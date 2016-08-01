@@ -57,4 +57,4 @@ Here is a description of scripts.json fields and structure:
 * dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
-Enjoy and feel free to reach out to us on the DFIR Community Slack channel, or at info@demisto.com
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
