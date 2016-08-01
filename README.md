@@ -7,11 +7,11 @@ We invite you to use the playbooks and scripts, modify them to suit your needs a
 
 
 ## Playbooks
-The Demisto Platform includes a visual playbook editor - you can add and modify tasks, create control flow according to answers returned by your queries, and automate everything with your existing security tools, services and products. You can also export your work to a file in the open playbook format, and import playbooks shared by your peers who have done the same.
+The Demisto Platform includes a visual playbook editor - you can add and modify tasks, create control flow according to answers returned by your queries, and automate everything with your existing security tools, services and products. You can also export your work to a file in the COPS format, and import playbooks shared by your peers who have done the same.
 
 We will be releasing more and more playbooks for interesting scenarios, so stay tuned. If you are working on an interesting playbook of your own, feel free to send us a Pull Request and let's build it together.
 
-The spec for our new format can be found here: https://github.com/demisto/dfir-playbook-spec
+The spec for our open playbook format, COPS, can be found [here](https://github.com/demisto/COPS).
 
 ## Scripts
 These scripts written in Python or Javascript perform Security Operations tasks.
