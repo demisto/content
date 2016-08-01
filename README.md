@@ -21,6 +21,6 @@ You can take your logic and the way you want to work and write your own scripts,
 The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
 ## Contributing Content
-For nstructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
+For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
