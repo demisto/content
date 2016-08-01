@@ -2,7 +2,7 @@
 
 ## Contributing Playbooks
 
-Our playbooks are described in an open format which we released called [COPS](https://github.com/demisto/dfir-playbook-spec) to drive collaboration and interoperability within the InfoSec community. 
+Our playbooks are described in an open format which we released called [COPS](https://github.com/demisto/COPS) to drive collaboration and interoperability within the InfoSec community. 
 
 In order to add playbooks you need to save them in the open playbook format(yaml file) and create a Pull Request. 
 
