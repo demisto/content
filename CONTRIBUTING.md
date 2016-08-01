@@ -20,7 +20,6 @@ Here is a description of scripts.json fields and structure:
             "name": "RemoteExec",
             "script": "RemoteExec.js",
             "type": "javascript",
-            "visualScript": "",
             "tags": ["endpoint"],
             "arguments": [
                 {
@@ -42,6 +41,20 @@ Here is a description of scripts.json fields and structure:
             "dependsOn": { "must": ["ssh"] }
 },
 ```
+
+* name: script name 
+* script: the script file name
+* type: javascript or python
+* tags: array of tags of the script
+* arguments: array of script arguments
+            * name: argument name
+            * description: argument description
+            * required: does this argument must be fulfilled in order to run script, or is it optional
+            * default: if you can provide the argument value , without giving the argument key(name) in command
+* comment: add comment 
+* system: 
+* scriptTarget: 0 for server script, 1 for agent script (to be run on endpoint)
+* dependsOn: depdencies on other scripts/integrations
 
 Enjoy and feel free to reach out to us on the DFIRCommunity Slack, or at using this repo issues.
 
