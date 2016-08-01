@@ -47,10 +47,10 @@ Here is a description of scripts.json fields and structure:
 * type: javascript or python
 * tags: array of tags of the script
 * arguments: array of script arguments
-            * name: argument name
-            * description: argument description - appears in automation page and in the CLI autocomplete
-            * required: Whether the user must provide this argument to run the script - yes for mandatory, no for optional
-            * default: (Only one "yes" per script) Argument can be provided without its name - e.g. !whois google.com instead of !whois domain=google.com
+	* name: argument name
+    * description: argument description - appears in automation page and in the CLI autocomplete
+    * required: Whether the user must provide this argument to run the script - yes for mandatory, no for optional
+    * default: (Only one "yes" per script) Argument can be provided without its name - e.g. `!whois google.com` instead of `!whois domain=google.com`
 * comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
 * system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "no" for scripts user creates from within the product.
 * scriptTarget: 0 for server script, 1 for agent script (to be run on endpoint)
