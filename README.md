@@ -20,15 +20,7 @@ The scripts are built to run inside the Demisto Platform - they can query or sen
 You can take your logic and the way you want to work and write your own scripts, allowing for maximum flexibility.
 The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
-# Adding content
-## Adding Playbooks
-Our playbooks are described in an open format which we are releasing to drive collaboration and interoperability within the InfoSec community. We realize every organization has different needs and we wanted to create something that allows for that flexibility.
+## Contributing Content
+For adding/modifing playbooks/scripts please read our contributer guide  [here](https://github.com/demisto/content/blob/master/CONTRIBUTING.md)
 
-In order to add playbooks you need to save them in the open playbook format and send a Pull Request. You can also edit them visually inside the Demisto Platform and export to a file.
-
-## Adding Scripts
-In addition to the actual scripts in a py or js file, you need to add a small section in the `scripts.json` file, with the script's display name, description, arguments and other metadata.
-Here is a description of `scripts.json` fields and structure:
-
-
-Enjoy and feel free to reach out to us on the DFIRCommunity Slack, or at <email-here>
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at info@demisto.com
