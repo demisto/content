@@ -13,14 +13,14 @@ We will be releasing more and more playbooks for interesting scenarios, so stay 
 
 The spec for our new format can be found here: https://github.com/demisto/dfir-playbook-spec
 
-## scripts
-These scripts written in Python or Javascript perform Security Operations tasks. 
-The scripts are built to run inside the Demisto Platform - they can query or send commands to a long list of existing security products, and react based on the output. 
+## Scripts
+These scripts written in Python or Javascript perform Security Operations tasks.
+The scripts are built to run inside the Demisto Platform - they can query or send commands to a long list of existing security products, and react based on the output.
 
 You can take your logic and the way you want to work and write your own scripts, allowing for maximum flexibility.
 The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
 ## Contributing Content
-For adding/modifing playbooks/scripts please read our contributer guide  [here](https://github.com/demisto/content/blob/master/CONTRIBUTING.md)
+For nstructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 
-Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at info@demisto.com
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
