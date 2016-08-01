@@ -43,7 +43,7 @@ Here is a description of scripts.json fields and structure:
 ```
 
 * name: Name for the script, that will be displayed in the Automation page
-* script: The actual file name
+* script: The name of the file containing the script itself
 * type: javascript or python
 * tags: array of tags of the script
 * arguments: array of script arguments
@@ -54,6 +54,7 @@ Here is a description of scripts.json fields and structure:
 * comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
 * system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "no" for scripts user creates from within the product.
 * scriptTarget: 0 for server script, 1 for agent script (to be run on endpoint)
-* dependsOn: depdencies on other scripts/integrations
+* dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
 
-Enjoy and feel free to reach out to us on the DFIRCommunity Slack, or at using this repo issues.
+If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
+Enjoy and feel free to reach out to us on the DFIR Community Slack channel, or at info@demisto.com
