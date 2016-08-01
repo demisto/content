@@ -2,13 +2,13 @@
 
 ## Contributing Playbooks
 
-Our playbooks are described in an open format which we released called [COPS](https://github.com/demisto/COPS) to drive collaboration and interoperability within the InfoSec community.
+Our playbooks are described in an open format we released called [COPS](https://github.com/demisto/COPS) to drive collaboration and interoperability within the InfoSec community.
 
 In order to add playbooks you need to save them in the open playbook format(yaml file) and create a Pull Request.
 
-You can also edit them visually inside the Demisto Platform and export to a yaml file.
+You can also edit them visually inside the Demisto Platform and then export to a yaml file.
 
-Also you can create a PR to modify an existing playbook.
+To add a new playbook, or modify and enhance an existing playbook - just open a Pull Request in this repo.
 
 ## Contributing Scripts
 
