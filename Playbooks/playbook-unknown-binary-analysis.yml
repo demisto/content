@@ -1,0 +1,104 @@
+id: playbook4
+version: 1
+name: Unknown Binary Analysis playbook
+description: This playbook provides tools for analyzing an unknown binary file discovered
+  on our network.
+tasks:
+- id: "1"
+  taskid: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+  type: title
+  task:
+    id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+    version: 4
+    name: Engage
+    istitletask: true
+    issystemtask: true
+- id: "2"
+  taskid: c125cda9-bd9d-4e8c-8b25-b7d0171254f2
+  type: regular
+  task:
+    id: c125cda9-bd9d-4e8c-8b25-b7d0171254f2
+    version: 1
+    name: Initial triage
+    description: 1. Make sure that there is relevant information in the incident -
+      either there is a file attached to the incident or there is a hash in the incident
+    issystemtask: true
+- id: "3"
+  taskid: cd85115e-4379-4319-853b-f518e9aa98bc
+  type: regular
+  task:
+    id: cd85115e-4379-4319-853b-f518e9aa98bc
+    version: 3
+    name: Assess severity
+    description: 'Based on the end user affected, and other information assess and
+      change the severity if needed. '
+    issystemtask: true
+- id: "4"
+  taskid: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
+  type: regular
+  task:
+    id: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
+    version: 3
+    name: Assign and involve appropriate personnel
+    description: 'Invite the relevant users for investigation - malware expert and
+      network experts if needed. '
+    issystemtask: true
+- id: "5"
+  taskid: 69b90798-0528-4dd8-8305-bc94bde2e380
+  type: title
+  task:
+    id: 69b90798-0528-4dd8-8305-bc94bde2e380
+    version: 1
+    name: Investigation for the unknown binary
+    istitletask: true
+    issystemtask: true
+- id: "6"
+  taskid: f054078c-7ba9-4d6d-8920-41cba166e996
+  type: regular
+  task:
+    id: f054078c-7ba9-4d6d-8920-41cba166e996
+    version: 1
+    name: Check Reputation of the binary
+    description: 'Perform various file reputation lookups (e.g. virustotal) for the
+      hash. '
+    script: FileReputation
+    issystemtask: true
+- id: "7"
+  taskid: 16908eeb-ded8-4c67-8b00-109b06fce2cf
+  type: regular
+  task:
+    id: 16908eeb-ded8-4c67-8b00-109b06fce2cf
+    version: 1
+    name: Search the hash of file across infrastructure
+    description: |
+      Perform search across the fleet using CB API.
+    script: CBSearch
+    issystemtask: true
+- id: "8"
+  taskid: b1ce179a-cafb-42e0-8322-fa91379b6825
+  type: regular
+  task:
+    id: b1ce179a-cafb-42e0-8322-fa91379b6825
+    version: 1
+    name: Detonate the file in a sandbox
+    description: "Integrate with wildfire to allow for executable detonation. \n"
+    script: WildfireReport
+    issystemtask: true
+- id: "9"
+  taskid: ba6946cc-e633-4fc0-8455-5454f668e080
+  type: regular
+  task:
+    id: ba6946cc-e633-4fc0-8455-5454f668e080
+    version: 1
+    name: Generate IOC/Yara for binary
+    description: 'Generate signatures (e.g. yara, IOC, etc) '
+    issystemtask: true
+- id: "10"
+  taskid: 780b78e3-687e-44ea-83c5-95a138e30cad
+  type: regular
+  task:
+    id: 780b78e3-687e-44ea-83c5-95a138e30cad
+    version: 1
+    name: Block the binary across systems
+    issystemtask: true
+system: true
