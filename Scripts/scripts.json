@@ -1,0 +1,3325 @@
+{
+    "server": [
+        {
+            "name": "ExampleJSScript",
+            "script": "example.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["example"],
+            "comment": "This is only an example script, to showcase how to use and write JavaScript scripts",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "ArgumentExample",
+                    "description": "An example argument that will be passed into and used by the script",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "WhoisSummary",
+            "script": "whoissummary.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["threat-intel", "whois", "server"],
+            "comment": "A simple script that outputs a shorter summary of the !whois command output",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Input for the WHOIS query",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["whois"] }
+        },
+        {
+            "name": "Whois",
+            "script": "whois.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["threat-intel", "whois", "server"],
+            "comment": "A simple script that returns WHOIS info for a domain",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Input for the WHOIS query",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["whois"] }
+        },
+        {
+            "name": "VolLDRModules",
+            "script": "volldrmodules.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command ldrmodules",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolPSList",
+            "script": "volpslist.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command pslist",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolGetProcWithMalNetConn",
+            "script": "volgetprocwithmalnetconn.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for getting the list of processes that have connections to ip address with bad reputation.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "repthreshold",
+                    "description": "Reputation threshold - any IP addresses up to and including this score are considered malicious",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "repscript",
+                    "description": "Reputation script to use for checking IP addresses",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolConnscan",
+            "script": "volconnscan.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command connscan",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolNetworkConnections",
+            "script": "volnetworkconnections.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for finding all the network connections. This script runs through different commands based on the profile provided.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolImageinfo",
+            "script": "volimageinfo.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command imageinfo",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolMalfind",
+            "script": "volmalfind.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command ldrmodules",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "pid",
+                    "description": "Process ID to pass to volatility as a parameter of the ldrmodules command",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolApihooks",
+            "script": "volapihooks.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command apihooks",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "pid",
+                    "description": "Process ID to pass to volatility as a parameter of the apihooks command",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolDlllist",
+            "script": "voldlllist.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Volatility script for command ldrmodules",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "pid",
+                    "description": "Process ID to pass to volatility as a parameter of the dlllist command",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "CommonServer",
+            "script": "common.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["infra", "server"],
+            "comment": "Common code that will be merged into each server script when it runs",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CommonUserServer",
+            "script": "",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["infra", "server"],
+            "comment": "Common user defined code that will be merged into each server script when it runs",
+            "system": false,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CommonServerPython",
+            "script": "common.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["infra", "server"],
+            "comment": "Common code that will be merged into each server script when it runs",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CommonServerUserPython",
+            "script": "",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["infra", "server"],
+            "comment": "Common user defined code that will be merged into each server script when it runs",
+            "system": false,
+            "scriptTarget": 0
+        },
+        {
+            "name": "Volatility",
+            "script": "volatilitygeneric.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Execute volatility with command and return tabular output. Incase where proper json output is not supported, scripts returns error. User should use raw command.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "cmd",
+                    "description": "The volatility command/module you want to use",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "SplunkEmailParser",
+            "script": "SplunkEmailParser.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["splunk","ingestion"],
+            "comment": "Classify an incident created from an email originating from Splunk.\nThe mail type should be in plain text, and inline: table should be selected.\nParsing is done in the following manner -\ntype is the header sourcetype, severity is the mail importance level, \nthe incident name is the mail subject and the systems are taken from host.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "body",
+                    "description": "Contents (body) of the email",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "subject",
+                    "description": "Subject of the email",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "DefaultIncidentClassifier",
+            "script": "DefaultIncidentClassifier.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["ingestion"],
+            "comment": "Classify an incident from mail.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "splunkSender",
+                    "description": "Email address from which Splunk sends emails to our mail listener",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "nexposeSender",
+                    "description": "Email address from which Nexpose sends emails to our mail listener",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "defaultIncidentType",
+                    "description": "The incident type to be set in case the email is neither from Splunk nor Nexpose",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "minRiskScore",
+                    "description": "Argument passed as-is to NexposeEmailParser. See its documentation for details.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "minVulnCount",
+                    "description": "Argument passed as-is to NexposeEmailParser. See its documentation for details.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "sentinelOneSender",
+                    "description": "Email address from which sentinel one sends emails to our mail listener",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "sentinelOneIncidentType",
+                    "description": "Incident type to classify sentinel one events to",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "NexposeEmailParser",
+            "script": "NexposeEmailParser.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["nexpose","ingestion"],
+            "comment": "Parses nexpose report into a clear table that contain risk score and vulnerability count for each server,\nAnd creates a new incident for each server.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "entryID",
+                    "description": "ID of the entry containing the Nexpose report. If none is provided, the script will iterate and find a relevant entry.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "minRiskScore",
+                    "description": "Minimal Risk Score an item in the report needs to reach in order to trigger an incident. Leave empty to trigger for any risk score.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "minVulnCount",
+                    "description": "Minimal Vulnerability Count an item in the report needs to reach in order to trigger an incident. Leave empty to trigger for any count.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "defaultNexposeSeverity",
+                    "description": "Severity to be set on triggered incidents",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "NexposeEmailParserForVuln",
+            "script": "NexposeEmailParserForVuln.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["nexpose","ingestion"],
+            "comment": "Parses nexpose report into a clear table that contain risk score and vulnerability count for each server,\nAnd creates a new incident for each server.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "report",
+                    "description": "Full XML contents of the Nexpose report. If not provided, it will be taken from the Incident Details.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "NexposeVulnExtractor",
+            "script": "NexposeVulnExtractor.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["nexpose"],
+            "comment": "Parse a specific server nexpose response in to a table of vulnerabilities.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "report",
+                    "description": "Full XML contents of the Nexpose report. If not provided, it will be taken from the Incident Details.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "VolRunCmds",
+            "script": "volruncmds.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Execute volatility with command and return tabular output. Incase where proper json output is not supported, scripts returns error. User should use raw command.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "cmds",
+                    "description": "Comma-separated list of volatility commands/modules to run",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "profile",
+                    "description": "Volatility profile to use",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "CheckFiles",
+            "script": "checkfiles.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["server", "threat-intel"],
+            "comment": "Iterate on all file artifacts in the investigation and return details of positives",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "fileNames",
+                    "description": "If provided, checks only files whose names are in the list. The names should be comma-separated.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file"] }
+        },
+        {
+            "name": "CheckSender",
+            "script": "checksender.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["phishing"],
+            "comment": "For phishing incidents, check the sender of the email via Pipl search",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["pipl-search"] }
+        },
+        {
+            "name": "StaticAnalyze",
+            "script": "staticanalyze.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["phishing"],
+            "comment": "For phishing incidents, iterate on all attachments and run PE dump on each",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "AnalyzeOSX",
+            "script": "analyzeosx.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["osx"],
+            "comment": "Get file and url reputation for osxcollector result.\n will use VirusTotal for Url checks, and IBM XForce for MD5 checks.\n maxchecks : for \n system  : system name to run agent on.\n section : the type check that OSXCollector should run.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "section",
+                    "description": "Ask OSXCollector for a specific section",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "timeout",
+                    "description": "Timeout to be passed to OSXCollector script",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "maxchecks",
+                    "description": "Maximum amount of files/urls to verify",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "system",
+                    "description": "OSX System to be used",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file", "url"] }
+        },
+        {
+            "name": "LCNewProcess",
+            "script": "lcnewprocess.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["lima charlie"],
+            "comment": "Using Lima Charlie, find all new process launches for a given sensor",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "sensor",
+                    "description": "Sensor to query",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "size",
+                    "description": "Size for the response",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "days",
+                    "description": "Size of time window, in days",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["timeline"] }
+        },
+        {
+            "name": "LCFindProcess",
+            "script": "lcfindprocess.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["lima charlie"],
+            "comment": "Using Lima Charlie, find a given process name across all sensors",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "name",
+                    "description": "Process name to find",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["objectloc"] }
+        },
+        {
+            "name": "LCFindDomain",
+            "script": "lcfinddomain.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["lima charlie"],
+            "comment": "Using Lima Charlie, find which sensor saw access to given domain",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "domain",
+                    "description": "Domain to be found",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["objectloc"] }
+        },
+        {
+            "name": "SplunkSearch",
+            "script": "splunksearch.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement","splunk"],
+            "comment": "Run a query through Splunk and format the results as a table",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Splunk query to execute",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "rows",
+                    "description": "Return up to X first rows. If omitted, defaults to 30.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["search"] }
+        },
+        {
+            "name": "SplunkSearchJsonPy",
+            "script": "SplunkSearchJson.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["enhancement"],
+            "comment": "Run a query through Splunk and format the results as a markdown with raw data parsed as JSON",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Splunk query to execute",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "rows",
+                    "description": "Return up to X first rows. If omitted, defaults to 30.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["search"] }
+        },
+        {
+            "name": "TriagePhishing",
+            "script": "triagephishing.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["phishing"],
+            "comment": "Process a suspected email and check URLs, attachments and sender via reputation services",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": [], "should": ["url", "pipl-search", "file"] }
+        },
+        {
+            "name": "DataIPReputation",
+            "script": "dataiprep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["reputation"],
+            "comment": "Evaluate reputation of an IP address and return a score between 1 to 5",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "input",
+                    "description": "IP address to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ip"] }
+        },
+        {
+            "name": "DataURLReputation",
+            "script": "dataurlrep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["reputation"],
+            "comment": "Evaluate reputation of a URL and return a score between 1 to 5",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "input",
+                    "description": "URL to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["url"] }
+        },
+        {
+            "name": "DataHashReputation",
+            "script": "datahashrep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["reputation"],
+            "comment": "Evaluate reputation of the given hash and return a score between 1 to 5",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "input",
+                    "description": "Hash value to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file"] }
+        },
+        {
+            "name": "IPReputation",
+            "script": "iprep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement"],
+            "comment": "A context script for IP entities",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "ip",
+                    "description": "IP address to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ip"] }
+        },
+        {
+            "name": "FileReputation",
+            "script": "filerep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement"],
+            "comment": "A context script for MD5 entities",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "file",
+                    "description": "File MD5 hash to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file"] }
+        },
+        {
+            "name": "EmailReputation",
+            "script": "emailrep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement"],
+            "comment": "A context script for Email entities",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "email",
+                    "description": "Email address to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["pipl-search"] }
+        },
+        {
+            "name": "URLReputation",
+            "script": "urlrep.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement"],
+            "comment": "A context script for URL entities",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "url",
+                    "description": "URL to look up",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["url"] }
+        },
+        {
+            "name": "CBSearch",
+            "script": "cbsearch.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["carbon-black", "endpoint", "enhancement"],
+            "comment": "Search Carbon Black for process & binary information",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "type",
+                    "description": "\"process\" or \"binary\" according to the type of search you want to run",
+                    "required": false,
+                    "default": false
+                }, {
+                    "name": "query",
+                    "description": "Query to be run - in Carbon Black syntax",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "rows",
+                    "description": "Number of rows to return. If omitted, default is as stated in the Carbon Black API documentation, currently 10.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "start",
+                    "description": "Start at this row #. Allows pagination through large response. If omitted, default is as stated in the Carbon Black API documentation, currently 0. ",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": [], "should": ["cb-process", "cb-binary"] }
+        },
+        {
+            "name": "CBSensors",
+            "script": "cbsensors.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["carbon-black", "endpoint"],
+            "comment": "List Carbon Black sensors",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-list-sensors"] }
+        },
+        {
+            "name": "CBSessions",
+            "script": "cbsessions.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["carbon-black", "endpoint"],
+            "comment": "List Carbon Black sessions",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "verbose",
+                    "description": "Show more detailed output",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-list-sessions"] }
+        },
+        {
+            "name": "CBLiveProcessList",
+            "script": "cbliveprocesslist.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["carbon-black", "endpoint"],
+            "comment": "Runs 'process list' command on a remote Carbon Black sensor",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "sessionid",
+                    "description": "ID of an active Carbon Black session",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-command-create", "cb-command-info"] }
+        },
+        {
+            "name": "CBEvents",
+            "script": "cbevents.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["carbon-black", "endpoint", "enhancement"],
+            "comment": "Returns all events associated with a process query",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Query to match against events",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-process", "process-events"] }
+        },
+        {
+            "name": "AnalyzeMemImage",
+            "script": "analyzememimage.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["memory", "forensics", "volatility", "server"],
+            "comment": "Use Volatility to run common memory image analysis commands",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "system",
+                    "description": "System with Volatility installed to be used for the analysis",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EsmExample",
+            "script": "ESMNitroExample.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["esm", "nitro", "siem", "example"],
+            "comment": "Example of using McAfee ESM (Nitro) with advanced filters",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "ip",
+                    "description": "IP Address to find",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Query limit. If omitted, defaults to 100.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "PagerDutyAssignOnCallUser",
+            "script": "pagerdutyassign.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["pagerduty", "communication"],
+            "comment": "By default assigns the first on-call user to an investigation (all incidents in the investigation will be owned by the on call user)",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Filter user. E.g. query=dan will find the first on call user with the string \"dan\" in their name",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["PagerDutyGetUsersOnCallNow"] }
+        },
+        {
+            "name": "PagerDutyAlertOnIncident",
+            "script": "pagerdutyalert.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["pagerduty", "communication"],
+            "comment": "Send incident details to pagerduty (useful to include in playbooks)",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["pagerDutySubmitEvent"] }
+        },
+        {
+            "name": "WildfireReport",
+            "script": "wildfirereport.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["enhancement", "wildfire", "sandbox"],
+            "comment": "Use wildfire file analysis and parse result",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "md5",
+                    "description": "MD5 Hash to look up",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "hash",
+                    "description": "Hash to look up",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["wildfire-report"] }
+        },
+        {
+            "name": "WildfireUpload",
+            "script": "wildfireupload.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["wildfire", "sandbox"],
+            "comment": "Upload file to wildfire for analysis.\nExample usage: !WildfireUpload upload=2@3",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "upload",
+                    "description": "ID of a war room entry containing a file to be uploaded to the WildFire service",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["wildfire-upload"] }
+        },
+        {
+            "name": "PanoramaConfig",
+            "script": "panoramaconfig.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["panorama", "firewall"],
+            "comment": "Set panorama configuration",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "ruleName",
+                    "description": "Name for the rule to be configured",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "xpath",
+                    "description": "Usually not required as ruleName is sufficient. Direct XPath to the rule entry to be modified.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "srcIP",
+                    "description": "Source IP address",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "dstIP",
+                    "description": "Destination IP address",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "negateSrc",
+                    "description": "Yes/No - whether to negate the source IP address (match all except the specified address)",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "negateDst",
+                    "description": "Yes/No - whether to negate the destination IP address (match all except the specified address)",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "action",
+                    "description": "Action for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "service",
+                    "description": "Service for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "disable",
+                    "description": "Yes/No - whether to disable the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "application",
+                    "description": "Application for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "srcUser",
+                    "description": "Source user for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "from",
+                    "description": "\"From\" value for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "to",
+                    "description": "\"To\" value for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "disableServerResponseInspection",
+                    "description": "Value for the \"disable-server-response-inspection\" option",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "description",
+                    "description": "Rule description",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["panorama"] }
+        },
+        {
+            "name": "PanoramaPcaps",
+            "script": "panoramapcaps.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["panorama", "firewall"],
+            "comment": "Get panorama pcaps",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "pcapType",
+                    "description": "Type of Packet Capture",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "from",
+                    "description": "\"From\" value for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "to",
+                    "description": "\"To\" value for the rule",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "serialNo",
+                    "description": "Serial number for the request. For further information, see the Panorama XML API Documentation.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "searchTime",
+                    "description": "Search time for the request. For further information, see the Panorama XML API Documentation.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "pcapID",
+                    "description": "ID of the Pcap for the request. For further information, see the Panorama XML API Documentation.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "password",
+                    "description": "Password for Panorama.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["panorama"] }
+        },
+        {
+            "name": "PanoramaMove",
+            "script": "panoramamove.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["panorama", "firewall"],
+            "comment": "Move panorama rules",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "xpath",
+                    "description": "Usually not required as \"src\" is sufficient. Full XPath to the source rule to be moved.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "src",
+                    "description": "Source value for the request. For further information, see the Panorama XML API Documentation.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "where",
+                    "description": "Values for the \"where\" parameter include \"before\", \"after\", \"top\" or \"bottom\". For further information, see the Panorama XML API Documentation.",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "dst",
+                    "description": "Destination xpath to move the rule. For further information, see the Panorama XML API Documentation.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["panorama"] }
+        },
+        {
+            "name": "PanoramaCommit",
+            "script": "panoramacommit.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["panorama", "firewall"],
+            "comment": "Commit configuration to panorama",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["panorama"] }
+        },
+        {
+            "name": "RemoteExec",
+            "script": "RemoteExec.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["endpoint"],
+            "arguments": [
+                {
+                    "name": "system",
+                    "description": "Name of system on which to run the command",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "cmd",
+                    "description": "Command to run",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "comment": "Execute a command on a remote machine (without installing a D2 agent)",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ssh"] }
+        },
+        {
+            "name": "BinaryReputationPy",
+            "script": "binaryreputation.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["hash", "server", "threat-intel", "virustotal", "xfe", "wildfire"],
+            "arguments": [
+                {
+                    "name": "fileNames",
+                    "description": "If provided, checks only files whose names are in the list. The names should be comma-separated.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Get reputation for any hash or file in the incident details",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file"] }
+        },
+        {
+            "name": "BinarySearchPy",
+            "script": "binarysearch.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["hash", "server", "endpoint", "carbon-black"],
+            "arguments": [],
+            "comment": "Search for a binary on an endpoint using Carbon Black",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["process"] }
+        },
+        {
+            "name": "CheckFilesWildfirePy",
+            "script": "checkfileswildfire.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["hash", "server", "threat-intel", "wildfire"],
+            "arguments": [
+                {
+                    "name": "fileNames",
+                    "description": "If provided, checks only files whose names are in the list. The names should be comma-separated.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Get reputation for attachments using wildfire and if the file is not known upload it to wildfire, wait 15 min and get reputation again",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["wildfire-upload", "wildfire-report"]}
+        },
+        {
+            "name": "CheckIPs",
+            "script": "checkips.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "threat-intel", "virustotal", "xfe"],
+            "arguments": [
+                {
+                    "name": "data",
+                    "description": "Raw text from which to extract IP addresses using the appropriate regular expression. If omitted, will scan Incident Details instead.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Get reputation for IPs in the incident or given raw text",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ips"] }
+        },
+        {
+            "name": "CheckSenderDomainDistance",
+            "script": "checksenderdomaindistance.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "phishing"],
+            "arguments": [
+                {
+                    "name": "domain",
+                    "description": "The domain to be measured against the domain in the sender's email address.\nUsually the domain used by the company for email, e.g. acme.com when users are assigned jane@acme.com",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Get the string distance for the sender from our domain",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CheckSenderPy",
+            "script": "checksender.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "phishing"],
+            "arguments": [
+                {
+                    "name": "email",
+                    "description": "Email address to look up. If omitted, will instead extract with regular expression from Incident Details, where the phishing email should be provided.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "For phishing incidents, check the sender of the email via Pipl search",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CheckURLs",
+            "script": "checkurls.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "threat-intel", "xfe", "virustotal"],
+            "arguments": [
+                {
+                    "name": "data",
+                    "description": "Raw text from which to extract URLs using the appropriate regular expression. If omitted, will scan Incident Details instead.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Check the URLs in the incident, or raw text provided as argument, for malicious URLs",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["url"] }
+        },
+        {
+            "name": "ExchangeFindAndDelete",
+            "script": "ExchangeFindAndDelete.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "response", "ews","exchange","email"],
+            "arguments": [
+                {
+                    "name": "mailbox",
+                    "description": "Mailbox to be searched, e.g. dave@acme.com",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "subject",
+                    "description": "Only match mails containing this Subject",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attachmentName",
+                    "description": "Only match mails containing an attachment with this name",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "sender",
+                    "description": "Only match mails from this sender (Email address)",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "comment": "Search for the given mail details and in the given mailbox delete found emails",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ews-delete-items", "ews-search-mailbox"] }
+        },
+        {
+            "name": "CloseInvestigation",
+            "script": "CloseInvestigation.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "management"],
+            "arguments": [
+                {
+                    "name": "reason",
+                    "description": "Reason for closing the investigation",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "comment": "Close an investigation",
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "XBInfo",
+            "script": "xbinfo.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [],
+            "comment": "Retrieve global Exabeam info about number of users, assets and events",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": [], "should": ["xb-users", "xb-assets", "xb-events"] }
+        },
+        {
+            "name": "XBNotable",
+            "script": "xbnotable.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [
+                {
+                    "name": "rows",
+                    "description": "Maximum number of result rows to return",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "days",
+                    "description": "Number of days back to include in results",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "comment": "Retrieve notable Exabeam users",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["xb-notable"] }
+        },
+        {
+            "name": "XBLockouts",
+            "script": "xblockouts.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [
+                {
+                    "name": "rows",
+                    "description": "Maximum number of result rows to return",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "days",
+                    "description": "Number of days back to include in results",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "comment": "Retrieve lockouts from Exabeam",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["xb-lockouts"] }
+        },
+        {
+            "name": "XBUser",
+            "script": "xbuser.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [
+                {
+                    "name": "username",
+                    "description": "Username for query",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "comment": "Retrieve user info from Exabeam",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["xb-user"] }
+        },
+        {
+            "name": "XBTimeline",
+            "script": "xbtimeline.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [
+                {
+                    "name": "username",
+                    "description": "Username for query",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "comment": "Retrieve timeline of a user",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["xb-timeline"] }
+        },
+        {
+            "name": "XBTriggeredRules",
+            "script": "xbtriggeredrules.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "analytics", "exabeam"],
+            "arguments": [
+                {
+                    "name": "session",
+                    "description": "Session to query",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "comment": "Retrieve the triggered rules for a session",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["xb-triggered-rules"] }
+        },
+        {
+            "name": "CYFileRep",
+            "script": "cyfilerep.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "threat-intel", "cylance", "file"],
+            "arguments": [
+                {
+                    "name": "entry",
+                    "description": "The ID of a file entry to upload",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "comment": "Retrieve file reputation and upload the file if required for analysis",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["file", "cy-upload"] }
+        },
+        {
+            "name": "CSActors",
+            "script": "csactors.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "threat-intel", "crowdstrike"],
+            "arguments": [
+                {
+                    "name": "q",
+                    "description": "Search all fields for the given data",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "name",
+                    "description": "Search based on actor name",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "description",
+                    "description": "Search based on description",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "minLastModifiedDate",
+                    "description": "Search range from modified date. Dates are formatted as YYYY-MM-DD.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "maxLastModifiedDate",
+                    "description": "Search range to modified date. Dates are formatted as YYYY-MM-DD.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "minLastActivityDate",
+                    "description": "Search range from activity date. Dates are formatted as YYYY-MM-DD.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "maxLastActivityDate",
+                    "description": "Search range to activity date. Dates are formatted as YYYY-MM-DD.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "origins",
+                    "description": "Search by origins - takes a comma-separated list",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "targetCountries",
+                    "description": "Search by target countries - takes a comma-separated list",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "targetIndustries",
+                    "description": "Search by target industries - takes a comma-separated list",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "motivations",
+                    "description": "Search by motivations - takes a comma-separated list",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "sort",
+                    "description": "Sort is field_name.order, field_name.order where order is either asc or desc.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "offset",
+                    "description": "Which page of the results to retrieve. It is 0 based.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "limit",
+                    "description": "Number of results for the page",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "comment": "Query CrowdStrike actors based on given parameters. For fields like countries and industries, multiple values can be passed separated by ','.",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cs-actors"] }
+        },
+        {
+            "name": "CSIndicators",
+            "script": "csindicators.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "threat-intel", "crowdstrike"],
+            "arguments": [
+                {
+                    "name": "parameter",
+                    "description": "Based on what parameter to search.\nSee CrowdStrike documentation for details.\nCan be one of indicator, type, report, actor, malicious_confidence, published_date, last_updated, malware_family, kill_chain, labels, DomainType, EmailAddressType, IntelNews, IPAddressType, Malware, Status, Target, ThreatType, Vulnerability",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "filter",
+                    "description": "Can be either match, equal, gt(e), lt(e)",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "value",
+                    "description": "The value for the given parameter",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "sort",
+                    "description": "Sort by a field. Should be field_name.order where order is either asc or desc. Fields are indicator, type, report, actor, malicious_confidence, published_date, last_updated.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "page",
+                    "description": "The page to retrieve - 1 based",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "pageSize",
+                    "description": "The size of the page to retrieve",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "comment": "Query CrowdStrike indicators based on given parameters.",
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cs-indicators"] }
+        },
+        {
+            "name": "SendEmail",
+            "script": "SendEmail.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["response", "email", "server"],
+            "comment": "Send an email with the specified parameters.\nAttachments are provided as a comma-separated list of entry IDs.\nExample usage: !SendEmail subject=\"File from war room\" body=\"Please see the attached file. --DBot\" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3",
+            "arguments": [
+                {
+                    "name": "to",
+                    "description": "Email addresses for the 'to' field",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "cc",
+                    "description": "Email addresses for the 'cc' field",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "bcc",
+                    "description": "Email addresses for the 'bcc' field",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "subject",
+                    "description": "Subject for the email to be sent",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "body",
+                    "description": "The contents (body) of the email to be sent",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attachIDs",
+                    "description": "A comma-separated list of IDs of war room entries that contain files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["send-mail"] }
+        },
+        {
+            "name": "CopyFileD2",
+            "script": "CopyFileD2.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["util", "server"],
+            "comment": "Copy a file from an entry to the destination path on the specified system. This uses the dissolvable agent's HTTPS communication channel rather than scp or other out-of-band methods.\nExample usage: !CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_suspiciousPE1.exe.evil entryid=21@8 system=Analyst1",
+            "arguments": [
+                {
+                    "name": "system",
+                    "description": "System to which we want to copy the file",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "destpath",
+                    "description": "Full filesystem path and filename under which to save the file",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "entryid",
+                    "description": "ID of the war room entry containing the file to copy",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "ADGetUserGroups",
+            "script": "ADGetUserGroups.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the groups in which the specified user is a member. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).",
+            "arguments": [
+                {
+                    "name": "dn",
+                    "description": "Active Directory Distinguished Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "email",
+                    "description": "Email address of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADGetUsersByEmail",
+            "script": "ADGetUsersByEmail.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the user associated with the specified email address.",
+            "arguments": [
+                {
+                    "name": "email",
+                    "description": "Email address by which to search",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADGetEmailForUser",
+            "script": "ADGetEmailForUser.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the email address associated with the specified user. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).",
+            "arguments": [
+                {
+                    "name": "dn",
+                    "description": "Active Directory Distinguished Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADGetComputerGroups",
+            "script": "ADGetComputerGroups.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the groups in which the specified computer is a member. The member computer can be specified by name or by DN.",
+            "arguments": [
+                {
+                    "name": "dn",
+                    "description": "Active Directory Distinguished Name for the desired computer",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Name of the desired computer",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADUserLogonInfo",
+            "script": "ADUserLogonInfo.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).",
+            "arguments": [
+               {
+                    "name": "dn",
+                    "description": "Active Directory Distinguished Name for the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "email",
+                    "description": "Email address of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADGetGroupComputers",
+            "script": "ADGetGroupComputers.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the list of computers that are members of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\" argument receives a comma-separated list of additional attributes you wish to be displayed in the results.\nExample usage: !ADGetGroupComputers groupdn=\"CN=ImportantComputers,DC=demisto,DC=com\" attributes=operatingsystem ",
+            "arguments": [
+                {
+                    "name": "groupdn",
+                    "description": "Active Directory Distinguished Name for the desired group",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADGetGroupUsers",
+            "script": "ADGetGroupUsers.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to retrieve the list of users who are members of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\" argument receives a comma-separated list of additional attributes you wish to be displayed in the results.\nExample usage: !ADGetGroupUsers groupdn=\"CN=Domain Admins,CN=Users,DC=demisto,DC=com\" attributes=badPwdCount,memberOf ",
+            "arguments": [
+                {
+                    "name": "groupdn",
+                    "description": "Active Directory Distinguished Name for the desired group",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADListComputers",
+            "script": "ADListComputers.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Retrieve the list of Computer objects stored in Active Directory. Use the \"attributes\" argument to include specific attributes in the results. ",
+            "arguments": [
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADListUsers",
+            "script": "ADListUsers.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Retrieve the list of User objects stored in Active Directory. Use the \"attributes\" argument to include specific attributes in the results. ",
+            "arguments": [
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ADListUsersEx",
+            "script": "ADListUsersEx.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Retrieve the list of User objects stored in Active Directory and include an extended list of attributes and information about each user. Use the \"attributes\" argument to include additional specific attributes in the results.",
+            "arguments": [
+                {
+                    "name": "attributes",
+                     "description": "Include these AD attributes of the resulting objects in addition to the default ones",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "Strings",
+            "script": "strings.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["server", "file"],
+            "comment": "Extract strings from a file with optional filter - similar to binutils strings command",
+            "arguments": [
+                {
+                    "name": "entry",
+                    "required": true,
+                    "default": true,
+                    "description": "Entry ID of a file entry to retrieve strings from"
+                },
+                {
+                    "name": "chars",
+                    "required": false,
+                    "default": false,
+                    "description": "Number of consecutive characters to be considered a string - default is 4"
+                },
+                {
+                    "name": "size",
+                    "required": false,
+                    "default": false,
+                    "description": "Display first 'size' results - default is 1024"
+                },
+                {
+                    "name": "filter",
+                    "required": false,
+                    "default": false,
+                    "description": "Regex to filter the strings - compiled with ignore case"
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "RegProbeBasic",
+            "script": "RegProbeBasic.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["registry"],
+            "comment": "Perform a short probe of the specified system's registry - retrieve and display the values of a list of interesting keys ",
+            "arguments": [
+                {
+                    "name": "system",
+                    "required": true,
+                    "default": true,
+                    "description": "Name of the system to be queried"
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "RegCollectValues",
+            "script": "RegCollectValues.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["registry","enhancement"],
+            "comment": "Collect values for the given registry path from all Windows systems in this investigation.",
+            "arguments": [
+                {
+                    "name": "regpath",
+                    "required": true,
+                    "default": true,
+                    "description": "The registry path of the key to query"
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "RegPathReputationBasicLists",
+            "script": "RegPathReputationBasicLists.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["registry","reputation"],
+            "comment": "Check the given registry path against a small blacklist and whitelist. If the key matches neither, returns an answer of 2 meaning \"Unknown\".",
+            "arguments": [
+                {
+                    "name": "input",
+                    "required": true,
+                    "default": true,
+                    "description": "Registry path to be checked"
+                }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "TaniumDeployAction",
+            "script": "taniumDeployAction.js",
+            "type": "javascript",
+            "visualScript": "",
+            "comment": "Execute an action, optionally with parameters, and filtering - based on an existing package. See https://kb.tanium.com/SOAP for more information",
+            "system": true,
+            "tags": ["tanium"],
+            "arguments": [
+                {
+                    "name": "packageName",
+                    "description": "Specify the package name. e.g. !TaniumDeployAction packageName=\"Clean Stale Tanium Client Data\"",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "packageID",
+                    "description": "Use the package ID instead of its name",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "parameters",
+                    "description": "Use parameters with the package. See https://kb.tanium.com/SOAP for more details",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "comment",
+                    "description": "Comment to be added to the action history in the Tanium server",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["tn-deploy-package"] }
+        },
+        {
+            "name": "TaniumAskQuestion",
+            "script": "taniumAskQuestion.js",
+            "type": "javascript",
+            "visualScript": "",
+            "comment": "Send a request for a formatted result of a saved question. To receive the most up to date data, run the same command twice. See https://kb.tanium.com/SOAP for more information",
+            "system": true,
+            "tags": ["tanium"],
+            "arguments": [
+                {
+                    "name": "name",
+                    "description": "Retrieve the question by its name. E.g. !TaniumAskQuestion name=\"Running Services\"",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "id",
+                    "description": "Retrieve the question by its ID.  To view ID in the Tanium console go to: Authoring -> Saved Questions tab. This shows you a list of Saved Questions. Click the edit button on a Saved Question and the ID will be shown in the lower left corner",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "timeout",
+                    "description": "Force Tanium to respond after x seconds (even if data was not collected fully by Tanium)",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["tn-result-data", "tn-result-info"] }
+        },
+        {
+            "name": "TaniumAskQuestionComplex",
+            "script": "taniumAskQuestionComplex.js",
+            "type": "javascript",
+            "visualScript": "",
+            "comment": "TaniumAskQuestionComplex - same as the AskQuestion command with additional filtering prepared by the script (an XML subsection added to the request).",
+            "system": true,
+            "tags": ["tanium"],
+            "arguments": [
+                {
+                    "name": "timeout",
+                    "description": "Force Tanium to respond after x seconds (even if data was not collected fully by Tanium)",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["tn-result-data", "tn-result-info", "tn-add-question-complex"] }
+        },
+        {
+            "name": "ADIsUserMember",
+            "script": "ADIsUserMember.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["active directory"],
+            "comment": "Use Active Directory to check if the specified user is a member of the specified group. Returns simply yes/no. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "dn",
+                    "description": "Active Directory Distinguished Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Name of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "email",
+                    "description": "Email address of the desired user",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "groupname",
+                    "description": "Name of the AD group to check",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ad-search"] }
+        },
+        {
+            "name": "ConferIncidentDetails",
+            "script": "ConferIncidentDetails.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["confer"],
+            "comment": "Display the incident details retrieved from Confer in a readable format",
+            "arguments": [],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["confer"] }
+        },
+        {
+            "name": "ConferSetSeverity",
+            "script": "ConferSetSeverity.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["confer"],
+            "comment": "Set incident severity according to indicators found in an confer alert",
+            "arguments": [],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["confer"] }
+        },
+        {
+            "name": "CuckooDetonateFile",
+            "script": "CuckooDetonateFile.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["cuckoo"],
+            "comment": "Detonate the file in Cuckoo sandbox.",
+            "arguments": [
+              {
+                  "name": "entryID",
+                  "description": "ID of the entry containing the file to detonate.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ck-file"] }
+        },
+        {
+            "name": "CuckooGetReport",
+            "script": "CuckooGetReport.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["cuckoo"],
+            "comment": "Get the report for a completed analysis.",
+            "arguments": [
+              {
+                  "name": "taskID",
+                  "description": "ID of the task in Cuckoo.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ck-report"] }
+        },
+        {
+            "name": "CuckooTaskStatus",
+            "script": "CuckooTaskStatus.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["cuckoo"],
+            "comment": "Check the current status of a task in Cuckoo sandbox.",
+            "arguments": [
+              {
+                  "name": "taskID",
+                  "description": "ID of the task to check.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["ck-view"] }
+        },
+        {
+            "name": "FPSetRule",
+            "script": "FPSetRule.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["forcepoint","triton"],
+            "comment": "Adds (or updates existing) rule in Forcepoint Triton. Preserves order of rules and modifies policy in-place if a rule exists with the exact type and value.",
+            "arguments": [
+              {
+                  "name": "policy",
+                  "description": "Policy/action assigned to the rule - \"allow\" or \"deny\" only.",
+                  "required": true,
+                  "default": true
+              },
+              {
+                  "name": "type",
+                  "description": "The Triton rule type - \"dest_domain\", \"dest_ip\", \"dest_host\" or \"url_regex\"",
+                  "required": true,
+                  "default": false
+              },
+              {
+                  "name": "value",
+                  "description": "The value to match for this rule (domain, regex, etc. depending on the type)",
+                  "required": true,
+                  "default": false
+              },
+              {
+                  "name": "remoteaccessname",
+                  "description": "If the Forcepoint Triton instance is configured as a RemoteAccess integration instance ‐ insert its name here. Replaces argument \"tritonsystem\".",
+                  "required": false,
+                  "default": false
+              },
+              {
+                  "name": "tritonsystem",
+                  "description": "System name of the linux host on which Forcepoint Triton is installed. Only use if not working with Triton as a RemoteAccess integration instance ‐ if so, use the \"remoteaccessname\" argument instead.",
+                  "required": false,
+                  "default": false
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "FPDeleteRule",
+            "script": "FPDeleteRule.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["forcepoint","triton"],
+            "comment": "Deletes a rule in Forcepoint Triton.",
+            "arguments": [
+              {
+                  "name": "type",
+                  "description": "The Triton rule type - \"dest_domain\", \"dest_ip\", \"dest_host\" or \"url_regex\"",
+                  "required": true,
+                  "default": false
+              },
+              {
+                  "name": "value",
+                  "description": "The value to match for this rule (domain, regex, etc. depending on the type)",
+                  "required": true,
+                  "default": false
+              },
+              {
+                  "name": "remoteaccessname",
+                  "description": "If the Forcepoint Triton instance is configured as a RemoteAccess integration instance ‐ insert its name here. Replaces argument \"tritonsystem\".",
+                  "required": false,
+                  "default": false
+              },
+              {
+                  "name": "tritonsystem",
+                  "description": "System name of the linux host on which Forcepoint Triton is installed. Only use if not working with Triton as a RemoteAccess integration instance ‐ if so, use the \"remoteaccessname\" argument instead.",
+                  "required": false,
+                  "default": false
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0
+        },
+        {
+            "name": "CBPApproveHash",
+            "script": "CBPApproveHash.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black-protection","bit9"],
+            "comment": "Approve/whitelist a hash in CBEP/Bit9.",
+            "arguments": [
+              {
+                  "name": "hash",
+                  "description": "The hash value to approve.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cbp-fileRule-update"] }
+        },
+        {
+            "name": "CBPBanHash",
+            "script": "CBPBanHash.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black-protection","bit9"],
+            "comment": "Ban/blacklist a hash in CBEP/Bit9.",
+            "arguments": [
+              {
+                  "name": "hash",
+                  "description": "The hash value to ban.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cbp-fileRule-update"] }
+        },
+        {
+            "name": "CBPFindComputer",
+            "script": "CBPFindComputer.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black-protection","bit9"],
+            "comment": "Find a computer in CBEP/Bit9.",
+            "arguments": [
+              {
+                  "name": "query",
+                  "description": "Only show computers matching this query. If omitted, displays all computers. Query is in CBEP/Bit9 syntax documented in https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#query-condition - e.g. \"name:*srv*\"",
+                  "required": false,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cbp-computer-search"] }
+        },
+        {
+            "name": "CBPFindRule",
+            "script": "CBPFindRule.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black-protection","bit9"],
+            "comment": "Find the rule state for a hash value in CBEP/Bit9.",
+            "arguments": [
+              {
+                  "name": "hash",
+                  "description": "The hash value to check.",
+                  "required": true,
+                  "default": true
+              }
+            ],
+            "system": true,
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cbp-fileRule-search"] }
+        },
+        {
+            "name": "CBAlerts",
+            "script": "CBAlerts.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black"],
+            "comment": "Get the list of Alerts from Carbon Black Enterprise Response. Supports the same arguments as the cb-alerts command.",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-alerts"] }
+        },
+        {
+            "name": "CBWatchlists",
+            "script": "CBWatchlists.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["carbon-black"],
+            "comment": "Display all watchlists and their details, queries, etc.",
+            "system": true,
+            "arguments": [
+              {
+                  "name": "id",
+                  "description": "Display a specific watchlist by watchlist ID (numeric)",
+                  "required": false,
+                  "default": true
+              }
+            ],
+            "scriptTarget": 0,
+            "dependsOn": { "must": ["cb-watchlist-get"] }
+        },
+        {
+            "name": "IncidentSet",
+            "script": "IncidentSet.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["management"],
+            "comment": "Modify incident info such as name, owner, type, etc.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "owner",
+                    "description": "Incident owner - must be an existing user in the platform",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "playbook",
+                    "description": "Assigned new playbook name",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "stage",
+                    "description": "Incident stage - must be from a predefined list of stages",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "details",
+                    "description": "Incident details",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "severity",
+                    "description": "The severity to set. Can be \"low\",\"medium\",\"high\" or \"critical\".",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "type",
+                    "description": "Incident type",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "name",
+                    "description": "Incident name",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "updatePlaybookForType",
+                    "description": "Should we also update the playbook according to the new given type. Can be yes or no. Default is yes.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "labels",
+                    "description": "Set and override the labels for the incident. Labels expected format is [{\"labelName\": \"labelValue\"}, {\"labelName1\": \"labelValue1\"}] (JSON).",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "addLabels",
+                    "description": "Add to the list of labels for the incident. Labels expected format is [{\"labelName\": \"labelValue\"}, {\"labelName1\": \"labelValue1\"}] (JSON).",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "SendURLDetailsByEmail",
+            "script": "sendurldetails.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["threat-intel"],
+            "comment": "Get all details about URL (reputation, number of ads, etc.) and send them via email",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "url",
+                    "description": "The URL to get details for. If not provided, will be taken from incident details.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "subject",
+                    "description": "The subject of the email. If not provided will be the incident name.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "recipient",
+                    "description": "The recipient of the email",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "SendEmailToManager",
+            "script": "sendemailtomanager.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["communication"],
+            "comment": "Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "email",
+                    "description": "The employee email. We will send an email to his manager. If not provided will be taken from incident label 'Email/from'",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "manager",
+                    "description": "The manager attribute in Active Directory. Default is 'manager'.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "entitlement",
+                    "description": "If provided (any value), we will add an entitlement to the subject allowing manager to reply to war room",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "body",
+                    "description": "The contents of the email body. It's a template that can include $empName and $managerName which will be replaced with actual values.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "request",
+                    "description": "The contents of the request from the manager. Will be added below the body. If none is provided, incident details will be taken.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "URLExtract",
+            "script": "URLExtract.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["url", "infra"],
+            "comment": "Extract URLs from the given text and place them both as output and in the context of a playbook",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "text",
+                    "description": "The text to extract URLs from",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "IPExtract",
+            "script": "IPExtract.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["ip", "infra"],
+            "comment": "Extract IPs from the given text and place them both as output and in the context of a playbook",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "text",
+                    "description": "The text to extract ip from",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "MD5Extract",
+            "script": "MD5Extract.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["hash", "infra"],
+            "comment": "Extract md5s from the given text and place them both as output and in the context of a playbook",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "text",
+                    "description": "The text to extract md5 from",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "TextFromHTML",
+            "script": "TextFromHTML.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["infra"],
+            "comment": "Extract regular text from the given HTML",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "html",
+                    "description": "The HTML to strip tags from",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "PrintContext",
+            "script": "PrintContext.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["infra"],
+            "comment": "Pretty-print the contents of the playbook context",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0
+        },
+        {
+            "name": "IncidentToContext",
+            "script": "IncidentToContext.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["infra"],
+            "comment": "Inserts incident info and labels into context for use inside playbooks.",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0
+        },
+        {
+            "name": "SlackSend",
+            "script": "SlackSend.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["slack"],
+            "comment": "Send messages to Slack teams",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "to",
+                    "description": "Send a Direct message by specifying a Slack user name",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "channel",
+                    "description": "Specify a Slack channel where the message will appear.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "entry",
+                    "description": "Send a link to this entry in the War Room",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "group",
+                    "description": "Specify a private channel",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "message",
+                    "description": "Message contents to send.",
+                    "required": false,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        }
+    ],
+    "agent": [
+        {
+            "name": "VolMalfindDumpAgent",
+            "script": "volmalfinddumpagent.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["volatility"],
+            "comment": "Volatility script for command ldrmodules",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "memdump",
+                    "description": "Path to memory dump file on the system being used",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "pid",
+                    "description": "Process ID to pass to volatility malfind command",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "dumpdir",
+                    "description": "Path to directory in which to save dumped memory sections",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Processes",
+            "script": "D2processes.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Show running processes",
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Hardware",
+            "script": "D2hardware.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Show system information",
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Users",
+            "script": "D2users.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Show local accounts",
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2GetSystemLog",
+            "script": "D2GetSystemLog.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Copy a log file. Works on Windows and Unix (differently - take a peek at the script itself to see how).",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "logName",
+                    "description": "Name of the log to retrieve",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Services",
+            "script": "D2services.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Show system services",
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "CommonD2",
+            "script": "common-d2.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["infra","agent"],
+            "comment": "Common code that will be merged into each D2 agent script when it runs",
+            "system": false,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Exec",
+            "script": "D2exec.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","endpoint"],
+            "comment": "Execute the command and pack the output back to server",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "cmd",
+                    "description": "System command to execute",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "VolRaw",
+            "script": "vol.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","volatility"],
+            "comment": "Execute volatility with command and file as parameters and returns raw output from stdout.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "cmd",
+                    "description": "Volatility command to run",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "file",
+                    "description": "Path of file to pass as argument to Volatility",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "VolJson",
+            "script": "voljson.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["volatility","agent"],
+            "comment": "Execute volatility with command and file as parameters and return output as json.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "cmd",
+                    "description": "Volatility command to run",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "file",
+                    "description": "Path of file to pass as argument to Volatility",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2PEDump",
+            "script": "D2pedump.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["executable","agent"],
+            "comment": "Execute PE Dump on a file that is under /tmp somewhere. Used internally by StaticAnalyze",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "file",
+                    "description": "Path to the PE file to analyze, relative to /tmp",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "Osxcollector",
+            "script": "osxcollector.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["osx","agent"],
+            "comment": "Execute osxcollector on machine, can run ONLY on OSX",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "section",
+                    "description": "Ask OSXCollector for a specific section",
+                    "required": false,
+                    "default": true
+                },
+                {
+                    "name": "timeout",
+                    "description": "Timeout for the OSXCollector execution to complete. If omitted, defaults to 10 minutes.",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "ExchangeSearchMailbox",
+            "script": "exsearchmailbox.js",
+            "type": "javascript",
+            "tags": ["exchange","email"],
+            "visualScript": "",
+            "comment": "Search all mailboxes on an Exchange server and copy the results to a specified target mailbox. This script runs through the agent on a Windows machine, pulls and executes a  PowerShell script - which talks to the Exchange server.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Exchange query to match against emails",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "toMailbox",
+                    "description": "Destination mailbox",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "toFolder",
+                    "description": "Folder within destination mailbox in which to place matched emails",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "server",
+                    "description": "Hostname of the Exchange server",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "ExchangeDeleteMail",
+            "script": "exdeletemail.js",
+            "type": "javascript",
+            "tags": ["exchange","email"],
+            "visualScript": "",
+            "comment": "Search all mailboxes on an Exchange server for a query and deletes all messages in which query is satisfied. This script runs through the agent on a Windows machine, pulls and executes a  PowerShell script - which talks to the Exchange server.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "query",
+                    "description": "Exchange query to match against emails",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "server",
+                    "description": "Hostname of the Exchange server",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "ExchangeAssignRole",
+            "script": "exassignrole.js",
+            "type": "javascript",
+            "tags": ["exchange","email"],
+            "visualScript": "",
+            "comment": "Assign a 'Mailbox Import Export' management role to a user. This script runs through the agent on a Windows machine, pulls and executes a  PowerShell script - which talks to the Exchange server.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "username",
+                    "description": "Username to whom to assign the role",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "role",
+                    "description": "Choose a different role to assign to the user. Default is 'Mailbox Import Export'.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "server",
+                    "description": "Hostname of the Exchange server",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Drop",
+            "script": "D2Drop.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","util"],
+            "comment": "Drop a file to a target system by providing its path on the server. Use CopyFileD2 instead in most cases.\nThis is a utility agent script to be used inside server scripts. See CopyFileD2 for an example.",
+            "arguments": [
+                {
+                    "name": "destpath",
+                    "description": "Full filesystem path and filename under which to save the file",
+                    "required": true,
+                    "default": false
+                }
+            ],
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2RegQuery",
+            "script": "D2RegQuery.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","registry"],
+            "comment": "Use the D2 agent to retrieve the value of the given registry key.",
+            "arguments": [
+                {
+                    "name": "regpath",
+                    "required": true,
+                    "default": true,
+                    "description": "The registry path of the key to be queried"
+                }
+            ],
+            "system": true,
+            "scriptTarget": 1
+        }
+
+    ]
+}

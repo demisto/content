@@ -1,0 +1,34 @@
+var xfeScore = -1;
+var vtScore = -1;
+var csScore = -1;
+var rep = executeCommand('url', {url: args.input});
+if (rep) {
+  for (var r = 0; r < rep.length; r++) {
+    if (rep[r].Type !== entryTypes.error && rep[r].ContentsFormat === formats.json) {
+      if (rep[r].Brand === brands.xfe && rep[r].Contents && rep[r].Contents.url.result.score) {
+        var s = rep[r].Contents.url.result.score;
+        if (s >= 6) {
+          xfeScore = 3;
+        } else if (s >= 3) {
+          xfeScore = 2;
+        } else {
+          xfeScore = 1;
+        }
+      } else if (rep[r].Brand === brands.vt && rep[r].Contents && rep[r].Contents.positives) {
+        var detected = rep[r].Contents.positives;
+        if (detected > 20) {
+          vtScore = 3;
+        } else if (detected > 8) {
+          vtScore = 2;
+        } else {
+          vtScore = 1;
+        }
+      } else if (rep[r].Brand === brands.cs && rep[r].Contents && rep[r].Contents.length) {
+        csScore = rep[r].Contents[0].malicious_confidence === 'high' ? 3 : rep[r].Contents[0].malicious_confidence === 'medium' ? 2 : 1;
+      }
+    }
+  }
+}
+
+var score = Math.max(xfeScore, vtScore, csScore);
+return score < 0 ? 0 : score;
