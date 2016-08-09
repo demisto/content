@@ -3319,7 +3319,41 @@
             ],
             "system": true,
             "scriptTarget": 1
+        },
+        {
+            "name": "D2Winpmem",
+            "script": "D2Winpmem.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","memory","forensics"],
+            "comment": "Use the D2 agent to carry the winpmem binary to a system and return the memory dump file to the war room. This usually takes a while, depending on amount of RAM in the target system.",
+            "arguments": [],
+            "system": true,
+            "scriptTarget": 1
+        },
+        {
+            "name": "D2Rekall",
+            "script": "D2Rekall.js",
+            "type": "javascript",
+            "visualScript": "",
+            "tags": ["agent","memory","forensics"],
+            "comment": "Use the D2 agent to execute Rekall on a system (usually a forensics workstation) and analyze a memory dump file located on that system.",
+            "arguments": [
+                {
+                    "name": "file",
+                    "required": true,
+                    "default": true,
+                    "description": "Path to the memory dump file in the machine's filesystem."
+                },
+                {
+                    "name": "format",
+                    "required": false,
+                    "default": false,
+                    "description": "Format argument for Rekall e.g. json or text."
+                }
+            ],
+            "system": true,
+            "scriptTarget": 1
         }
-
     ]
 }
