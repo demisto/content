@@ -11,7 +11,7 @@ elif demisto.get(demisto.args(), 'name'):
     if type(resp)==list and len(resp)==1 and type(resp[0])==dict and 'Contents' in resp[0] and type(resp[0]['Contents'])==list and len(resp[0]['Contents'])==1 and type(resp[0]['Contents'][0])==dict and 'dn' in resp[0]['Contents'][0]:
         memberDN = resp[0]['Contents'][0]['dn']
     else:
-        demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected output from ad command.' } )
+        demisto.results( resp )
         sys.exit(0)
 else:
     demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide either dn or name as argument!' } )
