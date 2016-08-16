@@ -12,11 +12,6 @@ For example:
 */
 // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
 // timeout - seconds to wait on each iteration while waiting for the question's result
-var taniumArgs = {
-						'name': args.name,
-						'id': args.id,
-						'timeout': args.timeout
-			    };
 
 var table = {
     Type: 1,
@@ -24,7 +19,9 @@ var table = {
     Contents: []
 };
 
-var res = executeCommand('tn-result-info', taniumArgs);
+if (!args.name && !args.id)
+    return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'You must provide name or id.' };
+var res = executeCommand('tn-result-info', args);
 if (res[0].Type !== entryTypes.error) {
     if (!res[0].Contents.result_infos) {
         return res[0].Contents.Envelope.Body.return.command;
@@ -38,12 +35,12 @@ if (res[0].Type !== entryTypes.error) {
     // Check the status 10 times, and wait 'timeout' seconds between each iteration
     var iterToWait = 10;
     var sec = 1;
-    if (taniumArgs.timeout) {
-    				sec = parseInt(taniumArgs.timeout) || 1;
+    if (args.timeout) {
+    				sec = parseInt(args.timeout) || 1;
     }
 				while (answers !== expectedAnswers && iterToWait-- > 0) {
 								wait(sec);
-								res = executeCommand('tn-result-info', taniumArgs);
+								res = executeCommand('tn-result-info', args);
 								if (res[0].Type === entryTypes.error) {
 												return res[0];
 								}
@@ -52,7 +49,7 @@ if (res[0].Type !== entryTypes.error) {
 				}
 
     // Get question data (i.e. question result)
-    var qDataRes = executeCommand('tn-result-data', taniumArgs);
+    var qDataRes = executeCommand('tn-result-data', args);
     if (!qDataRes[0].Contents.result_sets) {
         return qDataRes[0].Contents.Envelope.Body.return.command;
     }
@@ -72,7 +69,7 @@ if (res[0].Type !== entryTypes.error) {
         var row = {};
     				for (var i=0; i < cs.c.length; i++) {
         				//output += cs.c[i].dn + ': ' + rs.r.c[i].v + '\n';
-        				row[cs.c[i].dn] = rs.r.c[i].v;
+        				row[cs.c[i].dn] = formatCell(rs.r.c[i].v);
         }
         table.Contents.push(row);
     } else {
@@ -80,7 +77,7 @@ if (res[0].Type !== entryTypes.error) {
 								    var row = {};
 								    for (var j=0; j < cs.c.length; j++) {
 												    // output += cs.c[j].dn + ': ' + rs.r[item].c[j].v + '\n';
-												    row[cs.c[j].dn] = rs.r[item].c[j].v;
+												    row[cs.c[j].dn] = formatCell(rs.r[item].c[j].v);
 								    }
 								    table.Contents.push(row);
 				    }
