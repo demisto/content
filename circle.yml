@@ -5,6 +5,6 @@ test:
     - mkdir bundle
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
-    - cp Scripts/* bundle/
+    - cp $(find Scripts -type f -print) bundle/
     - cd bundle/ && tar -zcvf ../content.tar .
     - cp content.tar $CIRCLE_ARTIFACTS/content.tar
