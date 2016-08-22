@@ -6,5 +6,5 @@ test:
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
     - cp $(find Scripts -type f -print) bundle/
-    - cd bundle/ && tar -zcvf ../content.tar .
-    - cp content.tar $CIRCLE_ARTIFACTS/content.tar
+    - cd bundle/ && zip ../content.zip * 
+    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
