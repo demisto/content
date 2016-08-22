@@ -1,0 +1,5 @@
+test:
+  override:
+  post:
+    - tar -cvf content.tar Playbooks Reports Scripts
+    - cp content.tar $CIRCLE_ARTIFACTS/content.tar
