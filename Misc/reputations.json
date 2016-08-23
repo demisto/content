@@ -1,0 +1,51 @@
+{
+  "reputations": [
+    {
+      "id": "fileRep",
+      "file": true,
+      "version": -1,
+      "regex": "",
+      "details": "File enhancement scripts",
+      "enhancementScriptNames": ["Strings", "CYFileRep"]
+    },
+    {
+      "id": "ipRep",
+      "version": -1,
+      "regex": "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b",
+      "reputationScriptName": "DataIPReputation",
+      "details": "IP Reputation",
+      "enhancementScriptNames": ["IPReputation", "SplunkSearch"]
+    },
+    {
+      "id": "hashRep",
+      "version": -1,
+      "regex": "\\b[a-fA-F\\d]{32}\\b",
+      "reputationScriptName": "DataHashReputation",
+      "details": "Hash Reputation",
+      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"]
+    },
+    {
+      "id": "emailRep",
+      "version": -1,
+      "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "details": "Email Reputation",
+      "enhancementScriptNames": ["EmailReputation"]
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_|$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_|$])",
+      "reputationScriptName": "DataURLReputation",
+      "details": "URL Reputation",
+      "enhancementScriptNames": ["URLReputation", "SplunkSearch"]
+    },
+    {
+      "id": "registryRep",
+      "version": -1,
+      "regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))[\\\\\\w\\}\\{\\.\\-\\ \\*]*",
+      "reputationScriptName": "RegPathReputationBasicLists",
+      "details": "Registry Path Reputation",
+      "enhancementScriptNames": ["RegCollectValues", "CBEvents"]
+    }
+  ]
+}
