@@ -1,0 +1,10 @@
+test:
+  override:
+    - ls
+  post:
+    - mkdir bundle
+    - cp Playbooks/* bundle/
+    - cp Reports/* bundle/
+    - cp $(find Scripts -type f -print) bundle/
+    - cd bundle/ && zip ../content.zip * 
+    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
