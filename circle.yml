@@ -3,6 +3,8 @@ test:
     - ls
   post:
     - mkdir bundle
+    - cp Integrations/* bundle/
+    - cp Misc/* bundle/
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
     - cp $(find Scripts -type f -print) bundle/
