@@ -1483,7 +1483,7 @@
             "comment": "Get reputation for IPs in the incident or given raw text",
             "system": true,
             "scriptTarget": 0,
-            "dependsOn": { "must": ["ips"] }
+            "dependsOn": { "must": ["ip"] }
         },
         {
             "name": "CheckSenderDomainDistance",
