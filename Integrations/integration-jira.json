@@ -30,7 +30,7 @@
       "name": "url",
       "defaultValue": "",
       "type": 0,
-      "required": false
+      "required": true
     },
     {
       "display": "Insecure",
