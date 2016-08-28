@@ -1908,7 +1908,7 @@
                 {
                     "name": "subject",
                     "description": "Subject for the email to be sent",
-                    "required": false,
+                    "required": true,
                     "default": false
                 },
                 {
