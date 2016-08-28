@@ -2930,7 +2930,14 @@
             "tags": ["infra"],
             "comment": "Pretty-print the contents of the playbook context",
             "system": true,
-            "arguments": [],
+            "arguments": [
+                {
+                    "name": "outputformat",
+                    "description": "Output format - table, json or markdown. If omitted, default is markdown.",
+                    "required": false,
+                    "default": true
+                }
+            ],
             "scriptTarget": 0
         },
         {
