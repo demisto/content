@@ -371,3 +371,10 @@ function setPlaybook(name) {
 function addTask(arg) {
   return executeCommand('addTask', arg);
 }
+
+function formatCell(data) {
+    if (typeof(data) === 'string' || typeof(data) === 'number')
+        return data;
+    else
+        return JSON.stringify(data);
+}
