@@ -378,3 +378,24 @@ function formatCell(data) {
     else
         return JSON.stringify(data);
 }
+
+/**
+ * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
+ * @param {Object} arg the argument to convert to list
+ * @returns {Array} of strings
+ */
+function argToList(arg) {
+    if (!arg) {
+        return [];
+    }
+    if (Array.isArray(arg)) {
+        return arg;
+    }
+    if (typeof(arg) === 'string') {
+        if (arg[0] === '[' && arg[arg.length - 1] === ']') {
+            return JSON.parse(arg);
+        }
+        return arg.split(',');
+    }
+    return arg;
+}

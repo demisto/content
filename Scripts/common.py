@@ -183,3 +183,13 @@ def NormalizeRegistryPath(strRegistryPath):
             return dSub[k] + strRegistryPath[len(k):]
     return strRegistryPath
 
+def argToList(arg):
+    if not arg:
+        return []
+    if isinstance(arg, list):
+        return arg
+    if isinstance(arg, str):
+        if arg[0] == '[' and arg[-1] == ']':
+            return json.loads(arg)
+        return arg.split(',')
+    return arg
