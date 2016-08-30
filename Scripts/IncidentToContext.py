@@ -20,7 +20,7 @@ demisto.setContext('name', i['name'])
 demisto.setContext('owner', i['owner'])
 demisto.setContext('type', i['type'])
 demisto.setContext('severity', i['severity'])
-demisto.setContext('stage', i['stage'])
+demisto.setContext('phase', i['phase'])
 demisto.setContext('status', i['status'])
 demisto.setContext('details', i['details'])
 
