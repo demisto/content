@@ -11,6 +11,7 @@ brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'wildfire', 'cy': 'cylance', '
 providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'Wildfire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
 thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
 
+
 # Checks if the given entry from a URL reputation query is positive (known bad)
 def positiveUrl(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
@@ -22,6 +23,7 @@ def positiveUrl(entry):
             c = demisto.get(entry, 'Contents')[0]
             return demisto.get(c, 'indicator') and demisto.get(c, 'malicious_confidence') in ['high', 'medium']
     return False
+
 
 def positiveFile(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
@@ -43,6 +45,7 @@ def positiveFile(entry):
             return demisto.get(c, 'indicator') and demisto.get(c, 'malicious_confidence') in ['high', 'medium']
     return False
 
+
 def vtCountPositives(entry):
     positives = 0
     if demisto.get(entry, 'Contents.detected_urls'):
@@ -50,6 +53,7 @@ def vtCountPositives(entry):
             if demisto.get(detected, 'positives') > thresholds['vtPositives']:
                 positives += 1
     return positives
+
 
 def positiveIp(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
@@ -62,10 +66,12 @@ def positiveIp(entry):
             return demisto.get(c, 'indicator') and demisto.get(c, 'malicious_confidence') in ['high', 'medium']
     return False
 
+
 def formatEpochDate(t):
     if t:
         return time.ctime(t)
     return ''
+
 
 def shortCrowdStrike(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
@@ -90,6 +96,7 @@ def shortCrowdStrike(entry):
             return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': csRes}
     return entry
 
+
 def shortUrl(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
         c = entry['Contents']
@@ -106,6 +113,7 @@ def shortUrl(entry):
         if entry['Brand'] == brands['cs'] and demisto.get(entry, 'Contents'):
             return shortCrowdStrike(entry)
     return {'ContentsFormat': 'text', 'Type': 4, 'Contents': 'Unknown provider for result: ' + entry['Brand']}
+
 
 def shortFile(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
@@ -139,6 +147,7 @@ def shortFile(entry):
             return shortCrowdStrike(entry)
     return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
+
 def shortIp(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
         c = entry['Contents']
@@ -153,35 +162,40 @@ def shortIp(entry):
             return shortCrowdStrike(entry)
     return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
+
 def shortDomain(entry):
     if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
         if entry['Brand'] == brands['vt']:
             return {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': {'Positive URLs': vtCountPositives(entry), 'Provider': providers['vt']}}
     return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
+
 def isError(entry):
-    return type(entry)==dict and entry['Type']==entryTypes['error']
-    
+    return type(entry) == dict and entry['Type'] == entryTypes['error']
+
 
 def FormatADTimestamp(ts):
-    return ( datetime(year=1601, month=1, day=1) + timedelta(seconds = int(ts)/10**7) ).ctime()
+    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts)/10**7)).ctime()
+
 
 def PrettifyCompactedTimestamp(x):
     return '%s-%s-%sT%s:%s:%s' % (x[:4], x[4:6], x[6:8], x[8:10], x[10:12], x[12:])
 
+
 def NormalizeRegistryPath(strRegistryPath):
     dSub = {
-        'HKCR' : 'HKEY_CLASSES_ROOT',
-        'HKCU' : 'HKEY_CURRENT_USER',
-        'HKLM' : 'HKEY_LOCAL_MACHINE',
-        'HKU' : 'HKEY_USERS',
-        'HKCC' : 'HKEY_CURRENT_CONFIG',
-        'HKPD' : 'HKEY_PERFORMANCE_DATA'
+        'HKCR': 'HKEY_CLASSES_ROOT',
+        'HKCU': 'HKEY_CURRENT_USER',
+        'HKLM': 'HKEY_LOCAL_MACHINE',
+        'HKU': 'HKEY_USERS',
+        'HKCC': 'HKEY_CURRENT_CONFIG',
+        'HKPD': 'HKEY_PERFORMANCE_DATA'
     }
     for k in dSub:
         if strRegistryPath[:len(k)] == k:
             return dSub[k] + strRegistryPath[len(k):]
     return strRegistryPath
+
 
 def argToList(arg):
     if not arg:
