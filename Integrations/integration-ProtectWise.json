@@ -69,7 +69,7 @@
         ],
         "description": "Collection of all available sensors",
         "execution": false
-      },
+      },expandDetails
       {
         "name": "search",
         "arguments": [
@@ -128,13 +128,6 @@
             "default": false,
             "secret": false,
             "description": "Filter by events that are affected by a specific IP address"
-          },
-          {
-            "name": "expandDetails",
-            "required": false,
-            "default": false,
-            "secret": false,
-            "description": "Include observation records (true or false)"
           },
           {
             "name": "minLimit",
@@ -254,13 +247,6 @@
             "default": false,
             "secret": false,
             "description": "Filter by threat signature (find observations of the same type of threat) -  Example: 69020504"
-          },
-          {
-            "name": "expandDetails",
-            "required": false,
-            "default": false,
-            "secret": false,
-            "description": "Include observation records (true or false)"
           },
           {
             "name": "minLimit",
