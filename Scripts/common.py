@@ -202,7 +202,7 @@ def argToList(arg):
         return []
     if isinstance(arg, list):
         return arg
-    if isinstance(arg, str):
+    if type(arg) in [str, unicode]:
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
         return arg.split(',')
