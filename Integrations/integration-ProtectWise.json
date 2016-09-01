@@ -69,7 +69,7 @@
         ],
         "description": "Collection of all available sensors",
         "execution": false
-      },expandDetails
+      },
       {
         "name": "search",
         "arguments": [
