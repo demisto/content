@@ -1,4 +1,4 @@
-var raw = executeCommand('wildfire-upload', {upload: args.upload});
+var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
 
 if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
     return "failed";
