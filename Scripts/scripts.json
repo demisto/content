@@ -2992,6 +2992,153 @@
                 }
             ],
             "scriptTarget": 0
+        },
+        {
+            "name": "EPOCheckLatestDAT",
+            "script": "EPOCheckLatestDAT.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Check latest version of the DAT AV signature update",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPODetermineRepository",
+            "script": "EPODetermineRepository.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Helper script to pick the relevant repositories to operate on within the ePO Auditing playbook",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPORepoList",
+            "script": "EPORepoList.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "List all configured instances of ePO integration.",
+            "system": true,
+            "arguments": [],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPORepositoryComplianceCheck",
+            "script": "EPORepositoryComplianceCheck.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Check a list of ePO servers to see if they are up to date.",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "requireddatversion",
+                    "description": "Numeric DAT version, e.g. \"8260\"",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "repostocheck",
+                    "description": "comma-separated ePO instance names",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPORetrieveCurrentDATVersion",
+            "script": "EPORetrieveCurrentDATVersion.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Retrieve DAT version currently installed in the given ePO server",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "repos",
+                    "description": "Send a Direct message by specifying a Slack user name",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPOUpdateEndpoints",
+            "script": "EPOUpdateEndpoints.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Trigger an ePO Client Task to update AV signatures for specific endpoint",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "endpoints",
+                    "description": "Names of endpoints to update",
+                    "required": true,
+                    "default": true
+                },
+                {
+                    "name": "eposerver",
+                    "description": "ePO instance to use",
+                    "required": true,
+                    "default": false
+                },
+                {
+                    "name": "retryAttempts",
+                    "description": "Number of times the server will attempt to send the task to the client. Defaults to 1.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "retryIntervalInSeconds",
+                    "description": "Retry interval in seconds. Defaults to 30.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "abortAfterMinutes",
+                    "description": "Maximum number of minutes before aborting all attempts. Defaults to 5.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "stopAfterMinutes",
+                    "description": "Maximum duration in minutes the client task is allowed to run. Defaults to 20.",
+                    "required": false,
+                    "default": false
+                },
+                {
+                    "name": "randomizationInterval",
+                    "description": "Duration in minutes over which to randomly spread task execution. Defaults to 0 (execute on all clients immediately).",
+                    "required": false,
+                    "default": false
+                }
+            ],
+            "scriptTarget": 0
+        },
+        {
+            "name": "EPOUpdateRepository",
+            "script": "EPOUpdateRepository.py",
+            "type": "python",
+            "visualScript": "",
+            "tags": ["epo"],
+            "comment": "Trigger a Server Task in specific ePO servers to pull latest signatures from update server",
+            "system": true,
+            "arguments": [
+                {
+                    "name": "repos",
+                    "description": "List of ePO servers to update",
+                    "required": true,
+                    "default": true
+                }
+            ],
+            "scriptTarget": 0
         }
     ],
     "agent": [
