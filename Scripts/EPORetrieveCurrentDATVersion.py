@@ -4,7 +4,6 @@ if not repos:
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty repository list!"})
 else:
     repos = ','.join(repos) if isinstance(repos, list) else repos
-    reqDat = demisto.get(demisto.args(), 'requireddatversion')
     # Find the VSCANDAT1000 Package
     dArgs = {"using": repos,
              "command": "repository.findPackages",
