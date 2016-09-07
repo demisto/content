@@ -1,0 +1,20 @@
+commonfields:
+  id: CuckooTaskStatus
+  version: 1
+name: CuckooTaskStatus
+script: 'demisto.results( demisto.executeCommand("ck-view", {"id": demisto.args()["taskID"]}))'
+type: python
+tags:
+- cuckoo
+comment: Check the current status of a task in Cuckoo sandbox.
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: ID of the task to check.
+scripttarget: 0
+dependson:
+  must:
+  - ck-view
+timeout: 0s

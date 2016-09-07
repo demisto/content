@@ -1,0 +1,424 @@
+commonfields:
+  id: ProtectWise
+  version: 1
+name: ProtectWise
+display: ProtectWise
+category: Network Security
+image: data:image/png;base64,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
+description: Cloud based Security Network DVR.
+detaileddescription: |-
+  Integration with ProtectWise cloud product.
+  Please note you can use either token (acquired by api call : https://api.protectwise.com/momfodhxhz/#access-token-token) or user email/password for authentication.
+configuration:
+- display: Url
+  name: url
+  defaultvalue: https://api.protectwise.com/api/v1/
+  type: 0
+  required: true
+- display: Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Email
+  name: email
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Do not validate certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var getToken = function() {
+        var token = '';
+        if ((params.token) && (params.token.length > 0)) {
+            token = params.token;
+        }
+        if (token.length === 0) {
+            if (params.email.length === 0 || params.password.length === 0){
+                throw 'If token configuration is empty , you must provide email+password configuration params for auth';
+            }
+            var tokResult = http(
+                params.url+'token',
+                {
+                    Headers: {'Content-Type': ['application/json']},
+                    Method: 'POST',
+                    Body: JSON.stringify({'email':params.email,'password':params.password}),
+                },
+                params.insecure
+            );
+            if (tokResult.StatusCode !== 200 && tokResult.StatusCode !== 201) {
+                throw 'Failed to create token, request status code: ' + tokResult.StatusCode + ', body: ' + tokResult.Body;
+            }
+            var body = JSON.parse(tokResult.Body);
+            return body.token;
+        }
+        return token;
+    };
+    var downloadEventPcap = function(eventId, filename, token) {
+        var url = params.url+'pcaps/events/'+eventId;
+        if (filename && filename.length > 0 ) {
+            url = url + '?filename=' + filename;
+        }
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute download Event Pcap request:' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return saveFile(res.Body);
+    };
+    var observationEventPcap = function(eventId, sensorId, filename, token) {
+        var url = params.url+'pcaps/observations/'+sensorId+'/'+eventId;
+        if (filename && filename.length > 0 ) {
+            url = url + '?filename=' + filename;
+        }
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute download Observation Pcap request:' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return saveFile(res.Body);
+    };
+    var getEventPcapInfo = function(eventId, token) {
+        var url = params.url+'pcaps/events/'+eventId + '/info';
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute get Event Pcap info request:' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var getObservationPcapInfo = function(id, sensorId, token) {
+        var url = params.url+'pcaps/observations/'+sensorId + '/' + id + '/info';
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute get Observation Pcap info request:' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var sensors = function(id,token) {
+        var url = params.url+'sensors';
+        if (id && id.length > 0 ) {
+            url = url + '/' + id
+        }
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute request get sensors: ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var addQueryParam = function(urlSuffix, paramName, value){
+        if (value && value.length > 0){
+            urlSuffix = urlSuffix + '&' + paramName + '=' + value;
+        }
+        return urlSuffix;
+    };
+    var eventsSearch = function(start,end,eventType,killChainStage,threatLevel,threatCategory,observationStage,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,token) {
+        var url = params.url+'events?';
+        url = url + 'start=' + parseTime(start) + '&' + 'end='+ parseTime(end);
+        url = addQueryParam(url,'eventType',eventType);
+        url = addQueryParam(url,'killChainStage',killChainStage);
+        url = addQueryParam(url,'threatLevel',threatLevel);
+        url = addQueryParam(url,'threatCategory',threatCategory);
+        url = addQueryParam(url,'observationStage',observationStage);
+        url = addQueryParam(url,'ip',ip);
+        url = addQueryParam(url,'expandDetails',expandDetails);
+        url = addQueryParam(url,'minLimit',minLimit);
+        url = addQueryParam(url,'maxLimit',maxLimit);
+        url = addQueryParam(url,'reverseOrder',reverseOrder);
+        url = addQueryParam(url,'nextPage',nextPage);
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute request get events: ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
+        var url = params.url+'observations?';
+        url = url + 'sensorId='+sensorId+'&start=' + parseTime(start) + '&' + 'end='+ parseTime(end);
+        url = addQueryParam(url,'type',type);
+        url = addQueryParam(url,'killChainStage',killChainStage);
+        url = addQueryParam(url,'threatLevel',threatLevel);
+        url = addQueryParam(url,'threatCategory',threatCategory);
+        url = addQueryParam(url,'hasKillChain',hasKillChain);
+        url = addQueryParam(url,'ip',ip);
+        url = addQueryParam(url,'expandDetails',expandDetails);
+        url = addQueryParam(url,'minLimit',minLimit);
+        url = addQueryParam(url,'maxLimit',maxLimit);
+        url = addQueryParam(url,'reverseOrder',reverseOrder);
+        url = addQueryParam(url,'nextPage',nextPage);
+        url = addQueryParam(url,'signatureId',signatureId);
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute request get events: ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var fetchEvent = function(id,token) {
+        var url = params.url+'events/'+id;
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute request get sensors: ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var fetchObservation = function(id,sensorId,token) {
+        var url = params.url+'observations/'+id+'?sensorId='+sensorId;
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute request get sensors: ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        return res.Body;
+    };
+    var parseTime = function(time) {
+        if ((typeof time === 'string' || time instanceof String) && (time.indexOf("-") >= 0 || time.indexOf("/") >= 0 )){
+            var d = new Date(time);
+            return d.getTime();
+        }
+        return time;
+    }
+    switch (command) {
+        case 'test-module':
+            var token = getToken();
+           if (token && token.length > 0){
+                return true;
+            }
+            return false;
+        case 'sensors':
+            var token = getToken();
+            return {Type: 1, Contents: sensors(args.sensorId,token), ContentsFormat: 'json'};
+        case 'search':
+            var token = getToken();
+            return {Type: 1, Contents: eventsSearch(args.start,args.end,args.eventType,args.killChainStage,args.threatLevel,
+                args.threatCategory,args.observationStage,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,token), ContentsFormat: 'json'};
+        case 'pw-event-get':
+            var token = getToken();
+            return {Type: 1, Contents: fetchEvent(args.id,token), ContentsFormat: 'json'};
+        case 'observation-search':
+            var token = getToken();
+            return {Type: 1, Contents: observationSearch(args.sensorId,args.start,args.end,args.type,args.killChainStage,args.threatLevel,
+                args.threatCategory,args.hasKillChain,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,args.signatureId,token), ContentsFormat: 'json'};
+        case 'pw-observation-get':
+            var token = getToken();
+            return {Type: 1, Contents: fetchObservation(args.id,args.sensorId,token), ContentsFormat: 'json'};
+        case 'event-pcap-download':
+            var token = getToken();
+            return {Type: 3, FileID: downloadEventPcap(args.eventId,args.filename,token), File: args.filename, Contents: 'we must have contents for an entry'};
+        case 'event-pcap-info':
+            var token = getToken();
+            return {Type: 1, Contents: getEventPcapInfo(args.eventId,token), ContentsFormat: 'json'};
+        case 'observation-pcap-download':
+            var token = getToken();
+            return {Type: 3, FileID: observationEventPcap(args.id,args.sensorId,args.filename,token), File: args.filename, Contents: 'we must have contents for an entry'};
+        case 'observation-pcap-info':
+            var token = getToken();
+            return {Type: 1, Contents: getObservationPcapInfo(args.id,args.sensorId,token), ContentsFormat: 'json'};
+        case 'get-token':
+            return getToken();
+        default:
+            return 'Failed to find command';
+    }
+  type: javascript
+  commands:
+  - name: sensors
+    arguments:
+    - name: sensorId
+      default: true
+      description: The id of the individual sensor (if not provided will query all
+        available sensors)
+    description: Collection of all available sensors
+  - name: search
+    arguments:
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: eventType
+      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: observationStage
+      description: Filter by Realtime or Retrospective
+    - name: ip
+      description: Filter by events that are affected by a specific IP address
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    description: search Events ,Events are resources that describe a threat and contains
+      a collection of observations.
+  - name: pw-event-get
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: event id
+    description: Lookup a single event and its associated observations for ProtectWise
+  - name: observation-search
+    arguments:
+    - name: sensorId
+      required: true
+      description: the sensor id or a comma-separated list of sensor ids
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: type
+      description: Filter by observation type (ids http iprep urlrep protocol file
+        )
+    - name: hasKillChain
+      description: Search for observations in every kill chain stage (true false)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: ip
+      description: Filter observations by IP address in the src/dst fields
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: signatureId
+      description: 'Filter by threat signature (find observations of the same type
+        of threat) -  Example: 69020504'
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    description: search observations in ProtectWise
+  - name: pw-observation-get
+    arguments:
+    - name: id
+      required: true
+      description: Observation id
+    - name: sensorId
+      required: true
+      description: the sensor id or comma-separated list of ids
+    description: Lookup a single observation for ProtectWise
+  - name: event-pcap-download
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Event Pcap Download
+  - name: event-pcap-info
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    description: Get ProtectWise Event Pcap info
+  - name: observation-pcap-download
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Observation Pcap Download
+  - name: observation-pcap-info
+    arguments:
+    - name: id
+      required: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    description: Get ProtectWise Observation Pcap info
+  - name: get-token
+    arguments: []
+    description: Get API token, to use in integration configuration
+system: true

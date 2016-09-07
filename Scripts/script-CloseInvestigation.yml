@@ -1,0 +1,22 @@
+commonfields:
+  id: CloseInvestigation
+  version: 1
+name: CloseInvestigation
+script: |-
+  dArgs = {}
+  if demisto.get(demisto.args(), 'reason'):
+      dArgs['reason_What-happened'] = demisto.args()['reason']
+  demisto.results(demisto.executeCommand('closeInvestigation', dArgs))
+type: python
+tags:
+- server
+- management
+comment: Close an investigation
+system: true
+args:
+- name: reason
+  default: true
+  description: Reason for closing the investigation
+scripttarget: 0
+dependson: {}
+timeout: 0s

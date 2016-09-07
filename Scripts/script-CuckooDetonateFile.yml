@@ -1,0 +1,21 @@
+commonfields:
+  id: CuckooDetonateFile
+  version: 1
+name: CuckooDetonateFile
+script: 'demisto.results( demisto.executeCommand("ck-file", { "entryID": demisto.args()["entryID"]
+  }) )'
+type: python
+tags:
+- cuckoo
+comment: Detonate the file in Cuckoo sandbox.
+system: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: ID of the entry containing the file to detonate.
+scripttarget: 0
+dependson:
+  must:
+  - ck-file
+timeout: 0s

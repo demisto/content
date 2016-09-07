@@ -1,0 +1,50 @@
+commonfields:
+  id: SplunkSearchJsonPy
+  version: 1
+name: SplunkSearchJsonPy
+script: |-
+  rows = 30
+  if 'rows' in demisto.args():
+      rows = demisto.args()['rows']
+  query = demisto.args()['query']
+  if '|' not in query:
+      query = query + ' | head ' + str(rows)
+  res = demisto.executeCommand('search', {'query': query})
+  md = {
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['markdown'],
+      'Contents': '# Splunk search result'
+  }
+  for result in res:
+      if result['Brand'] == 'splunk':
+          for r in res[0]['Contents']:
+              data = demisto.get(r, 'result._raw')
+              if data:
+                  md['Contents'] += '\n|Time|Host|Source|\n|-|-|-|'
+                  md['Contents'] += '\n|' + str(demisto.get(r, 'result._time')) + '|' + str(demisto.get(r, 'result.host')) + '|' + str(demisto.get(r, 'result.source')) + '|\n'
+                  try:
+                      j = json.loads(data)
+                      for f in j:
+                          md['Contents'] += '\n- ' + f + ': ' + str(j[f])
+                  except:
+                      md['Contents'] += '\n- Raw data: ' + str(data)
+                  md['Contents'] += '\n'
+  demisto.results(md)
+type: python
+tags:
+- enhancement
+comment: Run a query through Splunk and format the results as a markdown with raw
+  data parsed as JSON
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Splunk query to execute
+- name: rows
+  description: Return up to X first rows. If omitted, defaults to 30.
+scripttarget: 0
+dependson:
+  must:
+  - search
+timeout: 0s

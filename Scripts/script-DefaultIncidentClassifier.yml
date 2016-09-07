@@ -1,0 +1,49 @@
+commonfields:
+  id: DefaultIncidentClassifier
+  version: 1
+name: DefaultIncidentClassifier
+script: |-
+  for (var i =0; incidents[0].labels && i < incidents[0].labels.length; i++) {
+      if (incidents[0].labels[i].type === 'Email/from') {
+          var sender = incidents[0].labels[i].value;
+          if (sender === args.splunkSender) {
+              executeCommand('SplunkEmailParser', {});
+              return setPlaybookAccordingToType(incidents[0].type);
+          } else if (sender === args.nexposeSender) {
+              return executeCommand('NexposeEmailParser', {minRiskScore: args.minRiskScore, minVulnCount: args.minVulnCount});
+          } else if (sender === args.sentinelOneSender) {
+              return setIncident({type: args.sentinelOneIncidentType});
+          } else {
+              return [setPlaybookAccordingToType(args.defaultIncidentType),
+              setIncident({type: args.defaultIncidentType})];
+          }
+      }
+  }
+  return 'incident is not an email, not classifying';
+type: javascript
+tags:
+- ingestion
+comment: Classify an incident from mail.
+system: true
+args:
+- name: splunkSender
+  description: Email address from which Splunk sends emails to our mail listener
+- name: nexposeSender
+  description: Email address from which Nexpose sends emails to our mail listener
+- name: defaultIncidentType
+  required: true
+  description: The incident type to be set in case the email is neither from Splunk
+    nor Nexpose
+- name: minRiskScore
+  description: Argument passed as-is to NexposeEmailParser. See its documentation
+    for details.
+- name: minVulnCount
+  description: Argument passed as-is to NexposeEmailParser. See its documentation
+    for details.
+- name: sentinelOneSender
+  description: Email address from which sentinel one sends emails to our mail listener
+- name: sentinelOneIncidentType
+  description: Incident type to classify sentinel one events to
+scripttarget: 0
+dependson: {}
+timeout: 0s

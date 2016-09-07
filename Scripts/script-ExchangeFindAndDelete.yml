@@ -1,0 +1,151 @@
+commonfields:
+  id: ExchangeFindAndDelete
+  version: 1
+name: ExchangeFindAndDelete
+script: |-
+  import re
+  resultText = ''
+  strSubjectLineRegex = r'.*Subject\w*:(.*)'
+  # example to match:    <b>Subject:</b> Cloud Services Invoice<o:p>'
+  strFromLineRegex = r'.*From\w*:(.*)'
+  # example to match:    <p class="MsoNormal"><b>From:</b> <a href="mailto:john.doe@gmail.com">john.doe@gmail.com</a>
+  strTagRegex = r'<[^>]*>'
+  strEmailRegex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+  entries = demisto.executeCommand('getEntries', {})
+  mailbody = demisto.incidents()[0]['details']
+  mailbody = mailbody.replace('<br>','\n')
+  # defaults
+  mailbox=''
+  sender=''
+  attachmentname=''
+  subject=''
+  query =''
+  # Get the mailbox
+  if demisto.args().has_key('mailbox'):
+      mailbox = demisto.args()['mailbox']
+  else:
+      for t in demisto.incidents()[0]['labels']:
+          if t['type'] == 'Email/from':
+              mailbox = t['value']
+              break
+      if mailbox == '':
+          for t in demisto.incidents()[0]['labels']:
+              if t['type'] == 'Email':
+                  mailbox = t['value']
+                  break
+  if not mailbox:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mailbox specified. Cannot continue.' } )
+      sys.exit(0)
+  # Get the mail's subject
+  if demisto.args().has_key('subject'):
+      subject = demisto.args()['subject']
+  else:
+      matches = re.findall(strSubjectLineRegex, mailbody, re.I)
+      if len(matches) > 0:
+          subject = re.sub(strTagRegex,'',matches[0])
+  qsubject = 'subject:"' + subject.strip() +'"' if subject else ''
+  # Get the attachment file name
+  if demisto.get(demisto.args(), 'attachmentName'):
+      attachmentname = demisto.args()['attachmentName']
+  else:
+      for entry in entries:
+          if entry['File'] and demisto.get(entry, 'File'):
+              attachmentname = entry['File']
+  qattach = 'attachment:"'+attachmentname+'"' if attachmentname else ''
+  # Get the sender
+  if demisto.args().has_key('sender'):
+      sender = demisto.args()['sender']
+  else:
+      matches = re.findall(strFromLineRegex, mailbody, re.I)
+      if len(matches) > 0:
+          emails = re.findall(strEmailRegex, matches[0], re.I)
+          if len(emails) > 0:
+              sender = emails[0]
+  qsender = 'from:"'+sender+'"' if sender else ''
+  folder = 'inbox'
+  parts = [qsubject, qsender,qattach]
+  query = ' AND '.join([x for x in parts if not x==''])
+  resultText +='Searching for emails using query:\n**' + query + '**\n'
+  FoundIDs = []
+  def AddID(id):
+      resultText += 'Found Item ID:\t' + id + '\n'
+      FoundIDs.append(id)
+  respSearch = demisto.executeCommand('ews-search-mailbox', {'target-mailbox': mailbox, 'folders-ids': folder, 'query': query })
+  if isError(respSearch[0]) or not respSearch[0]['ContentsFormat'] == formats['json']:
+      err = [{ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected response from ews-search-mailbox.' }]
+      demisto.results( [err] + respSearch)
+      sys.exit(0)
+  c = respSearch[0]['Contents']
+  #demisto.log(json.dumps(c)+'\n')
+  fault = demisto.get(c, 'Envelope.Body.Fault')
+  if fault:
+      if 'ErrorNonExistentMailbox' == demisto.gets(fault, 'detail.ResponseCode.#text'):
+          resultText += 'No mails found.\n'
+          finished=True
+      else:
+          msgXmlName = demisto.gets(fault, 'detail.MessageXml.Value.-Name')
+          msgXmlText = demisto.gets(fault, 'detail.MessageXml.Value.#text')
+          mdErr =  '### Received error from Exchange Web Services :\n'
+          mdErr += 'faultcode|faultstring|Message|ResponseCode' + ('|' + msgXmlName if type(msgXmlName)==str else '') + '\n'
+          mdErr += '-|-|-|-|-\n'
+          mdErr += '|'.join( [str(demisto.gets(fault, loc)) for loc in 'faultcode.#text', 'faultstring.#text', 'detail.Message.#text', 'detail.ResponseCode.#text' ] + ([msgXmlText] if msgXmlText else [])) + '\n'
+          demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['markdown'], 'Contents' : mdErr} )
+          sys.exit(0)
+  else:
+      resp = demisto.get(c, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage')
+      if resp and demisto.get(resp, '-ResponseClass') == 'Success':
+          itemcount = int(resp['RootFolder']['-TotalItemsInView']) # todo handle parsing error for ints
+          if itemcount==0:
+              resultText += 'No mails found.\n'
+              finished=True
+          elif itemcount>1:
+              items = resp['RootFolder']['Items']['Message']
+              for item in items:
+                  AddID(item['ItemId']['-Id'])
+          else:
+              AddID(resp['RootFolder']['Items']['Message']['ItemId']['-Id'])
+      else:
+          resultText += "Received empty or unsuccessful response with error:" + str(resp) +'\n'
+          finished = True
+  if not finished:
+      resultText += 'Deleting all founds emails...\n'
+      itemids = ','.join(FoundIDs)
+      delres = demisto.executeCommand('ews-delete-items', {'target-mailbox': mailbox, 'item-ids' :itemids })
+      delres = delres[0]
+      if delres['Type'] != 4 and delres['ContentsFormat'] == 'json':
+          delresp = demisto.get(delres, 'Contents.Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage')
+          if delresp:
+              if delresp['-ResponseClass'] == 'Success':
+                  resultText += 'Delete successful.\n'
+              else:
+                  resultText += "Delete failed: " + delresp['MessageText'] + "\nResponse Code:" + delresp['-ResponseCode']+'\n'
+          else:
+              resultText += "Delete failed with missing response\n"
+      else:
+          demisto.results(delres)
+  demisto.results( { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': resultText } )
+type: python
+tags:
+- server
+- response
+- ews
+- exchange
+- email
+comment: Search for the given mail details and in the given mailbox delete found emails
+system: true
+args:
+- name: mailbox
+  default: true
+  description: Mailbox to be searched, e.g. dave@acme.com
+- name: subject
+  description: Only match mails containing this Subject
+- name: attachmentName
+  description: Only match mails containing an attachment with this name
+- name: sender
+  description: Only match mails from this sender (Email address)
+scripttarget: 0
+dependson:
+  must:
+  - ews-delete-items
+  - ews-search-mailbox
+timeout: 0s

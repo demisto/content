@@ -1,0 +1,27 @@
+commonfields:
+  id: D2Drop
+  version: 1
+name: D2Drop
+script: |-
+  var files = files( '/tmp', true, false, args.files );
+  if ( files && files.length > 0 ) {
+      if ( 1 != copy( files[0].Path, args.destpath ) )
+          throw "Error copying file " + files[0].Path + " to " + files[0].destpath + ".";
+      else
+          pack("File copied successfully.");
+  }
+type: javascript
+tags:
+- agent
+- util
+comment: |-
+  Drop a file to a target system by providing its path on the server. Use CopyFileD2 instead in most cases.
+  This is a utility agent script to be used inside server scripts. See CopyFileD2 for an example.
+system: true
+args:
+- name: destpath
+  required: true
+  description: Full filesystem path and filename under which to save the file
+scripttarget: 1
+dependson: {}
+timeout: 0s

@@ -1,0 +1,28 @@
+commonfields:
+  id: URLReputation
+  version: 1
+name: URLReputation
+script: |-
+  var res = [];
+  var rep = executeCommand('url', {url: args.url});
+  if (rep && Array.isArray(rep)) {
+    for (var i = 0; i < rep.length; i++) {
+      res.push(shortUrl(rep[i]));
+    }
+  }
+  return res;
+type: javascript
+tags:
+- enhancement
+comment: A context script for URL entities
+system: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to look up
+scripttarget: 0
+dependson:
+  must:
+  - url
+timeout: 0s
