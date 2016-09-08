@@ -1,0 +1,44 @@
+commonfields:
+  id: ConferSetSeverity
+  version: 1
+name: ConferSetSeverity
+script: |-
+  # Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+  levelDict = {'DETECTED_MALWARE_APP': 3, 'FILELESS': 3, 'KNOWN_APT': 3, 'KNOWN_BACKDOOR': 3, 'KNOWN_DOWNLOADER': 3, 'KNOWN_DROPPER': 3, 'KNOWN_KEYLOGGER': 3, 'KNOWN_PASSWORD_STEALER': 3, \
+               'KNOWN_RANSOMWARE': 3, 'KNOWN_ROGUE': 3, 'KNOWN_ROOTKIT': 3, 'KNOWN_WORM': 3, 'MALWARE_APP': 3, 'RUN_MALWARE_APP': 3, 'MALWARE_DROP': 3, 'COMPANY_BLACKLIST': 3, \
+               'PHONE_HOME': 2, 'INJECT_CODE': 2, 'GET_CONTACTS': 2, 'FILE_TRANSFER': 2, 'CODE_DROP': 2, 'RUN_CMD_SHELL': 2, 'COMPROMISED_PROCESS': 2, 'BUFFER_OVERFLOW_CALL': 2, \
+               'ENUMERATE_PROCESSES': 2, 'FIXED_PORT_LISTEN': 2, 'HAS_PUP_CODE': 2, 'RUN_BROWSER': 2, 'BEACON': 2, 'REVERSE_SHELL': 2, 'MODIFY_KERNEL': 2, 'HAS_PACKED_CODE': 2, \
+               'PACKED_CALL': 2, 'MODIFY_SERVICE': 2, 'RUN_SYSTEM_APP': 2, 'RUN_ANOTHER_APP': 2, 'MODIFY_OWN_PROCESS': 2, 'INJECT_INPUT': 2, 'RAM_SCRAPING': 2, 'READ_SECURITY_DATA': 2, \
+               'HAS_BUFFER_OVERFLOW': 2, 'MODIFY_PROCESS': 2, 'HAS_SCRIPT_DLL': 2, 'ACTIVE_SERVER': 2, 'PERSIST': 2, 'SET_APP_LAUNCH': 2, 'RUN_PUP_APP': 2, 'INTERNATIONAL_SITE': 1, \
+               'SUSPICIOUS_SITE': 1, 'DETECTED_SUSPECT_APP': 1, 'LOW_REPUTATION_SITE': 1, 'IRC': 1, 'UNKNOWN_APP': 1, 'SUSPICIOUS_DOMAIN': 1, 'SUSPICIOUS_BEHAVIOR': 1, 'HAS_SUSPECT_CODE': 1, \
+               'ACCESS_EMAIL_DATA': 1, 'NETWORK_ACCESS': 1}
+  levelTranslate = {4: 'Critical', 3: 'High', 2: 'Medium', 1: 'Low', 0: 'Unknown'}
+  incDetails = demisto.incidents()[0]['details']
+  if incDetails:
+      try:
+          inc = json.loads(incDetails)
+          ind = demisto.get(inc, 'threatInfo.indicators')
+          maxLevel = 0
+          if ind:
+              for i in ind:
+                  level = levelDict[demisto.gets(i, 'indicatorName')]
+                  if level and level > maxLevel:
+                      maxLevel = level
+              demisto.executeCommand('setSeverity', {'id': demisto.incidents()[0]['id'], 'severity': levelTranslate[maxLevel]})
+              demisto.results('Changed incident level to: ' + levelTranslate[maxLevel])
+          else:
+              demisto.results('Could not find indicators')
+      except:
+          demisto.results('Incident details are not JSON')
+  else:
+      demisto.results('No details were found for the incident')
+type: python
+tags:
+- confer
+comment: Set incident severity according to indicators found in an confer alert
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - confer
+timeout: 0s

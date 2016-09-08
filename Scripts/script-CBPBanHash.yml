@@ -1,0 +1,23 @@
+commonfields:
+  id: CBPBanHash
+  version: 1
+name: CBPBanHash
+script: |-
+  CBP_HASH_BANNED = '3'
+  demisto.results(demisto.executeCommand("cbp-fileRule-update", {"fileState": CBP_HASH_BANNED, "hash": demisto.args()["hash"]}))
+type: python
+tags:
+- carbon-black-protection
+- bit9
+comment: Ban/blacklist a hash in CBEP/Bit9.
+system: true
+args:
+- name: hash
+  required: true
+  default: true
+  description: The hash value to ban.
+scripttarget: 0
+dependson:
+  must:
+  - cbp-fileRule-update
+timeout: 0s

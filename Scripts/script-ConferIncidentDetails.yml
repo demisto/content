@@ -1,0 +1,51 @@
+commonfields:
+  id: ConferIncidentDetails
+  version: 1
+name: ConferIncidentDetails
+script: |-
+  import time
+  def formatDate(t):
+      if t:
+          return time.ctime(t / 1000)
+      return ''
+  incDetails = demisto.incidents()[0]['details']
+  if incDetails:
+      try:
+          inc = json.loads(incDetails)
+          res = '## Confer Incident Details'
+          res += '\n\nID: **' + demisto.gets(inc, 'threatInfo.incidentId') + '**'
+          res += '\nTime: **' + formatDate(demisto.get(inc, 'eventTime')) + '**'
+          res += '\nType: **' + demisto.gets(inc, 'type') + '**'
+          res += '\nEvent ID: **' + demisto.gets(inc, 'eventId') + '**'
+          res += '\nScore: **' + demisto.gets(inc, 'threatInfo.score') + '**'
+          res += '\nURL: **' + demisto.gets(inc, 'url') + '**'
+          res += '\n### Indicators'
+          ind = demisto.get(inc, 'threatInfo.indicators')
+          if ind:
+              res += '\nIndicator Name | Application Name | SHA256'
+              res += '\n-------------- | ---------------- | ------'
+              for i in ind:
+                  res += '\n ' + demisto.gets(i, 'indicatorName') + ' | ' + demisto.gets(i, 'applicationName') + ' | ' + demisto.gets(i, 'sha256Hash')
+          dev = demisto.get(inc, 'deviceInfo')
+          if dev:
+              res += '\n### Device Info'
+              res += '\nID | Type | Name | Version | Email | Priority | Group Name | External IP'
+              res += '\n-- | ---- | ---- | ------- | ----- | -------- | ---------- | -----------'
+              res += '\n' + demisto.gets(dev, 'deviceId') + ' | ' + demisto.gets(dev, 'deviceType') + ' | ' + demisto.gets(dev, 'deviceName') + ' | ' + \
+                     demisto.gets(dev, 'deviceVersion') + ' | ' + demisto.gets(dev, 'email') + ' | ' + demisto.gets(dev, 'targetPriorityType') + ' | ' + \
+                     demisto.gets(dev, 'groupName') + ' | ' + demisto.gets(dev, 'externalIpAddress')
+          demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
+      except:
+          demisto.results('Incident details are not JSON')
+  else:
+      demisto.results('No details were found for the incident')
+type: python
+tags:
+- confer
+comment: Display the incident details retrieved from Confer in a readable format
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - confer
+timeout: 0s

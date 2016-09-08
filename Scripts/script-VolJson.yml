@@ -1,0 +1,22 @@
+commonfields:
+  id: VolJson
+  version: 1
+name: VolJson
+script: packOutput('vol.py --output=json -f ' + args.file + ' ' + args.cmd);
+type: javascript
+tags:
+- volatility
+- agent
+comment: Execute volatility with command and file as parameters and return output
+  as json.
+system: true
+args:
+- name: cmd
+  required: true
+  description: Volatility command to run
+- name: file
+  required: true
+  description: Path of file to pass as argument to Volatility
+scripttarget: 1
+dependson: {}
+timeout: 0s

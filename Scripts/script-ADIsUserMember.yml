@@ -1,0 +1,40 @@
+commonfields:
+  id: ADIsUserMember
+  version: 1
+name: ADIsUserMember
+script: |-
+  resp = demisto.executeCommand( 'ADGetUserGroups', demisto.args() )
+  try:
+      if not isError(resp[0]):
+          for d in resp[0]['Contents']:
+              if demisto.args()['groupname'] == d['name']:
+                  demisto.results("yes")
+                  sys.exit(0)
+          demisto.results("no")
+      else:
+          demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups:\n' + resp[0]['Contents'] } )
+  except Exception, ex:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ADGetUserGroups. Exception info:\n' + str(ex) + '\n\nInvalid output:\n' + str( resp ) } )
+type: python
+tags:
+- active directory
+comment: Use Active Directory to check if the specified user is a member of the specified
+  group. Returns simply yes/no. The user can be specified by name, email or as an
+  Active Directory Distinguished Name (DN).
+system: true
+args:
+- name: dn
+  description: Active Directory Distinguished Name of the desired user
+- name: name
+  description: Name of the desired user
+- name: email
+  description: Email address of the desired user
+- name: groupname
+  required: true
+  default: true
+  description: Name of the AD group to check
+scripttarget: 0
+dependson:
+  must:
+  - ad-search
+timeout: 0s

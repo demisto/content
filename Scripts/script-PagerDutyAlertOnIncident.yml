@@ -1,0 +1,20 @@
+commonfields:
+  id: PagerDutyAlertOnIncident
+  version: 1
+name: PagerDutyAlertOnIncident
+script: |-
+  if (incidents[0].severity == 4) {
+      return executeCommand('pagerDutySubmitEvent', {description: incidents[0].name,details: '{"incidentDetails":"'+incidents[0].details+'"}'});
+  }
+  return 'Incident severity not high enough to wake up user' ;
+type: javascript
+tags:
+- pagerduty
+- communication
+comment: Send incident details to pagerduty (useful to include in playbooks)
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - pagerDutySubmitEvent
+timeout: 0s

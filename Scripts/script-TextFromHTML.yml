@@ -1,0 +1,28 @@
+commonfields:
+  id: TextFromHTML
+  version: 1
+name: TextFromHTML
+script: |-
+  import re
+  body = re.search(r'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I)
+  if body and body.group(0):
+      data = re.sub(r'<.*?>', '', body.group(0))
+      entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ', 'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
+      for e in entities:
+          data = data.replace('&' + e + ';', entities[e])
+      demisto.results(data)
+  else:
+      demisto.results('Could not extract text')
+type: python
+tags:
+- infra
+comment: Extract regular text from the given HTML
+system: true
+args:
+- name: html
+  required: true
+  default: true
+  description: The HTML to strip tags from
+scripttarget: 0
+dependson: {}
+timeout: 0s

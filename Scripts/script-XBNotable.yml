@@ -1,0 +1,60 @@
+commonfields:
+  id: XBNotable
+  version: 1
+name: XBNotable
+script: |-
+  import time
+  rows = '100'
+  if demisto.args().has_key('rows'):
+      rows = demisto.args()['rows']
+  days = '1'
+  if demisto.args().has_key('days'):
+      days = demisto.args()['days']
+  res = '## Exabeam notable users'
+  entry = demisto.executeCommand('xb-notable', {'numberOfResults': rows, 'num': days})[0]
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      users = demisto.get(entry, 'Contents.users')
+      if users:
+          res += '\n### Total in the last ' + days + ' days: ' + str(len(users))
+          for user in users:
+              info = demisto.get(user, 'user.info')
+              if info:
+                  res += '\n\n\n![photo](data:image/png;base64,' +  demisto.get(info, 'photo').replace('\n', '') + ')'
+                  res += '\n|Account|Email|Name|Title|Department|Devision|DN|Location|Manager|Office|Cell|Group|First Seen|Last Seen|'
+                  res += '\n|-------|-----|----|-----|----------|--------|--|--------|-------|------|----|-----|----------|---------|'
+                  res += '\n| ' + demisto.get(info, 'accountId') + ' | ' + demisto.get(info, 'email') + ' | ' + demisto.get(info, 'fullName') + ' | ' + \
+                         demisto.get(info, 'title') + ' | ' + demisto.get(info, 'department') + ' | ' + demisto.get(info, 'division') + ' | ' + \
+                         demisto.get(info, 'dn') + ' | ' + demisto.get(info, 'location') + ', ' + demisto.get(info, 'country') + ' | ' + \
+                         demisto.get(info, 'manager') + ' | ' + demisto.get(info, 'phoneOffice') + ' | ' + demisto.get(info, 'phoneCell') + ' | ' + \
+                         demisto.get(info, 'group') + ' | ' + time.ctime(demisto.get(user, 'user.firstSeen') / 1000.0) + ' | ' + time.ctime(demisto.get(user, 'user.lastSeen') / 1000.0) + ' |'
+              res += '\nScore: **' + str(demisto.get(user, 'highestRiskScore')) + '**'
+              res += '\nHighest Risk Session:'
+              res += '\n|ID|Accounts|Start|End|Label|LoginHost|Zones|InitialRisk|Risk|Assets|Events|Reasons|SecurityEvents|'
+              res += '\n|--|--------|-----|---|-----|---------|-----|-----------|----|------|------|-------|--------------|'
+              session = demisto.get(user, 'highestRiskSession')
+              if session:
+                  res += '\n| ' + demisto.get(session, 'sessionId') + ' | ' + ','.join(demisto.get(session, 'accounts')) + ' | ' + time.ctime(demisto.get(session, 'startTime') / 1000.0) + ' | ' + \
+                         time.ctime(demisto.get(session, 'endTime') / 1000.0) + ' | ' + demisto.get(session, 'label') + ' | ' + demisto.get(session, 'loginHost') + ' | ' + \
+                         ','.join(demisto.get(session, 'zones')) + ' | ' + str(demisto.get(session, 'initialRiskScore')) + ' | ' + str(demisto.get(session, 'riskScore')) + ' | ' + \
+                         str(demisto.get(session, 'numOfAssets')) + ' | ' + str(demisto.get(session, 'numOfEvents')) + ' | ' + str(demisto.get(session, 'numOfReasons')) + ' | ' + \
+                         str(demisto.get(session, 'numOfSecurityEvents')) + ' |'
+      demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
+  else:
+      demisto.results(entry)
+type: python
+tags:
+- server
+- analytics
+- exabeam
+comment: Retrieve notable Exabeam users
+system: true
+args:
+- name: rows
+  description: Maximum number of result rows to return
+- name: days
+  description: Number of days back to include in results
+scripttarget: 0
+dependson:
+  must:
+  - xb-notable
+timeout: 0s

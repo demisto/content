@@ -1,0 +1,28 @@
+commonfields:
+  id: IPReputation
+  version: 1
+name: IPReputation
+script: |-
+  var res = [];
+  var rep = executeCommand('ip', {ip: args.ip});
+  if (rep && Array.isArray(rep)) {
+    for (var i = 0; i < rep.length; i++) {
+      res.push(shortIP(rep[i]));
+    }
+  }
+  return res;
+type: javascript
+tags:
+- enhancement
+comment: A context script for IP entities
+system: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP address to look up
+scripttarget: 0
+dependson:
+  must:
+  - ip
+timeout: 0s

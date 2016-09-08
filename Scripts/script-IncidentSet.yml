@@ -1,0 +1,64 @@
+commonfields:
+  id: IncidentSet
+  version: 1
+name: IncidentSet
+script: |-
+  res = []
+  dArgs = {}
+  inArgs= demisto.args()
+  if demisto.get(inArgs, 'owner'):
+      res += demisto.executeCommand("setOwner", {'owner': inArgs['owner']})
+  if demisto.get(inArgs, 'playbook'):
+      res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
+  if demisto.get(inArgs, 'stage'):
+      res += demisto.executeCommand("setStage", {'stage': inArgs['stage']})
+  if demisto.get(inArgs, 'name'):
+      dArgs['incName'] = inArgs['name']
+  if demisto.get(inArgs, 'details'):
+      dArgs['details'] = inArgs['details']
+  if demisto.get(inArgs, 'severity'):
+      dArgs['severity'] = inArgs['severity']
+  if demisto.get(inArgs, 'labels'):
+      dArgs['labels'] = inArgs['labels']
+  if demisto.get(inArgs, 'addLabels'):
+      dArgs['addLabels'] = inArgs['addLabels']
+  if demisto.get(inArgs, 'type'):
+      dArgs['type'] = inArgs['type']
+      if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
+          demisto.executeCommand("setPlaybookAccordingToType", {'type': inArgs['type']})
+  if dArgs:
+      res += demisto.executeCommand("setIncident", dArgs)
+  demisto.results(res)
+type: python
+tags:
+- management
+comment: Modify incident info such as name, owner, type, etc.
+system: true
+args:
+- name: owner
+  description: Incident owner - must be an existing user in the platform
+- name: playbook
+  description: Assigned new playbook name
+- name: stage
+  description: Incident stage - must be from a predefined list of stages
+- name: details
+  description: Incident details
+- name: severity
+  description: The severity to set. Can be "low","medium","high" or "critical".
+- name: type
+  description: Incident type
+- name: name
+  default: true
+  description: Incident name
+- name: updatePlaybookForType
+  description: Should we also update the playbook according to the new given type.
+    Can be yes or no. Default is yes.
+- name: labels
+  description: 'Set and override the labels for the incident. Labels expected format
+    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+- name: addLabels
+  description: 'Add to the list of labels for the incident. Labels expected format
+    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+scripttarget: 0
+dependson: {}
+timeout: 0s
