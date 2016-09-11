@@ -22,7 +22,6 @@ script: |-
   } catch (ex) {
     pack('Winpmem failed: ' + ex);
   }
-  6
 type: javascript
 tags:
 - agent
