@@ -26,7 +26,7 @@ script: |-
           mdTable = '### Values retrieved from system *' + system['name'] + '*'
           mdTable += '\n|Key|SubKey|Value|'
           mdTable += '\n|-----|------|-----|'
-          cmdResp = demisto.executeCommand( 'D2RegQuery', { 'using' : system['name'], 'path' : regPath } )
+          cmdResp = demisto.executeCommand( 'D2RegQuery', { 'using' : system['name'], 'regpath' : regPath } )
           moreEntries, moreRows = Reg2Markdown( regPath , cmdResp )
           mdTable += moreRows
           res += moreEntries
