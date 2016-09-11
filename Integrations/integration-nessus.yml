@@ -17,7 +17,7 @@ configuration:
 - display: Password
   name: password
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: 'Server Url (format : https://127.0.0.1:8834/ )'
   name: url
