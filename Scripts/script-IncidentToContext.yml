@@ -38,15 +38,16 @@ script: |-
   # Setting initial score based on severity. Severity "Unknown" yields score 0.
   score = i['severity'] * 25
   demisto.setContext('score', score)
-  labels = {}
-  for l in i['labels']:
-      name = 'Label/' + l['type']
-      if demisto.get(labels, name):
-          labels[name] = labels[name].append(l['value'])
-      else:
-          labels[name] = [l['value']]
-  for k, v in labels.iteritems():
-      demisto.setContext(k, v if len(v) > 1 else v[0])
+  if 'labels' in i and i['labels']:
+      labels = {}
+      for l in i['labels']:
+          name = 'Label/' + l['type']
+          if demisto.get(labels, name):
+              labels[name] = labels[name].append(l['value'])
+          else:
+              labels[name] = [l['value']]
+      for k, v in labels.iteritems():
+          demisto.setContext(k, v if len(v) > 1 else v[0])
   demisto.results('Incident context set')
 type: python
 tags:
