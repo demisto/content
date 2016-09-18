@@ -5,9 +5,14 @@ name: SendEmail
 script: |-
   from string import Template
   dArgs = demisto.args()
-  dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
-  if demisto.incidents():
+  if 'body' in dArgs:
+      dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  else:
+      dArgs['body'] = ''
+  if 'subject' in dArgs and demisto.incidents():
       dArgs['subject'] = Template(dArgs['subject']).safe_substitute(name=demisto.incidents()[0]['name'])
+  else:
+      dArgs['subject'] = 'No subject'
   demisto.results(demisto.executeCommand('send-mail', dArgs))
 type: python
 tags:
