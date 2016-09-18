@@ -1,0 +1,258 @@
+commonfields:
+  id: PassiveTotal
+  version: -1
+name: PassiveTotal
+display: PassiveTotal
+category: Data Enrichment
+system: true
+image: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4RDgRXhpZgAATU0AKgAAAAgABAE7AAIAAAAHAAAISodpAAQAAAABAAAIUpydAAEAAAAOAAAQyuocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGJlYWtlcgAAAAWQAwACAAAAFAAAEKCQBAACAAAAFAAAELSSkQACAAAAAzU0AACSkgACAAAAAzU0AADqHAAHAAAIDAAACJQAAAAAHOoAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMDE2OjA5OjE1IDAwOjA3OjUyADIwMTY6MDk6MTUgMDA6MDc6NTIAAABiAGUAYQBrAGUAcgAAAP/hCxlodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+DQo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIj48cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSJ1dWlkOmZhZjViZGQ1LWJhM2QtMTFkYS1hZDMxLWQzM2Q3NTE4MmYxYiIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIi8+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iPjx4bXA6Q3JlYXRlRGF0ZT4yMDE2LTA5LTE1VDAwOjA3OjUyLjU0NDwveG1wOkNyZWF0ZURhdGU+PC9yZGY6RGVzY3JpcHRpb24+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5iZWFrZXI8L3JkZjpsaT48L3JkZjpTZXE+DQoJCQk8L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwveDp4bXBtZXRhPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNrZXQgZW5kPSd3Jz8+/9sAQwAHBQUGBQQHBgUG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
+description: Analyze and understand threat infrastructure from a variety of sources–passive
+  DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to
+  time-intensive manual threat research and analysis.
+configuration:
+- display: Username
+  name: Username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Server URL
+  name: ServerURL
+  defaultvalue: https://api.passivetotal.org/
+  type: 0
+  required: false
+script:
+  script: |-
+    var serverUrl = params.ServerURL;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var encodeParams = function(p) {
+        var q = '';
+        if (p) {
+            var keys = Object.keys(p);
+            if (keys.length > 0) {
+                q = '?';
+                for (var i in keys) {
+                    if (i !== 0) {
+                        q += '&';
+                    }
+                    q += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(p[keys[i]]);
+                }
+            }
+        }
+        return q;
+    };
+
+    var doReq = function(method, path, parameters, body) {
+        var result = http(
+            serverUrl + path + encodeParams(parameters),
+            {
+                Headers: {'Content-Type': ['application/json']},
+                Method: method,
+                Username: params.Username,
+                Password: params.APIKey,
+                Body: body ? body : ''
+            }
+        );
+        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', check that username/password are correct';
+        }
+        return result.Body;
+    };
+
+    var commandToPath = {
+        'pt-get-subdomains': 'v2/enrichment/subdomains',
+        'pt-account': 'v2/account',
+        'pt-monitors': 'v2/account/monitors',
+        'pt-passive-dns': 'v2/dns/passive',
+        'pt-passive-unique': 'v2/dns/passive/unique',
+        'pt-dns-keyword': 'v2/dns/search/keyword',
+        'pt-enrichment': 'v2/enrichment',
+        'pt-malware': 'v2/enrichment/malware',
+        'pt-osint': 'v2/enrichment/osint',
+        'pt-whois': 'v2/whois',
+        'pt-whois-keyword': 'v2/whois/search/keyword',
+        'pt-whois-search': 'v2/whois/search/keyword',
+        'pt-get-components': 'v2/host-attributes/components',
+        'pt-get-pairs': 'v2/host-attributes/pairs',
+        'pt-ssl-cert': 'v2/ssl-certificate',
+        'pt-ssl-cert-history': 'v2/ssl-certificate/history',
+        'pt-ssl-cert-keyword': 'v2/ssl-certificate/search/keyword',
+        'pt-ssl-cert-search': 'v2/ssl-certificate/search'
+    };
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var res = doReq('GET', 'v2/account');
+            if (JSON.parse(res).username)
+                return true;
+            throw 'Unable to retrieve username';
+        default:
+            return {Type: 1, Contents: doReq('GET', commandToPath[command], args), ContentsFormat: 'json'};
+    }
+  type: javascript
+  commands:
+  - name: pt-get-subdomains
+    arguments:
+    - name: query
+      required: true
+      description: The name of the domain to retrieve sub domains for
+    description: Get subdomains using a wildcard query.
+  - name: pt-account
+    arguments: []
+    description: Retrieve account details from PassiveTotal
+  - name: pt-monitors
+    arguments: []
+    description: Get monitors associated with your account
+  - name: pt-passive-dns
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: direction
+      description: 'Pagination direction: next or previous'
+    - name: page
+      description: Page ID to request
+    - name: sources
+      description: Comma seperated list of sources to process with
+    - name: start
+      description: 'Only show data starting from date: YYYY-mm-dd'
+    - name: end
+      description: 'Only show data up to date: YYYY-mm-dd'
+    - name: timeout
+      description: Timeout to use on all source requests
+    description: Get passive DNS data
+  - name: pt-passive-unique
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: direction
+      description: 'Pagination direction: next or previous'
+    - name: page
+      description: Page ID to request
+    - name: sources
+      description: Comma seperated list of sources to process with
+    - name: start
+      description: 'Only show data starting from date: YYYY-mm-dd'
+    - name: from
+      description: 'Only show data up to date: YYYY-mm-dd'
+    description: Get unique resolutions from passive DNS data
+  - name: pt-dns-keyword
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Search DNS data for keywords
+  - name: pt-enrichment
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to enrich
+    description: Enrich the given query with metadata
+  - name: pt-malware
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to get malware for
+    description: Get malware data
+  - name: pt-osint
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to get OSINT for
+    description: Get opensource intelligence data
+  - name: pt-whois
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: compact_record
+      description: Compress the WHOIS record into a deduplicated format - true or
+        false
+    description: Get WHOIS data for a domain or IP address
+  - name: pt-whois-keyword
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Keyword to search WHOIS database
+    description: Search WHOIS details based on keywords
+  - name: pt-whois-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: field
+      required: true
+      description: 'WHOIS field to execute the search on: domain, email, name, organization,
+        address, phone, nameserver'
+    description: Get WHOIS records based on field matching queries
+  - name: pt-get-components
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Get detailed information about a host
+  - name: pt-get-pairs
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Get host pairs based on dependent requests observed in web crawls
+  - name: pt-ssl-cert
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The SHA1 to retrieve SSL certificate data for
+    description: Get the SSL certificate associated with the SHA-1
+  - name: pt-ssl-cert-history
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The SHA1 or IP to retrieve SSL certificate data for
+    description: Get the SSL certificate history associated with an IP address or
+      SHA-1
+  - name: pt-ssl-cert-keyword
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Search for SSL certificates based on a keyword
+  - name: pt-ssl-cert-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: field
+      required: true
+      description: 'Field to search against: issuerSurname, subjectOrganizationName,
+        issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName,
+        serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName,
+        issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName,
+        sha1, sslVersion, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName,
+        subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName,
+        subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
+    description: Search for SSL certificates based on field values
