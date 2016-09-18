@@ -9,8 +9,9 @@ script: |-
       dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
   else:
       dArgs['body'] = ''
-  if 'subject' in dArgs and demisto.incidents():
-      dArgs['subject'] = Template(dArgs['subject']).safe_substitute(name=demisto.incidents()[0]['name'])
+  if 'subject' in dArgs:
+      if demisto.incidents():
+          dArgs['subject'] = Template(dArgs['subject']).safe_substitute(name=demisto.incidents()[0]['name'])
   else:
       dArgs['subject'] = 'No subject'
   demisto.results(demisto.executeCommand('send-mail', dArgs))
