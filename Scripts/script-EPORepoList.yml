@@ -1,6 +1,6 @@
 commonfields:
-  id: e45e2e13-df74-48cb-87af-f84ea805c790
-  version: 10
+  id: EPORepoList
+  version: 1
 name: EPORepoList
 script: |-
   cmds = demisto.getAllSupportedCommands()
@@ -18,7 +18,9 @@ tags:
 - epo
 comment: |
   List all configured instances of ePO integration.
-enabled: true
+system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - epo-command
 timeout: 0s

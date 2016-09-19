@@ -1,6 +1,6 @@
 commonfields:
-  id: 0c48cf11-db76-48c3-8d61-94cb75f77698
-  version: 19
+  id: EPORetrieveCurrentDATVersion
+  version: 1
 name: EPORetrieveCurrentDATVersion
 script: |
   res = []
@@ -38,12 +38,14 @@ tags:
 - epo
 comment: |
   Retrieve DAT version currently installed in the given ePO server
-enabled: true
+system: true
 args:
 - name: repos
   required: true
   default: true
   description: Instance names of ePO servers to check (comma-separated)
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - epo-command
 timeout: 0s

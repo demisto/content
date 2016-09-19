@@ -1,6 +1,6 @@
 commonfields:
-  id: 10a419a6-eb28-444e-8d2d-284b16e1070d
-  version: 29
+  id: EPORepositoryComplianceCheck
+  version: 1
 name: EPORepositoryComplianceCheck
 script: |
   def generateText(tbl):
@@ -84,7 +84,7 @@ tags:
 - epo
 comment: |
   Check a list of ePO servers to see if they are up to date.
-enabled: true
+system: true
 args:
 - name: requireddatversion
   required: true
@@ -93,5 +93,7 @@ args:
 - name: repostocheck
   description: comma-separated ePO instance names
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - epo-command
 timeout: 0s

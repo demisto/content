@@ -1,6 +1,6 @@
 commonfields:
-  id: d491243d-18f3-46c5-8736-d023a4aa1402
-  version: 10
+  id: EPOUpdateEndpoints
+  version: 1
 name: EPOUpdateEndpoints
 script: |
   res = []
@@ -50,7 +50,7 @@ tags:
 - epo
 comment: |
   Trigger an ePO Client Task to update AV signatures for specific endpoints
-enabled: true
+system: true
 args:
 - name: endpoints
   required: true
@@ -74,5 +74,7 @@ args:
   description: Duration in minutes over which to randomly spread task execution. Defaults
     to 0 (execute on all clients immediately).
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - epo-command
 timeout: 0s

@@ -1,6 +1,6 @@
 commonfields:
-  id: c3c319d4-69c5-4643-8c4f-1f1d3218f99e
-  version: 14
+  id: EPOUpdateRepository
+  version: 1
 name: EPOUpdateRepository
 script: |
   def generateText(tbl):
@@ -67,12 +67,14 @@ tags:
 - epo
 comment: |
   Trigger a Server Task in specific ePO servers to pull latest signatures from update server
-enabled: true
+system: true
 args:
 - name: repos
   required: true
   default: true
   description: Instance names of ePO repositories to update
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - epo-command
 timeout: 0s
