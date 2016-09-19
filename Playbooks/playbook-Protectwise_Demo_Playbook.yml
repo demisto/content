@@ -1,0 +1,139 @@
+id: 9bbcb94e-de75-43f9-86c0-abf109e1002c
+version: 15
+name: Protectwise Demo Playbook
+description: Displays information for all events since 2016-06-17 and all observations
+  since 2016-08-15, and downloads all related PCAPs. Waits 5 minutes between each
+  10 observation PCAPs downloaded to stay within the ProtectWise default request rate
+  limit .
+tasks:
+- id: "1"
+  taskid: 14dd4695-41d2-454a-8d7c-f34141c06515
+  type: regular
+  task:
+    id: 14dd4695-41d2-454a-8d7c-f34141c06515
+    version: 1
+    name: PWSensors
+    script: 4891aeb3-3536-4637-82c7-2ce78c7d79c2
+  scriptarguments:
+    sensorId: ""
+  results:
+  - pwsensors
+- id: "2"
+  taskid: 21ad611d-0cb2-47cc-8cb4-0cba4c3efe16
+  type: regular
+  task:
+    id: 21ad611d-0cb2-47cc-8cb4-0cba4c3efe16
+    version: 3
+    name: PWEvents
+    script: 3f6cd335-1e3c-44e2-8429-b813468f0edd
+  scriptarguments:
+    end: ""
+    eventType: ""
+    expandDetails: ""
+    ip: ""
+    killChainStage: ""
+    maxLimit: ""
+    minLimit: ""
+    nextPage: ""
+    observationStage: ""
+    reverseOrder: ""
+    start: 2016-06-17
+    threatCategory: ""
+    threatLevel: ""
+  results:
+  - pwevents
+- id: "3"
+  taskid: bfd8cc23-fd89-48f3-880e-f1413937b612
+  type: regular
+  task:
+    id: bfd8cc23-fd89-48f3-880e-f1413937b612
+    version: 1
+    name: PWEventPcapInfo
+    script: facce7b0-946c-45c7-8258-8c4a1b69e918
+  scriptarguments:
+    eventId: ${pwevents}
+- id: "4"
+  taskid: 94419891-a100-4ee6-8ac6-674f6dee2619
+  type: regular
+  task:
+    id: 94419891-a100-4ee6-8ac6-674f6dee2619
+    version: 1
+    name: PWEventPcapDownload
+    description: Waits around 5 minutes every 10 files
+    script: 48a25ccd-7582-4771-8ec2-94862b780de7
+    clonedfrom: 986ccedd-dd9e-43ec-8486-43ab379d70c6
+  scriptarguments:
+    burstsize: "10"
+    eventId: ${pwevents}
+    filename: ""
+    waitms: "310000"
+- id: "5"
+  taskid: c223a464-ea5b-4404-812e-d8d23509aa47
+  type: regular
+  task:
+    id: c223a464-ea5b-4404-812e-d8d23509aa47
+    version: 4
+    name: PWObservations
+    script: 925b33af-d4ce-4126-8cec-540966376232
+  scriptarguments:
+    end: ""
+    expandDetails: ""
+    hasKillChain: ""
+    ip: ""
+    killChainStage: ""
+    maxLimit: ""
+    minLimit: ""
+    nextPage: ""
+    reverseOrder: ""
+    sensorId: ${pwsensors}
+    signatureId: ""
+    start: 2016-08-15
+    threatCategory: ""
+    threatLevel: ""
+    type: ""
+- id: "6"
+  taskid: dc1a1307-cf45-4ae2-83c7-35176079d6e6
+  type: regular
+  task:
+    id: dc1a1307-cf45-4ae2-83c7-35176079d6e6
+    version: 1
+    name: PWObservationPcapInfo
+    script: 5b366608-080a-4b24-8bc3-f34a9462d7a7
+  scriptarguments:
+    id: ${pwobservations}
+    sensorId: ${pwsensors}
+- id: "7"
+  taskid: 05cb4857-2411-4af9-8069-16b5b1bbd93a
+  type: regular
+  task:
+    id: 05cb4857-2411-4af9-8069-16b5b1bbd93a
+    version: 2
+    name: PWObservationPcapDownload
+    description: Waits around 5 minutes every 10 files
+    script: 4c889033-3bd6-46c3-8d8d-d1b71ebb5036
+    clonedfrom: 91eec079-64ff-458c-8c85-3704dc45e3ab
+  scriptarguments:
+    burstsize: "10"
+    filename: ""
+    id: ${pwobservations}
+    sensorId: ${pwsensors}
+    waitms: "310000"
+- id: "8"
+  taskid: d91a8bac-6a6f-4194-848c-bac3447787f2
+  type: regular
+  task:
+    id: d91a8bac-6a6f-4194-848c-bac3447787f2
+    version: 5
+    name: PrintContext
+    script: "34"
+- id: "9"
+  taskid: 231e2da6-02d2-4d40-8a3c-44a4d6733a40
+  type: regular
+  task:
+    id: 231e2da6-02d2-4d40-8a3c-44a4d6733a40
+    version: 1
+    name: CloseInvestigation
+    script: CloseInvestigation
+    clonedfrom: b75ba72f-c419-4c48-81fe-2427b0442f66
+  scriptarguments:
+    reason: Finished
