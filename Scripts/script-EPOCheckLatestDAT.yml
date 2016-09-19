@@ -1,0 +1,31 @@
+commonfields:
+  id: 225f6da9-397b-49dd-8a5a-170bdf1c9fe0
+  version: 15
+name: EPOCheckLatestDAT
+script: |
+  import urllib2
+  MCAFEE_DELTAAVV_INI_URL = "http://update.nai.com/products/commonupdater/gdeltaavv.ini"
+  # Another option is to use avvdat.ini - provided here in case any additional data from that file is needed in the future
+  #MCAFEE_AVVDAT_INI_URL = "http://update.nai.com/Products/CommonUpdater/avvdat.ini"
+
+  iniText = '<Could not fetch INI>'
+  latestDATVersion = None
+  try:
+      iniText = urllib2.urlopen(MCAFEE_DELTAAVV_INI_URL).read()
+      contentsSection = [section for section in iniText.split('\r\n\r\n') if section.startswith('[Contents]\r\n')][0]
+      demisto.log('** Extracted Contents section:\n' + contentsSection + '\n')
+      latestDATVersion = [line.split('=')[1] for line in contentsSection.split('\r\n') if line.startswith('CurrentVersion=')][0]
+      demisto.log('** McAfee website ini reports latest available DAT version ' + latestDATVersion)
+      demisto.setContext('latestdat', latestDATVersion)
+  except Exception as ex:
+      demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while retrieving DAT version from McAfee website. Exception info:\n" + str(ex) + "\n\nRetrieved iniText for debugging:\n" + str(iniText)})
+type: python
+tags:
+- epo
+comment: |
+  Check latest version of the DAT AV signature update.
+enabled: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
