@@ -171,6 +171,54 @@ script: |-
           if strRegistryPath[:len(k)] == k:
               return dSub[k] + strRegistryPath[len(k):]
       return strRegistryPath
+
+  def formatCell(data):
+      if type(data) in [unicode, str]:
+          return data
+      elif isinstance(data, dict):
+          return '\n'.join([k + ': ' + flattenCell(data[k]) for k in data])
+      else:
+          return flattenCell(data)
+
+  def flattenCell(data):
+      if type(data) in [unicode, str]:
+          return data
+      else:
+          return json.dumps(data, indent=4)
+
+  def FormatIso8601(t):
+      return t.strftime("%Y-%m-%dT%H:%M:%S")
+
+  def argToList(arg):
+      if not arg:
+          return []
+      if isinstance(arg, list):
+          return arg
+      if type(arg) in [str, unicode]:
+          if arg[0] == '[' and arg[-1] == ']':
+              return json.loads(arg)
+          return arg.split(',')
+      return arg
+
+  def appendContext(key, data):
+      existing = demisto.get(demisto.context(), key)
+      if existing:
+          demisto.setContext(key, existing + data)
+      else:
+          demisto.setContext(key, data)
+
+  def tblToMd(name, t):
+      mdResult = '### ' + name + '\n'
+      if t:
+          headers = t[0].keys()
+          mdResult += '|'.join(headers) + '\n'
+          mdResult += '|'.join(['-'] * len(headers)) + '\n'
+          for entry in t:
+              vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
+              mdResult += '|'.join(vals) + '\n'
+      else:
+          mdResult += '**No entries.**\n'
+      return mdResult
 type: python
 tags:
 - infra
