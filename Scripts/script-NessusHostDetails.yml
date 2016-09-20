@@ -1,0 +1,65 @@
+commonfields:
+  id: NessusHostDetails
+  version: 1
+name: NessusHostDetails
+script: |
+  res = []
+
+  def tblToMd(name, t):
+      mdResult = '### ' + name + '\n'
+      if t:
+          headers = t[0].keys()
+          mdResult += '|'.join(headers) + '\n'
+          mdResult += '|'.join(['-'] * len(headers)) + '\n'
+          for entry in t:
+              vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
+              mdResult += '|'.join(vals) + '\n'
+      else:
+          mdResult += '**No entries.**\n'
+      return mdResult
+
+
+  def sectionsToMarkdown(root):
+      mdResult = ''
+      for section in root:
+          data = demisto.get(entry, 'Contents.'+section)
+          if isinstance(data, dict):
+              data = [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          mdResult += tblToMd(section, data)
+      return mdResult
+
+
+  dArgs = demisto.args()
+  resCmd1 = demisto.executeCommand("scan-host-details", dArgs)
+  try:
+      for entry in resCmd1:
+          if isError(entry):
+              res = resCmd1
+              break
+          else:
+              mdResult = sectionsToMarkdown(resCmd1[0]['Contents'])
+              res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': mdResult})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd1)})
+  demisto.results(res)
+type: python
+tags:
+- nessus
+comment: |
+  Display information about a host within the given scan. The numerical host ID can be retrieved using NessusScanDetails "hosts" section
+system: true
+args:
+- name: scanId
+  required: true
+  default: true
+  description: The Scan ID (use command list-scans to get possible scan ID's)
+- name: historyId
+  description: The history_id of the historical data that should be returned.
+- name: hostId
+  required: true
+  description: The numerical id of the host to retrieve
+scripttarget: 0
+dependson: {}
+timeout: 0s
