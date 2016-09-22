@@ -219,6 +219,16 @@ script: |-
       else:
           mdResult += '**No entries.**\n'
       return mdResult
+
+  def sectionsToMarkdown(root):
+      mdResult = ''
+      for section in root:
+          data = demisto.get(entry, 'Contents.'+section)
+          if isinstance(data, dict):
+              data = [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          mdResult += tblToMd(section, data)
+      return mdResult
 type: python
 tags:
 - infra
