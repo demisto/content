@@ -354,6 +354,29 @@ script: |-
   function addTask(arg) {
     return executeCommand('addTask', arg);
   }
+  
+  /**
+  * Encode json object to URL.
+  * @args {Object} arg - the object to encode.
+  * @returns {String} in case of error will be empty. In Case of success will return the URL string.
+  */
+  function encodeToURLQuery(args) {
+        var query = '';
+        if (args) {
+            var keys = Object.keys(args);
+            if (keys.length > 0) {
+                query = '?';
+                for (var i = 0; i<keys.length; i++) {
+                    if (i !== 0) {
+                        query += '&';
+                    }
+                    query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
+                }
+            }
+        }
+        return query;
+  };
+
   function formatCell(data) {
       if (typeof(data) === 'string' || typeof(data) === 'number')
           return data;
