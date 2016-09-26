@@ -9,6 +9,11 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAbCAYAAAC3BEsmAAAeTUl
 description: Vulnerability scanner for auditors and security analysts by Tenable Network
   Security
 configuration:
+- display: 'Server Url (format : https://127.0.0.1:8834)'
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Username
   name: username
   defaultvalue: ""
@@ -19,11 +24,6 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: 'Server Url (format : https://127.0.0.1:8834/ )'
-  name: url
-  defaultvalue: ""
-  type: 0
-  required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -31,9 +31,16 @@ configuration:
   required: false
 script:
   script: |-
+    var getReadyURL = function() {
+        u = params.url;
+        if (u && u[u.length - 1] !== '/') {
+          u = u +'/';
+        }
+        return u;
+    }
     var login = function() {
         var result = http(
-            params.url+'session',
+            getReadyURL()+'session',
             {
                 Headers: {'Content-Type': ['application/json']},
                 Method: 'POST',
@@ -48,7 +55,7 @@ script:
     };
     var logout = function(token) {
         var result = http(
-            params.url+'session',
+            getReadyURL()+'session',
             {
                 Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
                 Method: 'DELETE',
@@ -62,7 +69,7 @@ script:
     };
     var scanList = function(token) {
         var result = http(
-            params.url+'scans',
+            getReadyURL()+'scans',
             {
                 Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
                 Method: 'GET',
@@ -82,7 +89,7 @@ script:
             body = JSON.stringify({'alt_targets': targetsArr});
         }
         var result = http(
-            params.url+'scans/'+scanId+'/launch',
+            getReadyURL()+'scans/'+scanId+'/launch',
             {
                 Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
                 Method: 'POST',
@@ -97,7 +104,7 @@ script:
         return JSON.parse(result.Body);
     };
     var scanDetails = function(token,scanId,historyId) {
-        var url = params.url+'scans/'+scanId;
+        var url = getReadyURL()+'scans/'+scanId;
         if (historyId && historyId.length > 0 ){
             url = url + '?history_id='+historyId;
         }
@@ -116,7 +123,7 @@ script:
         return JSON.parse(result.Body);
     };
     var scanHostDetails = function(token,scanId,historyId,hostId) {
-        var url = params.url+'scans/'+scanId + '/hosts/' + hostId;
+        var url = getReadyURL()+'scans/'+scanId + '/hosts/' + hostId;
         if (historyId && historyId.length > 0 ){
             url = url + '?history_id='+historyId;
         }
@@ -135,7 +142,7 @@ script:
         return JSON.parse(result.Body);
     };
     var scanExport = function(token, scanId, historyId, format, password, chapters) {
-        var url = params.url+'scans/'+scanId + '/export';
+        var url = getReadyURL()+'scans/'+scanId + '/export';
         if (historyId && historyId.length > 0 ){
             url = url + '?history_id='+historyId;
         }
@@ -163,7 +170,7 @@ script:
     };
     var getReport = function(token, scanId, fileId) {
         var res = http(
-            params.url+'scans/'+ scanId + '/export/' + fileId + '/download',
+            getReadyURL()+'scans/'+ scanId + '/export/' + fileId + '/download',
             {
                 Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
                 Method: 'GET',
@@ -222,7 +229,7 @@ script:
             body.settings.acls = acls;
         }
         var result = http(
-            params.url+'scans',
+            getReadyURL()+'scans',
             {
                 Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
                 Method: 'POST',
@@ -237,7 +244,7 @@ script:
         return JSON.parse(result.Body);
     };
     var getEditors = function(token) {
-        var url = params.url+'editor/scan/templates';
+        var url = getReadyURL()+'editor/scan/templates';
         var result = http(
             url,
             {
@@ -253,7 +260,7 @@ script:
         return JSON.parse(result.Body);
     };
     var getStatus = function(token,scanId,fileId) {
-        var url = params.url+'scans/'+scanId+'/export/'+fileId+'/status';
+        var url = getReadyURL()+'scans/'+scanId+'/export/'+fileId+'/status';
         var result = http(
             url,
             {
