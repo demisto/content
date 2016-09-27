@@ -36,8 +36,7 @@ script: |
 type: python
 tags:
 - epo
-comment: |
-  Retrieve DAT version currently installed in the given ePO server
+comment: Retrieve DAT version currently installed in the given ePO server
 system: true
 args:
 - name: repos

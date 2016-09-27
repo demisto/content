@@ -65,14 +65,13 @@ script: |
 type: python
 tags:
 - epo
-comment: |
-  Trigger a Server Task in specific ePO servers to pull latest signatures from update server
+comment: Trigger a Server Task in specific ePO servers to pull latest signatures from update server
 system: true
 args:
 - name: repos
   required: true
   default: true
-  description: Instance names of ePO repositories to update
+  description: Instance names of ePO servers to update
 scripttarget: 0
 dependson:
   must:

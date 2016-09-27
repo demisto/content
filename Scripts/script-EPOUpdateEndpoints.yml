@@ -48,8 +48,7 @@ script: |
 type: python
 tags:
 - epo
-comment: |
-  Trigger an ePO Client Task to update AV signatures for specific endpoints
+comment: Trigger an ePO Client Task to update AV signatures for specific endpoints
 system: true
 args:
 - name: endpoints
@@ -58,7 +57,7 @@ args:
   description: Names of endpoints to update
 - name: eposerver
   required: true
-  description: server instance to use
+  description: ePO instance to use
 - name: retryAttempts
   description: Number of times the server will attempt to send the task to the client.
     Defaults to 1.

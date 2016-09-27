@@ -23,8 +23,7 @@ script: |
 type: python
 tags:
 - epo
-comment: |
-  Check latest version of the DAT AV signature update.
+comment: Check latest version of the DAT AV signature update.
 system: true
 scripttarget: 0
 dependson: {}
