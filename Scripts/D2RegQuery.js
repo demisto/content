@@ -1,1 +1,0 @@
-pack(registry(args.regpath));

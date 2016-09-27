@@ -2,8 +2,7 @@ commonfields:
   id: CuckooDetonateFile
   version: 1
 name: CuckooDetonateFile
-script: 'demisto.results( demisto.executeCommand("ck-file", { "entryID": demisto.args()["entryID"]
-  }) )'
+script: 'demisto.results( demisto.executeCommand("ck-file", { "entryID": demisto.args()["entryID"]}) )'
 type: python
 tags:
 - cuckoo

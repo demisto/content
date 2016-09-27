@@ -16,8 +16,7 @@ script: |-
 type: python
 tags:
 - epo
-comment: |
-  List all configured instances of ePO integration.
+comment: List all configured instances of ePO integration.
 system: true
 scripttarget: 0
 dependson:
