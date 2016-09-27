@@ -288,6 +288,7 @@ script:
     - name: issueJson
       description: Issue object in json format
     - name: summary
+      required: true
       description: Summary of the issue, a mandatory field
     - name: projectKey
       description: Project key to associate the issue
