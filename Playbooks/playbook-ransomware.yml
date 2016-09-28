@@ -1,5 +1,5 @@
 id: playbook3
-version: 1
+version: -1
 name: Ransomware Playbook - Manual
 description: Master playbook for ransomware incidents. This playbook is a manual playbook.
 tasks:
@@ -8,85 +8,123 @@ tasks:
   type: title
   task:
     id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
-    version: 4
+    version: -1
     name: Engage
-    istitletask: true
     issystemtask: true
 - id: "2"
+  taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
+  type: regular
+  task:
+    id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
+    version: -1
+    name: Set initial incident context
+    script: IncidentToContext
+  results:
+  - Label/Application
+  - Label/Database
+  - Label/Directory
+  - Label/Email
+  - Label/Email/cc
+  - Label/Email/from
+  - Label/Email/format
+  - Label/Email/html
+  - Label/Email/text
+  - Label/Email/subject
+  - Label/Email/attachments
+  - Label/Email/headers
+  - Label/IP
+  - Label/System
+  - Label/URL
+  - Label/User
+  - Label/Brand
+  - Label/Instance
+  - id
+  - created
+  - modified
+  - occurred
+  - dueDate
+  - name
+  - owner
+  - type
+  - severity
+  - phase
+  - status
+  - details
+  - score
+- id: "3"
   taskid: d69a6289-b692-404c-8f90-d37d72aa265c
   type: regular
   task:
     id: d69a6289-b692-404c-8f90-d37d72aa265c
-    version: 3
+    version: -1
     name: Notify management chain
     description: 'Notify appropriate people inside the organization. '
     issystemtask: true
-- id: "3"
+- id: "4"
   taskid: 21cb9178-78a0-4610-801f-3bc5f808e4a2
   type: regular
   task:
     id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
-    version: 3
+    version: -1
     name: Initial triage
     description: 1. Make sure that there is relevant information in the incident -
       system name, end user name and initial severity as reported.
     issystemtask: true
-- id: "4"
+- id: "5"
   taskid: cd85115e-4379-4319-853b-f518e9aa98bc
   type: regular
   task:
     id: cd85115e-4379-4319-853b-f518e9aa98bc
-    version: 3
+    version: -1
     name: Assess severity
     description: 'Based on the end user affected, and other information assess and
       change the severity if needed. '
     issystemtask: true
-- id: "5"
+- id: "6"
   taskid: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
   type: regular
   task:
     id: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
-    version: 3
+    version: -1
     name: Assign and involve appropriate personnel
     description: 'Invite the relevant users for investigation - malware expert and
       network experts if needed. '
     issystemtask: true
-- id: "6"
+- id: "7"
   taskid: 744fdee2-aae7-4a50-8197-9e871d0661da
   type: title
   task:
     id: 744fdee2-aae7-4a50-8197-9e871d0661da
-    version: 1
+    version: -1
     name: 'Investigation Step 1: Details for this incident'
-    istitletask: true
     issystemtask: true
-- id: "7"
+- id: "8"
   taskid: e882cafd-1c86-4443-8ea8-e873d3552a0f
   type: regular
   task:
     id: e882cafd-1c86-4443-8ea8-e873d3552a0f
-    version: 1
+    version: -1
     name: Notify IT about the end user details for replacing device
     description: "1. Notify IT with end user details to replace device. \n2. Hopefully
       there is back for end user data to be restored."
     issystemtask: true
-- id: "8"
+- id: "9"
   taskid: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
   type: condition
   task:
     id: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
-    version: 1
+    version: -1
     name: Is the incident reported by end user or an alert from SIEM (or another security
       product)?
     issystemtask: true
   condition:
     Alert from Security Product:
-    - id: "9"
+    - id: "10"
       taskid: 2438c513-4f3c-4c5a-8c2d-33fdee1b0ff0
       type: condition
       task:
         id: 2438c513-4f3c-4c5a-8c2d-33fdee1b0ff0
-        version: 1
+        version: -1
         name: Is the incident real or a false positive?
         description: |-
           1. If a URL was flagged from the proxy logs or IDS or SIEM, check why: check for URL and IP reputation against threat feeds.
@@ -94,61 +132,61 @@ tasks:
         issystemtask: true
       condition:
         False positive:
-        - id: "10"
+        - id: "11"
           taskid: 1fe0d3b3-bd1e-415f-84a3-fd57071bf1cd
           type: regular
           task:
             id: 1fe0d3b3-bd1e-415f-84a3-fd57071bf1cd
-            version: 1
+            version: -1
             name: Mark the incident as false positive in SIEM
             issystemtask: true
-        - id: "11"
+        - id: "12"
           taskid: f213bfb8-2e8d-462a-8430-ffa8afe8049c
           type: regular
           task:
             id: f213bfb8-2e8d-462a-8430-ffa8afe8049c
-            version: 1
+            version: -1
             name: Close the issue in the incident management system
             description: Use /investigation_close command to close the investigation.
             issystemtask: true
         Real incident:
-        - id: "12"
+        - id: "13"
           taskid: 43ec8c44-5322-4cae-87f8-b4bbffb38fc0
           type: regular
           task:
             id: 43ec8c44-5322-4cae-87f8-b4bbffb38fc0
-            version: 1
+            version: -1
             name: Identify the affected endpoint and user
             description: "1. Get the source IP address from the alert and add it to
               investigation.\n2. Get the user associated with this system from domain
               controller and AD "
             issystemtask: true
-        - id: "13"
+        - id: "14"
           taskid: 732dad95-6ba7-4475-8fdb-4835137f7947
           type: regular
           task:
             id: 732dad95-6ba7-4475-8fdb-4835137f7947
-            version: 1
+            version: -1
             name: Inform user about Ransomeware
             description: 'Call user and notify them about the incident details. '
             issystemtask: true
-        - id: "14"
+        - id: "15"
           taskid: 862a44d2-5599-4282-883f-de1d9e1d063c
           type: regular
           task:
             id: 862a44d2-5599-4282-883f-de1d9e1d063c
-            version: 1
+            version: -1
             name: Execute local containment
             description: 'Ask the user to disconnect the system from network - turn
               wifi off if needed. '
             issystemtask: true
     User reported Incident:
-    - id: "15"
+    - id: "16"
       taskid: 794e5301-9904-4b42-8ad4-9f251c794781
       type: regular
       task:
         id: 794e5301-9904-4b42-8ad4-9f251c794781
-        version: 1
+        version: -1
         name: Document user details in investigation
         description: |-
           Take the following details from the end-user and register them into the ticket:
@@ -159,12 +197,12 @@ tasks:
 
            Is the user aware he/she clicked on a suspicious link or attachment lately?
         issystemtask: true
-    - id: "16"
+    - id: "17"
       taskid: e08042d0-b8a1-4220-8e6e-2d0a6895bd96
       type: regular
       task:
         id: e08042d0-b8a1-4220-8e6e-2d0a6895bd96
-        version: 1
+        version: -1
         name: Collect relevant details about incident
         description: |-
           1. Did a window pop up with demanding a ransom?
@@ -173,39 +211,38 @@ tasks:
            4. Are the files unavailable?
            5. Is the user aware he/she clicked on a suspicious link or attachment lately?
         issystemtask: true
-    - id: "17"
+    - id: "18"
       taskid: b47fff38-a785-41d6-8049-db1ae21226fa
       type: regular
       task:
         id: b47fff38-a785-41d6-8049-db1ae21226fa
-        version: 1
+        version: -1
         name: Execute initial containment
         description: Ask the user to disconnect the device from the network. If the
           user connects to the network with a wifi, he/she must turn it off.
         issystemtask: true
-- id: "18"
+- id: "19"
   taskid: efecb59f-31c6-4416-8e3a-a00e9deafc0f
   type: title
   task:
     id: efecb59f-31c6-4416-8e3a-a00e9deafc0f
-    version: 1
+    version: -1
     name: 'Investigation Step 2: Identify Source of Infection'
-    istitletask: true
     issystemtask: true
-- id: "19"
+- id: "20"
   taskid: 478d2a8f-2138-4b64-8555-54b3d1acfd75
   type: regular
   task:
     id: 478d2a8f-2138-4b64-8555-54b3d1acfd75
-    version: 1
+    version: -1
     name: 'Option 1: Investigate whether the ransomeware has been delivered by email'
     issystemtask: true
-- id: "20"
+- id: "21"
   taskid: 9a551e7e-0816-499f-8cfa-86d6584ea7f1
   type: regular
   task:
     id: 9a551e7e-0816-499f-8cfa-86d6584ea7f1
-    version: 1
+    version: -1
     name: Analyze email logs to narrow down suspicious emails
     description: 1. Go to the SIEM 2. Filter on the email logs associated with the
       user from the last 3 days 3. Filter again on emails where the recipient was
@@ -213,12 +250,12 @@ tasks:
       5. Export the list of emails into a CSV file. It should only contain emails
       sent to the victim from the Internet within the last 3 days.
     issystemtask: true
-- id: "21"
+- id: "22"
   taskid: cef1ed6a-c8e3-4b06-8ca4-4fcd15bbf067
   type: regular
   task:
     id: cef1ed6a-c8e3-4b06-8ca4-4fcd15bbf067
-    version: 1
+    version: -1
     name: Collect and analyze suspicious emails
     description: "1. Send the CSV file to IT Team and ask them to retrieve the full
       emails from the user’s inbox. Attach the cvs to the investigation as evidence.\n2.
@@ -230,33 +267,33 @@ tasks:
       Scan suspicious URLs as necessary with threat feeds like Virustotal, http://www.phishtank.com.
       If you identify suspicious URL analyze in depth in next steps. \n"
     issystemtask: true
-- id: "22"
+- id: "23"
   taskid: 170848e4-7295-4ebf-8e7a-0c02403a710f
   type: regular
   task:
     id: 170848e4-7295-4ebf-8e7a-0c02403a710f
-    version: 1
+    version: -1
     name: Analyze suspicious URLs and files collected from emails (malware playbook)
     description: "1. If you identify a suspicious URL, Download the malicious file
       with ‘curl’\n2. Check reputation of file using virustotal and other threat feeds.
       \n3. Do a static and dynamic analysis of files using sandbox or SIFT workstation.
       \n4. If you find suspicious file, then upload to VT or other AV vendors.\n"
     issystemtask: true
-- id: "23"
+- id: "24"
   taskid: 71148252-7dfa-442c-8d28-20cb54927a29
   type: regular
   task:
     id: 71148252-7dfa-442c-8d28-20cb54927a29
-    version: 1
+    version: -1
     name: 'Option 2: Investigate whether the victim’s PC has been infected by an exploit
       kit/drive-by download'
     issystemtask: true
-- id: "24"
+- id: "25"
   taskid: a4bc2ab7-98b8-493a-8bc2-b06430cf849e
   type: regular
   task:
     id: a4bc2ab7-98b8-493a-8bc2-b06430cf849e
-    version: 1
+    version: -1
     name: Analyze web proxy (or web gateway) logs to find suspicious URL
     description: |-
       1. Go to the SIEM
@@ -267,12 +304,12 @@ tasks:
        6. Sort the list by URLs, remove duplicates
        7. Make sure this is attached as artifact to the investigation
     issystemtask: true
-- id: "25"
+- id: "26"
   taskid: 7c9242cc-71a0-4e72-821d-226ffd2c8921
   type: regular
   task:
     id: 7c9242cc-71a0-4e72-821d-226ffd2c8921
-    version: 1
+    version: -1
     name: Analyze the URLs from previous task for malicious URL
     description: |-
       1. Check Reputation of all the collected URL against threat feeds like virustotal
@@ -287,52 +324,51 @@ tasks:
        Programmatic libraries (e.g. python-requests/1.2.0)
        dJava (e.g. Java/1.6.0_13)
     issystemtask: true
-- id: "26"
+- id: "27"
   taskid: e37b3eef-ac20-4ee6-8d71-5edb5a62ee29
   type: regular
   task:
     id: e37b3eef-ac20-4ee6-8d71-5edb5a62ee29
-    version: 1
+    version: -1
     name: Analyze the URL in a sandbox
     description: "Consider deeper analysis of the URL using sandbox like Cuckoo. \nBased
       on the analysis here and the previous step, create the final list of malicious
       URL.\n\n"
     issystemtask: true
-- id: "27"
+- id: "28"
   taskid: b770133f-1b8d-4b29-8fc2-32ac77a2b1a0
   type: regular
   task:
     id: b770133f-1b8d-4b29-8fc2-32ac77a2b1a0
-    version: 1
+    version: -1
     name: Get file details from web logs for downloaded files
     description: "1. Get the hash for downloaded files. \n2. Check the reputation
       of files against threat feeds. \n\n"
     issystemtask: true
-- id: "28"
+- id: "29"
   taskid: 9fd3ac5d-71d7-4d85-8715-0a0b489ea248
   type: regular
   task:
     id: 9fd3ac5d-71d7-4d85-8715-0a0b489ea248
-    version: 1
+    version: -1
     name: 'Go to : Generating IoCs from URLs and Hashes'
     description: 'Take the malicious URL and files from this section and generate
       IOC using steps in Section: Generating IoCs from URLs and Hashes'
     issystemtask: true
-- id: "29"
+- id: "30"
   taskid: 207c8a2d-2ec5-418c-86cf-22fa818c8cb9
   type: title
   task:
     id: 207c8a2d-2ec5-418c-86cf-22fa818c8cb9
-    version: 1
+    version: -1
     name: Generating IoCs for URLs and Hashes
-    istitletask: true
     issystemtask: true
-- id: "30"
+- id: "31"
   taskid: 9ac4e924-5559-455c-852c-d3a67a0a27a0
   type: regular
   task:
     id: 9ac4e924-5559-455c-852c-d3a67a0a27a0
-    version: 1
+    version: -1
     name: Generate IOC for malicious URL from SIEM Threat Feed
     description: "1. Get the list of flagged URLs/hashes from the Investigation Step\n2.
       Check the URL against threat feed (virustotal, IBM Xforce).\n3. Check your SIEM
@@ -341,12 +377,12 @@ tasks:
       If none of the IoCs are on the TI feed, you need to generate IoCs manually in
       next step\n"
     issystemtask: true
-- id: "31"
+- id: "32"
   taskid: cf6fe0f5-fe53-4ba7-80c7-4d6eaf896d2a
   type: regular
   task:
     id: cf6fe0f5-fe53-4ba7-80c7-4d6eaf896d2a
-    version: 1
+    version: -1
     name: Generate IOC for malicious URL manually
     description: "1. Go to the proxy logs again\n2. Find 2-3 properties associated
       with the flagged URL, such as:\n     The request is POST\n     The User-Agent
@@ -358,12 +394,12 @@ tasks:
       it produces.\n4. If the pattern is good enough, append your results to the investigation.
       \n\n\n"
     issystemtask: true
-- id: "32"
+- id: "33"
   taskid: c24a436e-71bb-48e7-89cd-8058fec1d2fb
   type: regular
   task:
     id: c24a436e-71bb-48e7-89cd-8058fec1d2fb
-    version: 1
+    version: -1
     name: Generate IOC from phishing emails
     description: "If you find in previous steps that source was phishing email - \n\n1.
       Find all the URLs in the email and go through the URL IOC generation steps.
@@ -372,136 +408,134 @@ tasks:
       - \n     extract sender, sending domain and other properties to find emails.
       \n     use this data to block future emails."
     issystemtask: true
-- id: "33"
+- id: "34"
   taskid: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
   type: regular
   task:
     id: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
-    version: 1
+    version: -1
     name: Deploy the IoCs collected
     description: |-
       1. Deploy a new rule to the SIEM, this will alert new infection attempts in the future
        2. Mark the hashes collected as malicious in the SIEM and import this into IOC databases for your enterprise.
        2. Send the patterns to IT and ask IT to block these URLs on the proxy and web gateway
     issystemtask: true
-- id: "34"
+- id: "35"
   taskid: dcccd78c-a7c6-4a21-8024-24ec6870c979
   type: title
   task:
     id: dcccd78c-a7c6-4a21-8024-24ec6870c979
-    version: 1
+    version: -1
     name: Identify other affected devices
-    istitletask: true
     issystemtask: true
-- id: "35"
+- id: "36"
   taskid: fe9439ce-8a68-45dc-8a4e-71a97d98072f
   type: regular
   task:
     id: fe9439ce-8a68-45dc-8a4e-71a97d98072f
-    version: 1
+    version: -1
     name: Identify other systems based on URL and hashes
     description: "1. Go to SIEM and search for the URL pattern from Generating IOC
       step in the proxy logs in order to identify other computers already affected.
       \n2. Search for hashes identified in all logs and identify systems associated.\n2.
       If you identify other affected PCs with above two steps, create new incident.\n\n"
     issystemtask: true
-- id: "36"
+- id: "37"
   taskid: e8e246cf-bf4c-47e8-89f5-4f0d1fbf0edb
   type: regular
   task:
     id: e8e246cf-bf4c-47e8-89f5-4f0d1fbf0edb
-    version: 1
+    version: -1
     name: Create new incident with the affected systems
     description: 'Create new incidents based on above steps. '
     issystemtask: true
-- id: "37"
+- id: "38"
   taskid: 08e01fbf-47af-4926-8cd1-c359cfc94410
   type: title
   task:
     id: 08e01fbf-47af-4926-8cd1-c359cfc94410
-    version: 1
+    version: -1
     name: Respond
-    istitletask: true
     issystemtask: true
-- id: "38"
+- id: "39"
   taskid: 5b96fdcb-14af-434b-8c89-ebbb3b344145
   type: regular
   task:
     id: 5b96fdcb-14af-434b-8c89-ebbb3b344145
-    version: 2
+    version: -1
     name: Notify affected user
     description: Notify affected user about the outcome of investigation.
     issystemtask: true
-- id: "39"
+- id: "40"
   taskid: bcc506a2-1413-43d8-8012-8c1d63f35ecc
   type: regular
   task:
     id: bcc506a2-1413-43d8-8012-8c1d63f35ecc
-    version: 1
+    version: -1
     name: IOC deployment verification
     description: 'Make sure that IOC deployment is in place. These are the IOC identified
       from previous steps. '
     issystemtask: true
-- id: "40"
+- id: "41"
   taskid: b32992a7-f5e0-4b95-8dd2-5c70e938c715
   type: regular
   task:
     id: b32992a7-f5e0-4b95-8dd2-5c70e938c715
-    version: 2
+    version: -1
     name: Remove temporary containment measures
     description: Remove the temporary containment measures that were placed.
     issystemtask: true
-- id: "41"
+- id: "42"
   taskid: 35c0d3b2-d9cd-460c-88be-6d7a229e9906
   type: regular
   task:
     id: 35c0d3b2-d9cd-460c-88be-6d7a229e9906
-    version: 2
+    version: -1
     name: Provide end-user remediation guidance and link to training
     issystemtask: true
-- id: "42"
+- id: "43"
   taskid: f68ec944-041d-4288-80fd-d4593bceb52b
   type: condition
   task:
     id: f68ec944-041d-4288-80fd-d4593bceb52b
-    version: 2
+    version: -1
     name: Is the identified malware known? (with automated remediation steps)
     issystemtask: true
   condition:
     "no":
-    - id: "43"
+    - id: "44"
       taskid: f13d62e8-15a2-4240-8245-9537c0c7aa83
       type: regular
       task:
         id: f13d62e8-15a2-4240-8245-9537c0c7aa83
-        version: 2
+        version: -1
         name: Document manual remediation steps
         issystemtask: true
     "yes":
-    - id: "44"
+    - id: "45"
       taskid: 91223da8-3e5b-432e-85d6-b05a8e614f83
       type: regular
       task:
         id: 91223da8-3e5b-432e-85d6-b05a8e614f83
-        version: 2
+        version: -1
         name: Trigger remediation scripts
         issystemtask: true
-- id: "45"
+- id: "46"
   taskid: 36ba1145-5eb5-4bc4-85f6-d5c9f4495cca
   type: condition
   task:
     id: 36ba1145-5eb5-4bc4-85f6-d5c9f4495cca
-    version: 2
+    version: -1
     name: Was remediation successful?
     issystemtask: true
   condition:
     "no":
-    - id: "46"
+    - id: "47"
       taskid: c56d39eb-e583-4183-8b18-12e9d0547c17
       type: regular
       task:
         id: c56d39eb-e583-4183-8b18-12e9d0547c17
-        version: 2
+        version: -1
         name: Reimage the entire system and restore from backup
         issystemtask: true
     "yes": []

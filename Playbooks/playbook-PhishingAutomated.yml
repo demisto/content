@@ -1,5 +1,5 @@
 id: playbook5
-version: 1
+version: -1
 name: Phishing Playbook - Automated
 description: This is an automated phishing playbook.
 tags:
@@ -10,19 +10,17 @@ tasks:
   type: title
   task:
     id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
-    version: 1
+    version: -1
     name: Triage and Engage
-    istitletask: true
     issystemtask: true
 - id: "2"
-  taskid: d4a6e062-7700-4c04-80f1-cbb4571244fe
+  taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
   type: regular
   task:
-    id: d4a6e062-7700-4c04-80f1-cbb4571244fe
-    version: 1
-    name: IncidentToContext
+    id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
+    version: -1
+    name: Set initial incident context
     script: IncidentToContext
-    issystemtask: true
   results:
   - Label/Application
   - Label/Database
@@ -30,10 +28,18 @@ tasks:
   - Label/Email
   - Label/Email/cc
   - Label/Email/from
+  - Label/Email/format
+  - Label/Email/html
+  - Label/Email/text
+  - Label/Email/subject
+  - Label/Email/attachments
+  - Label/Email/headers
   - Label/IP
   - Label/System
   - Label/URL
   - Label/User
+  - Label/Brand
+  - Label/Instance
   - id
   - created
   - modified
@@ -43,7 +49,7 @@ tasks:
   - owner
   - type
   - severity
-  - stage
+  - phase
   - status
   - details
   - score
@@ -52,7 +58,7 @@ tasks:
   type: regular
   task:
     id: 42aed86a-6e32-4ae9-8027-ee4c6280b9f5
-    version: 1
+    version: -1
     name: Auto-respond to phishing email
     description: Send an auto-response to the target telling them we are on it
     script: SendEmail
@@ -70,42 +76,42 @@ tasks:
   type: condition
   task:
     id: 3ebc40e3-46db-4f25-8b45-31a46b4ad004
-    version: 1
+    version: -1
     name: Do we have known bad URLs
     description: Check if we have known bad URLs
     script: CheckURLs
     issystemtask: true
   condition:
     "no":
-    - id: "9"
+    - id: "5"
       taskid: f6bfb9db-c44d-40ef-8f12-1cf328713344
       type: condition
       task:
         id: f6bfb9db-c44d-40ef-8f12-1cf328713344
-        version: 1
+        version: -1
         name: Check if we have known bad IPs
         script: CheckIPs
         issystemtask: true
       condition:
         "no":
-        - id: "10"
+        - id: "6"
           taskid: b62f132d-849b-490f-847a-15a6312a5b80
           type: condition
           task:
             id: b62f132d-849b-490f-847a-15a6312a5b80
-            version: 1
+            version: -1
             name: Check if we have known bad attachments
             description: Iterate on all attachments and check reputation
             script: BinaryReputationPy
             issystemtask: true
           condition:
             "no":
-            - id: "11"
+            - id: "7"
               taskid: e6b6ace8-da53-4aee-8318-47614ecf874c
               type: condition
               task:
                 id: e6b6ace8-da53-4aee-8318-47614ecf874c
-                version: 1
+                version: -1
                 name: Check with wildfire if attachments are bad
                 description: First, this will check if files are known and if not,
                   upload them to Wildfire and wait for the report for 15 min.
@@ -114,12 +120,12 @@ tasks:
               condition:
                 "no": []
                 "yes":
-                - id: "12"
+                - id: "8"
                   taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
                   type: regular
                   task:
                     id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-                    version: 6
+                    version: -1
                     name: Send email to user notifying them it's a malicious email
                     script: SendEmail
                     issystemtask: true
@@ -132,40 +138,40 @@ tasks:
                     cc: ""
                     subject: 'Re: Phishing Investigation - $name'
                     to: ${Label/Email/from}
-                - id: "13"
+                - id: "9"
                   taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
                   type: regular
                   task:
                     id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-                    version: 6
+                    version: -1
                     name: Find and delete malicious email
                     script: ExchangeFindAndDelete
                     issystemtask: true
-                - id: "14"
+                - id: "10"
                   taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
                   type: regular
                   task:
                     id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-                    version: 6
+                    version: -1
                     name: Search attachment using Carbon Black
                     script: BinarySearchPy
                     issystemtask: true
-                - id: "15"
+                - id: "11"
                   taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
                   type: regular
                   task:
                     id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-                    version: 6
+                    version: -1
                     name: Close the phishing investigation
                     script: CloseInvestigation
                     issystemtask: true
             "yes":
-            - id: "16"
+            - id: "12"
               taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
               type: regular
               task:
                 id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-                version: 6
+                version: -1
                 name: Send email to user notifying them it's a malicious email
                 script: SendEmail
                 issystemtask: true
@@ -179,42 +185,42 @@ tasks:
                 cc: ""
                 subject: 'Re: Phishing Investigation - $name'
                 to: ${Label/Email/from}
-            - id: "17"
+            - id: "13"
               taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
               type: regular
               task:
                 id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-                version: 6
+                version: -1
                 name: Find and delete malicious email
                 script: ExchangeFindAndDelete
                 issystemtask: true
-            - id: "18"
+            - id: "14"
               taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
               type: regular
               task:
                 id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-                version: 6
+                version: -1
                 name: Search attachment using Carbon Black
                 script: BinarySearchPy
                 issystemtask: true
-            - id: "19"
+            - id: "15"
               taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
               type: regular
               task:
                 id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-                version: 6
+                version: -1
                 name: Close the phishing investigation
                 script: CloseInvestigation
                 issystemtask: true
           results:
           - bad_hashes
         "yes":
-        - id: "20"
+        - id: "16"
           taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
           type: regular
           task:
             id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-            version: 6
+            version: -1
             name: Send email to user notifying them it's a malicious email
             script: SendEmail
             issystemtask: true
@@ -228,42 +234,42 @@ tasks:
             cc: ""
             subject: 'Re: Phishing Investigation - $name'
             to: ${Label/Email/from}
-        - id: "21"
+        - id: "17"
           taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
           type: regular
           task:
             id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-            version: 6
+            version: -1
             name: Find and delete malicious email
             script: ExchangeFindAndDelete
             issystemtask: true
-        - id: "22"
+        - id: "18"
           taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
           type: regular
           task:
             id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-            version: 6
+            version: -1
             name: Search attachment using Carbon Black
             script: BinarySearchPy
             issystemtask: true
-        - id: "23"
+        - id: "19"
           taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
           type: regular
           task:
             id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-            version: 6
+            version: -1
             name: Close the phishing investigation
             script: CloseInvestigation
             issystemtask: true
       results:
       - bad_ips
     "yes":
-    - id: "5"
+    - id: "20"
       taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
       type: regular
       task:
         id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-        version: 6
+        version: -1
         name: Send email to user notifying them it's a malicious email
         script: SendEmail
         issystemtask: true
@@ -277,30 +283,30 @@ tasks:
         cc: ""
         subject: 'Re: Phishing Investigation - $name'
         to: ${Label/Email/from}
-    - id: "6"
+    - id: "21"
       taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
       type: regular
       task:
         id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-        version: 6
+        version: -1
         name: Find and delete malicious email
         script: ExchangeFindAndDelete
         issystemtask: true
-    - id: "7"
+    - id: "22"
       taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
       type: regular
       task:
         id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-        version: 6
+        version: -1
         name: Search attachment using Carbon Black
         script: BinarySearchPy
         issystemtask: true
-    - id: "8"
+    - id: "23"
       taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
       type: regular
       task:
         id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-        version: 6
+        version: -1
         name: Close the phishing investigation
         script: CloseInvestigation
         issystemtask: true
@@ -311,7 +317,7 @@ tasks:
   type: regular
   task:
     id: 7f1be339-fd7c-41f6-849f-55ccce5c4bbc
-    version: 1
+    version: -1
     name: Check sender domain distance
     description: Check if the sender is trying to confuse the user with a domain that
       is very close to our domain
@@ -325,7 +331,7 @@ tasks:
   type: regular
   task:
     id: 5778ac35-8936-4170-8cf6-8cc09c98a300
-    version: 1
+    version: -1
     name: Manually inspect the email for anything suspicious
     description: Since automatic triage did not find anything wrong, please inspect
       it manually and see if something stands out
@@ -335,7 +341,7 @@ tasks:
   type: regular
   task:
     id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
-    version: 2
+    version: -1
     name: Assign and involve appropriate personnel
     description: 'Invite the relevant users for investigation - malware expert and
       network experts if needed. '
@@ -345,7 +351,7 @@ tasks:
   type: regular
   task:
     id: e76cfd73-35f3-4065-8e59-c37e365cd06c
-    version: 2
+    version: -1
     name: Assess severity
     description: 'Based on the end user affected, and other information assess and
       change the severity if needed. '
@@ -355,16 +361,15 @@ tasks:
   type: title
   task:
     id: 8577cc17-342c-4291-8918-611ca8adf6e5
-    version: 1
+    version: -1
     name: 'Investigation Step 1: Initial Inspection'
-    istitletask: true
     issystemtask: true
 - id: "29"
   taskid: cceb5cd4-a661-434d-87d8-24b9988877c4
   type: condition
   task:
     id: cceb5cd4-a661-434d-87d8-24b9988877c4
-    version: 1
+    version: -1
     name: Check if the hostname in the url is being misrepresented?
     description: |-
       See if the URL text versus the hostname shown are different by hovering
@@ -373,33 +378,33 @@ tasks:
     issystemtask: true
   condition:
     "no":
-    - id: "34"
+    - id: "30"
       taskid: 8715668a-d08d-4270-8260-09298a3a01e6
       type: regular
       task:
         id: 8715668a-d08d-4270-8260-09298a3a01e6
-        version: 1
+        version: -1
         name: Check sender email address
         script: CheckSenderPy
         issystemtask: true
-    - id: "35"
+    - id: "31"
       taskid: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
       type: condition
       task:
         id: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
-        version: 1
+        version: -1
         name: Is the sender name or email address identified as bad by threat feeds?
         description: 'Check the sender email and name against threat feed sources. '
         issystemtask: true
       condition:
         "no": []
         "yes":
-        - id: "36"
+        - id: "32"
           taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
           type: regular
           task:
             id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-            version: 6
+            version: -1
             name: Send email to user notifying them it's a malicious email
             script: SendEmail
             issystemtask: true
@@ -413,40 +418,40 @@ tasks:
             cc: ""
             subject: 'Re: Phishing Investigation - $name'
             to: ${Label/Email/from}
-        - id: "37"
+        - id: "33"
           taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
           type: regular
           task:
             id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-            version: 6
+            version: -1
             name: Find and delete malicious email
             script: ExchangeFindAndDelete
             issystemtask: true
-        - id: "38"
+        - id: "34"
           taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
           type: regular
           task:
             id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-            version: 6
+            version: -1
             name: Search attachment using Carbon Black
             script: BinarySearchPy
             issystemtask: true
-        - id: "39"
+        - id: "35"
           taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
           type: regular
           task:
             id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-            version: 6
+            version: -1
             name: Close the phishing investigation
             script: CloseInvestigation
             issystemtask: true
     "yes":
-    - id: "30"
+    - id: "36"
       taskid: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
       type: regular
       task:
         id: de7bf577-4b5d-4ee3-83b9-e026a25fa53e
-        version: 6
+        version: -1
         name: Send email to user notifying them it's a malicious email
         script: SendEmail
         issystemtask: true
@@ -460,30 +465,30 @@ tasks:
         cc: ""
         subject: 'Re: Phishing Investigation - $name'
         to: ${Label/Email/from}
-    - id: "31"
+    - id: "37"
       taskid: 9409a961-2ea3-4279-82af-ebf9740a5b5f
       type: regular
       task:
         id: 9409a961-2ea3-4279-82af-ebf9740a5b5f
-        version: 6
+        version: -1
         name: Find and delete malicious email
         script: ExchangeFindAndDelete
         issystemtask: true
-    - id: "32"
+    - id: "38"
       taskid: a898b05b-3a6e-4df8-832b-8917bf5fcae3
       type: regular
       task:
         id: a898b05b-3a6e-4df8-832b-8917bf5fcae3
-        version: 6
+        version: -1
         name: Search attachment using Carbon Black
         script: BinarySearchPy
         issystemtask: true
-    - id: "33"
+    - id: "39"
       taskid: f5df9520-2247-49a4-882f-7ec3726a9d2a
       type: regular
       task:
         id: f5df9520-2247-49a4-882f-7ec3726a9d2a
-        version: 6
+        version: -1
         name: Close the phishing investigation
         script: CloseInvestigation
         issystemtask: true
