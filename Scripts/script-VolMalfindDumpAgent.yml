@@ -27,7 +27,8 @@ script: |-
        }
      }
   }
-  rmdir(dumpdir);
+  if ('true' === args.dodelete)
+      rmdir(dumpdir);
 type: javascript
 tags:
 - volatility
@@ -36,6 +37,7 @@ system: true
 args:
 - name: memdump
   required: true
+  default: true
   description: Path to memory dump file on the system being used
 - name: pid
   required: true
@@ -43,6 +45,8 @@ args:
 - name: dumpdir
   required: true
   description: Path to directory in which to save dumped memory sections
+- name: dodelete
+  description: If "true", deletes the dir with the VAD dumps
 scripttarget: 1
 dependson: {}
 timeout: 0s
