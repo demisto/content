@@ -8,7 +8,7 @@ tasks:
   type: regular
   task:
     id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
-    version: 15
+    version: -1
     name: Set initial incident context
     script: IncidentToContext
   results:
