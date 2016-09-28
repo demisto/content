@@ -227,7 +227,7 @@
         },
         "legend": [
           { "name": "C2Communication", "fill": "#853732" },
-          { "name": "Default", "fill": "#3aabe8" },
+          { "name": "Unclassified", "fill": "#3aabe8" },
           { "name": "DeviceLost", "fill": "#5fa54a" },
           { "name": "Malware", "fill": "#4f8aab" },
           { "name": "Phishing", "fill": "#4f854a" },
@@ -384,7 +384,7 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "closed" ],
+        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "closed", "closeReason" ],
         "classes": "striped stackable small very compact"
       }
     }
