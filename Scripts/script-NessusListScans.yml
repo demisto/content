@@ -6,19 +6,6 @@ script: |
   from time import ctime
   res = []
 
-  def tblToMd(name, t):
-      mdResult = '### ' + name + '\n'
-      if t:
-          headers = t[0].keys()
-          mdResult += '|'.join(headers) + '\n'
-          mdResult += '|'.join(['-'] * len(headers)) + '\n'
-          for entry in t:
-              vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
-              mdResult += '|'.join(vals) + '\n'
-      else:
-          mdResult += '**No entries.**\n'
-      return mdResult
-
   dArgs = demisto.args()
   resScanList = demisto.executeCommand("scans-list", dArgs)
   try:
