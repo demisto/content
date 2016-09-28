@@ -10,9 +10,15 @@ script: |-
   # Iterate on all the labels and find hashes
   hashRe = re.compile(strHashRegex, re.I)
   hashes = set()
-  for t in demisto.incidents()[0]['labels']:
-      for h in hashRe.finditer(t['value']):
-          hashes.add(h.group(0))
+
+  inc = demisto.incidents()
+  if inc and 'labels' in inc[0]:
+      labels = inc[0]['labels']
+      if labels:
+          for t in labels:
+              for h in hashRe.finditer(t['value']):
+                  hashes.add(h.group(0))
+
   # Find hashes in the details
   for h in hashRe.finditer(demisto.incidents()[0]['details']):
       hashes.add(h.group(0))
@@ -27,6 +33,7 @@ script: |-
   badHashes = []
   res = []
   for h in hashes:
+      #demisto.log('Checking hash: ' + h)
       rep = demisto.executeCommand('file', {'file': h})
       for r in rep:
           if positiveFile(r):
