@@ -27,5 +27,7 @@ comment: Show templates of the scan editor including the UUIDs needed to create 
   new scan.
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - nessus-get-scans-editors
 timeout: 0s

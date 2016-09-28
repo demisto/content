@@ -38,5 +38,7 @@ args:
     "compliance",     "filters", "history", "hosts", "info", "notes", "remediations",
     "vulnerabilities"
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-details
 timeout: 0s

@@ -33,5 +33,7 @@ args:
   description: If specified, these targets will be scanned instead of the default.
     Value can be single host or of comma separated targets.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-launch
 timeout: 0s

@@ -27,5 +27,7 @@ args:
   description: Email address to look up. If omitted, will instead extract with regular
     expression from Incident Details, where the phishing email should be provided.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - pipl-search
 timeout: 0s

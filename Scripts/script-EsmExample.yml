@@ -26,5 +26,7 @@ args:
 - name: limit
   description: Query limit. If omitted, defaults to 100.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - search
 timeout: 0s

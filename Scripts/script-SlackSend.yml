@@ -26,5 +26,7 @@ args:
   default: true
   description: Message contents to send.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - slack-send
 timeout: 0s

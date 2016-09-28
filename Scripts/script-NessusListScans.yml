@@ -37,5 +37,7 @@ tags:
 comment: Display the list of folders and scans from Nessus.
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scans-list
 timeout: 0s
