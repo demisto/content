@@ -101,5 +101,8 @@ args:
   required: true
   description: The recipient of the email
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - url
+  - send-mail
 timeout: 0s

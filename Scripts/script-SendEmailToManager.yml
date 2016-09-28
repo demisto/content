@@ -82,5 +82,8 @@ args:
   description: The contents of the request from the manager. Will be added below the
     body. If none is provided, incident details will be taken.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - ad-search
+  - send-mail
 timeout: 0s

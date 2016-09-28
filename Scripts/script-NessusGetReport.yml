@@ -65,5 +65,9 @@ args:
   description: How long (in seconds) to wait for the result before giving up(Default
     is 5min)
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-export
+  - scan-export-status
+  - scan-report-download
 timeout: 0s

@@ -97,5 +97,10 @@ args:
   default: true
   description: The IP or domain to enrich
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - pt-enrichment
+  - pt-malware
+  - pt-osint
+  - pt-get-subdomains
 timeout: 0s

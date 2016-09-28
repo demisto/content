@@ -29,5 +29,7 @@ args:
   default: true
   description: The Scan ID as it appears in Scan List (e.g. 6)
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-details
 timeout: 0s

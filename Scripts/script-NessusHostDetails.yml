@@ -36,5 +36,7 @@ args:
   required: true
   description: The numerical id of the host to retrieve
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-host-details
 timeout: 0s

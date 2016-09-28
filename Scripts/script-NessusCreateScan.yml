@@ -70,5 +70,7 @@ args:
 - name: fileTargets
   description: The name of a file containing the list of targets to scan
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - scan-create
 timeout: 0s
