@@ -236,7 +236,7 @@
         },
         "legend": [
           { "name": "C2Communication", "fill": "#853732" },
-          { "name": "Default", "fill": "#3aabe8" },
+          { "name": "Unclassified", "fill": "#3aabe8" },
           { "name": "DeviceLost", "fill": "#5fa54a" },
           { "name": "Malware", "fill": "#4f8aab" },
           { "name": "Phishing", "fill": "#4f854a" },
