@@ -42,10 +42,7 @@ script: |-
       labels = {}
       for l in i['labels']:
           name = 'Label/' + l['type']
-          if demisto.get(labels, name):
-              labels[name] = labels[name].append(l['value'])
-          else:
-              labels[name] = [l['value']]
+          labels[name] = [l['value']] + (labels[name] if name in labels else [])
       for k, v in labels.iteritems():
           demisto.setContext(k, v if len(v) > 1 else v[0])
   demisto.results('Incident context set')
