@@ -8,6 +8,46 @@ description: Displays information for all events since 2016-06-17 and all observ
   limit .
 tasks:
 - id: "1"
+  taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
+  type: regular
+  task:
+    id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
+    version: -1
+    name: Set initial incident context
+    script: IncidentToContext
+  results:
+  - Label/Application
+  - Label/Database
+  - Label/Directory
+  - Label/Email
+  - Label/Email/cc
+  - Label/Email/from
+  - Label/Email/format
+  - Label/Email/html
+  - Label/Email/text
+  - Label/Email/subject
+  - Label/Email/attachments
+  - Label/Email/headers
+  - Label/IP
+  - Label/System
+  - Label/URL
+  - Label/User
+  - Label/Brand
+  - Label/Instance
+  - id
+  - created
+  - modified
+  - occurred
+  - dueDate
+  - name
+  - owner
+  - type
+  - severity
+  - phase
+  - status
+  - details
+  - score
+- id: "2"
   taskid: 14dd4695-41d2-454a-8d7c-f34141c06515
   type: regular
   task:
@@ -19,7 +59,7 @@ tasks:
     sensorId: "1985"
   results:
   - pwsensors
-- id: "2"
+- id: "3"
   taskid: 21ad611d-0cb2-47cc-8cb4-0cba4c3efe16
   type: regular
   task:
@@ -43,7 +83,7 @@ tasks:
     threatLevel: ""
   results:
   - pwevents
-- id: "3"
+- id: "4"
   taskid: bfd8cc23-fd89-48f3-880e-f1413937b612
   type: regular
   task:
@@ -53,7 +93,7 @@ tasks:
     script: PWEventPcapInfo
   scriptarguments:
     eventId: ${pwevents}
-- id: "4"
+- id: "5"
   taskid: 94419891-a100-4ee6-8ac6-674f6dee2619
   type: regular
   task:
@@ -67,7 +107,7 @@ tasks:
     eventId: ${pwevents}
     filename: ""
     waitms: "310000"
-- id: "5"
+- id: "6"
   taskid: c223a464-ea5b-4404-812e-d8d23509aa47
   type: regular
   task:
@@ -91,7 +131,7 @@ tasks:
     threatCategory: ""
     threatLevel: ""
     type: ""
-- id: "6"
+- id: "7"
   taskid: dc1a1307-cf45-4ae2-83c7-35176079d6e6
   type: regular
   task:
@@ -102,7 +142,7 @@ tasks:
   scriptarguments:
     id: ${pwobservations}
     sensorId: ${pwsensors}
-- id: "7"
+- id: "8"
   taskid: 05cb4857-2411-4af9-8069-16b5b1bbd93a
   type: regular
   task:
@@ -117,7 +157,7 @@ tasks:
     id: ${pwobservations}
     sensorId: ${pwsensors}
     waitms: "310000"
-- id: "8"
+- id: "9"
   taskid: d91a8bac-6a6f-4194-848c-bac3447787f2
   type: regular
   task:
@@ -125,7 +165,7 @@ tasks:
     version: -1
     name: PrintContext
     script: PrintContext
-- id: "9"
+- id: "10"
   taskid: 231e2da6-02d2-4d40-8a3c-44a4d6733a40
   type: regular
   task:

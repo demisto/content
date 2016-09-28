@@ -1,5 +1,5 @@
 id: playbook0
-version: 1
+version: -1
 name: Default
 description: Default playbook to help classify incoming incidents
 tasks:
@@ -8,7 +8,7 @@ tasks:
   type: regular
   task:
     id: ea9ee448-a157-44e5-8266-aba6173516e2
-    version: 1
+    version: -1
     name: ClassifyEmail
     script: DefaultIncidentClassifier
   scriptarguments:
@@ -19,7 +19,7 @@ tasks:
   type: condition
   task:
     id: f9de0883-2020-490e-85ed-fdfb66a2db87
-    version: 1
+    version: -1
     name: Is this a malware incident
     description: Did it involve a malicious binary running in your environment?
   condition:
@@ -30,7 +30,7 @@ tasks:
       type: regular
       task:
         id: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
@@ -40,7 +40,7 @@ tasks:
   type: condition
   task:
     id: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
-    version: 1
+    version: -1
     name: Is this a phishing incident?
     description: Was this incident created because a suspected email was received?
   condition:
@@ -51,7 +51,7 @@ tasks:
       type: regular
       task:
         id: 66553f46-579a-42af-8c02-341af3445ba3
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
@@ -61,7 +61,7 @@ tasks:
   type: condition
   task:
     id: 93f3f626-0b08-4257-8559-c2d3838cea13
-    version: 1
+    version: -1
     name: Is the incident a C2 communication incident?
     description: Was the incident opened because communication to a known bad actor
       was detected?
@@ -73,7 +73,7 @@ tasks:
       type: regular
       task:
         id: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
@@ -83,7 +83,7 @@ tasks:
   type: condition
   task:
     id: bd100974-58ce-4b53-8e32-c3930e215184
-    version: 1
+    version: -1
     name: Is the incident a ransomware incident?
   condition:
     "no": []
@@ -93,7 +93,7 @@ tasks:
       type: regular
       task:
         id: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
@@ -103,7 +103,7 @@ tasks:
   type: condition
   task:
     id: 6cab1990-09da-4e94-8d26-7a67571a6303
-    version: 1
+    version: -1
     name: Is the incident an unknown binary incident?
   condition:
     "no": []
@@ -113,7 +113,7 @@ tasks:
       type: regular
       task:
         id: bb222001-660e-418c-8849-25341bb74ddc
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
@@ -123,7 +123,7 @@ tasks:
   type: condition
   task:
     id: b4f728f9-7690-49ec-8214-216cf28d83e1
-    version: 1
+    version: -1
     name: Does the incident involve a lost or stolen device?
   condition:
     "no": []
@@ -133,7 +133,7 @@ tasks:
       type: regular
       task:
         id: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
-        version: 1
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
