@@ -2,14 +2,19 @@ commonfields:
   id: IsIntegrationAvailable
   version: -1
 name: IsIntegrationAvailable
-script: "brandName = demisto.get(demisto.args(), 'brandname')\r\nallInstances = demisto.getModules()\r\nbrandInstances
-  = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower()
-  == brandName.lower()]\r\nif brandInstances:\r\n    demisto.setContext('brandInstances',
-  brandInstances)\r\n    demisto.results('yes')\r\nelse:\r\n    demisto.results('no')\r\n"
+script: |
+  brandName = demisto.get(demisto.args(), 'brandname')
+  allInstances = demisto.getModules()
+  brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower()]
+  if brandInstances:
+      demisto.setContext('brandInstances', brandInstances)
+      demisto.results('yes')
+  else:
+      demisto.results('no')
 type: python
 tags:
 - infra
-sytsem: true
+system: true
 args:
 - name: brandname
   required: true
