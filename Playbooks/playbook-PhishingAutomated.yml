@@ -370,7 +370,7 @@ tasks:
   task:
     id: cceb5cd4-a661-434d-87d8-24b9988877c4
     version: -1
-    name: Check if the hostname in the url is being misrepresented?
+    name: Check if the hostname in urls is being misrepresented?
     description: |-
       See if the URL text versus the hostname shown are different by hovering
        over the link. Also carefully inspected the URL for spelling spoofing which
@@ -387,6 +387,8 @@ tasks:
         name: Check sender email address
         script: CheckSenderPy
         issystemtask: true
+      scriptarguments:
+        email: ""
     - id: "31"
       taskid: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
       type: condition

@@ -8,7 +8,7 @@ script: |-
   if 'email' in demisto.args():
       email = demisto.args()['email']
   else:
-      sender = re.search('From:.*href="mailto:(.*)"', demisto.incidents()[0]['details'], re.I)
+      sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
       if sender:
           email = sender.group(1)
   if email:

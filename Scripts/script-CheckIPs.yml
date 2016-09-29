@@ -48,7 +48,10 @@ script: |-
       demisto.setContext('bad_ips', currIps)
   else:
       res.append('no')
-      res.append('Only clean IPs found: \n' + '\n'.join(ips))
+      if ips:
+          res.append('Only clean IPs found: \n' + '\n'.join(ips))
+      else:
+          res.append('No IPs found within mail. Nothing to check.')
   demisto.results(res)
 type: python
 tags:
