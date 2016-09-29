@@ -1,0 +1,81 @@
+commonfields:
+  id: CuckooDisplayReport
+  version: -1
+name: CuckooDisplayReport
+script: |
+  res = []
+  BASIC_SECTIONS = ["info", "target", "signatures", "malscore", "strings", "static"]
+  showSections = demisto.get(demisto.args(), 'sections')
+  showSections = argToList(showSections) if showSections else BASIC_SECTIONS
+  try:
+      filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
+      with open(filePath, 'rb') as jsonFile:
+          report = json.load(jsonFile)
+
+      for s in showSections:
+          if s not in report:
+              res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Requested section ' + s + ' missing from report.'})
+              continue
+
+          if s == 'info':
+              t = report['info']
+              data = {k: formatCell(t[k]) for k in t}
+              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'signatures':
+              t = report['signatures']
+              data = [{k: formatCell(row[k]) for k in row} for row in t]
+              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'malscore':
+              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": {'Malscore': report['malscore']}})
+          elif s == 'strings':
+              strings = demisto.get(report, 'strings')
+              if strings:
+                  data = [{'Strings': s} for s in strings]
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'debug':
+              t = demisto.get(report, 'debug')
+              if t:
+                  if 'errors' in t and t['errors']:
+                      data = [{k: formatCell(row[k]) for k in row} for row in t['errors']]
+                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                  if 'log' in t and t['log']:
+                      data = [{k: formatCell(row[k]) for k in row} for row in t['log']]
+                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'statistics':
+              t = demisto.get(report, 'statistics')
+              if t and isinstance(t, list):
+                  for subtable in t:
+                      if t[subtable]:
+                          data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
+                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'behavior':
+              t = demisto.get(report, 'behavior')
+              if t and isinstance(t, list):
+                  for subtable in t:
+                      if t[subtable]:
+                          data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
+                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          else:
+              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": report[s]})
+
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) })
+  demisto.results(res)
+type: python
+tags:
+- cuckoo
+comment: Display the contents of a Cuckoo report file from a war room entry.
+system: true
+args:
+- name: reportentryid
+  required: true
+  default: true
+  description: ID of the war room entry containing the report file
+- name: sections
+  description: Sections to show (comma-separated). Sections are "info", "statistics",
+    "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression",
+    "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
+scripttarget: 0
+dependson: {}
+timeout: 0s
