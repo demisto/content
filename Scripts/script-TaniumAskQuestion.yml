@@ -120,7 +120,7 @@ args:
     left corner'
 - name: timeout
   description: Force Tanium to respond after x seconds (even if data was not collected
-    fully by Tanium)
+    fully by Tanium).  Default is 30 seconds.
 - name: pollfreq
   description: Frequency of polling Tanium for more answers. Default is each second.
 scripttarget: 0
