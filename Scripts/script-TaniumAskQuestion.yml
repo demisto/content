@@ -15,7 +15,8 @@ script: |-
    ...
   */
   // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
-  // timeout - seconds to wait on each iteration while waiting for the question's result
+  // timeout - seconds to wait while waiting for the question's result
+
   var table = {
       Type: 1,
       ContentsFormat: 'table',
@@ -32,21 +33,37 @@ script: |-
       // to confirm that all machines have answered
       var answers = res[0].Contents.result_infos.result_info.mr_passed;
       var expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
-      // Check the status 10 times, and wait 'timeout' seconds between each iteration
-      var iterToWait = 10;
-      var sec = 1;
+
+      var timeout = 1;
       if (args.timeout) {
-          sec = parseInt(args.timeout) || 1;
+          timeout = parseInt(args.timeout) || 30;
       }
-      while (answers !== expectedAnswers && iterToWait-- > 0) {
-          wait(sec);
+
+      var pollFreq = 1;
+      if (args.pollfreq)
+          pollFreq = parseInt(args.pollfreq) || 1; //seconds
+
+      var polled = false;
+      sec = 0;
+      do {
+          if (polled) {
+              sec += pollFreq;
+              wait(pollFreq);
+          }
           res = executeCommand('tn-result-info', args);
           if (res[0].Type === entryTypes.error) {
               return res[0];
           }
           answers = res[0].Contents.result_infos.result_info.mr_passed;
           expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
+          polled = true;
+      } while (answers !== expectedAnswers && sec < timeout);
+      if (sec >= timeout) {
+          log("Timed out. Results may be incomplete.");
+      } else {
+          log("Full results. It took " + sec + " seconds, polling at " + pollFreq + " second intervals.");
       }
+
       // Get question data (i.e. question result)
       var qDataRes = executeCommand('tn-result-data', args);
       if (!qDataRes[0].Contents.result_sets) {
@@ -93,6 +110,7 @@ comment: Send a request for a formatted result of a saved question. To receive 
 system: true
 args:
 - name: name
+  default: true
   description: Retrieve the question by its name. E.g. !TaniumAskQuestion name="Running
     Services"
 - name: id
@@ -103,6 +121,8 @@ args:
 - name: timeout
   description: Force Tanium to respond after x seconds (even if data was not collected
     fully by Tanium)
+- name: pollfreq
+  description: Frequency of polling Tanium for more answers. Default is each second.
 scripttarget: 0
 dependson:
   must:
