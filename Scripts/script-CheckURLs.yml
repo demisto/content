@@ -38,7 +38,10 @@ script: |-
       demisto.setContext('bad_urls', currUrls)
   else:
       res.append('no')
-      res.append('Only clean URLs found: \n' + '\n'.join(urls))
+      if urls:
+          res.append('Only clean URLs found: \n' + '\n'.join(urls))
+      else:
+          res.append('No URLs found within mail. Nothing to check.')
   demisto.results(res)
 type: python
 tags:
