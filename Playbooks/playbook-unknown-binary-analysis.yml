@@ -1,7 +1,8 @@
 id: playbook4
 version: -1
 name: Unknown Binary Analysis playbook
-description: This playbook provides tools for analyzing an unknown binary file discovered
+system: true
+description: This playbook describes steps for analyzing an unknown binary file discovered
   on our network.
 tasks:
 - id: "1"
@@ -53,6 +54,14 @@ tasks:
   - details
   - score
 - id: "3"
+  taskid: cb119c0d-7e32-494f-8d22-55cc6079aafb
+  type: regular
+  task:
+    id: cb119c0d-7e32-494f-8d22-55cc6079aafb
+    version: -1
+    name: Insert file info into context
+    description: Insert the file name and hashes into incident context
+- id: "4"
   taskid: c125cda9-bd9d-4e8c-8b25-b7d0171254f2
   type: regular
   task:
@@ -62,7 +71,7 @@ tasks:
     description: 1. Make sure that there is relevant information in the incident -
       either there is a file attached to the incident or there is a hash in the incident
     issystemtask: true
-- id: "4"
+- id: "5"
   taskid: cd85115e-4379-4319-853b-f518e9aa98bc
   type: regular
   task:
@@ -72,7 +81,7 @@ tasks:
     description: 'Based on the end user affected, and other information assess and
       change the severity if needed. '
     issystemtask: true
-- id: "5"
+- id: "6"
   taskid: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
   type: regular
   task:
@@ -82,61 +91,373 @@ tasks:
     description: 'Invite the relevant users for investigation - malware expert and
       network experts if needed. '
     issystemtask: true
-- id: "6"
-  taskid: 69b90798-0528-4dd8-8305-bc94bde2e380
+- id: "7"
+  taskid: d6202621-dfa9-4965-84c9-55a756486c4a
   type: title
   task:
-    id: 69b90798-0528-4dd8-8305-bc94bde2e380
+    id: d6202621-dfa9-4965-84c9-55a756486c4a
     version: -1
-    name: Investigation for the unknown binary
-    issystemtask: true
-- id: "7"
-  taskid: f054078c-7ba9-4d6d-8920-41cba166e996
-  type: regular
-  task:
-    id: f054078c-7ba9-4d6d-8920-41cba166e996
-    version: -1
-    name: Check Reputation of the binary
-    description: 'Perform various file reputation lookups (e.g. virustotal) for the
-      hash. '
-    script: FileReputation
-    issystemtask: true
+    name: Investigate the unknown binary
 - id: "8"
-  taskid: 16908eeb-ded8-4c67-8b00-109b06fce2cf
+  taskid: cedac9cc-2d0d-4e38-8361-27efa1c9f622
   type: regular
   task:
-    id: 16908eeb-ded8-4c67-8b00-109b06fce2cf
+    id: cedac9cc-2d0d-4e38-8361-27efa1c9f622
     version: -1
-    name: Search the hash of file across infrastructure
-    description: |
-      Perform search across the fleet using CB API.
-    script: CBSearch
-    issystemtask: true
+    name: Check if the file hash has appeared in past investigations
 - id: "9"
-  taskid: b1ce179a-cafb-42e0-8322-fa91379b6825
+  taskid: 05149df7-a98b-4058-8741-4a9aed269f41
   type: regular
   task:
-    id: b1ce179a-cafb-42e0-8322-fa91379b6825
+    id: 05149df7-a98b-4058-8741-4a9aed269f41
+    version: -1
+    name: Check file reputation for the hash
+    description: Use reputation services (e.g. VirusTotal) to retrieve reputation
+      for the hash
+    script: FileReputation
+  scriptarguments:
+    file: ${filehash}
+- id: "10"
+  taskid: e51b84e2-f466-4cb2-8c86-cae6f154472a
+  type: regular
+  task:
+    id: e51b84e2-f466-4cb2-8c86-cae6f154472a
     version: -1
     name: Detonate the file in a sandbox
-    description: "Integrate with wildfire to allow for executable detonation. \n"
-    script: WildfireReport
-    issystemtask: true
-- id: "10"
-  taskid: ba6946cc-e633-4fc0-8455-5454f668e080
-  type: regular
-  task:
-    id: ba6946cc-e633-4fc0-8455-5454f668e080
-    version: -1
-    name: Generate IOC/Yara for binary
-    description: 'Generate signatures (e.g. yara, IOC, etc) '
-    issystemtask: true
+    description: |
+      Send the executable to a sandbox such as Cuckoo, Wildfire, FireEye or Checkpoint Sandblast.
+    script: SandboxDetonateFile
 - id: "11"
-  taskid: 780b78e3-687e-44ea-83c5-95a138e30cad
+  taskid: 13431c24-316f-4010-8b6b-824e5c58d87d
   type: regular
   task:
-    id: 780b78e3-687e-44ea-83c5-95a138e30cad
+    id: 13431c24-316f-4010-8b6b-824e5c58d87d
     version: -1
-    name: Block the binary across systems
-    issystemtask: true
-system: true
+    name: Check if online sandboxes have analyzed this file hash
+    description: e.g. Malwr
+- id: "12"
+  taskid: 06d4aa8f-d58b-4bc6-844e-b079660f8936
+  type: condition
+  task:
+    id: 06d4aa8f-d58b-4bc6-844e-b079660f8936
+    version: -1
+    name: Is VirusTotal Private Account available?
+    script: IsIntegrationAvailable
+  condition:
+    "no": []
+    "yes":
+    - id: "13"
+      taskid: 3ce5b55d-d545-4d89-8dbb-755cab022f78
+      type: regular
+      task:
+        id: 3ce5b55d-d545-4d89-8dbb-755cab022f78
+        version: -1
+        name: Retrieve detailed file info and history from VirusTotal Private API
+  scriptarguments:
+    brandname: vtprivate
+  results:
+  - brandInstances
+- id: "14"
+  taskid: cbe1818e-6eee-413e-84a3-46be17dff671
+  type: regular
+  task:
+    id: cbe1818e-6eee-413e-84a3-46be17dff671
+    version: -1
+    name: Check if the filename is using a non-executable extension to trick users
+- id: "15"
+  taskid: 6b96e8f7-7084-4894-8c80-5edd1653a89b
+  type: regular
+  task:
+    id: 6b96e8f7-7084-4894-8c80-5edd1653a89b
+    version: -1
+    name: Check the file against our arsenal of YARA signatures
+- id: "16"
+  taskid: 079403c7-41e5-4d43-8c42-7a229a4c041a
+  type: regular
+  task:
+    id: 079403c7-41e5-4d43-8c42-7a229a4c041a
+    version: -1
+    name: Send the file hash to partner organizations and check if they saw it as
+      well
+- id: "17"
+  taskid: e7184875-4b18-4800-8cfb-ea200abc8d70
+  type: regular
+  task:
+    id: e7184875-4b18-4800-8cfb-ea200abc8d70
+    version: -1
+    name: View printable strings within the binary file
+    description: Clearly readable strings can provide extremely useful information.
+- id: "18"
+  taskid: 35e36032-d088-4487-830e-699ab538d24b
+  type: regular
+  task:
+    id: 35e36032-d088-4487-830e-699ab538d24b
+    version: -1
+    name: Check if all strings seem obfuscated / encrypted
+    description: If the file doesn't contain any cleartext strings, it is still not
+      necessarily malicious, but it should definitely raise the level of suspicion.
+- id: "19"
+  taskid: 3c9f7fb0-aeb8-4952-8710-54faebec11bc
+  type: regular
+  task:
+    id: 3c9f7fb0-aeb8-4952-8710-54faebec11bc
+    version: -1
+    name: Review entropy graph along the file
+- id: "20"
+  taskid: 9cfa8446-779f-4253-89ac-75ff00a74fcc
+  type: condition
+  task:
+    id: 9cfa8446-779f-4253-89ac-75ff00a74fcc
+    version: -1
+    name: Is the file a Windows binary? (Portable Executable format)
+  condition:
+    "no": []
+    "yes":
+    - id: "21"
+      taskid: fc4b56a4-a0f3-4680-8a6d-bea03103ab25
+      type: regular
+      task:
+        id: fc4b56a4-a0f3-4680-8a6d-bea03103ab25
+        version: -1
+        name: Show PE header information
+    - id: "22"
+      taskid: 65814c59-a0f5-41bb-872c-1a41c425a9ac
+      type: regular
+      task:
+        id: 65814c59-a0f5-41bb-872c-1a41c425a9ac
+        version: -1
+        name: Show PE heuristic information from PEStudio
+    - id: "23"
+      taskid: dc6f0bc8-763b-4bd7-8c8d-fc8977010912
+      type: regular
+      task:
+        id: dc6f0bc8-763b-4bd7-8c8d-fc8977010912
+        version: -1
+        name: Check for packers using PEiD
+    - id: "24"
+      taskid: 9bb2ea5b-9053-4bef-83d6-49d43b20b898
+      type: regular
+      task:
+        id: 9bb2ea5b-9053-4bef-83d6-49d43b20b898
+        version: -1
+        name: Check for packers using Detect-It-Easy
+    - id: "25"
+      taskid: 21637cfb-66a8-4762-87ef-94a498c96143
+      type: regular
+      task:
+        id: 21637cfb-66a8-4762-87ef-94a498c96143
+        version: -1
+        name: Check for strange section names and sizes
+    - id: "26"
+      taskid: 596424e1-b7cf-4481-8fbd-91e767174f32
+      type: regular
+      task:
+        id: 596424e1-b7cf-4481-8fbd-91e767174f32
+        version: -1
+        name: Review entropy for each section
+        description: This can help find encrypted/compressed PE sections
+    - id: "27"
+      taskid: 4caaf2a1-889b-4c52-86a0-3d729169f344
+      type: regular
+      task:
+        id: 4caaf2a1-889b-4c52-86a0-3d729169f344
+        version: -1
+        name: Look for strange number of imports
+    - id: "28"
+      taskid: b091942f-e137-4086-844f-eb3c12d41d74
+      type: regular
+      task:
+        id: b091942f-e137-4086-844f-eb3c12d41d74
+        version: -1
+        name: Look for suspicious imports
+    - id: "29"
+      taskid: b9c9b4a1-73f7-4ae5-800e-df06d0ad04c6
+      type: regular
+      task:
+        id: b9c9b4a1-73f7-4ae5-800e-df06d0ad04c6
+        version: -1
+        name: Look at PE resources
+        description: |-
+          Does the file contain another EXE as a resource? That may be evidence of a dropper.
+          If it contains images, icons or text resources, examine them to try and determine the binary's purpose.
+- id: "30"
+  taskid: 91a9375c-19c4-4159-8f4a-8854d1f34f42
+  type: condition
+  task:
+    id: 91a9375c-19c4-4159-8f4a-8854d1f34f42
+    version: -1
+    name: Is Carbon Black available?
+    script: IsIntegrationAvailable
+  condition:
+    "no": []
+    "yes":
+    - id: "31"
+      taskid: 54f71c62-6222-4685-8eca-b2daeca2066c
+      type: regular
+      task:
+        id: 54f71c62-6222-4685-8eca-b2daeca2066c
+        version: -1
+        name: Search Carbon Black for the file hash
+        script: CBSearch
+      scriptarguments:
+        query: hash:${filehash}
+        rows: ""
+        start: ""
+        type: ""
+  scriptarguments:
+    brandname: carbonblack
+  results:
+  - brandInstances
+- id: "32"
+  taskid: 8678130b-4ac8-4ecf-8175-1d81ec7341d3
+  type: condition
+  task:
+    id: 8678130b-4ac8-4ecf-8175-1d81ec7341d3
+    version: -1
+    name: Is Bit9 available?
+    script: IsIntegrationAvailable
+  condition:
+    "no": []
+    "yes":
+    - id: "33"
+      taskid: 8d36684b-18c0-4696-8b8d-ab3454103581
+      type: regular
+      task:
+        id: 8d36684b-18c0-4696-8b8d-ab3454103581
+        version: -1
+        name: Search for the hash across systems using Bit9
+    - id: "34"
+      taskid: 7874c956-fcb3-4035-8d5c-43f9336f0346
+      type: regular
+      task:
+        id: 7874c956-fcb3-4035-8d5c-43f9336f0346
+        version: -1
+        name: Check if the hash is included in any Bit9 rules
+  scriptarguments:
+    brandname: carbonblackprotection
+  results:
+  - brandInstances
+- id: "35"
+  taskid: 0da12bcf-318e-4f27-8f3b-f826c9277e17
+  type: title
+  task:
+    id: 0da12bcf-318e-4f27-8f3b-f826c9277e17
+    version: -1
+    name: 'Perform in-depth binary analysis (Optional) '
+- id: "36"
+  taskid: 12de2406-3abf-432b-833d-451b57b74c4c
+  type: regular
+  task:
+    id: 12de2406-3abf-432b-833d-451b57b74c4c
+    version: -1
+    name: Analyze the file in IDA Pro
+- id: "37"
+  taskid: 70a9a52d-723a-44a0-8722-88dcd60240e7
+  type: regular
+  task:
+    id: 70a9a52d-723a-44a0-8722-88dcd60240e7
+    version: -1
+    name: Debug the file in an isolated environment
+- id: "38"
+  taskid: 91f1c40a-4935-414e-8470-ef57029c64ab
+  type: regular
+  task:
+    id: 91f1c40a-4935-414e-8470-ef57029c64ab
+    version: -1
+    name: Look for anti-VM or anti-debugging tricks
+- id: "39"
+  taskid: 651be442-97d1-49d5-81bf-dab3ae2c7f1a
+  type: regular
+  task:
+    id: 651be442-97d1-49d5-81bf-dab3ae2c7f1a
+    version: -1
+    name: Look for packer / protector behavior
+- id: "40"
+  taskid: 1d822b14-5cc5-4a8d-8672-e5b921e0ea39
+  type: title
+  task:
+    id: 1d822b14-5cc5-4a8d-8672-e5b921e0ea39
+    version: -1
+    name: Respond
+- id: "41"
+  taskid: 37d93247-4dfc-4eb4-8b35-c6216dc7449e
+  type: condition
+  task:
+    id: 37d93247-4dfc-4eb4-8b35-c6216dc7449e
+    version: -1
+    name: Is the file malicious or otherwise undesirable?
+  condition:
+    "no":
+    - id: "42"
+      taskid: be8ea2cf-1364-4afd-8766-530147a91a80
+      type: condition
+      task:
+        id: be8ea2cf-1364-4afd-8766-530147a91a80
+        version: -1
+        name: Is Bit9 available?
+        script: IsIntegrationAvailable
+      condition:
+        "no": []
+        "yes":
+        - id: "43"
+          taskid: 5e8b8b6a-160a-4086-8c09-2d7767dcf3f6
+          type: regular
+          task:
+            id: 5e8b8b6a-160a-4086-8c09-2d7767dcf3f6
+            version: -1
+            name: Allow the hash across systems using Bit9
+            script: CBPApproveHash
+          scriptarguments:
+            hash: ${filehash}
+      scriptarguments:
+        brandname: carbonblackprotection
+      results:
+      - brandInstances
+    "yes":
+    - id: "44"
+      taskid: dcb8bb29-0d0e-41e0-8b2f-5dc32b30d8e6
+      type: condition
+      task:
+        id: dcb8bb29-0d0e-41e0-8b2f-5dc32b30d8e6
+        version: -1
+        name: Is Bit9 available?
+        script: IsIntegrationAvailable
+      condition:
+        "no": []
+        "yes":
+        - id: "45"
+          taskid: 7a5a74bd-ae0f-4221-84ba-0e98750d86b4
+          type: regular
+          task:
+            id: 7a5a74bd-ae0f-4221-84ba-0e98750d86b4
+            version: -1
+            name: Block the hash across systems using Bit9
+            script: CBPBanHash
+          scriptarguments:
+            hash: ${filehash}
+      scriptarguments:
+        brandname: carbonblackprotection
+      results:
+      - brandInstances
+    - id: "46"
+      taskid: fe5f8eb0-ff8e-4029-86ec-5b2db31dd0eb
+      type: regular
+      task:
+        id: fe5f8eb0-ff8e-4029-86ec-5b2db31dd0eb
+        version: -1
+        name: Generate OpenIOC/Yara for binary
+        description: 'Generate signatures (e.g. yara, IOC, etc) '
+    - id: "47"
+      taskid: 509ea08a-e919-481c-8134-21c9319b668f
+      type: regular
+      task:
+        id: 509ea08a-e919-481c-8134-21c9319b668f
+        version: -1
+        name: Deploy the generated IoC(s) to any relevant controls
+    - id: "48"
+      taskid: 5730847c-c3ee-46bc-8b25-d0b8d8e27cfe
+      type: regular
+      task:
+        id: 5730847c-c3ee-46bc-8b25-d0b8d8e27cfe
+        version: -1
+        name: Update partner organizations with our conclusion and share IoCs
