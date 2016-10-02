@@ -1,0 +1,117 @@
+commonfields:
+  id: SandboxDetonateFile
+  version: -1
+name: SandboxDetonateFile
+script: |
+  from time import sleep
+  res = []
+  timeout = 600
+  if 'timeout' in demisto.args():
+      timeout = int(demisto.args()['timeout'])
+  interval = 10
+  if 'interval' in demisto.args():
+      interval = int(demisto.args()['interval'])
+
+  cuckooDone = False
+  wildfireDone = False
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'wildfire'})[0]['Contents'] != 'yes':
+      wildfireDone = True
+      demisto.log('Wildfire not available.')
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'cuckoo'})[0]['Contents'] != 'yes':
+      cuckooDone = True
+      demisto.log('Cuckoo not available.')
+
+  # Get the file's hash
+  resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
+  if isError(resFileEntry[0]):
+      demisto.results(resFileEntry)
+      sys.exit()
+  else:
+      fileMd5 = demisto.get(resFileEntry[0], 'FileMetadata.md5')
+
+  demisto.log('File hash is ' + fileMd5)
+
+  ############ Hash check stage ############
+  # Wildfire
+  if not wildfireDone:
+      resCheckWildfire = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
+      if isError(resCheckWildfire[0]) or resCheckWildfire[0]['Contents'] != 'failed': # Error occurred or hash was already found, same reaction
+          res += resCheckWildfire
+          wildfireDone = True
+
+
+  ############ Submit stage ############
+  # Wildfire
+  if not wildfireDone:
+      res += demisto.executeCommand("WildfireUpload", {"upload": demisto.args()["entryID"]})
+  # Cuckoo
+  ckTaskId = -1
+  if not cuckooDone:
+      resCk = demisto.executeCommand("CuckooDetonateFile", {"entryID": demisto.args()["entryID"]})
+
+      if not isError(resCk[0]):
+          ckTaskId = resCk[0]['Contents'].split(' ')[-1]
+      res += resCk
+
+  ############ Poll stage ############
+  sec = 0
+  while (sec < timeout):
+      # Wildfire
+      if not wildfireDone:
+          resWildfireReport = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
+          if not resWildfireReport[0]['Contents'] == 'failed':
+              wildfireDone = True
+              res += resWildfireReport
+
+      # Cuckoo
+      if not cuckooDone:
+          resCS = demisto.executeCommand("CuckooTaskStatus", {"taskID": ckTaskId})
+          if isError(resCS[0]):
+              res += resCS
+          else:
+              if demisto.get(resCS[0], 'Contents.task.status') not in ['pending', 'running']:
+                  cuckooDone = True
+                  errors = demisto.get(resCS[0], 'Contents.task.errors')
+                  if errors:
+                      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Cuckoo returned errors:\n' + '\n'.join(errors) } )
+                  # Try to get the report even if errors occurred, in case errors were not fatal
+                  res += demisto.executeCommand("CuckooGetReport", {"taskID": ckTaskId})
+
+      if wildfireDone and cuckooDone:
+          break
+      sec += interval
+      sleep(interval)
+
+  if sec >= timeout:
+      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Timeout reached. Partial results returned.' } )
+  if not wildfireDone:
+      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from Wildfire (may be due to timeout).' } )
+  if not cuckooDone:
+      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from Cuckoo (may be due to timeout).' } )
+  demisto.results(res)
+type: python
+tags:
+- cuckoo
+- wildfire
+- fireeye
+- task
+- sandbox
+- enhancement
+- fireeye
+comment: Detonate the file in available sandboxes.
+args:
+- name: entryID
+  required: true
+  default: true
+  description: ID of the entry containing the file to detonate.
+- name: timeout
+  description: Timeout in seconds. Default is 10 minutes.
+- name: interval
+  description: Interval to poll for results. Default is 10 seconds.
+scripttarget: 0
+dependson:
+  should:
+  - wildfire-report
+  - ck-report
+system: true
+timeout: 0s
