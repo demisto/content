@@ -1,7 +1,10 @@
 id: playbook5
 version: -1
 name: Phishing Playbook - Automated
-description: This is an automated phishing playbook.
+description: "This is an automated playbook to investigate suspected Phishing attempts.\nIt
+  picks up the required information from the incident metadata as created by the mail
+  listener.\nLabels:\n-Email/from: Email address of the user targeted by the suspected
+  phishing attempt, who reported the email by forwarding it\n- "
 tags:
 - Phishing
 tasks:

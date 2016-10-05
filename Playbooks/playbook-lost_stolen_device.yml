@@ -1,8 +1,11 @@
 id: playbook8
 version: -1
 name: Lost / Stolen Device Playbook
-description: A playbook to follow when responding to incidents of device theft / loss.
 system: true
+description: |-
+  Initial incident details should be the name of the reporting person, or ID of the SIEM alert/incident, and description of the lost device.
+  Labels:
+   - User: the owner of the device
 tasks:
 - id: "1"
   taskid: 850c4685-415d-4625-82b4-5a71add73ddf
@@ -18,9 +21,9 @@ tasks:
     id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
     version: -1
     name: Notify and involve appropriate personnel
-    description: "Depending on regulatory, compliance and legal requirements or company
+    description: Depending on regulatory, compliance and legal requirements or company
       procedure, you may need to involve the legal department, PR department, upper
-      management, the employee's immediate supervisor and/or other personnel."
+      management, the employee's immediate supervisor and/or other personnel.
 - id: "3"
   taskid: d58b1e4d-b2a0-4122-8aa0-63f4adc10edc
   type: condition
@@ -55,22 +58,28 @@ tasks:
             version: -1
             name: Interview reporter of the incident and document their full account
         "yes": []
-
 - id: "7"
+  taskid: e0e04bad-e371-4be7-8056-974a97634a17
+  type: regular
+  task:
+    id: e0e04bad-e371-4be7-8056-974a97634a17
+    version: -1
+    name: Retrieve equipment information for the device from ERP software
+- id: "8"
   taskid: 2b1a676a-d81d-40fd-8a66-c2617d9b3e01
   type: regular
   task:
     id: 2b1a676a-d81d-40fd-8a66-c2617d9b3e01
     version: -1
     name: Retrieve device profile from IT asset management software
-- id: "8"
+- id: "9"
   taskid: 85c2c84c-5a80-47e8-8875-a8f5b6ea230a
   type: regular
   task:
     id: 85c2c84c-5a80-47e8-8875-a8f5b6ea230a
     version: -1
     name: Retrieve employee information of the device's owner from HR software
-- id: "9"
+- id: "10"
   taskid: b7c1f351-0611-4f74-8106-a3ba3d8400cb
   type: regular
   task:
@@ -83,27 +92,26 @@ tasks:
       Do they know if it was stolen deliberately?
       If so, do they know anything at all about the perpetrator?
       To their knowledge, was the security of the device fully enforced at the time? Do they admit to modifying the security configuration in any way for their convenience? (Removing the screen lock, shutting down anti-malware solutions, etc.)
-- id: "10"
+- id: "11"
   taskid: 6191b9a6-ed52-461d-8d38-f6305b90d848
   type: regular
   task:
     id: 6191b9a6-ed52-461d-8d38-f6305b90d848
     version: -1
     name: Report theft of device to authorities (including serial numbers)
-- id: "11"
-  taskid: e0e04bad-e371-4be7-8056-974a97634a17
-  type: regular
-  task:
-    id: e0e04bad-e371-4be7-8056-974a97634a17
-    version: -1
-    name: Retrieve equipment information for the device from ERP software
 - id: "12"
   taskid: 6ffc4cdf-0ae8-446a-8fef-f35f15ef9b2d
   type: regular
   task:
     id: 6ffc4cdf-0ae8-446a-8fef-f35f15ef9b2d
     version: -1
-    name: Assess severity by reviewing purpose of device and contents of latest backup
+    name: Assess severity by reviewing device details and contents of latest backup
+    description: |-
+      What was the purpose of device?
+      How sensitive is the data stored on it?
+      What is the extent of access to corporate resources available to the device?
+      How well protected was the device? (Screen lock, encryption, etc.)
+      Did the device include any unique business data that is not backed up? How much and how important is this data?
 - id: "13"
   taskid: 6adc9ae9-f940-44e2-82e5-062b6e4aadad
   type: title

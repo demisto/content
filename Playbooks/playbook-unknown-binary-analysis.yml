@@ -2,8 +2,11 @@ id: playbook4
 version: -1
 name: Unknown Binary Analysis playbook
 system: true
-description: This playbook describes steps for analyzing an unknown binary file discovered
-  on our network.
+description: |-
+  This playbook describes steps for analyzing an unknown binary file discovered on our network.
+  The file to investigate should be included when opening the incident. If the file cannot be acquired, some tasks can still be accomplished given only the hash in the "Hash" label.
+  Labels:
+  - Hash (optional, used if no file attached)
 tasks:
 - id: "1"
   taskid: f61f3880-e5f6-4a41-8af8-3349e3ebffff
