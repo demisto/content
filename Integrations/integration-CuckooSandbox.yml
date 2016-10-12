@@ -210,6 +210,8 @@ script:
     - name: memory
       description: (optional) - enable the creation of a full memory dump of the analysis
         machine
+    - name: options
+      description: ' (optional) - options to pass to the analysis package'
     description: commands.server.ckFile.description
   - name: ck-report
     arguments:
