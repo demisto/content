@@ -126,14 +126,15 @@ script:
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         delete qArgs.entryID;
-        qArgs.Method ='POST';
-        qArgs.Username = username;
-        qArgs.Password = password;
         res = httpMultipart(
             url,
             fileParam,
+            { // HTTP Request Headers
+                Method: 'POST',
+                Username: username,
+                Password: password
+            },
             qArgs,
-            null,
             qParams['insecure']
         );
         return parseResponse(res);
