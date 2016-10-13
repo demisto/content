@@ -220,6 +220,7 @@ script: |-
           mdResult += '**No entries.**\n'
       return mdResult
 
+
   def sectionsToMarkdown(root):
       mdResult = ''
       for section in root:
@@ -229,6 +230,15 @@ script: |-
           data = [{k: formatCell(row[k]) for k in row} for row in data]
           mdResult += tblToMd(section, data)
       return mdResult
+
+
+  def fileResult(filename, data):
+      from uuid import uuid4
+      temp = str(uuid4())
+      with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+          f.write(data)
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+
 type: python
 tags:
 - infra
