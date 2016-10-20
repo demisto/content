@@ -26,7 +26,7 @@ script:
   script: |-
     var username = params.credentials.identifier;
     var password = params.credentials.password;
-    var server = params.server;
+    var server = params.server + ':' + params.port;
     var insecure = params.insecure;
 
     var sendRequest = function(method, url, queryName, body) {
@@ -44,24 +44,28 @@ script:
                 insecure
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to ' + (queryName || 'get main page') + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body.slice(5) + '.';
+            throw 'Failed to ' + (queryName || 'get main page') + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        return JSON.parse(res.Body.slice(5));
+        return res.Body;
+    }
+
+    var sendRequestAndParse = function(method, url, queryName, body) {
+        JSON.parse(sendRequest(method, url, queryName, body).slice(5));
     }
 
     switch (command) {
         case 'test-module':
             return sendRequest('GET', server) ? 'ok' : 'No body in response';
         case 'grr_set_flows':
-            return sendRequest('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
+            return sendRequestAndParse('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
         case 'grr_get_files':
-            return sendRequest('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
+            return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
         case 'grr_get_hunts':
-            return sendRequest('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
+            return sendRequestAndParse('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
         case 'grr_get_hunt':
-            return sendRequest('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
+            return sendRequestAndParse('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
         case 'grr_set_hunts':
-            return sendRequest('POST', server + '/api/hunts', 'get hunts', JSON.stringify(args));
+            return sendRequestAndParse('POST', server + '/api/hunts', 'get hunts', JSON.stringify(args));
         case 'grr_get_flows':
             var urlArgs = {};
             if (args.count) {
@@ -70,7 +74,7 @@ script:
             if (args.offset) {
                 urlArgs.offset = args.offset;
             }
-            return sendRequest('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow');
+            return sendRequestAndParse('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow');
     }
   type: javascript
   commands:
