@@ -64,6 +64,7 @@ script:
         case 'grr_set_flows':
             return sendRequestAndParse('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
         case 'grr_get_files':
+            args.paths = JSON.parse(args.paths);
             return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
         case 'grr_get_hunts':
             return sendRequestAndParse('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
