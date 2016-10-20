@@ -16,7 +16,7 @@ configuration:
   name: port
   defaultvalue: "8000"
   type: 0
-  required: true
+  required: false
 - display: Credentials
   name: credentials
   defaultvalue: ""
