@@ -61,7 +61,7 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        return res.Body;
+        return JSON.parse(res.Body);
     }
 
     var getOffenses = function(filter, fields, range) {
