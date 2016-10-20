@@ -71,7 +71,7 @@ script:
         case 'grr_get_hunt':
             return sendRequestAndParse('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
         case 'grr_set_hunts':
-            return sendRequestAndParse('POST', server + '/api/hunts', 'get hunts', JSON.stringify(args));
+            return sendRequestAndParse('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args));
         case 'grr_get_flows':
             var urlArgs = {};
             if (args.count) {
