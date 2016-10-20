@@ -12,6 +12,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Port
+  name: port
+  defaultvalue: "8000"
+  type: 0
+  required: true
 - display: Credentials
   name: credentials
   defaultvalue: ""
@@ -20,7 +25,7 @@ configuration:
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
-  type: 8
+  type: 0
   required: false
 script:
   script: |-
