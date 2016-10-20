@@ -55,7 +55,7 @@ script:
     }
 
     var sendRequestAndParse = function(method, url, queryName, body) {
-        JSON.parse(sendRequest(method, url, queryName, body).slice(5));
+        return JSON.parse(sendRequest(method, url, queryName, body).slice(5));
     }
 
     switch (command) {
