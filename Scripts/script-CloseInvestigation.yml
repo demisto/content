@@ -5,7 +5,7 @@ name: CloseInvestigation
 script: |-
   dArgs = {}
   if demisto.get(demisto.args(), 'reason'):
-      dArgs['reason_What-happened'] = demisto.args()['reason']
+      dArgs['closeReason'] = demisto.args()['reason']
   demisto.results(demisto.executeCommand('closeInvestigation', dArgs))
 type: python
 tags:
