@@ -1,6 +1,6 @@
 commonfields:
   id: IncidentSet
-  version: 1
+  version: -1
 name: IncidentSet
 script: |-
   res = []
@@ -26,6 +26,10 @@ script: |-
       dArgs['type'] = inArgs['type']
       if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
           demisto.executeCommand("setPlaybookAccordingToType", {'type': inArgs['type']})
+  if demisto.get(inArgs, 'customFieldName'):
+      v = demisto.get(inArgs, 'customFieldValue')
+      if v:
+          dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
   if dArgs:
       res += demisto.executeCommand("setIncident", dArgs)
   demisto.results(res)
@@ -59,6 +63,10 @@ args:
 - name: addLabels
   description: 'Add to the list of labels for the incident. Labels expected format
     is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+- name: customFieldName
+  description: Name for a custom field you want to change
+- name: customFieldValue
+  description: The value you want to set for the field specified in customFieldName
 scripttarget: 0
 dependson: {}
 timeout: 0s
