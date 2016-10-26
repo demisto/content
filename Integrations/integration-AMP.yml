@@ -29,21 +29,18 @@ script:
     var server = params.server;
     var insecure = params.insecure;
 
-    var encodeArgs = function(command, args) {
-        var query = '';
+    var fixArgs = function(command, args) {
+        var newArgs = {};
         if (args) {
             var keys = Object.keys(args);
-            if (keys.length > 0) {
-                query = '?';
-                for (var i = 0; i<keys.length; i++) {
-                    if (i !== 0) {
-                        query += '&';
-                    }
-                    query += encodeURIComponent(fixBracketsArgs(command, keys[i])) + '=' + encodeURIComponent(args[keys[i]]);
+            for (var i = 0; i<keys.length; i++) {
+                if (i !== 0) {
+                    query += '&';
                 }
+                newArgs[fixBracketsArgs(command, keys[i])] = args[keys[i]];
             }
         }
-        return query;
+        return newArgs;
     };
 
     var sendRequest = function(method, url, queryName, body) {
@@ -179,14 +176,14 @@ script:
 
     switch (command) {
         case 'test-module':
-            return 'ok';
+            command = 'amp_get_version';
         default:
             var method = methodDict[command];
             var url = getURL(command, args);
             var query = '';
             var body = '';
             if (method === 'GET') {
-                query = encodeArgs(command, args);
+                query = encodeToURLQuery(fixArgs(command, args));
             } else {
                 body = encodeBody(args);
             }
