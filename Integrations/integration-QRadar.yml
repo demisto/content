@@ -112,7 +112,7 @@ script:
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var id = lastRun && lastRun.id ? lastRun.id : 0;
-            var res = JSON.parse(getOffenses('status=OPEN AND id>' + id));
+            var res = getOffenses('status=OPEN AND id>' + id);
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
