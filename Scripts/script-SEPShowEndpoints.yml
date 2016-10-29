@@ -1,0 +1,35 @@
+commonfields:
+  id: SEPShowEndpoints
+  version: -1
+name: SEPShowEndpoints
+script: |
+  dArgs = {}
+  updatedSince = demisto.get(demisto.args(), 'updatedSince')
+  if updatedSince:
+      dArgs['lastUpdate'] = updatedSince
+  resp = demisto.executeCommand('sep-computers', dArgs)
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], 'Contents.content')
+      data = [{k: formatCell(row[k]) for k in row} for row in data]
+      if data:
+          demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data} )
+      else:
+          demisto.results('No results.')
+type: python
+tags:
+- sep
+- symantec
+comment: Query Symantec Endpoint Protection Manager for details about endpoints
+system: true
+args:
+- name: updatedSince
+  default: true
+  description: (Optional) Only show endpoints with lastUpdate later than this. Format
+    is a numerical int64 timestamp. If omitted or set to 0 - gets all the results.
+scripttarget: 0
+dependson:
+  must:
+  - sep-computers
+timeout: 0s
