@@ -57,6 +57,7 @@ script:
         'vec-settings':'/api/settings',
         'vec-triage':'/api/rules',
         'vec-sensors':'/api/sensors',
+        'vec-health':'/api/health/',
     }
 
     var createIncidentFromDetection = function(incident) {
