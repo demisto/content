@@ -663,4 +663,4 @@ script:
       description: Protect admin areas of joomla | wordpress | phpBB
     description: Use this operation to configure Login Protect on wordpress | joomla
       | phpbb admin areas
-  system: true
+system: true
