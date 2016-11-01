@@ -1,0 +1,25 @@
+commonfields:
+  id: AreValuesEqual
+  version: -1
+name: AreValuesEqual
+script: |
+  answer = 'yes' if demisto.args()['left'] == demisto.args()['right'] else 'no'
+  demisto.setContext('AreValuesEqual', answer)
+  demisto.results(answer)
+type: python
+tags:
+- server
+- util
+system: true
+args:
+- name: left
+  required: true
+  default: true
+  description: First value for comparison
+- name: right
+  required: true
+  description: Second value for comparison
+scripttarget: 0
+comment: Check whether the values provided in arguments are equal.
+dependson: {}
+timeout: 0s
