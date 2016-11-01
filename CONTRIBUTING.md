@@ -12,48 +12,57 @@ To add a new playbook, or modify and enhance an existing playbook - just open a 
 
 ## Contributing Scripts
 
-In addition to the actual scripts in a Py or JS file, you need to add a small section in the scripts.json file, with the script's display name, description, arguments and other metadata.
-Here is a description of scripts.json fields and structure:
+Each of our scripts comes as a self-contained yml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
 
-``` json
-{
-            "name": "RemoteExec",
-            "script": "RemoteExec.js",
-            "type": "javascript",
-            "tags": ["endpoint"],
-            "arguments": [
-                {
-                    "name": "system",
-                    "description": "Name of system on which to run the command",
-                    "required": true,
-                    "default": false
-                },
-                {
-                    "name": "cmd",
-                    "description": "Command to run",
-                    "required": true,
-                    "default": false
-                }
-            ],
-            "comment": "Execute a command on a remote machine (without installing a D2 agent)",
-            "system": true,
-            "scriptTarget": 0,
-            "dependsOn": { "must": ["ssh"] }
-},
+Here is a description of the script yml format's fields and structure:
+
+``` yaml
+commonfields:
+  id: MyScript
+  version: 1
+name: MyScript
+script: |-
+  //Execute a command on a remote machine
+  var entries = executeCommand("ssh", args);
+  if (entries[0].Contents === null) {
+      output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Failed to execute remote command."});
+  } else {
+      return entries[0];     
+  }
+  return output;
+type: javascript
+tags:
+- endpoint
+- ssh
+comment: Execute a command via ssh
+args:
+- name: system
+  required: true
+  description: Name of system on which to run the command
+- name: cmd
+  required: true
+  description: Command to run
+scripttarget: 0
+dependson:
+  must:
+  - ssh
+system: false
+timeout: 0s
 ```
 
+* id: internal id for the script - make sure it doesn't conflict with an existing script
 * name: Name for the script, that will be displayed in the Automation page
-* script: The name of the file containing the script itself
-* type: javascript or python
+* script: The script itself in Python or Javascript
+* type: `javascript` or `python`
 * tags: array of tags of the script
+* comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
 * arguments: array of script arguments
 	* name: argument name
     * description: argument description - appears in automation page and in the CLI autocomplete
     * required: Whether the user must provide this argument to run the script - yes for mandatory, no for optional
     * default: (Only one "yes" per script) Argument can be provided without its name - e.g. `!whois google.com` instead of `!whois domain=google.com`
-* comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
 * system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "no" for scripts user creates from within the product.
-* scriptTarget: 0 for server script, 1 for agent script (to be run on endpoint)
+* scriptTarget: 0 for server script, 1 for agent script (to be run by the Demisto d2 dissolvable agent on the endpoint side)
 * dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
