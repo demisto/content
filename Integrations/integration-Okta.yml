@@ -43,9 +43,9 @@ script:
         'zipCode',
         'countryCode',
         'postalAddress',
-        'preferredLanguage    ',
+        'preferredLanguage',
         'locale',
-        'timezone    ',
+        'timezone',
         'userType',
         'employeeNumber',
         'costCenter',
@@ -379,12 +379,12 @@ script:
       description: Country name component of user’s address (country)
     - name: postalAddress
       description: Mailing address component of user’s address
-    - name: "preferredLanguage\t"
+    - name: "preferredLanguage"
       description: User’s preferred written or spoken languages
     - name: locale
       description: User’s default location for purposes of localizing items such as
         currency, date time format, numerical representations, etc.
-    - name: "timezone\t"
+    - name: "timezone"
       description: User’s time zone
     - name: userType
       description: Used to identify the organization to user relationship such as
