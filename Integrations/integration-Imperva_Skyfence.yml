@@ -1,0 +1,171 @@
+commonfields:
+  id: Imperva Skyfence
+  version: -1
+name: Imperva Skyfence
+display: Imperva Skyfence
+category: End point
+image: data:image/png;base64,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
+description: The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broker
+  (CASB) that provides visibility and control over sanctioned and unsanctioned cloud
+  apps to enable their safe and productive use.
+detaileddescription: |-
+  All API requests must be authenticated. The authentication model is OAuth 2.0.
+  Client applications must initially perform a token request to receive an authentication token,
+  and subsequently use the obtained token in all following requests.
+  The token request must itself be authenticated by a customer ID and password, here called Client ID and Client Secret. You need to manually obtain these credentials in the Skyfence web interface, at Settings > API.
+  Note: After the Client Secret has been displayed once, it no longer appears in the Skyfence web interface.
+configuration:
+- display: Server URL (192.168.56.101)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Client ID
+  name: clientId
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Client Secret
+  name: clientSecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Insecure (over HTTP)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |-
+    if (typeof params.insecure === 'string' || !params.insecure) {
+        params.insecure = params.insecure === 'true' ? true : false;
+    }
+
+    var fixUrl = function(url) {
+        fixedUrl = '';
+        if (url.indexOf("http") !== 0) {
+            if (params.insecure) {
+                fixedUrl = 'http://' + url;
+            } else {
+                fixedUrl = 'https://' + url;
+            }
+        }
+
+        return fixedUrl;
+    };
+
+    var url = fixUrl(params.url);
+
+    var login = function(params) {
+        var fullUrl = fixUrl(params.url) + '/cm/api/v1.0/oauth2/token';
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Body: {
+                    grant_type: 'client_credentials',
+                    client_id: params.clientId,
+                    client_secret: params.clientSecret
+                }
+            },
+            params.insecure
+        );
+
+        if ((res.StatusCode !== 200 && res.StatusCode !== 201) || !!res.Body.access_token) {
+            throw 'Failed to login to <' + fullUrl + '>' + '. Please check server url and crendetials. Error: ' + res.Body;
+        }
+
+        return res;
+    };
+
+    var listEndpoints = function(url, token) {
+        var fullUrl = fixUrl(url) + '/cm/api/v1.0/endpoint';
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {'Authorization': ['Bearer ' + token]}
+            },
+            params.insecure
+        );
+
+        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
+            throw 'Failed to list endpoints at url: <' + fullUrl + '>' + '. Error: ' + res.Body;
+        }
+
+        return res;
+    };
+
+    var setEndpointStatus = function(url, token, endpointId, action) {
+        // validate action
+        // action can be "enroll" or "revoke"
+        if (action !== 'enroll' && action !== 'revoke') {
+            throw 'action must be "enroll" or "revoke"!';
+        }
+
+        var fullUrl = fixUrl(url) + '/cm/api/v1.0/endpoint/' + endpointId;
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {'Authorization': ['Bearer ' + token]},
+                Body: {
+                    action: action
+                }
+            },
+            params.insecure
+        );
+
+        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
+            throw 'Failed to set endpoint <' + endpointId + '> status to ' + action + ' at url: <' + fullUrl + '>' + '. Error: ' + res.Body;
+        }
+
+        return res;
+    };
+
+    switch(command) {
+        case 'test-module':
+            login(params);
+            return true;
+        case 'imp-sf-list-endpoints':
+            var loginRes = login(params);
+            return listEndpoints(params.url, loginRes.access_token);
+        case 'imp-sf-set-endpoint-status':
+            var loginRes = login(params);
+            return setEndpointStatus(params.url, loginRes.access_token, args.endpointId, args.action);
+        default:
+            return true;
+    }
+  type: javascript
+  commands:
+  - name: imp-sf-auth
+    arguments: []
+    description: ' All API requests must be authenticated. The authentication model
+      is OAuth 2.0. Client applications must initially perform a token request to
+      receive an authentication token, and subsequently use the obtained token in
+      all following requests. The token request must itself be authenticated by a
+      customer ID and password, here called Client ID and Client Secret. You need
+      to manually obtain these credentials in the Skyfence web interface, at Settings
+      > API.'
+  - name: imp-sf-list-endpoints
+    arguments: []
+    description: The endpoints list request enables a client application to receive
+      a list of all managed and unmanaged endpoints, with their basic details. This
+      list can then be externally filtered or searched by the application to identify
+      individual endpoints that might require action. For any such endpoint, the application
+      can obtain fuller details (see Endpoint Details Request below) and if relevant
+      change its enrollment status (see Set Endpoint Status Request on page 11).
+  - name: imp-sf-set-endpoint-status
+    arguments:
+    - name: endpointId
+      required: true
+      default: true
+      description: 'The id of the endpoint. '
+    description: ' The endpoint status request enables a client application to enroll
+      an endpoint or revoke its enrollment. This is usually relevant for endpoints
+      with pending status but can be done for endpoints with any current status. The
+      endpoint needs to be specified by its ID, which can have been received from
+      an endpoints list request (see Endpoints List Request on page 10), from a new
+      endpoint notification (see New Endpoint Notifications on page 6), or from any
+      other implemented manual or automated input.'
+    execution: true
