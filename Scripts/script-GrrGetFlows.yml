@@ -1,0 +1,24 @@
+commonfields:
+  id: GrrGetFiles
+  version: -1
+name: GrrGetFlows
+script: |2
+
+  demisto.results(demisto.executeCommand("grr_get_flows", demisto.args()))
+type: python
+tags:
+- GRR
+comment: Lists flows launched on a given client
+enabled: true
+args:
+- name: client_id
+  required: true
+  default: true
+  description: The ID of the client
+- name: offset
+  description: Starting offset
+- name: count
+  description: Max number of flows to fetch
+scripttarget: 0
+dependson: {}
+timeout: 0s
