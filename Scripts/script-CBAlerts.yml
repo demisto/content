@@ -26,5 +26,5 @@ system: true
 scripttarget: 0
 dependson:
   must:
-  - cb-alerts
+  - cb-alert
 timeout: 0s
