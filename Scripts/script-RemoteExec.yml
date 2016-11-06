@@ -6,7 +6,7 @@ script: |-
   //Execute a command on a remote machine
   var output = [];
   var localSystem = false;
-  for (var s = 0; s < investigation.systems.length; s++) {
+  for (var s = 0; investigation.systems && s < investigation.systems.length; s++) {
       if (investigation.systems[s].name === args.system) {
           localSystem = true;
           break;
