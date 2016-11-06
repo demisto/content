@@ -9,7 +9,7 @@ type: python
 tags:
 - GRR
 comment: Lists flows launched on a given client
-enabled: true
+system: true
 args:
 - name: client_id
   required: true
@@ -22,3 +22,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dependson:
+  must:
+  - grr_get_flows

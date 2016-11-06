@@ -9,7 +9,7 @@ type: python
 tags:
 - GRR
 comment: Renders hunt's summary
-enabled: true
+system: true
 args:
 - name: hunt_id
   required: true
@@ -18,3 +18,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dependson:
+  must:
+  - grr_get_hunt

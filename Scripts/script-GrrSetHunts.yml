@@ -9,7 +9,7 @@ type: python
 tags:
 - GRR
 comment: Handles hunt creation request
-enabled: true
+system: true
 args:
 - name: hunt_runner_args
   description: Hunt runner arguments
@@ -18,3 +18,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dependson:
+  must:
+  - grr_set_hunts

@@ -9,7 +9,7 @@ type: python
 tags:
 - GRR
 comment: Downloads files from specified machine without requiring approval
-enabled: true
+system: true
 args:
 - name: hostname
   description: Target host, Can be FQDN or client ID
@@ -24,3 +24,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dependson:
+  must:
+  - grr_get_files

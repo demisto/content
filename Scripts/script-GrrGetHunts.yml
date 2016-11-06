@@ -9,7 +9,7 @@ type: python
 tags:
 - GRR
 comment: Renders list of available hunts
-enabled: true
+system: true
 args:
 - name: offset
   description: Starting offset
@@ -30,3 +30,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dependson:
+  must:
+  - grr_get_hunts
