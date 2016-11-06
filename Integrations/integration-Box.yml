@@ -61,6 +61,7 @@ script:
     }
 
     var refreshToken = function() {
+        contextData = getIntegrationContext();
         var request = {
             client_id: brandData.client_id,
             client_secret: brandData.client_secret,
@@ -72,6 +73,15 @@ script:
         request.grant_type = 'refresh_token';
         // Send it and get new access token
         var response = sendRequest('POST', 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);
+        var i = 0;
+        var isRefreshed = false;
+        while (i < 5 && response.StatusCode === 401 && !isRefreshed) {
+            // try to refresh 5 times if we got 401
+            contextData = getIntegrationContext();
+            wait(Math.floor(Math.random() * 10));
+            isRefreshed = contextData.expires_in > (10 * 60 * 1000 + currentTime.getTime());
+            i++;
+        }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
             throw 'Failed to refresh token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
         }
@@ -85,6 +95,7 @@ script:
 
     var getToken = function(forceRefresh) {
         var returnToken = '';
+        contextData = getIntegrationContext();
         if (!Object.keys(contextData).length) {
             // Build get initial tokens request
             returnToken = getNewToken();
