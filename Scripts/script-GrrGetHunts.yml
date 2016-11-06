@@ -28,7 +28,6 @@ args:
 - name: active_within
   description: Only return hunts that were active within given time duration
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:

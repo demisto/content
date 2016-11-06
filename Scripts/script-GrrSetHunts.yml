@@ -16,7 +16,6 @@ args:
 - name: hunt_args
   description: Hunt arguments
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:

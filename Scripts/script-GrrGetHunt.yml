@@ -16,7 +16,6 @@ args:
   default: true
   description: Hunt id
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:

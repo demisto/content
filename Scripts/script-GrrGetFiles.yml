@@ -22,7 +22,6 @@ args:
 - name: pathtype
   description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:

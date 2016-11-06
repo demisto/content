@@ -20,7 +20,6 @@ args:
 - name: count
   description: Max number of flows to fetch
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:

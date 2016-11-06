@@ -19,7 +19,6 @@ args:
   required: true
   description: JSON string of the flow to set
 scripttarget: 0
-dependson: {}
 timeout: 0s
 dependson:
   must:
