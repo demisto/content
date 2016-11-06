@@ -25,7 +25,7 @@ type: python
 tags:
 - google apps
 comment: Search the messages in the user's mailbox.
-enabled: true
+system: true
 args:
 - name: userKey
   required: true
@@ -51,5 +51,7 @@ args:
   auto: PREDEFINED
   description: 'Include messages from SPAM and TRASH in the results. (Default: false)'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - googleapps-gmail-search
 timeout: 0s

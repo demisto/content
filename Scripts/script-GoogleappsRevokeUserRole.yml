@@ -25,11 +25,13 @@ type: python
 tags:
 - google apps
 comment: Deletes a role assignment.
-enabled: true
+system: true
 args:
 - name: roleAssignmentId
   required: true
   description: Immutable ID of the role assignment.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - googleapps-revoke-user-role
 timeout: 0s

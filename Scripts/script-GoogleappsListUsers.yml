@@ -25,7 +25,7 @@ type: python
 tags:
 - google apps
 comment: Retrieves a paginated list of either deleted users or all users in a domain
-enabled: true
+system: true
 args:
 - name: domain
   default: true
@@ -69,5 +69,7 @@ args:
   description: 'Whether to return results in ascending or descending order. possible
     values : ASCENDING/DESCENDING'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - googleapps-list-users
 timeout: 0s

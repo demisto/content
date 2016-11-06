@@ -25,7 +25,7 @@ type: python
 tags:
 - google apps
 comment: Gets the specified message.
-enabled: true
+system: true
 args:
 - name: userKey
   required: true
@@ -48,5 +48,7 @@ args:
     email message data with body content in the raw field as a base64url encoded string;
     the payload field is not used'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - googleapps-gmail-get-mail
 timeout: 0s

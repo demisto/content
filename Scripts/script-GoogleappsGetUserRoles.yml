@@ -25,7 +25,7 @@ type: python
 tags:
 - google apps
 comment: Retrieves a list of all roleAssignments.
-enabled: true
+system: true
 args:
 - name: userKey
   required: true
@@ -33,5 +33,7 @@ args:
   description: userKey - Identifies the user in the API request. The value can be
     the user's primary email address, alias email address, or unique user ID.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - googleapps-get-user-roles
 timeout: 0s
