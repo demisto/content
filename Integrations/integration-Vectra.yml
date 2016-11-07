@@ -33,7 +33,6 @@ script:
     var password = params.credentials.password;
     var server = params.server;
     var insecure = params.insecure;
-
     var sendRequest = function(method, url, queryName) {
         var res = http(
                 url,
@@ -50,7 +49,6 @@ script:
         }
         return JSON.parse(res.Body);
     }
-
     var urlDict = {
         'vec-detections': '/api/detections',
         'vec-hosts':'/api/hosts',
@@ -58,8 +56,9 @@ script:
         'vec-triage':'/api/rules',
         'vec-sensors':'/api/sensors',
         'vec-health':'/api/health/',
+        'vec-get-host-by-id':'/api/hosts',
+        'vec-get-detetctions-by-id':'/api/detections/',
     }
-
     var createIncidentFromDetection = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
@@ -71,7 +70,6 @@ script:
             "labels": labels,
         }
     }
-
     switch (command) {
         case 'fetch-incidents':
             var lastRun = getLastRun();
@@ -92,6 +90,10 @@ script:
             return 'not cool';
         case 'vec-health':
             return sendRequest('GET', server + urlDict[command] + '/' + args.path, urlDict[command]);
+        case 'vec-get-host-by-id':
+            return sendRequest('GET', server + urlDict[command] + '/' + args.host_id, urlDict[command]);
+        case 'vec-get-detetctions-by-id':
+            return sendRequest('GET', server + urlDict[command] + '/' + args.detection_id, urlDict[command]);
         default:
             return sendRequest('GET', server + urlDict[command] + encodeToURLQuery(args), urlDict[command]);
     }
@@ -139,6 +141,8 @@ script:
       description: filter by destination in the detection detail set
     - name: proto
       description: filter by the protocol in the detection detail set
+    - name: dst_geo
+      description: Geo location of the destination string IP
     - name: dst_port
       description: filter by the destination port in the detection detail set
     - name: inbound_ip
@@ -224,5 +228,17 @@ script:
     arguments: []
     description: The sensors branch can retrieve a listing of sensors that collect
       and feed data to the X-series
+  - name: vec-get-host-by-id
+    arguments:
+    - name: host_id
+      required: true
+      default: true
+      description: The id of the required host
+    description: Get host by id
+  - name: vec-get-detetctions-by-id
+    arguments:
+    - name: detection_id
+      description: The id of the required detection
+    description: Get detections by host id
   isfetch: true
   system: true
