@@ -54,30 +54,55 @@ script:
         return fixedUrl;
     };
 
+    var parseResponse = function(resp) {
+        var res = null;
+        if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+            try {
+                res = JSON.parse(resp.Body);
+            } catch (e) {
+                res = resp.Body;
+            }
+        } else {
+          err = resp.Status;
+          if (resp.Body) {
+              err += '\n' + resp.Body;
+          }
+          throw err;
+        }
+
+
+        if (res && res.length && res.length > 1 ) {
+            // response body is array, then put it into object
+            // we don't want to return array
+            return { result: res };
+        } else if (res && res.length === 0) {
+            return {};
+        } else {
+            return res;
+        }
+    };
+
     var url = fixUrl(params.url);
 
     var login = function(params) {
         var fullUrl = fixUrl(params.url) + '/cm/api/v1.0/oauth2/token';
-        var body = [
-            'grant_type=client_credentials',
-            'client_id=' + params.clientId,
-            'client_secret=' + params.clientSecret
-        ].join('&');
+        var body = {
+            grant_type: 'client_credentials',
+            client_id: params.clientId,
+            client_secret: params.clientSecret
+        };
 
-        var res = http(
+        var res = httpMultipart(
             fullUrl,
+            '',
             {
-                Method: 'GET',
-                Body: body
+                Method: 'POST'
             },
+            body,
             params.insecure
         );
 
-        if ((res.StatusCode !== 200 && res.StatusCode !== 201) || !!res.Body.access_token) {
-            throw 'Failed to login to <' + fullUrl + '>' + '. Please check server url and crendetials. Error: ' + res.Body;
-        }
-
-        return res;
+        return parseResponse(res);
     };
 
     var listEndpoints = function(url, token) {
@@ -91,11 +116,7 @@ script:
             params.insecure
         );
 
-        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-            throw 'Failed to list endpoints at url: <' + fullUrl + '>' + '. Error: ' + res.Body;
-        }
-
-        return res;
+        return parseResponse(res);
     };
 
     var setEndpointStatus = function(url, token, endpointId, action) {
@@ -110,19 +131,19 @@ script:
             fullUrl,
             {
                 Method: 'POST',
-                Headers: {'Authorization': ['Bearer ' + token]},
-                Body: {
+                Headers: {
+                    'Authorization': ['Bearer ' + token],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify({
                     action: action
-                }
+                })
             },
             params.insecure
         );
 
-        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-            throw 'Failed to set endpoint <' + endpointId + '> status to ' + action + ' at url: <' + fullUrl + '>' + '. Error: ' + res.Body;
-        }
-
-        return res;
+        parseResponse(res);
+        return 'Success';
     };
 
     switch(command) {
@@ -140,15 +161,6 @@ script:
     }
   type: javascript
   commands:
-  - name: imp-sf-auth
-    arguments: []
-    description: ' All API requests must be authenticated. The authentication model
-      is OAuth 2.0. Client applications must initially perform a token request to
-      receive an authentication token, and subsequently use the obtained token in
-      all following requests. The token request must itself be authenticated by a
-      customer ID and password, here called Client ID and Client Secret. You need
-      to manually obtain these credentials in the Skyfence web interface, at Settings
-      > API.'
   - name: imp-sf-list-endpoints
     arguments: []
     description: The endpoints list request enables a client application to receive
@@ -163,6 +175,9 @@ script:
       required: true
       default: true
       description: 'The id of the endpoint. '
+    - name: action
+      required: true
+      description: '"enroll" / "revoke"'
     description: ' The endpoint status request enables a client application to enroll
       an endpoint or revoke its enrollment. This is usually relevant for endpoints
       with pending status but can be done for endpoints with any current status. The
