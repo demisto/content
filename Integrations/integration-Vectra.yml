@@ -141,8 +141,6 @@ script:
       description: filter by destination in the detection detail set
     - name: proto
       description: filter by the protocol in the detection detail set
-    - name: dst_geo
-      description: Geo location of the destination string IP
     - name: dst_port
       description: filter by the destination port in the detection detail set
     - name: inbound_ip
