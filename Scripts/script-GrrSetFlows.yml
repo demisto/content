@@ -1,5 +1,5 @@
 commonfields:
-  id: GrrGetFiles
+  id: GrrSetFlows
   version: -1
 name: GrrSetFlows
 script: |2
@@ -22,4 +22,4 @@ scripttarget: 0
 timeout: 0s
 dependson:
   must:
-  - grr_get_flows
+  - grr_set_flows

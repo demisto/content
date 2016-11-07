@@ -1,5 +1,5 @@
 commonfields:
-  id: GrrGetFiles
+  id: GrrGetHunts
   version: -1
 name: GrrGetHunts
 script: |2

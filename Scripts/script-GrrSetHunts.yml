@@ -1,5 +1,5 @@
 commonfields:
-  id: GrrGetFiles
+  id: GrrSetHunts
   version: -1
 name: GrrSetHunts
 script: |2
