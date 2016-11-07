@@ -323,4 +323,4 @@ script:
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
 system: true
-fromVersion: 1.6.1
+fromversion: 1.6.2
