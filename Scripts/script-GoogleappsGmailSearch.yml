@@ -1,5 +1,5 @@
 commonfields:
-  id: GoogleappsGmailGetMail
+  id: GoogleappsGmailSearch
   version: -1
 name: GoogleappsGmailSearch
 script: |2
