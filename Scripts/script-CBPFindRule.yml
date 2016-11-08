@@ -18,6 +18,7 @@ type: python
 tags:
 - carbon-black-protection
 - bit9
+- enhancement
 comment: Find the rule state for a hash value in CBEP/Bit9.
 system: true
 args:
