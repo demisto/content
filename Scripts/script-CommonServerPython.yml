@@ -200,10 +200,21 @@ script: |-
           return arg.split(',')
       return arg
 
-  def appendContext(key, data):
+  def appendContext(key, data, dedup=False):
+      if not data:
+        return
       existing = demisto.get(demisto.context(), key)
       if existing:
-          demisto.setContext(key, existing + data)
+          strBased = type(data) in [str, unicode] and type(existing) in [str, unicode]
+          if strBased:
+              data = data.split(',')
+              existing = existing.split(',')
+          newVal = data + existing
+          if dedup:
+              newVal = list(set(newVal))
+          if strBased:
+              newVal = ','.join(newVal)
+          demisto.setContext(key, newVal)
       else:
           demisto.setContext(key, data)
 
