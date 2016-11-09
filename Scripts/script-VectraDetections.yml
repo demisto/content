@@ -21,7 +21,7 @@ tags:
 - Vectra
 comment: Detection objects contain all the information related to security events
   detected on the network
-system: false
+system: true
 args:
 - description: Filters objects listed
   name: fields

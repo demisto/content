@@ -30,8 +30,10 @@ script: |+
 
       res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': summary})
       res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': details})
-  except Exception, ex:
+
       demisto.results(res)
+  except Exception, ex:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from VectraSummary. Exception info:\n' + str(ex) + '\n\nInvalid output:\n' + str( res ) } )
 
 type: python
 tags:

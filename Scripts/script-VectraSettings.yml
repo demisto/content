@@ -21,7 +21,7 @@ tags:
 - Vectra
 comment: The settings information includes S-series sensor and X-series configurations
   input by the administrator
-system: false
+system: true
 args: []
 scripttarget: 0
 timeout: 0s

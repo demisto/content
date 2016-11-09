@@ -20,7 +20,7 @@ type: python
 tags:
 - Vectra
 comment: Get detections by host id
-system: false
+system: true
 args:
 - description: The id of the required detection
   name: detection_id

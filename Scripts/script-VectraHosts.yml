@@ -21,7 +21,7 @@ tags:
 - Vectra
 comment: Host information includes data that correlates the host data to detected
   security events
-system: false
+system: true
 args:
 - description: Filters objects listed
   name: fields

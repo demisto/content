@@ -21,7 +21,7 @@ tags:
 - Vectra
 comment: The health configuration can be used to retrieve system health statistics
   such as subnet counts, traffic bandwidth, headend and sensor information
-system: false
+system: true
 args:
 - description: the path to query
   name: path

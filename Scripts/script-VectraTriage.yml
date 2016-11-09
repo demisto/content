@@ -20,7 +20,7 @@ type: python
 tags:
 - Vectra
 comment: The rules branch can be used to retrieve a listing of configured Triage rules
-system: false
+system: true
 args: []
 scripttarget: 0
 timeout: 0s

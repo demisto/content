@@ -20,7 +20,7 @@ type: python
 tags:
 - Vectra
 comment: Get host by id
-system: false
+system: true
 args:
 - default: true
   description: The id of the required host
