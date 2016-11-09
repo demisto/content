@@ -5,8 +5,8 @@ name: SetContext
 script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 tags:
-- server
-enabled: true
+- util
+system: true
 args:
 - name: key
   required: true
