@@ -33,7 +33,7 @@ script: |+
 
       demisto.results(res)
   except Exception, ex:
-      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from VectraSummary. Exception info:\n' + str(ex) + '\n\nInvalid output:\n' + str( res ) } )
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing Vectra incident labels. Exception info:\n' + str(ex) } )
 
 type: python
 tags:
