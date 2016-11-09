@@ -250,6 +250,13 @@ script: |-
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
 
+
+  def flattenRow(rowDict):
+    return {k: formatCell(rowDict[k]) for k in rowDict}
+
+
+  def flattenTable(tableDict):
+    return [flattenRow(row) for row in tableDict]
 type: python
 tags:
 - infra
