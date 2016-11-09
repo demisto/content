@@ -19,7 +19,7 @@ script: |2
 type: python
 tags:
 - Vectra
-comment: he settings information includes S-series sensor and X-series configurations
+comment: The settings information includes S-series sensor and X-series configurations
   input by the administrator
 system: false
 args: []
