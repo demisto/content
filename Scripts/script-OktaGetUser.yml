@@ -1,0 +1,28 @@
+args:
+- description: Username of requested user, please note that this will not work for
+    usernames that contains a '/' character
+  name: username
+- description: User ID of requested user
+  name: userid
+comment: "Fetches a specific user when you know the user\u2019s login, please note\
+  \ that one of the parameters bellow is mandatory."
+commonfields:
+  id: OktaGetUser
+  version: -1
+dependson:
+  must:
+  - okta-get-user
+name: OktaGetUser
+script: "\nresp = demisto.executeCommand(\"okta-get-user\", demisto.args())\n\nif\
+  \ isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents\")\n    if data:\n    \tdata = data if isinstance(data, list) else\
+  \ [data]\n    \tdata = [{k: formatCell(row[k]) for k in row} for row in data]\n\
+  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
+  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
+  )\n"
+scripttarget: 0
+system: true
+tags:
+- okta
+timeout: 0s
+type: python

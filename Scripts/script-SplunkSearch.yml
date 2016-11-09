@@ -15,7 +15,11 @@ script: |-
       data = res[0].Contents[i].result['_raw'];
       table.Contents.push({Time: res[0].Contents[i].result['_time'], Host: res[0].Contents[i].result['host'], Source: res[0].Contents[i].result['source'], Data: data});
   }
-  return table;
+  if (table.Contents.length > 0) {
+    return table;
+  } else {
+    return 'No results.'
+  }
 type: javascript
 tags:
 - enhancement
