@@ -37,7 +37,7 @@ script:
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         var response = JSON.parse(res.Body);
-        if (!response.res) {
+        if (response.res) {
             throw 'Got error response from incapsula for ' + queryName + '\nerror code: ' + response.res +'\nmessage: ' + response['res_message'] + '\ndebug info: ' + JSON.stringify(response['debug_info']);
         }
         return response;
