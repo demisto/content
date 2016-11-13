@@ -8,7 +8,7 @@ script: |
       data = demisto.get(demisto.args(), 'data')
       if (isinstance(data, list) and data):
           res.append("yes")
-      elif type(data) in [str, unicode]:
+      elif type(data) in [str, unicode] and data:
         if data[0] in ['[', '{']:
           data = data[1:]
         if data[-1] in [']', '}']:
