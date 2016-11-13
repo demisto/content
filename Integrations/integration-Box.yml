@@ -157,7 +157,7 @@ script:
     var token = getToken(false);
     switch (command) {
         case 'test-module':
-            if (contextData.code !== params.code) {
+            if (contextData.code && contextData.code !== params.code) {
                 token = getNewToken();
             }
             var testResponse = sendRequest('GET', base + urlDict['box_get_current_user'], undefined, token, 'Test');
