@@ -143,11 +143,11 @@ script:
             urlArgs.Version = apiVersion;
             sendRequest('GET', awsUrl + encodeToURLQuery(urlArgs));
             return 'ok';
-        case 'run-instances':
+        case 'run-instance':
             return createInstance(args.imageId, args.instanceType, args.keyName, args.subnetId, args.privateIpAddress, args.availabilityZone, args.securityGroup);
-        case 'stop-instances':
+        case 'stop-instance':
             return stopInstance(args.instanceId, args.force);
-        case 'start-instances':
+        case 'start-instance':
             return startInstance(args.instanceId);
         case 'create-image':
             return createImage(args.instanceId, args.name, args.noReboot, args.description);
@@ -156,7 +156,7 @@ script:
     }
   type: javascript
   commands:
-  - name: run-instances
+  - name: run-instance
     arguments:
     - name: imageId
       required: true
@@ -181,7 +181,7 @@ script:
       description: 'Security group name, Default: Amazon EC2 uses the default security
         group.'
     description: create ec2 aws instances from image
-  - name: stop-instances
+  - name: stop-instance
     arguments:
     - name: instanceId
       required: true
@@ -214,7 +214,7 @@ script:
       description: A description for the new image
     description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
       that is either running or stopped.
-  - name: start-instances
+  - name: start-instance
     arguments:
     - name: instanceId
       required: true
