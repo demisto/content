@@ -24,8 +24,8 @@ comment: The endpoints list request enables a client application to receive a li
   then be externally filtered or searched by the application to identify individual
   endpoints that might require action. For any such endpoint, the application can
   obtain fuller details (see Endpoint Details Request below) and if relevant change
-  its enrollment status (see Set Endpoint Status Request on page 11).
-system: false
+  its enrollment status.
+system: true
 args: []
 scripttarget: 0
 timeout: 0s
