@@ -13,14 +13,14 @@ script: |-
   INCAPSULA_WARNING = "****Incapsula Warning****"
   BASIC_WARNING_MAIL = '''
   WARNING
-  Your Site {0} is not compliance to Incapsula whitelist rules
+  Your Site {0} is not compliant to the Incapsula whitelist policy
   please update your settings
 
   --DBot
   '''
   ADVANCE_WARNING_MAIL = '''
   WARNING
-  Your Site {0} is not compliance to Incapsula whitelist rules
+  Your Site {0} is not compliant to the Incapsula whitelist policy
   please update your settings as soon as possible!
 
   --DBot
@@ -90,8 +90,8 @@ script: |-
 
       demisto.setContext(COMPLIANCE_LABEL, compliance_table)
 
-      markdownString = '# Results\n'
-      markdownString += tblToMd("Incompliance Sites - number of days not compliance", [compliance_table])
+      markdownString = '## Incapsula Whitelist Compliance - validation results\n'
+      markdownString += tblToMd("Non-Compliant Sites - number of days not compliant", [compliance_table])
 
       res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
 
@@ -100,8 +100,8 @@ type: python
 tags:
 - Incapsula
 comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh
-  server (not on the whitelist), make sure the site is compliance to the whitelist.\nif
-  not, a warning mail will be sent to the domain owner. "
+  server (one that should NOT be in the whitelist), make sure the site is compliant ( whitelist is being enforced ).\n
+  If not, a warning mail will be sent to the domain owner. "
 system: true
 args:
 - name: SSHValidationServer
