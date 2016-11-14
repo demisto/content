@@ -15,6 +15,7 @@ script: |-
           if myData:
               t += [{'Result found': demisto.args()['type'] + ':' + v, 'Device ID': h} for h in myData]
   if t:
+      demisto.setContext('CSFoundDevices', ','.join([detection['Device ID'] for detection in t]))
       res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
   else:
       res.append('No results.')
