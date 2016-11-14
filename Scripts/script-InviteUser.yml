@@ -1,0 +1,20 @@
+commonfields:
+  id: InviteUser
+  version: -1
+name: InviteUser
+script: return executeCommand('@', args);
+type: javascript
+tags:
+- util
+comment: |
+  Send a notification to another user and add user to the team
+system: true
+args:
+- name: user
+  required: true
+  default: true
+  description: Specify the user name which can also include team (to send to all members
+    if investigation) or here (to send to everyone currently online)
+scripttarget: 0
+dependson: {}
+timeout: 0s
