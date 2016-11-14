@@ -45,7 +45,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: IP address is question. E.g. !ip 1.1.1.1
+      description: IP address to query. E.g. !ip 1.1.1.1
     description: Check IP reputation (when information is available, returns a JSON
       with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
@@ -53,8 +53,8 @@ script:
     - name: ip
       required: true
       default: true
-      description: IP address is question. E.g. !ip 1.1.1.1
+      description: IP address to query. E.g. !ip 1.1.1.1
     - name: field
       required: true
-      description: The field to query
-    description: Check ip specific field
+      description: Name of the field to retrieve
+    description: Retrieve value for a specific field from the IP address information
