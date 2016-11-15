@@ -1,0 +1,39 @@
+commonfields:
+  id: IncapScheduleTask
+  version: -1
+name: IncapScheduleTask
+script: |-
+  res = []
+  SCHEDULE_TASK_ID_LABAL = "ScheduleTaskID"
+
+  dArgs = demisto.args()
+  ssh_server = dArgs.pop("SSHValidationServer")
+  dArgs['command'] = '!IncapWhitelistCompliance SSHValidationServer={}'.format(ssh_server)
+
+  res = demisto.executeCommand('scheduleEntry', dArgs)
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      taskID = demisto.get(res[0],"Contents.id")
+      demisto.setContext(SCHEDULE_TASK_ID_LABAL, taskID)
+      demisto.results(res)
+type: python
+tags:
+- Incapsula
+system: true
+args:
+- name: SSHValidationServer
+  required: true
+  default: true
+  description: Name of the non-whitelist SSH server instance
+- name: cron
+  required: true
+  description: The interval between each check (in cron format)
+- name: times
+  description: Number of times to execute the check
+scripttarget: 0
+dependson:
+  must:
+  - scheduleEntry
+  - IncapWhitelistCompliance
+timeout: 0s

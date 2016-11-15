@@ -1,0 +1,26 @@
+commonfields:
+  id: StopScheduleTask
+  version: -1
+name: StopScheduleTask
+script: |-
+  res = []
+
+  if demisto.args()['taskID']:
+      res =  demisto.executeCommand('scheduleEntry', {'id': demisto.args()['taskID'], 'cancel':'cancel'})
+
+  demisto.results(res)
+type: python
+tags:
+- schedule
+comment: 'This stops a scheduled task that correlate to the taskID Parameter '
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: the schedule task id to stop
+scripttarget: 0
+dependson:
+  must:
+  - scheduleEntry
+timeout: 0s
