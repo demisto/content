@@ -422,7 +422,7 @@ script:
       - ACTIVE_DIRECTORY
       - LDAP
       - FEDERATION
-      - FEDERATION
+      - SOCIAL
     - name: providerName
       description: Name of provider
     - name: groupIds
@@ -516,7 +516,7 @@ script:
       - ACTIVE_DIRECTORY
       - LDAP
       - FEDERATION
-      - FEDERATION
+      - SOCIAL
     - name: providerName
       description: Name of provider
     description: Update user with a given login, all fields are optional, fields which
