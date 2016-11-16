@@ -1,0 +1,71 @@
+commonfields:
+  id: BoxUpdateUser
+  version: -1
+name: BoxUpdateUser
+script: |2
+
+  resp = demisto.executeCommand("box_update_user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Box
+comment: Used to edit the settings and information about a user
+system: true
+args:
+- description: Whether the user should receive an email when they are rolled out of
+    an enterprise
+  name: notify
+- description: Setting this to null will roll the user out of the enterprise and make
+    them a free user. When passing a null value, do not pass this value as a string
+  name: enterprise
+- description: The name of this user
+  name: name
+- description: "string This user\u2019s enterprise role"
+  name: role
+- description: The language of this user
+  name: language
+- description: Whether or not this user can use Box Sync
+  name: is_sync_enabled
+- description: "The user\u2019s job title"
+  name: job_title
+- description: "The user\u2019s phone number"
+  name: phone
+- description: "The user\u2019s address"
+  name: address
+- description: "The user\u2019s total available space amount in byte. A value of -1\
+    \ grants unlimited storage"
+  name: space_amount
+- description: "An array of key/value pairs set by the user\u2019s admin"
+  name: tracking_codes
+- description: ' boolean Whether this user can see other enterprise users in its contact
+    list'
+  name: can_see_managed_users
+- description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+  name: status
+- description: The timezone of this user
+  name: timezone
+- description: Whether to exempt this user from Enterprise device limits
+  name: is_exempt_from_device_limits
+- description: Whether or not this user must use two-factor authentication
+  name: is_exempt_from_login_verification
+- description: Whether or not the user is required to reset password
+  name: is_password_reset_required
+- default: true
+  description: The user id to update
+  name: user_id
+  required: true
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - box_update_user
