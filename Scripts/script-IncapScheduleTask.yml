@@ -21,8 +21,8 @@ type: python
 tags:
 - Incapsula
 comment: |-
-  This script run periodically the "IncapWhitelistCompliance" script, which query the Incapsula monitored websites for white-list compliance  (see script for farther details).
-  The script than saved the new periodic ID in the context under "ScheduleTaskID" for farther use.
+  This script runs periodically the "IncapWhitelistCompliance" script, which query the Incapsula monitored websites for white-list compliance (see script for farther details).
+  The script than saves the new periodic ID in the context under "ScheduleTaskID" for farther use.
 system: true
 args:
 - name: SSHValidationServer
