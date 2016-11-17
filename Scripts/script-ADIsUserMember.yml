@@ -3,14 +3,26 @@ commonfields:
   version: 1
 name: ADIsUserMember
 script: |-
+  res = []
+
   resp = demisto.executeCommand( 'ADGetUserGroups', demisto.args() )
   try:
       if not isError(resp[0]):
-          for d in resp[0]['Contents']:
-              if demisto.args()['groupname'] == d['name']:
-                  demisto.results("yes")
-                  sys.exit(0)
-          demisto.results("no")
+          group_names = argToList(demisto.args()['groupname'])
+          user_groups = [row['name'] for row in resp[0]['Contents']]
+          res = list(set(group_names).intersection(user_groups))
+          if res:
+              markdownString = '### User johnathan belongs to groups:\n'
+              markdownString += "".join(['* ' + s + '\n' for s in res])
+              res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString}]
+              answer = 'yes'
+          else:
+              answer = 'no'
+
+          res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+
+          demisto.results(res)
+
       else:
           demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups:\n' + resp[0]['Contents'] } )
   except Exception, ex:
