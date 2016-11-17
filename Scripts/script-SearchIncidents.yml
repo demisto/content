@@ -1,0 +1,57 @@
+commonfields:
+  id: SearchIncidents
+  version: -1
+name: SearchIncidents
+script: |
+  FOUND_INCIDENTS_IDS_LABAL = "foundIncidentsIDs"
+
+  resp = []
+  dArgs, qArgs = {}, {}
+  incidents_ids = ""
+
+  dArgs = demisto.args()
+
+  qArgs['fromdate'] = dArgs.pop('fromdate') if dArgs.has_key('fromdate') else None
+  qArgs['todate'] = dArgs.pop('todate') if dArgs.has_key('todate') else None
+  [qArgs.pop(k) if not qArgs[k] else None for k in qArgs.keys()]
+
+  qArgs['query'] = "".join([str(k)+': '+str(dArgs[k])+' and ' if dArgs[k] else "" for k in dArgs.keys()])
+
+  resp = demisto.executeCommand("getIncidents", qArgs)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.data")
+
+      if data:
+          incidents_ids = ','.join([str(row['id']) for row in data])
+
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+
+  demisto.setContext(FOUND_INCIDENTS_IDS_LABAL, incidents_ids)
+type: python
+tags:
+- Incident
+comment: |-
+  Return incidents that oblige the argument fields. supports wildcard.
+  Saves all the incidents ids in context under "foundIncidentsIDs"
+system: true
+args:
+- name: name
+  default: true
+  description: Filter by incident name (wildcard supported)
+- name: fromdate
+  description: Filter by from date (e.g. 2006-01-02T15:04:05Z)
+- name: todate
+  description: Filter by to date (e.g. 2016-01-02T15:04:05Z)
+- name: user
+  description: Filter by incident owners (wildcard supported)
+scripttarget: 0
+dependson:
+  - getIncidents
+timeout: 0s
