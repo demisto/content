@@ -15,8 +15,7 @@ script: |
   qArgs['todate'] = dArgs.pop('todate') if dArgs.has_key('todate') else None
   [qArgs.pop(k) if not qArgs[k] else None for k in qArgs.keys()]
 
-  qArgs['query'] = "".join([str(k)+': '+str(dArgs[k])+' and ' if dArgs[k] else "" for k in dArgs.keys()])
-
+  qArgs['query'] = " and ".join([str(k) + ':"' + str(dArgs[k]) + '"' for k in dArgs.keys()])
   resp = demisto.executeCommand("getIncidents", qArgs)
 
   if isError(resp[0]):
