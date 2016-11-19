@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: SearchIncidents
 script: |
-  FOUND_INCIDENTS_IDS_LABAL = "foundIncidentsIDs"
+  FOUND_INCIDENTS_IDS_LABEL = "foundIncidentsIDs"
 
   resp = []
   dArgs, qArgs = {}, {}
@@ -33,24 +33,24 @@ script: |
       else:
           demisto.results("No results.")
 
-  demisto.setContext(FOUND_INCIDENTS_IDS_LABAL, incidents_ids)
+  demisto.setContext(FOUND_INCIDENTS_IDS_LABEL, incidents_ids)
 type: python
 tags:
 - Incident
 comment: |-
-  Return incidents that oblige the argument fields. supports wildcard.
+  Return incidents that match the search criteria. Supports wildcards.
   Saves all the incidents ids in context under "foundIncidentsIDs"
 system: true
 args:
 - name: name
   default: true
-  description: Filter by incident name (wildcard supported)
+  description: Filter by incident name (Uses Lucene. Wildcards supported within single terms)
 - name: fromdate
   description: Filter by from date (e.g. 2006-01-02T15:04:05Z)
 - name: todate
   description: Filter by to date (e.g. 2016-01-02T15:04:05Z)
 - name: user
-  description: Filter by incident owners (wildcard supported)
+  description: Filter by incident owners (Uses Lucene. Wildcards supported within single terms)
 scripttarget: 0
 dependson:
   - getIncidents
