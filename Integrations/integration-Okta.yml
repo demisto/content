@@ -416,6 +416,13 @@ script:
       description: Password answer for question supplied
     - name: providerType
       description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+      auto: PREDEFINED
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
     - name: providerName
       description: Name of provider
     - name: groupIds
@@ -503,6 +510,13 @@ script:
       description: Password answer for question supplied
     - name: providerType
       description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+      auto: PREDEFINED
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
     - name: providerName
       description: Name of provider
     description: Update user with a given login, all fields are optional, fields which
