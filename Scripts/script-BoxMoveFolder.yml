@@ -1,0 +1,44 @@
+commonfields:
+  id: BoxMoveFolder
+  version: -1
+name: BoxMoveFolder
+script: |2
+
+  resp = demisto.executeCommand("box_move_folder", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Box
+comment: "Moves all of the owned content from within one user\u2019s folder into a\
+  \ new folder in another user\u2019s account. You can move folders across users as\
+  \ long as the you have administrative permissions and the \u2018source\u2019 user\
+  \ owns the folders. To move everything from the root folder, use \u201C0\u201D which\
+  \ always represents the root folder of a Box account (Currently only moving of the\
+  \ root folder (0) is supported)"
+system: true
+args:
+- default: true
+  description: The ID of the user who the folder will be transferred from
+  name: from_user_id
+  required: true
+- description: The folder to move (currently only 0 - root is supported)
+  name: folder_id
+  required: true
+- description: The ID of the user who the folder will be transferred to
+  name: to_user_id
+  required: true
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - box_move_folder

@@ -1,0 +1,60 @@
+commonfields:
+  id: BoxAddUser
+  version: -1
+name: BoxAddUser
+script: |2
+
+  resp = demisto.executeCommand("box_add_user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Box
+comment: Used to provision a new user in an enterprise
+system: true
+args:
+- default: true
+  description: The email address this user uses to login
+  name: login
+  required: true
+- description: The name of this user
+  name: name
+  required: true
+- description: "This user\u2019s enterprise role. Can be coadmin or user"
+  name: role
+- description: The language of this user
+  name: language
+- description: Whether or not this user can use Box Sync
+  name: is_sync_enabled
+- description: "The user\u2019s job title"
+  name: job_title
+- description: "The user\u2019s phone number"
+  name: phone
+- description: "The user\u2019s address"
+  name: address
+- description: "The user\u2019s total available space amount in bytes"
+  name: space_amount
+- description: "An array of key/value pairs set by the user\u2019s admin"
+  name: tracking_codes
+- description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+  name: can_see_managed_users
+- description: The timezone of this user
+  name: timezone
+- description: Whether to exempt this user from Enterprise device limits
+  name: is_exempt_from_device_limits
+- description: Whether or not this user must use two-factor authentication
+  name: is_exempt_from_login_verification
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - box_add_user
