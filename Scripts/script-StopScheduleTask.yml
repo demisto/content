@@ -1,7 +1,7 @@
 commonfields:
-  id: StopScheduleTask
+  id: StopScheduledTask
   version: -1
-name: StopScheduleTask
+name: StopScheduledTask
 script: |-
   res = []
 
