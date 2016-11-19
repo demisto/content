@@ -12,13 +12,13 @@ script: |-
 type: python
 tags:
 - schedule
-comment: 'This stops a scheduled task that correlate to the taskID Parameter '
+comment: 'This stops the scheduled task whose ID is given in the taskID argument.'
 system: true
 args:
 - name: taskID
   required: true
   default: true
-  description: the schedule task id to stop
+  description: ID of the scheduled to stop
 scripttarget: 0
 dependson:
   must:
