@@ -24,7 +24,7 @@ type: python
 tags:
 - Elasticsearch
 comment: Run a search query using Elasticsearch
-enabled: true
+system: true
 args:
 - name: explain
   description: Computes a score explanation for a query and a specific document, default
