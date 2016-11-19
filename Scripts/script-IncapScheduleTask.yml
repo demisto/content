@@ -4,7 +4,7 @@ commonfields:
 name: IncapScheduleTask
 script: |-
   res = []
-  SCHEDULE_TASK_ID_LABAL = "ScheduleTaskID"
+  SCHEDULED_TASK_ID_CTXKEY = "ScheduledTaskID"
 
   dArgs = demisto.args()
   ssh_server = dArgs.pop("SSHValidationServer")
@@ -15,20 +15,20 @@ script: |-
       demisto.results(res)
   else:
       taskID = demisto.get(res[0],"Contents.id")
-      demisto.setContext(SCHEDULE_TASK_ID_LABAL, taskID)
+      demisto.setContext(SCHEDULED_TASK_ID_CTXKEY, taskID)
       demisto.results(res)
 type: python
 tags:
 - Incapsula
 comment: |-
-  This script runs periodically the "IncapWhitelistCompliance" script, which query the Incapsula monitored websites for white-list compliance (see script for farther details).
-  The script than saves the new periodic ID in the context under "ScheduleTaskID" for farther use.
+  This script periodically runs the "IncapWhitelistCompliance" script, which queries the Incapsula monitored websites for white-list compliance (see script for further details).
+  The script then saves the new periodic ID into incident context under the "ScheduleTaskID" key for later use.
 system: true
 args:
 - name: SSHValidationServer
   required: true
   default: true
-  description: Name of the non-whitelist SSH server instance
+  description: Name of the non-whitelisted server RemoteAccess instance
 - name: cron
   required: true
   description: The interval between each check (in cron format)
