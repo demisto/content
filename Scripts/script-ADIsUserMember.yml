@@ -50,6 +50,8 @@ args:
   required: true
   default: true
   description: Name of the AD group to check
+- name: nestedSearch
+  description: Enter any value to allow nested groups check as well
 scripttarget: 0
 dependson:
   must:
