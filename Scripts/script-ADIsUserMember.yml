@@ -22,6 +22,7 @@ script: |-
 
               answer = 'yes'
           else:
+              demisto.log("\nThe user is not part of any of the groups\n")
               answer = 'no'
 
           res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
