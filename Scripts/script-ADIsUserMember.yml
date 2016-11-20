@@ -1,8 +1,9 @@
 commonfields:
   id: ADIsUserMember
-  version: 1
+  version: -1
 name: ADIsUserMember
 script: |-
+  FOUND_GROUPS_LABAL = 'FoundGroups'
   res = []
 
   resp = demisto.executeCommand( 'ADGetUserGroups', demisto.args() )
@@ -10,11 +11,15 @@ script: |-
       if not isError(resp[0]):
           group_names = argToList(demisto.args()['groupname'])
           user_groups = [row['name'] for row in resp[0]['Contents']]
-          res = list(set(group_names).intersection(user_groups))
-          if res:
-              markdownString = '### User johnathan belongs to groups:\n'
-              markdownString += "".join(['* ' + s + '\n' for s in res])
+          groups = list(set(group_names).intersection(user_groups))
+          if groups:
+              markdownString = '### The user belongs to groups:\n'
+              markdownString += "".join(['* ' + s + '\n' for s in groups])
               res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString}]
+
+              group_names = ','.join([str(s) for s in groups])
+              demisto.setContext(FOUND_GROUPS_LABAL, group_names)
+
               answer = 'yes'
           else:
               answer = 'no'
@@ -48,5 +53,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ad-search
+  - ADGetUserGroups
 timeout: 0s

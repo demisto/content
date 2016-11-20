@@ -31,7 +31,7 @@ script: |-
               demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected output from ad command.' } )
           sys.exit(0)
   if memberDN:
-      filterstr = r"(&(member=" + memberDN + ")(objectcategory=group))"
+      filterstr = r"(&(member:1.2.840.113556.1.4.1941:=" + memberDN + ")(objectcategory=group))"
       demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } ) )
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Received empty DN or cannot locate DN for the specified arguments.' } )
