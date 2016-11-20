@@ -2,7 +2,7 @@ commonfields:
   id: SearchIncidents
   version: -1
 name: SearchIncidents
-script: |
+script: |-
   FOUND_INCIDENTS_IDS_LABEL = "foundIncidentsIDs"
 
   resp = []
@@ -51,6 +51,4 @@ args:
 - name: user
   description: Filter by incident owners (Uses Lucene. Wildcards supported within single terms)
 scripttarget: 0
-dependson:
-  - getIncidents
 timeout: 0s
