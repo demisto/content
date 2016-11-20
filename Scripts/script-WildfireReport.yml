@@ -19,7 +19,7 @@ script: |-
   for(var i=0; i<raws.length;i++) {
       raw = raws[i];
       if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire.file_info) {
-      return "failed";
+          return raw;
       }
       var item = raw[0].Contents.wildfire.file_info;
       results.push({Contents: {
