@@ -197,7 +197,7 @@ script: |-
       if type(arg) in [str, unicode]:
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return arg.split(',')
+          return [s.lstrip().rstrip() for s in arg.split(',')]
       return arg
 
   def appendContext(key, data, dedup=False):
