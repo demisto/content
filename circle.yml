@@ -1,6 +1,6 @@
 test:
   override:
-    - ls
+    - ./yamlvalidator
   post:
     - mkdir bundle
     - cp Integrations/* bundle/
