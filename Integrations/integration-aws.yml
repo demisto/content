@@ -13,6 +13,11 @@ detaileddescription: |-
   Secret Access Key and Access Key ID can be obtained from IAM page : https://console.aws.amazon.com/iam/ .
   Will work only with EC2 service.
 configuration:
+- display: The url to amazon region
+  name: url
+  defaultvalue: https://ec2.amazonaws.com/
+  type: 0
+  required: true
 - display: Access Key ID
   name: accessKeyID
   defaultvalue: ""
@@ -22,11 +27,6 @@ configuration:
   name: secretAccessKey
   defaultvalue: ""
   type: 4
-  required: true
-- display: The url to amazon region
-  name: url
-  defaultvalue: https://ec2.amazonaws.com/
-  type: 0
   required: true
 script:
   script: |-
