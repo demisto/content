@@ -4,6 +4,7 @@ test:
     - ./yamlvalidator
   post:
     - mkdir bundle
+    - for i in $(ls Tools); do zip -r "bundle/tools-${i%/}.zip" "Tools/$i"; done
     - cp Integrations/* bundle/
     - cp Misc/* bundle/
     - cp Playbooks/* bundle/
