@@ -1,0 +1,37 @@
+commonfields:
+  id: AwsCreateVolumeSnapshot
+  version: -1
+name: AwsCreateVolumeSnapshot
+script: |2
+
+  resp = demisto.executeCommand("create-volume-snapshot", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.CreateSnapshotResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Amazon Web Services
+comment: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use
+  snapshots for backups, to make copies of EBS volumes, and to save data before shutting
+  down an instance.
+system: true
+args:
+- default: true
+  description: The ID of the EBS volume
+  name: volumeId
+  required: true
+- description: A description for the snapshot
+  name: description
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - create-volume-snapshot
