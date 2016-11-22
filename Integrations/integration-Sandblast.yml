@@ -149,7 +149,7 @@ script:
         default:
             return sendRequest(
                 urlDict[command],
-                command === 'sb_query' ? createRequest(args) : requestTemplate,
+                command === 'sb-query' ? createRequest(args) : requestTemplate,
                 contentTypeDict[command],
                 command);
     }
