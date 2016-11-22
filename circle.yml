@@ -1,5 +1,6 @@
 test:
   override:
+    - chmod +x yamlvalidator
     - ./yamlvalidator
   post:
     - mkdir bundle
