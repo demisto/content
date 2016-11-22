@@ -10,7 +10,7 @@ description: Query, upload and download data using Check Point Sandblast
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
+  defaultvalue: https://te.checkpoint.com
   type: 0
   required: true
 - display: Version
