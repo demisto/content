@@ -17,7 +17,7 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-required: true
+  required: true
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
