@@ -22,7 +22,7 @@ tags:
 comment: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use
   snapshots for backups, to make copies of EBS volumes, and to save data before shutting
   down an instance.
-system: false
+system: true
 args:
 - default: true
   description: The ID of the EBS volume

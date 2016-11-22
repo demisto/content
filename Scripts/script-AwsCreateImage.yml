@@ -21,7 +21,7 @@ tags:
 - Amazon Web Services
 comment: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that
   is either running or stopped.
-system: false
+system: true
 args:
 - default: true
   description: The ID of the instance

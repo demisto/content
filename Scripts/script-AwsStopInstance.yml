@@ -20,7 +20,7 @@ type: python
 tags:
 - Amazon Web Services
 comment: stop ec2 aws instances
-system: false
+system: true
 args:
 - default: true
   description: instance ID

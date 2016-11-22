@@ -20,7 +20,7 @@ type: python
 tags:
 - Amazon Web Services
 comment: Starts an Amazon EBS-backed AMI that you've previously stopped.
-system: false
+system: true
 args:
 - default: true
   description: instance ID

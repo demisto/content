@@ -20,7 +20,7 @@ type: python
 tags:
 - Amazon Web Services
 comment: create ec2 aws instances from image
-system: false
+system: true
 args:
 - default: true
   description: The ID of the AMI
