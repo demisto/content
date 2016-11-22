@@ -1,6 +1,7 @@
 test:
   override:
-    - ls
+    - chmod +x yamlvalidator
+    - ./yamlvalidator
   post:
     - mkdir bundle
     - cp Integrations/* bundle/
