@@ -36,7 +36,7 @@ script:
     var version = params.version;
     var requestTemplate = JSON.stringify({request:[{features:['te']}]});
 
-    var base = server +'/tecloud/api/' + version + '/file/';
+    var base = server.replace(/[\/]+$/, '') +'/tecloud/api/' + version + '/file/';
     var headers = {'Authorization': [token]};
 
     var urlDict = {
@@ -81,7 +81,6 @@ script:
                 for (var i = 0; i < keys.length; i++) {
                     if (args[keys[i]]) {
                         if (teArgs[keys[i]] === 0) {
-                            console.log(args[keys[i]])
                             feature[keys[i]] = JSON.parse(args[keys[i]]);
                         } else if (teArgs[keys[i]] === 1) {
                             feature[keys[i]] = args[keys[i]] === 'true';
@@ -119,14 +118,15 @@ script:
                 throw 'Failed to ' + urlDict[command] + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
             // Extract file name from response
+            var currentTime = new Date();
             var fileName = command + '_at_' + currentTime.getTime();
-            if (res.Headers && res.Headers['content-disposition'] && res.Headers['content-disposition'].length === 1) {
-                var matches = /'filename=\"(.*)\"'/.match(res.Headers['content-disposition'][0]);
-                if (matches) {
-                    fileName = matches[1];
+            if (res.Headers && res.Headers['Content-Disposition']) {
+                var match = /filename=\"(.*)\"/.exec(res.Headers['Content-Disposition']);
+                if (match && match[1]) {
+                    fileName = match[1];
                 }
             }
-            return {Type: 9, FileID: saveFile(res.Body), File: fileName,  Contents: 'we must have contents for an entry'};
+            return {Type: 9, FileID: saveFile(res.Body), File: fileName, Contents: fileName};
         case 'sb-upload':
             var file_id = args['file_id'];
             delete args['file_id'];
