@@ -17,14 +17,14 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
-- display: Do not validate server certificate (insecure)
-  name: insecure
+required: true
+- display: Fetch incidents
+  name: isFetch
   defaultvalue: ""
   type: 8
   required: false
-- display: Fetch incidents
-  name: isFetch
+- display: Do not validate server certificate (insecure)
+  name: insecure
   defaultvalue: ""
   type: 8
   required: false
