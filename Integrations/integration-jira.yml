@@ -24,7 +24,7 @@ configuration:
   required: true
 - display: Insecure
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: "true"
   type: 8
   required: false
 script:
