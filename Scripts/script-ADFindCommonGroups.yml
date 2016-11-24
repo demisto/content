@@ -1,0 +1,52 @@
+commonfields:
+  id: ADFindCommonGroups
+  version: -1
+name: ADFindCommonGroups
+script: |+
+  res = []
+  users = argToList(demisto.args()['names']) if demisto.get(demisto.args(), 'names') else ''
+  if not users:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No users were provided' } )
+  else:
+      query_args = {'nestedSearch': demisto.args()['nestedSearch']} if demisto.get(demisto.args(), 'nestedSearch') else {}
+      users_groups = []
+      for name in users:
+          query_args['name'] = name
+          group_res = demisto.executeCommand('ADGetUserGroups_Enhanced', query_args)
+          if isError(group_res[0]):
+              res += group_res
+          else:
+              groups = demisto.get(group_res[0],'Contents')
+              users_groups += [{group['name']:group for group in groups}]
+
+      if users_groups:
+          base_group = users_groups[0]
+          for i in range(1,len(users_groups)):
+              for key in base_group.keys():
+                  if not users_groups[i].has_key(key):
+                      base_group.pop(key)
+          if base_group:
+              res += [{"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": base_group.values()}]
+          else:
+              res += ["The User have no common groups"]
+      else:
+          res += [{ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No group were found' }]
+      demisto.results(res)
+
+type: python
+tags:
+- active directory
+comment: Return the common groups of provided users (by user name)
+system: true
+args:
+- name: names
+  required: true
+  default: true
+  description: Names of the desired users
+- name: nestedSearch
+  description: Enter any value to allow nested groups search as well
+scripttarget: 0
+dependson:
+  must:
+  - ad-search
+timeout: 0s
