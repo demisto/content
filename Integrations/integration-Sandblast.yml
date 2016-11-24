@@ -114,7 +114,7 @@ script:
     var contextData = getIntegrationContext();
     var cookies = contextData.cookies
     var requestCookies = !cookies;
-    for (var i = 0; i < cookies.length; i++) {
+    for (var i = 0; !requestCookies && i < cookies.length; i++) {
         var currentTime = new Date();
         var date = new Date(cookies[i].Expires);
         var timeDiffernceInDays = (date.getTime() - currentTime.getTime()) / (1000 * 60 * 60 * 24)
