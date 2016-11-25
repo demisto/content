@@ -1,0 +1,110 @@
+id: playbook14
+version: -1
+system: true
+name: Checkpoint Firewall Configuration Backup Playbook
+description: Triggers a backup task on each firewall appliance and pulls the resulting
+  file into the war room via SCP.
+tasks:
+- id: "1"
+  taskid: 90dcd65d-f458-4fef-8546-df7a5b460b80
+  type: regular
+  task:
+    id: 90dcd65d-f458-4fef-8546-df7a5b460b80
+    version: 1
+    name: Determine list of devices to be backed up
+    scriptName: SetContext
+  scriptarguments:
+    key: chkpdevicestobackup
+    value: ""
+- id: "2"
+  taskid: 6eb6a468-79cc-460b-8e2c-cada1799b034
+  type: regular
+  task:
+    id: 6eb6a468-79cc-460b-8e2c-cada1799b034
+    version: 1
+    name: Trigger backup on each device
+    scriptName: CPCreateBackup
+  scriptarguments:
+    devices: ${chkpdevicestobackup}
+  results:
+  - chkpbackupstarted
+  - devicesbackuperrorstarting
+- id: "3"
+  taskid: 143e5bcf-7746-409b-8c53-ff761a2d4b99
+  type: regular
+  task:
+    id: 143e5bcf-7746-409b-8c53-ff761a2d4b99
+    version: 1
+    name: Show status for initiated backup tasks
+    scriptName: CPShowBackupStatus
+  scriptarguments:
+    devices: ${chkpbackupstarted}
+    waittimeout: "5"
+  results:
+  - chkpbackupstarted
+  - devicesbackuperror
+  - backupsreporttext
+- id: "4"
+  taskid: 1e1e3c6f-5703-47ea-8d70-871327266a2b
+  type: condition
+  task:
+    id: 1e1e3c6f-5703-47ea-8d70-871327266a2b
+    version: 1
+    name: Have any backups failed?
+    scriptName: UtilAnyResults
+  condition:
+    "no": []
+    "yes":
+    - id: "5"
+      taskid: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+      type: regular
+      task:
+        id: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+        version: 1
+        name: Open ticket on ServiceNow with list of problematic devices
+        scriptName: SNOpenTicket
+      scriptarguments:
+        assignmentgroup: ""
+        category: ""
+        comments: ${devicesbackuperror}
+        shortdescription: Checkpoint configuration backups - Failed
+        subcategory: ""
+  scriptarguments:
+    data: ${devicesbackuperror}
+- id: "6"
+  taskid: 36723772-43f0-4619-872f-f54d53770054
+  type: regular
+  task:
+    id: 36723772-43f0-4619-872f-f54d53770054
+    version: 1
+    name: Retrieve the backup files from the devices
+    scriptName: SCPPullFiles
+  scriptarguments:
+    systems2files: ${devicesbackupfiles}
+- id: "7"
+  taskid: d187c4cc-630c-4edd-8048-40678669101b
+  type: regular
+  task:
+    id: d187c4cc-630c-4edd-8048-40678669101b
+    version: 1
+    name: Email a report of backup results
+    scriptName: SendEmail
+  scriptarguments:
+    attachIDs: ""
+    bcc: ""
+    body: ${backupsreporttext}
+    cc: ""
+    htmlBody: ""
+    subject: Demisto - Checkpoint Backup Report
+    to: ""
+- id: "8"
+  taskid: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+  type: regular
+  task:
+    id: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+    version: 1
+    name: CloseInvestigation
+    scriptName: CloseInvestigation
+  scriptarguments:
+    notes: ""
+    reason: Done
