@@ -1,12 +1,10 @@
 commonfields:
   id: CheckSenderDomainDistance
-  version: 1
+  version: -1
 name: CheckSenderDomainDistance
 script: |-
   import re
-  domain = 'demisto.com'
-  if 'domain' in demisto.args():
-      domain = demisto.args()['domain']
+
   def levenshtein(s1, s2):
       l1 = len(s1)
       l2 = len(s2)
@@ -20,24 +18,32 @@ script: |-
               else:
                   matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz] + 1)
       return matrix[l2][l1]
+
   res = []
   found = False
-  sender = demisto.get(demisto.args(), 'sender')
-  if not sender:
-      sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
-      sender = sender.group(1) if sender else ''
-  if sender:
-      parts = sender.split('@')
-      demisto.log('[*] Checking sender ' + sender + ' against domain ' + domain)
-      if len(parts) == 2:
-          distance = levenshtein(domain, parts[1])
-          if distance > 0 and distance < 3:
-              res.append({'Type': entryTypes['note'], 'ContentsFormat': formats['text'], 'Contents': 'Domain ' + parts[1] + ' is suspiciously close to ' + domain})
-              found = True
-      else:
-          res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from sender - ' + sender.group(1)})
+
+  domains = argToList(demisto.get(demisto.args(), 'domain'))
+  if not domains:
+      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from arguments'})
   else:
-      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to find sender in email'})
+      sender = demisto.get(demisto.args(), 'sender')
+      if not sender:
+          sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
+          sender = sender.group(1) if sender else ''
+      if sender:
+          parts = sender.split('@')
+          if len(parts) == 2:
+              if not parts[1] in domains:
+                  for domain in domains:
+                      demisto.log('[*] Checking sender ' + sender + ' against domain ' + domain)
+                      distance = levenshtein(domain, parts[1])
+                      if distance > 0 and distance < 3:
+                          res.append({'Type': entryTypes['note'], 'ContentsFormat': formats['text'], 'Contents': 'Domain ' + parts[1] + ' is suspiciously close to ' + domain})
+                          found = True
+          else:
+              res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from sender - ' + sender})
+      else:
+          res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to find sender in email'})
   if found:
       res.append('yes')
   else:
@@ -51,11 +57,13 @@ comment: Get the string distance for the sender from our domain
 system: true
 args:
 - name: domain
+  required: true
   default: true
-  description: |-
-    The domain to be measured against the domain in the sender's email address.
-    Usually the domain used by the company for email, e.g. acme.com when users are assigned jane@acme.com
+  description: The domain to be measured against the domain in the sender's email
+    address.Usually the domain used by the company for email, e.g. acme.com when users
+    are assigned jane@acme.com (could be multiple domains with a comma separator)
 - name: sender
+  required: true
   description: Sender email address
 scripttarget: 0
 dependson: {}
