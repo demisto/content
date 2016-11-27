@@ -86,3 +86,5 @@ timeout: 0s
 dependson:
   must:
   - qr-searches
+  - qr-get-search
+  - QrGetSearchResults
