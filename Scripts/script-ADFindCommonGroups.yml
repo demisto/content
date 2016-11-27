@@ -12,7 +12,7 @@ script: |+
       users_groups = []
       for name in users:
           query_args['name'] = name
-          group_res = demisto.executeCommand('ADGetUserGroups_Enhanced', query_args)
+          group_res = demisto.executeCommand('ADGetUserGroups', query_args)
           if isError(group_res[0]):
               res += group_res
           else:
