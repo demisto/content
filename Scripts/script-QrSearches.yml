@@ -20,7 +20,7 @@ type: python
 tags:
 - QRadar
 comment: Searches in QRadar
-system: false
+system: true
 args:
 - default: true
   description: The query expressions in AQL

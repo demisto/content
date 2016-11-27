@@ -20,7 +20,7 @@ type: python
 tags:
 - QRadar
 comment: Gets offenses from qradar
-system: false
+system: true
 args:
 - description: Query to filter offenses
   name: filter

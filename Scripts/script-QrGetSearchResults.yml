@@ -20,7 +20,7 @@ type: python
 tags:
 - QRadar
 comment: Gets search results
-system: false
+system: true
 args:
 - default: true
   description: The search id
