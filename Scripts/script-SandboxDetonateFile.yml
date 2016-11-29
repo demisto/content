@@ -4,6 +4,8 @@ commonfields:
 name: SandboxDetonateFile
 script: |
   from time import sleep
+  import json
+
   res = []
   timeout = 600
   if 'timeout' in demisto.args():
@@ -16,10 +18,10 @@ script: |
   wildfireDone = False
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'wildfire'})[0]['Contents'] != 'yes':
       wildfireDone = True
-      demisto.log('Wildfire not available.')
+      #demisto.log('Wildfire not available.')
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'cuckoo'})[0]['Contents'] != 'yes':
       cuckooDone = True
-      demisto.log('Cuckoo not available.')
+      #demisto.log('Cuckoo not available.')
 
   # Get the file's hash
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
@@ -29,13 +31,19 @@ script: |
   else:
       fileMd5 = demisto.get(resFileEntry[0], 'FileMetadata.md5')
 
-  demisto.log('File hash is ' + fileMd5)
+  #demisto.log('File hash is ' + fileMd5)
 
   ############ Hash check stage ############
   # Wildfire
   if not wildfireDone:
       resCheckWildfire = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
-      if isError(resCheckWildfire[0]) or resCheckWildfire[0]['Contents'] != 'failed': # Error occurred or hash was already found, same reaction
+      if isError(resCheckWildfire[0]):
+          if "don't have an available report" in resCheckWildfire[0]['Contents']:
+              pass # No report in wildfire, need to upload the file
+          else: # Any other error should be reported back to war room
+              res += resCheckWildfire
+              wildfireDone = True
+      elif resCheckWildfire[0]['Contents'] != 'failed': # Hash was known since file was already analyzed - just return that answer
           res += resCheckWildfire
           wildfireDone = True
 
@@ -43,7 +51,15 @@ script: |
   ############ Submit stage ############
   # Wildfire
   if not wildfireDone:
-      res += demisto.executeCommand("WildfireUpload", {"upload": demisto.args()["entryID"]})
+      resWFUpload = demisto.executeCommand("WildfireUpload", {"upload": demisto.args()["entryID"]})
+      if isError(resWFUpload[0]):
+          wildfireDone = True
+          if 'Wildfire does not support this file type.' in resWFUpload[0]['Contents']:
+              res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : 'Wildfire does not support this file type.' } )
+          else:
+              res += resWFUpload
+
+
   # Cuckoo
   ckTaskId = -1
   if not cuckooDone:
@@ -59,9 +75,16 @@ script: |
       # Wildfire
       if not wildfireDone:
           resWildfireReport = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
-          if not resWildfireReport[0]['Contents'] == 'failed':
-              wildfireDone = True
+
+          if isError(resWildfireReport[0]):
+              if "don't have an available report" in resWildfireReport[0]['Contents']:
+                  pass # Wildfire hasn't finished yet
+              else: # Any other error should be reported back to war room
+                  res += resWildfireReport
+                  wildfireDone = True
+          elif resWildfireReport[0]['Contents'] != 'failed': # Wildfire finished and has a result
               res += resWildfireReport
+              wildfireDone = True
 
       # Cuckoo
       if not cuckooDone:
@@ -75,7 +98,11 @@ script: |
                   if errors:
                       res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Cuckoo returned errors:\n' + '\n'.join(errors) } )
                   # Try to get the report even if errors occurred, in case errors were not fatal
-                  res += demisto.executeCommand("CuckooGetReport", {"taskID": ckTaskId})
+                  resCkRep = demisto.executeCommand("CuckooGetReport", {"taskID": ckTaskId})
+                  res += resCkRep
+                  if not isError(resCkRep[0]):
+                      res += demisto.executeCommand("CuckooDisplayReportFile", {"sections": "all", "reportdata": json.dumps(resCkRep[0]['Contents'])})
+
 
       if wildfireDone and cuckooDone:
           break
@@ -97,7 +124,7 @@ tags:
 - task
 - sandbox
 - enhancement
-- fireeye
+- file
 comment: Detonate the file in available sandboxes.
 args:
 - name: entryID
@@ -114,4 +141,4 @@ dependson:
   - wildfire-report
   - ck-report
 system: true
-timeout: 0s
+timeout: 86.4µs
