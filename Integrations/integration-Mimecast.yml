@@ -151,6 +151,11 @@ script:
 
     switch (command) {
         case 'test-module':
+            var testArgs = {};
+            testArgs.pageSize = 1;
+            testArgs.text = 'Demisto';
+            var queryXml = parseQueryArgs(testArgs);
+            query(queryXml, true);
             return 'ok';
         case 'query':
             var queryXml = '';
