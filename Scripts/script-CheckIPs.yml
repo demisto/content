@@ -1,6 +1,6 @@
 commonfields:
   id: CheckIPs
-  version: 1
+  version: -1
 name: CheckIPs
 script: |-
   import re
@@ -38,16 +38,15 @@ script: |-
           if positiveIp(r):
               badIps.append(ip)
               res.append(shortIp(r))
+
+
   if len(res) > 0:
       res.extend(['yes', 'Found malicious IPs!'])
-      currIps = demisto.get(demisto.context(), 'bad_ips')
-      if currIps and isinstance(currIps, list):
-          currIps += [i for i in badIps if i not in currIps]
-      else:
-          currIps = badIps
-      demisto.setContext('bad_ips', currIps)
+      appendContext('bad_ips', badIps, dedup = True)
   else:
       res.append('no')
+      if not demisto.get(demisto.context(), 'bad_ips'):
+          demisto.setContext('bad_ips', '')
       if ips:
           res.append('Only clean IPs found: \n' + '\n'.join(ips))
       else:
