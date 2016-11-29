@@ -41,12 +41,7 @@ script: |-
               res.append(shortFile(r))
   if len(res) > 0:
       res.extend(['yes', 'Found malicious hashes!'])
-      currHashes = demisto.get(demisto.context(), 'bad_hashes')
-      if currHashes and isinstance(currHashes, list):
-          currHashes += [h for h in badHashes if h not in currHashes]
-      else:
-          currHashes = badHashes
-      demisto.setContext('bad_hashes', currHashes)
+      appendContext('bad_hashes', badHashes, dedup = True)      
   else:
       res.extend(['No suspicious files found', 'no'])
   demisto.results(res)

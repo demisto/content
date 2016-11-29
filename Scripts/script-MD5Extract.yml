@@ -13,14 +13,7 @@ script: |-
       if h not in hashes:
           hashes.append(h)
   res.append('MD5s found:\n' + '\n'.join(hashes))
-  currHashes = demisto.get(demisto.context(), 'md5s')
-  if currHashes and isinstance(currHashes, list):
-      for h in hashes:
-          if h not in currHashes:
-              currHashes.append(h)
-  else:
-      currHashes = hashes
-  demisto.setContext('md5s', currHashes)
+  appendContext('md5s', hashes, dedup = True)  
   demisto.results(res)
 type: python
 tags:
