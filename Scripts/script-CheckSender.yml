@@ -1,16 +1,18 @@
 commonfields:
-  id: CheckSenderPy
-  version: 1
-name: CheckSenderPy
+  id: CheckSender
+  version: -1
+name: CheckSender
 script: |-
   import re
   email = ''
   if 'email' in demisto.args():
       email = demisto.args()['email']
   else:
-      sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
-      if sender:
-          email = sender.group(1)
+      fullmail = demisto.get(demisto.args(), 'fullmail')
+      if fullmail:          
+          sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", fullmail, re.I)
+          if sender:
+              email = sender.group(1)
   if email:
       demisto.results(demisto.executeCommand('pipl-search', {'email': email}))
   else:
@@ -25,7 +27,9 @@ args:
 - name: email
   default: true
   description: Email address to look up. If omitted, will instead extract with regular
-    expression from Incident Details, where the phishing email should be provided.
+    expression from the fullmail argument, where the phishing email should be provided.
+- name: fullmail
+  description: Raw email text to regex the sender from
 scripttarget: 0
 dependson:
   must:
