@@ -50,7 +50,17 @@ script:
         'sb-query': 'application/json'
     };
 
-    var sendRequest = function(url, body, contentType, queryName) {
+    var saveCookies = function(res, requestCookies) {
+        if (requestCookies) {
+            for (var i = 0; i < res.Cookies.length; i++) {
+                if (res.Cookies[i].Domain === 'te.checkpoint.com') {
+                    setIntegrationContext({cookies: [res.Cookies[i]]});
+                }
+            }
+        }
+    }
+
+    var sendRequest = function(url, body, contentType, queryName, cookies, requestCookies) {
         if (contentType) {
             headers['Content-type'] = [contentType];
         }
@@ -59,13 +69,15 @@ script:
                 {
                     Method: 'POST',
                     Body: body,
-                    Headers: headers
+                    Headers: headers,
+                    Cookies: cookies
                 },
                 insecure
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+        saveCookies(res, requestCookies);
         return JSON.parse(res.Body);
     }
 
@@ -99,9 +111,21 @@ script:
         return JSON.stringify(request);
     }
 
+    var contextData = getIntegrationContext();
+    var cookies = contextData.cookies
+    var requestCookies = !cookies;
+    for (var i = 0; !requestCookies && i < cookies.length; i++) {
+        var currentTime = new Date();
+        var date = new Date(cookies[i].Expires);
+        var timeDiffernceInDays = (date.getTime() - currentTime.getTime()) / (1000 * 60 * 60 * 24)
+        if (timeDiffernceInDays < 100) {
+            requestCookies = true;
+        }
+    }
+
     switch (command) {
         case 'test-module':
-            if (sendRequest(urlDict['sb-quota'], requestTemplate, contentTypeDict['sb-quota'], 'test')) {
+            if (sendRequest(urlDict['sb-quota'], requestTemplate, contentTypeDict['sb-quota'], 'test', cookies, requestCookies)) {
                 return 'ok';
             }
             return 'not-cool';
@@ -110,7 +134,8 @@ script:
                 base + urlDict[command] + encodeToURLQuery(args),
                 {
                     Method: 'GET',
-                    Headers: headers
+                    Headers: headers,
+                    Cookies: cookies
                 },
                 insecure
             );
@@ -126,6 +151,7 @@ script:
                     fileName = match[1];
                 }
             }
+            saveCookies(res, requestCookies);
             return {Type: 9, FileID: saveFile(res.Body), File: fileName, Contents: fileName};
         case 'sb-upload':
             var file_id = args['file_id'];
@@ -136,6 +162,7 @@ script:
                 {
                     Method: 'POST',
                     Headers: headers,
+                    Cookies: cookies
                 },
                 {
                     'request': createRequest(args)
@@ -145,13 +172,16 @@ script:
             if (res.StatusCode < 200 || res.StatusCode >= 300) {
                 throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
+            saveCookies(res, requestCookies);
             return JSON.parse(res.Body);
         default:
             return sendRequest(
                 urlDict[command],
                 command === 'sb-query' ? createRequest(args) : requestTemplate,
                 contentTypeDict[command],
-                command);
+                command,
+                cookies,
+                requestCookies);
     }
   type: javascript
   commands:
