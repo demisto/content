@@ -11,7 +11,7 @@ script: |-
   dArgs = demisto.args()
   for name in name_list:
       dArgs.update({'name':name})
-      resp = demisto.executeCommand('ADGetUserGroups_Enhanced', dArgs)
+      resp = demisto.executeCommand('ADGetUserGroups', dArgs)
       if isError(resp[0]):
           res += [{ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups for {0}:\n'.format(name) + resp[0]['Contents'] }]
       else:
@@ -45,8 +45,7 @@ script: |-
 type: python
 tags:
 - active directory
-comment: Use Active Directory to get common groups between supplied users . The user
-  can be specified by name, email or as an Active Directory Distinguished Name (DN).
+comment: Use Active Directory to get common groups between supplied users.
 system: true
 args:
 - name: name
