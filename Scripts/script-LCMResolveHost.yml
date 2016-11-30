@@ -1,0 +1,31 @@
+commonfields:
+  id: LCMResolveHost
+  version: -1
+name: LCMResolveHost
+script: |
+  args = demisto.args()
+  resp = demisto.executeCommand("lcm-resolve-host", args)
+
+  if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
+      demisto.results(resp)
+  else:
+      demisto.results('Done')
+type: python
+tags:
+- lightcyber
+comment: Mark a host as resolved in LightCyber Magna. Will return an error if you
+  try to resolve a host that isn't in the detected entities list or if the host is
+  already resolved (You can use "unresolve" to change this property back).
+args:
+- name: id
+  required: true
+  default: true
+  description: The host's ID
+- name: reason
+  description: Reason for resolving the host
+scripttarget: 0
+dependson:
+  must:
+  - lcm-resolve-host
+timeout: 0s
+system: true
