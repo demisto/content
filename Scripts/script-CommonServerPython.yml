@@ -257,6 +257,11 @@ script: |-
 
   def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
+ 
+  MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
+
+  def stringEscapeMD(st):
+      return "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 type: python
 tags:
 - infra
