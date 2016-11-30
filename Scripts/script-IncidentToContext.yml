@@ -1,6 +1,6 @@
 commonfields:
   id: IncidentToContext
-  version: 1
+  version: -1
 name: IncidentToContext
 script: |-
   # These comments are required to make sure that all pre-defined labels are selectable in the playbook
