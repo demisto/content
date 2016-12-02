@@ -1,7 +1,7 @@
 commonfields:
-  id: McGetInfectedUsers
+  id: MCFindEmail
   version: -1
-name: McGetInfectedUsers
+name: MCFindEmail
 script: |
   USERS_LABAL = "Users"
 
@@ -19,7 +19,7 @@ script: |
 
           users = list(users)
           if users:
-              markdownString = '### Users that recived a suspicious mail:\n'
+              markdownString = '### Mailboxes with email(s) matching the query:\n'
               markdownString += "".join(['* ' + s + '\n' for s in users])
               res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
 
@@ -39,7 +39,7 @@ script: |
 type: python
 tags:
 - Mimecast
-comment: Looks for users that received a suspicious mail, returns No/Yes and the correlating  users
+comment: Find an email across all mailboxes, and return the list of mailboxes where the email was found, as well as Yes if the mail was found anywhere or No otherwise.
 system: true
 args:
 - name: queryXml
