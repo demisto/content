@@ -121,7 +121,6 @@ script:
                 args[keys[i]] = args[keys[i]] === 'true';
             }
         }
-        console.log(JSON.stringify(args))
         return sendRequest(
             'POST', server + 'api/siem/offenses/' + offense_id,
             {'Content-Type': ['application/json']},
