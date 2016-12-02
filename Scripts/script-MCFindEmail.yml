@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: MCFindEmail
 script: |
-  USERS_LABAL = "Users"
+  MAILBOXES_CTXKEY = "Mailboxes"
 
   res = []
   resp = demisto.executeCommand("query", demisto.args())
@@ -24,7 +24,7 @@ script: |
               res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
 
               users_str = ','.join([str(s) for s in users])
-              demisto.setContext(USERS_LABAL, users_str)
+              demisto.setContext(MAILBOXES_CTXKEY, users_str)
 
               answer = 'yes'
           else:
