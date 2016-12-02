@@ -44,5 +44,7 @@ args:
   description: Which task should we close with the reply. If none then no playbook
     tasks will be closed.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - send-mail
 timeout: 0s
