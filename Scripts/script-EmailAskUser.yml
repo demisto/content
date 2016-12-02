@@ -24,7 +24,6 @@ tags:
 - email
 comment: Ask a user a question via email and process the reply directly into the investigation.
 system: true
-enabled: true
 args:
 - name: email
   required: true
