@@ -20,7 +20,7 @@ type: python
 tags:
 - Mimecast
 comment: query mimecast emails
-system: false
+system: true
 args:
 - default: true
   description: The query string xml for the search using Mimecast Unified Search Experience
