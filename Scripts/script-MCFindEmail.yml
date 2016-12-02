@@ -34,8 +34,8 @@ script: |
           demisto.log("\nNo relevant mails have been found\n")
           answer = 'no'
 
-  res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
-  demisto.results(res)
+      res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+      demisto.results(res)
 type: python
 tags:
 - Mimecast
