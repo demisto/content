@@ -103,7 +103,6 @@ script:
 
     function sendSOAPRequest(method, args, service) {
         var req = fillInSOAPRequestTemplate(method, rplaceInTemplates(createTemplate(method, args), args), service);
-        console.log('sent ' + req)
         var res = http(
             service === 'AFF' ? baseAFF : baseAFA,
             {
@@ -116,7 +115,6 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
                 throw 'Failed to ' + method + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
-        console.log('rcvd ' + res.Body)
         return res.Body;
     }
 
