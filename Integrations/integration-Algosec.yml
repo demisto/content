@@ -157,7 +157,7 @@ script:
     }
 
     if (bfCommands.indexOf(command) !== -1) {
-        return JSON.parse(sendRESTRequest(commandToURL[command] ,args));
+        return JSON.parse(sendRESTRequest(commandToURL[command] ,args, 'AFA'));
     }
 
     args.sessionId = sendAndParse('ConnectRequest', {username: username, password: password}, 'AFA');
