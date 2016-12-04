@@ -1,0 +1,498 @@
+commonfields:
+  id: LightCyber Magna
+  version: -1
+name: LightCyber Magna
+display: LightCyber Magna
+system: true
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARYAAAAjCAYAAABRjSXlAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDhENjJFMzU1NDQ3MTFFNEIyQzZEMzIxNERGRDRDQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDhENjJFMzY1NDQ3MTFFNEIyQzZEMzIxNERGRDRDQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEOEQ2MkUzMzU0NDcxMUU0QjJDNkQzMjE0REZENENBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEOEQ2MkUzNDU0NDcxMUU0QjJDNkQzMjE0REZENENBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvdABUYAABavSURBVHja7F3fjyTX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
+description: Integration with LightCyber Magna using official API.
+detaileddescription: By default only Confirmed indicators trigger as Demisto incidents.
+  Enable "Fetch Suspicious indicators" to also trigger "Suspicious" level LightCyber
+  indicators.
+configuration:
+- display: Server (e.g. https://3.4.5.6)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Authentication
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust certifcate
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch "Suspicious" indicators
+  name: fetchsuspicious
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var fixUrl = function(base) {
+      res = base;
+      if (base && base[base.length - 1] != '/') {
+          res = res + '/';
+      }
+      return res;
+    };
+
+    var buildArgs = function(args) {
+        sArgs = Object.keys(args).map(function(key) {
+            return [key, args[key]].map(encodeURIComponent).join("=");
+        }).join("&");
+        if (sArgs) {
+            return '?' + sArgs;
+        } else {
+            return '';
+        }
+    };
+
+    var parseResponse = function(resp) {
+      if (resp.StatusCode === 200) {
+          try {
+              return JSON.parse(resp.Body);
+          } catch (e) {
+              return resp.Body;
+          }
+      } else {
+        err = resp.Status;
+        if (resp.Body) {
+            err += '\n' + resp.Body;
+        }
+        throw err;
+      }
+
+    };
+    var Base64 = {
+      _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+      encode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+        while (i < input.length) {
+          chr1 = input.charCodeAt(i++);
+          chr2 = input.charCodeAt(i++);
+          chr3 = input.charCodeAt(i++);
+          enc1 = chr1 >> 2;
+          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+          enc4 = chr3 & 63;
+          if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+          } else if (isNaN(chr3)) {
+            enc4 = 64;
+          }
+          output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        }
+
+        return output;
+      }
+    };
+
+
+    var loadCSV = function(csvData) {
+      var data = [];
+      var rows = csvData.split('\r\n');
+      var headers = rows[0].split(',');
+      for(var i = 1; i < rows.length; i++) {
+        var cells = rows[i].split(',');
+        if (cells.join('') === '') {
+            continue;
+        }
+        var obj = {};
+        for(var j = 0; j < cells.length; j++) {
+            obj[headers[j]] = cells[j];
+        }
+        data.push(obj);
+      }
+      return {results: data};
+    };
+
+    var doGet = function(qArgs, qParams, auth, raw, suffix) {
+      url = fixUrl(qParams.server) + suffix + buildArgs(qArgs);
+      res = http(
+          url,
+          {
+              Method: 'GET',
+              Headers: {'Authorization': [auth]}
+          },
+          qParams.insecure
+      );
+      if (raw) {
+          return res;
+      } else {
+          return parseResponse(res);
+      }
+    };
+
+    var doGetCSV = function(qArgs, qParams, auth, suffix) {
+      url = fixUrl(qParams.server) + suffix;
+      resp = http(
+          url,
+          {
+              Method: 'GET',
+              Headers: {'Authorization': [auth]}
+          },
+          qParams.insecure
+      );
+
+      if (resp.StatusCode === 200) {
+        return loadCSV(resp.Body);
+      } else {
+        err = resp.Status;
+        if (resp.Body) {
+            err += '\n' + resp.Body;
+        }
+        log("LightCyber doGetCsv error: " + err);
+        throw err;
+      }
+    };
+
+    var doPost = function(body, qParams, auth, raw, suffix) {
+      var url = fixUrl(qParams.server) + suffix;
+      var res = http(
+          url, // URL
+          { // HTTP Request Headers
+              Method: 'POST',
+              Headers: {'Authorization': [auth]},
+              Body: JSON.stringify(body)
+
+          },
+          qParams.insecure
+      );
+      if (raw) {
+          return res;
+      } else {
+          return parseResponse(res);
+      }
+    };
+
+    var getIndicators = function(qArgs, qParams, auth) {
+        return doGetCSV(qArgs, qParams, auth, 'api/reports/indicators');
+    };
+
+    var getEntities = function(qArgs, qParams, auth) {
+        return doGetCSV(qArgs, qParams, auth, 'api/reports/entities');
+    };
+
+    var getIndicatorsByHostId = function(qArgs, qParams, auth, filterIds) {
+        if (!filterIds || filterIds.length === 0){
+            return {};
+        } else {
+            var indicators = getIndicators(qArgs, qParams, auth);
+            var indByHostId = {};
+            var hostId;
+            for(var i = 0; i < indicators.length; i++) {
+                hostId = indicators[i].HostId;
+                // Only include hostIds that appear in filterIds
+                if (filterIds.indexOf(hostId) >= 0) {
+                    if (indByHostId[hostId]) {
+                        indByHostId[hostId].push(indicators[i]);
+                    } else {
+                        indByHostId[hostId] = [indicators[i]];
+                    }
+                }
+            }
+            return indByHostId;
+        }
+    };
+
+
+    var createIncidentFromEntity = function(entity) {
+            var keys = Object.keys(entity);
+            var labels = [];
+            for (var i = 0; i<keys.length; i++) {
+                labels.push({'type': keys[i], 'value': entity[keys[i]]});
+            }
+
+            var eid = 'Unknown';
+            if (entity['Entity Type'] === 'host') {
+                if (entity.Hostname) {
+                    eid = entity.Hostname;
+                } else if (entity.IP) {
+                    eid = entity.IP;
+                } else {
+                    eid = entity['Entity ID'];
+                }
+            } else {
+                if (entity.Username) {
+                    eid = entity.Username;
+                } else {
+                    eid = entity['Entity ID'];
+                }
+            }
+
+            return {
+                "name": 'LightCyber: ' + entity['Entity Type'] + ' {' + eid + '} - ' + entity['Final Status'],
+                "labels": labels,
+                "details": JSON.stringify(entity)
+            };
+        };
+
+    var getIncidents = function(qArgs, qParams, auth) {
+        var inc = [];
+        var last = getLastRun().highestLastDetected;
+        if (!last) {
+            last = '';
+        }
+        var data = getEntities(qArgs, qParams, auth);
+        if (data && data.results) {
+            var entities = data.results;
+            var highest = last;
+            var hostIds = {};
+            for (var i = 0; i < entities.length; i++) {
+                if ( entities[i].Status === 'Confirmed' || (qParams.fetchsuspicious && entities[i].Status === 'Suspicious') ) {
+                    if (entities[i]['Last Detected'] > last) {
+                        hostIds[entities[i]['Entity Id']] = '';
+                        inc.push(createIncidentFromEntity(entities[i]));
+                    }
+                    if (entities[i]['Last Detected'] > highest) {
+                        highest = entities[i]['Last Detected'];
+                    }
+                }
+            }
+            if (highest > last) {
+                setLastRun({'highestLastDetected': highest});
+            }
+
+            return JSON.stringify(inc);
+        } else {
+            return '';
+        }
+    };
+
+    delete args.using
+    delete args['using-brand']
+    // Currently API only supports Basic auth.
+    u = params.authentication.identifier;
+    p = params.authentication.password;
+    auth = 'Basic ' + Base64.encode(u + ':' + p);
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+      // This is the call made when pressing the integration test button.
+      case 'test-module':
+          resp = doGet(args, params, auth, true, 'api/version');
+          if (resp.StatusCode === 200) {
+              return 'ok';
+          } else if (resp.Status) {
+              return resp.Status;
+          } else {
+              return resp;
+          }
+          break;
+      case 'fetch-incidents':
+          return getIncidents(args, params, auth);
+      case 'lcm-version':
+          return doGet(args, params, auth, false, 'api/version');
+      case 'lcm-indicators':
+          return getIndicators(args, params, auth);
+      case 'lcm-entities':
+          return getEntities(args, params, auth);
+      case 'lcm-hosts':
+          var data = doGet(args, params, auth, false, 'api/hosts');
+          return {results: data};
+      case 'lcm-domain':
+          return doGet(args, params, auth, false, 'api/domains/' + args.name);
+      case 'lcm-hostbyip':
+          var data = doGet(args, params, auth, false, 'api/hosts/by_ip/' + args.ip);
+          return {results: data};
+      case 'lcm-hostbyname':
+          var data = doGet(args, params, auth, false, 'api/hosts/by_name/' + args.name);
+          return {results: data};
+      case 'lcm-hostbyid':
+          var data = doGet(args, params, auth, false, 'api/hosts/' + args.id);
+          return {results: data};
+      case 'lcm-pathfinder-scan':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/scan');
+      case 'lcm-executablebymd5':
+          return doGet(args, params, auth, false, 'api/executables/' + args.md5);
+      case 'lcm-executablebyname':
+          return doGet(args, params, auth, false, 'api/executables/by_name/' + args.name);
+      case 'lcm-sandbox-report':
+          return doGet(args, params, auth, false, 'api/executables/' + args.md5 + '/report');
+      case 'lcm-host-artifacts':
+          return doGet(args, params, auth, false, 'api/hosts/' + args.id + '/archive');
+      case 'lcm-resolve-host':
+          return doPost(args.reason ? args.reason : '', params, auth, false, 'api/hosts/' + args.id + '/resolve');
+      case 'lcm-unresolve-host':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/unresolve');
+      case 'lcm-set-host-comment':
+          return doPost(args.comment, params, auth, false, 'api/hosts/' + args.id + '/comment');
+      case 'lcm-acknowledge-host':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/acknowledge');
+      case 'lcm-resolve-user':
+          return doPost(args.reason ? args.reason : '', params, auth, false, 'api/users/' + args.name + '/resolve');
+      case 'lcm-unresolve-user':
+          return doPost('', params, auth, false, 'api/users/' + args.name + '/unresolve');
+      case 'lcm-set-user-comment':
+          return doPost(args.comment, params, auth, false, 'api/users/' + args.name + '/comment');
+      case 'lcm-acknowledge-user':
+          return doPost('', params, auth, false, 'api/users/' + args.name + '/acknowledge');
+      case 'lcm-daily-report':
+          return doGet(args, params, auth, false, 'api/daily_report');
+      case 'lcm-indicatorsforentity':
+          return getIndicatorsByHostId(args, params, auth, args.id);
+      default:
+          return 'Unrecognized command: ' + command;
+    }
+  type: javascript
+  commands:
+  - name: lcm-version
+    arguments: []
+    description: Show product version
+  - name: lcm-entities
+    arguments: []
+    description: Show all entities reported in alerts
+  - name: lcm-indicators
+    arguments: []
+    description: Show all indicators reported in alerts
+  - name: lcm-hosts
+    arguments: []
+    description: Get a list of all hosts in the system which are a part of an indicator
+      (either source or destination).
+  - name: lcm-hostbyip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to find
+    description: Get a specific host record by IP address (similar to user "find host"
+      feature)
+  - name: lcm-hostbyname
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Name to find
+    description: Get a specific host record by host name (similar to user "find host"
+      feature)
+  - name: lcm-pathfinder-scan
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of host to scan
+    description: Initiate a manual pathfinder scan on the host.
+  - name: lcm-sandbox-report
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: The md5 for which to retrieve the report
+    description: Download HTML sandbox report for the given MD5
+  - name: lcm-daily-report
+    arguments: []
+    description: Returns the daily report (normally sent by email)
+  - name: lcm-host-artifacts
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of the host whose suspicious artifacts to download.
+    description: Download a zip containing the suspicious artifacts of the host.
+  - name: lcm-resolve-host
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    - name: reason
+      description: Reason for resolving the host
+    description: Resolve a host
+  - name: lcm-unresolve-host
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    description: Un-resolve a host
+  - name: lcm-set-host-comment
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    - name: comment
+      required: true
+      description: The new comment to set for the host
+    description: Change the host comment
+  - name: lcm-acknowledge-host
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    description: Acknowledge all changes on a host (resets purple track changes marks)
+  - name: lcm-resolve-user
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    - name: reason
+      description: Reason for resolving the user
+    description: Resolve a user
+  - name: lcm-unresolve-user
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    description: Un-resolve a user
+  - name: lcm-set-user-comment
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    - name: comment
+      required: true
+      description: The new comment to set for the user
+    description: Change the user's comment
+  - name: lcm-acknowledge-user
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    description: Acknowledge all changes on a user (resets purple track changes marks)
+  - name: lcm-domain
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Domain name
+    description: Get a specific domain record by domain name
+  - name: lcm-executablebymd5
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: Executable's md5
+    description: Get a specific executable record (by MD5)
+  - name: lcm-executablebyname
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Executable's name
+    description: Get a specific executable record (by name)
+  - name: lcm-indicatorsforentity
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Host ID
+    description: Get indicators for a specific detected host
+  isfetch: true
