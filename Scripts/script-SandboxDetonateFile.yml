@@ -2,10 +2,8 @@ commonfields:
   id: SandboxDetonateFile
   version: -1
 name: SandboxDetonateFile
-script: |
+script: |-
   from time import sleep
-  import json
-
   res = []
   timeout = 600
   if 'timeout' in demisto.args():
@@ -14,6 +12,7 @@ script: |
   if 'interval' in demisto.args():
       interval = int(demisto.args()['interval'])
 
+  sandblastDone = False
   cuckooDone = False
   wildfireDone = False
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'wildfire'})[0]['Contents'] != 'yes':
@@ -22,6 +21,9 @@ script: |
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'cuckoo'})[0]['Contents'] != 'yes':
       cuckooDone = True
       #demisto.log('Cuckoo not available.')
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'sandblast'})[0]['Contents'] != 'yes':
+      sandblastDone = True
+      #demisto.log('Sandblast not available.')
 
   # Get the file's hash
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
@@ -59,6 +61,16 @@ script: |
           else:
               res += resWFUpload
 
+  # Sandblast
+  if not sandblastDone:
+      resSBUpload = demisto.executeCommand("sb-upload", {"file_id": demisto.args()["entryID"], "file_name" : demisto.args()["entryID"]})
+      if isError(resSBUpload[0]):
+          sandblastDone = True
+          res += resSBUpload
+      elif not str(demisto.get(resSBUpload[0], 'Contents.response.status.code')) in ['1001','1002']:
+          demisto.log('\n'+str(demisto.get(resSBUpload[0], 'Contents.response.status.code'))+'\n')
+          sandblastDone = True
+          res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Sandblast Error: {0}".format(str(demisto.get(resSBUpload[0], 'Contents.response.status.message'))) } )
 
   # Cuckoo
   ckTaskId = -1
@@ -72,6 +84,19 @@ script: |
   ############ Poll stage ############
   sec = 0
   while (sec < timeout):
+      # Sandblast
+      if not sandblastDone:
+          resSBReport = demisto.executeCommand("sb-query", {"md5": fileMd5})
+          if isError(resSBReport[0]):
+              sandblastDone = True
+              res.append(resSBReport[0])
+          elif str(demisto.get(resSBReport[0], 'Contents.response.status.code')) == '1001':
+              sandblastDone = True
+              res += resSBReport
+          elif str(demisto.get(resSBReport[0], 'Contents.response.status.code')) == '1004':
+              sandblastDone = True
+              res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Sandblast: problem uploading the file.' } )
+
       # Wildfire
       if not wildfireDone:
           resWildfireReport = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
@@ -98,13 +123,9 @@ script: |
                   if errors:
                       res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Cuckoo returned errors:\n' + '\n'.join(errors) } )
                   # Try to get the report even if errors occurred, in case errors were not fatal
-                  resCkRep = demisto.executeCommand("CuckooGetReport", {"taskID": ckTaskId})
-                  res += resCkRep
-                  if not isError(resCkRep[0]):
-                      res += demisto.executeCommand("CuckooDisplayReportFile", {"sections": "all", "reportdata": json.dumps(resCkRep[0]['Contents'])})
+                  res += demisto.executeCommand("CuckooGetReport", {"taskID": ckTaskId})
 
-
-      if wildfireDone and cuckooDone:
+      if wildfireDone and cuckooDone and sandblastDone:
           break
       sec += interval
       sleep(interval)
@@ -118,6 +139,7 @@ script: |
   demisto.results(res)
 type: python
 tags:
+- sandblast
 - cuckoo
 - wildfire
 - fireeye
@@ -140,5 +162,7 @@ dependson:
   should:
   - wildfire-report
   - ck-report
+  - sb-upload
+  - sb-query
 system: true
 timeout: 86.4µs
