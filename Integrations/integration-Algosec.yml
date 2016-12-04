@@ -184,6 +184,9 @@ script:
       description: "The device action to perform for the traffic. This can be either
         of the following: \U0010FC00 1 - Allow the traffic \U0010FC00 0 - Block the
         traffic"
+      predefined:
+      - "0"
+      - "1"
     - name: destAddress
       required: true
       description: The destination address to perform the action o
