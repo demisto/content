@@ -1,0 +1,38 @@
+commonfields:
+  id: LCMPathFinderScanHost
+  version: -1
+name: LCMPathFinderScanHost
+script: |
+  args = demisto.args()
+  resp = demisto.executeCommand("lcm-pathfinder-scan", args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  elif str(resp[0]['Contents']).lower() == 'true':
+      demisto.results('Host was added to PathFinder scan queue.')
+  elif str(resp[0]['Contents']).lower() == 'false':
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "LightCyber Magna could not add the host to the PathFinder scan queue." } )
+  else:
+      demisto.results(resp)
+type: python
+tags:
+- lightcyber
+comment: "Scan a host using LightCyber Magna's \"PathFinder\" agent (\"Pathfinder
+  OnDemand\").\nThis is the equivalent of pressing the Pathfinder OnDemand button
+  in the Magna UI. \n\nOnDemand pathfinder scans are typically performed after a host
+  is suspected (this is done automatically by Magna, but a reason external to Magna
+  can cause suspicion in this case). After pathfinder is launched the following is
+  achieved:\n* As a result of the scan pathfinder can find Malware or Riskware\n*
+  Suspicious artifacts (a list of rare and suspicious executables) can be used for
+  further investigation"
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: The host's ID
+scripttarget: 0
+dependson:
+  must:
+  - lcm-pathfinder-scan
+timeout: 0s
