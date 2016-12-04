@@ -136,6 +136,8 @@ script: |-
       res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from Wildfire (may be due to timeout).' } )
   if not cuckooDone:
       res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from Cuckoo (may be due to timeout).' } )
+  if not sandblastDone:
+      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from sandblast (may be due to timeout).' } )
   demisto.results(res)
 type: python
 tags:
@@ -163,6 +165,6 @@ dependson:
   - wildfire-report
   - ck-report
   - sb-upload
-  - sb-query
+  - sb-query  
 system: true
 timeout: 86.4µs
