@@ -45,7 +45,7 @@ script:
         var keys = Object.keys(incident);
         var labels = [];
         for (var i = 0; i<keys.length; i++) {
-            labels.push({'type': keys[i], 'value': incident[keys[i]]});
+            labels.push({'type': keys[i], 'value': String(incident[keys[i]])});
         }
         return {
             "name": incident.id + ' ' + incident.description,
