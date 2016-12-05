@@ -36,7 +36,7 @@ tasks:
         id: 513dacef-9809-4828-8d3c-ffb1c188e9c2
         version: 2
         name: Open ServiceNow ticket for admin to install agents
-        scriptName: SNOpenTicket
+        script: SNOpenTicket
       scriptarguments:
         assignmentgroup: ""
         category: Software
@@ -60,7 +60,7 @@ tasks:
         id: f35617e9-0a55-4967-8a2e-1c878e4711a0
         version: 1
         name: CloseInvestigation
-        scriptName: CloseInvestigation
+        script: CloseInvestigation
       scriptarguments:
         notes: ""
         reason: ""
