@@ -260,8 +260,30 @@ script: |-
  
   MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
 
+
   def stringEscapeMD(st):
       return "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+
+
+  def raiseTable(root, key):
+      newInternal = {}
+      if key in root and isinstance(root[key], dict):
+          for sub in root[key]:
+              if sub not in root:
+                  root[sub] =root[key][sub]
+              else:
+                  newInternal[sub] = root[key][sub]
+          if newInternal:
+              root[key] = newInternal
+          else:
+              del root[key]
+
+
+  def zoomField(item, fieldName):
+      if isinstance(item, dict) and fieldName in item:
+          return item[fieldName]
+      else:
+          return item
 type: python
 tags:
 - infra
