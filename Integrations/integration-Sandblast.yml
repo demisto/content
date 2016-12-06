@@ -64,7 +64,6 @@ script:
         if (contentType) {
             headers['Content-type'] = [contentType];
         }
-        console.log(body)
         var res = http(
                 base + url,
                 {
@@ -79,7 +78,6 @@ script:
             throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         saveCookies(res, requestCookies);
-        console.log(res.Body)
         return JSON.parse(res.Body);
     }
 
