@@ -9,10 +9,10 @@ script: |2
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0], "Contents")
+      data = [demisto.get(x, "Contents") for x in resp]
       if data:
           data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} if isinstance for row in data]
+          data = flattenTable(data)
           demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
       else:
           demisto.results("No results.")
@@ -21,20 +21,20 @@ tags:
 - Algosec
 comment: Find applications containing network objects related to IP address using
   BusinessFlow
-system: false
+system: true
 args:
-- default: true
-  description: The IP/Subnet to search
-  name: address
+- name: address
   required: true
-- auto: PREDEFINED
-  description: The search method for the address
-  name: type
+  default: true
+  description: The IP/Subnet to search
+- name: type
+  auto: PREDEFINED
   predefined:
   - INTERSECT
   - CONTAINED
   - CONTAINING
   - EXACT
+  description: The search method for the address
 scripttarget: 0
 timeout: 0s
 dependson:

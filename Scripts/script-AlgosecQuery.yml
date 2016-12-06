@@ -12,7 +12,7 @@ script: |2
       data = demisto.get(resp[0], "Contents.QueryResponse")
       if data:
           data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} if isinstance for row in data]
+          data = flattenTable(data)
           demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
       else:
           demisto.results("No results.")
@@ -20,23 +20,23 @@ type: python
 tags:
 - Algosec
 comment: Performs a batch traffic simulation query using Firewall Analyzer
-system: false
+system: true
 args:
-- default: true
+- name: source
+  required: true
+  default: true
   description: source(s) for the query. Multiple values are separated by commas (,)
-  name: source
+- name: destination
   required: true
-- description: destination(s) for the query. Multiple values are separated by commas
+  description: destination(s) for the query. Multiple values are separated by commas
     (,)
-  name: destination
+- name: service
   required: true
-- description: service(s) for the query. Multiple values are separated by commas (,)
-  name: service
-  required: true
-- description: user for the query
-  name: user
-- description: application for the query
-  name: application
+  description: service(s) for the query. Multiple values are separated by commas (,)
+- name: user
+  description: user for the query
+- name: application
+  description: application for the query
 scripttarget: 0
 timeout: 0s
 dependson:
