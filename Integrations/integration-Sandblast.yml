@@ -220,6 +220,8 @@ script:
       - "true"
       - "false"
       description: If true, response delivers the quota data (for cloud services only)
+    - name: file_name
+      description: File name - service calculates the file name from the part name
     description: Use the Query API to have a client application look for either the
       analysis report of a specific file on the Check Point Threat Prevention service
       databases or the status of a file, uploaded for analysis
