@@ -106,6 +106,8 @@ script:
         }
         if (args.features === 'all') {
             args.features = ['te', 'av', 'extraction'];
+        } else {
+            args.features = [args.features];
         }
         var request = {request: args};
         return JSON.stringify(request);
