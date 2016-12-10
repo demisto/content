@@ -1,0 +1,80 @@
+commonfields:
+  id: Giphy
+  version: -1
+name: Giphy
+display: Giphy
+system: true
+category: Communication
+image: data:image/png;base64,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
+description: Display random GIF in the War Room (e.g. !giphy hello)
+detaileddescription: 'You can get API Key from: https://github.com/Giphy/GiphyAPI#access-and-api-keys'
+configuration:
+- display: Giphy URL
+  name: url
+  defaultvalue: http://api.giphy.com/v1/gifs/random
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: |-
+    var sendRequest = function(tag) {
+        var serverUrl = params.url;
+        var apiKey = params.apikey;
+        var requestUrl = params.url + '?api_key=' + apiKey + '&tag=' + tag;
+        var res = http(requestUrl, { Method: 'GET' });
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    };
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            if (sendRequest(tag)) {
+                return 'ok';
+            }
+            return 'not ok';
+        case 'giphy':
+            var tag = args.tag;
+            var asJson = args['as-json'] === 'true';
+            var res = sendRequest(tag);
+
+            if (asJson) {
+                return res;
+            }
+
+            if (res.data && res.data.fixed_height_downsampled_url) {
+                var url = res.data.fixed_height_downsampled_url;
+                return {
+                    ContentsFormat: 'markdown',
+                    Type: 1,
+                    Contents: '![Giphy ' + tag + '](' + url + ')'
+                };
+            }
+
+            return 'Nothing found :(';
+        default:
+            // do nothing
+    }
+  type: javascript
+  commands:
+  - name: giphy
+    arguments:
+    - name: tag
+      default: true
+      description: The GIF tag to limit randomness by
+    - name: as-json
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns the response as JSON
+    description: Display random GIF in the War Room (e.g. !giphy hello)
