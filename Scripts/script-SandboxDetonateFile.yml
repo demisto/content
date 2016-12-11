@@ -25,6 +25,14 @@ script: |-
       sandblastDone = True
       #demisto.log('Sandblast not available.')
 
+  using = demisto.get(demisto.args(), 'using')
+  if using:
+      if 'wildfire' not in using.lower():
+          wildfireDone = True
+      if 'cuckoo' not in using.lower():
+          cuckooDone = True
+      if 'sandblast' not in using.lower() and 'checkpoint' not in using.lower():
+          sandblastDone = True
   # Get the file's hash
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
   if isError(resFileEntry[0]):
@@ -33,7 +41,7 @@ script: |-
   else:
       fileMd5 = demisto.get(resFileEntry[0], 'FileMetadata.md5')
 
-  #demisto.log('File hash is ' + fileMd5)
+
 
   ############ Hash check stage ############
   # Wildfire
@@ -49,6 +57,18 @@ script: |-
           res += resCheckWildfire
           wildfireDone = True
 
+  # Sandblast
+  if not sandblastDone:
+      resCheckSB = demisto.executeCommand("sb-query", {"md5": fileMd5})
+      if isError(resCheckSB[0]):
+          sandblastDone = True
+          res.append(resCheckSB[0])
+      elif str(demisto.get(resCheckSB[0], 'Contents.response.te.status.code')) == '1001':
+          sandblastDone = True
+          data = demisto.get(resCheckSB[0], 'Contents.response')
+          data = {x:data[x] for x in ['file_name', 'file_type', 'md5', 'te']}
+          raiseTable(data, 'te')
+          res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : flattenRow(data) })
 
   ############ Submit stage ############
   # Wildfire
@@ -68,7 +88,6 @@ script: |-
           sandblastDone = True
           res += resSBUpload
       elif not str(demisto.get(resSBUpload[0], 'Contents.response.status.code')) in ['1001','1002']:
-          demisto.log('\n'+str(demisto.get(resSBUpload[0], 'Contents.response.status.code'))+'\n')
           sandblastDone = True
           res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Sandblast Error: {0}".format(str(demisto.get(resSBUpload[0], 'Contents.response.status.message'))) } )
 
@@ -87,13 +106,17 @@ script: |-
       # Sandblast
       if not sandblastDone:
           resSBReport = demisto.executeCommand("sb-query", {"md5": fileMd5})
+
           if isError(resSBReport[0]):
               sandblastDone = True
               res.append(resSBReport[0])
-          elif str(demisto.get(resSBReport[0], 'Contents.response.status.code')) == '1001':
+          elif str(demisto.get(resSBReport[0], 'Contents.response.te.status.code')) == '1001':
               sandblastDone = True
-              res += resSBReport
-          elif str(demisto.get(resSBReport[0], 'Contents.response.status.code')) == '1004':
+              data = demisto.get(resSBReport[0], 'Contents.response')
+              data = {x:data[x] for x in ['file_name', 'file_type', 'md5', 'te']}
+              raiseTable(data, 'te')
+              res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : flattenRow(data) })
+          elif str(demisto.get(resSBReport[0], 'Contents.response.te.status.code')) == '1004' and sec > timeout/2: # Give sandblast time to sync that the file has been uploaded, disregard this for a while
               sandblastDone = True
               res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Sandblast: problem uploading the file.' } )
 
@@ -137,8 +160,11 @@ script: |-
   if not cuckooDone:
       res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from Cuckoo (may be due to timeout).' } )
   if not sandblastDone:
-      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from sandblast (may be due to timeout).' } )
-  demisto.results(res)
+      res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve full results from sandblast (may be due to timeout).' } )
+  if res:
+      demisto.results(res)
+  else:
+      demisto.results('No results.')
 type: python
 tags:
 - sandblast
