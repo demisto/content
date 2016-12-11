@@ -25,13 +25,13 @@ script: |-
       sandblastDone = True
       #demisto.log('Sandblast not available.')
 
-  using = demisto.get(demisto.args(), 'using')
-  if using:
-      if 'wildfire' not in using.lower():
+  usingBrand = demisto.get(demisto.args(), 'using-brand')
+  if usingBrand:
+      if 'wildfire' not in usingBrand.lower():
           wildfireDone = True
-      if 'cuckoo' not in using.lower():
+      if 'cuckoo' not in usingBrand.lower():
           cuckooDone = True
-      if 'sandblast' not in using.lower() and 'checkpoint' not in using.lower():
+      if 'sandblast' not in usingBrand.lower() and 'checkpoint' not in usingBrand.lower():
           sandblastDone = True
   # Get the file's hash
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
