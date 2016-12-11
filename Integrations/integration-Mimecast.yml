@@ -143,7 +143,7 @@ script:
                 queryXml = queryXml.replace('<sent></sent>','<sent select=\"from\" >'+args.sentFrom+'</sent>');
             }
             if ((args.sentTo) && (args.sentTo.length > 0) ){
-                queryXml = queryXml.replace('<sent></sent>','<sent select=\"from\" >'+args.sentTo+'</sent>');
+                queryXml = queryXml.replace('<sent></sent>','<sent select=\"to\" >'+args.sentTo+'</sent>');
             }
             queryXml = queryXml.replace('<sent></sent>','');//no empty tag
             if ((args.attachmentText) && (args.attachmentText.length > 0) ){
