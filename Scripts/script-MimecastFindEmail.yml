@@ -1,7 +1,7 @@
 commonfields:
-  id: MCFindEmail
+  id: MimecastFindEmail
   version: -1
-name: MCFindEmail
+name: MimecastFindEmail
 script: |
   MAILBOXES_CTXKEY = "Mailboxes"
 
