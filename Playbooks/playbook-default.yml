@@ -10,7 +10,7 @@ tasks:
     id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
     version: -1
     name: Set initial incident context
-    scriptName: IncidentToContext
+    script: IncidentToContext
   results:
   - Label/Application
   - Label/Database
@@ -50,7 +50,7 @@ tasks:
     id: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
     version: -1
     name: Is this an email
-    scriptName: IsContextSet
+    script: IsContextSet
   condition:
     "no": []
     "yes":
@@ -61,7 +61,7 @@ tasks:
         id: 99cd2a5a-e4f0-45a9-8e1d-c1b2a11df1e6
         version: -1
         name: Is this email coming from Splunk
-        scriptName: IsContextSet
+        script: IsContextSet
       condition:
         "no": []
         "yes":
@@ -72,7 +72,7 @@ tasks:
             id: 3e289371-6cd3-4665-8109-6c79c71fbfc2
             version: -1
             name: SplunkEmailParser
-            scriptName: SplunkEmailParser
+            script: SplunkEmailParser
       scriptarguments:
         key: ${Label/Email/from}
         value: set-to-splunk-sender
@@ -83,7 +83,7 @@ tasks:
         id: 5c718b22-00e4-4b0a-87be-4e1a39cb4fe4
         version: -1
         name: Is this a Nexpose email
-        scriptName: IsContextSet
+        script: IsContextSet
       condition:
         "no": []
         "yes":
@@ -94,7 +94,7 @@ tasks:
             id: cda168ea-c74d-40b4-89cb-67014f85409d
             version: -1
             name: NexposeEmailParser
-            scriptName: NexposeEmailParser
+            script: NexposeEmailParser
       scriptarguments:
         key: ${Label/Email/from}
         value: set-to-nexpose-sender
@@ -105,7 +105,7 @@ tasks:
         id: 12a63885-a530-40ef-8c3d-1be700401faa
         version: -1
         name: Is this a SentinelOne email
-        scriptName: IsContextSet
+        script: IsContextSet
       condition:
         "no": []
         "yes":
@@ -116,7 +116,7 @@ tasks:
             id: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
             version: -1
             name: Set incident type and playbook to SentinelOne
-            scriptName: IncidentSet
+            script: IncidentSet
           scriptarguments:
             addLabels: ""
             customFieldName: ""
@@ -140,7 +140,7 @@ tasks:
         id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
         version: -1
         name: Set type and playbook to default from email
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         addLabels: ""
         customFieldName: ""
@@ -175,7 +175,7 @@ tasks:
         id: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: Malware
 - id: "12"
@@ -196,7 +196,7 @@ tasks:
         id: 66553f46-579a-42af-8c02-341af3445ba3
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: Phishing
 - id: "14"
@@ -218,7 +218,7 @@ tasks:
         id: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: C2Communication
 - id: "16"
@@ -238,7 +238,7 @@ tasks:
         id: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: Ransomware
 - id: "18"
@@ -258,7 +258,7 @@ tasks:
         id: bb222001-660e-418c-8849-25341bb74ddc
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: UnknownBinary
 - id: "20"
@@ -278,7 +278,7 @@ tasks:
         id: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
         version: -1
         name: SetIncidentType
-        scriptName: IncidentSet
+        script: IncidentSet
       scriptarguments:
         type: DeviceLost
 system: true
