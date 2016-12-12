@@ -1,45 +1,25 @@
 commonfields:
-  id: McGetInfectedUsers
+  id: MimecastQuery
   version: -1
-name: McGetInfectedUsers
-script: |
-  USERS_LABAL = "Users"
+name: MimecastQuery
+script: |2
 
-  res = []
-  resp = demisto.executeCommand("query", demisto.args())
-  users = set()
+  resp = demisto.executeCommand("mimecast-query", demisto.args())
 
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0], "Contents.data")
+      data = demisto.get(resp[0], "Contents")
       if data:
-          for mail in data[0]['items']:
-             users.add(mail['displayto'])
-
-          users = list(users)
-          if users:
-              markdownString = '### Users that recived a suspicious mail:\n'
-              markdownString += "".join(['* ' + s + '\n' for s in users])
-              res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
-
-              users_str = ','.join([str(s) for s in users])
-              demisto.setContext(USERS_LABAL, users_str)
-
-              answer = 'yes'
-          else:
-              demisto.log("\nNo relevant mails have been found\n")
-              answer = 'no'
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
       else:
-          demisto.log("\nNo relevant mails have been found\n")
-          answer = 'no'
-
-  res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
-  demisto.results(res)
+          demisto.results("No results.")
 type: python
 tags:
 - Mimecast
-comment: Looks for users that received a suspicious mail, returns No/Yes and the correlating  users
+comment: query mimecast emails
 system: true
 args:
 - name: queryXml
@@ -117,5 +97,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - query
+  - mimecast-query
 timeout: 0s
