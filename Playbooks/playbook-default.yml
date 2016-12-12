@@ -74,7 +74,7 @@ tasks:
             name: SplunkEmailParser
             script: SplunkEmailParser
       scriptarguments:
-        key: ${Label/Email/from}
+        key: Label/Email/from
         value: set-to-splunk-sender
     - id: "5"
       taskid: 5c718b22-00e4-4b0a-87be-4e1a39cb4fe4
@@ -96,7 +96,7 @@ tasks:
             name: NexposeEmailParser
             script: NexposeEmailParser
       scriptarguments:
-        key: ${Label/Email/from}
+        key: Label/Email/from
         value: set-to-nexpose-sender
     - id: "7"
       taskid: 12a63885-a530-40ef-8c3d-1be700401faa
@@ -131,7 +131,7 @@ tasks:
             type: set-to-sentinelone-type
             updatePlaybookForType: ""
       scriptarguments:
-        key: ${Label/Email/from}
+        key: Label/Email/from
         value: set-to-sentinelone-sender
     - id: "9"
       taskid: cf75ade9-a303-4814-8d99-6ec9d09fbc02
@@ -155,7 +155,7 @@ tasks:
         type: Phishing
         updatePlaybookForType: ""
   scriptarguments:
-    key: ${Label/Email/from}
+    key: Label/Email/from
     value: ""
 - id: "10"
   taskid: f9de0883-2020-490e-85ed-fdfb66a2db87
