@@ -11,7 +11,6 @@ tasks:
     version: -1
     name: Set initial incident context
     scriptName: IncidentToContext
-    issystemtask: true
   results:
   - Label/Application
   - Label/Database
@@ -52,7 +51,6 @@ tasks:
     version: -1
     name: Is this an email
     scriptName: IsContextSet
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -64,7 +62,6 @@ tasks:
         version: -1
         name: Is this email coming from Splunk
         scriptName: IsContextSet
-        issystemtask: true
       condition:
         "no": []
         "yes":
@@ -76,7 +73,6 @@ tasks:
             version: -1
             name: SplunkEmailParser
             scriptName: SplunkEmailParser
-            issystemtask: true
       scriptarguments:
         key: ${Label/Email/from}
         value: set-to-splunk-sender
@@ -88,7 +84,6 @@ tasks:
         version: -1
         name: Is this a Nexpose email
         scriptName: IsContextSet
-        issystemtask: true
       condition:
         "no": []
         "yes":
@@ -100,7 +95,6 @@ tasks:
             version: -1
             name: NexposeEmailParser
             scriptName: NexposeEmailParser
-            issystemtask: true
       scriptarguments:
         key: ${Label/Email/from}
         value: set-to-nexpose-sender
@@ -112,7 +106,6 @@ tasks:
         version: -1
         name: Is this a SentinelOne email
         scriptName: IsContextSet
-        issystemtask: true
       condition:
         "no": []
         "yes":
@@ -124,7 +117,6 @@ tasks:
             version: -1
             name: Set incident type and playbook to SentinelOne
             scriptName: IncidentSet
-            issystemtask: true
           scriptarguments:
             addLabels: ""
             customFieldName: ""
@@ -149,7 +141,6 @@ tasks:
         version: -1
         name: Set type and playbook to default from email
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         addLabels: ""
         customFieldName: ""
@@ -174,7 +165,6 @@ tasks:
     version: -1
     name: Is this a malware incident
     description: Did it involve a malicious binary running in your environment?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -186,7 +176,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: Malware
 - id: "12"
@@ -197,7 +186,6 @@ tasks:
     version: -1
     name: Is this a phishing incident?
     description: Was this incident created because a suspected email was received?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -209,7 +197,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: Phishing
 - id: "14"
@@ -221,7 +208,6 @@ tasks:
     name: Is the incident a C2 communication incident?
     description: Was the incident opened because communication to a known bad actor
       was detected?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -233,7 +219,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: C2Communication
 - id: "16"
@@ -243,7 +228,6 @@ tasks:
     id: bd100974-58ce-4b53-8e32-c3930e215184
     version: -1
     name: Is the incident a ransomware incident?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -255,7 +239,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: Ransomware
 - id: "18"
@@ -265,7 +248,6 @@ tasks:
     id: 6cab1990-09da-4e94-8d26-7a67571a6303
     version: -1
     name: Is the incident an unknown binary incident?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -277,7 +259,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: UnknownBinary
 - id: "20"
@@ -287,7 +268,6 @@ tasks:
     id: b4f728f9-7690-49ec-8214-216cf28d83e1
     version: -1
     name: Does the incident involve a lost or stolen device?
-    issystemtask: true
   condition:
     "no": []
     "yes":
@@ -299,7 +279,6 @@ tasks:
         version: -1
         name: SetIncidentType
         scriptName: IncidentSet
-        issystemtask: true
       scriptarguments:
         type: DeviceLost
 system: true
