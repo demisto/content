@@ -1,12 +1,12 @@
 commonfields:
-  id: MCFindEmail
+  id: MimecastFindEmail
   version: -1
-name: MCFindEmail
+name: MimecastFindEmail
 script: |
   MAILBOXES_CTXKEY = "Mailboxes"
 
   res = []
-  resp = demisto.executeCommand("query", demisto.args())
+  resp = demisto.executeCommand("mimecast-query", demisto.args())
   users = set()
 
   if isError(resp[0]):
@@ -117,5 +117,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - query
+  - mimecast-query
 timeout: 0s
