@@ -142,7 +142,7 @@ tasks:
       task:
         id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
         version: -1
-        name: Set type and playbook to default from email
+        name: Set type and playbook to Phishing (default type for emails)
         script: IncidentSet
       scriptarguments:
         addLabels: ""
