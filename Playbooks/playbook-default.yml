@@ -73,6 +73,9 @@ tasks:
             version: -1
             name: SplunkEmailParser
             script: SplunkEmailParser
+          scriptarguments:
+            body: ${Label/Email/html}
+            subject: ${Label/Email/subject}
       scriptarguments:
         key: Label/Email/from
         value: set-to-splunk-sender
