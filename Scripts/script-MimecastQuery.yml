@@ -1,7 +1,7 @@
 commonfields:
-  id: MCQuery
+  id: MimecastQuery
   version: -1
-name: MCQuery
+name: MimecastQuery
 script: |2
 
   resp = demisto.executeCommand("mimecast-query", demisto.args())
