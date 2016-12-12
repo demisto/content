@@ -132,7 +132,7 @@ tasks:
             severity: ""
             stage: ""
             type: set-to-sentinelone-type
-            updatePlaybookForType: ""
+            updatePlaybookForType: yes
       scriptarguments:
         key: Label/Email/from
         value: set-to-sentinelone-sender
@@ -156,7 +156,7 @@ tasks:
         severity: ""
         stage: ""
         type: Phishing
-        updatePlaybookForType: ""
+        updatePlaybookForType: yes
   scriptarguments:
     key: Label/Email/from
     value: ""
