@@ -404,6 +404,27 @@ script: |-
       }
       return arg;
   }
+  
+  /**
+  * Check the list of available modules to see whether a command is currently available to be run.
+  * @args {Object} cmd - the command to check.
+  * @returns {bool} Whether the command is available or not.
+  */
+  function isCommandAvailable(cmd) {
+      var all = getAllSupportedCommands();
+      var modules = Object.keys(all);
+      for(var i = 0; i < modules.length ; i++) {
+          var modCmds = all[modules[i]];
+          if (modCmds) {
+              for(var j = 0; j < modCmds.length ; j++) {
+                  if (modCmds[j].name === cmd) {
+                      return true;
+                  }
+              }
+          }
+      }
+      return false;
+  }
 type: javascript
 tags:
 - infra

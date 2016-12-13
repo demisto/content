@@ -284,6 +284,16 @@ script: |-
           return item[fieldName]
       else:
           return item
+  
+  
+  def isCommandAvailable(cmd):
+      modules = demisto.getAllSupportedCommands();
+      for m in modules:
+          if modules[m] and isinstance(modules[m], list):
+              for c in modules[m]:
+                  if c['name'] == cmd:
+                      return True
+      return False
 type: python
 tags:
 - infra
