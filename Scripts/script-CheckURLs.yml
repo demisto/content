@@ -1,6 +1,6 @@
 commonfields:
   id: CheckURLs
-  version: 1
+  version: -1
 name: CheckURLs
 script: |-
   import re
@@ -23,11 +23,18 @@ script: |-
               continue
           urls.append(u)
   for u in urls:
-      rep = demisto.executeCommand('url', {'url': u})
-      for r in rep:
-          if positiveUrl(r):
+      if isCommandAvailable('url'):
+          rep = demisto.executeCommand('url', {'url': u})
+          for r in rep:
+              if positiveUrl(r):
+                  badUrls.append(u)
+                  res.append(shortUrl(r))
+      if isCommandAvailable('pt-malware'):
+          ptRep = demisto.executeCommand('pt-malware', {'query': u})
+          if not isError(ptRep[0]) and demisto.get(ptRep[0], 'Contents.results'):
               badUrls.append(u)
-              res.append(shortUrl(r))
+              contents = flattenTable(demisto.get(ptRep[0], 'Contents.results'))
+              res.append( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': contents} )
   if len(res) > 0:
       res.extend(['yes', 'Found malicious URLs!'])
       currUrls = demisto.get(demisto.context(), 'bad_urls')
@@ -41,7 +48,7 @@ script: |-
       if urls:
           res.append('Only clean URLs found: \n' + '\n'.join(urls))
       else:
-          res.append('No URLs found within mail. Nothing to check.')
+          res.append('No URLs found within data. Nothing to check.')
   demisto.results(res)
 type: python
 tags:
@@ -59,6 +66,7 @@ args:
     If omitted, will scan Incident Details instead.
 scripttarget: 0
 dependson:
-  must:
+  should:
   - url
+  - pt-malware
 timeout: 0s
