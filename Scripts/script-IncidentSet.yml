@@ -32,6 +32,7 @@ script: |-
           dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
   if dArgs:
       res += demisto.executeCommand("setIncident", dArgs)
+  res += demisto.executeCommand("IncidentToContext", {})
   demisto.results(res)
 type: python
 tags:
