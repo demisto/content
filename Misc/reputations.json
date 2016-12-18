@@ -34,7 +34,7 @@
     {
       "id": "urlRep",
       "version": -1,
-      "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_|$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_|$])",
+      "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
       "reputationScriptName": "DataURLReputation",
       "details": "URL Reputation",
       "enhancementScriptNames": ["URLReputation", "SplunkSearch"]
