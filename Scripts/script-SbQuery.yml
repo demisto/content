@@ -57,6 +57,8 @@ args:
   predefined:
   - 'true'
   - 'false'
+- description: File name - service calculates the file name from the part name
+  name: file_name
 scripttarget: 0
 timeout: 0s
 dependson:
