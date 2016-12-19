@@ -62,12 +62,9 @@ script: |-
                   for url in obs.object_.properties.value.values:
                     #URI object
                     create_new_ioc(data,i,ind.timestamp, stix_id, ind_id)
-            data[i]['indicator_type'] = 'url'
+                    data[i]['indicator_type'] = 'url'
                     data[i]['value'] = url
                     i = i + 1
-
-json_data = json.dumps(data)
-demisto.results(json_data)
 
   json_data = json.dumps(data)
   demisto.results(json_data)
