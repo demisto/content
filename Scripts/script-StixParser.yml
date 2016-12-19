@@ -5,24 +5,19 @@ name: StixParser
 script: |-
   from stix.core import STIXPackage
   import json
-
   import tempfile
   with tempfile.NamedTemporaryFile() as temp:
       temp.write(demisto.args()['iocXml'].encode('utf-8'))
       temp.flush()
       stix_package = STIXPackage.from_xml(temp.name)
-
   data = []
-
   i = 0
-
   def create_new_ioc(data, i, time, pkg_id, ind_id):
       data.append({})
       data[i]['fields'] = {'indicator_id': ind_id, 'stix_package_id':pkg_id}
       data[i]['source'] = ind_id.split(':')[0]
       if time is not None:
           data[i]['timestamp'] = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-
   stix_id = stix_package.id_
   for ind in stix_package.indicators:
       ind_id = ind.id_
@@ -32,16 +27,16 @@ script: |-
               for digest in obs.object_.properties.hashes:
                   if hasattr(digest,'simple_hash_value'):
                       if isinstance(digest.simple_hash_value.value, list):
-                        for hash in digest.simple_hash_value.value:
+                          for hash in digest.simple_hash_value.value:
+                              create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
+                              data[i]['indicator_type'] = 'file'
+                              data[i]['value'] = hash
+                              i = i + 1
+                      else:
                           create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
                           data[i]['indicator_type'] = 'file'
-                          data[i]['value'] = hash
+                          data[i]['value'] = digest.simple_hash_value.value.strip()
                           i = i + 1
-            else:
-              create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                        data[i]['indicator_type'] = 'file'
-                        data[i]['value'] = digest.simple_hash_value.value.strip()
-                        i = i + 1
           elif hasattr(obs.object_.properties, 'category'):
               #Address object
               category = obs.object_.properties.category
@@ -60,12 +55,11 @@ script: |-
                   i = i + 1
               elif hasattr(obs.object_.properties.value, 'values'):
                   for url in obs.object_.properties.value.values:
-                    #URI object
-                    create_new_ioc(data,i,ind.timestamp, stix_id, ind_id)
-                    data[i]['indicator_type'] = 'url'
-                    data[i]['value'] = url
-                    i = i + 1
-
+                      #URI object
+                      create_new_ioc(data,i,ind.timestamp, stix_id, ind_id)
+                      data[i]['indicator_type'] = 'url'
+                      data[i]['value'] = url
+                      i = i + 1
   json_data = json.dumps(data)
   demisto.results(json_data)
 type: python
