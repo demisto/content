@@ -1,0 +1,55 @@
+commonfields:
+  id: QRadarClassifier
+  version: -1
+name: QRadarClassifier
+script: |+
+  qradar_type_dict = {
+      'Type1' :
+          ['DescriptionA_1',
+          'DescriptionA_2',
+          'DescriptionA_3'],
+      'Type2' :
+          ['DescriptionB_1',
+          'DescriptionB_2',
+          'DescriptionB_3']
+      }
+
+  CLASSIFIER_LABEL = 'Label/description'
+  CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
+  CONTEXT_SEPARATOR = '|'
+
+  res = []
+
+  import re
+
+  ctx = demisto.context()
+  classifier = demisto.get(ctx, CLASSIFIER_LABEL)
+  incident_type = ''
+
+  if classifier:
+      # Set context for future use
+      cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
+      cur_description += CONTEXT_SEPARATOR if cur_description else ''
+      demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL, cur_description + classifier)
+
+      # Looks for incident type in the type dictionary
+      for key, val in qradar_type_dict.items():
+          if str(classifier.lower().replace(" ", "").replace("\n","")) in [str(s.lower().replace(" ", "")) for s in val]:
+              incident_type = key
+      if incident_type:
+          resp = demisto.executeCommand('IncidentSet', {'type': incident_type, 'updatePlaybookForType' : 'yes'})
+          if isError(resp[0]):
+              demisto.results(resp)
+
+
+type: python
+tags:
+- QRadar
+- Classifier
+comment: |-
+  This script Classifies QRadar incidents.
+  The 'qradar_type_dict' should include The different Types that can be mapped and all the descriptions to classify with.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
