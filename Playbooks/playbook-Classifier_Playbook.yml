@@ -8,7 +8,7 @@ tasks:
   type: title
   task:
     id: 41ef22c4-8b99-4a26-872f-4fff097258ed
-    version: 1
+    version: 2
     name: Set context for incident
     clonedfrom: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
 - id: "2"
@@ -16,7 +16,7 @@ tasks:
   type: regular
   task:
     id: 9da02bd7-5e1c-4ac7-8a74-4f4dbcbf511f
-    version: 1
+    version: 2
     name: Set incident to context
     scriptName: IncidentToContext
   results:
@@ -56,45 +56,78 @@ tasks:
   type: title
   task:
     id: 39ddd27e-adce-4ae6-8d16-a8ff9466254b
-    version: 2
+    version: 1
     name: Integration Classifiers
 - id: "4"
-  taskid: ea400046-cc88-44da-8803-92fe7f773b90
-  type: regular
+  taskid: 7876d574-4e76-45be-8208-f54e8164de4f
+  type: condition
   task:
-    id: ea400046-cc88-44da-8803-92fe7f773b90
-    version: 1
-    name: Vectra Classifier
-    description: Classify Vectra Incidents
-    scriptName: VectraClassifier
-- id: "5"
+    id: 7876d574-4e76-45be-8208-f54e8164de4f
+    version: 2
+    name: Get Brand Label
+    scriptName: GetContextValue
+    type: conditional
+  condition:
+    LightCyber Magna: []
+    QRadar:
+    - id: "5"
+      taskid: f4ceefab-a9be-4afc-80e7-968a319f09d4
+      type: regular
+      task:
+        id: f4ceefab-a9be-4afc-80e7-968a319f09d4
+        version: 3
+        name: QRadar Classifier
+        description: Classify QRadar Incidents
+        scriptName: QRadarClassifier
+        type: standard
+    Vectra:
+    - id: "6"
+      taskid: 06988f22-32d3-464f-8ce8-7fe5e344d234
+      type: regular
+      task:
+        id: 06988f22-32d3-464f-8ce8-7fe5e344d234
+        version: 2
+        name: Vectra classifier
+        description: Classify Vectra Incidents
+        scriptName: VectraClassifier
+        type: standard
+    arcsight-esm: []
+    arcsight-logger: []
+    confer: []
+    crowdstrike-intel: []
+    elasticsearch: []
+    esm: []
+    logrhythm: []
+    servicenow: []
+  scriptarguments:
+    key: Label/Brand
+- id: "7"
   taskid: fe32e248-6d3d-4583-80ac-160b69932b7f
   type: title
   task:
     id: fe32e248-6d3d-4583-80ac-160b69932b7f
-    version: 1
+    version: 2
     name: Mail Classifier
     type: section
-- id: "6"
+- id: "8"
   taskid: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
   type: condition
   task:
     id: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
-    version: 2
+    version: 7
     name: Is this an email
     scriptName: IsContextSet
   condition:
     "no": []
     "yes":
-    - id: "7"
+    - id: "9"
       taskid: cf75ade9-a303-4814-8d99-6ec9d09fbc02
       type: regular
       task:
         id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
-        version: 4
-        name: Set type and playbook to default from email
+        version: 5
+        name: Set type and playbook to Phishing (default type for emails)
         scriptName: IncidentSet
-        type: standard
       scriptarguments:
         addLabels: ""
         customFieldName: ""
@@ -111,19 +144,19 @@ tasks:
   scriptarguments:
     key: ${Label/Email/from}
     value: ""
-- id: "8"
+- id: "10"
   taskid: befe6857-6c3a-47a1-84e1-95b8d6d78c66
   type: title
   task:
     id: befe6857-6c3a-47a1-84e1-95b8d6d78c66
-    version: 1
+    version: 2
     name: 'Incident type not determined '
-- id: "9"
+- id: "11"
   taskid: 468f15bb-756e-4da8-8d0e-156fc55af84d
   type: regular
   task:
     id: 468f15bb-756e-4da8-8d0e-156fc55af84d
-    version: 2
+    version: 3
     name: Classifier Notify Admin
     description: |-
       Notify Admin that the classification process had failed.

@@ -51,36 +51,33 @@ script: |-
   }
 
   TYPE_VNAME_LABEL = 'Label/type_vname'
-  BRAND_LABEL = 'Label/Brand'
-  VECTRA_BRAND = 'vectra'
   CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
   CONTEXT_SEPARATOR = '|'
 
   ctx = demisto.context()
 
-  brand = demisto.get(ctx, BRAND_LABEL)
   type_name = demisto.get(ctx, TYPE_VNAME_LABEL)
   incident_type = ''
 
-  if brand and type_name:
-      if brand.lower() == VECTRA_BRAND.lower():
-          # Set context for future use
-          cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
-          cur_description += CONTEXT_SEPARATOR if cur_description else ''
-          demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL, cur_description + type_name)
+  if type_name:
+      # Set context for future use
+      cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
+      cur_description += CONTEXT_SEPARATOR if cur_description else ''
+      demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL, cur_description + type_name)
 
-          # Looks for incident type in the type dictionary
-          for key, val in vectra_type_dict.items():
-              if type_name in val:
-                  incident_type = key
-          if incident_type:
-              resp = demisto.executeCommand('IncidentSet ', {'type': incident_type, 'updatePlaybookForType' : 'yes'})
-              if isError(resp[0]):
-                  demisto.results(resp)
+      # Looks for incident type in the type dictionary
+      for key, val in vectra_type_dict.items():
+          if type_name in val:
+              incident_type = key
+      if incident_type:
+          resp = demisto.executeCommand('IncidentSet ', {'type': incident_type, 'updatePlaybookForType' : 'yes'})
+          if isError(resp[0]):
+              demisto.results(resp)
 type: python
 tags:
 - Vectra
 - Classifier
+comment: Classifying Vectra incidents
 system: true
 scripttarget: 0
 dependson: {}
