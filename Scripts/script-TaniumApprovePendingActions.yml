@@ -63,17 +63,13 @@ script: |
   getObjArgs["object-data"] = requestPendingObjects;
 
   var res = executeCommand('tn-get-object', getObjArgs);
-  dummyresponseData = '{"result_objects":[{"saved_actions":[{"saved_action":{"action_group_id":0,"approved_flag":false,"approver":{"id":0,"name":""},"comment":"","creation_time":"2016-06-17T17:12:50","distribute_seconds":0,"end_time":"Never","expire_seconds":180,"id":150,"issue_count":0,"issue_seconds":0,"last_action":{"id":1377,"start_time":"Never","target_group":{"id":1076}},"last_start_time":"Never","name":"Deploy Kill Application","next_start_time":"Never","package_spec":{"available_time":"2016-06-17T17:12:50","id":239,"name":"Kill Application - System activity monitor"},"policy_flag":false,"public_flag":false,"row_ids":[{"row_id":1267611369}],"start_time":"2016-06-17T17:12:52","status":0,"target_group":{"id":1076},"user":{"id":5,"name":"corp\\gr290181"},"user_start_time":"2016-06-17T17:12:52"}},{"cache_info":{"cache_id":2173651169,"cache_row_count":29,"expiration":"2016-06-17T17:18:09","filtered_row_count":1,"page_row_count":1}}]}]}';
   var table = {
       Type: 1,
       ContentsFormat: 'table',
       Contents: []
   };
 
-  //TODO check for error
-
-  //responseData = dummyresponseData.replace("\\","\\\\");
-  // TODO handle case when Contents are not SOAP envelope / other parsing error
+  
   responseData = res[0].Contents.Envelope.Body.return.result_object;
   respObj = JSON.parse(responseData);
   var savedActions = [];
@@ -89,15 +85,6 @@ script: |
           }
       }
   }
-
-  // // Display found pending actions as table
-  // if (savedActions.length === 0)
-  //   return "No saved actions were found.";
-  // else {
-  //     for (var a in savedActions)
-  //         table.Contents.push(formatAsRow(a,fieldsToDisplay));
-  //     return table;
-  // }
 
   var approvedSummary=[];
   for (var i=0; i < savedActions.length; i++) {
