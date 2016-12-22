@@ -57,6 +57,8 @@ args:
   - "true"
   - "false"
   description: If true, response delivers the quota data (for cloud services only)
+- name: file_name
+  description: File name - service calculates the file name from the part name
 scripttarget: 0
 timeout: 0s
 dependson:
