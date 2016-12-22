@@ -1,40 +1,54 @@
 commonfields:
   id: DataURLReputation
-  version: 1
+  version: -1
 name: DataURLReputation
 script: |-
   var xfeScore = -1;
   var vtScore = -1;
   var csScore = -1;
-  var rep = executeCommand('url', {url: args.input});
-  if (rep) {
-    for (var r = 0; r < rep.length; r++) {
-      if (rep[r].Type !== entryTypes.error && rep[r].ContentsFormat === formats.json) {
-        if (rep[r].Brand === brands.xfe && rep[r].Contents && rep[r].Contents.url.result.score) {
-          var s = rep[r].Contents.url.result.score;
-          if (s >= 6) {
-            xfeScore = 3;
-          } else if (s >= 3) {
-            xfeScore = 2;
-          } else {
-            xfeScore = 1;
+  var ptScore = -1;
+  if (isCommandAvailable('url')) {
+      var rep = executeCommand('url', {url: args.input});
+      if (rep) {
+        for (var r = 0; r < rep.length; r++) {
+          if (rep[r].Type !== entryTypes.error && rep[r].ContentsFormat === formats.json) {
+            if (rep[r].Brand === brands.xfe && rep[r].Contents && rep[r].Contents.url.result.score) {
+              var s = rep[r].Contents.url.result.score;
+              if (s >= 6) {
+                xfeScore = 3;
+              } else if (s >= 3) {
+                xfeScore = 2;
+              } else {
+                xfeScore = 1;
+              }
+            } else if (rep[r].Brand === brands.vt && rep[r].Contents && rep[r].Contents.positives) {
+              var detected = rep[r].Contents.positives;
+              if (detected > 20) {
+                vtScore = 3;
+              } else if (detected > 8) {
+                vtScore = 2;
+              } else {
+                vtScore = 1;
+              }
+            } else if (rep[r].Brand === brands.cs && rep[r].Contents && rep[r].Contents.length) {
+              csScore = rep[r].Contents[0].malicious_confidence === 'high' ? 3 : rep[r].Contents[0].malicious_confidence === 'medium' ? 2 : 1;
+            }
           }
-        } else if (rep[r].Brand === brands.vt && rep[r].Contents && rep[r].Contents.positives) {
-          var detected = rep[r].Contents.positives;
-          if (detected > 20) {
-            vtScore = 3;
-          } else if (detected > 8) {
-            vtScore = 2;
-          } else {
-            vtScore = 1;
-          }
-        } else if (rep[r].Brand === brands.cs && rep[r].Contents && rep[r].Contents.length) {
-          csScore = rep[r].Contents[0].malicious_confidence === 'high' ? 3 : rep[r].Contents[0].malicious_confidence === 'medium' ? 2 : 1;
         }
       }
-    }
   }
-  var score = Math.max(xfeScore, vtScore, csScore);
+  if (isCommandAvailable('pt-malware')) {
+      var pt = executeCommand('pt-malware', {query: args.input});
+      if (pt && pt[0].Type !== entryTypes.error && pt[0].ContentsFormat === formats.json) {
+          ptRes = pt[0].Contents.results;
+          if (ptRes && ptRes.length > 0) {
+              ptScore = 3;
+          } else {
+              ptScore = 1;
+          }
+      }
+  }
+  var score = Math.max(xfeScore, vtScore, csScore, ptScore);
   return score < 0 ? 0 : score;
 type: javascript
 tags:
@@ -48,6 +62,7 @@ args:
   description: URL to look up
 scripttarget: 0
 dependson:
-  must:
+  should:
   - url
+  - pt-malware
 timeout: 0s
