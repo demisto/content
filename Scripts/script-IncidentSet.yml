@@ -24,12 +24,13 @@ script: |-
       v = demisto.get(inArgs, 'customFieldValue')
       if v:
           dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
+  if demisto.get(inArgs, 'type'):
+      dArgs['type'] = inArgs['type']
   if dArgs:
       res += demisto.executeCommand("setIncident", dArgs)
   res += demisto.executeCommand("IncidentToContext", {})
   # Playbook change should always be the last action in a script
-  if demisto.get(inArgs, 'type'):
-      dArgs['type'] = inArgs['type']
+  if demisto.get(dArgs, 'type'):      
       if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
           demisto.executeCommand("setPlaybookAccordingToType", {'type': inArgs['type']})
   if demisto.get(inArgs, 'playbook'):
