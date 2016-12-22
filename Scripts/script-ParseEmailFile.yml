@@ -554,6 +554,8 @@ type: python
 tags:
 - email
 - phishing
+- enhancement
+- file
 comment: Parse an email from an eml or msg file and populate all relevant context
   data to investigate the email. Also extracts inner attachments and returns them
   to the war room. The incident labels themselves are preserved and not modified -

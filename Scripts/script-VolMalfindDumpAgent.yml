@@ -17,7 +17,7 @@ script: |-
   res.push(volExec);
   if (volExec.Type !== entryTypes.error) {
      // we need to take all the files and move them over.
-     res.push(executeCommand('copy-from', {system:args.system, file: dumpdir + '/*'}));
+     res.push(executeCommand('copy-from', {using:args.system, file: dumpdir + '/*'}));
   }
   if ('true' === args.dodelete) {
       res.push(executeCommand('RemoteExec', {system:args.system, cmd:'sudo rm -rf ' + dumpdir}));

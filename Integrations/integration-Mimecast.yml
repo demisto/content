@@ -143,7 +143,7 @@ script:
                 queryXml = queryXml.replace('<sent></sent>','<sent select=\"from\" >'+args.sentFrom+'</sent>');
             }
             if ((args.sentTo) && (args.sentTo.length > 0) ){
-                queryXml = queryXml.replace('<sent></sent>','<sent select=\"from\" >'+args.sentTo+'</sent>');
+                queryXml = queryXml.replace('<sent></sent>','<sent select=\"to\" >'+args.sentTo+'</sent>');
             }
             queryXml = queryXml.replace('<sent></sent>','');//no empty tag
             if ((args.attachmentText) && (args.attachmentText.length > 0) ){
@@ -163,7 +163,7 @@ script:
             var queryXml = parseQueryArgs(testArgs);
             query(queryXml, true);
             return 'ok';
-        case 'query':
+        case 'mimecast-query':
             var queryXml = '';
             if ((args.queryXml) && (args.queryXml.length > 0)) {
                 queryXml = args.queryXml;
@@ -179,7 +179,7 @@ script:
     }
   type: javascript
   commands:
-  - name: query
+  - name: mimecast-query
     arguments:
     - name: queryXml
       default: true
