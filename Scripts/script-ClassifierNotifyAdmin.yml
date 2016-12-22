@@ -33,6 +33,7 @@ script: |-
 type: python
 tags:
 - Classifier
+comment: Send mail to admin, notifying that classification failed
 system: true
 args:
 - name: sendTo
