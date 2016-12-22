@@ -40,5 +40,7 @@ args:
   default: true
   description: 'Mail address to notify '
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - send-mail
 timeout: 0s
