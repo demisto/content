@@ -73,10 +73,6 @@ script: |
       Contents: []
   };
 
-  //TODO check for error
-
-  //responseData = dummyresponseData.replace("\\","\\\\");
-  // TODO handle case when Contents are not SOAP envelope / other parsing error
   responseData = res[0].Contents.Envelope.Body.return.result_object;
   respObj = JSON.parse(responseData);
   var savedActions = [];
