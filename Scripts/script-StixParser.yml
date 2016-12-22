@@ -29,7 +29,7 @@ script: |-
                       if isinstance(digest.simple_hash_value.value, list):
                           for hash in digest.simple_hash_value.value:
                               create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                              data[i]['indicator_type'] = 'file'
+                              data[i]['indicator_type'] = 'File'
                               data[i]['value'] = hash
                               i = i + 1
                       else:
@@ -43,14 +43,14 @@ script: |-
               if category.startswith( 'ip' ):
                   for ip in obs.object_.properties.address_value.values:
                       create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                      data[i]['indicator_type'] = 'ip'
+                      data[i]['indicator_type'] = 'IP'
                       data[i]['value'] = ip
                       i = i + 1
           elif hasattr(obs.object_.properties, 'type_'):
               if obs.object_.properties.type_ == 'URL':
                   #URI object
                   create_new_ioc(data,i,ind.timestamp, stix_id, ind_id)
-                  data[i]['indicator_type'] = 'url'
+                  data[i]['indicator_type'] = 'URL'
                   data[i]['value'] = obs.object_.properties.value.value
                   i = i + 1
               elif hasattr(obs.object_.properties.value, 'values'):
