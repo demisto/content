@@ -18,20 +18,20 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
-  name: insecure
-  defaultvalue: "true"
-  type: 8
+- display: Query to fetch offenses
+  name: query
+  defaultvalue: ""
+  type: 0
   required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
   required: false
 script:
   script: |-
@@ -40,12 +40,13 @@ script:
     var password = params.credentials.password;
     var server = params.server+'/';
     var insecure = params.insecure;
+    var query = params.query;
 
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
         for (var i = 0; i<keys.length; i++) {
-            labels.push({'type': keys[i], 'value': incident[keys[i]]});
+            labels.push({'type': keys[i], 'value': String(incident[keys[i]])});
         }
         return {
             "name": incident.id + ' ' + incident.description,
@@ -137,15 +138,15 @@ script:
             return 'not ok';
         case 'fetch-incidents':
             var lastRun = getLastRun();
-            var id = lastRun && lastRun.id ? lastRun.id : 0;
-            var res = getOffenses('status=OPEN AND id>' + id);
+            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
+            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''));
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
-                id = Math.max(id, offense.id);
+                startTime = Math.max(startTime, offense.start_time);
                 incidents.push(createIncidentFromOffense(res[i]));
             }
-            setLastRun({'id': id !== 0 ? id + 1 : 0});
+            setLastRun({startTime: startTime});
             return JSON.stringify(incidents);
         case 'qr-offenses':
             return getOffenses(args.filter, args.fields, args.range);

@@ -21,7 +21,7 @@ tags:
 - Sandblast
 comment: Use the Quote API to have a client application get the current license and
   quota status of the API Key that you use
-system: false
+system: true
 args: []
 scripttarget: 0
 timeout: 0s

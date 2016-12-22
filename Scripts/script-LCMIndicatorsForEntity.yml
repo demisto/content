@@ -1,0 +1,33 @@
+commonfields:
+  id: LCMIndicatorsForEntity
+  version: -1
+name: LCMIndicatorsForEntity
+script: |
+  args = demisto.args()
+  resp = demisto.executeCommand("lcm-indicatorsforentity", args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- lightcyber
+comment: Shows detected indicators pertaining to a specific host from LightCyber Magna.
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: Host ID for which to retrieve indicators
+scripttarget: 0
+dependson:
+  must:
+  - lcm-indicatorsforentity
+timeout: 0s
