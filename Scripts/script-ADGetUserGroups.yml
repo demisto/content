@@ -1,6 +1,6 @@
 commonfields:
   id: ADGetUserGroups
-  version: 1
+  version: -1
 name: ADGetUserGroups
 script: |-
   # Optional arguments and default values
@@ -8,6 +8,7 @@ script: |-
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
   resp = ''
+  nested_search = ':1.2.840.113556.1.4.1941:' if demisto.get(demisto.args(), 'nestedSearch') else ''
   memberDN = ''
   if demisto.get(demisto.args(), 'dn'):
       memberDN = demisto.args()['dn']
@@ -31,7 +32,7 @@ script: |-
               demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected output from ad command.' } )
           sys.exit(0)
   if memberDN:
-      filterstr = r"(&(member=" + memberDN + ")(objectcategory=group))"
+      filterstr = r"(&(member{0}=".format(nested_search) + memberDN + ")(objectcategory=group))"
       demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } ) )
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Received empty DN or cannot locate DN for the specified arguments.' } )
@@ -44,6 +45,7 @@ comment: Use Active Directory to retrieve the groups in which the specified user
 system: true
 args:
 - name: dn
+  default: true
   description: Active Directory Distinguished Name of the desired user
 - name: name
   description: Name of the desired user
@@ -52,6 +54,8 @@ args:
 - name: attributes
   description: Include these AD attributes of the resulting objects in addition to
     the default ones
+- name: nestedSearch
+  description: Enter any value to allow nested groups search as well
 scripttarget: 0
 dependson:
   must:
