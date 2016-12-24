@@ -11,7 +11,7 @@ tasks:
     id: f5a623c7-65a2-42e7-89b6-6a7d30b50825
     version: 1
     name: Determine the correct repository to use
-    script:: SetContext
+    script: SetContext
   scriptarguments:
     key: repo
     value: ""
@@ -22,7 +22,7 @@ tasks:
     id: 858d4f66-8300-4f1f-8249-e2a3f9f0ac7c
     version: 7
     name: Retrieve ePO's current DAT version
-    script:: EPORetrieveCurrentDATVersion
+    script: EPORetrieveCurrentDATVersion
   scriptarguments:
     repos: ${repo}
   results:
@@ -92,7 +92,7 @@ tasks:
     id: d8cd9924-954c-4301-8583-05c263e67848
     version: 1
     name: Display list of AV related tickets from ServiceNow
-    script:: SNListTickets
+    script: SNListTickets
   scriptarguments:
     fields: comments,short_description,category,subcategory,state
     query: subcategory=Antivirus
@@ -103,6 +103,6 @@ tasks:
     id: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
     version: 1
     name: Close the investigation
-    script:: CloseInvestigation
+    script: CloseInvestigation
   scriptarguments:
     reason: AuditCompleted
