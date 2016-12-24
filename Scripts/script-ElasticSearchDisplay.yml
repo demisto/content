@@ -37,7 +37,7 @@ script: |-
   return res;
 type: javascript
 tags:
-- elasticsearch
+- Elasticsearch
 system: true
 args:
 - name: query
