@@ -64,5 +64,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ADGetUserGroups
+  - ad-search
 timeout: 0s
