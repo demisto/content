@@ -34,7 +34,6 @@ tasks:
     version: -1
     name: Set initial incident context
     script: IncidentToContext
-    issystemtask: true
   results:
   - Label/Application
   - Label/Database
@@ -483,8 +482,7 @@ tasks:
               scriptarguments:
                 email: ${Label/Email/from}
           scriptarguments:
-            key: responseRequired
-            value: "yes"
+            brandname: pipl
           results:
           - brandInstances
         - id: "35"
