@@ -18,7 +18,7 @@ script: |2
           demisto.results("No results.")
 type: python
 tags:
-- Sandblast
+- sandblast
 comment: Use the Query API to have a client application look for either the analysis
   report of a specific file on the Check Point Threat Prevention service databases
   or the status of a file, uploaded for analysis

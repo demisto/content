@@ -11,7 +11,7 @@ script: |2
       demisto.results('No results.')
 type: python
 tags:
-- Sandblast
+- sandblast
 comment: 'Use the Download API to have a client application download files generated
   by the Check Point Threat Prevention service: analysis reports, Threat Emulation
   sandbox outputs, and more. The request must have the ID of the file to download'
