@@ -30,7 +30,18 @@ configuration:
 script:
   script: |-
     var getCookies = function() {
-        var result = http(
+        var result = callGetCookies
+        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
+            result = callGetCookies() // try another time, since Jira api sometimes needs twice to check for cookies
+        }
+        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
+            throw 'Failed to create auth cookie, request status code: ' + result.StatusCode + ', check that username/password are correct';
+        }
+        return result.Cookies;
+    };
+
+    var callGetCookies = function() {
+        return http(
             params.url+'rest/auth/1/session',
             {
                 Headers: {'Content-Type': ['application/json']},
@@ -41,11 +52,8 @@ script:
             },
             params.insecure
         );
-        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
-            throw 'Failed to create auth cookie, request status code: ' + result.StatusCode + ', check that username/password are correct';
-        }
-        return result.Cookies;
     };
+    
     var addQueryParam = function(urlSuffix, paramName, value){
         if (value && value.length > 0){
             urlSuffix = urlSuffix + '&' + paramName + '=' + value;
