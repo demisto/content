@@ -17,7 +17,7 @@ script: |
       binary = 'autorunsc64.exe';
     }
 
-    var output = execute(binary + ' -ct -h -s -t');
+    var output = execute(binary + ' -ct -h -s -t -accepteula');
 
     if (output.Success) {
       pack(output.Stdout);
