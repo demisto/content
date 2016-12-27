@@ -1,5 +1,6 @@
 id: Classifier Playbook
 version: -1
+system: true
 name: Classifier Playbook
 description: 'Determined the type of the incident . '
 tasks:
