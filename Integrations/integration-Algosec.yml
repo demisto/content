@@ -41,12 +41,12 @@ script:
 
     function fillInSoapContent(content, service) {
         var request = service === 'AFF' ? '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="https://www.algosec.com/WSHandler"><soapenv:Header/><soapenv:Body>%content%</soapenv:Body></soapenv:Envelope>' : '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:afa="https://www.algosec.com/afa-ws"><soapenv:Header/><soapenv:Body>%content%</soapenv:Body></soapenv:Envelope>';
-        return rplaceInTemplates(request, {content: content});
+        return replaceInTemplates(request, {content: content});
     }
 
     function fillInSOAPRequestTemplate(method, content, service) {
         var template = service === 'AFF' ? '<wsh:%method%><FFWSHeader><version>1</version></FFWSHeader>%content%</wsh:%method%>' : '<afa:%method%>%content%</afa:%method%>';
-        return fillInSoapContent(rplaceInTemplates(template, {content: content, method: method}), service);
+        return fillInSoapContent(replaceInTemplates(template, {content: content, method: method}), service);
     }
 
     var responseDict = {
@@ -90,19 +90,19 @@ script:
                 var trafficLines =
                 (args.description ? '<description>"%description%"</description>' : '') +
                 methodDict['trafficLines'];
-                return rplaceInTemplates(methodDict[method], {trafficLines: trafficLines});
+                return replaceInTemplates(methodDict[method], {trafficLines: trafficLines});
             case 'QueryRequest':
                 var query = methodDict['QueryInput'] +
                 (args.user ? '<User>%user%</User>' : '') +
                 (args.application ? '<Application>%application%</Application>' : '');
-                return rplaceInTemplates(methodDict[method], {query: query});
+                return replaceInTemplates(methodDict[method], {query: query});
             default:
                 return methodDict[method];
         }
     }
 
     function sendSOAPRequest(method, args, service) {
-        var req = fillInSOAPRequestTemplate(method, rplaceInTemplates(createTemplate(method, args), args), service);
+        var req = fillInSOAPRequestTemplate(method, replaceInTemplates(createTemplate(method, args), args), service);
         var res = http(
             service === 'AFF' ? baseAFF : baseAFA,
             {
