@@ -1,6 +1,6 @@
 commonfields:
   id: Autoruns
-  version: 1
+  version: -1
 name: Autoruns
 script: |-
   respAR = demisto.executeCommand( 'D2Autoruns', { 'using' : demisto.args()['system'] } )
@@ -10,12 +10,22 @@ script: |-
       demisto.log(str(ex))
       lines = respAR[0]['Contents'].split('\r\n')
 
+  hashes = []
   headers = lines[5].replace('\t','|')
-  mdTable = headers +'\n'
+  try:
+      hashCol = headers.split('|').index('MD5')
+  except ValueError as ve:
+      hashCol = -1
+  mdTable = headers + '\n'
   mdTable += '|'.join( '---'*len(headers.split('|')) ) + '\n'
   for l in lines[6:]:
+          if hashCol > -1:
+              cells = l.split('\t')
+              if hashCol < len(cells) and cells[hashCol].strip():
+                  hashes.append(cells[hashCol])
           mdTable += l.replace('\t','|') +'\n'
-
+  if hashes:
+      appendContext('md5s', ', '.join(hashes), dedup = True)
   demisto.results( { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': mdTable} )
 type: python
 tags:
