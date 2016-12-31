@@ -1,16 +1,42 @@
 commonfields:
   id: ADIsUserMember
-  version: 1
+  version: -1
 name: ADIsUserMember
 script: |-
-  resp = demisto.executeCommand( 'ADGetUserGroups', demisto.args() )
+  FOUND_GROUPS_LABAL = 'FoundGroups'
+  res = []
+
+  resp = demisto.executeCommand('ADGetUserGroups', demisto.args())
   try:
       if not isError(resp[0]):
-          for d in resp[0]['Contents']:
-              if demisto.args()['groupname'] == d['name']:
-                  demisto.results("yes")
-                  sys.exit(0)
-          demisto.results("no")
+          group_names = argToList(demisto.args()['groupname'])
+
+          for name in group_names:
+              group_resp = demisto.executeCommand('ad-search', {'filter':'(&(objectClass=group)(name={0}))'.format(name)})
+              if isError(group_resp[0]):
+                  res.append(  { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ad-search:\n' + resp[0]['Contents'] } )
+              elif (isinstance(group_resp[0]['Contents'],str) or isinstance(group_resp[0]['Contents'],unicode)) and group_resp[0]['Contents'] == 'No results':
+                  res.append( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Group {0} not found:\n'.format(name) } )
+
+          user_groups = [row['name'] for row in resp[0]['Contents']]
+          groups = list(set(group_names).intersection(user_groups))
+          if groups:
+              markdownString = '### The user belongs to groups:\n'
+              markdownString += "".join(['* ' + s + '\n' for s in groups])
+              res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+
+              group_names = ','.join([str(s) for s in groups])
+              demisto.setContext(FOUND_GROUPS_LABAL, group_names)
+
+              answer = 'yes'
+          else:
+              demisto.log("\nThe user is not part of any of the groups\n")
+              answer = 'no'
+
+          res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+
+          demisto.results(res)
+
       else:
           demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups:\n' + resp[0]['Contents'] } )
   except Exception, ex:
@@ -33,6 +59,8 @@ args:
   required: true
   default: true
   description: Name of the AD group to check
+- name: nestedSearch
+  description: Enter any value to allow nested groups check as well
 scripttarget: 0
 dependson:
   must:

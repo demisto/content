@@ -21,15 +21,15 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust certifcate
-  name: insecure
-  defaultvalue: "false"
-  type: 8
-  required: false
 - display: SEPM domain for the user
   name: domain
   defaultvalue: ""
   type: 0
+  required: false
+- display: Trust certificate
+  name: insecure
+  defaultvalue: "false"
+  type: 8
   required: false
 script:
   script: |-

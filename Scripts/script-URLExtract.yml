@@ -19,14 +19,7 @@ script: |-
           continue
       urls.append(u)
   res.append('URLs found:\n' + '\n'.join(urls))
-  currUrls = demisto.get(demisto.context(), 'urls')
-  if currUrls and isinstance(currUrls, list):
-      for u in urls:
-          if u not in currUrls:
-              currUrls.append(u)
-  else:
-      currUrls = urls
-  demisto.setContext('urls', currUrls)
+  appendContext('urls', urls, dedup = True)
   demisto.results(res)
 type: python
 tags:

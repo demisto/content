@@ -1,0 +1,42 @@
+commonfields:
+  id: AlgosecGetApplications
+  version: -1
+name: AlgosecGetApplications
+script: |2
+
+  resp = demisto.executeCommand("algosec-get-applications", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = [demisto.get(x, "Contents") for x in resp]
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = flattenTable(data)
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Algosec
+comment: Find applications containing network objects related to IP address using
+  BusinessFlow
+system: true
+args:
+- name: address
+  required: true
+  default: true
+  description: The IP/Subnet to search
+- name: type
+  auto: PREDEFINED
+  predefined:
+  - INTERSECT
+  - CONTAINED
+  - CONTAINING
+  - EXACT
+  description: The search method for the address
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-get-applications

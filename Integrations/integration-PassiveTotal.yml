@@ -10,6 +10,11 @@ description: Analyze and understand threat infrastructure from a variety of sour
   DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to
   time-intensive manual threat research and analysis
 configuration:
+- display: Server URL
+  name: ServerURL
+  defaultvalue: https://api.passivetotal.org/
+  type: 0
+  required: false
 - display: Username
   name: Username
   defaultvalue: ""
@@ -20,11 +25,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Server URL
-  name: ServerURL
-  defaultvalue: https://api.passivetotal.org/
-  type: 0
-  required: false
 script:
   script: |-
     var serverUrl = params.ServerURL;

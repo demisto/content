@@ -1,0 +1,28 @@
+commonfields:
+  id: SbDownload
+  version: -1
+name: SbDownload
+script: |2
+
+  resp = demisto.executeCommand("sb-download", demisto.args())
+  if resp and resp[0]['Contents']:
+      demisto.results(resp)
+  else:
+      demisto.results('No results.')
+type: python
+tags:
+- sandblast
+comment: 'Use the Download API to have a client application download files generated
+  by the Check Point Threat Prevention service: analysis reports, Threat Emulation
+  sandbox outputs, and more. The request must have the ID of the file to download'
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: File id to download
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sb-download

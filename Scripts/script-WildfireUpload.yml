@@ -1,11 +1,17 @@
 commonfields:
   id: WildfireUpload
-  version: 1
+  version: -1
 name: WildfireUpload
 script: |-
   var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
-  if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
-      return "failed";
+  if (!raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
+      if (raw[0].Contents.indexOf('Failed to upload, error 418') > -1) {
+          return {Contents: 'Wildfire does not support this file type.',
+                  ContentsFormat: formats.text,
+                  Type: entryTypes.error};
+      } else {
+          return raw;
+      }
   }
   var item = raw[0].Contents.wildfire['upload-file-info'];
   return {Contents: {

@@ -197,13 +197,24 @@ script: |-
       if type(arg) in [str, unicode]:
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return arg.split(',')
+          return [s.lstrip().rstrip() for s in arg.split(',')]
       return arg
 
-  def appendContext(key, data):
+  def appendContext(key, data, dedup=False):
+      if not data:
+        return
       existing = demisto.get(demisto.context(), key)
       if existing:
-          demisto.setContext(key, existing + data)
+          strBased = type(data) in [str, unicode] and type(existing) in [str, unicode]
+          if strBased:
+              data = data.split(',')
+              existing = existing.split(',')
+          newVal = data + existing
+          if dedup:
+              newVal = list(set(newVal))
+          if strBased:
+              newVal = ','.join(newVal)
+          demisto.setContext(key, newVal)
       else:
           demisto.setContext(key, data)
 
@@ -239,6 +250,50 @@ script: |-
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
 
+
+  def flattenRow(rowDict):
+    return {k: formatCell(rowDict[k]) for k in rowDict}
+
+
+  def flattenTable(tableDict):
+    return [flattenRow(row) for row in tableDict]
+ 
+  MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
+
+
+  def stringEscapeMD(st):
+      return "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+
+
+  def raiseTable(root, key):
+      newInternal = {}
+      if key in root and isinstance(root[key], dict):
+          for sub in root[key]:
+              if sub not in root:
+                  root[sub] =root[key][sub]
+              else:
+                  newInternal[sub] = root[key][sub]
+          if newInternal:
+              root[key] = newInternal
+          else:
+              del root[key]
+
+
+  def zoomField(item, fieldName):
+      if isinstance(item, dict) and fieldName in item:
+          return item[fieldName]
+      else:
+          return item
+  
+  
+  def isCommandAvailable(cmd):
+      modules = demisto.getAllSupportedCommands();
+      for m in modules:
+          if modules[m] and isinstance(modules[m], list):
+              for c in modules[m]:
+                  if c['name'] == cmd:
+                      return True
+      return False
 type: python
 tags:
 - infra

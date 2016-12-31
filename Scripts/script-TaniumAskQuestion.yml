@@ -34,14 +34,8 @@ script: |-
       var answers = res[0].Contents.result_infos.result_info.mr_passed;
       var expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
 
-      var timeout = 1;
-      if (args.timeout) {
-          timeout = parseInt(args.timeout) || 30;
-      }
-
-      var pollFreq = 1;
-      if (args.pollfreq)
-          pollFreq = parseInt(args.pollfreq) || 1; //seconds
+      var timeout = parseInt(args.timeout) || 30; // seconds
+      var pollFreq = parseInt(args.pollfreq) || 3; // seconds
 
       var polled = false;
       sec = 0;
@@ -59,7 +53,7 @@ script: |-
           polled = true;
       } while (answers !== expectedAnswers && sec < timeout);
       if (sec >= timeout) {
-          log("Timed out. Results may be incomplete.");
+          log("Timed out. Results may be incomplete. Run the query again to allow Tanium to reach full results.");
       } else {
           log("Full results. It took " + sec + " seconds, polling at " + pollFreq + " second intervals.");
       }
@@ -81,7 +75,6 @@ script: |-
       if (itemCount === 1) {
           var row = {};
           for (var i=0; i < cs.c.length; i++) {
-              //output += cs.c[i].dn + ': ' + rs.r.c[i].v + '\n';
               row[cs.c[i].dn] = formatCell(rs.r.c[i].v);
           }
           table.Contents.push(row);
@@ -89,7 +82,6 @@ script: |-
           for (var item=0; item < itemCount; item++) {
               var row = {};
               for (var j=0; j < cs.c.length; j++) {
-                  // output += cs.c[j].dn + ': ' + rs.r[item].c[j].v + '\n';
                   row[cs.c[j].dn] = formatCell(rs.r[item].c[j].v);
               }
               table.Contents.push(row);

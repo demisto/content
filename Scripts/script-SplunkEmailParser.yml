@@ -55,13 +55,15 @@ script: |-
   var severity = getField('level');
   var systems = getField('host');
   var incName = subject;
-  return setIncident({
-                          type: type,
-                          details: details,
-                          severity: severity,
-                          incName: incName,
-                          systems: systems
-                      });
+  var res = setPlaybookAccordingToType(type);
+  res = res.concat(setIncident({
+      type: type,
+      details: details,
+      severity: severity,
+      incName: incName,
+      systems: systems
+  }));
+  return res;
 type: javascript
 tags:
 - splunk

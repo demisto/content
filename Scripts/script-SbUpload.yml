@@ -1,0 +1,65 @@
+commonfields:
+  id: SbUpload
+  version: -1
+name: SbUpload
+script: |2
+
+  resp = demisto.executeCommand("sb-upload", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.response")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- sandblast
+comment: Use the Upload API to have a client application request that Check Point
+  Threat Prevention modules scan and analyze a file. When you upload a file to the
+  service, the file is encrypted. It is un-encrypted during analysis, and then deleted
+system: true
+args:
+- name: file_name
+  required: true
+  default: true
+  description: File name - service calculates the file name from the part name
+- name: md5
+  description: The md5 to upload
+- name: sha1
+  description: The sha1 to upload
+- name: sha256
+  description: The sha256 to upload
+- name: file_type
+  description: File extension (although the service identifies the type)
+- name: features
+  auto: PREDEFINED
+  predefined:
+  - te
+  - av
+  - extraction
+  - all
+  description: Available features - default is te and av
+- name: images
+  description: Array of objects with id and revision of available OS images
+- name: reports
+  description: Array of supported report formats of - pdf | xml | tar
+- name: benign_reports
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: By default, reports are returned only for malicious files - you can
+    mark this as true and get benign reports
+- name: file_id
+  required: true
+  description: The file id
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sb-upload

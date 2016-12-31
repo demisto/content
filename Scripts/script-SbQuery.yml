@@ -1,0 +1,66 @@
+commonfields:
+  id: SbQuery
+  version: -1
+name: SbQuery
+script: |2
+
+  resp = demisto.executeCommand("sb-query", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.response")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- sandblast
+comment: Use the Query API to have a client application look for either the analysis
+  report of a specific file on the Check Point Threat Prevention service databases
+  or the status of a file, uploaded for analysis
+system: true
+args:
+- name: md5
+  description: The md5 to query
+- name: sha1
+  description: The sha1 to query
+- name: sha256
+  description: The sha256 to query
+- name: file_type
+  description: File extension (although the service identifies the type)
+- name: features
+  auto: PREDEFINED
+  predefined:
+  - te
+  - av
+  - extraction
+  - all
+  description: Available features - default is te and av
+- name: images
+  description: Array of objects with id and revision of available OS images
+- name: reports
+  description: Array of supported report formats of - pdf | xml | tar
+- name: benign_reports
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: By default, reports are returned only for malicious files - you can
+    mark this as true and get benign reports
+- name: quota
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If true, response delivers the quota data (for cloud services only)
+- name: file_name
+  description: File name - service calculates the file name from the part name
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sb-query
