@@ -1,0 +1,778 @@
+commonfields:
+  id: RSA Netwitness Security Analytics
+  version: -1
+name: RSA Netwitness Security Analytics
+display: RSA Netwitness Security Analytics
+category: SIEM & Analytics
+image: data:image/png;base64,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
+description: Security Analytics
+configuration:
+- display: Server Url
+  name: url
+  defaultvalue: 192.168.56.101
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: anar
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: anar123qwe
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    var url = params.url;
+    if (url.indexOf("https://") < 0) {
+        url = 'https://' + url;
+    }
+    var username = params.username;
+    var password = params.password;
+
+    function FailedRequestError(message, url, query, reqBody, resBody) {
+        return {
+            message: message,
+            url: url,
+            query: query,
+            reqBody: reqBody,
+            resBody: resBody,
+            toString: function() {
+                var error = [
+                    message,
+                    'Request url: ' + url,
+                ];
+
+                if (query) {
+                    error.push('Request query: ' + JSON.stringify(query));
+                }
+                if (reqBody) {
+                    error.push('Request body:' + JSON.stringify(reqBody));
+                }
+
+                error.push('Response: ' + resBody);
+
+                return error.join('\n');
+            }
+        };
+    }
+
+    function escapeRegExp(str) {
+        return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    }
+
+    function replaceAll(str, find, replace) {
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    }
+
+    function login(url, username, password) {
+        var fullUrl = url + '/j_spring_security_check';
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Origin': [url],
+                    'Content-Type': ['application/x-www-form-urlencoded'],
+                    'Referer': [url + '/login']
+                },
+                Body: 'j_username=' + username + '&j_password=' + password
+            },
+            true,
+            false,
+            true
+        );
+
+        if (res.StatusCode !== 302) {
+            throw 'Failed to login with status [' + res.StatusCode + ']. Expected status 302. Check username or password. Error: ' + res.Body;
+        }
+
+        var sessionId = res.Cookies[0].Value;
+        try {
+            getAvailableAssignees(sessionId);
+        } catch(err) {
+            throw 'Failed to login! Check username or password.';
+        }
+
+        return sessionId;
+    }
+
+    function createQuery(args, defaultQuery) {
+        args = args || {};
+        defaultQuery = defaultQuery || {};
+        var query = {};
+
+        if (args.page || defaultQuery.page) {
+            query.page = args.page || defaultQuery.page;
+        }
+
+        if (args.start || defaultQuery.start) {
+            query.start = args.start || defaultQuery.start;
+        }
+
+        if (args.limit || defaultQuery.limit) {
+            query.limit = args.limit || defaultQuery.limit;
+        }
+
+        if (args.sort || defaultQuery.sort) {
+            query.sort = args.sort || defaultQuery.sort;
+        }
+
+        if (args.filter || defaultQuery.filter) {
+            query.filter = args.filter || defaultQuery.filter;
+        }
+
+        return query;
+    }
+
+    function createQueryFromString(q) {
+        if (!q.match(/(.*=.*&)*(.*=.*)/)) {
+            throw 'invalid query. query must be of structure: key1=value1&key2=value2&keyN=valueN';
+        }
+        var query = replaceAll(q, '\"', '"')
+            .split('&')
+            .reduce(function(qArgs, nextArg) {
+                var na = nextArg.split('=');
+                var argKey = na[0];
+                var argValue = na[1];
+                qArgs[argKey] = argValue;
+                return qArgs;
+            }, {});
+
+        return query;
+    }
+
+    var defaultIncidentFilter = {
+        page: 1,
+        start: 0,
+        limit: 100,
+        sort: JSON.stringify([
+            {
+                property:'created',
+                direction: 'DESC'
+            }
+        ]),
+        filter: JSON.stringify([
+            {
+                property: 'created',
+                value: [
+                    851171984031, // year 1996
+                    new Date().getTime()
+                ]
+            }
+        ])
+    };
+
+    function fetchIncidents(sessionId, args) {
+        var fullUrl = url + '/ajax/incidents/2';
+        var query = {};
+        if (args.query) {
+            query = createQueryFromString(args.query);
+        } else {
+            query = createQuery(args, defaultIncidentFilter);
+        }
+
+        fullUrl += encodeToURLQuery(query);
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch incidents with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        try {
+            incidents = JSON.parse(res.Body);
+            if (incidents.success) {
+                return incidents.data;
+            } else {
+                throw FailedRequestError('Fetch incidents failed.', fullUrl, query, null, incidents).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while fetching incidents.', fullUrl, query, null, res.Body).toString();
+        }
+    }
+
+    var defaultComponentFilter = {
+        page: 1,
+        start: 0,
+        limit: 1000,
+        sort: replaceAll(JSON.stringify([
+            {
+                property: 'displayName',
+                direction: 'ASC'
+            }
+        ]), '\"', '"')
+    };
+
+    function getComponents(sessionId, args) {
+        var fullUrl = url + '/common/devices/types/DECODER,CONCENTRATOR,BROKER,LOG_DECODER,CORE_ARCHIVER';
+        var query = {};
+        if (args.query) {
+            query = createQueryFromString(args.query);
+        } else {
+            query = createQuery(args, defaultComponentFilter);
+        }
+        fullUrl += encodeToURLQuery(query);
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch components with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        try {
+            components = JSON.parse(res.Body);
+            if (components.success) {
+                return components.data;
+            } else {
+                throw FailedRequestError('Fetch components failed.', fullUrl, query, null, components).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error when fetching components.', fullUrl, query, null, res.Body).toString();
+        }
+    }
+
+
+    function createEventsQuery(args) {
+        args = args || {};
+        var query = {};
+
+        query.deviceId = args.deviceId;
+        query.collectionName = args.collectionName || '';
+        query.predicateIds = args.predicateIds || '';
+        query.timeRangeType = args.timeRangeType;
+        query.startDate = args.startDate || '';
+        query.endDate = args.endDate || '';
+        query.lastCollectionTime = args.lastCollectionTime || '';
+        query.mid1 = args.mid1 || 0;
+        query.mid2 = args.mid2 || 0;
+        query.investigationToken = args.investigationToken || '';
+        query.page = args.page || 1;
+        query.start = args.start || 0;
+        query.limit = args.limit || 25;
+        query.sort = args.sort
+            ? replaceAll(args.sort, '\"', '"')
+            : JSON.stringify([
+                {
+                    property: 'id',
+                    direction: 'ASC'
+                }
+            ]);
+
+        return query;
+    }
+    function getEvents(sessionId, args) {
+        var query = createEventsQuery(args);
+        var fullUrl = url + '/ajax/investigation/events' + encodeToURLQuery(query);
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch events with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        try {
+            events = JSON.parse(res.Body);
+            if (events.success) {
+                return events.data;
+            } else {
+                throw FailedRequestError('Fetch events failed.', fullUrl, query, null, events).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching events.', fullUrl, query, null, res.Body).toString();
+        }
+    }
+
+    function getAvailableAssignees(sessionId) {
+        var fullUrl = url + '/ajax/incident/user/availableAssignees';
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch availabe assignees with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        try {
+            availableAssignees = JSON.parse(res.Body);
+            if (availableAssignees.success) {
+                return availableAssignees.data;
+            } else {
+                throw FailedRequestError('Fetch available assignees failed.', fullUrl, null, null, availableAssignees).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while fetching available assignees.', fullUrl, null, null, res.Body).toString();
+        }
+    }
+
+    function getEventsViewHtml(sessionId) {
+        var fullUrl = url + '/investigation/events';
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch CSRF token with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        return res.Body;
+    }
+
+    function extractCsrfTokenFromHTML(html) {
+        var matched = html.match(/<meta name="csrf-token" content=".*"/);
+        if (!matched) {
+            throw 'CSRF token not found! Internal error in Netwitness. Response  body: \n' + html;
+        }
+
+        var csrfToken = replaceAll(matched[0].replace('<meta name="csrf-token" content=', ''), '"', '');
+        return csrfToken;
+    }
+
+    function extractLoggedUserFromHTML(html) {
+        var matchedLoggedUser = html.match(/name: Ext\.htmlDecode\(.*\)/);
+        if (!matchedLoggedUser) {
+            throw 'Failed to determine logged in user. Html: ' + html;
+        }
+
+        var name = matchedLoggedUser[0].replace('name: Ext.htmlDecode(\'', '').replace('\')', '');
+        var user = {
+            name: name
+        };
+
+        return user;
+    }
+
+    var DEFAULT_SEVERITY = "50";
+    function createAlert(sessionId, args, createdUser, csrfToken) {
+        var fullUrl = [
+            url,
+            'ajax/alert/create',
+            args.deviceId,
+            replaceAll(args.eventList, ' ', ''),
+            '2?ctoken=' + csrfToken
+        ].join('/');
+
+        var body = {
+            alertSummary: args.alertSummary,
+            severity: args.severity ? args.severity + '' : DEFAULT_SEVERITY,
+            create_by_user: createdUser.name
+        };
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch events with status [' + res.StatusCode + ']. Error: ' + res.Body;
+        }
+
+        try {
+            var alertRes = JSON.parse(res.Body);
+            if (alertRes.success) {
+                return alertRes.data;
+            } else {
+                throw FailedRequestError('Failed to create alert.', fullUrl, null, body, alertRes).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while creating alert.', fullUrl, null, body, res.Body).toString();
+        }
+    }
+
+    function createIncident(sessionId, args, availableAssignees) {
+        var eventsViewHTML = getEventsViewHtml(sessionId);
+        var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
+        var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
+        // currently we extract only the name of the logged in user. But the all the user object is exist in the html.
+        // it just will take more development time.
+        // that is why we look for the user in availableAssigness
+        availableAssignees.forEach(function(user) {
+            if (user.name === loggedUser.name) {
+                loggedUser = user;
+            }
+        });
+
+        var newAlert = createAlert(sessionId, args, loggedUser, csrfToken);
+
+        var fullUrl = [
+            url,
+            'ajax/incident/create',
+            '2?ctoken=' + csrfToken
+        ].join('/');
+
+        var newIncident = {
+            name: args.name,
+            summary: args.summary || '',
+            priority: args.priority,
+            createdBy: loggedUser.name,
+            alert_id_list: [
+                newAlert.id
+            ]
+        };
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(newIncident)
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to create incident with status [' + res.StatusCode + ']\n.'
+                + 'Request Body: ' + JSON.stringify(body) + '\n. Response Body: ' + res.Body;
+        }
+
+        try {
+            var newIncidentRes = JSON.parse(res.Body);
+            if (newIncidentRes.success) {
+                newIncident.id = newIncidentRes.data.id;
+                return newIncident;
+            } else {
+                throw FailedRequestError('Failed to create incident.', fullUrl, null, body, newIncidentRes).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while creating incident.', fullUrl, null, body, res.Body).toString();
+        }
+    }
+
+    function updateIncident(sessionId, args, availableAssignees) {
+        var eventsViewHTML = getEventsViewHtml(sessionId);
+        var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
+        var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
+        // currently we extract only the name of the logged in user. But the all the user object is exist in the html.
+        // it just will take more development time.
+        // that is why we look for the user in availableAssigness
+        availableAssignees.forEach(function(user) {
+            if (user.name === loggedUser.name) {
+                loggedUser = user;
+            }
+        });
+
+        var fullUrl = [
+            url,
+            'ajax/incidents/update/2',
+            '?ctoken=' + csrfToken
+        ].join('/');
+
+        var updatedIncident = {
+            id_list: replaceAll(args.idList, ' ', '').split(','),
+            attribute_map: {
+                lastUpdatedByUser: loggedUser
+            },
+            benign_domain_list: []
+        };
+        if (args.name) {
+            updatedIncident.attribute_map.name = args.name;
+        }
+        if (args.priority) {
+            updatedIncident.attribute_map.priority = args.priority;
+        }
+        if (args.status) {
+            updatedIncident.attribute_map.status = args.status;
+        }
+        if (args.summary) {
+            updatedIncident.attribute_map.summary = args.summary;
+        }
+        if (args.comment) {
+            updatedIncident.attribute_map.comment = args.comment;
+        }
+        if (args.assignee) {
+            var assigneeUser = null;
+            availableAssignees.forEach(function(user) {
+                if (user.login === args.assignee) {
+                    assigneeUser = user;
+                }
+            });
+            if (!assigneeUser) {
+                throw 'assignee argument is invalid. No such [' + args.assignee + '] available assignee user exist';
+            }
+            updatedIncident.attribute_map.assignee = assigneeUser;
+        }
+        if (args.categories) {
+            updatedIncident.attribute_map.categories = args.categories;
+        }
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(updatedIncident)
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to create incident with status [' + res.StatusCode + ']\n.'
+                + 'Request Body: ' + JSON.stringify(updatedIncident) + '\n. Response Body: ' + res.Body;
+        }
+
+        try {
+            var updateRes = JSON.parse(res.Body);
+            if (updateRes.success) {
+                return updateRes;
+            } else {
+                throw FailedRequestError('Failed to update incident.', fullUrl, null, updatedIncident, updateRes).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Failed to update incident.', fullUrl, null, updatedIncident, res.Body).toString();
+        }
+    }
+
+    // The command input arg holds the command sent from the user.
+    var sessionId = login(url, username, password);
+
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+        case 'nw-login':
+            return sessionId;
+        case 'nw-fetch-incidents':
+            var incidents = fetchIncidents(sessionId, args);
+            return { incidents: incidents };
+        case 'nw-get-components':
+            var components = getComponents(sessionId, args);
+            return { components: components };
+        case 'nw-get-events':
+            var events = getEvents(sessionId, args);
+            return { events: events };
+        case 'nw-get-available-assignees':
+            var availableAssignees = getAvailableAssignees(sessionId);
+            return { availableAssignees: availableAssignees };
+        case 'nw-create-incident':
+            var availableAssignees = getAvailableAssignees(sessionId);
+            var newIncident = createIncident(sessionId, args, availableAssignees);
+            return { incident: newIncident };
+        case 'nw-update-incident':
+            var availableAssignees = getAvailableAssignees(sessionId, args);
+            var updatedIncident = updateIncident(sessionId, args, availableAssignees);
+            return updatedIncident;
+        default:
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
+    }
+  type: javascript
+  commands:
+  - name: nw-fetch-incidents
+    arguments:
+    - name: query
+      description: 'If query provided all other parameters ignored. Query should contain
+        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+    - name: page
+      description: The default is 1. Indicates the page number of incidents
+    - name: start
+      description: The default is 0. Indicates the start index of incident in page
+    - name: limit
+      description: The default is 100. Limits the number of incidents per page
+    - name: sort
+      description: By default sorts by "created" field in "DESC" order
+    - name: filter
+      description: By default filters by "created" from 1996 to this date.
+  - name: nw-login
+    arguments: []
+  - name: nw-get-components
+    arguments:
+    - name: query
+  - name: nw-get-events
+    arguments:
+    - name: timeRangeType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_10_MINUTES
+      - LAST_15_MINUTES
+      - LAST_30_MINUTES
+      - LAST_HOUR
+      - LAST_3_HOURS
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_2_DAYS
+      - LAST_5_DAYS
+      - EARLY_MORNING
+      - MORNING
+      - AFTERNOON
+      - EVENING
+      - TODAY
+      - YESTERDAY
+      - THIS_WEEK
+      - LAST_WEEK
+      - ALL_DATA
+      - CUSTOM
+      description: Filter of time range in which events occured
+    - name: deviceId
+      required: true
+    - name: collectionName
+      description: Optional
+    - name: predicateIds
+      description: Optional
+    - name: startDate
+      description: Optional. If timeRangeType defined as CUSTOM, set this argument
+    - name: endDate
+      description: Optional. If timeRangeType defined as CUSTOM, set this argument
+    - name: lastCollectionTime
+      description: '[optional datetime] Last collection time'
+    - name: mid1
+    - name: mid2
+    - name: investigationToken
+      description: '[guid] Investigation id token'
+    - name: page
+      description: '[optional number] Default set to 1. The page number'
+    - name: start
+      description: '[optional number] Default set to 0. The starting index of event
+        in page.'
+    - name: limit
+      description: '[optional number] Default set to 25. Limits the number of events
+        per page'
+    description: Returns all the events in defined time range
+  - name: nw-get-available-assignees
+    arguments: []
+    description: Returns the available users to be assigned to incidents
+  - name: nw-create-incident
+    arguments:
+    - name: alertSummary
+      required: true
+      description: Short summary of the alert which will be attached to incident
+    - name: severity
+      description: '[optional string] Default set to "50". '
+    - name: name
+      required: true
+      description: '[string] The name of the incident.'
+    - name: assigned
+    - name: eventList
+      required: true
+      description: List of event ids separated by comma [,] must not include spaces
+        in it. In order to get list of events you can use nw-get-events
+    - name: deviceId
+      required: true
+      description: The id of the device/component (Concentrator, Log Decoder, Packet
+        Decoder, etc.) from which the events are. You can view the list of devices
+        by executing the command nw-get-components
+    - name: priority
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Priority of the incident
+    - name: summary
+      description: Summary of the incident
+    description: Creating new incident
+    execution: true
+  - name: nw-add-events-to-incident
+    arguments: []
+    execution: true
+  - name: nw-update-incident
+    arguments:
+    - name: idList
+      required: true
+      description: 'List of incident ids which will be updated, separated by comma
+        [,]. Must not contain spaces. Example: 13,15,23'
+    - name: name
+      description: '[optional string] Set name if incident name has been changed'
+    - name: summary
+      description: '[optional string] Updated incident summary'
+    - name: assignee
+      description: '[optional string] Set assignee login name if assignee has changed.
+        Example: demisto123 '
+    - name: comment
+      description: '[optional string] Add a journal entry describing your changes'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - NEW
+      - ASSIGNED
+      - IN_PROGRESS
+      - REMEDIATION_REQUESTED
+      - REMEDIATION_COMPLETED
+      - CLOSED
+      - CLOSED_FALSE_POSITIVE
+      description: '[optional status] Set status if changed'
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: '[optional priority] Set priority if incident priority has been
+        changed'
+    - name: categories
+      description: List of categories.
+    execution: true
+  isfetch: true
