@@ -28,14 +28,7 @@ script: |-
           continue
       ips.append(ip)
   res.append('IPs found:\n' + '\n'.join(ips))
-  currIPs = demisto.get(demisto.context(), 'ips')
-  if currIPs and isinstance(currIPs, list):
-      for i in ips:
-          if i not in currIPs:
-              currIPs.append(i)
-  else:
-      currIPs = ips
-  demisto.setContext('ips', currIPs)
+  appendContext('ips', ips)
   demisto.results(res)
 type: python
 tags:

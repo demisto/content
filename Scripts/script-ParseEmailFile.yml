@@ -465,6 +465,7 @@ script: |-
           if fname and a.data:
               fname = fname.encode('utf-8')
               attachments.append(fname)
+              demisto.setContext('AttachmentName', fname)
               r.append(fileResult(fname, a.data))
       demisto.setContext('Label/Email', extractAddress(msg.to))
       demisto.setContext('Label/Email/cc', extractAddress(msg.cc))
@@ -499,6 +500,7 @@ script: |-
                   parts += part.get_payload()
               elif part.get_filename():
                   attachments.append(part.get_filename())
+                  demisto.setContext('AttachmentName', part.get_filename())
                   r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
                   html = part.get_payload(decode=True)
@@ -552,6 +554,8 @@ type: python
 tags:
 - email
 - phishing
+- enhancement
+- file
 comment: Parse an email from an eml or msg file and populate all relevant context
   data to investigate the email. Also extracts inner attachments and returns them
   to the war room. The incident labels themselves are preserved and not modified -

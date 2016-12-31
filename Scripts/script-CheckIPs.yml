@@ -1,6 +1,6 @@
 commonfields:
   id: CheckIPs
-  version: 1
+  version: -1
 name: CheckIPs
 script: |-
   import re
@@ -33,25 +33,30 @@ script: |-
               continue
           ips.append(ip)
   for ip in ips:
-      rep = demisto.executeCommand('ip', {'ip': ip})
-      for r in rep:
-          if positiveIp(r):
+      if isCommandAvailable('ip'):
+          rep = demisto.executeCommand('ip', {'ip': ip})
+          for r in rep:
+              if positiveIp(r):
+                  badIps.append(ip)
+                  res.append(shortIp(r))
+      if isCommandAvailable('pt-malware'):
+          ptRep = demisto.executeCommand('pt-malware', {'query': ip})
+          if not isError(ptRep[0]) and demisto.get(ptRep[0], 'Contents.results'):
               badIps.append(ip)
-              res.append(shortIp(r))
+              contents = flattenTable(demisto.get(ptRep[0], 'Contents.results'))
+              res.append( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': contents} )
+
   if len(res) > 0:
       res.extend(['yes', 'Found malicious IPs!'])
-      currIps = demisto.get(demisto.context(), 'bad_ips')
-      if currIps and isinstance(currIps, list):
-          currIps += [i for i in badIps if i not in currIps]
-      else:
-          currIps = badIps
-      demisto.setContext('bad_ips', currIps)
+      appendContext('bad_ips', badIps, dedup = True)
   else:
       res.append('no')
+      if not demisto.get(demisto.context(), 'bad_ips'):
+          demisto.setContext('bad_ips', '')
       if ips:
           res.append('Only clean IPs found: \n' + '\n'.join(ips))
       else:
-          res.append('No IPs found within mail. Nothing to check.')
+          res.append('No IPs found within data. Nothing to check.')
   demisto.results(res)
 type: python
 tags:
@@ -68,6 +73,7 @@ args:
     expression. If omitted, will scan Incident Details instead.
 scripttarget: 0
 dependson:
-  must:
+  should:
   - ip
+  - pt-malware
 timeout: 0s

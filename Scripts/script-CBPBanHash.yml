@@ -1,10 +1,20 @@
 commonfields:
   id: CBPBanHash
-  version: 1
+  version: -1
 name: CBPBanHash
 script: |-
   CBP_HASH_BANNED = '3'
-  demisto.results(demisto.executeCommand("cbp-fileRule-update", {"fileState": CBP_HASH_BANNED, "hash": demisto.args()["hash"]}))
+  res = []
+  t = []
+  for h in argToList(demisto.args()['hash']):
+      e = demisto.executeCommand("cbp-fileRule-update", {"fileState": CBP_HASH_BANNED, "hash": h})[0]
+      if isError(e):
+          res += [e]
+      else:
+          t.append( e['Contents'] )
+
+  res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
+  demisto.results(res)
 type: python
 tags:
 - carbon-black-protection
@@ -15,7 +25,7 @@ args:
 - name: hash
   required: true
   default: true
-  description: The hash value to ban.
+  description: The hash value(s) to ban (comma-separated).
 scripttarget: 0
 dependson:
   must:

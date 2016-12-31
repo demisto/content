@@ -1,6 +1,6 @@
 commonfields:
   id: IncidentToContext
-  version: 1
+  version: -1
 name: IncidentToContext
 script: |-
   # These comments are required to make sure that all pre-defined labels are selectable in the playbook
@@ -45,6 +45,11 @@ script: |-
           labels[name] = [l['value']] + (labels[name] if name in labels else [])
       for k, v in labels.iteritems():
           demisto.setContext(k, v if len(v) > 1 else v[0])
+
+  if 'CustomFields' in i and i['CustomFields']:
+      for key in i['CustomFields'].keys():
+          demisto.setContext(key, i['CustomFields'][key])
+
   demisto.results('Incident context set')
 type: python
 tags:

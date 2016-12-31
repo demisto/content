@@ -1,0 +1,46 @@
+commonfields:
+  id: ClassifierNotifyAdmin
+  version: -1
+name: ClassifierNotifyAdmin
+script: |-
+  BRAND_LABEL = 'Label/Brand'
+  CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
+  INCIDENT_ID_LABEL = 'Label/id'
+  CONTEXT_SEPARATOR = '|'
+
+  MAIL_SUBJECT = 'Demisto warning: Failed to classify incident {0}'
+
+  ctx = demisto.context()
+  res = []
+
+  brand = demisto.get(ctx, BRAND_LABEL) or ''
+  description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
+  incident_id = demisto.get(ctx, INCIDENT_ID_LABEL) or ''
+  send_to = demisto.args()['sendTo'] if demisto.get(demisto.args(), 'sendTo') else ''
+
+  markdownString = '### Classification failed:\n'
+  markdownString += '* Brand: {0}\n'.format(brand) if brand else '* Brand was not provided\n'
+  markdownString += '* Description:\n{0}'.format(''.join(['** {0}\n'.format(st) for st in description.split(CONTEXT_SEPARATOR)])) if description else '* Description was not provided\n'
+
+  res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+
+  if send_to:
+      resp = demisto.executeCommand("send-mail", {"to" : send_to, "subject" : MAIL_SUBJECT.format(incident_id), "body" : markdownString})
+      if isError(resp[0]):
+          res += resp
+
+  demisto.results(res)
+type: python
+tags:
+- Classifier
+comment: Send mail to admin, notifying that classification failed
+system: true
+args:
+- name: sendTo
+  default: true
+  description: 'Mail address to notify '
+scripttarget: 0
+dependson:
+  must:
+  - send-mail
+timeout: 0s

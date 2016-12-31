@@ -5,7 +5,7 @@ name: IsIntegrationAvailable
 script: |
   brandName = demisto.get(demisto.args(), 'brandname')
   allInstances = demisto.getModules()
-  brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower()]
+  brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower() and (not demisto.get(allInstances[instanceName], 'state') or allInstances[instanceName]['state'] == 'active')]
   if brandInstances:
       demisto.setContext('brandInstances', brandInstances)
       demisto.results('yes')

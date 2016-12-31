@@ -1,0 +1,37 @@
+commonfields:
+  id: GoogleappsRevokeUserRole
+  version: -1
+name: GoogleappsRevokeUserRole
+script: |2
+
+  import re
+
+  args = demisto.args()
+  for key in args.keys():
+      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
+  resp = demisto.executeCommand("googleapps-revoke-user-role", args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- google apps
+comment: Deletes a role assignment.
+system: true
+args:
+- name: roleAssignmentId
+  required: true
+  description: Immutable ID of the role assignment.
+scripttarget: 0
+dependson:
+  must:
+  - googleapps-revoke-user-role
+timeout: 0s

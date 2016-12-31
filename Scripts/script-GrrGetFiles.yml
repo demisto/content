@@ -1,0 +1,28 @@
+commonfields:
+  id: GrrGetFiles
+  version: -1
+name: GrrGetFiles
+script: |2
+
+  demisto.results(demisto.executeCommand("grr_get_files", demisto.args()))
+type: python
+tags:
+- GRR
+comment: Downloads files from specified machine without requiring approval
+system: true
+args:
+- name: hostname
+  description: Target host, Can be FQDN or client ID
+- name: paths
+  description: Fetch this number of elements, an array of path strings
+- name: max_file_size
+  description: Maximum size of file we will download
+- name: action
+  description: Action to apply to found files - STAT, HASH or DOWNLOAD
+- name: pathtype
+  description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - grr_get_files

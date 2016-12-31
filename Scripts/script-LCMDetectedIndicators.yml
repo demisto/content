@@ -1,0 +1,28 @@
+commonfields:
+  id: LCMDetectedIndicators
+  version: -1
+name: LCMDetectedIndicators
+script: |
+  args = demisto.args()
+  resp = demisto.executeCommand("lcm-indicators", args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- lightcyber
+comment: Shows detected indicators from LightCyber Magna.
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - lcm-indicators
+timeout: 0s

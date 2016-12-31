@@ -1,0 +1,33 @@
+commonfields:
+  id: IncapGetDomainApproverEmail
+  version: -1
+name: IncapGetDomainApproverEmail
+script: |2
+
+  resp = demisto.executeCommand("incap-get-domain-approver-email", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Incapsula
+comment: Use this operation to get the list of email addresses that can be used when
+  adding an SSL site
+system: true
+args:
+- name: domain
+  description: 'The domain name of the site. For example: www.example.com, hello.example.com,
+    example.com'
+scripttarget: 0
+dependson:
+  must:
+  - incap-get-domain-approver-email
+timeout: 0s
