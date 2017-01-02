@@ -27,6 +27,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |2+
 
@@ -44,8 +54,9 @@ script:
         'endSession': /<soapenv:Body><endSessionResponse xmlns=(.*)\/><\/soapenv:Body>/,
         'systemEventRetrieve': /<systemEventRetrieveResponse xmlns="urn:Manager">((.|\n)*)<\/systemEventRetrieveResponse>/,
         'hostAntiMalwareScan':/<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
-        'alertStatusRetrieve':/<soapenv:Body>((.|\n)*)<\/soapenv:Body>/
-
+        'alertStatusRetrieve':/<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
+        'securityProfileRetrieveAll': /<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
+        'securityProfileAssignToHost': /<soapenv:Body>((.|\n)*)<\/soapenv:Body>/
     };
 
 
@@ -54,7 +65,9 @@ script:
         'trendmicro-host-antimalware-scan': 'hostAntiMalwareScan',
         'trendmicro-host-retrieve-all': 'hostRetrieveAll',
         'trendmicro-system-event-retrieve': 'systemEventRetrieve',
-        'trendmicro-alert-status': 'alertStatusRetrieve'
+        'trendmicro-alert-status': 'alertStatusRetrieve',
+        'trendmicro-security-profile-retrieve-all': 'securityProfileRetrieveAll',
+        'trendmicro-security-profile-assign-to-host': 'securityProfileAssignToHost'
     };
 
     var sessionData = '<urn:sID>%sessionId%</urn:sID>';
@@ -65,7 +78,9 @@ script:
             'hostRetrieveAll': '<urn:hostRetrieveAll>' + sessionData + '</urn:hostRetrieveAll>',
             'systemEventRetrieve': '<urn:systemEventRetrieve>%timeFilter%%hostFilter%%eventIdFilter%<urn:includeNonHostEvents>%includeNonHostEvents%</urn:includeNonHostEvents>'+ sessionData +'</urn:systemEventRetrieve>',
             'hostAntiMalwareScan': '<urn:hostAntiMalwareScan>%hostIDs%' + sessionData + '</urn:hostAntiMalwareScan>',
-            'alertStatusRetrieve': '<urn:alertStatusRetrieve><urn:count>%count%</urn:count>' + sessionData + '</urn:alertStatusRetrieve>'
+            'alertStatusRetrieve': '<urn:alertStatusRetrieve><urn:count>%count%</urn:count>' + sessionData + '</urn:alertStatusRetrieve>',
+            'securityProfileRetrieveAll': '<urn:securityProfileRetrieveAll>' + sessionData + '</urn:securityProfileRetrieveAll>',
+            'securityProfileAssignToHost':'<urn:securityProfileAssignToHost><urn:securityProfileID>%securityProfileID%</urn:securityProfileID>%hostIDs%' + sessionData + '</urn:securityProfileAssignToHost>'
     };
 
     var filterDict = {
@@ -144,52 +159,91 @@ script:
         return request;
     }
 
-        function sendSOAPRequest(methodName, args) {
-            var req = createSOAPRequest(methodName, args);
-            var res = http(
-                url,
-                {
-                    Method: 'POST',
-                    Headers: {
-                    SOAPAction: [""]
-                    },
-                    Body: req
+    function sendSOAPRequest(methodName, args) {
+        var req = createSOAPRequest(methodName, args);
+        var res = http(
+            url,
+            {
+                Method: 'POST',
+                Headers: {
+                SOAPAction: [""]
                 },
-                insecure,
-                proxy
-            );
-            if (res.StatusCode < 200 || res.StatusCode >= 300) {
-                    throw 'Failed to ' + methodName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-                }
-            return res.Body;
-        }
-
-         function sendAndParse(method, args) {
-            var responseXML = sendSOAPRequest(method, args);
-            var match = responseDict[method].exec(responseXML);
-            if (match && match[1]) {
-                return match[1];
+                Body: req
+            },
+            insecure,
+            proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+                throw 'Failed to ' + methodName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
-            throw method +' failed';
-        }
-
-
-    if (command === 'test-module') {
-        if (sendAndParse('authenticate', {username: username, password: password})) {
-                return 'ok';
-            }
-            return 'something is wrong';
+        return res.Body;
     }
 
+    function sendAndParse(method, args) {
+        var responseXML = sendSOAPRequest(method, args);
+        var match = responseDict[method].exec(responseXML);
+        if (match && match[1]) {
+            return match[1];
+        }
+        throw method +' failed';
+    }
 
     // Wrap host IDs array if exists
     if ('hostIDs' in args) {
             args.hostIDs = '<urn:hostIDs>' + args.hostIDs.split(',').join('</urn:hostIDs><urn:hostIDs>') + '</urn:hostIDs>';
     }
-    args.sessionId = sendAndParse('authenticate', {username: username, password: password});
-    var res = JSON.parse(x2j(sendAndParse(commandToMethod[command], args)));
-    sendAndParse('endSession',args)
-    return res
+
+    function createIncidentFromAlert(singleAlert) {
+        var keys = Object.keys(singleAlert);
+        var labels = [];
+        for (var i = 0; i < keys.length; i++) {
+            labels.push({'type': keys[i], 'value': String(singleAlert[keys[i]])});
+        }
+        var alertTime = new Date(singleAlert.alertDate);
+        return {
+                "name": singleAlert.alertType,
+                "occurred": alertTime,
+                "labels": labels,
+            }
+    }
+
+    function fetchIncidents() {
+        var lastRun = getLastRun();
+        var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
+        var maxTime = startTime;
+        args.sessionId = sendAndParse('authenticate', {username: username, password: password});
+        args.count = 1000;
+        var res = JSON.parse(x2j(sendAndParse('alertStatusRetrieve', args)));
+        sendAndParse('endSession',args);
+        var incidents = [];
+        if (res && res.alertStatusRetrieveResponse){
+            var alertsDict = res.alertStatusRetrieveResponse.alertStatusRetrieveReturn;
+            for (var i in alertsDict) {
+                var alertTime = new Date(alertsDict[i].alertDate);
+                if (alertTime > startTime) {
+                    incidents.push(createIncidentFromAlert(alertsDict[i]));
+                    maxTime = Math.max(alertTime, maxTime);
+                }
+            }
+        }
+        setLastRun({startTime: maxTime});
+        return JSON.stringify(incidents);
+    }
+
+    switch (command) {
+        case 'test-module':
+            if (sendAndParse('authenticate', {username: username, password: password})) {
+                return 'ok';
+            }
+            return 'something is wrong';
+        case 'fetch-incidents':
+            return fetchIncidents();
+        default:
+            args.sessionId = sendAndParse('authenticate', {username: username, password: password});
+            var res = JSON.parse(x2j(sendAndParse(commandToMethod[command], args)));
+            sendAndParse('endSession',args);
+            return res;
+    }
 
   type: javascript
   commands:
@@ -251,9 +305,23 @@ script:
       required: true
       description: list of host ids to scan, separated by commas
     description: scan computers by host ID list
+    execution: true
   - name: trendmicro-alert-status
     arguments:
     - name: count
       required: true
       description: Number of alerts to fetch
     description: Get last alerts
+  - name: trendmicro-security-profile-retrieve-all
+    arguments: []
+    description: Get all security profiles
+  - name: trendmicro-security-profile-assign-to-host
+    arguments:
+    - name: securityProfileID
+      required: true
+      description: security profile ID that will be assigned to the hosts
+    - name: hostIDs
+      required: true
+      description: list of host IDs, separated by commas
+    execution: true
+  isfetch: true
