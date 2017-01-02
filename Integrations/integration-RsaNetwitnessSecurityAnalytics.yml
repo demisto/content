@@ -7,19 +7,19 @@ category: SIEM & Analytics
 image: data:image/png;base64,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
 description: Security Analytics
 configuration:
-- display: Server Url
+- display: Server Url (192.168.56.101)
   name: url
-  defaultvalue: 192.168.56.101
+  defaultvalue: ""
   type: 0
   required: true
 - display: Username
   name: username
-  defaultvalue: anar
+  defaultvalue: ""
   type: 0
   required: true
 - display: Password
   name: password
-  defaultvalue: anar123qwe
+  defaultvalue: ""
   type: 4
   required: true
 - display: Fetch incidents
@@ -398,16 +398,18 @@ script:
 
     var DEFAULT_SEVERITY = "50";
     function createAlert(sessionId, args, createdUser, csrfToken) {
+        var eventListString = replaceAll(args.eventList, ' ', '');
         var fullUrl = [
             url,
             'ajax/alert/create',
             args.deviceId,
-            replaceAll(args.eventList, ' ', ''),
+            eventListString,
             '2?ctoken=' + csrfToken
         ].join('/');
 
         var body = {
             alertSummary: args.alertSummary,
+            event_id_list: eventListString.split(','),
             severity: args.severity ? args.severity + '' : DEFAULT_SEVERITY,
             create_by_user: createdUser.name
         };
@@ -426,7 +428,7 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch events with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to create new alert with status [' + res.StatusCode + ']. Error: ' + res.Body;
         }
 
         try {
@@ -500,6 +502,64 @@ script:
             }
         } catch (err) {
             throw FailedRequestError('Unexpected error while creating incident.', fullUrl, null, body, res.Body).toString();
+        }
+    }
+
+    function addEventsToIncident(sessionId, args, availableAssignees) {
+        var eventsViewHTML = getEventsViewHtml(sessionId);
+        var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
+        var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
+        // currently we extract only the name of the logged in user. But the all the user object is exist in the html.
+        // it just will take more development time.
+        // that is why we look for the user in availableAssigness
+        availableAssignees.forEach(function(user) {
+            if (user.name === loggedUser.name) {
+                loggedUser = user;
+            }
+        });
+
+        var newAlert = createAlert(sessionId, args, loggedUser, csrfToken);
+
+        var fullUrl = [
+            url,
+            'ajax/incident/addToIncident',
+            '2?ctoken=' + csrfToken
+        ].join('/');
+
+        var reqBody = {
+            alertIds: [
+                newAlert.id
+            ],
+            incidentId: args.incidentId
+        };
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(reqBody)
+            },
+            true
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to add events to incident with status [' + res.StatusCode + ']\n.'
+                + 'Request Body: ' + JSON.stringify(body) + '\n. Response Body: ' + res.Body;
+        }
+
+        try {
+            var resObject = JSON.parse(res.Body);
+            if (resObject.success) {
+                return true;
+            } else {
+                throw FailedRequestError('Failed to add events to incident.', fullUrl, null, body, newIncidentRes).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while adding new events to incident.', fullUrl, null, body, res.Body).toString();
         }
     }
 
@@ -614,6 +674,10 @@ script:
             var availableAssignees = getAvailableAssignees(sessionId);
             var newIncident = createIncident(sessionId, args, availableAssignees);
             return { incident: newIncident };
+        case 'nw-add-events-to-incident':
+            var availableAssignees = getAvailableAssignees(sessionId, args);
+            var isSuccess = addEventsToIncident(sessionId, args, availableAssignees);
+            return { success: isSuccess };
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var updatedIncident = updateIncident(sessionId, args, availableAssignees);
@@ -637,14 +701,20 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: By default sorts by "created" field in "DESC" order
+      description: 'By default sorts by "created" field in "DESC" order. Example:
+        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: By default filters by "created" from 1996 to this date.
+      description: 'By default filters by "created" from 1996 to this date. Example:
+        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+    description: Fetches incidents by filter
   - name: nw-login
     arguments: []
+    description: Logins to the system and returns valid sessionId
   - name: nw-get-components
     arguments:
     - name: query
+      description: '[optional string] Query must contain page, start, limit'
+    description: Returns all the components in the system
   - name: nw-get-events
     arguments:
     - name: timeRangeType
@@ -675,20 +745,24 @@ script:
       description: Filter of time range in which events occured
     - name: deviceId
       required: true
+      description: '[number] Id of the device where the events stored/occurred. In
+        order to get list of available devices/components run command nw-get-components'
     - name: collectionName
-      description: Optional
+      description: '[optional]'
     - name: predicateIds
-      description: Optional
+      description: '[optional]'
     - name: startDate
-      description: Optional. If timeRangeType defined as CUSTOM, set this argument
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
+        argument'
     - name: endDate
-      description: Optional. If timeRangeType defined as CUSTOM, set this argument
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
+        argument'
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
     - name: mid2
     - name: investigationToken
-      description: '[guid] Investigation id token'
+      description: '[optional guid] Investigation id token'
     - name: page
       description: '[optional number] Default set to 1. The page number'
     - name: start
@@ -705,13 +779,17 @@ script:
     arguments:
     - name: alertSummary
       required: true
-      description: Short summary of the alert which will be attached to incident
+      description: '[string] Short summary of the alert which will be attached to
+        incident'
     - name: severity
       description: '[optional string] Default set to "50". '
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
+      description: '[optional string] Set assignee login name if assignee has changed.
+        You can execute nw-get-available-assignees to get the list of users. Example:
+        demisto123'
     - name: eventList
       required: true
       description: List of event ids separated by comma [,] must not include spaces
@@ -735,21 +813,44 @@ script:
     description: Creating new incident
     execution: true
   - name: nw-add-events-to-incident
-    arguments: []
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: '[string] Existing incident id. '
+    - name: eventList
+      required: true
+      description: '[array of strings] List of event ids separated by comma [,] must
+        not include spaces in it. In order to get list of events you can use nw-get-events.
+        Example: "23,12,3"'
+    - name: alertSummary
+      required: true
+      description: '[string] Short summary of the alert which will be attached to
+        incident'
+    - name: severity
+      required: true
+      description: '[number] Severity of the incident. Example: 50'
+    - name: deviceId
+      required: true
+      description: '[number] The id of the device/component (Concentrator, Log Decoder,
+        Packet Decoder, etc.) from which the events are. You can view the list of
+        devices by executing the command nw-get-components'
+    description: This command will add new events to existing incident
     execution: true
   - name: nw-update-incident
     arguments:
     - name: idList
       required: true
       description: 'List of incident ids which will be updated, separated by comma
-        [,]. Must not contain spaces. Example: 13,15,23'
+        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
     - name: name
       description: '[optional string] Set name if incident name has been changed'
     - name: summary
       description: '[optional string] Updated incident summary'
     - name: assignee
       description: '[optional string] Set assignee login name if assignee has changed.
-        Example: demisto123 '
+        You can execute nw-get-available-assignees to get the list of users. Example:
+        demisto123'
     - name: comment
       description: '[optional string] Add a journal entry describing your changes'
     - name: status
@@ -774,5 +875,6 @@ script:
         changed'
     - name: categories
       description: List of categories.
+    description: Updates incident
     execution: true
   isfetch: true
