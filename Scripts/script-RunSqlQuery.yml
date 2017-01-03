@@ -1,6 +1,6 @@
 commonfields:
-  id: b6dfcc01-c7f5-480d-8cc9-b4cc76003a40
-  version: 5
+  id: RunSqlQuery
+  version: -1
 name: RunSqlQuery
 script: |
   resp = demisto.executeCommand("query", demisto.args())
@@ -18,8 +18,8 @@ script: |
 type: python
 tags:
 - sql
-comment: Query a rational DB using SQL
-enabled: true
+comment: Query a relational DB using SQL
+system: true
 args:
 - name: query
   required: true
@@ -28,5 +28,7 @@ args:
 - name: limit
   description: 'Limit amount of rows results to be displayed, Default: 100'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - query
 timeout: 0s
