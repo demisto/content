@@ -8,7 +8,7 @@ script: |-
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
   filterstr = r"(&(objectCategory=Computer)(memberof=" + demisto.args()['groupdn'] + "))"
-  demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } ) )
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } ) )
 type: python
 tags:
 - active directory
