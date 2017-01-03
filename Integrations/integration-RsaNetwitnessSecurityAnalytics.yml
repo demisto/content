@@ -174,8 +174,8 @@ script:
         ])
     };
 
-    function fetchIncidents(sessionId, args) {
-        var fullUrl = url + '/ajax/incidents/2';
+    function fetchIncidents(sessionId, args, incidentManagementId) {
+        var fullUrl = url + '/ajax/incidents/' + incidentManagementId;
         var query = {};
         if (args.query) {
             query = createQueryFromString(args.query);
@@ -224,14 +224,15 @@ script:
         ]), '\"', '"')
     };
 
-    function getComponents(sessionId, args) {
-        var fullUrl = url + '/common/devices/types/DECODER,CONCENTRATOR,BROKER,LOG_DECODER,CORE_ARCHIVER';
+    function getComponents(sessionId, args, types) {
+        var fullUrl = url + '/common/devices';
         var query = {};
         if (args.query) {
             query = createQueryFromString(args.query);
         } else {
             query = createQuery(args, defaultComponentFilter);
         }
+        fullUrl += types ? '/types/' + types.join('/') : '';
         fullUrl += encodeToURLQuery(query);
 
         var res = http(
@@ -261,6 +262,15 @@ script:
         }
     }
 
+    function getIncidentManagementId(sessionId) {
+        var incidentManagement = getComponents(sessionId, {}, ['INCIDENT_MANAGEMENT']);
+
+        if (!incidentManagement || incidentManagement.length === 0) {
+            throw 'Failed to find RSA Netwitness INCIDENT_MANAGEMENT component/device: ' + JSON.stringify(incidentManagement);
+        }
+
+        return incidentManagement[0].id;
+    }
 
     function createEventsQuery(args) {
         args = args || {};
@@ -397,14 +407,15 @@ script:
     }
 
     var DEFAULT_SEVERITY = "50";
-    function createAlert(sessionId, args, createdUser, csrfToken) {
+    function createAlert(sessionId, args, incidentManagementId, createdUser, csrfToken) {
         var eventListString = replaceAll(args.eventList, ' ', '');
         var fullUrl = [
             url,
             'ajax/alert/create',
             args.deviceId,
             eventListString,
-            '2?ctoken=' + csrfToken
+            incidentManagementId + '',
+            '?ctoken=' + csrfToken
         ].join('/');
 
         var body = {
@@ -443,7 +454,7 @@ script:
         }
     }
 
-    function createIncident(sessionId, args, availableAssignees) {
+    function createIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
         var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
         var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
@@ -456,12 +467,13 @@ script:
             }
         });
 
-        var newAlert = createAlert(sessionId, args, loggedUser, csrfToken);
+        var newAlert = createAlert(sessionId, args, incidentManagementId, loggedUser, csrfToken);
 
         var fullUrl = [
             url,
             'ajax/incident/create',
-            '2?ctoken=' + csrfToken
+            incidentManagementId + '',
+            '?ctoken=' + csrfToken
         ].join('/');
 
         var newIncident = {
@@ -505,7 +517,7 @@ script:
         }
     }
 
-    function addEventsToIncident(sessionId, args, availableAssignees) {
+    function addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
         var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
         var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
@@ -518,12 +530,13 @@ script:
             }
         });
 
-        var newAlert = createAlert(sessionId, args, loggedUser, csrfToken);
+        var newAlert = createAlert(sessionId, args, incidentManagementId, loggedUser, csrfToken);
 
         var fullUrl = [
             url,
             'ajax/incident/addToIncident',
-            '2?ctoken=' + csrfToken
+            incidentManagementId + '',
+            '?ctoken=' + csrfToken
         ].join('/');
 
         var reqBody = {
@@ -563,7 +576,7 @@ script:
         }
     }
 
-    function updateIncident(sessionId, args, availableAssignees) {
+    function updateIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
         var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
         var loggedUser = extractLoggedUserFromHTML(eventsViewHTML);
@@ -578,7 +591,8 @@ script:
 
         var fullUrl = [
             url,
-            'ajax/incidents/update/2',
+            'ajax/incidents/update',
+            incidentManagementId + '',
             '?ctoken=' + csrfToken
         ].join('/');
 
@@ -652,14 +666,15 @@ script:
 
     // The command input arg holds the command sent from the user.
     var sessionId = login(url, username, password);
+    var incidentManagementId = args.incidentManagementId || getIncidentManagementId(sessionId);
 
     switch (command) {
         case 'test-module':
             return 'ok';
         case 'nw-login':
             return sessionId;
-        case 'nw-fetch-incidents':
-            var incidents = fetchIncidents(sessionId, args);
+        case 'nw-list-incidents':
+            var incidents = fetchIncidents(sessionId, args, incidentManagementId);
             return { incidents: incidents };
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
@@ -672,15 +687,15 @@ script:
             return { availableAssignees: availableAssignees };
         case 'nw-create-incident':
             var availableAssignees = getAvailableAssignees(sessionId);
-            var newIncident = createIncident(sessionId, args, availableAssignees);
+            var newIncident = createIncident(sessionId, args, incidentManagementId, availableAssignees);
             return { incident: newIncident };
         case 'nw-add-events-to-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
-            var isSuccess = addEventsToIncident(sessionId, args, availableAssignees);
+            var isSuccess = addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees);
             return { success: isSuccess };
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
-            var updatedIncident = updateIncident(sessionId, args, availableAssignees);
+            var updatedIncident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
             return updatedIncident;
         default:
             // You can use args[argName] or args.argName to get a specific arg. args are strings.
@@ -689,7 +704,7 @@ script:
     }
   type: javascript
   commands:
-  - name: nw-fetch-incidents
+  - name: nw-list-incidents
     arguments:
     - name: query
       description: 'If query provided all other parameters ignored. Query should contain
@@ -706,6 +721,11 @@ script:
     - name: filter
       description: 'By default filters by "created" from 1996 to this date. Example:
         "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+    - name: incidentManagementId
+      description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running nw-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Fetches incidents by filter
   - name: nw-login
     arguments: []
@@ -810,6 +830,11 @@ script:
       description: Priority of the incident
     - name: summary
       description: Summary of the incident
+    - name: incidentManagementId
+      description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running nw-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Creating new incident
     execution: true
   - name: nw-add-events-to-incident
@@ -835,6 +860,11 @@ script:
       description: '[number] The id of the device/component (Concentrator, Log Decoder,
         Packet Decoder, etc.) from which the events are. You can view the list of
         devices by executing the command nw-get-components'
+    - name: incidentManagementId
+      description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running nw-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: This command will add new events to existing incident
     execution: true
   - name: nw-update-incident
@@ -875,6 +905,11 @@ script:
         changed'
     - name: categories
       description: List of categories.
+    - name: incidentManagementId
+      description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running nw-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
   isfetch: true
