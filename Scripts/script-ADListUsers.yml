@@ -7,7 +7,7 @@ script: |-
   attrs = 'name,displayname'
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
-  demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : "(objectClass=User)", 'attributes' : attrs } ) )
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : "(objectClass=User)", 'attributes' : attrs } ) )
 type: python
 tags:
 - active directory
