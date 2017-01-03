@@ -13,7 +13,7 @@ script: |-
   if demisto.get(demisto.args(), 'dn'):
       memberDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
-      resp = demisto.executeCommand( 'ad-search', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
+      resp = demisto.executeCommand( 'AdSearch', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
   elif demisto.get(demisto.args(), 'email'):
       resp = demisto.executeCommand( 'ADGetUsersByEmail', { 'email' : demisto.args()['email'] } )
   else:
@@ -33,7 +33,7 @@ script: |-
           sys.exit(0)
   if memberDN:
       filterstr = r"(&(member{0}=".format(nested_search) + memberDN + ")(objectcategory=group))"
-      demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } ) )
+      demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } ) )
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Received empty DN or cannot locate DN for the specified arguments.' } )
 type: python

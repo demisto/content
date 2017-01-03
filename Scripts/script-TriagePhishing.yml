@@ -71,8 +71,9 @@ script: |-
   }
   // Check the sender via PIPL search
   if (fromStr) {
-    var rep = executeCommand('pipl-search', {email: fromStr});
-    Array.prototype.push.apply(results, rep);
+    var rep = executeCommand('pipl-search', {email: fromStr})[0];
+    rep.ContentsFormat = formats.table;
+    results.push(rep);
   }
   if (malicious) {
     results.push('Suspicious results found');

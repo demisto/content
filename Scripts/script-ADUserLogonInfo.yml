@@ -12,7 +12,7 @@ script: |-
   if demisto.get(demisto.args(), 'dn'):
       userDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
-      resp = demisto.executeCommand( 'ad-search', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
+      resp = demisto.executeCommand( 'AdSearch', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
   elif demisto.get(demisto.args(), 'email'):
       resp = demisto.executeCommand( 'ADGetUsersByEmail', { 'email' : demisto.args()['email'] } )
   else:
@@ -28,7 +28,7 @@ script: |-
       sys.exit(0)
   if userDN:
       filterstr = r"(&(objectClass=User)(distinguishedName=" + userDN + "))"
-      resAD = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } )
+      resAD = demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } )
       try:
           for m in resAD:
               if isError(m):

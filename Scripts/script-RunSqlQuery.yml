@@ -1,9 +1,9 @@
 commonfields:
-  id: EmailReputation
+  id: RunSqlQuery
   version: -1
-name: EmailReputation
-script: |-
-  resp = demisto.executeCommand('pipl-search', demisto.args());
+name: RunSqlQuery
+script: |
+  resp = demisto.executeCommand("query", demisto.args())
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -17,16 +17,18 @@ script: |-
           demisto.results("No results.")
 type: python
 tags:
-- enhancement
-comment: A context script for Email entities
+- sql
+comment: Query a relational DB using SQL
 system: true
 args:
-- name: email
+- name: query
   required: true
   default: true
-  description: Email address to look up
+  description: SQL query to preform
+- name: limit
+  description: 'Limit amount of rows results to be displayed, Default: 100'
 scripttarget: 0
 dependson:
   must:
-  - pipl-search
+  - query
 timeout: 0s
