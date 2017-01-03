@@ -1,18 +1,18 @@
 commonfields:
-  id: TrendMicro DSM
+  id: Trend Micro
   version: -1
-name: TrendMicro DSM
-display: TrendMicro DSM
+name: Trend Micro
+display: Trend Micro
 category: IT service Management
 image: data:image/png;base64,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
-description: Trend Micro Deep Security
+description: Uses Trend Micro Deep Security
 configuration:
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL and port (e.g. https://192.168.0.1:4119)
   name: server
   defaultvalue: ""
   type: 0
@@ -31,11 +31,6 @@ configuration:
   name: isFetch
   defaultvalue: ""
   type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
 script:
   script: |2+
@@ -118,6 +113,10 @@ script:
         'eventIdFilter': eventIdFilterDict
     };
 
+    // Wrap host IDs array if exists
+    if ('hostIDs' in args) {
+            args.hostIDs = '<urn:hostIDs>' + args.hostIDs.split(',').join('</urn:hostIDs><urn:hostIDs>') + '</urn:hostIDs>';
+    }
 
     function getFilterContent(filterName, args) {
         var filterContent = '';
@@ -125,7 +124,7 @@ script:
         var argNames = Object.keys(args);
         for (var i = 0; i < argNames.length; i++) {
             if (argNames[i] in filterArgsDict){
-            filterContent = filterContent + filterArgsDict[argNames[i]];
+            filterContent += filterArgsDict[argNames[i]];
             }
         }
         if (!filterContent) {
@@ -188,10 +187,6 @@ script:
         throw method +' failed';
     }
 
-    // Wrap host IDs array if exists
-    if ('hostIDs' in args) {
-            args.hostIDs = '<urn:hostIDs>' + args.hostIDs.split(',').join('</urn:hostIDs><urn:hostIDs>') + '</urn:hostIDs>';
-    }
 
     function createIncidentFromAlert(singleAlert) {
         var keys = Object.keys(singleAlert);
