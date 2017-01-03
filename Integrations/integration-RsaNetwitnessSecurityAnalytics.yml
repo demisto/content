@@ -174,7 +174,7 @@ script:
         ])
     };
 
-    function fetchIncidents(sessionId, args, incidentManagementId) {
+    function listIncidents(sessionId, args, incidentManagementId) {
         var fullUrl = url + '/ajax/incidents/' + incidentManagementId;
         var query = {};
         if (args.query) {
@@ -212,6 +212,47 @@ script:
         }
     }
 
+    function fetchIncidents(sessionId, args, incidentManagementId) {
+        var lastRun = getLastRun().lastRun || 851171984031;
+        var lastRunNext = lastRun;
+
+        var tillNow = new Date().getTime();
+        var query = {
+            page: 1,
+            start: 0,
+            limit: 1000,
+            filter: JSON.stringify([{
+                property: 'created',
+                value: [
+                    lastRun,
+                    tillNow
+                ]
+            }])
+        };
+
+        // TODO handle paging. If number of incidents are more than 1000, then we need to
+        // fetch the next pages too.
+        var lastIncidents = listIncidents(sessionId, query, incidentManagementId);
+        var convertedIncidents = [];
+        for (var i = 0; i < lastIncidents.length; i++) {
+            var inc = lastIncidents[i];
+            if (inc.created > lastRunNext) {
+                // we get the last incident which created
+                lastRunNext = inc.created + 1;
+            }
+            convertedIncidents.push({
+                name: inc.id,
+                created: new Date(inc.created),
+                occurred: new Date(inc.firstAlertTime),
+                owner: inc.assignee ? inc.assignee.login : '',
+                reason: inc.name
+            });
+        }
+
+        setLastRun({ lastRun: lastRunNext });
+        return JSON.stringify(convertedIncidents);
+    }
+
     var defaultComponentFilter = {
         page: 1,
         start: 0,
@@ -224,13 +265,13 @@ script:
         ]), '\"', '"')
     };
 
-    function getComponents(sessionId, args, types) {
+    function getComponents(sessionId, argz, types) {
         var fullUrl = url + '/common/devices';
         var query = {};
-        if (args.query) {
-            query = createQueryFromString(args.query);
+        if (argz.query) {
+            query = createQueryFromString(argz.query);
         } else {
-            query = createQuery(args, defaultComponentFilter);
+            query = createQuery(argz, defaultComponentFilter);
         }
         fullUrl += types ? '/types/' + types.join('/') : '';
         fullUrl += encodeToURLQuery(query);
@@ -669,12 +710,14 @@ script:
     var incidentManagementId = args.incidentManagementId || getIncidentManagementId(sessionId);
 
     switch (command) {
+        case 'fetch-incidents':
+            return fetchIncidents(sessionId, args, incidentManagementId);
         case 'test-module':
             return 'ok';
         case 'nw-login':
             return sessionId;
         case 'nw-list-incidents':
-            var incidents = fetchIncidents(sessionId, args, incidentManagementId);
+            var incidents = listIncidents(sessionId, args, incidentManagementId);
             return { incidents: incidents };
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
@@ -912,4 +955,6 @@ script:
         first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
+  - name: fetch-incidents
+    arguments: []
   isfetch: true
