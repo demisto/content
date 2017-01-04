@@ -1,6 +1,6 @@
 commonfields:
-  id: d333f93a-8929-4992-8a66-55fa0f17751a
-  version: 14
+  id: IsIPInRanges
+  version: -1
 name: IsIPInRanges
 script: |
   import socket, struct
@@ -31,22 +31,22 @@ script: |
       for iprange in ipranges:
           if addressInNetwork(ip, iprange):
               isInRange = "yes"
+              break
 
   demisto.results(isInRange)
 type: python
 tags:
 - ip
-- ipinfo
 comment: 'Returns True if ip is in one of the ranges provided. '
-enabled: true
+system: true
 args:
 - name: ip
   required: true
   default: true
   description: Ip to check in ranges
 - name: ipRanges
-  description: 'list of IP ranges to check the ip in (if list is not provided, will
-    use default list)  '
+  description: list of IP ranges to check the ip in (if list is not provided, will
+    use default list (e.g  192.16.0.0/16)
 scripttarget: 0
 dependson: {}
 timeout: 0s
