@@ -1,0 +1,52 @@
+commonfields:
+  id: d333f93a-8929-4992-8a66-55fa0f17751a
+  version: 14
+name: IsIPInRanges
+script: |
+  import socket, struct
+
+  private_subnets = ['172.16.0.0/12',
+                       '10.0.0.0/8',
+                       '198.18.0.0/15',
+                       '192.168.0.0/16',
+                       '100.64.0.0/10',
+                       '192.0.0.0/24']
+
+  def addressInNetwork(ip, net_n_bits):
+      ipaddr = struct.unpack('<L', socket.inet_aton(ip))[0]
+      net, bits = net_n_bits.split('/')
+      netaddr = struct.unpack('<L', socket.inet_aton(net))[0]
+      netmask = ((1L << int(bits)) - 1)
+      return ipaddr & netmask == netaddr & netmask
+
+  isInRange = "no"
+
+  ip = str(demisto.get(demisto.args(),"ip"))
+  ipranges = argToList(demisto.get(demisto.args(),"ipRanges"))
+  ipranges = ipranges if ipranges else private_subnets
+
+  if not ip:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'IP was not found.' })
+  else:
+      for iprange in ipranges:
+          if addressInNetwork(ip, iprange):
+              isInRange = "yes"
+
+  demisto.results(isInRange)
+type: python
+tags:
+- ip
+- ipinfo
+comment: 'Returns True if ip is in one of the ranges provided. '
+enabled: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: Ip to check in ranges
+- name: ipRanges
+  description: 'list of IP ranges to check the ip in (if list is not provided, will
+    use default list)  '
+scripttarget: 0
+dependson: {}
+timeout: 0s
