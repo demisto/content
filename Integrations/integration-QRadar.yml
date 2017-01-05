@@ -140,7 +140,7 @@ script:
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '1-' + incidentsPerCall);
+            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + incidentsPerCall);
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
