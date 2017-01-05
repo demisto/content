@@ -41,6 +41,7 @@ script:
     var server = params.server+'/';
     var insecure = params.insecure;
     var query = params.query;
+    const incidentsPerCall = 50;
 
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
@@ -139,7 +140,7 @@ script:
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''));
+            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), '1-' + incidentsPerCall);
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
