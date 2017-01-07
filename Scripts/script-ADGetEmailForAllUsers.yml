@@ -23,7 +23,7 @@ type: python
 tags:
 - active directory
 comment: Use Active Directory to retrieve the email address associated with tall users.
-enabled: true
+system: true
 scripttarget: 0
 dependson:
   must:
