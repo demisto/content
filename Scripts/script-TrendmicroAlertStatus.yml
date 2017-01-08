@@ -30,3 +30,4 @@ timeout: 0s
 dependson:
   must:
   - trendmicro-alert-status
+
