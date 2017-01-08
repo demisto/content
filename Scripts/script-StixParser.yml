@@ -14,7 +14,7 @@ script: |-
   i = 0
   def create_new_ioc(data, i, time, pkg_id, ind_id):
       data.append({})
-      data[i]['fields'] = {'indicator_id': ind_id, 'stix_package_id':pkg_id}
+      data[i]['CustomFields'] = {'indicator_id': ind_id, 'stix_package_id':pkg_id}
       data[i]['source'] = ind_id.split(':')[0]
       if time is not None:
           data[i]['timestamp'] = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
