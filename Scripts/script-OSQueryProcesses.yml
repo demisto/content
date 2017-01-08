@@ -8,7 +8,7 @@ script: |-
   demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
 type: python
 tags:
-- OSQeury
+- OSQuery
 comment: Returns processes details from a remote system using OSQuery
 system: true
 args:

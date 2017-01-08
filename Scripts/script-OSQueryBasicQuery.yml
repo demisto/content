@@ -6,7 +6,7 @@ script: |-
   import json
 
   ## ssh command to run, json format, param = query to execute
-  CURL_COMMAND = 'osqueryi --json "{0}"'
+  COMMAND = 'osqueryi --json "{0}"'
 
   systems = argToList(demisto.args()['system'])
   query = demisto.get(demisto.args(), 'query')
@@ -16,7 +16,7 @@ script: |-
 
   if query and systems:
       for system in systems:
-          temp_res = demisto.executeCommand("RemoteExec", {'cmd' : CURL_COMMAND.format(str(query)), 'system': system})
+          temp_res = demisto.executeCommand("RemoteExec", {'cmd' : COMMAND.format(str(query)), 'system': system})
           if isError(temp_res[0]):
               error_res += [{"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'An Error occurred on remote system:\"{0}\". Error={1}.'.format(system,temp_res[0]['Contents'])}]
           else:
@@ -26,7 +26,7 @@ script: |-
   demisto.results(res + error_res)
 type: python
 tags:
-- OSQeury
+- OSQuery
 comment: |-
   Returns the results from a basic OSQuery query on a remote Linux machine.
   For more information read documentation at https://osquery.readthedocs.io/
