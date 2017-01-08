@@ -133,7 +133,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            if (getOffenses()) {
+            if (getOffenses(undefined, undefined, '0-1')) {
                 return 'ok';
             }
             return 'not ok';
