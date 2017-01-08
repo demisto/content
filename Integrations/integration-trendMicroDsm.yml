@@ -48,6 +48,7 @@ script:
         'hostRetrieveAll': /<hostRetrieveAllResponse xmlns="urn:Manager">((.|\n)*)<\/hostRetrieveAllResponse>/,
         'endSession': /<soapenv:Body><endSessionResponse xmlns=(.*)\/><\/soapenv:Body>/,
         'systemEventRetrieve': /<systemEventRetrieveResponse xmlns="urn:Manager">((.|\n)*)<\/systemEventRetrieveResponse>/,
+        'antiMalwareEventRetrieve':/<antiMalwareEventRetrieveResponse xmlns="urn:Manager">((.|\n)*)<\/antiMalwareEventRetrieveResponse>/,
         'hostAntiMalwareScan':/<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
         'alertStatusRetrieve':/<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
         'securityProfileRetrieveAll': /<soapenv:Body>((.|\n)*)<\/soapenv:Body>/,
@@ -60,6 +61,7 @@ script:
         'trendmicro-host-antimalware-scan': 'hostAntiMalwareScan',
         'trendmicro-host-retrieve-all': 'hostRetrieveAll',
         'trendmicro-system-event-retrieve': 'systemEventRetrieve',
+        'trendmicro-anti-malware-event-retrieve': 'antiMalwareEventRetrieve',
         'trendmicro-alert-status': 'alertStatusRetrieve',
         'trendmicro-security-profile-retrieve-all': 'securityProfileRetrieveAll',
         'trendmicro-security-profile-assign-to-host': 'securityProfileAssignToHost'
@@ -72,6 +74,7 @@ script:
             'endSession': '<urn:endSession>' + sessionData + '</urn:endSession>',
             'hostRetrieveAll': '<urn:hostRetrieveAll>' + sessionData + '</urn:hostRetrieveAll>',
             'systemEventRetrieve': '<urn:systemEventRetrieve>%timeFilter%%hostFilter%%eventIdFilter%<urn:includeNonHostEvents>%includeNonHostEvents%</urn:includeNonHostEvents>'+ sessionData +'</urn:systemEventRetrieve>',
+            'antiMalwareEventRetrieve': '<urn:antiMalwareEventRetrieve>%timeFilter%%hostFilter%%eventIdFilter%'+ sessionData +'</urn:antiMalwareEventRetrieve>',
             'hostAntiMalwareScan': '<urn:hostAntiMalwareScan>%hostIDs%' + sessionData + '</urn:hostAntiMalwareScan>',
             'alertStatusRetrieve': '<urn:alertStatusRetrieve><urn:count>%count%</urn:count>' + sessionData + '</urn:alertStatusRetrieve>',
             'securityProfileRetrieveAll': '<urn:securityProfileRetrieveAll>' + sessionData + '</urn:securityProfileRetrieveAll>',
@@ -319,4 +322,47 @@ script:
       required: true
       description: list of host IDs, separated by commas
     execution: true
+  - name: trendmicro-anti-malware-event-retrieve
+    arguments:
+    - name: rangeFrom
+      description: Time interval start
+    - name: rangeTo
+      description: Time interval end
+    - name: specificTime
+      description: Specific Time
+    - name: timeFilterType
+      auto: PREDEFINED
+      predefined:
+      - LAST_HOUR
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - CUSTOM_RANGE
+      - SPECIFIC_TIME
+      description: Define time filter mode. mandatory if filtering by time.
+    - name: hostGroupID
+      description: Filter by host group ID
+    - name: hostID
+      description: Filter by host ID
+    - name: securityProfileID
+      description: Filter by host security profile ID
+    - name: hostFilterType
+      auto: PREDEFINED
+      predefined:
+      - ALL_HOSTS
+      - HOSTS_IN_GROUP
+      - HOSTS_USING_SECURITY_PROFILE
+      - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
+      - SPECIFIC_HOST
+      - MY_HOSTS
+      description: Define host filter mode. mandatory if filtering by host/s.
+    - name: eventID
+      description: filter by event ID
+    - name: eventFilterOperator
+      auto: PREDEFINED
+      predefined:
+      - GREATER_THAN
+      - LESS_THAN
+      - EQUAL
+      description: event ID operator
+    description: Get anti malware events
   isfetch: true
