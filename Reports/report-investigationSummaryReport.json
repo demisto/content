@@ -608,7 +608,7 @@
       "type": "text",
       "data": "War Room Notes",
       "layout": {
-        "rowPos": 5000,
+        "rowPos": 200000,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -628,7 +628,7 @@
         }
       },
       "layout": {
-        "rowPos": 5001,
+        "rowPos": 300000,
         "columnPos": 100
       }
     },
@@ -636,7 +636,7 @@
       "type": "text",
       "data": "Evidence Timeline",
       "layout": {
-        "rowPos": 6000,
+        "rowPos": 300001,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -650,7 +650,7 @@
       "type": "text",
       "data": "Showing all Evidences as of start of investigation",
       "layout": {
-        "rowPos": 6010,
+        "rowPos": 300010,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -670,7 +670,7 @@
         }
       },
       "layout": {
-        "rowPos": 6020,
+        "rowPos": 300020,
         "columnPos": 100,
         "tableColumns": ["occurred", "description", "id"],
         "classes": "selectable celled fixed unstackable"
@@ -680,7 +680,7 @@
       "type": "text",
       "data": "Detailed Evidence",
       "layout": {
-        "rowPos": 6040,
+        "rowPos": 300030,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -703,7 +703,7 @@
         }
       },
       "layout": {
-        "rowPos": 6042,
+        "rowPos": 300042,
         "columnPos": 100
       }
     },
@@ -711,7 +711,7 @@
       "type": "text",
       "data": "Skipped Tasks",
       "layout": {
-        "rowPos": 7500,
+        "rowPos": 400000,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -729,7 +729,7 @@
         "filter": "skippedTasks"
       },
       "layout": {
-        "rowPos": 7600,
+        "rowPos": 400001,
         "columnPos": 100
       }
     },
@@ -737,7 +737,7 @@
       "type": "text",
       "data": "Team",
       "layout": {
-        "rowPos": 80000,
+        "rowPos": 500000,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -754,7 +754,7 @@
         "filter": "investigationUsers"
       },
       "layout": {
-        "rowPos": 81000,
+        "rowPos": 500001,
         "columnPos": 100,
         "tableColumns": [{ "key": "Avatar", "hidden": true} , "Name", "Email", "Phone Number"],
         "classes": "collapsing selectable unstackable"
