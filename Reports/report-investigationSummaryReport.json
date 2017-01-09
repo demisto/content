@@ -737,7 +737,7 @@
       "type": "text",
       "data": "Team",
       "layout": {
-        "rowPos": 8000,
+        "rowPos": 80000,
         "columnPos": 100,
         "style": {
           "textAlign": "left",
@@ -754,7 +754,7 @@
         "filter": "investigationUsers"
       },
       "layout": {
-        "rowPos": 8100,
+        "rowPos": 81000,
         "columnPos": 100,
         "tableColumns": [{ "key": "Avatar", "hidden": true} , "Name", "Email", "Phone Number"],
         "classes": "collapsing selectable unstackable"
