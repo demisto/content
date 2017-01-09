@@ -154,7 +154,7 @@ tasks:
         type: Phishing
         updatePlaybookForType: "yes"
   scriptarguments:
-    key: ${Label/Email/from}
+    key: Label/Email/from
     value: ""
 - id: "10"
   taskid: befe6857-6c3a-47a1-84e1-95b8d6d78c66
