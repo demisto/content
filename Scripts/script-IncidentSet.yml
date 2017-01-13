@@ -8,8 +8,6 @@ script: |-
   inArgs= demisto.args()
   if demisto.get(inArgs, 'owner'):
       res += demisto.executeCommand("setOwner", {'owner': inArgs['owner']})
-  if demisto.get(inArgs, 'playbook'):
-      res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
   if demisto.get(inArgs, 'stage'):
       res += demisto.executeCommand("setStage", {'stage': inArgs['stage']})
   if demisto.get(inArgs, 'name'):
@@ -22,16 +20,21 @@ script: |-
       dArgs['labels'] = inArgs['labels']
   if demisto.get(inArgs, 'addLabels'):
       dArgs['addLabels'] = inArgs['addLabels']
-  if demisto.get(inArgs, 'type'):
-      dArgs['type'] = inArgs['type']
-      if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
-          demisto.executeCommand("setPlaybookAccordingToType", {'type': inArgs['type']})
   if demisto.get(inArgs, 'customFieldName'):
       v = demisto.get(inArgs, 'customFieldValue')
       if v:
           dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
+  if demisto.get(inArgs, 'type'):
+      dArgs['type'] = inArgs['type']
   if dArgs:
       res += demisto.executeCommand("setIncident", dArgs)
+  res += demisto.executeCommand("IncidentToContext", {})
+  # Playbook change should always be the last action in a script
+  if demisto.get(dArgs, 'type'):      
+      if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
+          demisto.executeCommand("setPlaybookAccordingToType", {'type': inArgs['type']})
+  if demisto.get(inArgs, 'playbook'):
+      res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
   demisto.results(res)
 type: python
 tags:

@@ -8,7 +8,6 @@ script: |
   demisto.results(answer)
 type: python
 tags:
-- server
 - util
 system: true
 args:

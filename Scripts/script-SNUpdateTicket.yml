@@ -10,7 +10,6 @@ script: |-
       dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
   if 'shortdescription' in dArgs:
       dArgs['short-description'] = dArgs.pop('shortdescription')
-  dArgs['comments'] = argToList(dArgs['comments'])
   resCmdName = demisto.executeCommand("servicenow-incident-update", dArgs)
   try:
       for entry in resCmdName:

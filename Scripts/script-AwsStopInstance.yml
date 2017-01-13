@@ -1,0 +1,38 @@
+commonfields:
+  id: AwsStopInstance
+  version: -1
+name: AwsStopInstance
+script: |2
+
+  resp = demisto.executeCommand("stop-instance", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.StopInstancesResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Amazon Web Services
+comment: stop ec2 aws instances
+system: true
+args:
+- default: true
+  description: instance ID
+  name: instanceId
+  required: true
+- description: ' Forces the instances to stop (Default: false). The instances do not
+    have an opportunity to flush file system caches or file system metadata. If you
+    use this option, you must perform file system check and repair procedures. This
+    option is not recommended for Windows instances.'
+  name: force
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - stop-instance

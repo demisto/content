@@ -1,0 +1,22 @@
+commonfields:
+  id: GrrGetHunt
+  version: -1
+name: GrrGetHunt
+script: |2
+
+  demisto.results(demisto.executeCommand("grr_get_hunt", demisto.args()))
+type: python
+tags:
+- GRR
+comment: Renders hunt's summary
+system: true
+args:
+- name: hunt_id
+  required: true
+  default: true
+  description: Hunt id
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - grr_get_hunt

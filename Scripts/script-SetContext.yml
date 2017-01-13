@@ -1,0 +1,20 @@
+commonfields:
+  id: SetContext
+  version: -1
+name: SetContext
+script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
+type: python
+tags:
+- util
+system: true
+args:
+- name: key
+  required: true
+  default: true
+  description: The key to set
+- name: value
+  required: true
+  description: The value to set
+scripttarget: 0
+dependson: {}
+timeout: 0s

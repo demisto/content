@@ -1,0 +1,39 @@
+commonfields:
+  id: CBFindIP
+  version: -1
+name: CBFindIP
+script: |-
+  res = []
+  t = []
+  found = []
+  ips = argToList(demisto.args()['ip'])
+  for ip in ips:
+      for e in demisto.executeCommand('CBSearch',{'type': 'process', 'query': 'ipaddr:' + ip}):
+          if isError(e):
+              res += e
+          else:
+              found.append(ip)
+              t += e['Contents']
+  if t:
+      appendContext("found_ips", ','.join(found), dedup=True)
+      demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
+  else:
+      demisto.results( {'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': 'No results.'} )
+  demisto.results(res)
+type: python
+tags:
+- carbon-black
+- endpoint
+- enhancement
+comment: Search Carbon Black for connection to specified IP address(es).
+system: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP address(es) to find (comma-separated)
+scripttarget: 0
+dependson:
+  must:
+  - CBSearch
+timeout: 0s

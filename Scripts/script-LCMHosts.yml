@@ -1,0 +1,46 @@
+commonfields:
+  id: LCMHosts
+  version: -1
+name: LCMHosts
+script: |
+  args = demisto.args()
+  if demisto.get(args, 'ip') and demisto.get(args, 'name'):
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'You cannot specify both name and IP. Pick one way to find the host you need.' } )
+
+  if demisto.get(args, 'ip'):
+      cmd = 'lcm-hostbyip'
+  elif demisto.get(args, 'name'):
+      cmd = 'lcm-hostbyname'
+  else:
+      cmd = 'lcm-hosts'
+
+  resp = demisto.executeCommand(cmd, args)
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- lightcyber
+comment: Shows hosts from LightCyber Magna. If looking for a specific host, specify
+  either a name or an IP. Otherwise all hosts will be listed.
+args:
+- name: name
+  default: true
+  description: (Optional) Name of host to find
+- name: ip
+  description: (Optional) IP of host to find
+scripttarget: 0
+dependson:
+  should:
+  - lcm-hosts
+  - lcm-hostbyname
+  - lcm-hostbyip
+timeout: 0s
+system: true

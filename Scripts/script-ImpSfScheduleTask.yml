@@ -1,0 +1,39 @@
+commonfields:
+  id: ImpSfScheduleTask
+  version: -1
+name: ImpSfScheduleTask
+script: |-
+  res = []
+  SCHEDULE_TASK_ID_LABAL = "ScheduleTaskID"
+
+  dArgs = demisto.args()
+  dArgs['command'] = '!ImpSfRevokeUnaccessedDevices'
+
+  res = demisto.executeCommand('scheduleEntry', dArgs)
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      taskID = demisto.get(res[0],"Contents.id")
+      demisto.setContext(SCHEDULE_TASK_ID_LABAL, taskID)
+      demisto.results(res)
+type: python
+tags:
+- Imperva Skyfence
+comment: |-
+  Creating a schedule task that's call ImpSfRevokeUnaccessedDevices:
+  Getting all devices data from server, if a device haven't been accessed to in over two months (and is still managed), the script will send the corresponding user a warning mail.
+  If it's haven't been accessed to in over three months, the script will revoke the device credentials and notify the user by mail
+system: true
+args:
+- name: cron
+  required: true
+  default: true
+  description: The interval between each check (in cron format)
+- name: times
+  description: Number of times to execute the check
+scripttarget: 0
+dependson:
+  must:
+  - scheduleEntry
+  - ImpSfRevokeUnaccessedDevices
+timeout: 0s

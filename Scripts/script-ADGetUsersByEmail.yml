@@ -9,7 +9,20 @@ script: |-
       attrs += "," + demisto.args()['attributes']
   email = demisto.args()['email']
   filterstr = r"(&(objectClass=user)(mail=" + email + "))"
-  demisto.results( demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } ) )
+  resp = demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } )
+  if not isError(resp[0]) and not 'No results' == resp[0]['Contents']:
+      if isinstance(resp[0]['Contents'], list) and resp[0]['Contents']:
+          person = resp[0]['Contents'][0]
+          dispname = demisto.get(person, 'displayname')
+          if dispname:
+              demisto.setContext('ADDisplayName', dispname)
+          name = demisto.get(person, 'name')
+          if name:
+              demisto.setContext('ADPersonName', name)
+          dn = demisto.get(person, 'dn')
+          if dn:
+              demisto.setContext('ADDistinguishedName', dn)
+  demisto.results(resp)
 type: python
 tags:
 - active directory

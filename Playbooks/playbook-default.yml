@@ -44,136 +44,242 @@ tasks:
   - details
   - score
 - id: "2"
-  taskid: ea9ee448-a157-44e5-8266-aba6173516e2
-  type: regular
+  taskid: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
+  type: condition
   task:
-    id: ea9ee448-a157-44e5-8266-aba6173516e2
-    version: 2
-    name: ClassifyEmail
-    script: DefaultIncidentClassifier
+    id: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
+    version: -1
+    name: Is this an email
+    script: IsContextSet
+  condition:
+    "no": []
+    "yes":
+    - id: "3"
+      taskid: 99cd2a5a-e4f0-45a9-8e1d-c1b2a11df1e6
+      type: condition
+      task:
+        id: 99cd2a5a-e4f0-45a9-8e1d-c1b2a11df1e6
+        version: -1
+        name: Is this email coming from Splunk
+        script: IsContextSet
+      condition:
+        "no": []
+        "yes":
+        - id: "4"
+          taskid: 3e289371-6cd3-4665-8109-6c79c71fbfc2
+          type: regular
+          task:
+            id: 3e289371-6cd3-4665-8109-6c79c71fbfc2
+            version: -1
+            name: SplunkEmailParser
+            script: SplunkEmailParser
+          scriptarguments:
+            body: ${Label/Email/html}
+            subject: ${Label/Email/subject}
+      scriptarguments:
+        key: Label/Email/from
+        value: set-to-splunk-sender
+    - id: "5"
+      taskid: 5c718b22-00e4-4b0a-87be-4e1a39cb4fe4
+      type: condition
+      task:
+        id: 5c718b22-00e4-4b0a-87be-4e1a39cb4fe4
+        version: -1
+        name: Is this a Nexpose email
+        script: IsContextSet
+      condition:
+        "no": []
+        "yes":
+        - id: "6"
+          taskid: cda168ea-c74d-40b4-89cb-67014f85409d
+          type: regular
+          task:
+            id: cda168ea-c74d-40b4-89cb-67014f85409d
+            version: -1
+            name: NexposeEmailParser
+            script: NexposeEmailParser
+      scriptarguments:
+        key: Label/Email/from
+        value: set-to-nexpose-sender
+    - id: "7"
+      taskid: 12a63885-a530-40ef-8c3d-1be700401faa
+      type: condition
+      task:
+        id: 12a63885-a530-40ef-8c3d-1be700401faa
+        version: -1
+        name: Is this a SentinelOne email
+        script: IsContextSet
+      condition:
+        "no": []
+        "yes":
+        - id: "8"
+          taskid: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
+          type: regular
+          task:
+            id: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
+            version: -1
+            name: Set incident type and playbook to SentinelOne
+            script: IncidentSet
+          scriptarguments:
+            addLabels: ""
+            customFieldName: ""
+            customFieldValue: ""
+            details: ""
+            labels: ""
+            name: ""
+            owner: ""
+            playbook: ""
+            severity: ""
+            stage: ""
+            type: set-to-sentinelone-type
+            updatePlaybookForType: yes
+      scriptarguments:
+        key: Label/Email/from
+        value: set-to-sentinelone-sender
+    - id: "9"
+      taskid: cf75ade9-a303-4814-8d99-6ec9d09fbc02
+      type: regular
+      task:
+        id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
+        version: -1
+        name: Set type and playbook to Phishing (default type for emails)
+        script: IncidentSet
+      scriptarguments:
+        addLabels: ""
+        customFieldName: ""
+        customFieldValue: ""
+        details: ""
+        labels: ""
+        name: ""
+        owner: ""
+        playbook: ""
+        severity: ""
+        stage: ""
+        type: Phishing
+        updatePlaybookForType: yes
   scriptarguments:
-    defaultIncidentType: Phishing
-    splunkSender: please-specify
-- id: "3"
+    key: Label/Email/from
+    value: ""
+- id: "10"
   taskid: f9de0883-2020-490e-85ed-fdfb66a2db87
   type: condition
   task:
     id: f9de0883-2020-490e-85ed-fdfb66a2db87
-    version: 2
+    version: -1
     name: Is this a malware incident
     description: Did it involve a malicious binary running in your environment?
   condition:
     "no": []
     "yes":
-    - id: "4"
+    - id: "11"
       taskid: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
       type: regular
       task:
         id: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
         type: Malware
-- id: "5"
+- id: "12"
   taskid: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
   type: condition
   task:
     id: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
-    version: 2
+    version: -1
     name: Is this a phishing incident?
     description: Was this incident created because a suspected email was received?
   condition:
     "no": []
     "yes":
-    - id: "6"
+    - id: "13"
       taskid: 66553f46-579a-42af-8c02-341af3445ba3
       type: regular
       task:
         id: 66553f46-579a-42af-8c02-341af3445ba3
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
         type: Phishing
-- id: "7"
+- id: "14"
   taskid: 93f3f626-0b08-4257-8559-c2d3838cea13
   type: condition
   task:
     id: 93f3f626-0b08-4257-8559-c2d3838cea13
-    version: 2
+    version: -1
     name: Is the incident a C2 communication incident?
     description: Was the incident opened because communication to a known bad actor
       was detected?
   condition:
     "no": []
     "yes":
-    - id: "8"
+    - id: "15"
       taskid: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
       type: regular
       task:
         id: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
         type: C2Communication
-- id: "9"
+- id: "16"
   taskid: bd100974-58ce-4b53-8e32-c3930e215184
   type: condition
   task:
     id: bd100974-58ce-4b53-8e32-c3930e215184
-    version: 2
+    version: -1
     name: Is the incident a ransomware incident?
   condition:
     "no": []
     "yes":
-    - id: "10"
+    - id: "17"
       taskid: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
       type: regular
       task:
         id: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
         type: Ransomware
-- id: "11"
+- id: "18"
   taskid: 6cab1990-09da-4e94-8d26-7a67571a6303
   type: condition
   task:
     id: 6cab1990-09da-4e94-8d26-7a67571a6303
-    version: 2
+    version: -1
     name: Is the incident an unknown binary incident?
   condition:
     "no": []
     "yes":
-    - id: "12"
+    - id: "19"
       taskid: bb222001-660e-418c-8849-25341bb74ddc
       type: regular
       task:
         id: bb222001-660e-418c-8849-25341bb74ddc
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:
         type: UnknownBinary
-- id: "13"
+- id: "20"
   taskid: b4f728f9-7690-49ec-8214-216cf28d83e1
   type: condition
   task:
     id: b4f728f9-7690-49ec-8214-216cf28d83e1
-    version: 2
+    version: -1
     name: Does the incident involve a lost or stolen device?
   condition:
     "no": []
     "yes":
-    - id: "14"
+    - id: "21"
       taskid: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
       type: regular
       task:
         id: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
-        version: 2
+        version: -1
         name: SetIncidentType
         script: IncidentSet
       scriptarguments:

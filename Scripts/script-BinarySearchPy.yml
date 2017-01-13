@@ -22,7 +22,7 @@ script: |-
           hashes.add(demisto.get(entry, 'FileMetadata.md5'))
   res = []
   for h in hashes:
-      processes = demisto.executeCommand('process', {'query': 'md5:' + h})
+      processes = demisto.executeCommand('cb-process', {'query': 'md5:' + h})
       if len(processes) > 0 and processes[0]['Type'] == entryTypes['note'] and processes[0]['ContentsFormat'] == formats['json']:
           process = demisto.get(processes[0], 'Contents.results')
           if process:
@@ -48,5 +48,5 @@ system: true
 scripttarget: 0
 dependson:
   must:
-  - process
+  - cb-process
 timeout: 0s
