@@ -1,0 +1,47 @@
+commonfields:
+  id: AwsCreateImage
+  version: -1
+name: AwsCreateImage
+script: |2
+
+  resp = demisto.executeCommand("create-image", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.CreateImageResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Amazon Web Services
+comment: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that
+  is either running or stopped.
+system: true
+args:
+- default: true
+  description: The ID of the instance
+  name: instanceId
+  required: true
+- description: 'A name for the new image - Constraints: 3-128 alphanumeric characters,
+    parentheses (()), square brackets ([]), spaces ( ), periods (.), slashes (/),
+    dashes (-), single quotes (''), at-signs (@), or underscores(_)'
+  name: name
+  required: true
+- description: By default, Amazon EC2 attempts to shut down and reboot the instance
+    before creating the image. If the 'No Reboot' option is set(give value 'true'
+    for that) Amazon EC2 doesn't shut down the instance before creating the image.
+    When this option is used, file system integrity on the created image can't be
+    guaranteed.
+  name: noReboot
+- description: A description for the new image
+  name: description
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - create-image

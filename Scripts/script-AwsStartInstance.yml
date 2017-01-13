@@ -1,0 +1,33 @@
+commonfields:
+  id: AwsStartInstance
+  version: -1
+name: AwsStartInstance
+script: |2
+
+  resp = demisto.executeCommand("start-instance", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.StartInstancesResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Amazon Web Services
+comment: Starts an Amazon EBS-backed AMI that you've previously stopped.
+system: true
+args:
+- default: true
+  description: instance ID
+  name: instanceId
+  required: true
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - start-instance

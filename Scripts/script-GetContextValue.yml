@@ -1,0 +1,26 @@
+commonfields:
+  id: GetContextValue
+  version: -1
+name: GetContextValue
+script: |+
+  contextValue = demisto.get(demisto.context(), demisto.args()['key'])
+
+  if contextValue:
+      demisto.results(contextValue)
+  else:
+      demisto.results('no')
+
+
+type: python
+tags:
+- context
+comment: The script returns a value from context
+system: true
+args:
+- name: key
+  required: true
+  default: true
+  description: 'The context key to retrieve  '
+scripttarget: 0
+dependson: {}
+timeout: 0s

@@ -1,0 +1,37 @@
+commonfields:
+  id: ImpSfListEndpoints
+  version: -1
+name: ImpSfListEndpoints
+script: |2
+
+  resp = demisto.executeCommand("imp-sf-list-endpoints", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.result")
+      if data:
+          for i in range(len(data)):
+            data[i][LAST_UPDATED_FORMATED] = datetime.datetime.fromtimestamp(float(data[i]['last_updated']) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Imperva Skyfence
+comment: The endpoints list request enables a client application to receive a list
+  of all managed and unmanaged endpoints, with their basic details. This list can
+  then be externally filtered or searched by the application to identify individual
+  endpoints that might require action. For any such endpoint, the application can
+  obtain fuller details (see Endpoint Details Request below) and if relevant change
+  its enrollment status.
+system: true
+args: []
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - imp-sf-list-endpoints

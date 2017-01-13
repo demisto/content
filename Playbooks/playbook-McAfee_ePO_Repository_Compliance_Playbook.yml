@@ -1,0 +1,148 @@
+id: playbook11
+version: -1
+system: true
+name: McAfee ePO Repository Compliance Playbook
+description: Ensures that ePO servers are updated to the latest McAfee published AV
+  signatures (DAT file version).
+tasks:
+- id: "1"
+  taskid: 03918ca7-d71d-4796-8952-280a23ce8b3c
+  type: regular
+  task:
+    id: 03918ca7-d71d-4796-8952-280a23ce8b3c
+    version: 1
+    name: Determine list of repositories to check
+    description: |-
+      Determine which EPO servers to check (configured as instances under Demisto Settings).
+      Sets the eporepos context item to a comma-separated list of instance names exactly as they appearin Settings.
+      This can be filled manually or set to a constant value in the playbook such as corp1,dev1,test2
+    script: SetContext
+  scriptarguments:
+    key: eporepos
+    value: ""
+- id: "2"
+  taskid: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
+  type: regular
+  task:
+    id: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
+    version: 1
+    name: Retrieve DAT version and date from McAfee
+    script: EPOCheckLatestDAT
+  results:
+  - latestdat
+- id: "3"
+  taskid: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
+  type: condition
+  task:
+    id: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
+    version: 1
+    name: Are any local repositories using older DATs?
+    script: EPORepositoryComplianceCheck
+  condition:
+    "no": []
+    "yes":
+    - id: "4"
+      taskid: 18ab6c23-eb90-4f0f-817c-6318dc746338
+      type: regular
+      task:
+        id: 18ab6c23-eb90-4f0f-817c-6318dc746338
+        version: 1
+        name: Initiate update task in each local repository
+        script: EPOUpdateRepository
+      scriptarguments:
+        repos: ${olddatrepos}
+      results:
+      - repoupdateresultstext
+      - repoupdateresultshtml
+    - id: "5"
+      taskid: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
+      type: regular
+      task:
+        id: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
+        version: 1
+        name: Send report to admin with update results
+        script: SendEmail
+      scriptarguments:
+        attachIDs: ""
+        bcc: ""
+        body: ${repoupdateresultstext}
+        cc: ""
+        htmlBody: ""
+        subject: 'Demisto: ePO Update Results'
+        to: ""
+    - id: "6"
+      taskid: c064dd4b-1407-4f65-82af-00f3ba8e57e0
+      type: condition
+      task:
+        id: c064dd4b-1407-4f65-82af-00f3ba8e57e0
+        version: 4
+        name: Are any repositories faulty and may not be updating correctly?
+        script: UtilAnyResults
+      condition:
+        "no": []
+        "yes":
+        - id: "7"
+          taskid: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
+          type: regular
+          task:
+            id: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
+            version: 1
+            name: Send email alert with list of faulty repositories to admin
+            script: SendEmail
+          scriptarguments:
+            attachIDs: ""
+            bcc: ""
+            body: ${faultyrepostext}
+            cc: ""
+            htmlBody: ""
+            subject: 'Demisto: Faulty ePO Repositories Alert'
+            to: ""
+      scriptarguments:
+        data: ${faultyrepos}
+  scriptarguments:
+    repostocheck: ${eporepos}
+    requireddatversion: ${latestdat}
+  results:
+  - olddatrepos
+  - faultyrepos
+  - faultyrepostext
+  - repocomplianceresultshtml
+  - repocomplianceresultstext
+- id: "8"
+  taskid: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
+  type: regular
+  task:
+    id: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
+    version: 3
+    name: Display list of AV related tickets from ServiceNow
+    script: SNListTickets
+  scriptarguments:
+    fields: comments,short_description,category,subcategory,state
+    query: subcategory=Antivirus
+- id: "9"
+  taskid: f9ee1f48-bc46-465b-84c2-6e717f732ba8
+  type: regular
+  task:
+    id: f9ee1f48-bc46-465b-84c2-6e717f732ba8
+    version: 4
+    name: Send audit report to administrator with list of servers and their results
+    script: SendEmail
+  scriptarguments:
+    attachIDs: ""
+    bcc: ""
+    body: ${repocomplianceresultstext}
+    cc: ""
+    htmlBody: ""
+    subject: 'Demisto: ePO Repository Compliance Report'
+    to: ""
+- id: "10"
+  taskid: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+  type: regular
+  task:
+    id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+    version: 3
+    name: Close the investigation
+    script: CloseInvestigation
+  scriptarguments:
+    notes: ""
+    reason: AuditCompleted

@@ -1,0 +1,41 @@
+commonfields:
+  id: CBPCatalogFindHash
+  version: -1
+name: CBPCatalogFindHash
+script: |
+  md5s = argToList(demisto.args()['md5'])
+  found = []
+  res = []
+  t = []
+  for md5 in md5s:
+      resp = demisto.executeCommand('cbp-fileCatalog-search', {'query': 'md5:'+ md5})
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          data = demisto.get(resp[0], 'Contents')
+          if data:
+              found.append(md5)
+              t += data
+  appendContext('found_hashes', ','.join(found), dedup=True)
+  if t:
+      res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : t })
+  else:
+      res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : 'No results.' })
+  demisto.results(res)
+type: python
+tags:
+- carbon-black-protection
+- bit9
+- enhancement
+comment: Search the CBP/Bit9 file catalog for an md5 hash.
+system: true
+args:
+- name: md5
+  required: true
+  default: true
+  description: md5 hash to find
+scripttarget: 0
+dependson:
+  must:
+  - cbp-fileCatalog-search
+timeout: 0s

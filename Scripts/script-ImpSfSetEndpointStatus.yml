@@ -1,0 +1,31 @@
+commonfields:
+  id: ImpSfSetEndpointStatus
+  version: -1
+name: ImpSfSetEndpointStatus
+script: |2
+
+  resp = demisto.executeCommand("imp-sf-set-endpoint-status", demisto.args())
+  demisto.results(resp)
+type: python
+tags:
+- Imperva Skyfence
+comment: ' The endpoint status request enables a client application to enroll an endpoint
+  or revoke its enrollment. This is usually relevant for endpoints with pending status
+  but can be done for endpoints with any current status. The endpoint needs to be
+  specified by its ID, which can have been received from an endpoints list request,
+  from a new endpoint notification, or from any other implemented manual or automated
+  input.'
+system: true
+args:
+- default: true
+  description: 'The id of the endpoint. '
+  name: endpointId
+  required: true
+- description: '"enroll" / "revoke"'
+  name: action
+  required: true
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - imp-sf-set-endpoint-status

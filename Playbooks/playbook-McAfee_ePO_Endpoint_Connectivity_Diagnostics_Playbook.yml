@@ -1,0 +1,96 @@
+id: playbook13
+version: -1
+system: true
+name: McAfee ePO Endpoint Connectivity Diagnostics Playbook
+description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
+  or lost connectivity with ePO and take steps to return to valid state.
+tasks:
+- id: "1"
+  taskid: 61e08639-b0d4-489c-8244-ea7820cbe5f3
+  type: condition
+  task:
+    id: 61e08639-b0d4-489c-8244-ea7820cbe5f3
+    version: 2
+    name: Are any endpoints in ePO listed as unmanaged?
+  condition:
+    "no": []
+    "yes":
+    - id: "2"
+      taskid: 13407220-d8fe-4874-8448-3696efabfec8
+      type: regular
+      task:
+        id: 13407220-d8fe-4874-8448-3696efabfec8
+        version: 2
+        name: Check if unmanaged endpoints are in special excluded list
+        description: |-
+          Most organizations have some excluded servers, either legacy OS, or being managed by a different security solution, etc.
+          Usually this list is managed in Active Directory and this task is accomplished by checking whether any computers in the unmanaged list are a member of this group.
+      scriptarguments:
+        computers: ${epounmanagedendpoints}
+        groupdn: ""
+        reverse: ""
+    - id: "3"
+      taskid: 513dacef-9809-4828-8d3c-ffb1c188e9c2
+      type: regular
+      task:
+        id: 513dacef-9809-4828-8d3c-ffb1c188e9c2
+        version: 2
+        name: Open ServiceNow ticket for admin to install agents
+        script: SNOpenTicket
+      scriptarguments:
+        assignmentgroup: ""
+        category: Software
+        comments: ${epounmanagedendpoints}
+        shortdescription: Unmanaged EP
+        subcategory: Antivirus
+- id: "4"
+  taskid: 8da2bbd2-1bc5-4c81-8467-2ad02e61ccca
+  type: condition
+  task:
+    id: 8da2bbd2-1bc5-4c81-8467-2ad02e61ccca
+    version: 1
+    name: Check if there are agents which haven't communicated with ePO in the past
+      3 days
+  condition:
+    "no":
+    - id: "5"
+      taskid: f35617e9-0a55-4967-8a2e-1c878e4711a0
+      type: regular
+      task:
+        id: f35617e9-0a55-4967-8a2e-1c878e4711a0
+        version: 1
+        name: CloseInvestigation
+        script: CloseInvestigation
+      scriptarguments:
+        notes: ""
+        reason: ""
+    "yes":
+    - id: "6"
+      taskid: 77f3d67f-ddab-4beb-8a13-50878d636659
+      type: regular
+      task:
+        id: 77f3d67f-ddab-4beb-8a13-50878d636659
+        version: 1
+        name: Check connectivity for each endpoint using ping
+    - id: "7"
+      taskid: 12ab1460-035f-4075-83e3-0c3499e4b23b
+      type: regular
+      task:
+        id: 12ab1460-035f-4075-83e3-0c3499e4b23b
+        version: 1
+        name: Remotely check that mFE service is installed and running
+    - id: "8"
+      taskid: 2c6c6764-94f8-4777-836b-649ef7b51b98
+      type: regular
+      task:
+        id: 2c6c6764-94f8-4777-836b-649ef7b51b98
+        version: 1
+        name: Remotely execute cmdagent commandline utility to force communication
+          with ePO
+    - id: "9"
+      taskid: 6ce43ee5-eec4-43a3-81b6-60090083e047
+      type: regular
+      task:
+        id: 6ce43ee5-eec4-43a3-81b6-60090083e047
+        version: 1
+        name: Retrieve McAfee Agent logs from misbehaving endpoints

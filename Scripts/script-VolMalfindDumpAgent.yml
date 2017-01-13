@@ -1,34 +1,29 @@
 commonfields:
   id: VolMalfindDumpAgent
-  version: 1
+  version: -1
 name: VolMalfindDumpAgent
 script: |-
-  var cmdline = 'vol.py -f ' + args.memdump + ' ' + 'malfind';
+  var res = [];
+  var output = {Success: false};
+  var cmdline = 'sudo vol.py -f ' + args.memdump + ' malfind';
   if (args.pid) {
      cmdline = cmdline + ' -p ' + args.pid;
   }
   var dumpdir = args.dumpdir;
   cmdline = cmdline + ' -D ' + dumpdir;
-  var timeout = 600 ;
-  if (args.timeout) {
-     timeout = args.timeout ;
-  }
-  mkdir(dumpdir);
-  var output = execute(cmdline,timeout);
-  if (output.Success) {
+
+  executeCommand('RemoteExec', {system:args.system, cmd:'sudo mkdir ' + dumpdir});
+  var volExec = executeCommand('RemoteExec', {system:args.system, cmd: cmdline})[0];
+  res.push(volExec);
+  if (volExec.Type !== entryTypes.error) {
      // we need to take all the files and move them over.
-     pack(output);
-     var results = files(dumpdir);
-     for (var i = 0; i < results.length; i++) {
-       if (results[i].Type !== "Folder") {
-         var fileName = results[i].Path;
-         pack_file(fileName);
-         del(fileName);
-       }
-     }
+     res.push(executeCommand('copy-from', {using:args.system, file: dumpdir + '/*'}));
   }
-  if ('true' === args.dodelete)
-      rmdir(dumpdir);
+  if ('true' === args.dodelete) {
+      res.push(executeCommand('RemoteExec', {system:args.system, cmd:'sudo rm -rf ' + dumpdir}));
+  }
+
+  return res;
 type: javascript
 tags:
 - volatility
@@ -47,6 +42,9 @@ args:
   description: Path to directory in which to save dumped memory sections
 - name: dodelete
   description: If "true", deletes the dir with the VAD dumps
-scripttarget: 1
+- name: system
+  required: true
+  description: Volatility system to run the script on.
+scripttarget: 0
 dependson: {}
 timeout: 0s
