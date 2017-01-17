@@ -21,10 +21,8 @@ tags:
 - Trend Micro
 comment: Get all security profiles
 system: true
-args: []
 scripttarget: 0
-timeout: 0s
 dependson:
   must:
   - trendmicro-security-profile-retrieve-all
-
+timeout: 0s

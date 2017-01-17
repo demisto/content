@@ -16,15 +16,14 @@ tags:
 comment: Get all security profiles
 system: true
 args:
-- description: security profile ID that will be assigned to the hosts
-  name: securityProfileID
+- name: securityProfileID
   required: true
-- description: list of host IDs, separated by commas
-  name: hostIDs
+  description: security profile ID that will be assigned to the hosts
+- name: hostIDs
   required: true
+  description: list of host IDs, separated by commas
 scripttarget: 0
-timeout: 0s
 dependson:
   must:
   - trendmicro-security-profile-assign-to-host
-
+timeout: 0s
