@@ -18,7 +18,7 @@ script: |
           else:
               fileID = demisto.get(entry, 'Contents')
 
-              timeout = float(demisto.get(dArgs, 'timeout'))
+              timeout = float(demisto.get(dArgs, 'timeout')) if demisto.get(dArgs, 'timeout') else DEFAULT_TIMEOUT
               if not timeout:
                   timeout = DEFAULT_TIMEOUT
               timeLeft = timeout

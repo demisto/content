@@ -1,0 +1,64 @@
+commonfields:
+  id: NessusRunScan
+  version: -1
+name: NessusRunScan
+script: |
+  from time import ctime, sleep
+  res = []
+  DEFAULT_TIMEOUT = 60 * 5
+  dArgs = demisto.args()
+
+  scanID = demisto.get(dArgs,"scanId")
+
+  #start a new scan
+  resCmd = demisto.executeCommand("scan-launch", dArgs)
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              scan_uuid = demisto.get(entry, 'Contents.scan_uuid')
+
+              timeout = float(demisto.get(dArgs, 'timeout')) if demisto.get(dArgs, 'timeout') else DEFAULT_TIMEOUT
+              # (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+              timeLeft = timeout
+              while timeLeft > 0:
+                  resStatus = demisto.executeCommand("NessusScanStatus", {'scanId': scanID})
+                  if isError(resStatus[0]):
+                      res.append(resStatus[0])
+                  else:
+                      status = resStatus[0]['Contents']
+                      if status in ['completed', 'aborted', 'cancelled', 'paused', 'stopped']:
+                          res.append({'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': status if status else 'ErrorFetchingScanStatus'})
+                          break
+                  sleep(timeout / 10.0)
+                  timeLeft -= (timeout / 10.0)
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Timeout reached while waiting for Nessus scan to complete."})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+type: python
+tags:
+- nessus
+comment: Run a Nessus scan. Waits 5 minutes for it to complete (or whatever timeout
+  given as an argument).
+system: true
+args:
+- name: scanId
+  required: true
+  default: true
+  description: The Scan ID (use command list-scans to get possible scan ID's)
+- name: timeout
+  description: How long (in seconds) to wait for the result before giving up(Default
+    is 5min)
+- name: targets
+  description: If specified, these targets will be scanned instead of the default.
+    Value can be single host or of comma separated targets.
+scripttarget: 0
+dependson:
+  must:
+  - scan-launch
+timeout: 0s

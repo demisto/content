@@ -1,0 +1,20 @@
+commonfields:
+  id: NessusSetScanID
+  version: -1
+name: NessusSetScanID
+script: |-
+  SCAN_ID_LABEL = "ScanID"
+
+  demisto.results(demisto.executeCommand("SetContext", {"key":SCAN_ID_LABEL, "value" : demisto.get(demisto.args(),"scanID")}))
+type: python
+tags:
+- nessus
+system: true
+args:
+- name: scanID
+  required: true
+  default: true
+  description: the scan ID to set in context
+scripttarget: 0
+dependson: {}
+timeout: 0s
