@@ -25,7 +25,6 @@ tasks:
     id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
     version: -1
     name: Triage and Engage
-    issystemtask: true
 - id: "2"
   taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
   type: regular
@@ -404,7 +403,6 @@ tasks:
         name: Manually inspect the email for anything suspicious
         description: Since automatic triage did not find anything wrong, please inspect
           it manually and see if something stands out
-        issystemtask: true
     - id: "28"
       taskid: 5445acdd-df36-403e-8635-a0cbc3bd3f04
       type: regular
@@ -414,7 +412,6 @@ tasks:
         name: Assign and involve appropriate personnel
         description: 'Invite the relevant users for investigation - malware expert
           and network experts if needed. '
-        issystemtask: true
     - id: "29"
       taskid: e76cfd73-35f3-4065-8e59-c37e365cd06c
       type: regular
@@ -424,7 +421,6 @@ tasks:
         name: Assess severity
         description: 'Based on the end user affected, and other information assess
           and change the severity if needed. '
-        issystemtask: true
     "yes": []
   scriptarguments:
     key: responseRequired
@@ -457,7 +453,6 @@ tasks:
           See if the URL text versus the hostname shown are different by hovering
            over the link. Also carefully inspected the URL for spelling spoofing which
            is typically a sign of phishing email.
-        issystemtask: true
       condition:
         "no":
         - id: "33"
@@ -494,7 +489,6 @@ tasks:
             name: Is the sender name or email address identified as bad by threat
               feeds?
             description: 'Check the sender email and name against threat feed sources. '
-            issystemtask: true
           condition:
             "no": []
             "yes":
@@ -602,19 +596,126 @@ tasks:
         subject: 'Re: Phishing Investigation - ${name}'
         to: ${originalFrom}
     - id: "43"
-      taskid: eb11cb54-4221-4c96-8c93-a745b0595f6f
+      taskid: 08c684e8-65b9-4461-8eea-64991f25efef
+      type: condition
+      task:
+        id: 08c684e8-65b9-4461-8eea-64991f25efef
+        version: -1
+        name: 'Is Mimecast integration available '
+        script: IsIntegrationAvailable
+        type: conditional
+      condition:
+        "no":
+        - id: "44"
+          taskid: b97c18b9-ee11-4e6b-82cd-a730863ea41b
+          type: regular
+          task:
+            id: b97c18b9-ee11-4e6b-82cd-a730863ea41b
+            version: -1
+            name: Get full list of all mailboxes from Exchange server
+            script: ADGetEmailForAllUsers
+            type: standard
+        "yes":
+        - id: "45"
+          taskid: b0cfd859-df25-4f7b-8e3d-0de46787bc4f
+          type: regular
+          task:
+            id: b0cfd859-df25-4f7b-8e3d-0de46787bc4f
+            version: -1
+            name: Find all mailboxes containing the malicious email using Mimecast
+            script: MimecastFindEmail
+            type: standard
+          scriptarguments:
+            active: ""
+            attachmentText: ""
+            attachmentType: ${Label/Email/attachments}
+            body: ""
+            date: ""
+            dateFrom: ""
+            dateTo: ""
+            dryRun: ""
+            pageSize: ""
+            queryXml: ""
+            sentFrom: ${Label/Email/from}
+            sentTo: ""
+            startRow: ""
+            subject: ${Label/Email/subject}
+            text: ""
+      scriptarguments:
+        brandname: mimecast
+      results:
+      - brandInstances
+    - id: "46"
+      taskid: 2222e6a2-3a96-431d-8146-98dca313551f
       type: regular
       task:
-        id: eb11cb54-4221-4c96-8c93-a745b0595f6f
+        id: 2222e6a2-3a96-431d-8146-98dca313551f
         version: -1
-        name: Find and delete the malicious email in Exchange
-        script: ExchangeFindAndDelete
+        name: Search all mailboxes to find instances of the email
+        script: ExchangeSearch
+        type: standard
       scriptarguments:
-        attachmentName: ${AttachmentName}
-        mailbox: ${Label/Email}
+        attachmentName: ${Label/Email/attachments}
+        body: ""
+        mailbox: ${Mailboxes}
         sender: ${Label/Email/from}
         subject: ${Label/Email/subject}
-    - id: "44"
+      results:
+      - ExchangeItemIDs
+    - id: "47"
+      taskid: bd4ad1c9-8f76-424f-8292-ce7ea17ff16b
+      type: condition
+      task:
+        id: bd4ad1c9-8f76-424f-8292-ce7ea17ff16b
+        version: 1
+        name: Were any emails found on server?
+        script: IsContextSet        
+        type: conditional
+      condition:
+        "no": []
+        "yes":
+        - id: "48"
+          taskid: 952c4981-c88c-475e-8ec3-5f4445256bb1
+          type: condition
+          task:
+            id: 952c4981-c88c-475e-8ec3-5f4445256bb1
+            version: 1
+            name: Review found emails and decide whether to go ahead with automatic
+              delete
+            type: conditional
+          condition:
+            "no":
+            - id: "49"
+              taskid: 370383b4-f933-48fe-8a51-ed24db1b81fe
+              type: regular
+              task:
+                id: 370383b4-f933-48fe-8a51-ed24db1b81fe
+                version: 1
+                name: Delete the emails from mailboxes manually
+                type: standard
+            "yes":
+            - id: "50"
+              taskid: e58b34a6-42f7-48ae-8560-55c9ef407079
+              type: regular
+              task:
+                id: e58b34a6-42f7-48ae-8560-55c9ef407079
+                version: 1
+                name: Delete the instances of the email from Exchange server
+                description: "Deleting the infected mails' IDs, useing EWS\nMail IDs
+                  are saved in context in \"ExchangeItemIDs\" "
+                script: ExchangeDeleteIDsFromContext
+                type: standard
+              scriptarguments:
+                attachmentName: ""
+                mailbox: ${Users}
+                sender: ""
+                subject: ${Label/Email/subject}
+              results:
+              - ExchangeItemIDs
+      scriptarguments:
+        key: ${ExchangeItemIDs}
+        value: ""
+    - id: "51"
       taskid: 3134f6ad-9de9-4f84-8ccf-d8c8d5ca9dd4
       type: condition
       task:
@@ -633,7 +734,6 @@ tasks:
             version: -1
             name: Is Carbon Black Protection (Bit9) Available?
             script: IsIntegrationAvailable
-            issystemtask: true
           condition:
             "no": []
             "yes":

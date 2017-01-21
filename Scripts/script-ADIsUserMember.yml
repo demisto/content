@@ -12,7 +12,7 @@ script: |-
           group_names = argToList(demisto.args()['groupname'])
 
           for name in group_names:
-              group_resp = demisto.executeCommand('ad-search', {'filter':'(&(objectClass=group)(name={0}))'.format(name)})
+              group_resp = demisto.executeCommand('AdSearch', {'filter':'(&(objectClass=group)(name={0}))'.format(name)})
               if isError(group_resp[0]):
                   res.append(  { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ad-search:\n' + resp[0]['Contents'] } )
               elif (isinstance(group_resp[0]['Contents'],str) or isinstance(group_resp[0]['Contents'],unicode)) and group_resp[0]['Contents'] == 'No results':
