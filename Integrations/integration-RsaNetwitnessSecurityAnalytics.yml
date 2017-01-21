@@ -242,7 +242,6 @@ script:
             }
             convertedIncidents.push({
                 name: inc.id,
-                created: new Date(inc.created),
                 occurred: new Date(inc.firstAlertTime),
                 owner: inc.assignee ? inc.assignee.login : '',
                 reason: inc.name
