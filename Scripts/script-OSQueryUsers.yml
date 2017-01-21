@@ -1,0 +1,23 @@
+commonfields:
+  id: OSQueryUsers
+  version: -1
+name: OSQueryUsers
+script: |-
+  QUERY = "select * from users;"
+
+  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
+type: python
+tags:
+- OSQuery
+comment: Returns Users Table from a remote system using OSQuery
+system: true
+args:
+- name: system
+  required: true
+  default: true
+  description: The System to remote execute on, can be a list of systems
+scripttarget: 0
+dependson:
+  must:
+  - OSQueryBasicQuery
+timeout: 0s

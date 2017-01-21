@@ -11,7 +11,7 @@ script: |-
   if demisto.get(demisto.args(), 'dn'):
       memberDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
-      resp = demisto.executeCommand( 'ad-search', { 'filter' : "(&(objectClass=User)(name=" + demisto.args()['name'] + "))" } )
+      resp = demisto.executeCommand( 'AdSearch', { 'filter' : "(&(objectClass=User)(name=" + demisto.args()['name'] + "))" } )
       if type(resp)==list and len(resp)==1 and type(resp[0])==dict and 'Contents' in resp[0] and type(resp[0]['Contents'])==list and len(resp[0]['Contents'])==1 and type(resp[0]['Contents'][0])==dict and 'dn' in resp[0]['Contents'][0]:
           memberDN = resp[0]['Contents'][0]['dn']
       else:
@@ -22,7 +22,20 @@ script: |-
       sys.exit(0)
   if memberDN:
       filterstr = r"(&(objectClass=User)(distinguishedName=" + memberDN + "))"
-      demisto.results( demisto.executeCommand( 'ad-search' , { 'filter' : filterstr, 'attributes' : attrs } ) )
+      resp = demisto.executeCommand( 'AdSearch' , { 'filter' : filterstr, 'attributes' : attrs } )
+      if not isError(resp[0]) and not 'No results' == resp[0]['Contents']:
+          if isinstance(resp[0]['Contents'], list) and resp[0]['Contents']:
+              person = resp[0]['Contents'][0]
+              dispname = demisto.get(person, 'displayname')
+              if dispname:
+                  demisto.setContext('ADDisplayName', dispname)
+              name = demisto.get(person, 'name')
+              if name:
+                  demisto.setContext('ADPersonName', name)
+              dn = demisto.get(person, 'dn')
+              if dn:
+                  demisto.setContext('ADDistinguishedName', dn)
+      demisto.results(resp)
   else:
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'User not found.' } )
 type: python

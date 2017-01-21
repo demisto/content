@@ -1,0 +1,42 @@
+commonfields:
+  id: TrendMicroGetHostID
+  version: -1
+name: TrendMicroGetHostID
+script: |-
+  ID_LABEL = 'Label/HostID'
+
+  hostnames = argToList(demisto.get(demisto.args(),'hostname'))
+  ID = []
+  res = []
+  if hostnames:
+      resp = demisto.executeCommand("TrendmicroHostRetrieveAll", {})
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          for hostname in hostnames:
+              hostRes = {"hostname": hostname, 'ID': ''}
+              for host in resp[0]["Contents"]:
+                  if str(host["name"]) == hostname:
+                      hostRes["ID"] = host["ID"]
+                      ID += [host["ID"]]
+                      break;
+              res += [hostRes]
+          demisto.setContext(ID_LABEL,",".join(ID))
+          demisto.results([{"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents":res}])
+  else:
+      demisto.results([{ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Hostname was not provided' }])
+type: python
+tags:
+- Trend Micro
+comment: Returns a table of hosts and thers TrendMicro IDs
+system: true
+args:
+- name: hostname
+  required: true
+  default: true
+  description: Hostname to retrive it's ID (Could be a list)
+scripttarget: 0
+dependson:
+  must:
+  - trendmicro-host-retrieve-all
+timeout: 0s

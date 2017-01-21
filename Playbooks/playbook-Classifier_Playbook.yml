@@ -69,6 +69,17 @@ tasks:
     scriptName: GetContextValue
     type: conditional
   condition:
+    Trend Micro:
+    - id: "6"
+      taskid: ff90e560-c9db-4f34-8ddc-f05a763485c5
+      type: regular
+      task:
+        id: ff90e560-c9db-4f34-8ddc-f05a763485c5
+        version: 2
+        name: Trend Micro Classifier
+        description: Classify Trend Micro Incidents
+        scriptName: TrendMicroClassifier
+        type: standard
     LightCyber Magna: []
     QRadar:
     - id: "5"
@@ -143,7 +154,7 @@ tasks:
         type: Phishing
         updatePlaybookForType: "yes"
   scriptarguments:
-    key: ${Label/Email/from}
+    key: Label/Email/from
     value: ""
 - id: "10"
   taskid: befe6857-6c3a-47a1-84e1-95b8d6d78c66
