@@ -10,12 +10,12 @@ description: RSA NetWitness Logs and Packets decoders are responsible for the re
   and reconstruct data for full session analysis. In addition, the decoder can collect
   flow and endpoint data.
 configuration:
-- display: Appliance URL (192.168.56.108)
+- display: Appliance IP/Hostname (192.168.56.108)
   name: url
   defaultvalue: ""
   type: 0
   required: true
-- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105)
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) / Broker (50103)
   name: port
   defaultvalue: ""
   type: 0
@@ -51,7 +51,12 @@ script:
     var parseResponse = function(resp) {
         if (resp.StatusCode === 200) {
             try {
-                return JSON.parse(resp.Body);
+                var res = JSON.parse(resp.Body);
+                if (Array.isArray(res)) {
+                    return { results: res };
+                }
+                
+                return res;
             } catch (e) {
                 return resp.Body;
             }
