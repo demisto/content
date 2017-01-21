@@ -90,7 +90,7 @@ tags:
 - threat-intel
 comment: Enrich the given IP or domain with metadata, malware, osint
 system: true
-enabled: true
+system: true
 args:
 - name: query
   required: true
