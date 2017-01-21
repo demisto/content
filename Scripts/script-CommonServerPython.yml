@@ -252,11 +252,11 @@ script: |-
 
 
   def flattenRow(rowDict):
-    return {k: formatCell(rowDict[k]) for k in rowDict}
+      return {k: formatCell(rowDict[k]) for k in rowDict}
 
 
   def flattenTable(tableDict):
-    return [flattenRow(row) for row in tableDict]
+      return [flattenRow(row) for row in tableDict]
  
   MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
 
@@ -284,8 +284,6 @@ script: |-
           return item[fieldName]
       else:
           return item
-  
-  
   def isCommandAvailable(cmd):
       modules = demisto.getAllSupportedCommands();
       for m in modules:
@@ -294,6 +292,13 @@ script: |-
                   if c['name'] == cmd:
                       return True
       return False
+
+  def epochToTimestamp(epoch):
+      return datetime.fromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+  def formatTimeColumns(data, timeColumnNames):
+      for row in data:
+          for k in timeColumnNames:
+              row[k] = epochToTimestamp(row[k])
 type: python
 tags:
 - infra
