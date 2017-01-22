@@ -1,0 +1,23 @@
+commonfields:
+  id: CuckooGetScreenshot
+  version: -1
+name: CuckooGetScreenshot
+script: demisto.results(demisto.executeCommand("ck-scrshot", demisto.args()))
+type: python
+tags:
+- cuckoo
+comment: Detonate the file in Cuckoo sandbox.
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: ID of the task that generated the screenshot
+- name: screenshot
+  description: (optional) - numerical identifier of a single screenshot (e.g. 0001,
+    0002)
+scripttarget: 0
+dependson:
+  must:
+  - ck-scrshot
+timeout: 0s
