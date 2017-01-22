@@ -3,12 +3,17 @@ commonfields:
   version: -1
 name: CheckWhitelist
 script: |
-  whitelist = demisto.executeCommand("getList", {"listName": demisto.args()["whitelistname"]})
-  if demisto.args()['item'] in whitelist:
-      answer = 'yes'
+  res = demisto.executeCommand("getList", {"listName": demisto.args()["whitelistname"]})
+  if isError(res[0]):
+      demisto.results(res)
   else:
-      answer = 'no'
-  demisto.results(answer)
+      whitelist = res[0]['Contents']
+      demisto.log(str(whitelist))
+      if demisto.args()['item'] in whitelist:
+          answer = 'yes'
+      else:
+          answer = 'no'
+      demisto.results(answer)
 type: python
 tags:
 - whitelist
