@@ -13,10 +13,8 @@ script: |-
       userDN = demisto.args()['dn']
   elif demisto.get(demisto.args(), 'name'):
       resp = demisto.executeCommand( 'ad-search', { 'filter' : "(&(objectCategory=Computer)(name=" + demisto.args()['name'] + "))" } )
-  elif demisto.get(demisto.args(), 'email'):
-      resp = demisto.executeCommand( 'ADGetUsersByEmail', { 'email' : demisto.args()['email'] } )
   else:
-      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide either dn, name or email as argument!' } )
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide either dn or name as argument!' } )
       sys.exit(0)
   if type(resp)==list and len( [ r for r in resp if isError(r) ] ) > 0 :
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned by ad command: ' + r['Contents'] } )
@@ -61,7 +59,7 @@ type: python
 tags:
 - active directory
 comment: Use Active Directory to retrieve detailed information about a computer account.
-  The user can be specified by name, email or as an Active Directory Distinguished
+  The computer can be specified by name or as an Active Directory Distinguished
   Name (DN).
 system: true
 args:
@@ -70,8 +68,6 @@ args:
   description: Active Directory Distinguished Name for the desired computer
 - name: name
   description: Name of the desired computer
-- name: email
-  description: Email address of the desired computer
 - name: attributes
   description: Include these AD attributes of the resulting objects in addition to
     the default ones
