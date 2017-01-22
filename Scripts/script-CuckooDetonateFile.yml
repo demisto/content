@@ -1,7 +1,7 @@
 commonfields:
-  id: CuckooDetonateFileExt
+  id: CuckooDetonateFile
   version: -1
-name: CuckooDetonateFileExt
+name: CuckooDetonateFile
 script: |-
   res =  demisto.executeCommand("ck-file", demisto.args())
   if isError(res[0]):
