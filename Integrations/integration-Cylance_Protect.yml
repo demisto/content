@@ -55,7 +55,6 @@ script:
             httpParams.Body = body;
         }
         var res = http(server + url, httpParams, params.insecure, params.proxy, undefined, true);
-        console.log(JSON.stringify(res))
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request to Cylance protect Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
         }
