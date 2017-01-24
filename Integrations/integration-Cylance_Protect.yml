@@ -41,8 +41,6 @@ script:
     var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';
 
     var sendRequest = function(url, body, token) {
-        console.log('body ' + body)
-        console.log('url ' + server + url)
         var httpParams = {
                 Method: 'POST',
                 Headers: {
