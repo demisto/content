@@ -38,34 +38,6 @@ script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
 
-    var sendRequest = function(method, url, body, authCookies, recursive) {
-        var httpParams = {
-                Method: method,
-                Headers: {
-                    'Content-Type': ['application/xml;charset=utf-8']
-                }
-            };
-        if (authCookies) {
-            httpParams.Cookies = authCookies;
-        }
-        if (method !== 'GET' && body) {
-            httpParams.Body = body;
-        }
-        var res = http(server + url, httpParams, params.insecure, params.proxy, undefined, true);
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            if (authCookies && !recursive) {
-                sendRequest(
-                    methodDictionary['logout'],
-                    getUrl('logout'),
-                    undefined,
-                    loginCookies,
-                    true);
-            }
-            throw 'Request to KeyLight URL ' + url + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + x2j(res.Body) + '.';
-        }
-        return res;
-    };
-
     var filtersFields = ['fieldPath', 'filterType', 'value'];
 
     var urlDictionary = {
@@ -122,6 +94,36 @@ script:
         'kl-delete-record-attachments': '<DeleteRecordAttachments><componentId>%componentID%</componentId>%values%</DeleteRecordAttachments>'
     };
 
+    var filterFields = ['field-path', 'filter-type', 'value'];
+
+    var sendRequest = function(method, url, body, authCookies, recursive) {
+        var httpParams = {
+                Method: method,
+                Headers: {
+                    'Content-Type': ['application/xml;charset=utf-8']
+                }
+            };
+        if (authCookies) {
+            httpParams.Cookies = authCookies;
+        }
+        if (method !== 'GET' && body) {
+            httpParams.Body = body;
+        }
+        var res = http(server + url, httpParams, params.insecure, params.proxy, undefined, true);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (authCookies && !recursive) {
+                sendRequest(
+                    methodDictionary['logout'],
+                    getUrl('logout'),
+                    undefined,
+                    loginCookies,
+                    true);
+            }
+            throw 'Request to KeyLight URL ' + url + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + x2j(res.Body) + '.';
+        }
+        return res;
+    };
+
     var createFiltersFromArgs = function(args) {
         var res = replaceInTemplates(!!args.value ?
                 '<filters><SearchCriteriaItem><FieldPath><int>%field-path%</int>/FieldPath><FilterType>%filter-type%</FilterType></SearchCriteriaItem></filters>' :
@@ -173,8 +175,6 @@ script:
         }
         return replaceInTemplates(bodyDictionary[command], args);
     }
-
-    var filterFields = ['field-path', 'filter-type', 'value'];
 
     var getUrl = function(command, args) {
         return urlDictionary[command] + (methodDictionary[command] === 'GET' ? encodeToURLQuery(args) : '');
