@@ -12,14 +12,29 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: credentials
+- display: Port
+  name: port
+  defaultvalue: "34993"
+  type: 0
+  required: true
+- display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
-  required: false
+  required: true
 - display: Advanced login - set to true to authenticate via LDAP, AD etc
   name: advancedLogin
   defaultvalue: "false"
+  type: 8
+  required: false
+- display: Do not validate certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -28,74 +43,149 @@ script:
     var testUrl = 'mgmt/shared/echo';
     var loginReferenceUrl = 'mgmt/shared/authn/login';
 
-    var fixUrl = function(base) {
-        res = base;
-        if (base && base[base.length - 1] != '/') {
-            res = res + '/';
-        }
-        return res;
-    };
+    var serverUrl = params.url.replace(/[\/]+$/, '') + ':' + params.port + '/';
+    var proxy = params.proxy;
+    var insecure = params.insecure;
 
-    var getF5SecurityToken = function(params) {
-        var url = fixUrl(params.url);
-        url = url + loginReferenceUrl;
-        var readyBody = JSON.stringify({
-                    'username': params['credentials']['identifier'],
-                    'password': params['credentials']['password'],
-                    'loginProviderName': 'tmos'
-                });
+    var getF5SecurityToken = function() {
+        var url = serverUrl + loginReferenceUrl;
         var httpParams = {
                 Method: 'POST',
-                Body: readyBody
+                Body: JSON.stringify({
+                    'username': params.credentials.identifier,
+                    'password': params.credentials.password,
+                    'loginProviderName': 'tmos'
+                })
             };
 
-        var res = http(url, httpParams, true);
-        if (res.StatusCode === 200) {
-                    var parsedBody = JSON.parse(res.Body);
-                    var token =  parsedBody.token.token;
-                    return token
+        var res = http(url, httpParams, insecure, proxy);
+        if (res.StatusCode !== 200) {
+            throw 'Failed getting token from F5';
         }
-        throw "Error";
+        return JSON.parse(res.Body).token.token;
     }
 
-    var getRaw = function(args, params, uri, advancedLogin) {
-        var url = fixUrl(params.url);
-        url = url + uri;
+    var sendRequest = function(method, uri, body) {
+        var url = serverUrl + uri;
         var httpParams = {
-                Method: 'GET',
-                Username: params['credentials']['identifier'],
-                Password: params['credentials']['password']
-
+                Method: method,
+                Body: body
             };
-        if (advancedLogin) {
-            httpParams = {
-                Method: 'GET',
-                Headers: {
-                        'X-F5-Auth-Token': [getF5SecurityToken(params)]
-                    }
-
+        if (params.advancedLogin) {
+            httpParams.Headers = {
+                'X-F5-Auth-Token': [getF5SecurityToken()]
             };
+        } else {
+            httpParams.Username = params.credentials.identifier;
+            httpParams.Password = params.credentials.password;
         }
-
-        res = http(url, httpParams, true);
-        return res;
+        res = http(url, httpParams, insecure, proxy);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed getting ' + url + ' from F5, status code ' + res.StatusCode + ' and body ' + res.Body;
+        }
+        return JSON.parse(res.Body);
     };
 
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-             var resp = getRaw(args, params, testUrl, params.advancedLogin);
-                if (resp.StatusCode === 200) {
-                    return 'ok';
-                } else if (resp.Status) {
-                    return resp.Status;
-                } else {
-                    return resp;
-                }
+    var methodDictionary = {
+        show: 'GET',
+        list: 'GET',
+        del: 'DELETE',
+        modify: 'PATCH',
+        create: 'POST'
+    };
+
+    var uriDictionary = {
+        'f5-create-policy': 'security/firewall/policy',
+        'f5-create-rule': 'security/firewall/policy/~Common~%policy-name%/rules',
+        'f5-list-rules': 'security/firewall/policy/~Common~%policy-name%/rules',
+        'f5-modify-rule': 'security/firewall/policy/~Common~%policy-name%/rules/%rule-name%',
+        'f5-delete-rule': 'security/firewall/policy/~Common~%policy-name%/rules/%rule-name%',
+        'f5-modify-global-policy': 'security/firewall/globalRules/',
+        'f5-show-global-policy': 'security/firewall/globalRules',
+        'f5-del-policy': 'security/firewall/policy/~Common~%policy-name%'
+    };
+
+    var getMethod = function(command) {
+        return methodDictionary[command.split('-')[1]];
+    }
+
+    var getUrl = function(command, args) {
+        return 'mgmt/tm/' + replaceInTemplatesAndRemove(uriDictionary[command], args);
+    }
+
+    var buildBody = function(command, args) {
+        switch (getMethod(command)) {
+            case 'PATCH':
+            case 'POST':
                 break;
+            default:
+                return undefined;
+        }
+        return JSON.stringify(args);
+    }
+
+    switch (command) {
+        case 'test-module':
+            if (sendRequest('GET', testUrl)) {
+                return 'ok';
+            }
+            return 'Gevald!!';
         default:
-            // You can use args[argName] or args.argName to get a specific arg. args are strings.
-            // You can use params[paramName] or params.paramName to get a specific params.
-            // Params are of the type given in the integration page creation.
+            return sendRequest(getMethod(command), getUrl(command, args), buildBody(command, args));
     }
   type: javascript
+  commands:
+  - name: f5-create-policy
+    arguments: []
+    description: Creates an F5 firewall policy
+  - name: f5-create-rule
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name the rule will be associated with
+    description: Creates a rule in a specific policy
+  - name: f5-list-rules
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name that the rules displayed are associated with
+    description: List all the rules of a specific policy
+  - name: f5-modify-rule
+    arguments:
+    - name: The policy name the rule is associated with
+      required: true
+      default: true
+      description: policy-name
+    - name: rule-name
+      required: true
+      description: The rule name to modify
+    description: Modifies an F5 rule in a specific policy
+  - name: f5-del-rule
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name the rule is associated with
+    - name: rule-name
+      required: true
+      description: The rule name to delete
+    description: Delete an F5 rule
+  - name: f5-modify-global-policy
+    arguments:
+    - name: enforcedPolicy
+      required: true
+      default: true
+      description: The new enforced policy to add to global policy
+    description: Add specific policy to global policy
+  - name: f5-show-global-policy
+    arguments: []
+    description: Display global policy
+  - name: f5-del-policy
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name to delete
+    description: Delete a policy 
