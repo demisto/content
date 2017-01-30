@@ -3,16 +3,51 @@ commonfields:
   version: -1
 name: CuckooDisplayReport
 script: |
+  #ALL_SECTIONS = ["info","statistics","network","dropped","suricata","debug","procmemory","signatures","decompression","malfamily","behavior","target","malscore","static","feeds","strings","virustotal"]
   res = []
+  if 'reportentryid' not in demisto.args() and 'reportfilepath' not in demisto.args()  and 'reportdata' not in demisto.args():
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'You must provide reportdata, reportentryid or reportfilepath. '})
+      sys.exit()
+  showAllSections = False
   BASIC_SECTIONS = ["info", "target", "signatures", "malscore", "strings", "static"]
   showSections = demisto.get(demisto.args(), 'sections')
-  showSections = argToList(showSections) if showSections else BASIC_SECTIONS
+  if showSections and showSections.lower() != 'all':
+      showSections = argToList(showSections) if showSections else BASIC_SECTIONS
+  else:
+      showAllSections = True
   try:
-      filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
-      with open(filePath, 'rb') as jsonFile:
-          report = json.load(jsonFile)
+      report = None
+      if 'reportdata' in demisto.args():
+          report = json.loads(demisto.args()['reportdata'])
+      else:
+          try:
+              if 'reportfilepath' in demisto.args():
+                  filePath = demisto.args()['reportfilepath']
+              else:
+                  filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
+              with open(filePath, 'rb') as jsonFile:
+                  report = json.load(jsonFile)
+          except Exception as ex:
+              entry = demisto.executeCommand('getEntry', {'id': demisto.args()['reportentryid']})[0]
+              if isError(entry):
+                  demisto.results(entry)
+                  sys.exit()
+              else:
+                  report = entry['Contents']
 
-      for s in showSections:
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while loading report. Exception info:\n" + str(ex) })
+
+  if not report:
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Failed to load report JSON from the provided source argument.'})
+      sys.exit()
+
+  if showAllSections:
+      showSections = report.keys()
+
+  for s in showSections:
+      try:
           if s not in report:
               res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Requested section ' + s + ' missing from report.'})
               continue
@@ -35,12 +70,16 @@ script: |
           elif s == 'debug':
               t = demisto.get(report, 'debug')
               if t:
-                  if 'errors' in t and t['errors']:
-                      data = [{k: formatCell(row[k]) for k in row} for row in t['errors']]
-                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
-                  if 'log' in t and t['log']:
-                      data = [{k: formatCell(row[k]) for k in row} for row in t['log']]
-                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                  for part in ['errors', 'log']:
+                      if part in t and t[part]:
+                          data = [{part: s} for s in t[part]]
+                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+          elif s == 'screenshots':
+              t = demisto.get(report, 'screenshots')
+              if t:
+                  data = [{'screenshots': s} for s in t]
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+
           elif s == 'statistics':
               t = demisto.get(report, 'statistics')
               if t and isinstance(t, list):
@@ -56,11 +95,13 @@ script: |
                           data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
                           res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
           else:
-              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": report[s]})
-
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) })
+              data = report[s] if isinstance(report[s], list) else [report[s]]
+              data = [{k: formatCell(row[k]) for k in row} for row in data]
+              res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+              #res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": report[s]})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing section " + s + " from report. Exception info:\n" + str(ex) })
   demisto.results(res)
 type: python
 tags:
@@ -69,13 +110,16 @@ comment: Display the contents of a Cuckoo report file from a war room entry.
 system: true
 args:
 - name: reportentryid
-  required: true
   default: true
   description: ID of the war room entry containing the report file
 - name: sections
   description: Sections to show (comma-separated). Sections are "info", "statistics",
     "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression",
     "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
+- name: reportfilepath
+  description: Local file path to the report file
+- name: reportdata
+  description: 'The report to be parsed '
 scripttarget: 0
 dependson: {}
 timeout: 0s
