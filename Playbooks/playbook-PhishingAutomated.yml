@@ -23,14 +23,14 @@ tasks:
   type: title
   task:
     id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
-    version: -1
+    version: 4
     name: Triage and Engage
 - id: "2"
   taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
   type: regular
   task:
     id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
-    version: -1
+    version: 24
     name: Set initial incident context
     script: IncidentToContext
   results:
@@ -70,7 +70,7 @@ tasks:
   type: regular
   task:
     id: 61208a52-fef6-4a4c-83df-20d85c876ce7
-    version: -1
+    version: 4
     name: Store the reporting person's email address for later replies
     description: Save the original "from" sender because it might be overridden by
       eml/msg attachments
@@ -83,7 +83,7 @@ tasks:
   type: regular
   task:
     id: 1500e59f-9f10-4bea-827e-89b971376624
-    version: -1
+    version: 4
     name: Auto-respond to acknowledge receipt
     description: Send an auto-response to the target telling them we are on it
     script: SendEmail
@@ -101,7 +101,7 @@ tasks:
   type: regular
   task:
     id: ce398bb5-71a3-4e57-884a-73f027470db4
-    version: -1
+    version: 4
     name: Identify attached file and its type
     script: LocateAttachment
   scriptarguments:
@@ -115,7 +115,7 @@ tasks:
   type: condition
   task:
     id: 6a3df7ba-06c5-4c94-839e-45bdaaf98db5
-    version: -1
+    version: 4
     name: Is there an email message attached?
     description: Check if the original email is attached or just forwarded
     script: IdentifyAttachedEmail
@@ -127,7 +127,7 @@ tasks:
       type: regular
       task:
         id: 6b552e9b-e1a4-441f-8905-b01c2d5a5c16
-        version: -1
+        version: 4
         name: Parse attached email and override context
         description: Parse email attachment identified in the previous step and override
           the email context values
@@ -150,7 +150,7 @@ tasks:
       type: regular
       task:
         id: 767b4b12-b6a9-4bb4-873f-ec6ca9f34236
-        version: -1
+        version: 4
         name: Identify the internal attachment
         script: LocateAttachment
       scriptarguments:
@@ -163,120 +163,164 @@ tasks:
   results:
   - reportedemailentryid
 - id: "9"
-  taskid: e0be23d6-55f9-4e3d-8d7c-537e17bf94c5
-  type: regular
+  taskid: 075441ee-160d-4d67-8b58-6d0be4c35a01
+  type: condition
   task:
-    id: e0be23d6-55f9-4e3d-8d7c-537e17bf94c5
-    version: -1
-    name: Extract URLs from email body
-    description: Both html and text email parts as parsed from the original
-    script: URLExtract
+    id: 075441ee-160d-4d67-8b58-6d0be4c35a01
+    version: 1
+    name: Does the email contain a textual body?
+    script: IsContextSet
+    type: conditional
+  condition:
+    "no": []
+    "yes":
+    - id: "10"
+      taskid: 1355953b-12b9-471b-8d5d-1d3241ca4bfb
+      type: regular
+      task:
+        id: 1355953b-12b9-471b-8d5d-1d3241ca4bfb
+        version: 7
+        name: Extract IP Addresses from email body
+        script: IPExtract
+        type: standard
+      scriptarguments:
+        text: ${Label/Email/text}
+    - id: "11"
+      taskid: e0be23d6-55f9-4e3d-8d7c-537e17bf94c5
+      type: regular
+      task:
+        id: e0be23d6-55f9-4e3d-8d7c-537e17bf94c5
+        version: 6
+        name: Extract URLs from email body
+        script: URLExtract
+        type: standard
+      scriptarguments:
+        text: ${Label/Email/text}
   scriptarguments:
-    text: ${Label/Email/html} ${Label/Email/text}
-  results:
-  - urls
-- id: "10"
-  taskid: 1355953b-12b9-471b-8d5d-1d3241ca4bfb
-  type: regular
+    key: Label/Email/text
+    value: ""
+- id: "12"
+  taskid: 91be5bd5-bd6b-45fa-8abb-3e1391bf51de
+  type: condition
   task:
-    id: 1355953b-12b9-471b-8d5d-1d3241ca4bfb
-    version: -1
-    name: Extract IP Addresses from email body
-    description: Both html and text email parts as parsed from the original
-    script: IPExtract
+    id: 91be5bd5-bd6b-45fa-8abb-3e1391bf51de
+    version: 1
+    name: Does the email contain an html body?
+    script: IsContextSet
+    type: conditional
+  condition:
+    "no": []
+    "yes":
+    - id: "13"
+      taskid: f64cf64f-d5f7-4034-8de4-9b7409273fd0
+      type: regular
+      task:
+        id: f64cf64f-d5f7-4034-8de4-9b7409273fd0
+        version: 1
+        name: Extract IP Addresses from email html body
+        script: IPExtract
+        type: standard
+      scriptarguments:
+        text: ${Label/Email/html}
+    - id: "14"
+      taskid: eac3a531-7105-4538-8dee-738f845bca9e
+      type: regular
+      task:
+        id: eac3a531-7105-4538-8dee-738f845bca9e
+        version: 2
+        name: Extract URLs from email html body
+        script: URLExtract
+        type: standard
+      scriptarguments:
+        text: ${Label/Email/html}
   scriptarguments:
-    text: ${Label/Email/html} ${Label/Email/text}
-  results:
-  - ips
-- id: "11"
+    key: Label/Email/html
+    value: ""
+- id: "15"
   taskid: 737f900f-689d-4ef8-8695-6dfcb5638226
   type: condition
   task:
     id: 737f900f-689d-4ef8-8695-6dfcb5638226
-    version: -1
+    version: 4
     name: Have the email headers been provided?
     script: IsContextSet
   condition:
     "no": []
     "yes":
-    - id: "12"
+    - id: "16"
       taskid: 73cd5f19-4e5d-48c5-87ea-49ca719063fc
       type: regular
       task:
         id: 73cd5f19-4e5d-48c5-87ea-49ca719063fc
-        version: -1
+        version: 4
         name: URLExtract from headers
         description: Extract URLs from the headers
         script: URLExtract
       scriptarguments:
         text: ${Label/Email/headers}
-      results:
-      - urls
-    - id: "13"
+    - id: "17"
       taskid: 433d9980-233d-4bae-80b1-b12ca3855feb
       type: regular
       task:
         id: 433d9980-233d-4bae-80b1-b12ca3855feb
-        version: -1
+        version: 4
         name: IPExtract from headers
         description: Extract URLs from the headers
         script: IPExtract
       scriptarguments:
         text: ${Label/Email/headers}
-      results:
-      - ips
   scriptarguments:
     key: Label/Email/headers
     value: ""
-- id: "14"
+- id: "18"
   taskid: 9dedceb6-b38b-4328-8003-2a5edcce0f26
   type: condition
   task:
     id: 9dedceb6-b38b-4328-8003-2a5edcce0f26
-    version: -1
+    version: 4
     name: Do we have known bad URLs?
     description: Check if we have known bad URLs
     script: CheckURLs
   condition:
     "no":
-    - id: "15"
+    - id: "19"
       taskid: 08521ef5-dedb-40d7-8630-01e76fd9659f
       type: condition
       task:
         id: 08521ef5-dedb-40d7-8630-01e76fd9659f
-        version: -1
+        version: 4
         name: Check if we have known bad IPs
         script: CheckIPs
       condition:
         "no":
-        - id: "16"
+        - id: "20"
           taskid: a1f2c1a5-457d-44f6-8882-25215e3f102b
           type: condition
           task:
             id: a1f2c1a5-457d-44f6-8882-25215e3f102b
-            version: -1
+            version: 4
             name: Are any file hashes in the incident known as malicious?
             description: Iterate on all attachments and check hash reputation
             script: BinaryReputationPy
           condition:
             "no":
-            - id: "17"
+            - id: "21"
               taskid: 32982b66-d971-4dcc-8659-0ecb69117dce
               type: condition
               task:
                 id: 32982b66-d971-4dcc-8659-0ecb69117dce
-                version: -1
+                version: 4
                 name: Did we extract an attached file that we can analyze?
                 script: IsContextSet
               condition:
                 "no": []
                 "yes":
-                - id: "18"
+                - id: "22"
                   taskid: e77bff63-ce6a-4e8a-841f-135aee2e6869
                   type: regular
                   task:
                     id: e77bff63-ce6a-4e8a-841f-135aee2e6869
-                    version: -1
+                    version: 4
                     name: Detonate the file in a sandbox
                     description: This task will use all the available sandboxes. It
                       supports Cuckoo, Wildfire and FireEye.
@@ -285,22 +329,22 @@ tasks:
                     entryID: ${AttachmentEntryID}
                     interval: "30"
                     timeout: "900"
-                - id: "19"
+                - id: "23"
                   taskid: c752c128-ee8f-4f94-877a-39bdb10a7d40
                   type: condition
                   task:
                     id: c752c128-ee8f-4f94-877a-39bdb10a7d40
-                    version: -1
+                    version: 4
                     name: Is the attachment malicious according to Sandbox report?
                   condition:
                     "no": []
                     "yes":
-                    - id: "20"
+                    - id: "24"
                       taskid: 8af67544-2422-4a48-860d-b1834b6a85a9
                       type: regular
                       task:
                         id: 8af67544-2422-4a48-860d-b1834b6a85a9
-                        version: -1
+                        version: 4
                         name: Response is required
                         description: Set the context to enable response
                         script: SetContext
@@ -313,12 +357,12 @@ tasks:
                 key: AttachmentEntryID
                 value: ""
             "yes":
-            - id: "21"
+            - id: "25"
               taskid: f717a7ae-7c08-414e-8f3c-11ac5762ff74
               type: regular
               task:
                 id: f717a7ae-7c08-414e-8f3c-11ac5762ff74
-                version: -1
+                version: 4
                 name: Response is required
                 description: Set the context to enable response
                 script: SetContext
@@ -327,15 +371,13 @@ tasks:
                 value: "yes"
           scriptarguments:
             fileNames: ""
-          results:
-          - bad_hashes
         "yes":
-        - id: "22"
+        - id: "26"
           taskid: 69f2f976-d1de-4948-8656-979d8402e9a6
           type: regular
           task:
             id: 69f2f976-d1de-4948-8656-979d8402e9a6
-            version: -1
+            version: 4
             name: Response is required
             description: Set the context to enable response
             script: SetContext
@@ -347,12 +389,12 @@ tasks:
       results:
       - bad_ips
     "yes":
-    - id: "23"
+    - id: "27"
       taskid: ee4eb637-17c9-4dd9-8883-fd7221766ed8
       type: regular
       task:
         id: ee4eb637-17c9-4dd9-8883-fd7221766ed8
-        version: -1
+        version: 4
         name: Response is required
         description: Set the context to enable response
         script: SetContext
@@ -363,30 +405,30 @@ tasks:
     data: ${urls}
   results:
   - bad_urls
-- id: "24"
+- id: "28"
   taskid: 4440a41f-7d53-4a52-86bb-85b49b6722b4
   type: title
   task:
     id: 4440a41f-7d53-4a52-86bb-85b49b6722b4
-    version: -1
+    version: 4
     name: 'Manual Investigation Step 1: Initial Inspection'
-- id: "25"
+- id: "29"
   taskid: dcad4902-6b0f-4670-894e-52ea5964466d
   type: condition
   task:
     id: dcad4902-6b0f-4670-894e-52ea5964466d
-    version: -1
+    version: 4
     name: Is response required
     description: Check if we need to do anything manual here
     script: IsContextSet
   condition:
     "no":
-    - id: "26"
+    - id: "30"
       taskid: 24b22999-3ec2-4455-87b3-552d2a330f9f
       type: regular
       task:
         id: 24b22999-3ec2-4455-87b3-552d2a330f9f
-        version: -1
+        version: 4
         name: Check sender domain distance
         description: Check if the sender is trying to confuse the user with a domain
           that is very close to one of our own email domains
@@ -394,30 +436,30 @@ tasks:
       scriptarguments:
         domain: company.com, companymail.com, companyeurope.com
         sender: ${Label/Email/from}
-    - id: "27"
+    - id: "31"
       taskid: 5778ac35-8936-4170-8cf6-8cc09c98a300
       type: regular
       task:
         id: 5778ac35-8936-4170-8cf6-8cc09c98a300
-        version: -1
+        version: 4
         name: Manually inspect the email for anything suspicious
         description: Since automatic triage did not find anything wrong, please inspect
           it manually and see if something stands out
-    - id: "28"
+    - id: "32"
       taskid: 5445acdd-df36-403e-8635-a0cbc3bd3f04
       type: regular
       task:
         id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
-        version: -1
+        version: 6
         name: Assign and involve appropriate personnel
         description: 'Invite the relevant users for investigation - malware expert
           and network experts if needed. '
-    - id: "29"
+    - id: "33"
       taskid: e76cfd73-35f3-4065-8e59-c37e365cd06c
       type: regular
       task:
         id: e76cfd73-35f3-4065-8e59-c37e365cd06c
-        version: -1
+        version: 6
         name: Assess severity
         description: 'Based on the end user affected, and other information assess
           and change the severity if needed. '
@@ -425,29 +467,29 @@ tasks:
   scriptarguments:
     key: responseRequired
     value: "yes"
-- id: "30"
+- id: "34"
   taskid: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
   type: title
   task:
     id: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
-    version: -1
+    version: 4
     name: 'Manual Investigation Step 2: Deeper Inspection'
-- id: "31"
+- id: "35"
   taskid: 636705d2-8d33-4707-8938-c5e082d988dd
   type: condition
   task:
     id: 636705d2-8d33-4707-8938-c5e082d988dd
-    version: -1
+    version: 4
     name: Is response required
     script: IsContextSet
   condition:
     "no":
-    - id: "32"
+    - id: "36"
       taskid: cceb5cd4-a661-434d-87d8-24b9988877c4
       type: condition
       task:
         id: cceb5cd4-a661-434d-87d8-24b9988877c4
-        version: -1
+        version: 4
         name: Check if the hostname in urls is being misrepresented?
         description: |-
           See if the URL text versus the hostname shown are different by hovering
@@ -455,23 +497,23 @@ tasks:
            is typically a sign of phishing email.
       condition:
         "no":
-        - id: "33"
+        - id: "37"
           taskid: 2b253833-7a26-45a6-8683-5a65f318c3b1
           type: condition
           task:
             id: 2b253833-7a26-45a6-8683-5a65f318c3b1
-            version: -1
+            version: 4
             name: Is Pipl integration available?
             script: IsIntegrationAvailable
           condition:
             "no": []
             "yes":
-            - id: "34"
+            - id: "38"
               taskid: 8f82336f-6ff8-4440-8a51-8c66d67b03a6
               type: regular
               task:
                 id: 8f82336f-6ff8-4440-8a51-8c66d67b03a6
-                version: -1
+                version: 4
                 name: Look up sender email address in Pipl
                 script: CheckSender
               scriptarguments:
@@ -480,24 +522,24 @@ tasks:
             brandname: pipl
           results:
           - brandInstances
-        - id: "35"
+        - id: "39"
           taskid: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
           type: condition
           task:
             id: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
-            version: -1
+            version: 4
             name: Is the sender name or email address identified as bad by threat
               feeds?
             description: 'Check the sender email and name against threat feed sources. '
           condition:
             "no": []
             "yes":
-            - id: "36"
+            - id: "40"
               taskid: adcfdd4c-ab4d-4721-8172-bcbf01b0021f
               type: regular
               task:
                 id: adcfdd4c-ab4d-4721-8172-bcbf01b0021f
-                version: -1
+                version: 4
                 name: Response is required
                 description: Set the context to enable response
                 script: IsContextSet
@@ -508,12 +550,12 @@ tasks:
             key: responseRequired
             value: "yes"
         "yes":
-        - id: "37"
+        - id: "41"
           taskid: 9e54260e-9d3c-4c17-8190-8f73dc03459c
           type: regular
           task:
             id: 9e54260e-9d3c-4c17-8190-8f73dc03459c
-            version: -1
+            version: 4
             name: Response is required
             description: Set the context to enable response
             script: IsContextSet
@@ -524,33 +566,33 @@ tasks:
   scriptarguments:
     key: responseRequired
     value: "yes"
-- id: "38"
+- id: "42"
   taskid: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
   type: title
   task:
     id: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
-    version: -1
+    version: 4
     name: Response
   scriptarguments:
     key: responseRequired
     value: "yes"
-- id: "39"
+- id: "43"
   taskid: ebddd82a-85ed-432e-82b2-4b29a6206009
   type: condition
   task:
     id: ebddd82a-85ed-432e-82b2-4b29a6206009
-    version: -1
+    version: 4
     name: Should we do response
     description: Check if the response context is set
     script: IsContextSet
   condition:
     "no":
-    - id: "40"
+    - id: "44"
       taskid: 0b1ba0a2-27cd-48f1-8e70-336942c43e64
       type: regular
       task:
         id: 0b1ba0a2-27cd-48f1-8e70-336942c43e64
-        version: -1
+        version: 4
         name: Send email to user notifying them this email is safe
         script: SendEmail
       scriptarguments:
@@ -563,12 +605,12 @@ tasks:
         htmlBody: ""
         subject: 'Re: Phishing Investigation - ${name}'
         to: ${originalFrom}
-    - id: "41"
+    - id: "45"
       taskid: b93906e8-2d73-4f04-8c96-cf50eeaa2ec7
       type: regular
       task:
         id: b93906e8-2d73-4f04-8c96-cf50eeaa2ec7
-        version: -1
+        version: 4
         name: Close the phishing investigation
         script: CloseInvestigation
       scriptarguments:
@@ -576,12 +618,12 @@ tasks:
           them that they may proceed normally.
         reason: Safe
     "yes":
-    - id: "42"
+    - id: "46"
       taskid: 2e583a63-f01a-4cc2-8aed-4872a41d6334
       type: regular
       task:
         id: 2e583a63-f01a-4cc2-8aed-4872a41d6334
-        version: -1
+        version: 4
         name: Send email to user notifying them it's a malicious email
         script: SendEmail
       scriptarguments:
@@ -595,33 +637,33 @@ tasks:
         htmlBody: ""
         subject: 'Re: Phishing Investigation - ${name}'
         to: ${originalFrom}
-    - id: "43"
+    - id: "47"
       taskid: 08c684e8-65b9-4461-8eea-64991f25efef
       type: condition
       task:
         id: 08c684e8-65b9-4461-8eea-64991f25efef
-        version: -1
+        version: 4
         name: 'Is Mimecast integration available '
         script: IsIntegrationAvailable
         type: conditional
       condition:
         "no":
-        - id: "44"
+        - id: "48"
           taskid: b97c18b9-ee11-4e6b-82cd-a730863ea41b
           type: regular
           task:
             id: b97c18b9-ee11-4e6b-82cd-a730863ea41b
-            version: -1
+            version: 5
             name: Get full list of all mailboxes from Exchange server
             script: ADGetEmailForAllUsers
             type: standard
         "yes":
-        - id: "45"
+        - id: "49"
           taskid: b0cfd859-df25-4f7b-8e3d-0de46787bc4f
           type: regular
           task:
             id: b0cfd859-df25-4f7b-8e3d-0de46787bc4f
-            version: -1
+            version: 3
             name: Find all mailboxes containing the malicious email using Mimecast
             script: MimecastFindEmail
             type: standard
@@ -645,12 +687,12 @@ tasks:
         brandname: mimecast
       results:
       - brandInstances
-    - id: "46"
+    - id: "50"
       taskid: 2222e6a2-3a96-431d-8146-98dca313551f
       type: regular
       task:
         id: 2222e6a2-3a96-431d-8146-98dca313551f
-        version: -1
+        version: 3
         name: Search all mailboxes to find instances of the email
         script: ExchangeSearch
         type: standard
@@ -660,46 +702,44 @@ tasks:
         mailbox: ${Mailboxes}
         sender: ${Label/Email/from}
         subject: ${Label/Email/subject}
-      results:
-      - ExchangeItemIDs
-    - id: "47"
+    - id: "51"
       taskid: bd4ad1c9-8f76-424f-8292-ce7ea17ff16b
       type: condition
       task:
         id: bd4ad1c9-8f76-424f-8292-ce7ea17ff16b
-        version: 1
+        version: 2
         name: Were any emails found on server?
-        script: IsContextSet        
+        script: IsContextSet
         type: conditional
       condition:
         "no": []
         "yes":
-        - id: "48"
+        - id: "52"
           taskid: 952c4981-c88c-475e-8ec3-5f4445256bb1
           type: condition
           task:
             id: 952c4981-c88c-475e-8ec3-5f4445256bb1
-            version: 1
+            version: 2
             name: Review found emails and decide whether to go ahead with automatic
               delete
             type: conditional
           condition:
             "no":
-            - id: "49"
+            - id: "53"
               taskid: 370383b4-f933-48fe-8a51-ed24db1b81fe
               type: regular
               task:
                 id: 370383b4-f933-48fe-8a51-ed24db1b81fe
-                version: 1
+                version: 2
                 name: Delete the emails from mailboxes manually
                 type: standard
             "yes":
-            - id: "50"
+            - id: "54"
               taskid: e58b34a6-42f7-48ae-8560-55c9ef407079
               type: regular
               task:
                 id: e58b34a6-42f7-48ae-8560-55c9ef407079
-                version: 1
+                version: 2
                 name: Delete the instances of the email from Exchange server
                 description: "Deleting the infected mails' IDs, useing EWS\nMail IDs
                   are saved in context in \"ExchangeItemIDs\" "
@@ -710,91 +750,89 @@ tasks:
                 mailbox: ${Users}
                 sender: ""
                 subject: ${Label/Email/subject}
-              results:
-              - ExchangeItemIDs
       scriptarguments:
         key: ${ExchangeItemIDs}
         value: ""
-    - id: "51"
+    - id: "55"
       taskid: 3134f6ad-9de9-4f84-8ccf-d8c8d5ca9dd4
       type: condition
       task:
         id: 3134f6ad-9de9-4f84-8ccf-d8c8d5ca9dd4
-        version: -1
+        version: 4
         name: Did we find an attachment inside the email and extract its hash?
         script: IsContextSet
       condition:
         "no": []
         "yes":
-        - id: "45"
+        - id: "56"
           taskid: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
           type: condition
           task:
             id: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
-            version: -1
+            version: 5
             name: Is Carbon Black Protection (Bit9) Available?
             script: IsIntegrationAvailable
           condition:
             "no": []
             "yes":
-            - id: "46"
+            - id: "57"
               taskid: 24d70a61-8809-48db-878a-428fb81c0bb8
               type: regular
               task:
                 id: 24d70a61-8809-48db-878a-428fb81c0bb8
-                version: -1
+                version: 4
                 name: Search attachment hash in the Bit9 file catalog
                 script: CBPCatalogFindHash
               scriptarguments:
                 md5: ${AttachmentMD5}
-            - id: "47"
+            - id: "58"
               taskid: 8b223b77-bcc4-463c-8108-65ab696d9b9f
               type: regular
               task:
                 id: 8b223b77-bcc4-463c-8108-65ab696d9b9f
-                version: -1
+                version: 4
                 name: Check if the attachment hash is included in any Bit9 rules
                 script: CBPFindRule
               scriptarguments:
                 hash: ${AttachmentMD5}
-            - id: "48"
+            - id: "59"
               taskid: fde5176a-66b8-4fb8-8147-f04d174e9c66
               type: regular
               task:
                 id: fde5176a-66b8-4fb8-8147-f04d174e9c66
-                version: -1
+                version: 4
                 name: Review Bit9 results
           scriptarguments:
             brandname: carbonblackprotection
           results:
           - brandInstances
-        - id: "49"
+        - id: "60"
           taskid: 6a229223-43ef-4e76-8a7e-2b6003f5bbf0
           type: condition
           task:
             id: 6a229223-43ef-4e76-8a7e-2b6003f5bbf0
-            version: -1
+            version: 4
             name: Is Carbon Black Response available?
             script: IsIntegrationAvailable
           condition:
             "no": []
             "yes":
-            - id: "50"
+            - id: "61"
               taskid: aa29ff50-2115-4041-88aa-2995a294f18e
               type: regular
               task:
                 id: aa29ff50-2115-4041-88aa-2995a294f18e
-                version: -1
+                version: 4
                 name: Search attachments using Carbon Black
                 script: BinarySearchPy
               scriptarguments:
                 md5: ${AttachmentMD5}
-            - id: "51"
+            - id: "62"
               taskid: 98e77c76-f6c6-4a85-8f01-902d9f0c0354
               type: condition
               task:
                 id: 98e77c76-f6c6-4a85-8f01-902d9f0c0354
-                version: -1
+                version: 4
                 name: Did Carbon Black find the attachment on any endpoints?
                 description: If someone saved or executed the malicious attachment,
                   we need to investigate further
@@ -802,12 +840,12 @@ tasks:
               condition:
                 "no": []
                 "yes":
-                - id: "52"
+                - id: "63"
                   taskid: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
                   type: regular
                   task:
                     id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-                    version: -1
+                    version: 8
                     name: Investigate further
                     description: Investigate the results of the execution
               scriptarguments:
@@ -818,23 +856,23 @@ tasks:
             brandname: carbonblack
           results:
           - brandInstances
-        - id: "53"
+        - id: "64"
           taskid: 3aa9da87-5b96-4fd6-8c5a-89df2bd4de6c
           type: condition
           task:
             id: 3aa9da87-5b96-4fd6-8c5a-89df2bd4de6c
-            version: -1
+            version: 4
             name: Is CrowdStrike Falcon Host available?
             script: IsIntegrationAvailable
           condition:
             "no": []
             "yes":
-            - id: "54"
+            - id: "65"
               taskid: 02fc676f-d98b-4b2a-8052-75a61a96faa7
               type: regular
               task:
                 id: 02fc676f-d98b-4b2a-8052-75a61a96faa7
-                version: -1
+                version: 4
                 name: Search for the attachment using CrowdStrike
                 script: CSHuntByIOC
               scriptarguments:
@@ -842,23 +880,23 @@ tasks:
                 value: ${AttachmentMD5}
               results:
               - CSFoundDevices
-            - id: "55"
+            - id: "66"
               taskid: 715d5f70-d6a5-4322-8c37-c77bdbeab9f4
               type: condition
               task:
                 id: 715d5f70-d6a5-4322-8c37-c77bdbeab9f4
-                version: -1
+                version: 4
                 name: Did CrowdStrike locate the IOC on any devices?
                 script: IsContextSet
               condition:
                 "no": []
                 "yes":
-                - id: "56"
+                - id: "67"
                   taskid: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
                   type: regular
                   task:
                     id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-                    version: -1
+                    version: 8
                     name: Investigate further
                     description: Investigate the results of the execution
               scriptarguments:
