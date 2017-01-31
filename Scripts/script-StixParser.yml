@@ -76,5 +76,5 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: meirwah/stix
+dockerimage: demisto/stix
 system: true
