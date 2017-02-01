@@ -37,6 +37,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var url = params.url;
@@ -45,6 +50,7 @@ script:
     }
     var username = params.username;
     var password = params.password;
+    var proxy = params.proxy || false;
 
     function FailedRequestError(message, url, query, reqBody, resBody) {
         return {
@@ -95,12 +101,12 @@ script:
                 Body: 'j_username=' + username + '&j_password=' + password
             },
             true,
-            false,
+            proxy,
             true
         );
 
         if (res.StatusCode !== 302) {
-            throw 'Failed to login with status [' + res.StatusCode + ']. Expected status 302. Check username or password. Error: ' + res.Body;
+            throw 'Failed to login with status [' + res.StatusCode + ']. Expected status 302. Check username or password. \nOriginal error: ' + res.Body;
         }
 
         var sessionId = res.Cookies[0].Value;
@@ -198,31 +204,61 @@ script:
                     'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
                 }
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch incidents with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to fetch incidents with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         try {
-            incidents = JSON.parse(res.Body);
-            if (incidents.success) {
-                return incidents.data;
+            incidentsRes = JSON.parse(res.Body);
+            if (incidentsRes.success) {
+                var incidents = incidentsRes.data;
+                if (!args.loadAlerts) {
+                    return incidents;
+                }
+
+                // loading all the alerts which related to incident
+                // we load the alerts and original alerts which contains the original events which the alert created from
+                // this has performance impact
+                for (var i = 0; i < incidents.length; i++) {
+                    var alerts = filterAlerts(sessionId, {
+                        filter: JSON.stringify([
+                            {
+                                property: 'incidentId',
+                                value: incidents[i].id
+                            }
+                        ])
+                    })
+                    incidents[i].alerts = [];
+                    alerts.forEach(function(alert) {
+                        var originalAlert = getOriginalAlertById(sessionId, { alertId: alert.id });
+                        incidents[i].alerts.push({
+                            alert: alert,
+                            orignalAlert: originalAlert
+                        });
+                    });
+                }
+
+                return incidents;
             } else {
-                throw FailedRequestError('Fetch incidents failed.', fullUrl, query, null, incidents).toString();
+                throw FailedRequestError('Fetch incidents failed.', fullUrl, query, null, incidentsRes).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error while fetching incidents.', fullUrl, query, null, res.Body).toString();
+            throw FailedRequestError('Unexpected error while fetching incidents. \nOriginal error: ' + err, fullUrl, query, null, res.Body).toString();
         }
     }
 
     function fetchIncidents(sessionId, args, incidentManagementId) {
-        var lastRun = getLastRun().lastRun || 851171984031;
+        var now = new Date().getTime();
+        var lastRun = getLastRun().lastRun || now - 1*60*1000; // last minute
         var lastRunNext = lastRun;
 
-        var tillNow = new Date().getTime();
+        var tillNow = now;
         var query = {
+            loadAlerts: true,
             page: 1,
             start: 0,
             limit: 1000,
@@ -245,6 +281,7 @@ script:
                 // we get the last incident which created
                 lastRunNext = inc.created + 1;
             }
+
             convertedIncidents.push({
                 name: inc.id,
                 occurred: new Date(inc.firstAlertTime),
@@ -255,6 +292,42 @@ script:
 
         setLastRun({ lastRun: lastRunNext });
         return JSON.stringify(convertedIncidents);
+    }
+
+    function getIncidentById(sessionId, args, incidentManagementId) {
+        var fullUrl = [
+            url,
+            'ajax/incident',
+            incidentManagementId,
+            args.incidentId
+        ].join('/');
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to get incident by id with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            incident = JSON.parse(res.Body);
+            if (incident.success) {
+                return incident.data;
+            } else {
+                throw FailedRequestError('Fetch incident by id failed.', fullUrl, null, null, incident).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected error while fetching incident by id. \nOriginal error: ' + err, fullUrl, null, null, res.Body).toString();
+        }
     }
 
     var defaultComponentFilter = {
@@ -292,7 +365,7 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch components with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to fetch components with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         try {
@@ -303,7 +376,7 @@ script:
                 throw FailedRequestError('Fetch components failed.', fullUrl, query, null, components).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error when fetching components.', fullUrl, query, null, res.Body).toString();
+            throw FailedRequestError('Unexpected error when fetching components. \nOriginal error: ' + err, fullUrl, query, null, res.Body).toString();
         }
     }
 
@@ -317,13 +390,13 @@ script:
         return incidentManagement[0].id;
     }
 
-    function createEventsQuery(args) {
+    function createEventsQuery(args, predicateIds) {
         args = args || {};
         var query = {};
 
         query.deviceId = args.deviceId;
         query.collectionName = args.collectionName || '';
-        query.predicateIds = args.predicateIds || '';
+        query.predicateIds = predicateIds ? predicateIds.join(',') : '';
         query.timeRangeType = args.timeRangeType;
         query.startDate = args.startDate || '';
         query.endDate = args.endDate || '';
@@ -346,7 +419,17 @@ script:
         return query;
     }
     function getEvents(sessionId, args) {
-        var query = createEventsQuery(args);
+        var predicateIds = [];
+        if (args.filter) {
+            var eventsViewHTML = getEventsViewHtml(sessionId);
+            var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
+            var filters = args.filter.split(',');
+            for (var i = 0; i < filters.length; i++) {
+                var predicate = postEventsTransient(sessionId, filters[i], csrfToken);
+                predicateIds.push(predicate);
+            }
+        }
+        var query = createEventsQuery(args, predicateIds);
         var fullUrl = url + '/ajax/investigation/events' + encodeToURLQuery(query);
 
         var res = http(
@@ -357,11 +440,12 @@ script:
                     'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
                 }
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch events with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to fetch events with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         try {
@@ -372,7 +456,244 @@ script:
                 throw FailedRequestError('Fetch events failed.', fullUrl, query, null, events).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected while fetching events.', fullUrl, query, null, res.Body).toString();
+            throw FailedRequestError('Unexpected while fetching events. \nOriginal error: ' + err, fullUrl, query, null, res.Body).toString();
+        }
+    }
+    function postEventsTransient(sessionId, query, ctoken) {
+        var fullUrl = url + '/predicates/transient';
+        var body = {
+            name: query,
+            query: query,
+            ctoken: ctoken
+        };
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/x-www-form-urlencoded']
+                },
+                Body: encodeToURLQuery(body).replace(/^\?/, '')
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch events with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            transient = JSON.parse(res.Body);
+            if (transient.success) {
+                return transient.object;
+            } else {
+                throw FailedRequestError('Posting transient for events failed.', fullUrl, null, body, transient).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while posting transient for events. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
+        }
+    }
+
+    function getEventDetails(sessionId, args) {
+        var fullUrl = url + '/investigation/reconstruct/event';
+        var eventsViewHTML = getEventsViewHtml(sessionId);
+        var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
+
+        var body = {
+            deviceId: args.deviceId,
+            collectionName: args.collectionName || '',
+            eventId: args.eventId,
+            contentType: 'AUTO',
+            contentSide: 'REQUEST_AND_RESPONSE',
+            contentLayout: 'TOP_TO_BOTTOM',
+            packetOverride: -1,
+            ctoken: csrfToken
+        };
+        var res = http(
+            fullUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Content-Type': ['application/x-www-form-urlencoded']
+                },
+                Body: encodeToURLQuery(body).replace(/^\?/, '')
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch event with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            event = JSON.parse(res.Body);
+            if (event.success) {
+                var content = getEventContent(sessionId, event.data.uri);
+                return [event.data, content];
+            } else {
+                throw FailedRequestError('Fetching event details', fullUrl, null, body, event).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching event details. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
+        }
+    }
+
+    // Returns events/session data content.
+    function getEventContent(sessionId, urlSuffix) {
+        var fullUrl = url + urlSuffix;
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch event data (recontruction) with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            return res.Body;
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching event data (recontruction). \nOriginal error: ' + err, fullUrl, query, null, res.Body).toString();
+        }
+    }
+
+    var defaultAlertQuery = {
+        page: 1,
+        start: 0,
+        limit: 100,
+        sort: JSON.stringify([
+            {
+                property:'alert.timestamp',
+                direction: 'DESC'
+            }
+        ]),
+        filter: JSON.stringify([
+            {
+                property: 'alert.timestamp',
+                value: [
+                    851171984031, // year 1996
+                    new Date().getTime()
+                ]
+            }
+        ])
+    };
+    function filterAlerts(sessionId, args) {
+        var query = createQuery(args, defaultAlertQuery);
+        var fullUrl = [
+            url,
+            '/ajax/alerts/',
+            incidentManagementId,
+            encodeToURLQuery(query)
+        ].join('');
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to fetch alerts with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            alerts = JSON.parse(res.Body);
+            if (alerts.success) {
+                return alerts.data;
+            } else {
+                throw FailedRequestError('Fetch alerts failed.', fullUrl, query, null, alerts).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching alerts. Original error:' + err, fullUrl, query, null, res.Body).toString();
+        }
+    }
+
+    function getAlertById(sessionId, args) {
+        var fullUrl = [
+            url,
+            'ajax/alerts',
+            incidentManagementId,
+            args.alertId
+        ].join('/');
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to get events of alert with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            alert = JSON.parse(res.Body);
+            if (alert.success) {
+                return alert.data;
+            } else {
+                throw FailedRequestError('Fetch alert details failed.', fullUrl, query, null, alert).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching alert details. \nOriginal error: ' + err, fullUrl, null, null, res.Body).toString();
+        }
+    }
+
+    function getOriginalAlertById(sessionId, args) {
+        var fullUrl = [
+            url,
+            'ajax/alerts/originalalert',
+            incidentManagementId,
+            args.alertId
+        ].join('/');
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                }
+            },
+            true,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to get events of alert with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
+        }
+
+        try {
+            alert = JSON.parse(res.Body);
+            if (alert.success) {
+                return alert.data;
+            } else {
+                throw FailedRequestError('Fetch alert details failed.', fullUrl, query, null, alert).toString();
+            }
+        } catch (err) {
+            throw FailedRequestError('Unexpected while fetching alert details. \nOriginal error: ' + err, fullUrl, null, null, res.Body).toString();
         }
     }
 
@@ -387,11 +708,12 @@ script:
                     'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
                 }
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch availabe assignees with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to fetch availabe assignees with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         try {
@@ -402,7 +724,7 @@ script:
                 throw FailedRequestError('Fetch available assignees failed.', fullUrl, null, null, availableAssignees).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error while fetching available assignees.', fullUrl, null, null, res.Body).toString();
+            throw FailedRequestError('Unexpected error while fetching available assignees. \nOriginal error: ' + err, fullUrl, null, null, res.Body).toString();
         }
     }
 
@@ -417,11 +739,12 @@ script:
                     'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
                 }
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to fetch CSRF token with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to fetch CSRF token with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         return res.Body;
@@ -480,11 +803,12 @@ script:
                 },
                 Body: JSON.stringify(body)
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to create new alert with status [' + res.StatusCode + ']. Error: ' + res.Body;
+            throw 'Failed to create new alert with status [' + res.StatusCode + ']. \nOriginal error: ' + res.Body;
         }
 
         try {
@@ -495,7 +819,7 @@ script:
                 throw FailedRequestError('Failed to create alert.', fullUrl, null, body, alertRes).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error while creating alert.', fullUrl, null, body, res.Body).toString();
+            throw FailedRequestError('Unexpected error while creating alert. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
 
@@ -541,7 +865,8 @@ script:
                 },
                 Body: JSON.stringify(newIncident)
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -558,7 +883,7 @@ script:
                 throw FailedRequestError('Failed to create incident.', fullUrl, null, body, newIncidentRes).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error while creating incident.', fullUrl, null, body, res.Body).toString();
+            throw FailedRequestError('Unexpected error while creating incident. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
 
@@ -601,7 +926,8 @@ script:
                 },
                 Body: JSON.stringify(reqBody)
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -617,7 +943,7 @@ script:
                 throw FailedRequestError('Failed to add events to incident.', fullUrl, null, body, newIncidentRes).toString();
             }
         } catch (err) {
-            throw FailedRequestError('Unexpected error while adding new events to incident.', fullUrl, null, body, res.Body).toString();
+            throw FailedRequestError('Unexpected error while adding new events to incident. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
 
@@ -689,7 +1015,8 @@ script:
                 },
                 Body: JSON.stringify(updatedIncident)
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -723,12 +1050,26 @@ script:
         case 'nw-list-incidents':
             var incidents = listIncidents(sessionId, args, incidentManagementId);
             return { incidents: incidents };
+        case 'nw-get-incident-details':
+            var incident = getIncidentById(sessionId, args, incidentManagementId);
+            return { incident: incident };
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
             return { components: components };
         case 'nw-get-events':
             var events = getEvents(sessionId, args);
             return { events: events };
+        case 'nw-get-event-details':
+            return getEventDetails(sessionId, args);
+        case 'nw-get-alerts':
+            var alerts = filterAlerts(sessionId, args);
+            return { alerts: alerts };
+        case 'nw-get-alert-details':
+            var alert = getAlertById(sessionId, args);
+            return { alert: alert };
+        case 'nw-get-alert-original':
+            var alert = getOriginalAlertById(sessionId, args);
+            return { alert: alert };
         case 'nw-get-available-assignees':
             var availableAssignees = getAvailableAssignees(sessionId);
             return { availableAssignees: availableAssignees };
@@ -773,6 +1114,11 @@ script:
         device/component id. It can be received by running nw-get-component command.
         If this argument is not filled/passed, the script will automatically get the
         first device of type INCIDENT_MANAGEMENT from the SA server.'
+    - name: loadAlerts
+      description: '[optinal boolean] By default alerts and events related to incident
+        not loaded. If loadAlerts is true, then command will load all alerts and their
+        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
+        alert XHR request send to SA.'
     description: Fetches incidents by filter
   - name: nw-login
     arguments: []
@@ -838,6 +1184,11 @@ script:
     - name: limit
       description: '[optional number] Default set to 25. Limits the number of events
         per page'
+    - name: sort
+      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
+    - name: filter
+      description: '<string> Must provide key value pairs of fieldName and their value
+        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: nw-get-available-assignees
     arguments: []
@@ -961,4 +1312,47 @@ script:
     execution: true
   - name: fetch-incidents
     arguments: []
+  - name: nw-get-alerts
+    arguments:
+    - name: page
+      description: The default is 1. Indicates the page number of incidents
+    - name: start
+      description: The default is 0. Indicates the start index of incident in page
+    - name: limit
+      description: The default is 100. Limits the number of incidents per page
+    - name: sort
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
+        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+    - name: filter
+      description: 'By default filters by "alert.timestamp" from 1996 to this date.
+        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+  - name: nw-get-alert-details
+    arguments:
+    - name: alertId
+      required: true
+  - name: nw-get-event-details
+    arguments:
+    - name: deviceId
+      required: true
+      description: '[number] Id of the device where the events stored/occurred. In
+        order to get list of available devices/components run command nw-get-components'
+    - name: eventId
+      required: true
+      description: '[number] Id of the event'
+    description: Returns two entries. One is event details json and the second is
+      event/session content
+  - name: nw-get-incident-details
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: '[number] ID of incident. Example: "INC-12"'
+    description: Returns incident json by id
+  - name: nw-get-alert-original
+    arguments:
+    - name: alertId
+      required: true
+      default: true
+      description: Id of the alert
+    description: Returns the original events which this alert contains
   isfetch: true
