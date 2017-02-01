@@ -1,0 +1,54 @@
+commonfields:
+  id: RACopyFrom
+name: RACopyFrom
+fromversion: 2.0.1
+script: |-
+  var files = executeCommand("copy-from", {"file":args.filePath})
+  var err = null;
+  var res = null
+  for (i = 0; i < files.length; i++) {
+      if (files[i].Type === entryTypes.file) {
+          res = files[i];
+      } else if (files[i].Type === entryTypes.error) {
+          err = files[i]
+      }
+  }
+  if (err) {
+      return err;
+  }
+
+  if (args.contextKey) {
+      setContext(args.contextKey+"/MD5", res.FileMetadata.MD5);
+      setContext(args.contextKey+"/SHA1", res.FileMetadata.SHA1);
+      setContext(args.contextKey+"/SHA256", res.FileMetadata.SHA256);
+      setContext(args.contextKey+"/SHA512", res.FileMetadata.SHA512);
+      setContext(args.contextKey+"/SSDeep", res.FileMetadata.SSDeep);
+      setContext(args.contextKey+"/Type", res.FileMetadata.Type);
+  }
+
+  return res;
+type: javascript
+tags: []
+comment: |
+  Copy a file using remote access integration.
+  Will place file attributes on contextKey param:
+  Assuming contextKey parameter is foo, the following keys will be set:
+  foo/MD5
+  foo/SHA1
+  foo/SHA256
+  foo/sha512
+  foo/SSDeep
+  foo/Type
+enabled: true
+args:
+- name: filePath
+  required: true
+  default: true
+  description: File to copy to war room
+- name: contextKey
+  description: Context key to store file details on
+scripttarget: 0
+dependson: 
+  must:
+  - remoteaccess
+timeout: 0s
