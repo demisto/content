@@ -361,7 +361,8 @@ script:
                     'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
                 }
             },
-            true
+            true,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
