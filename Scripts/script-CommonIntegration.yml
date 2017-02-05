@@ -28,6 +28,23 @@ script: |-
     }
     return res;
   };
+  
+  var xmlReservedChars = {
+    '&': '&amp;',
+    '\"': '&quot;',
+    '\'': '&apos;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+
+  function escapeXMLChars(input) {
+      var res = input;
+      var keys = Object.keys(xmlReservedChars);
+      for (var i = 0; i < keys.length; i++) {
+          res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
+      }
+      return res;
+  };
 type: javascript
 tags:
 - infra
