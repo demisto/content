@@ -29,11 +29,11 @@ script:
         if stat == 0:
             filename = demisto.uniqueFile()
             call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': 3, 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
         else:
-            demisto.results({'ContentsFormat': 'text', 'Type': 4, 'Contents': 'PhantomJS returned - ' + str(stat)})
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + str(stat)})
         sys.exit(0)
-    demisto.results({'ContentsFormat': 'text', 'Type': 4, 'Contents': 'Unrecognized command'})
+    demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
   type: python
   commands:
   - name: rasterize
