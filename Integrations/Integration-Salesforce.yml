@@ -12,12 +12,12 @@ configuration:
   type: 9
   required: true
 - display: Consumer Key
-  name: client_id
+  name: clientID
   defaultvalue: ""
   type: 0
   required: true
 - display: Consumer Secret
-  name: client_secret
+  name: clientSecret
   defaultvalue: ""
   type: 4
   required: true
@@ -25,12 +25,13 @@ script:
   script: |-
     var authUrl = 'https://login.salesforce.com/services/oauth2/token';
     var uriPrefix = '/services/data/v20.0/';
+    var sessionData = '';
 
     function getNewToken() {
         var request = {
                 grant_type: 'password',
-                client_id: params.client_id,
-                client_secret: params.client_secret,
+                client_id: params.clientID,
+                client_secret: params.clientSecret,
                 username: params.credentials.identifier,
                 password: params.credentials.password
             };
@@ -45,16 +46,10 @@ script:
                     },
                     false
                 );
-            if (response.StatusCode < 200 || response.StatusCode >= 300) {
-                throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-            }
+        if (response.StatusCode < 200 || response.StatusCode >= 300) {
+            throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
+        }
         return JSON.parse(response.Body);
-    }
-
-    function updateSessionContext() {
-        var newResponse = getNewToken();
-        setIntegrationContext(newResponse);
-        return newResponse;
     }
 
 
@@ -63,29 +58,28 @@ script:
         if (token) {
             headers['Authorization'] = ['Bearer ' + token];
         }
-        if(method == 'POST' || method == 'PATCH') {
+        if (method == 'POST' || method == 'PATCH') {
             headers['Content-Type'] = ['application/json'];
         }
-            return http(
-                    url,
-                    {
-                        Method: method,
-                        Headers: headers,
-                        Body: body,
-                    },
-                    false
-                );
-        }
+        return http(
+                url,
+                {
+                    Method: method,
+                    Headers: headers,
+                    Body: body,
+                },
+                false
+            );
+    }
 
     function sendRequestInSession(method, uri, body) {
-        var contextData = getIntegrationContext();
-        if (!contextData || !contextData.access_token) {
-            contextData = updateSessionContext();
+        if (!sessionData || !sessionData.access_token) {
+            throw "Faield to get access token for Salesforce integration.";
         }
-        var response = sendRequest(method, contextData.instance_url + uriPrefix + uri, body, contextData.access_token);
+        var response = sendRequest(method, sessionData.instance_url + uriPrefix + uri, body, sessionData.access_token);
         if (response.StatusCode === 401) {
-            contextData = updateSessionContext();
-            response = sendRequest(method, contextData.instance_url + uriPrefix + uri, body, contextData.access_token);
+            sessionData = getNewToken();
+            response = sendRequest(method, sessionData.instance_url + uriPrefix + uri, body, sessionData.access_token);
         }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
                 throw 'Failed to run command uri: ' + uri + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
@@ -94,14 +88,7 @@ script:
     }
 
 
-    if (command == 'test-module') {
-        var newResponse = getNewToken();
-        if (!!newResponse) {
-            return 'ok';
-        }
-        return 'Failed to get session token';
-    }
-
+    sessionData = getNewToken();
 
 
     // The command input arg holds the command sent from the user.
@@ -125,6 +112,13 @@ script:
         case 'salesforce-create-object':
             response = sendRequestInSession('POST','sobjects/' + args.path, args.json);
             return JSON.parse(response.Body);
+        case 'test-module':
+            try {
+                sendRequestInSession('GET','','');
+            } catch (err) {
+                return 'Connection test failed with error: ' + err + '.';
+            }
+            return 'ok';
         default:
     }
   type: javascript
