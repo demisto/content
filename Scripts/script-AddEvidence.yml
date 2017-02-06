@@ -20,7 +20,7 @@ script: |-
   demisto.results([e for e in res if isError(e)])
 type: python
 tags: []
-enabled: true
+system: true
 args:
 - name: entryIDs
   default: true
