@@ -2,6 +2,7 @@ commonfields:
   id: 74eb90a9-cffc-44e1-8fac-6d7e2ddd5b0e
   version: 12
 name: AddEvidence
+fromversion: 2.0.1
 script: |-
   entryIDs = demisto.get( demisto.args(), 'entryIDs')
   desc = demisto.get( demisto.args(), 'description')
