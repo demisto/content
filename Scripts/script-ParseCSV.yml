@@ -115,7 +115,7 @@ tags:
 - csv
 comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes
   into the context.
-enabled: true
+system: true
 args:
 - name: file
   required: true
