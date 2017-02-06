@@ -294,7 +294,7 @@ script: |-
       return False
 
   def epochToTimestamp(epoch):
-      return datetime.fromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+      return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
   def formatTimeColumns(data, timeColumnNames):
       for row in data:
           for k in timeColumnNames:
