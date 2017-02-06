@@ -1,0 +1,30 @@
+commonfields:
+  id: 74eb90a9-cffc-44e1-8fac-6d7e2ddd5b0e
+  version: 12
+name: AddEvidence
+script: |-
+  entryIDs = demisto.get( demisto.args(), 'entryIDs')
+  desc = demisto.get( demisto.args(), 'description')
+  if not desc:
+      desc = 'Evidence added by DBot'
+  if entryIDs:
+      entryIDs =argToList(entryIDs)
+  else:
+      entryIDs = demisto.get( demisto.context(), 'lastCompletedTaskEntries')
+  res = []
+  for e in entryIDs:
+      ent = demisto.executeCommand('getEntry', {'id': e})[0]
+      if ent['ContentsFormat'] in ['table', 'markdown'] and ent['Contents']:
+          demisto.log("Executing demisto.executeCommand('markAsEvidence', {'id': '"+ e +"', 'description': '" + desc + "'})")
+          res += demisto.executeCommand('markAsEvidence', {'id': e, 'description': desc})
+  demisto.results([e for e in res if isError(e)])
+type: python
+tags: []
+enabled: true
+args:
+- name: entryIDs
+  default: true
+- name: description
+scripttarget: 0
+dependson: {}
+timeout: 0s
