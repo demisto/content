@@ -22,9 +22,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Instance URL
+  name: InstanceURL
+  defaultvalue: https://login.salesforce.com
+  type: 0
+  required: true
 script:
   script: |-
-    var authUrl = 'https://login.salesforce.com/services/oauth2/token';
+    var authUrl = params.InstanceURL + '/services/oauth2/token';
     var uriPrefix = '/services/data/v20.0/';
     var sessionData = '';
 
