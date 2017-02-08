@@ -155,6 +155,9 @@ script:
     var includeRecord = ['kl-create-record', 'kl-update-record', 'kl-delete-record-attachments'];
 
     var buildBodyForCommand = function(command, args) {
+        if (methodDictionary[command] === 'GET') {
+            return undefined;
+        }
         var keys = Object.keys(args);
         var filters;
         for (var j = 0; j < keys.length; j++) {
