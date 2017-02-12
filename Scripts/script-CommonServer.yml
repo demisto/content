@@ -249,6 +249,12 @@ script: |-
         }};
       } else if (entry.Brand === brands.cs && c && c.length && c[0].indicator) {
         return shortCrowdStrike(entry);
+      } else if (entry.Brand === brands.threatconnect && c && c.data && c.data.address) {
+        var addr = c.data.address;
+        return {ContentsFormat: formats.table, Type: entryTypes.note, Contents: {
+          IP: addr.ip, Rating: addr.rating, Confidence: addr.confidence,
+          DateAdded: addr.dateAdded, ID: addr.id, webLink: addr.webLink, Provider: entry.Brand
+        }};
       }
     }
     return entry;
@@ -406,19 +412,16 @@ script: |-
   }
 
   /**
-     * Translate ThreatConnect rating to score
-     * @param {rating} TC rating as int
-     * @returns {score} int (between 0 and 3)
-     */
+   * Translate ThreatConnect rating to score
+   * @param {rating} TC rating as int
+   * @returns {score} int (between 0 and 3)
+   */
   function threatConnectRatingToScore(rating) {
       var tcScore = 0;
       if (rating == 2 || rating == 1) {
-          tcScore = 1;
-      }
-      if (rating == 3 ) {
           tcScore = 2;
       }
-      if (rating == 4 || rating == 5) {
+      if (rating > 2) {
           tcScore = 3;
       }
       return tcScore;
