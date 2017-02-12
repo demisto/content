@@ -177,6 +177,12 @@ script: |-
         }};
       } else if (entry.Brand === brands.cs && c && c.length && c[0].indicator) {
         return shortCrowdStrike(entry);
+      } else if (entry.Brand === brands.threatconnect && c && c.data && c.data.url) {
+        var url = c.data.url;
+        return {ContentsFormat: formats.table, Type: entryTypes.note, Contents: {
+          Url: url.text, Rating: url.rating, Confidence: url.confidence,
+          DateAdded: url.dateAdded, ID: url.id, webLink: url.webLink, Provider: entry.Brand
+        }};
       }
     }
     return entry;
@@ -219,6 +225,12 @@ script: |-
         }};
       } else if (entry.Brand === brands.cs && c && c.length && c[0].indicator) {
         return shortCrowdStrike(entry);
+      } else if (entry.Brand === brand.threatconnect && c && c.data && c.data.file) {
+        var file = c.data.file;
+        return {ContentsFormat: formats.table, Type: entryTypes.note, Contents: {
+          File: file.file, Rating: file.rating, Confidence: file.confidence, Sha256: file.sha256, Sha1: file.sha1, MD5: file.md5,
+          DateAdded: file.dateAdded, ID: file.id, webLink: file.webLink, Provider: entry.Brand
+        }};
       }
     }
     return entry;
