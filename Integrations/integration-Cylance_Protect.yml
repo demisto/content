@@ -36,6 +36,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';
@@ -96,6 +106,21 @@ script:
         return JSON.stringify(body);
     }
 
+    var createIncidentFromThreat = function(threat) {
+        var incident = {
+            name: threat.priority + ' ' + threat.name,
+            labels: []
+        };
+        var keys = Object.keys(incident);
+        for (var i = 0; i<keys.length; i++) {
+            incident.labels.push({
+                type: keys[i],
+                value: String(incident[keys[i]])
+            });
+        }
+        return incident;
+    }
+
     var urlDictionary = {
         'cp-get-list': 'globallist/get',
         'cp-get-devices': 'device/get',
@@ -127,6 +152,36 @@ script:
                 return 'ok';
             }
             return 'something is wrong';
+        case 'fetch-incidents':
+            var fetchCommand = 'cp-get-threats';
+            var lastCall = getLastRun();
+            var firstQuery = !lastCall || !lastCall['first_found'];
+            if (firstQuery) {
+                lastCall['first_found'] = '2000-01-01T00:00:00Z'
+            }
+            var newLastCall = lastCall;
+            var newIncidents = [];
+            var fetchArgs = {};
+            if (!firstQuery) {
+                fetchArgs.filters = JSON.stringify({
+                                Field: 'first_found',
+                                Operator: 'IsGreaterThan',
+                                Value: lastCall['first_found']
+                            });
+            }
+            var response = sendRequest(
+                urlDictionary[fetchCommand],
+                buildBodyForCommand(fetchCommand, fetchArgs),
+                auth['access_token']
+                );
+            for (var i = 0; response.data && i < response.data.length; i++) {
+                if (Date.parse(response.data[i]['first_found']) > Date.parse(newLastCall['first_found'])) {
+                    newLastCall = response.data[i];
+                    newIncidents.push(createIncidentFromThreat(response.data[i]));
+                }
+            }
+            setLastRun(newLastCall);
+            return JSON.stringify(newIncidents);
         default:
             return sendRequest(
                 urlDictionary[command],
@@ -348,3 +403,5 @@ script:
       description: The Policy Name
     description: Get a specific policy details. If no args supplied, default policy
       is retrieved
+  isfetch: true
+hidden: false
