@@ -26,7 +26,7 @@ type: javascript
 tags:
 - firewall
 - panorama
-enabled: true
+system: true
 args:
 - name: ip
   required: true
@@ -43,5 +43,7 @@ args:
   - both
   description: Direction to block
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - panorama
 timeout: 0s
