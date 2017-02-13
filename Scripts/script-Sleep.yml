@@ -1,0 +1,19 @@
+commonfields:
+  id: Sleep
+  version: -1
+name: Sleep
+script: |
+  import time
+  time.sleep(int(demisto.args()['seconds']));
+type: python
+tags:
+- Utility
+enabled: true
+args:
+- name: seconds
+  required: true
+  default: true
+  description: Amount of seconds to sleep
+scripttarget: 0
+dependson: {}
+timeout: 6000s
