@@ -16,22 +16,29 @@ script:
         # This is the call made when pressing the integration test button.
         demisto.results('ok')
         sys.exit(0)
-
     if demisto.command() == 'rasterize':
-        from subprocess import call
+        import os
+        import subprocess
+        return_code = 0
+        error_message = ''
         friendlyName = 'url.png'
         if demisto.get(demisto.args(), 'type') == 'pdf':
             friendlyName = 'url.pdf'
         command = ['phantomjs', '/usr/local/bin/rasterize.js', demisto.args()['url'], friendlyName]
         if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
             command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
-        stat = call(command)
-        if stat == 0:
+        try:
+            error_message = subprocess.check_output(command);
+        except Exception as e:
+            return_code = -1
+            error_message = e.output
+
+        if return_code == 0:
             filename = demisto.uniqueFile()
-            call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
+            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
         else:
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + str(stat)})
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
     demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
   type: python
