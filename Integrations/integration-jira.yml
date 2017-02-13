@@ -11,6 +11,8 @@ detaileddescription: |
   Update there the project you want to fetch from like:  "project = soc AND  status=open".
   This will fetch for first time all tickets in your system (include past) that are in open status and in project soc, after first run, it will create incident only for new tickets,
   If you wish to start in first time from a specific position, use "Issue index to start fetching incidents from" param.
+  
+  you can also fetch incidents by time (by issues created field) by turning on the  "Use created field to fetch incidents" field, instead of using id's.  
 configuration:
 - display: Jira URL, in the format https://demisto.atlassian.net/
   name: url
@@ -52,6 +54,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Use created field to fetch incidents
+  name: fetchByCreated
+  defaultvalue: ""
+  type: 8
+  required: false  
 script:
   script: |-
     // handle '/' at the end of the url
@@ -364,6 +371,9 @@ script:
             var incidents = [];
             var maxResults = 50;
             var query = params.query + ' and id > ' + String(idOffset)
+            if (params.fetchByCreated) {
+              query = params.query + ' and created>-1m'
+            }
             var res = runQuery(query,'',maxResults)
             for (var i = 0; i < res.issues.length; i++) {
                 var ticket = res.issues[i];
