@@ -7,6 +7,7 @@ script: |-
   var vtScore = -1;
   var csScore = -1;
   var ptScore = -1;
+  var tcScore = -1;
   
   if (isCommandAvailable('ip')) {
       var rep = executeCommand('ip', {ip: args.input});
@@ -41,6 +42,14 @@ script: |-
               }
             } else if (rep[r].Brand === brands.cs && rep[r].Contents && rep[r].Contents.length) {
               csScore = rep[r].Contents[0].malicious_confidence === 'high' ? 3 : rep[r].Contents[0].malicious_confidence === 'medium' ? 2 : 1;
+            } else if (rep[r].Brand === brands.threatconnect && rep[r].Contents && rep[r].Contents.length) {
+              csScore = rep[r].Contents[0].malicious_confidence === 'high' ? 3 : rep[r].Contents[0].malicious_confidence === 'medium' ? 2 : 1;
+            } else if (rep[r].Brand === brands.threatconnect && rep[r].Contents && rep[r].Contents.status && rep[r].Contents.status === 'Success') {
+              tcScore = 1;
+              if (rep[r].Contents.data && rep[r].Contents.data.address && rep[r].Contents.data.address.rating) {
+                  var rating = parseInt(rep[r].Contents.data.address.rating);
+                  tcScore = threatConnectRatingToScore(rating);
+              }
             }
           }
         }
@@ -59,7 +68,7 @@ script: |-
           }
       }
   }
-  var score = Math.max(xfeScore, vtScore, csScore, ptScore);
+  var score = Math.max(xfeScore, vtScore, cyScore, wfScore, csScore, tcScore);
   return score < 0 ? 0 : score;
 type: javascript
 tags:
