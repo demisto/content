@@ -1,0 +1,57 @@
+commonfields:
+  id: bffdcf72-2061-4767-83d5-3ff2a9e8afe7
+  version: 5
+name: BlockIP
+script: |-
+  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorame'})[0].Contents;
+  var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
+  switch (args['using-brand'].toLowerCase()) {
+      case 'panorama':
+          blockCP = false;
+          break;
+      case 'check point':
+          blockPanorama = false;
+          break;
+  }
+
+  var entries = [];
+  if (blockPanorama) {
+      entries.push(executeCommand('PanoramaBlockIP', args));
+  }
+
+  if (blockCP) {
+      entries.push(!args.ipname ?
+              'Failed adding to Check Point as ipname argument is missing':
+              executeCommand('CPBlockIP', args))
+  }
+  return entries;
+type: javascript
+tags:
+- firewall
+- checkpoint
+- panorama
+system: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP to block
+- name: rulename
+  required: true
+  description: Rule name
+- name: direction
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - to
+  - from
+  - both
+  description: Direction to block (to, from or both - default)
+- name: ipname
+  description: Base name for added ip/hosts inside checkpoint db
+scripttarget: 0
+dependson:
+  should:
+  - panorama
+  - checkpoint
+timeout: 0s
