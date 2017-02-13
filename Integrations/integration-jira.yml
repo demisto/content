@@ -465,5 +465,4 @@ script:
       description: Issue Id
     description: Creates (or updates) issue link
   isfetch: true
-hidden: false
 system: true
