@@ -1,0 +1,49 @@
+commonfields:
+  id: 711343f8-a7e4-4fd9-8be1-e560764b435f
+  version: 11
+name: PanoramaBlockIP
+script: |-
+  var direction = args.direction || 'both';
+  var blockingDestination = direction === 'to' || direction === 'both';
+  var blockingSource = direction === 'from' || direction === 'both';
+  var blockedDestination = false;
+  var blockedSource = true;
+  if (blockingDestination) {
+      blockedDestination = 'success' === executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-to'});
+  }
+  if (blockingSource) {
+      blockedSource = 'success' === executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-from'});
+  }
+  if ((blockingDestination && blockedDestination) || (blockingDestination && blockedDestination)) {
+      return executeCommand('PanoramaCommit', {});
+  }
+  return {
+      Contents: 'no rules commited',
+      ContentsFormat: formats.text,
+      Type: entryTypes.error
+  };
+type: javascript
+tags:
+- firewall
+- panorama
+system: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP to block
+- name: rulename
+  required: true
+  description: Rule name
+- name: direction
+  auto: PREDEFINED
+  predefined:
+  - to
+  - from
+  - both
+  description: Direction to block
+scripttarget: 0
+dependson:
+  must:
+  - panorama
+timeout: 0s
