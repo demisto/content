@@ -30,7 +30,7 @@ tags:
 - firewall
 - checkpoint
 - panorama
-enabled: true
+system: true
 args:
 - name: ip
   required: true
@@ -50,5 +50,8 @@ args:
 - name: ipname
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
-dependson: {}
+dependson:
+  should:
+  - panorama
+  - checkpoint
 timeout: 0s
