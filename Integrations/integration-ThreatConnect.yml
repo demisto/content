@@ -130,6 +130,53 @@ script:
             res = json.dumps(data, indent=4)
             demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
         sys.exit(0)
+    if demisto.command() == 'tc-get-tags':
+        tc = getClient()
+        ro = RequestObject()
+        ro.set_http_method('GET')
+        ro.set_request_uri('/v2/tags')
+        results = tc.api_request(ro)
+        if results.headers['content-type'] == 'application/json':
+            data = results.json()
+            res = json.dumps(data, indent=4)
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
+        sys.exit(0)
+    if demisto.command() == 'tc-tag-indicator':
+        tc = getClient()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(demisto.args()['indicator'])
+        indicators.retrieve()
+
+        for indicator in indicators:
+            indicator.add_tag(demisto.args()['tag'])
+            indicator.commit()
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Indicator: "+demisto.args()['indicator']+" With id: "+str(indicator.id)+", was tagged with tag: "+demisto.args()['tag']})
+        sys.exit(0)
+    if demisto.command() == 'tc-get-indicator':
+        tc = getClient()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(demisto.args()['indicator'])
+        indicators.retrieve()
+
+        for indicator in indicators:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicator.json})
+
+        if len(indicators) == 0:
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+demisto.args()['indicator']})
+        sys.exit(0)
+    if demisto.command() == 'tc-get-indicators-by-tag':
+        tc = getClient()
+        ro = RequestObject()
+        ro.set_http_method('GET')
+        ro.set_request_uri('/v2/tags/'+demisto.args()['tag']+'/indicators')
+        results = tc.api_request(ro)
+        if results.headers['content-type'] == 'application/json':
+            data = results.json()
+            res = json.dumps(data, indent=4)
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
+        sys.exit(0)
   type: python
   commands:
   - name: ip
@@ -179,6 +226,33 @@ script:
     - name: limit
       description: int limit of results, default is 500
     description: 'retrieve all indicators '
+  - name: tc-get-tags
+    arguments: []
+    description: Get all ThreatConnect Tags in system
+  - name: tc-tag-indicator
+    arguments:
+    - name: tag
+      required: true
+      description: Tag value
+    - name: indicator
+      required: true
+      default: true
+      description: Indicator to tag, this is the value of indicator like ip, file
+        hash, url
+    description: Tag an exiting indicator
+  - name: tc-get-indicator
+    arguments:
+    - name: indicator
+      required: true
+      default: true
+      description: Indicator value to search by, can be an IP, url, file Hash
+    description: Get indicator
+  - name: tc-get-indicators-by-tag
+    arguments:
+    - name: tag
+      required: true
+      default: true
+      description: Tag value to filter by
+    description: Fetch all indicators that have given tag
   dockerimage: meirwah/threatconnect-sdk
-hidden: false
 system: true
