@@ -1,0 +1,237 @@
+commonfields:
+  id: Cisco Umbrella Investigate
+  version: -1
+system: true
+name: Cisco Umbrella Investigate
+display: Cisco Umbrella Investigate
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: Cisco Umbrella Investigate
+detaileddescription: 'Cisco Investigate is part of the Cisco Umbrella package. When
+  you log into the CIsco Umbrella portal you will need to obtain the API Token for
+  the Cisco Investigate Feature. '
+configuration:
+- display: Please enter your api token
+  name: APIToken
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: |+
+    // The command input arg holds the command sent from the user.
+
+    var apitoken = params.APIToken;
+
+    /*
+     * Sample function for http GET request with query string
+     */
+    var sendRequest = function(url, param) {
+
+        // handle '/' at the end of the url
+        //if (url[url.length - 1] === '/') {
+        //    url = url.substring(0, url.length - 1);
+        //}
+
+        // prepare the request url (make sure to encode the query parameter value)
+        var requestUrl = url; //+ '?sample_param=' + encodeURIComponent(param);
+        log('API Token:' + apitoken);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: {
+                    Authorization: ['Bearer ' + apitoken],
+                    Accept: ['application/json']
+                }
+            }
+        );
+
+        log('Status Code Returned' + res.StatusCode);
+        /* For cisco umbrella investigate
+        200 OK—Everything worked as expected.
+    204 OK—Everything worked as expected but no content was returned. The domain classifier service returns this for domains Umbrella has no information on.
+    400 Bad Request—Likely missing a required parameter or malformed JSON. Please check the syntax on your query.
+    403 Unauthorized—Request had Authorization header but token was missing or invalid. Please ensure your API token is valid.
+    404 Not Found—The requested item doesn't exist, check the syntax of your query or ensure the IP and/or domain are valid.
+    500, 502, 503, 504 Server errors—something went wrong on our end.
+     */
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    };
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            return 'ok';
+        case 'domain-category':
+            /*
+            Returned Value For Output If Success 200
+    Field    Type    Description
+    status
+    integer
+    The status will be "-1" if the domain is believed to be malicious, "1" if the domain is believed to be benign, "0" if it hasn't been classified yet.
+    security_categories
+    array of strings
+    The Umbrella security category, or categories, that match this domain or that this domain is associated with. If none match, the return will be blank.
+    content_categories
+    array of strings
+    The Umbrella content category or categories that match this domain. If none match, the return will be blank.
+    */
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/domains/categorization/' + encodeURIComponent(args.domain) + '?showLabels';
+            var resp = sendRequest(url);
+            return resp;
+            //return {ContentsFormat: 'markdown', Contents: '# Simple test with arg - ' + args.domain, Type: 1};
+      /* DEPRECATED
+
+        case 'domain-score':
+            var url = 'https://investigate.api.opendns.com/domains/score/' + encodeURIComponent(args.domain);
+            var resp = sendRequest(url);
+            return resp;
+    */
+        case 'related-domains':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/recommendations/name/' + encodeURIComponent(args.domain) + '.json';
+            var resp = sendRequest(url);
+            return resp;
+            //return {ContentsFormat: 'markdown', Contents: '# Simple test with arg - ' + args.domain, Type: 1};
+        case 'domain-search':
+            var url = 'https://investigate.api.umbrella.com/search/' + encodeURIComponent(args.domainregex) + '?';
+
+            if(args['start'] && args.start !== '') {
+                url += 'start=' + encodeURIComponent(args.start) + '&';
+            } else {
+                url += 'start=-32days&';
+            }
+            url += 'includecategory=true';
+            var resp = sendRequest(url);
+            return resp;
+        case 'domain-links':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/links/name/' + encodeURIComponent(args.domain) + '.json';
+            var resp = sendRequest(url);
+            return resp;
+            //return {ContentsFormat: 'markdown', Contents: '# Simple test with arg - ' + args.domain, Type: 1};
+        case 'domain-security':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/security/name/' + encodeURIComponent(args.domain) + '.json';
+            var resp = sendRequest(url);
+            return resp;
+        case 'domain-tags':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/domains/' + encodeURIComponent(args.domain) + '/latest_tags';
+            var resp = sendRequest(url);
+            return resp;
+            //return {ContentsFormat: 'markdown', Contents: '# Simple test with arg - ' + args.domain, Type: 1};
+         case 'domain-dns':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/dnsdb/name/a/' + encodeURIComponent(args.domain) + '.json';
+            var resp = sendRequest(url);
+            return resp;
+        case 'ip-dns':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/dnsdb/ip/a/' + encodeURIComponent(args.domain) + '.json';
+            var resp = sendRequest(url);
+            return resp;
+        case 'ip-latestdomains':
+            //log(JSON.stringify(params));
+            var url = 'https://investigate.api.opendns.com/ips/' + encodeURIComponent(args.ip) + '/latest_domains';
+            log('URL:' + url);
+            var resp = sendRequest(url);
+            return resp;
+        case 'fetch-incidents':
+            // JSON of the incident type created by this integration
+            // You can store the last run as a string using set last run.
+            setLastRun({'time': 'now'});
+            // And you can retrieve it in any other call...
+            var now = getLastRun();
+            // now is an object with field time, that has value 'now'.
+            return JSON.stringify([{"Name":"Incident #1"},{"Name":"Incident #2"}]);
+        default:
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
+    }
+
+
+
+
+    /*
+
+      The following are the API's available URL's for Cisco Investigate
+
+      url: 'https://investigate.api.opendns.com/domains/categorization/cnn.com',
+      url: 'https://investigate.api.opendns.com/domains/categorization/ ',
+      url: 'https://investigate.api.opendns.com/domains/categorization/amazon.com?showLabels',
+      url: 'https://investigate.api.opendns.com/domains/categories/',
+      url: 'https://investigate.api.opendns.com/recommendations/name/www.cnn.com.json',
+      url: 'https://investigate.api.opendns.com/links/name/cnn.com.json',
+      url: 'https://investigate.api.opendns.com/security/name/www.xss-payloads.com.json',
+      url: 'https://investigate.api.opendns.com/domains/www.xss-payloads.com/latest_tags',
+      url: 'https://investigate.api.opendns.com/dnsdb/name/a/homestarrunner.com.json',
+      url: 'https://investigate.api.opendns.com/dnsdb/ip/a/208.67.222.222.json',
+      url: 'https://investigate.api.opendns.com/ips/208.67.222.222/latest_domains'
+        */
+
+  type: javascript
+  commands:
+  - name: domain-category
+    arguments:
+    - name: domain
+      required: true
+      description: Enter the domain you would like to categorize
+    description: Returns the category of a domain like amazon.com = Ecommerce/Shopping
+  - name: related-domains
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain
+    description: Get a list of related domains back
+  - name: domain-links
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain
+    description: See the quantity of domains link to the domain of interest
+  - name: domain-security
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain
+    description: See security information about this specific domain
+  - name: domain-tags
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain
+    description: Get Tags that match this specific domain
+  - name: domain-dns
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain
+    description: Get DNSDB records about a domain
+  - name: ip-dns
+    arguments:
+    - name: ip
+      required: true
+      description: 'Enter an IP Address:'
+    description: Get dns information related to an IP address
+  - name: ip-latestdomains
+    arguments:
+    - name: ip
+      required: true
+      description: 'Enter an IP Address:'
+    description: Latest malicious domains for an IP Address
+  - name: domain-search
+    arguments:
+    - name: domainregex
+      description: Enter a domain regular expression
+    - name: start
+      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+    description: To perform a pattern search enter a domain with a regex match like
+      ope\[a-z\]dns.com
