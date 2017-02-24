@@ -441,7 +441,7 @@ script: |-
 
   /**
   * Check the list of available modules to see whether a command is currently available to be run.
-  * @args {Object} cmd - the command to check.
+  * @param {Object} cmd - the command to check.
   * @returns {bool} Whether the command is available or not.
   */
   function isCommandAvailable(cmd) {
@@ -458,6 +458,85 @@ script: |-
           }
       }
       return false;
+  }
+  /**
+   * Check if the given entry is an error entry
+   * @param {Object} entry - the entry to check
+   * @returns {Boolean} true if this is an error entry, false otherwise
+   */
+  function isError(entry) {
+    return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
+  }
+  /**
+   * Check if the given res is an array and is not an error
+   * @param {Array} res - the result from the execute to check
+   * @returns {Boolean} true if this is a valid result
+   */
+  function isValidRes(res) {
+    return res && Array.isArray(res) && res.length && !isError(res[0]);
+  }
+  /**
+   * Flatten the fields into a map of dot notation key and value
+   * @param {Object} obj - the object to iterate on
+   * @param {String} path - the path so far in dot notation
+   * @param {Object} flat - the collected object result
+   * @returns an object with keys that are dot notation and values
+   */
+  function flattenFields(obj, path, flat) {
+    if (obj) {
+        if (typeof obj === 'object') {
+            var keys = Object.keys(obj);
+            for (var f=0; f<keys.length; f++) {
+                flattenFields(obj[keys[f]], path !== '' ? path + '.' + keys[f] : keys[f], flat);
+            }
+        } else if (Array.isArray(obj)) {
+            for (var i=0; i<obj.length; i++) {
+                flattenFields(obj[i], path !== '' ? path + '.' + i : '' + i, flat);
+            }
+        } else {
+            flat[path] = obj.toString();
+        }
+    }
+  }
+  /**
+   * Query the given object with the given path and retrive it
+   * @param {Object} obj - the object to query
+   * @param {String} path - the path to retrieve from the object
+   * @returns if path is found, then the value at the path, null otherwise
+   */
+  function jq(obj, path) {
+    if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
+      return null;
+    }
+    var parts = path.split('.');
+    for (var i=0; i<parts.length; i++) {
+      // First, handle array option
+      var part = parts[i].match(/([a-zA-Z0-9]*)(\[([0-9]+)\])?/);
+      if (part[3]) {
+        // If array of property and not top array
+        if (part[1]) {
+          if (obj.hasOwnProperty(part[1]) && Array.isArray(obj[part[1]])) {
+            obj = obj[part[1]][parseInt(part[3])];
+          } else {
+            return null;
+          }
+        } else {
+          if (Array.isArray(obj)) {
+            obj = obj[parseInt(part[3])];
+          } else {
+            return null;
+          }
+        }
+      } else {
+        // Not an array
+        if (obj.hasOwnProperty(part[1])) {
+          obj = obj[part[1]];
+        } else {
+          return null;
+        }
+      }
+    }
+    return obj;
   }
 type: javascript
 tags:
