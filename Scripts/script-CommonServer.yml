@@ -480,7 +480,7 @@ script: |-
    * @param {Object} obj - the object to iterate on
    * @param {String} path - the path so far in dot notation
    * @param {Object} flat - the collected object result
-   * @returns an object with keys that are dot notation and values
+   * @returns {Object} an object with keys that are dot notation and values
    */
   function flattenFields(obj, path, flat) {
     if (obj) {
@@ -502,7 +502,7 @@ script: |-
    * Query the given object with the given path and retrive it
    * @param {Object} obj - the object to query
    * @param {String} path - the path to retrieve from the object
-   * @returns if path is found, then the value at the path, null otherwise
+   * @returns {Object} if path is found, then the value at the path, null otherwise
    */
   function jq(obj, path) {
     if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
@@ -539,10 +539,10 @@ script: |-
     return obj;
   }
   /**
-   * Replace the given args wit the actual values in the input template
+   * Replace the given args with the actual values in the input template
    * @param {String} input - the template to replace values in
    * @param {Object} args - the map of values to use
-   * @returns the template with the values filled in
+   * @returns {String} the template with the values filled in
    */
   function replaceInTemplates(input, args) {
     var res = input;
@@ -551,6 +551,44 @@ script: |-
       res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
     }
     return res;
+  };
+  /**
+   * Replace the given args with the actual values in the input template and remove from args
+   * @param {String} input - the template to replace values in
+   * @param {Object} args - the map of values to use
+   * @returns {String} the template with the values filled in
+   */
+  function replaceInTemplatesAndRemove(input, args) {
+      var res = input;
+      var keys = Object.keys(args);
+      for (var i = 0; i < keys.length; i++) {
+        if (res.indexOf('%' +  keys[i] + '%') !== -1) {
+          res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+          delete(args[keys[i]]);
+        }
+      }
+      return res;
+  };
+
+  var xmlReservedChars = {
+    '&': '&amp;',
+    '\"': '&quot;',
+    '\'': '&apos;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+  /**
+   * Escape reserved XML chars in the input
+   * @param {String} input - the input to escape
+   * @returns {String} the escaped input
+   */
+  function escapeXMLChars(input) {
+      var res = input;
+      var keys = Object.keys(xmlReservedChars);
+      for (var i = 0; i < keys.length; i++) {
+          res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
+      }
+      return res;
   };
 type: javascript
 tags:
