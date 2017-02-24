@@ -538,6 +538,20 @@ script: |-
     }
     return obj;
   }
+  /**
+   * Replace the given args wit the actual values in the input template
+   * @param {String} input - the template to replace values in
+   * @param {Object} args - the map of values to use
+   * @returns the template with the values filled in
+   */
+  function replaceInTemplates(input, args) {
+    var res = input;
+    var keys = Object.keys(args);
+    for (var i = 0; i < keys.length; i++) {
+      res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+    }
+    return res;
+  };
 type: javascript
 tags:
 - infra
