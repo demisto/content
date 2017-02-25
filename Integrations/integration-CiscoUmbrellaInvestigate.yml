@@ -21,18 +21,7 @@ script:
     // The command input arg holds the command sent from the user.
 
     var apitoken = params.APIToken;
-
-    /*
-     * Sample function for http GET request with query string
-     */
     var sendRequest = function(url, param) {
-
-        // handle '/' at the end of the url
-        //if (url[url.length - 1] === '/') {
-        //    url = url.substring(0, url.length - 1);
-        //}
-
-        // prepare the request url (make sure to encode the query parameter value)
         var requestUrl = url; //+ '?sample_param=' + encodeURIComponent(param);
         log('API Token:' + apitoken);
         var res = http(
@@ -46,7 +35,7 @@ script:
             }
         );
 
-        log('Status Code Returned' + res.StatusCode);
+        //log('Status Code Returned' + res.StatusCode);
         /* For cisco umbrella investigate
         200 OK—Everything worked as expected.
     204 OK—Everything worked as expected but no content was returned. The domain classifier service returns this for domains Umbrella has no information on.
@@ -164,17 +153,17 @@ script:
 
       The following are the API's available URL's for Cisco Investigate
 
-      url: 'https://investigate.api.opendns.com/domains/categorization/cnn.com',
+      url: 'https://investigate.api.opendns.com/domains/categorization/<domain>',
       url: 'https://investigate.api.opendns.com/domains/categorization/ ',
-      url: 'https://investigate.api.opendns.com/domains/categorization/amazon.com?showLabels',
+      url: 'https://investigate.api.opendns.com/domains/categorization/<domain>?showLabels',
       url: 'https://investigate.api.opendns.com/domains/categories/',
-      url: 'https://investigate.api.opendns.com/recommendations/name/www.cnn.com.json',
-      url: 'https://investigate.api.opendns.com/links/name/cnn.com.json',
-      url: 'https://investigate.api.opendns.com/security/name/www.xss-payloads.com.json',
-      url: 'https://investigate.api.opendns.com/domains/www.xss-payloads.com/latest_tags',
-      url: 'https://investigate.api.opendns.com/dnsdb/name/a/homestarrunner.com.json',
-      url: 'https://investigate.api.opendns.com/dnsdb/ip/a/208.67.222.222.json',
-      url: 'https://investigate.api.opendns.com/ips/208.67.222.222/latest_domains'
+      url: 'https://investigate.api.opendns.com/recommendations/name/<domain>.json',
+      url: 'https://investigate.api.opendns.com/links/name/<domain>.json',
+      url: 'https://investigate.api.opendns.com/security/name/<domain>.com.json',
+      url: 'https://investigate.api.opendns.com/domains/<domain>/latest_tags',
+      url: 'https://investigate.api.opendns.com/dnsdb/name/a/<domain>.json',
+      url: 'https://investigate.api.opendns.com/dnsdb/ip/a/<ipaddress>.json',
+      url: 'https://investigate.api.opendns.com/ips/<ipaddress>/latest_domains'
         */
 
   type: javascript

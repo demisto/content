@@ -77,6 +77,8 @@ script: |+
       //log(dnsInfoData.rrs)
       var dnsFeatures = dnsInfoData.features;
       //log('dnsFeatures' + JSON.stringify(dnsInfoData));
+      var dnsRss = dnsInfoData.rrs_tf[0].rrs[0].rr;
+      dnsFeatures.rr = dnsRss;
       var featuresList = [];
       var contentString = '';
       contentString += '\n| Name        | Info           |';
