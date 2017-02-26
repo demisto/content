@@ -167,6 +167,44 @@ script:
             }
             return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
     };
+    var getSecurityGroupInfo = function(sgId,sgName) {
+            var urlArgs = {};
+            urlArgs.Action = 'DescribeSecurityGroups';
+            urlArgs.Version = apiVersion;
+
+            var filterid = 1;
+            var filter;
+
+            if ((sgId) && (sgId.length > 0)) {
+                filter = 'Filter.'+filterid.toString();
+                urlArgs[filter+'.Name'] = 'group-id';
+                urlArgs[filter+'.Value'] = sgId;
+                filterid = filterid + 1;
+            }
+            if ((sgName) && (sgName.length > 0)) {
+                filter = 'Filter.'+filterid.toString();
+                urlArgs[filter+'.Name'] = 'group-name';
+                urlArgs[filter+'.Value'] = sgName;
+                filterid = filterid + 1;
+            }
+            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+    };
+    var getEbsVolumeInfo = function(volumeId) {
+            var urlArgs = {};
+            urlArgs.Action = 'DescribeVolumes';
+            urlArgs.Version = apiVersion;
+
+            var filterid = 1;
+            var filter;
+
+            if ((volumeId) && (volumeId.length > 0)) {
+                filter = 'Filter.'+filterid.toString();
+                urlArgs[filter+'.Name'] = 'volume-id';
+                urlArgs[filter+'.Value'] = volumeId;
+                filterid = filterid + 1;
+            }
+            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+    };
 
     switch (command) {
         case 'test-module':
@@ -187,6 +225,10 @@ script:
             return createVolSnapshot(args.volumeId, args.description);
         case 'get-instance-info':
             return getInstanceInfo(args.instanceId, args.ipAddress, args.keyName);
+        case 'get-sg-info':
+            return getSecurityGroupInfo(args.sgId, args.sgName);
+        case 'get-ebs-volume-info':
+            return getEbsVolumeInfo(args.volumeId);
     }
   type: javascript
   commands:
@@ -276,3 +318,18 @@ script:
     - name: keyName
       description: Filter by the name of the key pair used when the instance was launched.
     description: Describe Instances - Describes one of your instances.
+  - name: get-sg-info
+    arguments:
+    - name: sgId
+      default: true
+      description: Security Group ID
+    - name: sgName
+      description: Security Group Name
+    description: Get EC2 Security Group Information
+  - name: get-ebs-volume-info
+    arguments:
+    - name: volumeId
+      required: true
+      default: true
+      description: EBS Volume ID
+    description: Get EC2 EBS Volume Information
