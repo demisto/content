@@ -51,6 +51,7 @@ script:
     var username = params.username;
     var password = params.password;
     var proxy = params.proxy || false;
+    var COOKIE_PREFIX = 'RSA_SA_LICENSE=true; JSESSIONID=';
 
     function FailedRequestError(message, url, query, reqBody, resBody) {
         return {
@@ -109,14 +110,43 @@ script:
             throw 'Failed to login with status [' + res.StatusCode + ']. Expected status 302. Check username or password. \nOriginal error: ' + res.Body;
         }
 
-        var sessionId = res.Cookies[0].Value;
+        var sessionId = null;
+        res.Cookies.forEach(function(cookie) {
+            if (cookie.Name === 'JSESSIONID') {
+                sessionId = cookie.Value;
+            }
+        });
+
         try {
             getAvailableAssignees(sessionId);
         } catch(err) {
-            throw 'Failed to login! Check username or password.';
+            throw 'Failed to login! Check username or password. Error: ' + err;
         }
 
         return sessionId;
+    }
+
+    function logout(url, sessionId) {
+        var fullUrl = url + '/j_spring_security_logout';
+
+        var res = http(
+            fullUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Origin': [url],
+                    'Content-Type': ['application/x-www-form-urlencoded'],
+                    'Cookie': [COOKIE_PREFIX + sessionId]
+                }
+            },
+            true,
+            proxy,
+            true
+        );
+
+        if (res.StatusCode !== 302) {
+            throw 'Failed to logout with status [' + res.StatusCode + ']. Expected status 302.\nOriginal error: ' + res.Body;
+        }
     }
 
     function createQuery(args, defaultQuery) {
@@ -201,7 +231,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -307,7 +337,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -358,7 +388,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -438,7 +468,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -472,7 +502,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/x-www-form-urlencoded']
                 },
                 Body: encodeToURLQuery(body).replace(/^\?/, '')
@@ -517,7 +547,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/x-www-form-urlencoded']
                 },
                 Body: encodeToURLQuery(body).replace(/^\?/, '')
@@ -551,7 +581,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -603,7 +633,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -639,7 +669,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -675,7 +705,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -706,7 +736,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': ['RSA_SA_LICENSE=true; SaneID=10.64.49.14-1456516139492605; s_pers=%20s_fid%3D0D47AAAFD2A1592B-3436DC4A7A7EB300%7C1531522908438%3B%20gpv_pn%3DMYTOOLSSTATIC%252FTOOLS%252FTHE%2520SQUARE%7C1468452708438%3B%20s_lv%3D1468450908454%7C1563058908454%3B%20s_lv_s%3DLess%2520than%25201%2520day%7C1468452708454%3B; s_vi=[CS]v1|2B6795DE050118E9-40001608C00050FA[CE]; s_fid=3D8DF632622AC544-1283F8DF4BA4E8DC; JSESSIONID=' + sessionId]
                 }
             },
             true,
@@ -737,7 +767,7 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId]
+                    'Cookie': [COOKIE_PREFIX + sessionId]
                 }
             },
             true,
@@ -799,7 +829,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/json']
                 },
                 Body: JSON.stringify(body)
@@ -861,7 +891,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/json']
                 },
                 Body: JSON.stringify(newIncident)
@@ -922,7 +952,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/json']
                 },
                 Body: JSON.stringify(reqBody)
@@ -1011,7 +1041,7 @@ script:
             {
                 Method: 'POST',
                 Headers: {
-                    'Cookie': ['RSA_SA_LICENSE=true; JSESSIONID=' + sessionId],
+                    'Cookie': [COOKIE_PREFIX + sessionId],
                     'Content-Type': ['application/json']
                 },
                 Body: JSON.stringify(updatedIncident)
@@ -1040,57 +1070,60 @@ script:
     // The command input arg holds the command sent from the user.
     var sessionId = login(url, username, password);
     var incidentManagementId = args.incidentManagementId || getIncidentManagementId(sessionId);
-
+    var results = false;
     switch (command) {
         case 'fetch-incidents':
-            return fetchIncidents(sessionId, args, incidentManagementId);
+            results = fetchIncidents(sessionId, args, incidentManagementId);
         case 'test-module':
-            return 'ok';
+            results = 'ok';
         case 'nw-login':
-            return sessionId;
+            results = sessionId;
         case 'nw-list-incidents':
             var incidents = listIncidents(sessionId, args, incidentManagementId);
-            return { incidents: incidents };
+            results = { incidents: incidents };
         case 'nw-get-incident-details':
             var incident = getIncidentById(sessionId, args, incidentManagementId);
-            return { incident: incident };
+            results = { incident: incident };
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
-            return { components: components };
+            results = { components: components };
         case 'nw-get-events':
             var events = getEvents(sessionId, args);
-            return { events: events };
+            results = { events: events };
         case 'nw-get-event-details':
-            return getEventDetails(sessionId, args);
+            results = getEventDetails(sessionId, args);
         case 'nw-get-alerts':
             var alerts = filterAlerts(sessionId, args);
-            return { alerts: alerts };
+            results = { alerts: alerts };
         case 'nw-get-alert-details':
             var alert = getAlertById(sessionId, args);
-            return { alert: alert };
+            results = { alert: alert };
         case 'nw-get-alert-original':
             var alert = getOriginalAlertById(sessionId, args);
-            return { alert: alert };
+            results = { alert: alert };
         case 'nw-get-available-assignees':
             var availableAssignees = getAvailableAssignees(sessionId);
-            return { availableAssignees: availableAssignees };
+            results = { availableAssignees: availableAssignees };
         case 'nw-create-incident':
             var availableAssignees = getAvailableAssignees(sessionId);
             var newIncident = createIncident(sessionId, args, incidentManagementId, availableAssignees);
-            return { incident: newIncident };
+            results = { incident: newIncident };
         case 'nw-add-events-to-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var isSuccess = addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees);
-            return { success: isSuccess };
+            results = { success: isSuccess };
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var updatedIncident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
-            return updatedIncident;
+            results = updatedIncident;
         default:
             // You can use args[argName] or args.argName to get a specific arg. args are strings.
             // You can use params[paramName] or params.paramName to get a specific params.
             // Params are of the type given in the integration page creation.
     }
+
+    logout(url, sessionId);
+    return results;
   type: javascript
   commands:
   - name: nw-list-incidents
@@ -1357,3 +1390,4 @@ script:
       description: Id of the alert
     description: Returns the original events which this alert contains
   isfetch: true
+  
