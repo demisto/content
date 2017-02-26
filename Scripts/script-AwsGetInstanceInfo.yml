@@ -105,7 +105,7 @@ script: |-
 type: javascript
 tags:
 - Amazon Web Services
-enabled: true
+system: true
 args:
 - name: instanceId
   default: true
