@@ -212,7 +212,6 @@ script:
   type: javascript
   commands:
   - name: dam-get-alert-by-id
-    deprecated: false
     arguments:
     - name: id
       required: true
@@ -221,7 +220,6 @@ script:
     description: Get a DAM alert from Mcafee Database Activity Monitoring by alert
       id
   - name: dam-get-latest-by-rule
-    deprecated: false
     arguments:
     - name: ruleName
       required: true
@@ -234,4 +232,4 @@ script:
         last timeBack minute, defaults to last 10 minutes
     description: Get latest DAM alerts by rule name
   isfetch: true
-hidden: false
+system: true
