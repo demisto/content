@@ -46,6 +46,14 @@
       "reputationScriptName": "RegPathReputationBasicLists",
       "details": "Registry Path Reputation",
       "enhancementScriptNames": ["RegCollectValues", "CBEvents"]
+    },
+    {
+      "id": "cveScore",
+      "version": -1,
+      "regex": "CVE-\\d{4}-\\d{4,7}",
+      "reputationScriptName": "cveReputation",
+      "details": "CVE CVSS Score",
+      "enhancementScriptNames": ["cveSearch"]
     }
   ]
 }
