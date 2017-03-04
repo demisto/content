@@ -33,7 +33,7 @@
       "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"]
     },
     {
-      "id": "hashRepSHA2",
+      "id": "hashRepSHA256",
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationScriptName": "DataHashReputation",
