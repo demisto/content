@@ -25,6 +25,22 @@
       "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"]
     },
     {
+      "id": "hashRepSHA1",
+      "version": -1,
+      "regex": "\\b[a-fA-F\\d]{40}\\b",
+      "reputationScriptName": "DataHashReputation",
+      "details": "File",
+      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"]
+    },
+    {
+      "id": "hashRepSHA256",
+      "version": -1,
+      "regex": "\\b[a-fA-F\\d]{64}\\b",
+      "reputationScriptName": "DataHashReputation",
+      "details": "File",
+      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"]
+    },
+    {
       "id": "emailRep",
       "version": -1,
       "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
@@ -46,6 +62,14 @@
       "reputationScriptName": "RegPathReputationBasicLists",
       "details": "Registry Path Reputation",
       "enhancementScriptNames": ["RegCollectValues", "CBEvents"]
+    },
+    {
+      "id": "cveScore",
+      "version": -1,
+      "regex": "CVE-\\d{4}-\\d{4,7}",
+      "reputationScriptName": "cveReputation",
+      "details": "CVE CVSS Score",
+      "enhancementScriptNames": ["cveSearch"]
     }
   ]
 }
