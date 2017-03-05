@@ -50,5 +50,5 @@ tags:
 comment: |
   Pre processing script for Emails from Mcafee DAM, about sensor disconnected.
   Will ignore second notification, but will process first notification into incidents.
-enabled: true
+system: true
 scripttarget: 0
