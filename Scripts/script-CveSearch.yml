@@ -16,7 +16,6 @@ script: |2
       return header+"\n"+divider+"\n";
   }
   var data=resCmd[0].Contents;
-  //return JSON.stringify(data);
   var cvss = (data.cvss) ? "(CVSS: "+data.cvss+")" : "";
   var res = "### "+args.cveId+" "+ cvss + "\n";
   res += "#### Description\n"
@@ -32,7 +31,6 @@ script: |2
       }
       res += tmpConfig.substring(0,tmpConfig.length-2) + "\n";
   }
-  //var newStr = str.substring(0, str.length-1);
 
   res += "#### External references\n"
   res += "- [https://cve.mitre.org/cgi-bin/cvename.cgi?name="+args.cveId+"](https://cve.mitre.org/cgi-bin/cvename.cgi?name="+args.cveId+")\n";
