@@ -218,7 +218,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tblToMd(name, t, headers = None):
+  def tableToMarkdown(name, t, headers = None):
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = t[0].keys()
@@ -236,6 +236,9 @@ script: |-
     else:
         mdResult += '**No entries.**\n'
     return mdResult
+    
+    
+  tblToMd = tableToMarkdown
 
 
   def sectionsToMarkdown(root):
