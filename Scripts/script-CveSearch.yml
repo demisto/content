@@ -43,14 +43,17 @@ script: |2
   return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: res } ;
 type: javascript
 tags:
+- cve
 - enhancement
 comment: Search vulnerability information based on CVE ID
-enabled: true
+system: true
 args:
 - name: cveId
   required: true
   default: true
   description: CVE ID to search
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - cve-search
 timeout: 0s
