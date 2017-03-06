@@ -24,9 +24,12 @@ script: |2
 
   return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: res } ;
 type: javascript
-tags: []
+tags:
+- cve
 comment: Displays the latest updated CVE entries
-enabled: true
+system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - cve-latest
 timeout: 0s
