@@ -253,13 +253,12 @@ script: |-
 
 
   def fileResult(filename, data):
-      from uuid import uuid4
-      temp = str(uuid4())
+      temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
-
-
+      
+      
   def flattenRow(rowDict):
       return {k: formatCell(rowDict[k]) for k in rowDict}
 
