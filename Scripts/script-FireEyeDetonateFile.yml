@@ -1,0 +1,127 @@
+commonfields:
+  id: b4465e06-bf34-4b77-8373-5b8413c482ad
+  version: 4
+name: FireEyeDetonateFile
+script: |+
+  import json
+  from time import sleep
+
+  res = []
+  timeout = 960
+
+  if 'timeout' in demisto.args():
+      timeout = int(demisto.args()['timeout'])
+  interval = 10
+  if 'interval' in demisto.args():
+      interval = int(demisto.args()['interval'])
+
+  file = demisto.get(demisto.args(),'file')
+
+  feDone = False
+  feSubmissionKeys = {}
+
+  #profiles = ['win10x64','win7-sp1','win7x64-sp1','winxp-sp3']
+  profiles = argToList(demisto.args()['profiles'])
+
+  ### Make sure fireeye available
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'fireeye'})[0]['Contents'] != 'yes':
+      feDone = True
+
+  ### Upload file and get submission_key
+  if not feDone:
+      bArgs = {'analysistype':'1',
+              'application':'0',
+              'force':"true",
+              'prefetch':"1",
+              'priority':"1",
+              'profiles':'win7-sp1',
+              'timeout':"180",
+              'upload':file}
+
+      for profile in profiles:
+          bArgs['profiles'] = profile
+          resp = demisto.executeCommand('fe-submit', bArgs)
+          if isError(resp[0]):
+              demisto.results(resp)
+              sys.exit(0)
+          else:
+              feSubmissionKey = demisto.get(resp[0],'Contents')
+              feSubmissionKey = json.loads(feSubmissionKey)
+              feSubmissionKeys[profile] = demisto.get(feSubmissionKey[0],'ID')
+  else:
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Integration not available.' } )
+      sys.exit(0)
+
+  ############ Poll stage ############
+  status = None
+  sec = 0
+  stauses = {}
+  while sec < timeout and feSubmissionKeys:
+      if not feDone:
+          status = "Done"
+          ######## Get status
+          for profile in profiles:
+              resp = demisto.executeCommand('fe-submit-status',{'submission_Key':feSubmissionKeys[profile]})
+              if isError(resp[0]):
+                  demisto.results(resp)
+                  sys.exit(0)
+
+              stauses[profile] = demisto.get(resp[0],'Contents.submissionStatus')
+              if stauses[profile] in ["In Progress"]:
+                  status = "In Progress"
+
+          ##### find status
+          if status in ["In Progress"]:
+              sec += interval
+              sleep(interval)
+              ### continue loop
+          else:
+              ## loop done failed
+              feDone = True
+      else:
+          break
+
+
+  ############ Get results ############
+  if not feDone:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from FireEye (may be due to timeout).' } )
+
+  for profile in profiles:
+      status = stauses[profile]
+      if status in ["Done"]:
+          resp = demisto.executeCommand('fe-submit-result ',{'submission_Key':feSubmissionKeys[profile]})
+          if isError(resp[0]):
+              demisto.results(resp)
+          else:
+              data = demisto.get(resp[0], "Contents.alerts.alert")
+              if data:
+                  data = data if isinstance(data, list) else [data]
+                  data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+                  data = tblToMd(profile,data)
+                  demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
+              else:
+                  demisto.results("No results.")
+      else:
+          demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Failed to detonate file {0}, exit status = {1}'.format(file,status) })
+
+type: python
+tags:
+- fireeye
+- file
+- enhancement
+system: true
+args:
+- name: file
+  required: true
+  default: true
+  description: File /EntryID to detonate
+- name: profiles
+  required: true
+  description: The FireEye profiles to use (comma separated)
+scripttarget: 0
+dependson:
+  must:
+  - fe-submit
+  - fe-submit-result
+  - fe-submit-status
+timeout: 960ns
