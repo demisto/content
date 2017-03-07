@@ -55,6 +55,7 @@ script: |-
         }
       }
   }
+  /*
   if (isCommandAvailable('pt-malware')) {
       var pt = executeCommand('pt-malware', {query: args.input});
       if (pt) {
@@ -68,7 +69,9 @@ script: |-
           }
       }
   }
-  var score = Math.max(xfeScore, vtScore, cyScore, wfScore, csScore, tcScore);
+  */
+
+  var score = Math.max(xfeScore, vtScore, csScore, tcScore /*, ptScore */);
   return score < 0 ? 0 : score;
 type: javascript
 tags:
@@ -84,5 +87,4 @@ scripttarget: 0
 dependson:
   should:
   - ip
-  - pt-malware
 timeout: 0s
