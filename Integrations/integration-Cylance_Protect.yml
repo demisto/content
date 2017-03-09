@@ -44,7 +44,7 @@ configuration:
   required: false
 - display: Time Field
   name: timeField
-  defaultvalue: first_found
+  defaultvalue: last_found
   type: 0
   required: false
 - display: Extended Filter
