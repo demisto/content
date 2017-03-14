@@ -12,7 +12,7 @@ script: |-
   for md5 in md5s:
       for e in demisto.executeCommand('cb-binary',{'query': 'md5:' + md5}):
           if isError(e):
-              res += e
+              res.append(e)
           else:
               myData = demisto.get(e, 'Contents.results')
               if myData:
