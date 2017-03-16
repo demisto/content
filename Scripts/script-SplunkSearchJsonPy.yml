@@ -2,34 +2,37 @@ commonfields:
   id: SplunkSearchJsonPy
   version: 1
 name: SplunkSearchJsonPy
-script: |-
+script: |+
+  import json
   rows = 30
   if 'rows' in demisto.args():
       rows = demisto.args()['rows']
   query = demisto.args()['query']
   if '|' not in query:
       query = query + ' | head ' + str(rows)
-  res = demisto.executeCommand('search', {'query': query})
-  md = {
-      'Type': entryTypes['note'],
-      'ContentsFormat': formats['markdown'],
-      'Contents': '# Splunk search result'
-  }
-  for result in res:
-      if result['Brand'] == 'splunk':
-          for r in res[0]['Contents']:
-              data = demisto.get(r, 'result._raw')
-              if data:
-                  md['Contents'] += '\n|Time|Host|Source|\n|-|-|-|'
-                  md['Contents'] += '\n|' + str(demisto.get(r, 'result._time')) + '|' + str(demisto.get(r, 'result.host')) + '|' + str(demisto.get(r, 'result.source')) + '|\n'
-                  try:
-                      j = json.loads(data)
-                      for f in j:
-                          md['Contents'] += '\n- ' + f + ': ' + str(j[f])
-                  except:
-                      md['Contents'] += '\n- Raw data: ' + str(data)
-                  md['Contents'] += '\n'
-  demisto.results(md)
+  res = demisto.executeCommand('search', {'query': query, 'using-brand': 'splunk'})
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      data = demisto.get(res[0],'Contents')
+      if data:
+          data = data if isinstance(data, list) else [data]
+          new_data  = []
+          for r in data:
+              new_r = {}
+              new_r["Time"] = demisto.get(r, 'result._time')
+              new_r["Host"] = demisto.get(r, 'result.host')
+              new_r["Source"] = demisto.get(r, 'result.source')
+              raw = json.loads(demisto.get(r, 'result._raw'))
+              for key in raw.keys():
+                  new_r[key] = raw[key]
+              new_data.append(new_r)
+          data = new_data
+          data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+          data = tblToMd('Splunk search result',data)
+          demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
 type: python
 tags:
 - enhancement
