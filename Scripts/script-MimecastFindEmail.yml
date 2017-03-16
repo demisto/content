@@ -14,8 +14,10 @@ script: |
   else:
       data = demisto.get(resp[0], "Contents.data")
       if data:
-          for mail in data[0]['items']:
-             users.add(mail['displayto'])
+          items = demisto.get(data[0],'items')
+          if isinstance(items,list):
+              for mail in items:
+                  users.add(mail['displayto'])
 
           users = list(users)
           if users:
