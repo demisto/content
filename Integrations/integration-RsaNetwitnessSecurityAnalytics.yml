@@ -1074,48 +1074,63 @@ script:
     switch (command) {
         case 'fetch-incidents':
             results = fetchIncidents(sessionId, args, incidentManagementId);
+            break;
         case 'test-module':
             results = 'ok';
+            break;
         case 'nw-login':
             results = sessionId;
+            break;
         case 'nw-list-incidents':
             var incidents = listIncidents(sessionId, args, incidentManagementId);
             results = { incidents: incidents };
+            break;
         case 'nw-get-incident-details':
             var incident = getIncidentById(sessionId, args, incidentManagementId);
             results = { incident: incident };
+            break;
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
             results = { components: components };
+            break;
         case 'nw-get-events':
             var events = getEvents(sessionId, args);
             results = { events: events };
+            break;
         case 'nw-get-event-details':
             results = getEventDetails(sessionId, args);
+            break;
         case 'nw-get-alerts':
             var alerts = filterAlerts(sessionId, args);
             results = { alerts: alerts };
+            break;
         case 'nw-get-alert-details':
             var alert = getAlertById(sessionId, args);
             results = { alert: alert };
+            break;
         case 'nw-get-alert-original':
             var alert = getOriginalAlertById(sessionId, args);
             results = { alert: alert };
+            break;
         case 'nw-get-available-assignees':
             var availableAssignees = getAvailableAssignees(sessionId);
             results = { availableAssignees: availableAssignees };
+            break;
         case 'nw-create-incident':
             var availableAssignees = getAvailableAssignees(sessionId);
             var newIncident = createIncident(sessionId, args, incidentManagementId, availableAssignees);
             results = { incident: newIncident };
+            break;
         case 'nw-add-events-to-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var isSuccess = addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees);
             results = { success: isSuccess };
+            break;
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var updatedIncident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
             results = updatedIncident;
+            break;
         default:
             // You can use args[argName] or args.argName to get a specific arg. args are strings.
             // You can use params[paramName] or params.paramName to get a specific params.
