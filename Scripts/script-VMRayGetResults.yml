@@ -6,13 +6,11 @@ script: |-
   import json
   dArgs = {}
   dArgs["sample_id"] = demisto.args()["sample_id"]
-  #dArgs["task_id"] = demisto.args()["task_id"] if "task_id" in demisto.args() else "0"
-
   #res_jobs = json.loads(demisto.executeCommand("get_job_sample", dArgs)[0]['Contents'])
   res_jobs = demisto.executeCommand("get_job_sample", dArgs)
   # demisto.results(res_jobs)
   if not res_jobs:
-      demisto.results("Hurra kein Job gefunden, vielleicht ist die Analyse schon fertig. Mal schauen!")
+      demisto.results("Hurray no jobs found, maybe the analysis is completed. Let's see!")
       my_data = demisto.executeCommand("get_results", dArgs)
       # my_data = json.loads(demisto.executeCommand("get_results", dArgs)[0]['Contents'])
       # demisto.results(my_data)
@@ -43,7 +41,6 @@ args:
 - name: sample_id
   required: true
   default: true
-- name: task_id
 scripttarget: 0
 dependson: {}
 timeout: 0s
