@@ -1,0 +1,78 @@
+commonfields:
+  id: dac1183b-08c0-4ac2-83aa-1afab0d8467c
+  version: 49
+name: VMRay
+script: |-
+  import json
+  import time
+  #entries = demisto.executeCommand("getEntries", {})
+  #demisto.results(demisto.args()['entry_id'])
+  res = []
+  resCmdName = demisto.executeCommand("getFilePath", {"id": demisto.args()['entry_id']})
+  try:
+      path = resCmdName[0]['Contents']['path']
+      data = json.loads(demisto.executeCommand("upload_sample", {"file_name":path})[0]['Contents'])
+      #data = json.loads('{"errors":[],"jobs":[{"job_analyzer_id":1,"job_analyzer_name":"vmray","job_configuration_id":164,"job_configuration_name":"windows_script_file","job_created":"2016-12-05T10:57:35","job_id":725010,"job_jobrule_id":12,"job_jobrule_sampletype":"JScript","job_parent_analysis_id":null,"job_prescript_id":null,"job_priority":1,"job_sample_id":686587,"job_sample_md5":"de330d7ef6384982511d7b27d1ff46c4","job_sample_sha1":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","job_sample_sha256":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","job_snapshot_id":1,"job_snapshot_name":"def","job_status":"queued","job_statuschanged":"2016-12-05T10:57:35","job_submission_id":860015,"job_tracking_state":"//waiting","job_type":"full_analysis","job_user_email":"dominik.oestreicher@doit-solutions.de","job_user_id":264,"job_vm_id":17,"job_vm_name":"win7_32_sp1","job_vmhost_id":null,"job_vminstance_num":null,"job_vnc_token":"XVVYc0eUHUrIxUM1GRncgwxBXmdl4syi"},{"job_analyzer_id":1,"job_analyzer_name":"vmray","job_configuration_id":164,"job_configuration_name":"windows_script_file","job_created":"2016-12-05T10:57:35","job_id":725011,"job_jobrule_id":12,"job_jobrule_sampletype":"JScript","job_parent_analysis_id":null,"job_prescript_id":null,"job_priority":1,"job_sample_id":686587,"job_sample_md5":"de330d7ef6384982511d7b27d1ff46c4","job_sample_sha1":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","job_sample_sha256":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","job_snapshot_id":1,"job_snapshot_name":"def","job_status":"queued","job_statuschanged":"2016-12-05T10:57:35","job_submission_id":860015,"job_tracking_state":"//waiting","job_type":"full_analysis","job_user_email":"dominik.oestreicher@doit-solutions.de","job_user_id":264,"job_vm_id":9,"job_vm_name":"win7_64_sp1","job_vmhost_id":null,"job_vminstance_num":null,"job_vnc_token":"Y2QvfiafnXJnLmhXge91EkhBp6Z7SUYH"},{"job_analyzer_id":1,"job_analyzer_name":"vmray","job_configuration_id":164,"job_configuration_name":"windows_script_file","job_created":"2016-12-05T10:57:35","job_id":725012,"job_jobrule_id":12,"job_jobrule_sampletype":"JScript","job_parent_analysis_id":null,"job_prescript_id":null,"job_priority":1,"job_sample_id":686587,"job_sample_md5":"de330d7ef6384982511d7b27d1ff46c4","job_sample_sha1":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","job_sample_sha256":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","job_snapshot_id":1,"job_snapshot_name":"def","job_status":"queued","job_statuschanged":"2016-12-05T10:57:35","job_submission_id":860015,"job_tracking_state":"//waiting","job_type":"full_analysis","job_user_email":"dominik.oestreicher@doit-solutions.de","job_user_id":264,"job_vm_id":18,"job_vm_name":"win8.1_64","job_vmhost_id":null,"job_vminstance_num":null,"job_vnc_token":"wj1w0jW8rUT2SvqCEmbdVEa7DeKbFESw"},{"job_analyzer_id":1,"job_analyzer_name":"vmray","job_configuration_id":164,"job_configuration_name":"windows_script_file","job_created":"2016-12-05T10:57:35","job_id":725013,"job_jobrule_id":12,"job_jobrule_sampletype":"JScript","job_parent_analysis_id":null,"job_prescript_id":null,"job_priority":1,"job_sample_id":686587,"job_sample_md5":"de330d7ef6384982511d7b27d1ff46c4","job_sample_sha1":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","job_sample_sha256":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","job_snapshot_id":1,"job_snapshot_name":"def","job_status":"queued","job_statuschanged":"2016-12-05T10:57:35","job_submission_id":860015,"job_tracking_state":"//waiting","job_type":"full_analysis","job_user_email":"dominik.oestreicher@doit-solutions.de","job_user_id":264,"job_vm_id":20,"job_vm_name":"win10_64","job_vmhost_id":null,"job_vminstance_num":null,"job_vnc_token":"4Pl3ExRHZr4RCzTzqNtCknskgHP9qqJY"}],"samples":[{"sample_created":"2016-12-05T10:57:35","sample_filename":"-ge507lx8748.js","sample_filesize":15767,"sample_id":686587,"sample_is_multipart":false,"sample_md5hash":"de330d7ef6384982511d7b27d1ff46c4","sample_priority":1,"sample_sha1hash":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","sample_sha256hash":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","sample_shareable":false,"sample_type":"JScript","sample_url":null,"sample_webif_url":"https://cloud.vmray.com/user/sample/view?id=686587","submission_filename":"-ge507lx8748.js"}],"submissions":[{"submission_comment":null,"submission_created":"2016-12-05T10:57:35","submission_filename":"-ge507lx8748.js","submission_id":860015,"submission_ip_id":624,"submission_ip_ip":"176.94.234.2","submission_prescript_id":null,"submission_priority":1,"submission_sample_id":686587,"submission_sample_md5":"de330d7ef6384982511d7b27d1ff46c4","submission_sample_sha1":"bd9d39b9f83b95c745c2fea55036be8fdd5f88fd","submission_sample_sha256":"bbc7de2dabec62204a6165f11c03e1c755f8e2bb6d4c2dc475a6ba766aacc412","submission_tags":[],"submission_type":"api","submission_user_email":"dominik.oestreicher@doit-solutions.de","submission_user_id":264,"submission_webif_url":"https://cloud.vmray.com/user/sample/view?id=686587"}]}')
+
+
+      if data:
+          open_jobs = data["jobs"]
+          #res.append(open_jobs)
+          sample_id = data["samples"]
+          #res.append("All jobs have finished")
+          if sample_id:
+              sample_id = data["samples"][0]["sample_id"]
+              demisto.executeCommand("scheduleEntry", {"command": "!vmray_getResults sample_id={} ".format(str(sample_id)), "cron": "*/1 * * * *"})
+          else:
+              #demisto.results(data)
+              res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Could not extract result list from response: " + data["errors"][0]["error_msg"]})
+
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+  #resCmdName = demisto.executeCommand("getFilePath", {"id": demisto.args()['entry_id']})
+  #res.append(resCmdName)
+  demisto.results(res)
+  #try:
+  #    for entry in resCmdName:
+  #        if isError(entry):
+  #            demisto.results(resCmdName)
+  #        else:
+  #            path = demisto.get(entry, 'Contents.path')
+  #            demisto.results(path)
+      #demisto.executeCommand("upload_sample", {"file_name":path})
+  #            data = json.loads(demisto.executeCommand("upload_sample", {"file_name":path})[0]['Contents'])
+  #            if data:
+  #                open_jobs = data["jobs"]
+  #                sample_id = data["samples"][0]["sample_id"]
+
+  #                demisto.results("All jobs have finished")
+                  #demisto.results(sample_id)
+                  #demisto.results(demisto.executeCommand("get_results", {"sample_id":str(sample_id)}))
+  #                demisto.executeCommand("scheduleEntry", {"command": "vmray_getResults sample_id={}".format(str(sample_id)), "cron": "*/1 * * * *"})
+  #except Exception as ex:
+  #    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+  #                     "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+  #demisto.results(res)
+          #demisto.results(demisto.executeCommand("get_results", {"sample_id":str(sample_id)}))
+      #xdemisto.results(demisto.executeCommand("get_results", {"sample_id":str(sample_id)}))
+  #demisto.results(json.loads(data[0]["Contents"]))
+  #for i, v in data[0].iteritems():
+  #    demisto.results(i)
+  #    demisto.results(v)
+  #data = demisto.executeCommand("upload_sample", {"file_name":path})
+  #data = json.loads(json_data)
+type: python
+tags:
+- file
+enabled: true
+args:
+- name: entry_id
+  default: true
+  description: The ID of a file entry to upload
+- name: job_id
+  description: The ID of the job to look at
+scripttarget: 0
+dependson: {}
+timeout: 0s
