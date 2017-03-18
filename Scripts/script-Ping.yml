@@ -28,7 +28,8 @@ script: |-
   except Exception as e:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(e) } )
 type: python
-tags: [ Utility ]
+tags:
+- Utility
 enabled: true
 args:
 - name: address
