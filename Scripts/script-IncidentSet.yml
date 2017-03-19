@@ -28,7 +28,6 @@ script: |-
       dArgs['type'] = inArgs['type']
   if dArgs:
       res += demisto.executeCommand("setIncident", dArgs)
-  res += demisto.executeCommand("IncidentToContext", {})
   # Playbook change should always be the last action in a script
   if demisto.get(dArgs, 'type'):      
       if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
