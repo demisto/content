@@ -14,6 +14,7 @@ script: |-
 type: javascript
 tags:
 - Utility
+comment: Converts XML string to JSON format
 enabled: true
 args:
 - name: xml
