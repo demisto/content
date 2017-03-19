@@ -30,6 +30,7 @@ script: |-
 type: python
 tags:
 - Utility
+comment: Pings an IP or url address, to verify it's up 
 enabled: true
 args:
 - name: address
