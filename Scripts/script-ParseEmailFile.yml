@@ -532,6 +532,7 @@ script: |-
               subj = subjenc.decode(encoding)
           except:
               subj = eml['Subject']
+          subj = unicode(subj).encode('utf-8')
           demisto.setContext('Label/Email', extractAddress(eml['To']))
           demisto.setContext('Label/Email/cc', extractAddress(eml['Cc']))
           demisto.setContext('Label/Email/from', extractAddress(eml['From']))
