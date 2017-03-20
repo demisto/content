@@ -18,7 +18,7 @@ configuration:
   type: 4
   required: false
 script:
-  script: |+
+  script: |
     import base64
     import datetime
     import os.path
@@ -49,13 +49,13 @@ script:
 
     def test_module(api):
         try:
-            api.call("GET", "/rest/analysis/?_limit=1")
+            api.call("GET", "/rest/analysis?_limit=1")
             demisto.results('ok')
         except VMRayRESTAPIError as exc:
             if exc.status_code == 401:
-                demisto.results('Error 401')
+                demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : "Authentication failed!" })
             else:
-                raise
+                demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : exc })
 
     def get_request(api, url, method='GET'):
         data = api.call(method, url)
@@ -66,41 +66,39 @@ script:
         # This is the call made when pressing the integration test button.
         # demisto.results('ok')
         test_module(api)
-        sys.exit(0)
     if demisto.command() == 'upload_sample':
         # To upload a file the filename is needed. Demisto renames the files
         # and stores it internaly. To get the filename you need an automation.
         # You can use demisto.args()[argName] to get a specific arg. args are strings.
-        file = demisto.args()['file_name']
+        file = demisto.args()['file_id']
         demisto.results(submit_sample(api, open(file, "rb")))
-        sys.exit(0)
     if demisto.command() == 'get_results':
         job_id = demisto.args()['sample_id']
         get_request(api, url_dict[demisto.command()] % job_id)
-        sys.exit(0)
     if demisto.command() == 'get_job_sample':
         sample_id = demisto.args()['sample_id']
-        test = get_request(api, url_dict[demisto.command()] % sample_id)
-        sys.exit(0)
+        get_request(api, url_dict[demisto.command()] % sample_id)
 
+    sys.exit(0)
   type: python
   commands:
   - name: upload_sample
     arguments:
-    - name: file_name
+    - name: file_id
       required: true
-    description: Upload
-  - name: get_job
-    arguments:
-    - name: job_id
-      required: true
+      description: The file id to submit
+    description: Submit sample to VMRay
   - name: get_results
     arguments:
     - name: sample_id
       required: true
+      description: Analysis sample ID
+    description: Get all analysis details about a specific sample.
   - name: get_job_sample
     arguments:
     - name: sample_id
       required: true
+      description: Job sample id
+    description: Get all jobs details about a specific sample.
   dockerimage: vmray
 hidden: false
