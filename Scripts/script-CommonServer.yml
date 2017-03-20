@@ -225,7 +225,7 @@ script: |-
         }};
       } else if (entry.Brand === brands.cs && c && c.length && c[0].indicator) {
         return shortCrowdStrike(entry);
-      } else if (entry.Brand === brand.threatconnect && c && c.data && c.data.file) {
+      } else if (entry.Brand === brands.threatconnect && c && c.data && c.data.file) {
         var file = c.data.file;
         return {ContentsFormat: formats.table, Type: entryTypes.note, Contents: {
           File: file.file, Rating: file.rating, Confidence: file.confidence, Sha256: file.sha256, Sha1: file.sha1, MD5: file.md5,
