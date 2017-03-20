@@ -8,6 +8,7 @@ script: |-
   fieldName = demisto.args()['fieldName']
   # Example format: '2018-02-02T22:58:21+02:00'
   demisto.log('[*] ' + fieldName + ' <- ' + now)
+  demisto.setContext(fieldName, now)
   demisto.results( demisto.executeCommand("setIncident", {fieldName: now }) )
 type: python
 tags: []
