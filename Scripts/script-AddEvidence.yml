@@ -15,7 +15,7 @@ script: |-
   res = []
   for e in entryIDs:
       ent = demisto.executeCommand('getEntry', {'id': e})[0]
-      if ent['ContentsFormat'] in ['table', 'markdown'] and ent['Contents']:
+      if (ent['ContentsFormat'] in ['table', 'markdown'] and ent['Contents']) or ent['Type'] == entryTypes['file']:
           demisto.log("Executing demisto.executeCommand('markAsEvidence', {'id': '"+ e +"', 'description': '" + desc + "'})")
           res += demisto.executeCommand('markAsEvidence', {'id': e, 'description': desc})
   demisto.results([e for e in res if isError(e)])
