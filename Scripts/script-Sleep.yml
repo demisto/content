@@ -8,6 +8,7 @@ script: |
 type: python
 tags:
 - Utility
+comment: Sleep for X seconds
 enabled: true
 args:
 - name: seconds
