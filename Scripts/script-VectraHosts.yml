@@ -2,8 +2,8 @@ commonfields:
   id: VectraHosts
   version: -1
 name: VectraHosts
-script: |2
-
+script: |
+  keys = ['id','name','state','t_score','c_score','last_source','last_detection_timestamp','detection_set','url','tags','key_asset','new_host_pointer','sensor_luid','t_score','targets_key_asset']
   resp = demisto.executeCommand("vec-hosts", demisto.args())
 
   if isError(resp[0]):
@@ -12,8 +12,10 @@ script: |2
       data = demisto.get(resp[0], "Contents.results")
       if data:
           data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+          data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+          data = tblToMd("Vectra Hosts",data,keys)
+
+          demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
       else:
           demisto.results("No results.")
 type: python
