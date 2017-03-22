@@ -8,8 +8,7 @@ script: |+
   if 'rows' in demisto.args():
       rows = demisto.args()['rows']
   query = demisto.args()['query']
-  if '|' not in query:
-      query = query + ' | head ' + str(rows)
+  query = query + ' | head ' + str(rows)
   res = demisto.executeCommand('search', {'query': query, 'using-brand': 'splunk'})
   if isError(res[0]):
       demisto.results(res)
@@ -20,12 +19,18 @@ script: |+
           new_data  = []
           for r in data:
               new_r = {}
-              new_r["Time"] = demisto.get(r, 'result._time')
-              new_r["Host"] = demisto.get(r, 'result.host')
-              new_r["Source"] = demisto.get(r, 'result.source')
-              raw = json.loads(demisto.get(r, 'result._raw'))
-              for key in raw.keys():
-                  new_r[key] = raw[key]
+              raw = demisto.get(r, 'result._raw')
+              if raw:
+                  new_r["Time"] = demisto.get(r, 'result._time')
+                  new_r["Host"] = demisto.get(r, 'result.host')
+                  new_r["Source"] = demisto.get(r, 'result.source')
+                  raw = json.loads(raw)
+                  for key in raw.keys():
+                      new_r[key] = raw[key]
+              else:
+                  if not demisto.get(demisto.args(), 'showPreviews') and demisto.get(r, 'preview'):
+                      continue
+                  new_r = demisto.get(r, 'result')
               new_data.append(new_r)
           data = new_data
           data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
