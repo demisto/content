@@ -15,15 +15,15 @@ configuration:
   defaultvalue: https://api.passivetotal.org/
   type: 0
   required: false
-- display: Username
+- display: Username/API Key
   name: Username
   defaultvalue: ""
   type: 0
   required: true
-- display: API Key
+- display: API Secret 
   name: APIKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 script:
   script: |-
