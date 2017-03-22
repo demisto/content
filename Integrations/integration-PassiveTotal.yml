@@ -23,7 +23,7 @@ configuration:
 - display: API Secret 
   name: APIKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 script:
   script: |-
