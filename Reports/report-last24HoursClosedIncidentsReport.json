@@ -67,7 +67,7 @@
       "query": {
         "type": "incident",
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "totalOnly": true,
           "period": {
@@ -128,7 +128,7 @@
         "type": "incident",
         "groupBy": ["severity"],
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "totalOnly": false,
           "period": {
@@ -183,7 +183,7 @@
         "type": "incident",
         "groupBy": ["type"],
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "totalOnly": false,
           "period": {
@@ -268,7 +268,7 @@
         "type": "incident",
         "groupBy": ["dueDate"],
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "totalOnly": false,
           "period": {
@@ -320,7 +320,7 @@
         "type": "incident",
         "groupBy": ["owner"],
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "totalOnly": false,
           "period": {
@@ -371,7 +371,7 @@
       "query": {
         "type": "incident",
         "filter": {
-          "status": [2],
+          "status": [2, 3],
           "andOp": true,
           "period": {
             "by": "hour",
