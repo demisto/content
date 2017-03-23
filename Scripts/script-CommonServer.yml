@@ -499,6 +499,74 @@ script: |-
     }
   }
   /**
+   * Convert a given object to a simple string
+   * @param {Object} o - the object to convert - can be an array as well
+   * @returns {String} - the converted string
+   */
+  function objToStr(o) {
+      if (Array.isArray(o)) {
+          return o.map(function(v) {
+              return objToStr(v);
+          }).join(',');
+      } else if (typeof(o) === 'string') {
+          return o;
+      } else {
+          return JSON.stringify(o);
+      }
+  }
+
+  /**
+   * Convert a given object to md while decending multiple levels
+   * @param {Object} o - the object to convert - can be an array as well
+   * @returns {String} - the converted md string
+   */
+  function objToMd(o) {
+      var flat = {};
+      flattenFields(o, '', flat);
+      var keys = Object.keys(flat);
+      var md = 'Key | Value\n- | -\n';
+      for (var i=0; i<keys.length; i++) {
+          md += keys[i] + ' | ' + flat[keys[i]] + '\n';
+      }
+      return md;
+  }
+
+  /**
+   * Convert a given array to md table
+   * @param {Array} arr - the array to convert
+   * @returns {String} - the converted md string
+   */
+  function arrToMd(arr) {
+      if (arr.length === 0) {
+          return '';
+      }
+      var headers = Object.keys(arr[0]);
+      var md = '';
+      var sep = '';
+      for (var h = 0; h < headers.length; h++) {
+          if (h !== 0) {
+              md += ' | ';
+              sep += ' | ';
+          }
+          md += headers[h];
+          sep += '-';
+      }
+      md += '\n' + sep + '\n';
+      for (var i = 0; i < arr.length; i++) {
+          if (i !== 0) {
+              md += '\n';
+          }
+          for (var j = 0; j < headers.length; j++) {
+              if (j !== 0) {
+                  md += ' | ';
+              }
+              md += objToStr(arr[i][headers[j]]);
+          }
+      }
+      return md;
+  }
+
+  /**
    * Query the given object with the given path and retrive it
    * @param {Object} obj - the object to query
    * @param {String} path - the path to retrieve from the object
