@@ -1,88 +1,18 @@
 commonfields:
   id: PTEnrich
-  version: 1
+  version: -1
 name: PTEnrich
 script: |
-  function isErr(e) {
-      return e.Type === entryTypes.error;
-  }
-
-  function objToStr(o) {
-      if (Array.isArray(o)) {
-          return o.map(function(v) {
-              return objToStr(v);
-          }).join(',');
-      } else if (typeof(o) === 'string') {
-          return o;
-      } else {
-          return JSON.stringify(o);
-      }
-  }
-
-  function objToMd(o) {
-      var keys = Object.keys(o);
-      var md = 'Key | Value\n- | -\n';
-      for (var i in keys) {
-          md += keys[i] + ' | ' + objToStr(o[keys[i]]) + '\n';
-      }
-      return md;
-  }
-
-  function arrToMd(arr) {
-      if (arr.length === 0) {
-          return '';
-      }
-      var headers = Object.keys(arr[0]);
-      var md = '';
-      var sep = '';
-      for (var h = 0; h < headers.length; h++) {
-          if (h !== 0) {
-              md += ' | ';
-              sep += ' | ';
-          }
-          md += headers[h];
-          sep += '-';
-      }
-      md += '\n' + sep + '\n';
-      for (var i = 0; i < arr.length; i++) {
-          if (i !== 0) {
-              md += '\n';
-          }
-          for (var j = 0; j < headers.length; j++) {
-              if (j !== 0) {
-                  md += ' | ';
-              }
-              md += objToStr(arr[i][headers[j]]);
-          }
-      }
-      return md;
-  }
-
-  var res = {};
-  var commands = ['pt-enrichment', 'pt-malware', 'pt-osint', 'pt-get-subdomains'];
+  var res = [];
+  var commands = ['pt-get-subdomains', 'pt-passive-dns', 'pt-whois', 'pt-ssl-cert', 'pt-enrichment', 'pt-malware', 'pt-osint'];
   for (var i in commands) {
       var r = executeCommand(commands[i], {query: args.query});
-      if (isErr(r[0])) {
+      if (isError(r[0])) {
           return r[0];
       }
-      res[commands[i]] = r[0];
+      res.push(r[0]);
   }
-
-  var md = '## PassiveTotal Enrichment for ' + args.query;
-
-  md += '\n### Subdomains section\n\n';
-  md += objToMd(res['pt-get-subdomains'].Contents);
-
-  md += '\n### Metadata section\n\n';
-  md += objToMd(res['pt-enrichment'].Contents);
-
-  md += '\n\n### Malware section\n\n';
-  md += arrToMd(res['pt-malware'].Contents.results);
-
-  md += '\n\n### OSINT section\n\n';
-  md += arrToMd(res['pt-osint'].Contents.results);
-
-  return {ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md};
+  return res;
 type: javascript
 tags:
 - passive-total
@@ -90,12 +20,24 @@ tags:
 - threat-intel
 comment: Enrich the given IP or domain with metadata, malware, osint
 system: true
-system: true
 args:
 - name: query
   required: true
   default: true
   description: The IP or domain to enrich
+outputs:
+- contextpath: passivetotal.username
+  description: Username / Key used for PassiveTotal
+- contextpath: passivetotal.resolves
+  description: The various resolves from the passive DNS collection
+- contextpath: badIPs
+  description: Bad IPs found during enrichment
+  important: true
+  importantDescription: Bad IPs found during enrichment
+- contextpath: badDomains
+  description: Bad domains found during enrichment
+  important: true
+  importantDescription: Bad domains found during enrichment
 scripttarget: 0
 dependson:
   must:
@@ -103,4 +45,7 @@ dependson:
   - pt-malware
   - pt-osint
   - pt-get-subdomains
+  - pt-passive-dns
+  - pt-whois
+  - pt-ssl-cert
 timeout: 0s
