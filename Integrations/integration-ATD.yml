@@ -163,7 +163,7 @@ script:
 
         data = {};
         data.data = {};
-        //data.data.vmProfileList = parseInt(args.vmProfileList);
+        data.data.vmProfileList = parseInt(args.vmProfileList);
         data.data.submitType = parseInt(args.submitType);
         data.data.url = args.url;
         data.data.messageId = args.messageId;
@@ -299,7 +299,7 @@ script:
       description: The name of the sample file. This parameter is optional for URL
         submissions
     - name: vmProfileList
-      required: true
+      required: false
       description: Analyzer profile ID. The profile ID number can be found in the
         UI Policy/Analyzer Profile page.
     - name: submitType
