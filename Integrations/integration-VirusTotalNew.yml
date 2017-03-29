@@ -26,6 +26,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var serverUrl = params.url;
@@ -33,28 +38,33 @@ script:
         serverUrl += '/';
     }
 
-    var doReq = function(method, path, parameters, body) {
+    var doReq = function(method, path, parameters) {
         if (!parameters) {
             parameters = {};
         }
         parameters.apikey = params.key;
         var result = http(
-            serverUrl + path + encodeToURLQuery(parameters),
+            serverUrl + path + (method === 'GET' ? encodeToURLQuery(parameters) : ''),
             {
-                Headers: {'Content-Type': ['application/json']},
+                Headers: {'Content-Type': ['application/x-www-form-urlencoded'], 'Accept': ['application/json']},
                 Method: method,
-                Body: body ? body : ''
-            }
+                Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''
+            },
+            params.insecure,
+            params.proxy
         );
 
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
-        if (result.Body==="" && result.StatusCode == 204) {
+        if (result.Body === '' && result.StatusCode == 204) {
             throw 'No content recieved. Possible API rate limit reached.';
         }
+        if (result.Body === '') {
+            throw 'No content recieved. Maybe you tried a private API?.';
+        }
         var obj = JSON.parse(result.Body);
-        if (obj.response_code !== 1) {
+        if (!Array.isArray(obj) && obj.response_code !== 1) {
             throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
         }
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
@@ -64,7 +74,7 @@ script:
         if (!threshold) {
             threshold = 10;
         }
-        var res = doReq('GET', 'file/report', {resource: hash});
+        var res = doReq('POST', 'file/report', {resource: hash});
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
             r = res.obj;
@@ -74,7 +84,7 @@ script:
         var md = '';
         var ec = {};
         for (var i=0; i<r.length; i++) {
-            md += '## VirusTotal Hash Reputation for: [' + hash + '](' + r[i].permalink + ')\n';
+            md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
@@ -146,7 +156,7 @@ script:
         if (!threshold) {
             threshold = 10;
         }
-        var res = doReq('GET', 'url/report', {resource: url, scan:1});
+        var res = doReq('POST', 'url/report', {resource: url, scan:1});
 
         var o = res.obj;
         var ec = {};
@@ -182,18 +192,14 @@ script:
                 ec.badUrls.push(o.url);
             }
         }
-
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
     var doDomain = function(domain, longFormat, sampleSize) {
-
         if (!sampleSize) {
             sampleSize = 10;
         }
-
         var res = doReq('GET', 'domain/report', {domain: domain});
-
         var o = res.obj;
         var ec = {};
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
@@ -220,23 +226,90 @@ script:
                 }
             }
         }
-
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-
     };
 
     var scanURL = function(url) {
-
+        var res = doReq('POST', 'url/scan', {url: url});
+        var r = [];
+        if (Array.isArray(res.obj)) { // Got multiple URLs so need to nicely iterate
+            r = res.obj;
+        } else {
+            r = [res.obj];
+        }
+        var md = '';
+        var ec = {vtScanID: []};
+        for (var i=0; i<r.length; i++) {
+            md += '## VirusTotal URL scan for: [' + r[i].url + '](' + r[i].permalink + ')\n';
+            md += 'Scan ID: **' + r[i].scan_id + '**\n';
+            ec.vtScanID.push(r[i].scan_id);
+            md += 'Scan Date: **' + r[i].scan_date + '**\n\n';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var scanFile = function() {
-
+    var scanFile = function(entry, uploadURL) {
+        var result = httpMultipart(uploadURL ? uploadURL : serverUrl + 'file/scan', entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        if (result.Body === '' && result.StatusCode == 204) {
+            throw 'No content recieved. Possible API rate limit reached.';
+        }
+        if (result.Body === '') {
+            throw 'No content recieved. Maybe you tried a private API?.';
+        }
+        var obj = JSON.parse(result.Body);
+        if (obj.response_code !== 1) {
+            throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
+        }
+        var ec = {};
+        ec.hashes = obj.md5;
+        ec.vtScanID = obj.scan_id;
+        var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
+        md += 'Resource: **' + obj.resource + '**\n';
+        md += 'Scan ID: **' + obj.scan_id + '**\n';
+        md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
+        return {Type: entryTypes.note, Contents: result.Body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var rescanFile = function() {
-
+    var rescanFile = function(hash) {
+        var res = doReq('POST', 'file/rescan', {resource: hash});
+        var r = [];
+        if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
+            r = res.obj;
+        } else {
+            r = [res.obj];
+        }
+        var md = '';
+        var ec = {vtScanID: []};
+        for (var i=0; i<r.length; i++) {
+            md += '## VirusTotal File Rescan for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
+            md += 'Scan ID: **' + r[i].scan_id + '**\n';
+            ec.vtScanID.push(r[i].scan_id);
+            md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n\n';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
+    var doComments = function(resource, comment) {
+        var res = doReq('POST', 'comments/put', {resource: resource, comment: comment});
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.verbose_msg};
+    }
+
+    var getComments = function(resource, before) {
+        var params = {resource: resource};
+        if (before) {
+            params.before = before;
+        }
+        var res = doReq('GET', 'comments/get', params);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: arrToMd(res.obj.comments)};
+    }
+
+    var fileScanUploadURL = function() {
+        var res = doReq('GET', 'file/scan/upload_url');
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
+    }
 
     switch (command) {
         case 'test-module':
@@ -250,6 +323,20 @@ script:
             return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait);
         case 'domain':
             return doDomain(args.domain, args.long, args.sampleSize);
+        case 'file-scan':
+            return scanFile(args.entryID, args.uploadURL);
+        case 'file-rescan':
+            return rescanFile(args.file);
+        case 'url-scan':
+            return scanURL(args.url);
+        case 'vt-comments-add':
+            return doComments(args.resource, args.comment);
+        case 'vt-comments-get':
+            return getComments(args.resource, args.before);
+        case 'vt-file-scan-upload-url':
+            return fileScanUploadURL();
+        default:
+            throw 'Unknown command - ' + command;
     }
   type: javascript
   commands:
@@ -325,11 +412,19 @@ script:
     - name: submitWait
       description: Seconds to wait if the URL does not exist and is submitted to be
         scanned
+      defaultValue: "0"
+    outputs:
+    - contextPath: badUrls
+      description: Bad URLs found
+      important: true
+      importantDescription: Bad URLs found querying VirusTotal
     description: Check URL Reputation
   - name: domain
     deprecated: false
     arguments:
     - name: domain
+      required: true
+      default: true
       description: Domain name to check reputation
     - name: long
       auto: PREDEFINED
@@ -343,4 +438,72 @@ script:
         etc.) to display for long format
       defaultValue: "10"
     description: Check domain reputation
+  - name: file-scan
+    deprecated: false
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit
+    - name: uploadURL
+      description: Private API extension. Special upload URL for files bigger than
+        32M.
+    outputs:
+    - contextPath: hashes
+      description: Hashes being scanned
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files
+    description: Submit a file for scanning
+  - name: file-rescan
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to re-scan. Supports MD5, SHA1 and SHA256.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files
+    description: Rescan an already submitted file to save time and not upload
+  - name: url-scan
+    deprecated: false
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted URLs
+    description: Scan a given URL
+  - name: vt-comments-add
+    deprecated: false
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The hash (md5/sha1/sha256) or URL you're commenting on
+    - name: comment
+      required: true
+      description: 'The actual review, you can tag it using the "#" twitter-like syntax
+        (e.g. #disinfection #zbot) and reference users using the "@" syntax (e.g.
+        @VirusTotalTeam).'
+    description: Add comments for files and URLs
+  - name: vt-file-scan-upload-url
+    deprecated: false
+    arguments: []
+    outputs:
+    - contextPath: vtUploadURL
+      description: The special upload URL for large files
+    description: Private API. Get a special URL for files above 32M.
+  - name: vt-comments-get
+    deprecated: false
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The hash (md5/sha1/sha256) or URL you're retrieving comments for
+    - name: before
+      description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
+    description: Private API. Retrieve comments for a given resource
 hidden: false
