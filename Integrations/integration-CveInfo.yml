@@ -10,53 +10,100 @@ description: Search CVE Information - powered by circl.lu
 configuration: []
 script:
   script: |
-    // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            res=sendRequest("http://cve.circl.lu/api/last");
-            return 'ok';
-        case 'cve-search':
-            var url="http://cve.circl.lu/api/cve/" + args.cveId.toUpperCase();
-            res=sendRequest(url);
-            return JSON.parse(res.Body);
-        case 'cve-latest':
-            url="http://cve.circl.lu/api/last";
-            res=sendRequest(url);
-            return JSON.parse(res.Body);
-        default:
-            // You can use args[argName] or args.argName to get a specific arg. args are strings.
-            // You can use params[paramName] or params.paramName to get a specific params.
-            // Params are of the type given in the integration page creation.
-    }
-
-    /*
-     * Sample function for http GET request with query string
-     */
-    function sendRequest(url) {
-
-        // handle '/' at the end of the url
-        if (url[url.length - 1] === '/') {
-            url = url.substring(0, url.length - 1);
-        }
-
-        var requestUrl = url;
+    var sendRequest = function(url) {
         var res = http(
-            requestUrl,
+            url,
             {
-                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Method: 'GET',
                 Headers: {
                     Accept: ['application/json']
                 }
             }
         );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
-        return res;
+        if (res.Body === '') {
+            throw 'No content recieved.';
+        }
+        var obj = JSON.parse(res.Body);
+        return {body: res.Body, obj: obj, statusCode: res.StatusCode};
     };
+
+    var cveToMd = function(o) {
+        if (o.id) {
+            var md = '## cicle.lu CVE: ' + o.id + '\n';
+            md += 'Summary: **' + o.summary + '**\n';
+            md += 'Published: **' + o.Published + '**\n';
+            md += 'Modified: **' + o.Modified + '**\n';
+            md += 'CVSS: **' + o.cvss + '**\n';
+            md += 'CVSS Time: **' + o['cvss-time'] + '**\n';
+            md += 'References: **' + (o.references ? o.references.join(', ') : 'N/A') + '**\n';
+            if (o.access) {
+                md += '### Access' + '\n';
+                md += objToMd(o.access) + '\n';
+            }
+            if (o.impact) {
+                md += '### Impact' + '\n';
+                md += objToMd(o.impact) + '\n';
+            }
+            if (o.map_cve_hp) {
+                md += '### HP' + '\n';
+                md += objToMd(o.map_cve_hp) + '\n';
+            }
+            if (o.map_cve_nessus) {
+                md += '### Nessus' + '\n';
+                md += objToMd(o.map_cve_nessus) + '\n';
+            }
+            if (o.map_cve_ncip) {
+                md += '### NCIP' + '\n';
+                md += objToMd(o.map_cve_ncip) + '\n';
+            }
+            if (o.ranking) {
+                md += '### Ranking' + '\n';
+                md += objToMd(o.ranking) + '\n';
+            }
+            if (o.vulnerable_configuration) {
+                md += '### Vulnerable Configurations' + '\n';
+                md += arrToMd(o.vulnerable_configuration) + '\n';
+            }
+            return md;
+        }
+        return 'No result found.';
+    };
+
+    var doCVE = function(cve) {
+        var res = sendRequest('http://cve.circl.lu/api/cve/' + args.cveId.toUpperCase());
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj)};
+    };
+
+    var doLatest = function() {
+        var res = sendRequest('http://cve.circl.lu/api/last');
+        var o = res.obj.results;
+        var md = '## cicle.lu Latest CVEs\n';
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += cveToMd(o[i]) + '\n';
+            }
+        } else {
+            md += 'No result found.';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            res = sendRequest('http://cve.circl.lu/api/last');
+            return 'ok';
+        case 'cve-search':
+            return doCVE(args.cveId.toUpperCase());
+        case 'cve-latest':
+            return doLatest();
+        default:
+            throw 'Unknown command - ' + command;
+    }
   type: javascript
   commands:
   - name: cve-search
