@@ -192,39 +192,41 @@ script:
         return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var doDomain = function(domain, longFormat, sampleSize) {
-        if (!sampleSize) {
-            sampleSize = 10;
-        }
-        var res = doReq('GET', 'domain/report', {domain: domain});
+    var doCVE = function(cve) {
+        var res = doReq('GET', 'vulnerabilities/search/' + cve);
         var o = res.obj;
         var ec = {};
-        var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
-        md += '#### Domain categories: *' + o.categories + "*\n";
-
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
-        for (var i=0; i<arrTitle.length; i++) {
-            if (arrTitle[i].a) {
-                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
-            }
-        }
-        if (longFormat === 'true') {
-            for (var j=0; j<arrTitle.length; j++) {
-                if (arrTitle[j].a) {
-                    md += '### ' + arrTitle[j].t + '\n';
-                    // Print only the first 10 rows
-                    var curr = [];
-                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
-                        curr.push(arrTitle[j].a[k]);
-                    }
-                    md += arrToMd(curr) + '\n';
+        var md = '## X-Force CVE Search for: ' + cve + '\n';
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += 'Title: **' + o[i].title + '**\n';
+                md += 'Description: **' + o[i].description + '**\n';
+                md += 'Risk: **' + o[i].risk_level + '**\n';
+                md += 'Type: **' + o[i].type + '**\n';
+                md += 'Variant: **' + o[i].variant + '**\n';
+                md += 'Temporal score: **' + o[i].temporal_score + '**\n';
+                md += 'Remedy: **' + o[i].remedy + '**\n';
+                md += 'Reported: **' + o[i].reported + '**\n';
+                md += 'Standard codes: **' + (o[i].stdcode ? o[i].stdcode.join(', ') : 'N/A') + '**\n';
+                md += 'Platforms: **' + (o[i].platforms_affected ? o[i].platforms_affected.join(', ') : 'N/A') + '**\n';
+                md += 'Exploitability: **' + o[i].exploitability + '**\n';
+                md += 'Consequences: **' + o[i].consequences + '**\n';
+                md += 'Confidence: **' + o[i].report_confidence + '**\n';
+                if (o[i].cvss) {
+                    md += '### CVSS' + '\n'
+                    md += objToMd(o[i].cvss) + '\n';
                 }
+                if (o[i].references) {
+                    md += '### References' + '\n'
+                    md += arrToMd(o[i].references);
+                }
+                md += '\n\n';
             }
+        } else {
+            md += 'No result found.'
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+    }
 
     switch (command) {
         case 'test-module':
@@ -238,6 +240,8 @@ script:
             return doURL(args.url, args.long, args.threshold);
         case 'domain':
             return doURL(args.domain, args.long, args.threshold);
+        case 'cve-search':
+            return doCVE(args.cve);
         default:
             throw 'Unknown command - ' + command;
     }
@@ -338,4 +342,13 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     description: Check domain reputation
+  - name: cve-search
+    deprecated: false
+    arguments:
+    - name: cve
+      required: true
+      deprecated: false
+      default: true
+      description: The cve to search for
+    description: Search for details about the given CVE
 hidden: false

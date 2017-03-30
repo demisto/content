@@ -537,7 +537,7 @@ script: |-
    * @returns {String} - the converted md string
    */
   function arrToMd(arr) {
-      if (arr.length === 0) {
+      if (!arr || arr.length === 0) {
           return '';
       }
       var headers = Object.keys(arr[0]);
