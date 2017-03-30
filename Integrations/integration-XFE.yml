@@ -192,41 +192,71 @@ script:
         return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
+    var cveToMd = function(o) {
+        var cve = 'Unknown';
+        if (o.stdcode) {
+            for (var i=0; i<o.stdcode.length; i++) {
+                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
+                    cve = o.stdcode[i].toUpperCase();
+                    break;
+                }
+            }
+        }
+        var md = '### Standard code: ' + cve + '\n';
+        md += 'Title: **' + o.title + '**\n';
+        md += 'Description: **' + o.description + '**\n';
+        md += 'Risk: **' + o.risk_level + '**\n';
+        md += 'Type: **' + o.type + '**\n';
+        md += 'Variant: **' + o.variant + '**\n';
+        md += 'Temporal score: **' + o.temporal_score + '**\n';
+        md += 'Remedy: **' + o.remedy + '**\n';
+        md += 'Reported: **' + o.reported + '**\n';
+        md += 'Standard codes: **' + (o.stdcode ? o.stdcode.join(', ') : 'N/A') + '**\n';
+        md += 'Platforms: **' + (o.platforms_affected ? o.platforms_affected.join(', ') : 'N/A') + '**\n';
+        md += 'Exploitability: **' + o.exploitability + '**\n';
+        md += 'Consequences: **' + o.consequences + '**\n';
+        md += 'Confidence: **' + o.report_confidence + '**\n';
+        if (o.cvss) {
+            md += '### CVSS' + '\n'
+            md += objToMd(o.cvss) + '\n';
+        }
+        if (o.references) {
+            md += '### References' + '\n'
+            md += arrToMd(o.references) + '\n';
+        }
+        return md;
+    };
+
     var doCVE = function(cve) {
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         var o = res.obj;
-        var ec = {};
         var md = '## X-Force CVE Search for: ' + cve + '\n';
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {
-                md += 'Title: **' + o[i].title + '**\n';
-                md += 'Description: **' + o[i].description + '**\n';
-                md += 'Risk: **' + o[i].risk_level + '**\n';
-                md += 'Type: **' + o[i].type + '**\n';
-                md += 'Variant: **' + o[i].variant + '**\n';
-                md += 'Temporal score: **' + o[i].temporal_score + '**\n';
-                md += 'Remedy: **' + o[i].remedy + '**\n';
-                md += 'Reported: **' + o[i].reported + '**\n';
-                md += 'Standard codes: **' + (o[i].stdcode ? o[i].stdcode.join(', ') : 'N/A') + '**\n';
-                md += 'Platforms: **' + (o[i].platforms_affected ? o[i].platforms_affected.join(', ') : 'N/A') + '**\n';
-                md += 'Exploitability: **' + o[i].exploitability + '**\n';
-                md += 'Consequences: **' + o[i].consequences + '**\n';
-                md += 'Confidence: **' + o[i].report_confidence + '**\n';
-                if (o[i].cvss) {
-                    md += '### CVSS' + '\n'
-                    md += objToMd(o[i].cvss) + '\n';
-                }
-                if (o[i].references) {
-                    md += '### References' + '\n'
-                    md += arrToMd(o[i].references);
-                }
-                md += '\n\n';
+                md += cveToMd(o[i]) + '\n';
             }
         } else {
             md += 'No result found.'
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var doCVELatest = function(limit) {
+        if (!limit) {
+            limit = '30';
+        }
+        var res = doReq('GET', 'vulnerabilities', {limit: limit});
+        var o = res.obj;
+        var md = '## X-Force Latest CVEs\n';
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += cveToMd(o[i]) + '\n';
+            }
+        } else {
+            md += 'No result found.'
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
 
     switch (command) {
         case 'test-module':
@@ -242,6 +272,8 @@ script:
             return doURL(args.domain, args.long, args.threshold);
         case 'cve-search':
             return doCVE(args.cveId);
+        case 'cve-latest':
+            return doCVELatest(args.limit);
         default:
             throw 'Unknown command - ' + command;
     }
@@ -341,6 +373,11 @@ script:
       deprecated: false
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
+    outputs:
+    - contextPath: badUrls
+      description: Bad URLs found
+      important: true
+      importantDescription: Bad URLs found querying X-Force
     description: Check domain reputation
   - name: cve-search
     deprecated: false
@@ -351,4 +388,12 @@ script:
       default: true
       description: The cve to search for
     description: Search for details about the given CVE
+  - name: cve-latest
+    deprecated: false
+    arguments:
+    - name: limit
+      deprecated: false
+      default: true
+      description: The number of results to return
+    description: Return the latest vulnerabilities found
 hidden: false
