@@ -241,7 +241,7 @@ script:
         case 'domain':
             return doURL(args.domain, args.long, args.threshold);
         case 'cve-search':
-            return doCVE(args.cve);
+            return doCVE(args.cveId);
         default:
             throw 'Unknown command - ' + command;
     }
@@ -345,7 +345,7 @@ script:
   - name: cve-search
     deprecated: false
     arguments:
-    - name: cve
+    - name: cveId
       required: true
       deprecated: false
       default: true
