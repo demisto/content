@@ -203,23 +203,20 @@ script:
             }
         }
         var md = '### Standard code: ' + cve + '\n';
-        md += 'Title: **' + o.title + '**\n';
-        md += 'Description: **' + o.description + '**\n';
-        md += 'Risk: **' + o.risk_level + '**\n';
-        md += 'Type: **' + o.type + '**\n';
-        md += 'Variant: **' + o.variant + '**\n';
-        md += 'Temporal score: **' + o.temporal_score + '**\n';
-        md += 'Remedy: **' + o.remedy + '**\n';
-        md += 'Reported: **' + o.reported + '**\n';
+        md += 'Title: **' + nvl(o.title) + '**\n';
+        md += 'Description: **' + nvl(o.description) + '**\n';
+        md += 'Risk: **' + nvl(o.risk_level) + '**\n';
+        md += 'Type: **' + nvl(o.type) + '**\n';
+        md += 'Variant: **' + nvl(o.variant) + '**\n';
+        md += 'Temporal score: **' + nvl(o.temporal_score) + '**\n';
+        md += 'Remedy: **' + nvl(o.remedy) + '**\n';
+        md += 'Reported: **' + nvl(o.reported) + '**\n';
         md += 'Standard codes: **' + (o.stdcode ? o.stdcode.join(', ') : 'N/A') + '**\n';
         md += 'Platforms: **' + (o.platforms_affected ? o.platforms_affected.join(', ') : 'N/A') + '**\n';
-        md += 'Exploitability: **' + o.exploitability + '**\n';
-        md += 'Consequences: **' + o.consequences + '**\n';
-        md += 'Confidence: **' + o.report_confidence + '**\n';
-        if (o.cvss) {
-            md += '### CVSS' + '\n'
-            md += objToMd(o.cvss) + '\n';
-        }
+        md += 'Exploitability: **' + nvl(o.exploitability) + '**\n';
+        md += 'Consequences: **' + nvl(o.consequences) + '**\n';
+        md += 'Confidence: **' + nvl(o.report_confidence) + '**\n';
+        md += objToList(o.cvss, 'CVSS');
         if (o.references) {
             md += '### References' + '\n'
             md += arrToMd(o.references) + '\n';
