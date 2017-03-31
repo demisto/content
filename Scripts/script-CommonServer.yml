@@ -459,6 +459,7 @@ script: |-
       }
       return false;
   }
+
   /**
    * Check if the given entry is an error entry
    * @param {Object} entry - the entry to check
@@ -467,6 +468,7 @@ script: |-
   function isError(entry) {
     return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
   }
+
   /**
    * Check if the given res is an array and is not an error
    * @param {Array} res - the result from the execute to check
@@ -475,6 +477,17 @@ script: |-
   function isValidRes(res) {
     return res && Array.isArray(res) && res.length && !isError(res[0]);
   }
+
+  /**
+   * If the given value exists, return it. Otherwise, return default and if not provided 'Unknown'
+   * @param {Object} v - value that can be anything
+   * @param {Object} def - default value. If not provided will be 'Unknown'
+   * @return {Object} value if exists or default otherwise
+   */
+  function nvl(v, def) {
+    return v ? v : def ? def : 'Unknown';
+  }
+
   /**
    * Flatten the fields into a map of dot notation key and value
    * @param {Object} obj - the object to iterate on
@@ -529,6 +542,24 @@ script: |-
           md += keys[i] + ' | ' + flat[keys[i]] + '\n';
       }
       return md;
+  }
+
+  /**
+   * Convert a given object to md list (-) while each value is converted to simple str
+   * @param {Object} o - the object to convert
+   * @param {String} t - the title of the list
+   * @returns {String} the returned md
+   */
+  function objToList(o, t) {
+    var md = '';
+    if (o) {
+        md += '### ' + t + '\n';
+        var keys = Object.keys(o);
+        for (var i=0; i<keys.length; i++) {
+            md += '- ' + keys[i] + ': ' + objToStr(o[keys[i]]) + '\n';
+        }
+    }
+    return md;
   }
 
   /**

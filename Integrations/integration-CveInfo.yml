@@ -36,29 +36,19 @@ script:
             md += 'Summary: **' + o.summary + '**\n';
             md += 'Published: **' + o.Published + '**\n';
             md += 'Modified: **' + o.Modified + '**\n';
-            md += 'CVSS: **' + o.cvss + '**\n';
-            md += 'CVSS Time: **' + o['cvss-time'] + '**\n';
-            md += 'References: **' + (o.references ? o.references.join(', ') : 'N/A') + '**\n';
-            if (o.access) {
-                md += '### Access' + '\n';
-                md += objToMd(o.access) + '\n';
+            md += 'CVSS: **' + nvl(o.cvss) + '**\n';
+            md += 'CVSS Time: **' + nvl(o['cvss-time']) + '**\n';
+            if (o.references) {
+                md += '#### References\n';
+                for (var i=0; i<o.references.length; i++) {
+                    md += '- [' + o.references[i] + '](' + o.references[i] + ')\n';
+                }
             }
-            if (o.impact) {
-                md += '### Impact' + '\n';
-                md += objToMd(o.impact) + '\n';
-            }
-            if (o.map_cve_hp) {
-                md += '### HP' + '\n';
-                md += objToMd(o.map_cve_hp) + '\n';
-            }
-            if (o.map_cve_nessus) {
-                md += '### Nessus' + '\n';
-                md += objToMd(o.map_cve_nessus) + '\n';
-            }
-            if (o.map_cve_ncip) {
-                md += '### NCIP' + '\n';
-                md += objToMd(o.map_cve_ncip) + '\n';
-            }
+            md += objToList(o.access, 'Access');
+            md += objToList(o.impact, 'Impact');
+            md += objToList(o.map_cve_hp, 'HP');
+            md += objToList(o.map_cve_nessus, 'Nessus');
+            md += objToList(o.map_cve_ncip, 'NCIP');
             if (o.ranking) {
                 md += '### Ranking' + '\n';
                 md += objToMd(o.ranking) + '\n';
