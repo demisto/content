@@ -63,11 +63,15 @@ script:
         if (result.Body === '') {
             throw 'No content recieved. Maybe you tried a private API?.';
         }
-        var obj = JSON.parse(result.Body);
-        if (!Array.isArray(obj) && obj.response_code !== 1) {
-            throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
+        try {
+            var obj = JSON.parse(result.Body);
+            if (!Array.isArray(obj) && obj.response_code !== 1) {
+                throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
+            }
+            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
     var doFile = function(hash, longFormat, threshold) {
