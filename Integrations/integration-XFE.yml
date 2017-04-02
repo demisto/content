@@ -58,8 +58,12 @@ script:
         if (result.Body === '') {
             throw 'No content recieved.';
         }
-        var obj = JSON.parse(result.Body);
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        try {
+            var obj = JSON.parse(result.Body);
+            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
     };
 
     var doFile = function(hash, longFormat) {

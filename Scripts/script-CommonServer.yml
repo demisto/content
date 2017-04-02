@@ -374,10 +374,10 @@ script: |-
   }
 
   /**
-  * Encode json object to URL.
-  * @args {Object} arg - the object to encode.
-  * @returns {String} in case of error will be empty. In Case of success will return the URL string.
-  */
+   * Encode json object to URL.
+   * @args {Object} arg - the object to encode.
+   * @returns {String} in case of error will be empty. In Case of success will return the URL string.
+   */
   function encodeToURLQuery(args) {
         var query = '';
         if (args) {
@@ -388,12 +388,21 @@ script: |-
                     if (i !== 0) {
                         query += '&';
                     }
-                    query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
+                    if (Array.isArray(args[keys[i]])) {
+                        for (var j=0; j<args[keys[i]].length; j++) {
+                            if (j !== 0) {
+                                query += '&';
+                            }
+                            query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]][j]);
+                        }
+                    } else {
+                        query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
+                    }
                 }
             }
         }
         return query;
-  };
+  }
 
   function formatCell(data) {
       if (typeof(data) === 'string' || typeof(data) === 'number')
