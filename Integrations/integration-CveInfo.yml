@@ -62,23 +62,36 @@ script:
         return 'No result found.';
     };
 
+    var cveToContext = function(o) {
+        if (o.id) {
+            return {ID: o.id, CVSS: o.cvss, Published: o.Published, Modified: o.Modified, Description: o.summary};
+        }
+        return null;
+    };
+
     var doCVE = function(cve) {
         var res = sendRequest('http://cve.circl.lu/api/cve/' + args.cveId.toUpperCase());
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj)};
+        var ec = cveToContext(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec ? {CVE: ec} : {}};
     };
 
     var doLatest = function() {
         var res = sendRequest('http://cve.circl.lu/api/last');
         var o = res.obj.results;
         var md = '## cicle.lu Latest CVEs\n';
+        var ec = [];
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {
                 md += cveToMd(o[i]) + '\n';
+                var ecl = cveToContext(o[i]);
+                if (ecl) {
+                    ec.push(ecl);
+                }
             }
         } else {
             md += 'No result found.';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec.length > 0 ? {CVE: ec} : {}};
     };
 
     // The command input arg holds the command sent from the user.
@@ -102,7 +115,29 @@ script:
       required: true
       default: true
       description: CVE ID to search
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Search CVE by ID
   - name: cve-latest
     arguments: []
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Get latest updated CVEs

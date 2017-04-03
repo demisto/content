@@ -58,12 +58,16 @@ script:
         if (result.Body === '') {
             throw 'No content recieved.';
         }
+        var obj;
         try {
-            var obj = JSON.parse(result.Body);
-            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+            obj = JSON.parse(result.Body);
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
+        if (obj.error) {
+            throw 'XFE error - ' + obj.error;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
     var doFile = function(hash, longFormat) {
@@ -228,18 +232,33 @@ script:
         return md;
     };
 
+    var cveToContext = function(o) {
+        var cve = 'Unknown';
+        if (o.stdcode) {
+            for (var i=0; i<o.stdcode.length; i++) {
+                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
+                    cve = o.stdcode[i].toUpperCase();
+                    break;
+                }
+            }
+        }
+        return {ID: cve, CVSS: o.risk_level, Published: o.reported, Modified: o.reported};
+    };
+
     var doCVE = function(cve) {
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         var o = res.obj;
         var md = '## X-Force CVE Search for: ' + cve + '\n';
+        var ec = [];
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {
                 md += cveToMd(o[i]) + '\n';
+                ec.push(cveToContext(o[i]));
             }
         } else {
             md += 'No result found.'
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec.length > 0 ? {CVE: ec} : {}};
     };
 
     var doCVELatest = function(limit) {
@@ -249,14 +268,16 @@ script:
         var res = doReq('GET', 'vulnerabilities', {limit: limit});
         var o = res.obj;
         var md = '## X-Force Latest CVEs\n';
+        var ec = [];
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {
                 md += cveToMd(o[i]) + '\n';
+                ec.push(cveToContext(o[i]));
             }
         } else {
             md += 'No result found.'
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec.length > 0 ? {CVE: ec} : {}};
     };
 
     switch (command) {
@@ -388,6 +409,17 @@ script:
       deprecated: false
       default: true
       description: The cve to search for
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Search for details about the given CVE
   - name: cve-latest
     deprecated: false
@@ -396,5 +428,16 @@ script:
       deprecated: false
       default: true
       description: The number of results to return
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Return the latest vulnerabilities found
 hidden: false
