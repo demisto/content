@@ -393,6 +393,11 @@ script:
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
       defaultValue: "10"
+    outputs:
+    - contextPath: badIPs
+      description: Bad IPs found
+      important: true
+      importantDescription: Bad IPs found querying VirusTotal
     description: Check IP Reputation
   - name: url
     deprecated: false
