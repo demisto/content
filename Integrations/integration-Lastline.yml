@@ -378,7 +378,7 @@ script:
       required: true
       deprecated: false
       default: true
-      description: 'URL to be analyzed '
+      description: URL to be analyzed
     - name: timeout
       deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
