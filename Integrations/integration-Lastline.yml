@@ -330,7 +330,7 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            submitUrl('google.com');
+            urlGetSubmit('google.com');
             return 'ok';
         case 'url':
             return urlGetSubmit(args.url, args.malicious_score, args.timeout, args.interval);
