@@ -9,7 +9,7 @@ description: Submitting resources for analysis and obtaining the results
 configuration:
 - display: Server URL (e.g. https://user.lastline.com)
   name: url
-  defaultvalue: http://user.lastline.com
+  defaultvalue: https://analysis.lastline.com
   type: 0
   required: true
 - display: API Key for accessing Lastline APIs
