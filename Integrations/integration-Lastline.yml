@@ -23,175 +23,283 @@ configuration:
   type: 4
   required: true
 - display: Use system proxy settings
-  name: proxy
+  name: insecure
   defaultvalue: "True"
   type: 8
   required: false
-- display: Score threshold for marking file or URL as malicious
-  name: malicious_score
-  defaultvalue: "50"
-  type: 0
-  required: false
-- display: Score threshold to present analysis in war room
-  name: full_report_score
-  defaultvalue: "50"
-  type: 0
-  required: false
 script:
   script: |+
-    var lastlineDefaults = {interval:10, timeout:60};
+    var lastlineDefaults = {interval:10, timeout:0, malicious_score:50};
 
     var serverUrl = params.url;
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
     }
 
-    var doReq = function(method, path, parameters, body) {
-        if (!parameters) {
-            parameters = {};
+    // print data report as markdown
+    var dataToMd = function(data,malicious_score) {
+        var key;
+        var name;
+        if ('url' in data.analysis_subject) {
+            key='URL';
+            name = data.analysis_subject.url;
+        } else {
+            key='file';
+            name = 'MD5:'+data.analysis_subject.md5;
         }
-        parameters.key = params.api_key;
-        parameters.api_token=params.api_token;
-        parameters.full_report_score=params.full_report_score;
-
-        console.log(serverUrl + path + encodeToURLQuery(parameters));
-        var result = http(
-            serverUrl + path + encodeToURLQuery(parameters),
-            {
-                Headers: {'Content-Type': ['application/json']},
-                Method: method,
-                Body: ''
-            }
-        );
-        console.log(JSON.stringify(result));
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
-        }
-        var obj = JSON.parse(result.Body);
-
-        // analysis is not ready yet
-        if (obj.error_code && obj.error_code == 106) {
-            return {body: null, obj: {data:null}};
-        }
-
-        // no file matching hash
-        if (obj.error_code && obj.error_code == 101) {
-            return {body: null, obj: {data:null}};
-        }
-        if (obj.error_code) {
-            throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
-        }
-        if (obj.success != 1) {
-            throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
-        }
-        if (obj.data.errors) {
-            throw 'Error: ' + obj.data.errors;
-        }
-        return {body: result.Body, obj: obj};
-    }
-    // var doFile = function (file_id) {
-    //     var parameters;
-    //     if (!parameters) {
-    //         parameters = {};
-    //     }
-    //     parameters.key = params.api_key;
-    //     parameters.api_token=params.api_token;
-    //     var path = 'analysis/submit/file';
-
-    //     var res = httpMultipart(
-    //         serverUrl + path + encodeToURLQuery(parameters),
-    //         file_id,
-    //         {
-    //             Method: 'POST',
-    //             Headers: {'Content-Type': ['application/json']}
-    //         }
-    //         );
-    //     console.log(JSON.stringify(res));
-    //     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-    //         throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-    //     }
-    //     return JSON.parse(res.Body);
-
-    // }
-    var analysisPoll = function(uuid,timeout,interval) {
-        var res = doReq('POST', '/analysis/get', {uuid: uuid});
-
-        var waited=0;
-        while (!analysisReady(res.obj.data) && timeout>waited) {
-            wait(interval);
-            waited+=interval;
-            res = doReq('POST', 'analysis/get', {uuid: uuid});
-        }
-        return res;
-    }
-    var analysisReady = function (data) {
-        return (data && data.score);
-    }
-    var dataToMd = function(data) {
-        var key = Object.keys(data.analysis_subject)[0];
-        var name = data.analysis_subject[key];
         var md = '';
-        md += '## Lastline analysis for ' + key + ': **' + name +'**\n';
-        md += '### Score: ' + data.score + "\n";
+        if (data.score>=malicious_score) {
+            name = name+ ' :red_circle:';
+        }
+        md += '### Lastline analysis for ' + key + ': **' + name +'**\n';
+
+        md += '#### Score: ' + data.score  + "\n";
         md += 'Task UUID: ' + data.task_uuid + "\n";
         md += 'Submission Time: ' + data.submission + "\n";
         if (Array.isArray(data.malicious_activity) && data.malicious_activity.length>0) {
             md += '### Suspicious Activity\n';
             md += objToMd(data.malicious_activity) + "\n";
         }
+        if (key == 'file') {
+            md += objToMd(data.analysis_subject);
+        }
         md += "\n";
         return md;
     }
-    // var submitFile = function (file,timeout) {
-    //     file = {MD5: '47439da9cdcf7e6379e032334004dc11',
-    //             SHA1: '48818704bca867afd66a5a4d01938ab65d1595c3',
-    //             SHA256: '44403483a46def5191b998b2fd3de809130f100d41b59d57771ad2a9ec7dea52'};
-    //     var res = doReq('POST','analysis/submit/file', {md5: file.MD5}); //, sha1: file.SHA1, sha256: file.SHA256});
-    //     //var res = doFile(file_id);
-    //     var md="";
-    //     var ec={};
 
-    //     return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    // }
-    var submitUrl = function (url,timeout,interval) {
-        if (!timeout) {
-            timeout = lastlineDefaults.timeout;
+    // send http post request
+    var doReq = function(method, path, parameters, body) {
+        if (!parameters) {
+            parameters = {};
         }
-        if (!interval) {
-            interval = lastlineDefaults.interval;
+        parameters.key = params.api_key;
+        parameters.api_token=params.api_token;
+
+        var result = http(
+            serverUrl + path + encodeToURLQuery(parameters),
+            {
+                Headers: {'Content-Type': ['application/json']},
+                Method: method
+            },
+            params.insecure
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
 
-        var res = doReq('POST', 'analysis/submit/url', {url: url});
-        var uuid = res.obj.data.task_uuid;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+
+        // analysis is not ready yet
+        if (obj.error_code && obj.error_code == 106) {
+            return {body: null, obj: {data:null}};
+        }
+
+        if (obj.error_code) {
+            switch (obj.error_code) {
+                case 101:
+                    // file hash does not exist
+                    break;
+                case 106:
+                    // analysis report not ready
+                    break;
+                default:
+                    throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
+            }
+        }
+
+        return {body: result.Body, obj: obj};
+    }
+
+    // send http multipart request (post file)
+    var doFile = function (entry_id) {
+        var parameters;
+        if (!parameters) {
+            parameters = {};
+        }
+        parameters.key = params.api_key;
+        parameters.api_token=params.api_token;
+        var path = 'analysis/submit/file';
+
+        var result = httpMultipart(
+            serverUrl + path + encodeToURLQuery(parameters),
+            entry_id,
+            {
+                Method: 'POST',
+                Headers: {'Content-Type': ['application/json']}
+            },{},
+            params.insecure
+
+            );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+
+        if (obj.error_code) {
+            switch (obj.error_code) {
+                case 101:
+                    // file hash does not exist
+                    break;
+                case 106:
+                    // analysis report not ready
+                    break;
+                default:
+                    throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
+            }
+        }
+        return {body: result.Body, obj: obj};
+
+    }
+
+    // poll for analysis report
+    var analysisPoll = function(uuid,malicious_score,timeout,interval) {
+        var result = doReq('POST', '/analysis/get', {uuid: uuid, full_report_score:malicious_score});
+
+        var waited=0;
+        while (!analysisReady(result.obj.data) && parseInt(timeout)>waited) {
+            wait(parseInt(interval));
+            waited+=interval;
+            result = doReq('POST', 'analysis/get', {uuid: uuid, full_report_score:malicious_score});
+        }
+        return result;
+    }
+
+    // check if report is ready based on data content (score field is set)
+    var analysisReady = function (data) {
+        return (data && 'score' in data);
+    }
+
+    // submit file for analysis
+    // optional - wait for analysis to copmplete and print results
+    // if not waiting - add uuid to context
+    var fileSubmit = function (file_id,malicious_score,timeout,interval) {
+        result = doFile(file_id);
+
+        var uuid = result.obj.data.task_uuid;
 
         var ec = {};
         var md = '';
 
-        ec.lastlineTasks=[{'url':url,'uuid':uuid}];
-
-        if (!analysisReady(res.obj.data) && timeout > 0) {
-            res = analysisPoll(uuid,timeout,interval);
+        if (!analysisReady(result.obj.data) && timeout > 0) {
+            result = analysisPoll(uuid,timeout,interval);
         }
 
-        if (analysisReady(res.obj.data)) {
-            md=dataToMd(res.obj.data);
-            if (res.obj.data.score > params.malicious_score) {
-                ec.URLMalicious={'url':url,'score':res.obj.data.score};
+        if (analysisReady(result.obj.data)) {
+            md=dataToMd(result.obj.data,malicious_score);
+            if (result.obj.data.score > malicious_score) {
+                ec['URL/Malicious']=url;
             }
         } else {
-            md += '## Lastline analysis for url: **' + url +'**\n';
-            md += 'URL submitted for analysis.\n';
+            ec.lastlineTasks=[{'file_id':file_id,'uuid':uuid}];
+            md += '### Lastline analysis for file: **' + file_id +'**\n';
+            md += 'File submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-
+        return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     }
-    var analysisGet = function(uuid,timeout,interval) {
+
+    // submit URL for analysis and get its report
+    // if analysis exists - return it immediately.
+    // if analysis does not exist - submit it and either wait or put task id into context
+    var urlGetSubmit = function (url,malicious_score,timeout,interval) {
         if (!timeout) {
             timeout = lastlineDefaults.timeout;
         }
         if (!interval) {
             interval = lastlineDefaults.interval;
+        }
+        if (!malicious_score) {
+            malicious_score = lastlineDefaults.malicious_score;
+        }
+
+        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:malicious_score});
+        var uuid = result.obj.data.task_uuid;
+
+        var ec = {};
+        var md = '';
+
+        if (!analysisReady(result.obj.data) && timeout > 0) {
+            result = analysisPoll(uuid,malicious_score,timeout,interval);
+        }
+
+        if (analysisReady(result.obj.data)) {
+            md=dataToMd(result.obj.data,malicious_score);
+            if (result.obj.data.score > malicious_score) {
+                ec['URL/Malicious']=url;
+            }
+        } else {
+            ec.lastlineTasks=[{'url':url,'uuid':uuid}];
+            md += '### Lastline analysis for url: **' + url +'**\n';
+            md += 'URL submitted for analysis.\n';
+            md += 'Task UUID: ' + uuid + '\n';
+        }
+        return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+
+    }
+
+    // get file hash analysis.
+    // If hash is not known - retuern error
+    var hashGet = function(hash, malicious_score, full_report_score) {
+        if (!malicious_score) {
+            malicious_score = lastlineDefaults.malicious_score;
+        }
+        if (!full_report_score) {
+            full_report_score = lastlineDefaults.full_report_score;
+        }
+        var fileParams={full_report_score:malicious_score};
+
+        switch (hash.length) {
+            case 32:
+                fileParams.md5=hash;
+                break;
+            case 40:
+                fileParams.sha1=hash;
+                break;
+            case 64:
+                fileParams.sha256=hash;
+                break
+            default:
+                throw 'Hash not recognized';
+        }
+
+        var md='';
+        var ec={};
+
+        // check if file hash exists
+        var result = doReq('POST','analysis/submit/file', fileParams);
+
+        if (result.obj.error_code == 101) {
+            throw 'File hash not found in Lastline';
+        }
+        var data = result.obj.data;
+        md += dataToMd(data,malicious_score);
+
+        if (result.obj.data.score > malicious_score) {
+            ec['File/Malicious']=hash;
+        }
+        return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+
+    }
+
+    // get analysis report based on uuid
+    // if report not ready - either wait or return waiting message
+    var analysisGet = function(uuid,malicious_score,timeout,interval) {
+        if (!timeout) {
+            timeout = lastlineDefaults.timeout;
+        }
+        if (!interval) {
+            interval = lastlineDefaults.interval;
+        }
+        if (!malicious_score) {
+            malicious_score = lastlineDefaults.malicious_score;
         }
         if (!uuid || uuid == '') {
             throw 'No task UUID provided';
@@ -199,42 +307,41 @@ script:
         var ec = {};
         var md = '';
 
-        res = analysisPoll(uuid,timeout,interval);
+        result = analysisPoll(uuid,malicious_score,timeout,interval);
 
-        if (analysisReady(res.obj.data)) {
-            if (res.obj.data.score > params.malicious_score) {
-                ec.URLMalicious={'url':url,'score':res.obj.data.score};
+
+        if (analysisReady(result.obj.data)) {
+            if (result.obj.data.score > malicious_score) {
+                if ('url' in result.obj.data.analysis_subject) {
+                    ec['URL/Malicious']={url:result.obj.data.analysis_subject.url,score:result.obj.data.score};
+                } else {
+                    ec['File/Malicious']={md5:obj.data.analysis_subject.md5,sha1:data.analysis_subject.sha1,sha256:data.analysis_subject.sha256,score:result.obj.data.score};
+                }
             }
-            md+=dataToMd(res.obj.data);
+            md+=dataToMd(result.obj.data,malicious_score);
         } else {
-            md += 'Report not ready.\n';
+            md += '#### Report not ready.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
     // The command input arg holds the command sent from the user.
     switch (command) {
-    // This is the call made when pressing the integration test button.
-    case 'test-module':
-        if (!parseInt(params.malicious_score) || parseInt(params.malicious_score) < 0 || parseInt(params.malicious_score > 100)) {
-            throw 'Malicious score threshold invalid. Allowed values are 0-100.';
-        }
-        if (!parseInt(params.full_report_score) || parseInt(params.full_report_score) < 0 || parseInt(params.full_report_score > 100)) {
-            throw 'Full report score threshold invalid. Allowed values are 0-100.';
-        }
-        submitUrl('google.com',0,10);
-        return 'ok';
-    case 'lastlineGet':
-        return analysisGet(args.uuid, args.timeout, args.interval);
-    case 'lastlineUrl':
-        return submitUrl(args.url,args.timeout, args.interval);
-    // case 'lastlineFile':
-    //     return submitFile(args.file_id);
-    default:
-        // You can use args[argName] or args.argName to get a specific arg. args are strings.
-        // You can use params[paramName] or params.paramName to get a specific params.
-        // Params are of the type given in the integration page creation.
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            submitUrl('google.com');
+            return 'ok';
+        case 'url':
+            return urlGetSubmit(args.url, args.malicious_score, args.timeout, args.interval);
+        case 'file':
+            return hashGet(args.file, args.malicious_score);
+        case 'lastlineUpload':
+            return fileSubmit(args.file_id, args.malicious_score, args.timeout, args.interval);
+        case 'lastlineGet':
+            return analysisGet(args.uuid, args.malicious_score, args.timeout, args.interval);
+        default:
+            throw 'Unknown command - ' + command;
     }
 
   type: javascript
@@ -250,15 +357,21 @@ script:
     - name: timeout
       deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
+      defaultValue: "0"
     - name: interval
       deprecated: false
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
+    - name: malicious_score
+      deprecated: false
+      description: Score threshold to identify file as malicious
     outputs:
-    - contextPath: URLMalicious
+    - contextPath: URL/Malicious
+      description: List of malicious URLs identified by Lastline analysis
+    - contextPath: File/Malicious
       description: List of malicious URLs identified by Lastline analysis
     description: Get analysis report
-  - name: lastlineUrl
+  - name: url
     deprecated: false
     arguments:
     - name: url
@@ -269,25 +382,56 @@ script:
     - name: timeout
       deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
+      defaultValue: "0"
     - name: interval
       deprecated: false
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
+    - name: malicious_score
+      deprecated: false
+      description: Score threshold to identify file as malicious
     outputs:
     - contextPath: lastlineTasks
       description: List of the submitted Lastline analysis tasks
-    - contextPath: URLMalicious
+    - contextPath: URL/Malicious
       description: List of malicious URLs identified by Lastline analysis
       important: true
       importantDescription: List of malicious URLs identified by Lastline analysis
     description: Submit URL for analysis
-  - name: lastlineFile
+  - name: file
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      deprecated: false
+      default: true
+      description: File hash to be checked (supporting MD5, SHA1, SHA256)
+    - name: malicious_score
+      deprecated: false
+      description: Score threshold to identify file as malicious
+    outputs:
+    - contextPath: File/Malicious
+      description: List of malicious URLs identified by Lastline analysis
+    description: Submit a file for analysis
+  - name: lastlineUpload
     deprecated: false
     arguments:
     - name: file_id
       required: true
       deprecated: false
       default: true
-      description: File entry to be analyzed
-    description: Submit a file for analysis
+      description: File ID to be uploaded
+    - name: malicious_score
+      deprecated: false
+      description: Score threshold to identify file as malicious
+    - name: timeout
+      deprecated: false
+      description: Timeout (in seconds) to wait for analysis to complete
+    - name: interval
+      deprecated: false
+      description: Interval (in seconds) to poll for the analysis status
+    outputs:
+    - contextPath: lastlineTasks
+      description: List of the submitted Lastline analysis tasks
+    description: Upload file for analysis
 hidden: false
