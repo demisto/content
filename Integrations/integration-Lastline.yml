@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAYCAYAAAAxkDmIAAAAAXN
 description: Submitting resources for analysis and obtaining the results
 configuration:
 - display: Server URL (e.g. https://analysis.lastline.com)
-  name: url
+  name: url 
   defaultvalue: https://analysis.lastline.com
   type: 0
   required: true
