@@ -64,15 +64,16 @@ script:
         if (result.Body === '') {
             throw 'No content recieved.';
         }
+        var obj;
         try {
-            var obj = JSON.parse(result.Body);
-            if (obj.errors && obj.errors.length > 0) {
-                throw obj.errors.join(', ');
-            }
-            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+            obj = JSON.parse(result.Body);
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
+        if (obj.errors && obj.errors.length > 0) {
+            throw obj.errors.join(', ');
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
     var dateToEpoch = function(d) {
