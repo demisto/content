@@ -8,6 +8,66 @@ script: |-
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
   /**
+   * Converts comma separated list to an array
+   * @param {String} arg - the string to convert
+   * @returns {Array} array from the original string-list
+   */
+  function argToList(arg){
+      if (!arg){
+          return [];
+      } else if (arg instanceof Array) {
+          return arg;
+      } else if (typeof arg === "string") {
+          if (arg[0] === '[' && arg[-1] === ']'){
+              return JSON.parse(arg);
+          } else {
+              return arg.split(',');
+          }
+      }
+  }
+  /**
+   * Converts a demisto table in JSON form to a Markdown table
+   * @param {String} name - the name of the table
+   * @param {Object} t - the JSON table - Array of objects with the same keys
+   * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
+   * @returns {Array} array from the original string-list
+   */
+  function tableToMarkdown(name, t, headers){
+      //in case of headers was not provided (backward compatibility)
+
+      if (!(t instanceof Array)){
+          t = [t];
+      }
+      if (!(headers instanceof Array && headers.length > 0) || !headers){
+          headers = Object.keys(t[0]);
+      }
+
+      var mdResults = '';
+      if (name) {
+          mdResults = '### ' + name + '\n';
+      }
+      if (t) {
+          mdResults += headers.join('|') + '\n';
+          var sep = [];
+          headers.forEach(function(h){
+              sep.push('-');
+          });
+          mdResults += sep.join('|') + '\n';
+          t.forEach(function(entry){
+              var vals = [];
+              headers.forEach(function(h){
+                  vals.push(!!entry[h] ? formatCell(entry[h]) : ' ');
+              });
+              mdResults += vals.join('|') + '\n';
+          });
+      } else{
+          mdResults += 'No data returned\n';
+      }
+      return mdResults;
+  }
+
+  var tblToMd = tableToMarkdown;  
+  /**
    * Checks if the given string represents a valid IPv4 address
    * @param {String} ip - the string to check
    * @returns {Boolean} true if valid IPv4 address
