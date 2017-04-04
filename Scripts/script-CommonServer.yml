@@ -619,7 +619,7 @@ script: |-
     var parts = path.split('.');
     for (var i=0; i<parts.length; i++) {
       // First, handle array option
-      var part = parts[i].match(/([a-zA-Z0-9]*)(\[([0-9]+)\])?/);
+      var part = parts[i].match(/([a-zA-Z0-9_]*)(\[([0-9]+)\])?/);
       if (part[3]) {
         // If array of property and not top array
         if (part[1]) {
