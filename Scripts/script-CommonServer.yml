@@ -61,7 +61,7 @@ script: |-
               mdResults += vals.join('|') + '\n';
           });
       } else{
-          mdResults += '**No entries.**\n';
+          mdResults += 'No data returned\n';
       }
       return mdResults;
   }
