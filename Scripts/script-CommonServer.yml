@@ -646,6 +646,7 @@ script: |-
     }
     return obj;
   }
+
   /**
    * Replace the given args with the actual values in the input template
    * @param {String} input - the template to replace values in
@@ -659,7 +660,8 @@ script: |-
       res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
     }
     return res;
-  };
+  }
+
   /**
    * Replace the given args with the actual values in the input template and remove from args
    * @param {String} input - the template to replace values in
@@ -676,7 +678,7 @@ script: |-
         }
       }
       return res;
-  };
+  }
 
   var xmlReservedChars = {
     '&': '&amp;',
@@ -685,6 +687,7 @@ script: |-
     '<': '&lt;',
     '>': '&gt;'
   };
+
   /**
    * Escape reserved XML chars in the input
    * @param {String} input - the input to escape
@@ -697,7 +700,7 @@ script: |-
           res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
       }
       return res;
-  };
+  }
 type: javascript
 tags:
 - infra
