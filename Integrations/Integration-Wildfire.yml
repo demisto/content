@@ -166,7 +166,7 @@ script:
               url,
               {
                   Method: 'POST',
-                  Body: 'apikey=37ddffe5490c01835b6645fb6ecfe9c9&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                  Body: 'apikey='+params.token+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
                   Headers: headers
               }
           );
