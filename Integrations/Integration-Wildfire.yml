@@ -1,0 +1,260 @@
+commonfields:
+  id: WildFire - Mine
+  version: -1
+name: WildFire - Mine
+display: WildFire - Mine
+category: Forensics & Malware analysis
+image: data:image/png;base64,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
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: secure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    var urlDict = {
+        'upload': '/submit/file',
+        'report': '/get/report'};
+
+    var errorDictReport = {
+        401 : 'Unauthorized API key invalid',
+        404 : 'Not Found The report was not found',
+        405 : 'Method Not Allowed Method other than POST used',
+        419 : 'Request report quota exceeded',
+        420 : 'Insufficient arguments',
+        421 : 'Invalid arguments',
+        500 : 'Internal error'};
+
+    var errorDictUpload = {
+        200 : 'OK Indicates success and a report is returned',
+        401 : 'Unauthorized API key invalid',
+        405 : 'Method Not Allowed Method other than POST used',
+        413 : 'Request Entity Too Large Sample file size over max limit',
+        418 : 'Unsupported File Type Sample file type is not supported',
+        419 : 'Max Request Reached Max number of uploads per day exceeded',
+        500 : 'Internal error',
+        513 : 'File upload failed' }
+
+    /*func from server funcs/ to be delted*/
+
+    var tblToMd = function(name, t, headers){
+      //in case of headers was not provided (backward compatibility)
+      if (!(t instanceof Array)){
+          t = [t];
+      }
+      if (!(headers instanceof Array && headers.length > 0) || !headers){
+          headers = Object.keys(t[0]);
+      }
+      var mdResults = '';
+      if (name) {
+          mdResults = '### ' + name + '\n';
+      }
+      if (t) {
+          mdResults += headers.join('|') + '\n';
+          var sep = [];
+          headers.forEach(function(h){
+              sep.push('-');
+          });
+          mdResults += sep.join('|') + '\n';
+          t.forEach(function(entry){
+              var vals = [];
+              headers.forEach(function(h){
+                  vals.push(!!entry[h] ? formatCell(entry[h]) : ' ');
+              });
+              mdResults += vals.join('|') + '\n';
+          });
+      } else{
+          mdResults += 'No data returned\n';
+      }
+      return mdResults;
+    };
+
+    var parseFile = function(body) {
+        var context = {};
+        var whichFile;
+        if(body.malware == 'yes'){
+          context['File/Malicious'] = [];
+          whichFile = context['File/Malicious'];
+        }
+        else{
+          context.File = [];
+          whichFile = context.File;
+        }
+        var ep = {};
+        //ep['Name'] = ;
+        //ep['EntryID'] = ;
+        ep['MD5'] = body.md5;
+        ep['SHA1'] = body.sha1;
+        ep['SHA256'] = body.sha256;
+       // ep['Extension'] =
+        ep['Type'] = body.filetype;
+        ep['Hostname'] =
+        //ep['Path'] =
+
+        whichFile.push(ep);
+
+        return context;
+    }
+
+    /*
+     * Sample function for http GET request with query string
+     */
+    var sendRequest = function(url, body, headers) {
+        url.replace(/[\/]+$/, '');
+        var res = http(
+            url,
+            {
+                Method: 'POST', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Body: body,
+                Headers: headers}
+        );
+        if (res.StatusCode !=200) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDictReport[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.Body;
+        // add support for PDF
+    };
+
+    var sendMultipartRequest = function(url, headers, file, apikey){
+        url.replace(/[\/]+$/, '');
+        var res = httpMultipart(
+                url,
+                file,
+                {
+                    Method: 'POST',
+                    Headers: headers,
+                },
+                {
+                    'apikey': apikey,
+                    'file' : file
+                },
+                params.insecure
+                );
+
+        if (res.StatusCode !=200) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDictUpload[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(x2j(res.Body));
+    };
+
+    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
+
+
+    /*MD table with title "Wildfire Report", starting at 'wildfire'
+    In content, File Entity object with the relevant field from the integration.
+    a. if file is malicious, context name is File/Malicious else File
+    */
+
+    //var contextFunc = function(body){}
+    var parseResult = function(body, title) {
+        var md = tblToMd(title, body, Object.keys(body));
+        return md;
+       // return {Type: entryTypes.note, Contents: body, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: context};
+    };
+
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var res = http(
+                url,
+                {
+                    Method: 'POST',
+                    Body: 'apikey=37ddffe5490c01835b6645fb6ecfe9c9&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                    Headers: headers
+                }
+            );
+
+            if(res.StatusCode==200)
+                return 'ok';
+            else
+                return 'Something went wrong';
+            break;
+
+        case 'WildFireReport':
+            var url = params.server + urlDict.report;
+            var hash = args.md5 || args.sha256;
+            if(!hash)
+                throw 'Missing md5/sha256';
+            var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
+            var resXML = sendRequest(url, bodyXML, headers);
+            var result = JSON.parse(x2j(resXML));
+            var report = result.wildfire.task_info.report;
+            var file_info = result.wildfire.file_info;
+
+            var md = parseResult(file_info,'File info');
+            for (var i=0; i<report.length; i++){
+                md += parseResult(report[i],'Report '+i);
+            }
+            var context = parseFile(result.wildfire.file_info);
+
+            if(args.format=='pdf'){
+                /*we need the file data, so we want the xml anyway*/
+                var bodyPDF = 'apikey='+params.token+'&format=pdf&hash='+hash;
+                var resPDF = sendRequest(url, bodyPDF, headers);
+
+                var currentTime = new Date();
+                var fileName = command + '_at_' + currentTime.getTime();
+
+                return {Type: entryTypes.note,
+                        FileID: saveFile(resPDF),
+                        File: fileName,
+                        Contents: fileName,
+                        EntryContext: context
+                };
+            }
+            else{ /*args.format == xml */
+                return {Type: entryTypes.note,
+                        Contents: result,
+                        ContentsFormat: formats.json,
+                        HumanReadable: md, /*todo*/
+                        ReadableContentsFormat: formats.markdown,
+                        EntryContext: context
+                };
+            }
+            break;
+        case 'WildFireUpload1':
+            var url = params.server + urlDict.upload;
+            return sendMultipartRequest(url, headers, args.upload, params.token);
+    }
+
+  type: javascript
+  commands:
+  - name: WildFireReport
+    deprecated: false
+    arguments:
+    - name: md5
+      deprecated: false
+    - name: sha256
+      deprecated: false
+    - name: format
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - pdf
+  - name: WildFireUpload1
+    deprecated: false
+    arguments:
+    - name: upload
+      deprecated: false
+      description: File to upload
+hidden: false
