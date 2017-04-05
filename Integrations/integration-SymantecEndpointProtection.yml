@@ -252,9 +252,7 @@ script:
         clientContentJson = doGet(args, params, token, false, 'sepm/api/v1/stats/client/content');
 
         var md = '## Client Content, last updated on {0}\n'.format(clientContentJson.lastUpdated);
-        clientContentJson.clientDefStatusList.forEach(function(defStatus) {
-            md += objToMd(defStatus) + '\n';
-        });
+        md += tblToMd('Client Content Verions', clientContentJson.clientDefStatusList);
 
         return {
             Type: entryTypes.note, Contents: clientContentJson, ContentsFormat: formats.json, HumanReadable: md,
@@ -264,19 +262,14 @@ script:
 
     var endpointsInfo = function(qArgs, qParams, token) {
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/computers');
-
-        // var md = '## Endpoints\n';
-        // for (var i = 0; i < jsonRes.content.length; i++) {
-        //     md += tblToMd('Endpoint ' + (i + 1), jsonRes.content[i], argToList(qArgs.keys));
-        // }
-        md = tblToMd('Endpoints', jsonRes.content, argToList(qArgs.keys));
+        md = tblToMd('Endpoints', jsonRes.content, argToList(qArgs.columns));
 
         return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'sepm.endpoints': jsonRes}};
     }
 
     var groupsInfo = function(qArgs, qParams, token) {
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/groups');
-        md = tblToMd('Groups', jsonRes.content, argToList(qArgs.keys));
+        md = tblToMd('Groups', jsonRes.content, argToList(qArgs.columns));
 
         return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'sepm.groups': jsonRes}};
     }
@@ -456,7 +449,9 @@ script:
   type: javascript
   commands:
   - name: sep-endpoints-info
-    arguments: []
+    arguments:
+    - name: columns
+      description: The columns to show.
     description: Get information about endpoints.
   - name: sep-update-content
     arguments:
@@ -489,7 +484,9 @@ script:
       description: The polling interval of the command.
     description: Scans an endpoint.
   - name: sep-groups-info
-    arguments: []
+    arguments:
+    - name: columns
+      description: The columns to show.
     description: Get information about groups.
   - name: sep-system-info
     arguments: []
