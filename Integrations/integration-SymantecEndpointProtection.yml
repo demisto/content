@@ -244,19 +244,20 @@ script:
 
         return {
             Type: entryTypes.note, Contents: systemInfoJson, ContentsFormat: formats.json, HumanReadable: md,
-            EntryContext: {'sepm.ServerAVDefPublishDate': systemInfoJson.avdef.publishedBySymantec}
+            EntryContext: {'SEPM.ServerAVDefVersion': systemInfoJson.avdef.publishedBySymantec}
         };
     }
 
     var clientContent = function(qArgs, qParams, token) {
         clientContentJson = doGet(args, params, token, false, 'sepm/api/v1/stats/client/content');
 
-        var md = '## Client Content, last updated on {0}\n'.format(clientContentJson.lastUpdated);
+        var lastUpdatedDate = Date(parseInt(clientContentJson.lastUpdated) * 1000);
+        var md = '## Client Content, last updated on {0}\n'.format(lastUpdatedDate);
         md += tblToMd('Client Content Verions', clientContentJson.clientDefStatusList);
 
         return {
             Type: entryTypes.note, Contents: clientContentJson, ContentsFormat: formats.json, HumanReadable: md,
-            EntryContext: {'sepm.ClientContentVersions': clientContentJson.clientDefStatusList, 'sepm.LastUpdated': clientContentJson.lastUpdated}
+            EntryContext: {'SEPM.ClientContentVersions': clientContentJson.clientDefStatusList, 'sepm.LastUpdated': lastUpdatedDate}
         };
     }
 
@@ -264,14 +265,14 @@ script:
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/computers');
         md = tblToMd('Endpoints', jsonRes.content, argToList(qArgs.columns));
 
-        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'sepm.endpoints': jsonRes}};
+        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.endpoints': jsonRes}};
     }
 
     var groupsInfo = function(qArgs, qParams, token) {
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/groups');
         md = tblToMd('Groups', jsonRes.content, argToList(qArgs.columns));
 
-        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'sepm.groups': jsonRes}};
+        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.groups': jsonRes}};
     }
 
     var getComputerIdByIp = function(qParams, token, ip) {
@@ -343,7 +344,7 @@ script:
         md += '### commandId = ' + commandId + '\n';
         md += '### ' + message;
 
-        return {Type: entryTypes.note, Contents: response['cmdStatusDetail'], ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'sepm.lastCommandId': commandId}};
+        return {Type: entryTypes.note, Contents: response['cmdStatusDetail'], ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.lastCommandId': commandId}};
     }
 
     var runClientCommand = function(qArgs, qParams, token, command) {
