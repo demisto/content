@@ -263,9 +263,23 @@ script:
 
     var endpointsInfo = function(qArgs, qParams, token) {
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/computers');
-        md = tblToMd('Endpoints', jsonRes.content, argToList(qArgs.columns));
 
-        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.endpoints': jsonRes}};
+        md = '## Endpoints Information';
+        if (qArgs.hostname) {
+            md += ', filtered for hostname: ' + qArgs.hostname + '\n';
+            var filteredJsonRes = {}
+            jsonRes.content.forEach(function(h) {
+                if (h.computerName == qArgs.hostname) {
+                    filteredJsonRes = h;
+                }
+            });
+        } else {
+            md += '\n';
+            filteredJsonRes = jsonRes.content;
+        }
+
+        md += tblToMd('Endpoints', filteredJsonRes, argToList(qArgs.columns));
+        return {Type: entryTypes.note, Contents: filteredJsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.endpoints': filteredJsonRes}};
     }
 
     var groupsInfo = function(qArgs, qParams, token) {
@@ -453,6 +467,8 @@ script:
     arguments:
     - name: columns
       description: The columns to show.
+    - name: hostname
+      description: If given, show information only about the specific hostname.
     description: Get information about endpoints.
   - name: sep-update-content
     arguments:
