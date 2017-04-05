@@ -51,8 +51,6 @@ script:
         500 : 'Internal error',
         513 : 'File upload failed' };
 
-    /*func from server funcs/ to be delted*/
-
     var tblToMd = function(name, t, headers){
       //in case of headers was not provided (backward compatibility)
       if (!(t instanceof Array)){
@@ -85,10 +83,6 @@ script:
       return mdResults;
     };
 
-
-    /*
-     * Sample function for http GET request with query string
-     */
     var sendRequest = function(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
