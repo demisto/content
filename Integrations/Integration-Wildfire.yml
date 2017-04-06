@@ -29,62 +29,27 @@ configuration:
 script:
   script: |+
     var urlDict = {
-        'upload': '/submit/file',
-        'report': '/get/report'};
+        upload: '/submit/file',
+        report: '/get/report'
+      };
 
-    var errorDictReport = {
+    var errorDict = {
         401 : 'Unauthorized API key invalid',
         404 : 'Not Found The report was not found',
         405 : 'Method Not Allowed Method other than POST used',
-        419 : 'Request report quota exceeded',
-        420 : 'Insufficient arguments',
-        421 : 'Invalid arguments',
-        500 : 'Internal error'};
-
-    var errorDictUpload = {
-        200 : 'OK Indicates success and a report is returned',
-        401 : 'Unauthorized API key invalid',
-        405 : 'Method Not Allowed Method other than POST used',
         413 : 'Request Entity Too Large Sample file size over max limit',
         418 : 'Unsupported File Type Sample file type is not supported',
-        419 : 'Max Request Reached Max number of uploads per day exceeded',
+        419 : 'Request quota exceeded',
+        420 : 'Insufficient arguments',
+        421 : 'Invalid arguments',
         500 : 'Internal error',
-        513 : 'File upload failed' };
+        513 : 'File upload failed'
+      };
 
-    var tblToMd = function(name, t, headers){
-      //in case of headers was not provided (backward compatibility)
-      if (!(t instanceof Array)){
-          t = [t];
-      }
-      if (!(headers instanceof Array && headers.length > 0) || !headers){
-          headers = Object.keys(t[0]);
-      }
-      var mdResults = '';
-      if (name) {
-          mdResults = '### ' + name + '\n';
-      }
-      if (t) {
-          mdResults += headers.join('|') + '\n';
-          var sep = [];
-          headers.forEach(function(h){
-              sep.push('-');
-          });
-          mdResults += sep.join('|') + '\n';
-          t.forEach(function(entry){
-              var vals = [];
-              headers.forEach(function(h){
-                  vals.push(!!entry[h] ? formatCell(entry[h]) : ' ');
-              });
-              mdResults += vals.join('|') + '\n';
-          });
-      } else{
-          mdResults += 'No data returned\n';
-      }
-      return mdResults;
-    };
-
+    /*
+     * Sample function for http GET request with query string
+     */
     var sendRequest = function(url, body, headers) {
-        url.replace(/[\/]+$/, '');
         var res = http(
             url,
             {
@@ -93,14 +58,13 @@ script:
                 Headers: headers
             }
         );
-        if (res.StatusCode !=200) {
+        if (res.StatusCode !==200) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDictReport[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
         }
         return res.Body;
     };
 
     var sendMultipartRequest = function(url, headers, file, apikey){
-        url.replace(/[\/]+$/, '');
         var res = httpMultipart(
           url,
           file,
@@ -115,21 +79,12 @@ script:
           params.insecure
         );
 
-        if (res.StatusCode !=200) {
-          throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDictUpload[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+        if (res.StatusCode !==200) {
+          throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
         }
         return JSON.parse(x2j(res.Body));
     };
 
-    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
-
-
-    /*MD table with title "Wildfire Report", starting at 'wildfire'
-    In content, File Entity object with the relevant field from the integration.
-    a. if file is malicious, context name is File/Malicious else File
-    */
-
-    //var contextFunc = function(body){}
     var resToMD = function(body, title) {
         return tblToMd(title, body, Object.keys(body));
     };
@@ -137,31 +92,20 @@ script:
     var parseFile = function(body) {
         var context = {};
         context.File = [];
-        var ep = {};
+        context.File.push({Type : body.filetype, MD5 : body.md5, SHA1 : body.sha1, SHA256 : body.sha256, Size : body.size, Name : body.filename});
 
-        ep.Type = body.filetype;
-        ep.MD5 = body.md5;
-        ep.SHA1 = body.sha1;
-        ep.SHA256 = body.sha256;
-        ep.Size = body.size;
-        if(body.filename){
-            ep.Name = body.filename;
-        }
-
-        context.File.push(ep);
-
-        if(body.malware == 'yes'){
-            context['File/Malicious'] = [];
-            context['File/Malicious'].push(ep);
+        if(body.malware === 'yes'){
+            context['File/Malicious'] = [context.File[0]];
         }
         return context;
     };
 
+    var url = params.server.replace(/[\/]+$/, '');
+    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
 
-    // The command input arg holds the command sent from the user.
     switch (command) {
-      // This is the call made when pressing the integration test button.
       case 'test-module':
+          url += urlDict.report;
           var res = http(
               url,
               {
@@ -171,14 +115,14 @@ script:
               }
           );
 
-          if(res.StatusCode==200)
+          if(res.StatusCode===200)
               return 'ok';
           else
               return 'Something went wrong';
           break;
 
       case 'WildFireReport':
-        var url = params.server + urlDict.report;
+        url += urlDict.report;
         var hash = args.md5 || args.sha256;
         if(!hash)
             throw 'Missing md5/sha256';
@@ -191,7 +135,7 @@ script:
 
         var context = parseFile(result.wildfire.file_info);
 
-        if(args.format=='pdf'){
+        if(args.format==='pdf'){
           var bodyPDF = 'apikey='+params.token+'&format=pdf&hash='+hash;
           var resPDF = sendRequest(url, bodyPDF, headers);
 
@@ -213,7 +157,7 @@ script:
           return {Type: entryTypes.note,
                   Contents: result,
                   ContentsFormat: formats.json,
-                  HumanReadable: md, /*todo*/
+                  HumanReadable: md,
                   ReadableContentsFormat: formats.markdown,
                   EntryContext: context
           };
@@ -221,11 +165,10 @@ script:
         break;
 
       case 'WildFireUpload':
-          var url = params.server + urlDict.upload;
+          url += urlDict.upload;
           var result = sendMultipartRequest(url, headers, args.upload, params.token);
-          var fileinfo = result.wildfire['upload-file-info'];
-          var context = parseFile(fileinfo);
-          var md = resToMD(fileinfo,'Wildfire Report');
+          var context = parseFile(result.wildfire['upload-file-info']);
+          var md = resToMD(result.wildfire['upload-file-info'],'Wildfire Report');
 
           return {Type: entryTypes.note,
                       Contents: result,
@@ -233,7 +176,7 @@ script:
                       HumanReadable: md, /*todo*/
                       ReadableContentsFormat: formats.markdown,
                       EntryContext: context
-              };
+                      };
 
     }
 
