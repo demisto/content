@@ -56,8 +56,10 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            // do a Get on the handler here with no Body
-            return 'ok';
+            if (sendRequest()) {
+                return 'ok';
+            }
+            return 'something is wrong';
         case 'encase-copyjob':
             var requestXML =
                 '<TASK>\
