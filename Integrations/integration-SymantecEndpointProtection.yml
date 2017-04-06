@@ -35,9 +35,9 @@ script:
     // Default timeout and interval parameters for polling the response
     CLIENT_COMMAND_PARAMETERS = {
         'sep-update-content'    : {'timeout': 120, 'interval': 10},
-        'sep-quarantine'    : {'timeout': 120, 'interval': 10}
+        'sep-quarantine'        : {'timeout': 120, 'interval': 10},
         // Don't poll for scan response because it takes too long. The automation will do that
-        'sep-scan'              : {'timeout': 1, 'interval': 1},
+        'sep-scan'              : {'timeout': 1, 'interval': 1}
     }
 
     ENDPOINTS_INFO_DEFAULT_COLUMNS = [
@@ -158,8 +158,7 @@ script:
             t.forEach(function(entry) {
                 var vals = [];
                 headers.forEach(function(h) {
-                    // add escape to the output of formatCell
-                    vals.push(!!entry[h] ? formatCell(entry[h]) : ' ');
+                    vals.push(!!entry[h] ? stringEscapeMD(formatCell(entry[h])) : ' ');
                 });
                 mdResults += vals.join('|') + '\n';
             });
@@ -168,6 +167,20 @@ script:
         }
 
         return mdResults;
+    }
+
+    MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+    var stringEscapeMD = function(st) {
+        escapedSt = '';
+        for (var i = 0; i < st.length; i++) {
+            log(st[i]);
+            if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
+                escapedSt += '\\';
+            }
+            escapedSt += st[i];
+        }
+
+        return escapedSt;
     }
 
     var buildClientXml = function(data) {
