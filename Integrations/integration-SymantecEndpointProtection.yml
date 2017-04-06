@@ -336,7 +336,7 @@ script:
             commandStatusJson = getCommandStatusDetails(qParams, token, commandId);
             cmdStatusDetail = commandStatusJson.Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail;
             stateId = cmdStatusDetail.stateId;
-            if (stateId != '0') {
+            if (stateId == '2' || stateId == '3') {
                 isDone = true;
                 break;
             }
@@ -350,7 +350,7 @@ script:
         }
     }
 
-    var buildCommandResponseOutput = function(title, commandId, response, message) {
+    var buildCommandResponseOutput = function(title, commandId, message) {
         cmdStatusDetail = response.cmdStatusDetail;
         delete cmdStatusDetail.hardwareKey;
 
@@ -359,7 +359,7 @@ script:
         md += '### Command ID: {0}\n'.format(commandId);
         md += '### ' + message;
 
-        return {Type: entryTypes.note, Contents: cmdStatusDetail, ContentsFormat: formats.json, HumanReadable: md,
+        return {Type: entryTypes.note, Contents: {'cmdStatusDetail': cmdStatusDetail, 'commandId': commandId}, ContentsFormat: formats.json, HumanReadable: md,
                 EntryContext: {'SEPM.LastCommand': {'CommandDetails': cmdStatusDetail, 'CommandId': commandId}}};
     }
 
@@ -390,7 +390,7 @@ script:
 
         response = pollResponse(qParams, qArgs, token, commandId, timeout, interval);
         endpoint = qArgs.hostname ? qArgs.hostname : qArgs.ip;
-        title = 'Launched {0} command for endpoint {1}, here is the output:\n'.format(command, endpoint);
+        title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint);
 
         if (response.isDone) {
             message = 'Command is done.';
@@ -400,15 +400,15 @@ script:
             message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout);
         }
 
-        return buildCommandResponseOutput(title, commandId, response, message);
+        return buildCommandResponseOutput(title, commandId, message);
     }
 
     var commandStatus = function(qArgs, qParams, token) {
         // Poll once for a response (timeout=1, interval=1)
         response = pollResponse(qParams, qArgs, token, qArgs.commandId, 1, 1);
-        message = response.isDone ? 'Command finished.' : 'Command is in progress. Run !sep-command-status to check again.';
+        message = response.isDone ? 'Command is done.' : 'Command is in progress. Run !sep-command-status to check again.';
 
-        return buildCommandResponseOutput('Got command status:', qArgs.commandId, response, message);
+        return buildCommandResponseOutput('Command status:', qArgs.commandId, message);
     }
 
     var updateContent = function(qArgs, qParams, token, computerId) {
