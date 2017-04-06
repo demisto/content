@@ -7,6 +7,77 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
+  
+  /**
+   * Formats a string in place
+   * @returns {String} the formatted string
+   */
+  String.prototype.format = function() {
+     var content = this;
+     for (var i=0; i < arguments.length; i++)
+     {
+          var replacement = '{' + i + '}';
+          content = content.replace(replacement, arguments[i]);
+     }
+     return content;
+  }
+
+  /**
+   * Creates a string from an object
+   * @param {JSON or String} o - the object to create the string from
+   * @returns {String} a string which represents the object
+   */
+  function objToStr(o) {
+      if (Array.isArray(o)) {
+          return o.map(function(v) {
+              return objToStr(v);
+          }).join(',');
+      } else if (typeof(o) === 'string') {
+          return o;
+      } else {
+          return JSON.stringify(o);
+      }
+  }
+
+  /**
+   * Creates a markdown string from an object
+   * @param {JSON or String} o - the object to create the markdown from
+   * @returns {String} a markdown string which represents the object
+   */
+  function objToMd(o) {
+      var keys = Object.keys(o);
+      keys.sort();
+      var md = 'Key | Value\n- | -\n';
+      for (var i in keys) {
+          md += keys[i] + ' | ' + objToStr(o[keys[i]]) + '\n';
+      }
+      return md;
+  }
+
+  /**
+   * Escapes markdown characters in a stiring
+   * @param {String} arg - the string to fix
+   * @returns {String} a string with the markdown characters escaped
+   */
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+
+  var stringEscapeMD = function(st) {
+      if (typeof(st) != 'string') {
+          return st;
+      }
+
+      escapedSt = '';
+      for (var i = 0; i < st.length; i++) {
+          if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
+              escapedSt += '\\';
+          }
+          escapedSt += st[i];
+      }
+
+      return escapedSt;
+  }
+
+
   /**
    * Converts comma separated list to an array
    * @param {String} arg - the string to convert
@@ -56,7 +127,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push(!!entry[h] ? formatCell(entry[h]) : ' ');
+                  vals.push(!!entry[h] ? stringEscapeMD(formatCell(entry[h])) : ' ');
               });
               mdResults += vals.join('|') + '\n';
           });
