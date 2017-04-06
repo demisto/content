@@ -1,10 +1,10 @@
 commonfields:
   id: 2e2f9dfc-656b-4afd-8092-58248fa6b5d6
-  version: 44
+  version: 50
 name: SEPScan
 script: |-
-  SCAN_DEFAULT_TIMEOUT = 10;
-  SCAN_DEFAULT_INTERVAL = 2;
+  SCAN_DEFAULT_TIMEOUT = 600;
+  SCAN_DEFAULT_INTERVAL = 30;
 
   if (!args.ip && !args.hostname) {
       throw 'Please provide an IP address or a hostname.'
@@ -19,7 +19,7 @@ script: |-
   for (var i = 0; i < retries; i++) {
       response = executeCommand("sep-command-status", {commandId: response[0].Contents.commandId});
       var stateId = response[0].Contents.cmdStatusDetail.stateId;
-      if (stateId != '0') {
+      if (stateId == '2' || stateId == '3') {
           isDone = true;
           break;
       }
