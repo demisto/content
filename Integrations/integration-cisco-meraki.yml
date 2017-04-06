@@ -14,10 +14,13 @@ configuration:
   type: 0
   required: true
 script:
-  script: |2
-
-    var merakiUrlPrefix = 'https://dashboard.meraki.com/api/v0/';
-
+  script: |
+    /**
+       * flatten nested object to top level fields
+       * @param {Object | Array<Object>} ob - object to flatten
+       * @returns {String} the flatten object
+       * { "a": "bla", "b": { "c": "hello", "d": "there" } } => { "a": "bla", "b.c" = "hello", "b.d": "there" }
+    */
     var flattenObject = function(ob) {
         var toReturn = {};
 
@@ -38,12 +41,10 @@ script:
         return toReturn;
     };
 
-    // ------------------------ mics -------------------- //
-
     /**
        * Converts a demisto table in JSON form to a Markdown table
        * @param {String} name - the name of the table
-       * @param {Object} table - the JSON table - Array of objects with the same keys
+       * @param {Object | Array<Object>} table - the JSON table - Array of objects with the same keys
        * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
        * @returns {String} Markdown representation of the original list
     */
@@ -102,11 +103,12 @@ script:
         return text;
     }
 
+    var merakiUrlPrefix = 'https://dashboard.meraki.com/api/v0/';
+    var apiKey = params.apiKey;
+
     var sendRequest = function(url, method, body) {
         var requestUrl = merakiUrlPrefix + url;
-        var apiKey = params.apiKey;
         var requestMethod = method || 'GET';
-
 
         var httpParams = {
             Method: requestMethod,
@@ -114,15 +116,25 @@ script:
                 'X-Cisco-Meraki-API-Key': [apiKey],
                 'Content-Type': ['application/json'],
             },
+            body: body
         };
-        if(body) {
-            httpParams.body = body;
-        }
 
         var res = http(
             requestUrl,
-            httpParams
+            httpParams,
+            false,
+            false,
+            true // no redirect
         );
+
+        if (res.StatusCode === 302) {
+            var redirectUrl = res.Headers.Location;
+
+            res = http(
+                    redirectUrl,
+                    httpParams
+            );
+        }
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed. '
@@ -135,7 +147,7 @@ script:
             // body is empty - than just return true (action succeed)
             return true;
         } else {
-             var body = res && JSON.parse(res.Body);
+             var body = JSON.parse(res.Body);
         if (body === undefined) {
            throw 'Request Failed, returned response with no body';
         }
