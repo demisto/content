@@ -39,6 +39,26 @@ script:
         'sep-quarantine'    : {'timeout': 120, 'interval': 10}
     }
 
+    ENDPOINTS_INFO_DEFAULT_COLUMNS = [
+        'computerName',
+        'ipAddresses',
+        'operatingSystem',
+        'osBitness',
+        'cidsDefsetVersion',
+        'lastScanTime',
+        'description',
+        'quarantineDesc',
+        'domainOrWorkgroup',
+        'macAddresses',
+        'group',
+        'dhcpServer',
+        'biosVersion',
+        'virtualizationPlatform',
+        'computerTimeStamp',
+        'creationTime',
+        'agentTimestamp'
+    ]
+
     var fixUrl = function(base) {
       res = base;
       if (base && base[base.length - 1] != '/') {
@@ -257,7 +277,7 @@ script:
 
         return {
             Type: entryTypes.note, Contents: clientContentJson, ContentsFormat: formats.json, HumanReadable: md,
-            EntryContext: {'SEPM.ClientContentVersions': clientContentJson.clientDefStatusList, 'sepm.LastUpdated': lastUpdatedDate}
+            EntryContext: {'SEPM.ClientContentVersions': clientContentJson.clientDefStatusList, 'SEPM.LastUpdated': lastUpdatedDate}
         };
     }
 
@@ -266,6 +286,7 @@ script:
 
         md = '## Endpoints Information';
         if (qArgs.hostname) {
+            // Set the war room result
             md += ', filtered for hostname: ' + qArgs.hostname + '\n';
             var filteredJsonRes = {}
             jsonRes.content.forEach(function(h) {
@@ -273,13 +294,37 @@ script:
                     filteredJsonRes = h;
                 }
             });
+
+            // Set the entry context
+            entryContext = {
+                'SEPM.Endpoint.Hostname': filteredJsonRes.computerName,
+                'SEPM.Endpoint.Domain': filteredJsonRes.domainOrWorkgroup,
+                'SEPM.Endpoint.IPAddresses': filteredJsonRes.ipAddresses,
+                'SEPM.Endpoint.OS': filteredJsonRes.operatingSystem + ' | ' + filteredJsonRes.osBitness,
+                'SEPM.Endpoint.Description': filteredJsonRes.description,
+                'SEPM.Endpoint.MACAddress': filteredJsonRes.macAddress,
+                'SEPM.Endpoint.BIOSVersion': filteredJsonRes.biosVersion,
+                'SEPM.Endpoint.DHCPServer': filteredJsonRes.dhcpServer
+            };
         } else {
             md += '\n';
             filteredJsonRes = jsonRes.content;
+            entryContext = {};
         }
 
-        md += tblToMd('Endpoints', filteredJsonRes, argToList(qArgs.columns));
-        return {Type: entryTypes.note, Contents: filteredJsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.endpoints': filteredJsonRes}};
+        if (qArgs.columns) {
+            if (qArgs.columns == 'all' || qArgs.columns == '*') {
+                columnsList = [];
+            } else {
+                columnsList = argToList(qArgs.columns);
+            }
+        } else {
+            columnsList = ENDPOINTS_INFO_DEFAULT_COLUMNS;
+            columnsList.sort();
+        }
+
+        md += tblToMd('Endpoints', filteredJsonRes, columnsList);
+        return {Type: entryTypes.note, Contents: filteredJsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
     }
 
     var groupsInfo = function(qArgs, qParams, token) {
