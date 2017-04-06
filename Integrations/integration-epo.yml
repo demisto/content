@@ -31,63 +31,158 @@ script:
     // You can use params[paramName] or params.paramName to get a specific params.
     // Params are of the type given in the integration page creation.
     var callEpo = function(qParams, qArgs) {
-        p = qArgs['params'] ? qArgs['params']+'&' : '';
-        url = qParams['address'] + '/remote/' + qArgs['command'] + '?' + p + ':output=json';
-        res = http(
-        url,
-        {
-            Method: 'GET',
-            Username: qParams['authentication']['identifier'],
-            Password: qParams['authentication']['password']
-        },
-        qParams['insecure']
+        var p = qArgs['params'] ? qArgs['params']+'&' : '';
+        var url = qParams['address'] + '/remote/' + qArgs['command'] + '?' + p + ':output=json';
+        var result = http(
+            url,
+            {
+                Method: 'GET',
+                Username: qParams['authentication']['identifier'],
+                Password: qParams['authentication']['password']
+            },
+            qParams['insecure']
         );
-        return res;
+        if (isResponseOK(result)) {
+            trimmedRes = result.Body.substring(okStr.length);
+            trimmedRes = trimmedRes.replace('\n',' ');
+            parsedRes = JSON.parse(trimmedRes);
+            if (parsedRes.length == 1) {
+                parsedRes = parsedRes[0];
+            }
+            return parsedRes;
+        } else if (result.StatusCode == 200){
+            throw 'Error accessing ePO interface. Command: ' + url + ". Body: " + result.Body;
+        } else {
+            throw 'Error accessing ePO interface. Command: ' + url + ". Response: " + JSON.stringify(result);
+        }
     };
+
+    var doRawHttp = function(method, url, parameters, body) {
+        if (!parameters) {
+            parameters = {};
+        }
+        var result = http(
+            url + encodeToURLQuery(parameters),
+            {
+                Headers: {'Content-Type': ['application/json']},
+                Method: method,
+                Body: ''
+            }
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;
+        }
+        return result;
+    }
+
     var isResponseOK = function(response) {
-        // EPO response if of format:
-        // OK:
-        // data
-        // Or in format
-        // Error:
-        // error string
-        if (res.StatusCode === 200) {
+        // EPO response if of format: OK -> data. Error: error string
+        if (response.StatusCode === 200) {
             okStr = 'OK:';
-            if (res.Body.indexOf(okStr) === 0) {
+            if (response.Body.indexOf(okStr) === 0) {
                 return true;
             }
         }
         return false;
     };
-    var test = function(params) {
-        tmp = {};
-        tmp['command']  = 'core.help';
-        res = callEpo(params, tmp);
-        if (isResponseOK(res)) {
-            return 'ok';
+    var epoHelp = function () {
+        var readyRes = callEpo(params, {command : 'core.help'});;
+        var md = '### ePO Help\n';
+        var line;
+        var cmd;
+        var desc;
+        for (var i in parsedRes) {
+            line = parsedRes[i].replace(/(\r\n|\n|\r)/gm,"");
+            desc = line.split('-')[1] ? line.split('-')[1].trim() : 'N/A';
+            cmd = line.split('-')[0] ? line.split('-')[0].trim() : 'N/A';
+            md += '**' + desc + "** - " + cmd + '\n';
         }
-        if (res.Status) {
-            return res.Status;
+        return {Type: entryTypes.note, Contents: readyRes, ContentsFormat: formats.json, HumanReadable: md};
+    };
+    var epoGetDatUpdateTask = function() {
+        dArgs = {
+            "command": "clienttask.find",
+            "params": "searchText=VSEContentUpdateDemisto"
         }
-        return res;
+        var result = callEpo(params, dArgs);
+        return result.objectId;
+    }
+    var epoUpdateCLientDat = function() {
+        var clientTask = epoGetDatUpdateTask();
+        dArgsUpdate = {
+            "command": "clienttask.run",
+            "params": "names=" + args.systems + "&productId=EPOAGENTMETA&taskId=" + clientTask
+        }
+        var options = ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes', 'stopAfterMinutes', 'randomizationInterval'];
+        for (var i=0;i<options.length;i++) {
+            if (args[options[i]]) {
+                dArgsUpdate[options[i]] = + args[options[i]];
+            }
+        }
+        var result = callEpo(params, dArgsUpdate);
+        var md = "ePO client DAT update task started: " + result;
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoUpdateRepository = function() {
+        dArgs = {
+            "command": "repository.pull",
+            "params": "sourceRepository=McAfeeHttp&targetBranch=Current"
+        }
+        var result = callEpo(params, dArgs);
+
+        var md = "### ePO repository update started.\n";
+        md += result;
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoGetCurrentDat = function () {
+        var dArgs = {
+            "command": "repository.findPackages",
+            "params": "searchText=VSCANDAT1000"
+        };
+        var result = callEpo(params, dArgs);
+        var md = "### McAfee ePO Current DAT file version in repository: **" + result.productDetectionProductVersion + '**\n';
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoGetLatestDat = function() {
+        var url = "http://update.nai.com/products/commonupdater/gdeltaavv.ini"
+        //Another option is to use avvdat.ini - provided here in case any additional data from that file is needed in the future
+        //var url = "http://update.nai.com/Products/CommonUpdater/avvdat.ini"
+        result = doRawHttp("GET",url);
+        var res = '';
+        var sections = result.Body.split('\r\n\r\n');
+        var lines = sections[0].split('\r\n');
+        for (var i=0;i<lines.length;i++) {
+            if (lines[i].indexOf("CurrentVersion")===0){
+                return lines[i].split('=')[1];
+            }
+        }
+        throw 'Cannot get McAfee latest DAT file version';
+    }
+    var epoCheckLatestDat = function() {
+        var datVersion = epoGetLatestDat();
+        var md='### McAfee Latest DAT file version is **' + datVersion + '**\n';
+        return {Type: entryTypes.note, Contents: {mcAfeeLatestDatVersion:datVersion}, ContentsFormat: formats.json, HumanReadable: md};
     }
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            return test(params);
+            return epoHelp();
+        case 'epo-help':
+            return epoHelp();
+        case 'epo-get-latest-dat':
+            return epoCheckLatestDat();
+        case 'epo-get-current-dat':
+            return epoGetCurrentDat();
+        case 'epo-update-client-dat':
+            return epoUpdateCLientDat();
+        case 'epo-update-repository':
+            return epoUpdateRepository();
         default:
-            res = callEpo(params, args);
-            if (isResponseOK(res)) {
-                trimmedRes = res.Body.substring(okStr.length);
-                parsedRes = JSON.parse(trimmedRes);
-                //We need the response to be a single object
-                readyRes = {response: parsedRes};
-                return readyRes;
-            } else if (res.StatusCode == 200){
-                throw res.Body;
-            } else {
-                throw JSON.stringify(res);
-            }
+            var result = callEpo(params, args);
+            var md = "### ePO cCommand sent\n";
+            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+
+
     }
   type: javascript
   commands:
@@ -102,4 +197,49 @@ script:
       description: Command parameters (e.g. param1=value&param2=value)
     description: Run a remote command on EPO
     execution: true
-system: true
+  - name: epo-help
+    arguments: []
+    description: print help on ePO commands
+  - name: epo-get-latest-dat
+    arguments: []
+    outputs:
+    - contentPath: mcAfeeLatestDatVersion
+      contextPath: mcafee.latestDAT
+      description: Latest McAfee DAT file version
+    description: Check the latest DAT file in McAfee repository
+  - name: epo-get-current-dat
+    arguments: []
+    outputs:
+    - contentPath: productDetectionProductVersion
+      contextPath: mcafee.epoDAT
+      description: Current McAfee DAT file in ePO repository
+    description: check the existing DAT file version in ePO
+  - name: epo-update-client-dat
+    arguments:
+    - name: systems
+      required: true
+      description: IP or system name. Can be comma separated list or system names
+        or IP addresses
+    - name: retryAttempts
+      description: Number of times the server will attempt to send the task to the
+        client.
+      defaultValue: "1"  
+    - name: retryIntervalInSeconds
+      description: Retry interval in seconds.
+      defaultValue: "30"
+    - name: abortAfterMinutes
+      description: Maximum number of minutes before aborting all attempts.
+      defaultValue: "5"
+    - name: stopAfterMinutes
+      description: Maximum duration in minutes the client task is allowed to run.
+      defaultValue: "20"
+    - name: randomizationInterval
+      description: Duration in minutes over which to randomly spread task execution.
+        0 minutes will execute on all clients immediately.
+      defaultValue: "0"  
+    description: Run client task to update the DAT file
+  - name: epo-update-repository
+    arguments: []
+    description: Trigger a Server Task in specific ePO servers to pull latest signatures
+      from update server
+hidden: false
