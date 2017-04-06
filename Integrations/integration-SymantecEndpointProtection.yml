@@ -31,7 +31,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     // Default timeout and interval parameters for polling the response
     CLIENT_COMMAND_PARAMETERS = {
         'sep-update-content'    : {'timeout': 120, 'interval': 10},
@@ -57,6 +57,16 @@ script:
         'computerTimeStamp',
         'creationTime',
         'agentTimestamp'
+    ]
+
+    GROUPS_INFO_DEFAULT_COLUMNS = [
+        'fullPathName',
+        'numberOfPhysicalComputers',
+        'numberOfRegisteredUsers',
+        'policySerialNumber',
+        'policyDate',
+        'description',
+        'created'
     ]
 
     var fixUrl = function(base) {
@@ -312,6 +322,7 @@ script:
             entryContext = {};
         }
 
+        // Set the war room result
         if (qArgs.columns) {
             if (qArgs.columns == 'all' || qArgs.columns == '*') {
                 columnsList = [];
@@ -329,9 +340,32 @@ script:
 
     var groupsInfo = function(qArgs, qParams, token) {
         jsonRes = doGet(args, params, token, false, 'sepm/api/v1/groups');
-        md = tblToMd('Groups', jsonRes.content, argToList(qArgs.columns));
 
-        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'SEPM.groups': jsonRes}};
+        // Set the entry context
+        entryContext = {}
+        entryContext['SEPM.Groups'] = [];
+        jsonRes.content.forEach(function(entry) {
+            var group = {}
+            GROUPS_INFO_DEFAULT_COLUMNS.forEach(function(h) {
+                group[h] = entry[h];
+            });
+            entryContext['SEPM.Groups'].push(group);
+        });
+
+        // Set the war room result
+        if (qArgs.columns) {
+            if (qArgs.columns == 'all' || qArgs.columns == '*') {
+                columnsList = [];
+            } else {
+                columnsList = argToList(qArgs.columns);
+            }
+        } else {
+            columnsList = GROUPS_INFO_DEFAULT_COLUMNS;
+            columnsList.sort();
+        }
+
+        md = tblToMd('Groups Information', jsonRes.content, columnsList);
+        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
     }
 
     var getComputerIdByIp = function(qParams, token, ip) {
