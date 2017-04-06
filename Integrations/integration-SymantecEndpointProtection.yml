@@ -35,8 +35,9 @@ script:
     // Default timeout and interval parameters for polling the response
     CLIENT_COMMAND_PARAMETERS = {
         'sep-update-content'    : {'timeout': 120, 'interval': 10},
-        'sep-scan'              : {'timeout': 300, 'interval': 30},
         'sep-quarantine'    : {'timeout': 120, 'interval': 10}
+        // Don't poll for scan response because it takes too long. The automation will do that
+        'sep-scan'              : {'timeout': 1, 'interval': 1},
     }
 
     ENDPOINTS_INFO_DEFAULT_COLUMNS = [
@@ -416,7 +417,7 @@ script:
             commandStatusJson = getCommandStatusDetails(qParams, token, commandId);
             cmdStatusDetail = commandStatusJson.Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail;
             stateId = cmdStatusDetail.stateId;
-            if (stateId == '3') {
+            if (stateId != '0') {
                 isDone = true;
                 break;
             }
@@ -424,21 +425,20 @@ script:
             wait(interval);
         }
 
-        message = isDone ? 'Command finished.' : 'Command is not done.\nIn order to fetch the state of the command, run "!sep-command-status" with the commandId.'
-
         return {
             'cmdStatusDetail': cmdStatusDetail,
-            'message': message
+            'isDone': isDone
         }
     }
 
-    var buildCommandResponseOutput = function(commandId, response) {
+    var buildCommandResponseOutput = function(title, commandId, response, message) {
         cmdStatusDetail = response.cmdStatusDetail;
         delete cmdStatusDetail.hardwareKey;
 
-        md = objToMd(cmdStatusDetail) + '\n';
-        md += '### commandId = ' + commandId + '\n';
-        md += '### ' + response.message;
+        md = '### ' + title + '\n';
+        md += objToMd(cmdStatusDetail) + '\n';
+        md += '### Command ID: {0}\n'.format(commandId);
+        md += '### ' + message;
 
         return {Type: entryTypes.note, Contents: cmdStatusDetail, ContentsFormat: formats.json, HumanReadable: md,
                 EntryContext: {'SEPM.LastCommand': {'CommandDetails': cmdStatusDetail, 'CommandId': commandId}}};
@@ -470,15 +470,26 @@ script:
         }
 
         response = pollResponse(qParams, qArgs, token, commandId, timeout, interval);
+        endpoint = qArgs.hostname ? qArgs.hostname : qArgs.ip;
+        title = 'Launched {0} command for endpoint {1}, here is the output:\n'.format(command, endpoint);
 
-        return buildCommandResponseOutput(commandId, response);
+        if (response.isDone) {
+            message = 'Command is done.';
+        } else if (command == 'sep-scan') {
+            message = 'Command is in progress.';
+        } else {
+            message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout);
+        }
+
+        return buildCommandResponseOutput(title, commandId, response, message);
     }
 
     var commandStatus = function(qArgs, qParams, token) {
         // Poll once for a response (timeout=1, interval=1)
         response = pollResponse(qParams, qArgs, token, qArgs.commandId, 1, 1);
+        message = response.isDone ? 'Command finished.' : 'Command is in progress. Run !sep-command-status to check again.';
 
-        return buildCommandResponseOutput(qArgs.commandId, response);
+        return buildCommandResponseOutput('Got command status:', qArgs.commandId, response, message);
     }
 
     var updateContent = function(qArgs, qParams, token, computerId) {
