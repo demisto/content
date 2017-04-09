@@ -25,6 +25,7 @@ script: |+
 
 type: python
 tags:
+- Utility
 - ingestion
 comment: Finds a CSV file in the war room and loads it into context.
 system: true
