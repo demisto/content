@@ -478,6 +478,23 @@ script:
       description: The columns to show.
     - name: hostname
       description: If given, show information only about the specific hostname.
+    outputs:
+    - contextPath: SEPM.Endpoint.Hostname
+      description: The endpoint's hostname.
+    - contextPath: SEPM.Endpoint.Domain
+      description: The endpoint's domain.
+    - contextPath: SEPM.Endpoint.IPAddresses
+      description: The endpoint's IP addresses.
+    - contextPath: SEPM.Endpoint.OS
+      description: The endpoint's OS information.
+    - contextPath: SEPM.Endpoint.Description
+      description: The endpoint's description.
+    - contextPath: SEPM.Endpoint.MACAddress
+      description: The endpoint's MAC address.
+    - contextPath: SEPM.Endpoint.BIOSVersion
+      description: The endpoint's BIOS version.
+    - contextPath: SEPM.Endpoint.DHCPServer
+      description: The endpoint's DHCP server address.
     description: Get information about endpoints.
   - name: sep-update-content
     arguments:
@@ -489,6 +506,11 @@ script:
       description: The timeout of the command.
     - name: interval
       description: The polling interval of the command.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
     description: Updates the content of the given client.
   - name: sep-scan
     arguments:
@@ -508,20 +530,36 @@ script:
       description: The timeout of the command.
     - name: interval
       description: The polling interval of the command.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
     description: Scans an endpoint.
   - name: sep-groups-info
     arguments:
     - name: columns
       description: The columns to show.
+    outputs:
+    - contextPath: SEPM.Groups
+      description: The list of groups.
     description: Get information about groups.
   - name: sep-system-info
     arguments: []
+    outputs:
+    - contextPath: SEPM.ServerAVDefVersion
+      description: The serverAV definition version.
     description: Get the system information (version, AV definition).
   - name: sep-command-status
     arguments:
     - name: commandId
       required: true
       description: The command ID.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
     description: Retrieves the status of a command.
   - name: sep-quarantine
     arguments:
@@ -540,8 +578,18 @@ script:
       - Quarantine
       - Undo
       description: The action type.
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
     description: Quarantines the endpoint according to its policy.
   - name: sep-client-content
     arguments: []
+    outputs:
+    - contextPath: SEPM.ClientContentVersions
+      description: The versions of the clients.
+    - contextPath: SEPM.LastUpdated
+      description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
