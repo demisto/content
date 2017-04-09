@@ -74,9 +74,18 @@ script:
         var res = doReq('GET', 'malware/' + hash);
         var o = res.obj.malware;
         var ec = {};
+        var dbotScore = 0;
         if (o && o.family) {
             ec.badHashes = hash;
+            dbotScore = 3;
+        } else if (o && o.risk === 'high') {
+            dbotScore = 3;
+        } else if (o && o.risk === 'medium') {
+            dbotScore = 2;
+        } else if (o) {
+            dbotScore = 1;
         }
+        ec.dbotScore = {indicator: hash, type: 'hash', vendor: 'XFE', score: dbotScore};
         var md = '## X-Force Hash Reputation for: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
         md += 'Type: **' + o.type + '**\n';
         md += 'Risk: **' + o.risk + '**\n';
@@ -120,9 +129,16 @@ script:
         res.malware = malwareRes.obj;
         var o = res.reputation;
         var ec = {};
+        var dbotScore = 0;
         if (o.score && o.score > threshold) {
             ec.badIPs = ip;
+            dbotScore = 3;
+        } else if (o.score && o.score > threshold / 2) {
+            dbotScore = 2;
+        } else if (o.score) {
+            dbotScore = 1;
         }
+        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'XFE', score: dbotScore};
         var md = '## X-Force IP Reputation for: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
         md += 'Score: **' + o.score + '**\n';
         md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
@@ -166,9 +182,16 @@ script:
         }
         var o = res.url;
         var ec = {};
+        var dbotScore = 0;
         if (o.result && o.result.score && o.result.score > threshold) {
             ec.badUrls = url;
+            dbotScore = 3;
+        } else if (o.result && o.result.score && o.result.score > threshold / 2) {
+            dbotScore = 2;
+        } else if (o.result && o.result.score) {
+            dbotScore = 1;
         }
+        ec.dbotScore = {indicator: url, type: 'url', vendor: 'XFE', score: dbotScore};
         var md = '## X-Force URL Reputation for: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + url + ')\n';
         if (o.result) {
             md += 'Score: **' + o.result.score + '**\n';
@@ -326,6 +349,14 @@ script:
       description: Bad URLs found
       important: true
       importantDescription: Bad URLs found querying X-Force
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check the given URL reputation
   - name: file
     deprecated: false
@@ -348,6 +379,14 @@ script:
       description: Bad hashes found
       important: true
       importantDescription: Bad hashes found querying X-Force
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check file reputation
   - name: ip
     deprecated: false
@@ -374,6 +413,14 @@ script:
       description: Bad IPs found
       important: true
       importantDescription: Bad IPs found querying X-Force
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check IP reputation
   - name: domain
     deprecated: false
@@ -400,6 +447,14 @@ script:
       description: Bad URLs found
       important: true
       importantDescription: Bad URLs found querying X-Force
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check domain reputation
   - name: cve-search
     deprecated: false
