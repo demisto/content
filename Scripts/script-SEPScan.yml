@@ -1,6 +1,6 @@
 commonfields:
-  id: 2e2f9dfc-656b-4afd-8092-58248fa6b5d6
-  version: 50
+  id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
+  version: 3
 name: SEPScan
 script: |-
   SCAN_DEFAULT_TIMEOUT = 600;
@@ -36,7 +36,9 @@ script: |-
 
   return response;
 type: javascript
-tags: []
+tags:
+- sep
+- symantec
 enabled: true
 args:
 - name: scanType
