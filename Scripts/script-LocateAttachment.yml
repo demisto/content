@@ -23,7 +23,6 @@ script: |-
 type: python
 tags:
 - email
-- util
 comment: Identify whether the incident includes an attached file. Optional typefilter
   argument can be used to only match if the filetype includes that string. Same for filename.
   Filetype is according to the linux "file" command (filemagic format identification).
