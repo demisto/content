@@ -155,30 +155,30 @@ script:
             contextObj = {};
 
             var id = dq(element, 'id');
-            mdObj['ID'] = id;
+            mdObj['id'] = id;
             contextObj['Id'] = id;
 
             var key = dq(element, 'key');
             mdObj['key'] = key;
-            contextObj['key'] = key;
+            contextObj['Key'] = key;
 
             var assignee = dq(element, 'fields.assignee.displayName') + "(" + dq(element, 'fields.assignee.emailAddress') + ")";
-            mdObj['Assignee'] = assignee;
-            contextObj['assignee'] = assignee;
+            mdObj['assignee'] = assignee;
+            contextObj['Assignee'] = assignee;
 
             mdObj['reporter'] = dq(element, 'fields.reporter.displayName') + "(" + dq(element, 'fields.reporter.emailAddress') + ")";
 
             var creator = dq(element, 'fields.creator.displayName') + "(" + dq(element, 'fields.creator.emailAddress') + ")";
             mdObj['creator'] = creator;
-            contextObj['creator'] = creator;
+            contextObj['Creator'] = creator;
 
             var summary = dq(element, 'fields.summary');
             mdObj['summary'] = summary;
-            contextObj['summary'] = summary;
+            contextObj['Summary'] = summary;
 
             var status = dq(element, 'fields.status.name')
             mdObj['status'] = status;
-            contextObj['State'] = status;
+            contextObj['Status'] = status;
 
             mdObj['issueType'] = dq(element, 'fields.issuetype.description');
             mdObj['priority'] = dq(element, 'fields.priority.name');
@@ -530,6 +530,19 @@ script:
         will be truncated.
     - name: headers
       description: Headers to display in Human readable format
+    outputs:
+    - contextPath: Ticket.Id
+      description: Id of ticket
+    - contextPath: Ticket.Key
+      description: Key of ticket
+    - contextPath: Ticket.Assignee
+      description: User assigned to ticket
+    - contextPath: Ticket.Creator
+      description: User who created the ticket
+    - contextPath: Ticket.Summary
+      description: Summary of ticket
+    - contextPath: Ticket.Status
+      description: Status of ticket
     description: Query Jira issues
   - name: jira-get-issue
     arguments:
