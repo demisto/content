@@ -107,8 +107,9 @@ script:
     var apiKey = params.apiKey;
 
     var sendRequest = function(url, method, body) {
-        var requestUrl = merakiUrlPrefix + url;
+
         var requestMethod = method || 'GET';
+        var requestUrl = merakiUrlPrefix + url;
 
         var httpParams = {
             Method: requestMethod,
@@ -116,7 +117,7 @@ script:
                 'X-Cisco-Meraki-API-Key': [apiKey],
                 'Content-Type': ['application/json'],
             },
-            body: body
+            Body: body
         };
 
         var res = http(
@@ -124,10 +125,11 @@ script:
             httpParams,
             false,
             false,
-            true // no redirect
+            true // no redirect (e.i. request is not automatically redirect - instead it will return 302)
         );
 
-        if (res.StatusCode === 302) {
+        // catch redirect response
+        if (!res || res.StatusCode === 302) {
             var redirectUrl = res.Headers.Location;
 
             res = http(
@@ -136,22 +138,23 @@ script:
             );
         }
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed. '
+            + '\nUrl: ' + requestUrl
             + '\nStatus code: ' + res.StatusCode
             + '\nSurl: ' + res.StatusCode
             + '.\nBody: ' + JSON.stringify(res) + '.';
         }
 
         if(requestMethod === 'POST') {
-            // body is empty - than just return true (action succeed)
+            // action succeed - than just return true
             return true;
         } else {
-             var body = JSON.parse(res.Body);
-        if (body === undefined) {
+             var resBody = JSON.parse(res.Body);
+        if (resBody === undefined) {
            throw 'Request Failed, returned response with no body';
         }
-        return body;
+        return resBody;
         }
     };
 
