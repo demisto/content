@@ -16,6 +16,7 @@ tags:
 - enhancement
 comment: A context script for MD5 entities
 system: true
+deprecated: true
 args:
 - name: file
   required: true
