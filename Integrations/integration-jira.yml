@@ -206,7 +206,7 @@ script:
         var createIssueObj = {md: [] , context: {Ticket: []}};
         createIssueObj['md'].push(data);
         var id = dq(data, 'id');
-        createIssueObj['context'].Ticket.push({ID: id});
+        createIssueObj['context'].Ticket.push({Id: id});
         return createIssueObj;
     }
 
@@ -218,7 +218,7 @@ script:
         }
         data.forEach(function (element) {
             mdObj ={};
-            mdObj['ID'] = dq(element, 'id');
+            mdObj['id'] = dq(element, 'id');
             mdObj['key'] = dq(element, 'updateAuthor.key');
             mdObj['commnet'] = dq(element, 'body');
             mdObj['ticket_link'] = dq(element, 'self');
@@ -234,7 +234,7 @@ script:
         }
         data.forEach(function (element) {
             mdObj ={};
-            mdObj['ID'] = dq(element, 'id');
+            mdObj['id'] = dq(element, 'id');
             mdObj['key'] = dq(element, 'updateAuthor.key');
             mdObj['attachment'] = dq(element, 'fields.attachment');
             mdObj['ticket_link'] = dq(element, 'self');
@@ -552,6 +552,19 @@ script:
       description: Issue id
     - name: headers
       description: Headers to display in Human readable format
+    outputs:
+    - contextPath: Ticket.Id
+      description: Id of ticket
+    - contextPath: Ticket.Key
+      description: Key of ticket
+    - contextPath: Ticket.Assignee
+      description: User assigned to ticket
+    - contextPath: Ticket.Creator
+      description: User who created the ticket
+    - contextPath: Ticket.Summary
+      description: Summary of ticket
+    - contextPath: Ticket.Status
+      description: Status of ticket
     description: Fetch issue from Jira
   - name: jira-create-issue
     arguments:
