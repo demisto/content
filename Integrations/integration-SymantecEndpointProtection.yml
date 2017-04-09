@@ -30,6 +30,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use proxy system settings
+  name: proxy
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     // Default timeout and interval parameters for polling the response
@@ -71,7 +76,7 @@ script:
     ]
 
     var fixUrl = function(base) {
-        return (base[base.length - 1] != '/' ? (base + '/') : base);
+        return ((base[base.length - 1] != '/') ? (base + '/') : base);
     }
 
     var buildArgs = function(args) {
@@ -111,35 +116,38 @@ script:
         }
     }
 
-    var doAuth = function(qParams) {
-        url = fixUrl(qParams.server) + 'sepm/api/v1/identity/authenticate';
+    var doAuth = function() {
+        url = fixUrl(params.server) + 'sepm/api/v1/identity/authenticate';
         body = {
-            username: (qParams.authentication ? qParams.authentication.identifier : ''),
-            password: (qParams.authentication ? qParams.authentication.password : ''),
-            domain: (qParams.domain ? qParams.domain : '')
+            username: (params.authentication ? params.authentication.identifier : ''),
+            password: (params.authentication ? params.authentication.password : ''),
+            domain: (params.domain ? params.domain : '')
         };
         res = http(
             url,
             {
                 Method: 'POST',
                 Headers: {"Content-Type": ["application/json"]},
-                Body: JSON.stringify(body)
+                Body: JSON.stringify(body),
+
             },
-            qParams['insecure']
+            params.insecure,
+            params.proxy
         );
 
         return res;
     };
 
-    var doGet = function(qArgs, qParams, token, raw, suffix) {
-        url = fixUrl(qParams.server) + suffix + buildArgs(qArgs);
+    var doGet = function(token, raw, suffix) {
+        url = fixUrl(params.server) + suffix + buildArgs(args);
         res = http(
             url,
             {
                 Method: 'GET',
                 Headers: {'Authorization': ['Bearer ' + token]}
             },
-            qParams.insecure
+            params.insecure,
+            params.proxy
         );
 
         if (raw) {
@@ -149,8 +157,8 @@ script:
         }
     }
 
-    var doPost = function(qArgs, qParams, token, is_xml, suffix, body) {
-        url = fixUrl(qParams.server) + suffix;
+    var doPost = function(token, is_xml, suffix, body) {
+        url = fixUrl(params.server) + suffix;
         res = http(
             url,
             {
@@ -159,7 +167,7 @@ script:
                 Body: body
 
             },
-            qParams.insecure
+            params.insecure
         );
 
         res = parseResponse(res);
@@ -170,9 +178,9 @@ script:
         return res;
     }
 
-    var systemInfo = function(qArgs, qParams, token) {
-        versionJson = doGet(args, params, token, false, 'sepm/api/v1/version');
-        avdefJson = doGet(args, params, token, false, 'sepm/api/v1/content/avdef/latest');
+    var systemInfo = function(token) {
+        versionJson = doGet(token, false, 'sepm/api/v1/version');
+        avdefJson = doGet(token, false, 'sepm/api/v1/content/avdef/latest');
 
         var systemInfoJson = {
             'version': versionJson,
@@ -191,8 +199,8 @@ script:
         };
     }
 
-    var clientContent = function(qArgs, qParams, token) {
-        clientContentJson = doGet(args, params, token, false, 'sepm/api/v1/stats/client/content');
+    var clientContent = function(token) {
+        clientContentJson = doGet(token, false, 'sepm/api/v1/stats/client/content');
 
         var lastUpdatedDate = Date(parseInt(clientContentJson.lastUpdated) * 1000);
         var md = '## Client Content, last updated on {0}\n'.format(lastUpdatedDate);
@@ -204,16 +212,16 @@ script:
         };
     }
 
-    var endpointsInfo = function(qArgs, qParams, token) {
-        jsonRes = doGet(args, params, token, false, 'sepm/api/v1/computers');
+    var endpointsInfo = function(token) {
+        jsonRes = doGet(token, false, 'sepm/api/v1/computers');
 
         md = '## Endpoints Information';
-        if (qArgs.hostname) {
+        if (args.hostname) {
             // Set the war room result
-            md += ', filtered for hostname: ' + qArgs.hostname + '\n';
+            md += ', filtered for hostname: ' + args.hostname + '\n';
             var filteredJsonRes = {}
             jsonRes.content.forEach(function(h) {
-                if (h.computerName == qArgs.hostname) {
+                if (h.computerName == args.hostname) {
                     filteredJsonRes = h;
                 }
             });
@@ -236,11 +244,11 @@ script:
         }
 
         // Set the war room result
-        if (qArgs.columns) {
-            if (qArgs.columns == 'all' || qArgs.columns == '*') {
+        if (args.columns) {
+            if (args.columns == 'all' || args.columns == '*') {
                 columnsList = [];
             } else {
-                columnsList = argToList(qArgs.columns);
+                columnsList = argToList(args.columns);
             }
         } else {
             columnsList = ENDPOINTS_INFO_DEFAULT_COLUMNS;
@@ -251,8 +259,8 @@ script:
         return {Type: entryTypes.note, Contents: filteredJsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
     }
 
-    var groupsInfo = function(qArgs, qParams, token) {
-        jsonRes = doGet(args, params, token, false, 'sepm/api/v1/groups');
+    var groupsInfo = function(token) {
+        jsonRes = doGet(token, false, 'sepm/api/v1/groups');
 
         // Set the entry context
         entryContext = {}
@@ -266,11 +274,11 @@ script:
         });
 
         // Set the war room result
-        if (qArgs.columns) {
-            if (qArgs.columns == 'all' || qArgs.columns == '*') {
+        if (args.columns) {
+            if (args.columns == 'all' || args.columns == '*') {
                 columnsList = [];
             } else {
-                columnsList = argToList(qArgs.columns);
+                columnsList = argToList(args.columns);
             }
         } else {
             columnsList = GROUPS_INFO_DEFAULT_COLUMNS;
@@ -281,30 +289,30 @@ script:
         return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
     }
 
-    var getComputerIdByIp = function(qParams, token, ip) {
+    var getComputerIdByIp = function(token, ip) {
         xml = buildClientXml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip));
-        resJson = doPost(null, qParams, token, true, 'sepm/ws/v1/ClientService', xml);
+        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
 
         return resJson.Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId;
     }
 
-    var getComputerIdByHostname = function(qParams, token, hostname) {
+    var getComputerIdByHostname = function(token, hostname) {
         xml = buildClientXml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname));
-        resJson = doPost(null, qParams, token, true, 'sepm/ws/v1/ClientService', xml);
+        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
 
         return resJson.Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId;
     }
 
-    var getComputerId = function(qParams, qArgs, token) {
-        if (qArgs.ip) {
+    var getComputerId = function(token) {
+        if (args.ip) {
             try {
-                computerId = getComputerIdByIp(qParams, token, qArgs.ip);
+                computerId = getComputerIdByIp(token, args.ip);
             } catch (err) {
                 throw 'Failed to locate the endpoint by its IP address.';
             }
-        } else if (qArgs.hostname) {
+        } else if (args.hostname) {
             try {
-                computerId = getComputerIdByHostname(qParams, token, qArgs.hostname);
+                computerId = getComputerIdByHostname(token, args.hostname);
             } catch (err) {
                 throw 'Failed to locat the endpoint by its hostname.';
             }
@@ -315,18 +323,18 @@ script:
         return computerId;
     }
 
-    var getCommandStatusDetails = function(qParams, token, commandId) {
+    var getCommandStatusDetails = function(token, commandId) {
         xml = buildCommandXml('<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(commandId));
-        resJson = doPost(null, qParams, token, true, 'sepm/ws/v1/CommandService', xml);
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
 
         return resJson;
     }
 
-    var pollResponse = function(qParams, qArgs, token, commandId, timeout, interval) {
+    var pollResponse = function(token, commandId, timeout, interval) {
         retries = timeout / interval;
         isDone = false;
         for (var i = 0; i < retries; i++) {
-            commandStatusJson = getCommandStatusDetails(qParams, token, commandId);
+            commandStatusJson = getCommandStatusDetails(token, commandId);
             cmdStatusDetail = commandStatusJson.Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail;
             stateId = cmdStatusDetail.stateId;
             if (stateId == '2' || stateId == '3') {
@@ -356,33 +364,33 @@ script:
                 EntryContext: {'SEPM.LastCommand': {'CommandDetails': cmdStatusDetail, 'CommandId': commandId}}};
     }
 
-    var runClientCommand = function(qArgs, qParams, token, command) {
+    var runClientCommand = function(token, command) {
         try {
-            computerId = getComputerId(qParams, qArgs, token);
+            computerId = getComputerId(token);
         }
         catch (err) {
             return {Type: entryTypes.error, Contents: err, ContentsFormat: formats.json, HumanReadable: err, EntryContext: {}};
         }
 
-        timeout = qArgs.timeout ? parseInt(qArgs.timeout) : CLIENT_COMMAND_PARAMETERS[command]['timeout'];
-        interval = qArgs.interval ? parseInt(qArgs.interval) : CLIENT_COMMAND_PARAMETERS[command]['interval'];
+        timeout = args.timeout ? parseInt(args.timeout) : CLIENT_COMMAND_PARAMETERS[command]['timeout'];
+        interval = args.interval ? parseInt(args.interval) : CLIENT_COMMAND_PARAMETERS[command]['interval'];
 
         switch (command) {
             case 'sep-update-content':
-                commandId = updateContent(qArgs, qParams, token, computerId);
+                commandId = updateContent(token, computerId);
                 break;
             case 'sep-scan':
-                commandId = scan(qArgs, qParams, token, computerId);
+                commandId = scan(token, computerId);
                 break;
             case 'sep-quarantine':
-                commandId = quarantine(qArgs, qParams, token, computerId);
+                commandId = quarantine(token, computerId);
                 break;
             default:
                 throw 'Invalid command.';
         }
 
-        response = pollResponse(qParams, qArgs, token, commandId, timeout, interval);
-        endpoint = qArgs.hostname ? qArgs.hostname : qArgs.ip;
+        response = pollResponse(token, commandId, timeout, interval);
+        endpoint = args.hostname ? args.hostname : args.ip;
         title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint);
 
         if (response.isDone) {
@@ -396,33 +404,33 @@ script:
         return buildCommandResponseOutput(title, commandId, message);
     }
 
-    var commandStatus = function(qArgs, qParams, token) {
+    var commandStatus = function(token) {
         // Poll once for a response (timeout=1, interval=1)
-        response = pollResponse(qParams, qArgs, token, qArgs.commandId, 1, 1);
+        response = pollResponse(token, args.commandId, 1, 1);
         message = response.isDone ? 'Command is done.' : 'Command is in progress. Run !sep-command-status to check again.';
 
-        return buildCommandResponseOutput('Command status:', qArgs.commandId, message);
+        return buildCommandResponseOutput('Command status:', args.commandId, message);
     }
 
-    var updateContent = function(qArgs, qParams, token, computerId) {
+    var updateContent = function(token, computerId) {
         xml = buildCommandXml('<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList></com:runClientCommandUpdateContent>'.format(computerId));
-        resJson = doPost(qArgs, qParams, token, true, 'sepm/ws/v1/CommandService', xml);
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId;
 
         return commandId;
     }
 
-    var scan = function(qArgs, qParams, token, computerId) {
-        xml = buildCommandXml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computerId, qArgs.scanType));
-        resJson = doPost(qArgs, qParams, token, true, 'sepm/ws/v1/CommandService', xml);
+    var scan = function(token, computerId) {
+        xml = buildCommandXml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computerId, args.scanType));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId;
 
         return commandId;
     }
 
-    var quarantine = function(qArgs, qParams, token, computerId) {
-        xml = buildCommandXml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(qArgs.actionType, computerId));
-        resJson = doPost(qArgs, qParams, token, true, 'sepm/ws/v1/CommandService', xml);
+    var quarantine = function(token, computerId) {
+        xml = buildCommandXml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(args.actionType, computerId));
+        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId;
 
         return commandId;
@@ -447,19 +455,19 @@ script:
             }
             break;
         case 'sep-system-info':
-            return systemInfo(args, params, token);
+            return systemInfo(token);
         case 'sep-client-content':
-            return clientContent(args, params, token);
+            return clientContent(token);
         case 'sep-endpoints-info':
-            return endpointsInfo(args, params, token);
+            return endpointsInfo(token);
         case 'sep-groups-info':
-            return groupsInfo(args, params, token);
+            return groupsInfo(token);
         case 'sep-command-status':
-            return commandStatus(args, params, token);
+            return commandStatus(token);
         case 'sep-update-content':
         case 'sep-scan':
         case 'sep-quarantine':
-            return runClientCommand(args, params, token, command);
+            return runClientCommand(token, command);
         default:
     }
   type: javascript
