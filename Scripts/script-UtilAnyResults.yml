@@ -23,7 +23,7 @@ script: |
   demisto.results(res)
 type: python
 tags:
-- util
+- Utility
 comment: Utility script to use in playbooks - returns "yes" if the input is non-empty.
 system: true
 args:

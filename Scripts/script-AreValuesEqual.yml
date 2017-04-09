@@ -8,7 +8,7 @@ script: |
   demisto.results(answer)
 type: python
 tags:
-- util
+- Utility
 system: true
 args:
 - name: left

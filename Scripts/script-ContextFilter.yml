@@ -130,7 +130,7 @@ script: |
   return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Unknown filter type - ' + args.filterType};
 type: javascript
 tags:
-- util
+- Utility
 comment: Filter context keys by applying one of the various available manipulations
   and storing in a new context key. Please notice that the resulting context key will
   not be available automatically as an option but you can still specify it.
