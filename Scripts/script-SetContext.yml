@@ -5,7 +5,7 @@ name: SetContext
 script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 tags:
-- util
+- Utility
 system: true
 args:
 - name: key

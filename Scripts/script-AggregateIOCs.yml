@@ -14,7 +14,7 @@ script: |-
       demisto.setContext('found_iocs', '')
 type: python
 tags:
-- util
+- Utility
 system: true
 scripttarget: 0
 dependson: {}

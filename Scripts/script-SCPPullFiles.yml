@@ -17,7 +17,7 @@ script: |
   demisto.results(res)
 type: python
 tags:
-- util
+- Utility
 comment: Take a list of devices and pull a specific file (given by path) from each
   using SCP
 system: true
