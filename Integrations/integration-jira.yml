@@ -580,6 +580,9 @@ script:
       description: assignee name
     - name: reporter
       description: reporter name
+    outputs:
+    - contextPath: Ticket.Id
+      description: Id of ticket
     description: Create a new issue on Jira
   - name: jira-issue-upload-file
     arguments:
