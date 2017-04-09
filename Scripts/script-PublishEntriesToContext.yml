@@ -22,7 +22,7 @@ script: |-
   return 'No entries found';
 type: javascript
 tags:
-- util
+- Utility
 enabled: true
 args:
 - name: ids

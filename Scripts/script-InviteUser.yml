@@ -5,7 +5,7 @@ name: InviteUser
 script: return executeCommand('@', args);
 type: javascript
 tags:
-- util
+- Utility
 comment: |
   Send a notification to another user and add user to the team
 system: true
