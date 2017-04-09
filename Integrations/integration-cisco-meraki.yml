@@ -103,6 +103,21 @@ script:
         return text;
     }
 
+    var createMapEntry = function(obj) {
+
+        var location = {
+            lat: obj.lat,
+            lng: obj.lng
+        };
+
+        return {
+            // type
+            Type: 15, // entryTypes.map,
+             // contents
+            ContentsFormat: formats.json, Contents: location
+        };
+    }
+
     var merakiUrlPrefix = 'https://dashboard.meraki.com/api/v0/';
     var apiKey = params.apiKey;
 
@@ -271,12 +286,7 @@ script:
         if(uplinks && uplinks.length) {
             context.Uplink = uplinks.map(mapObjFunction([
                 { from: 'status', to: 'Status' },
-                { from: 'interface', to: 'Interface' },
-                /*{ from: 'publicIP', to: 'PublicIP' },
-                { from: 'dns', to: 'DNSServer' },
-                { from: 'usingStaticIp', to: 'UsingStaticIP' },
-                { from: 'ip', to: 'IP' },
-                { from: 'gateway', to: 'Gateway' }*/
+                { from: 'interface', to: 'Interface' }
             ]));
         }
         return createTableEntry("Device Uplink", uplinks, context, headers);
@@ -314,7 +324,7 @@ script:
             context.Device = mapDeviceFunction(device);
         }
 
-        return createTableEntry("Device " + serial, device, context, headers);
+        return [createTableEntry("Device " + serial, device, context, headers), createMapEntry(device)];
     };
 
     var removeDevice = function(networkId, serial) {
@@ -493,6 +503,9 @@ script:
   commands:
   - name: meraki-fetch-organizations
     arguments: []
+    outputs:
+    - contextPath: Organization
+      description: List of organizations, each includes ID & Name
     description: List the organizations that the api-key has privileges on
   - name: meraki-get-organization-license-state
     arguments:
@@ -509,6 +522,10 @@ script:
       description: Organization id
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Devices
+      description: List of devices, each includes Serial, NetworkId, Model, ClaimedAt,
+        PublicIp & Mac
     description: List of Inventories for an organization
   - name: meraki-fetch-networks
     arguments:
@@ -517,6 +534,10 @@ script:
       description: Organization id
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Network
+      description: List of networks, each includes ID, Name, Type, OrganizationId,
+        Tags & TimeZone
     description: List the networks in an organization
   - name: meraki-fetch-devices
     arguments:
@@ -525,6 +546,10 @@ script:
       description: Network id
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Device
+      description: List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC & Address
     description: List the devices in a network
   - name: meraki-fetch-device-uplink
     arguments:
@@ -536,6 +561,9 @@ script:
       description: Device serial#
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Uplink
+      description: List of device uplink, each includes Status & Interface
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
     arguments:
@@ -544,6 +572,10 @@ script:
       description: Network id
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: SSID
+      description: List of SSIDs, each includes Name, SplashPage, BandSelection, Enabled,
+        AuthMode & WalledGardenRanges
     description: List the SSIDs in a network
   - name: meraki-fetch-clients
     arguments:
@@ -556,6 +588,10 @@ script:
         be at most one month and in seconds (e.g. 1 day is 86400 seconds).'
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Client
+      description: List of clients, each includes ID, MAC, IP, Description, mDNSName,
+        Hostname, Usage & VLAN
     description: List the clients of a device, up to a maximum of a month ago
   - name: meraki-fetch-firewall-rules
     arguments:
@@ -567,6 +603,10 @@ script:
       description: SSID number
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Firewall
+      description: List of firewalls, each includes Policy, Protocol, DestPort, DestCidr
+        & Comment
     description: List of L3 firewall rules for an SSID
   - name: meraki-remove-device
     arguments:
@@ -587,6 +627,10 @@ script:
       description: Device serial
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: Serial
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC & Address
     description: Get a single device
   - name: meraki-update-device
     arguments:
@@ -606,6 +650,10 @@ script:
       description: New latitude of the device
     - name: lng
       description: New longitude of the device
+    outputs:
+    - contextPath: Device
+      description: Updated evice which includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC & Address
     description: Update the attributes of a device
   - name: meraki-claim-device
     arguments:
