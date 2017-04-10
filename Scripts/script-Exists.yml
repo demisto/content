@@ -1,0 +1,25 @@
+commonfields:
+  id: Exists
+  version: -1
+name: Exists
+script: |
+  if (args.value) {
+      if (Array.isArray(args.value)) {
+          return args.value.length > 0 ? 'yes' : 'no';
+      }
+      return 'yes';
+  }
+  return 'no';
+type: javascript
+tags:
+- Utility
+comment: Check if a given value exists in the context. Will return 'no' for empty
+  empty arrays.
+system: true
+enabled: true
+args:
+- name: value
+  default: true
+  description: The value to check if exists - can handle arrays as well
+  isArray: true
+scripttarget: 0
