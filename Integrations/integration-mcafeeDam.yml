@@ -47,7 +47,15 @@ configuration:
   type: 0
   required: false
 script:
-  script: |2-
+  script: |-
+    var mdAlertFields={
+      'Execution Time':'executionTime',
+      'Rule':'rules.rule.name',
+      'User':'execUser',
+      'Database':'database.name',
+      'Sensor':'identifyingSensor.name',
+      'Command Type':'cmdType'
+    };
 
     var fixUrl = function(base) {
         res = base;
@@ -147,14 +155,79 @@ script:
         }
         return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation};
     };
-
     var alertsToIncident = function(alerts) {
-        incidents = [];
-        for (i = 0 ; i < alerts.length; i++){
-            incident.push(alertToIncident(alerts[i]));
+        var incidents = [];
+        for (i = 0; i < alerts.length; i++){
+            incidents.push(alertToIncident(alerts[i]));
         }
         return incidents;
     };
+    function alertsToMd(alerts) {
+        var md="";
+        if (Array.isArray(alerts)) {
+            for (var i in alerts) {
+                md += alertToMd(alerts[i]) + "\n --- \n";
+            }
+        } else {
+            md += alertToMd(alerts);
+        }
+        return md;
+    }
+    function mdTableHead() {
+        var head='|';
+        var line='|';
+        for (var key in mdAlertFields) {
+            head+=key + '|';
+            line+= '- |';
+        }
+        return head+'\n'+line+'\n';
+    }
+    function mdTableData(alert) {
+        var data='|';
+        for (var key in mdAlertFields) {
+            data+=resolve(alert,mdAlertFields[key]) + '|';
+        }
+        return data + '\n';
+    }
+    function alertToMd(alert) {
+        var md ='';
+        md +="### DAM Alert ID " + alert.id + "\n";
+        md += mdTableHead();
+        md += mdTableData(alert);
+        if (alert.operation) {
+            md += '#### Statement\n';
+            md += '\n```' + alert.operation + '```\n';
+        }
+        if (alert.accessedObjects && alert.accessedObjects.object) {
+            var objects = Array.isArray(alert.accessedObjects.object) ? alert.accessedObjects.object : new Array(alert.accessedObjects.object);
+            md += '#### Accessed Objects \n';
+            md += 'Type|Owner|Name\n-|-|-\n';
+            for (var i in objects) {
+                md += objects[i].type + '|' + objects[i].owner + '|' + objects[i].name + "\n";
+            }
+        }
+
+        return md;
+    }
+
+    function resolve(obj,path) {
+        if (Array.isArray(obj)) {
+            var ret = [];
+            for (var i in obj) {
+                ret.push(resolve(obj[i],path));
+            }
+            return ret;
+        } else {
+            var dot=path.indexOf(".");
+            if (dot == -1) {
+                return obj[path] ? obj[path] : 'N/A';
+            } else {
+                var curr = path.substring(0,dot);
+                var rest = path.substring(dot+1);
+                return obj[curr] ? resolve(obj[curr],rest) : 'N/A';
+            }
+        }
+    }
 
     var fetchIncidents = function() {
         var count = params.batchSize || 100;
@@ -199,28 +272,76 @@ script:
         case 'fetch-incidents':
             return JSON.stringify(fetchIncidents());
         case 'dam-get-alert-by-id':
-            return sendRequest(finalUrl, 'alert', 'HH$Id=' + encodeURIComponent(args.id)).HedgehogXmlApi.alert;
+            var jsonRes=sendRequest(finalUrl, 'alert', 'HH$Id=' + encodeURIComponent(args.id)).HedgehogXmlApi.alert;
+            if (jsonRes) {
+                var entryContext = {
+                };
+                md = alertToMd(jsonRes);
+                return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
+            } else {
+                md = '### no alerts found\n';
+                return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, HumanReadable: md};
+            }
         case 'dam-get-latest-by-rule':
             var count = args.count || 10;
             var timeBack = 1000 * 60 * (args.timeBack || 10);
             var res = sendRequest(finalUrl, 'alert', 'HH$RuleName=' + encodeURIComponent(args.ruleName) +
                 '&HH$TimeBackPeriod='+encodeURIComponent(timeBack +'') + '&HH$pageSize='+encodeURIComponent(count)).HedgehogXmlApi;
+
             if (res && res.alert) {
-                return {alerts: res.alert};
+                jsonRes = res.alert;
+                console.log(JSON.stringify(jsonRes));
+                var entryContext = {};
+                md = alertsToMd(jsonRes);
+                return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
+            } else {
+                md = '### no alerts found\n';
+                return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, HumanReadable: md};
             }
-            return null;
     }
   type: javascript
   commands:
   - name: dam-get-alert-by-id
+    deprecated: false
     arguments:
     - name: id
       required: true
       default: true
       description: The alert ID
+    outputs:
+    - contentPath: id
+      contextPath: AlertId
+      description: DAM Alert ID
+    - contentPath: accessedObjects.object.name
+      contextPath: alertAccessedObjects
+      description: DAM Accessed Objects
+      important: true
+      importantDescription: DAM Accessed Objects
+    - contentPath: execUser
+      contextPath: dbUser
+      description: DAM Database User
+      important: true
+      importantDescription: DAM Database User
+    - contentPath: osUser
+      contextPath: account.username
+      description: DAM OS User
+      important: true
+      importantDescription: DAM OS User
+    - contentPath: database
+      contextPath: database
+      description: DAM Database
+      important: true
+      importantDescription: DAM Database
+    - contentPath: identifyingSensor
+      contextPath: sensor
+      description: DAM Sensor
+    - contentPath: rules
+      contextPath: rules
+      description: DAM Rules
     description: Get a DAM alert from McAfee Database Activity Monitoring by alert
       ID
   - name: dam-get-latest-by-rule
+    deprecated: false
     arguments:
     - name: ruleName
       required: true
@@ -231,6 +352,36 @@ script:
     - name: timeBack
       description: Filter DAM alerts and import alerts that where created only in
         the last given minutes, defaults to last 10 minutes
+    outputs:
+    - contentPath: id
+      contextPath: AlertId
+      description: DAM Alert ID
+    - contentPath: accessedObjects.object.name
+      contextPath: alertAccessedObjects
+      description: DAM Accessed Objects
+      important: true
+      importantDescription: DAM Accessed Objects
+    - contentPath: execUser
+      contextPath: dbUser
+      description: DAM Database User
+      important: true
+      importantDescription: DAM Database User
+    - contentPath: osUser
+      contextPath: account.username
+      description: DAM OS User
+      important: true
+      importantDescription: DAM OS User
+    - contentPath: database
+      contextPath: database
+      description: DAM Database
+      important: true
+      importantDescription: DAM Database
+    - contentPath: identifyingSensor
+      contextPath: sensor
+      description: DAM Sensor
+    - contentPath: rules
+      contextPath: rules
+      description: DAM Rules
     description: Get latest DAM alerts by rule name
   isfetch: true
-system: true
+hidden: false
