@@ -418,7 +418,6 @@ script:
       deprecated: false
       description: Score threshold to identify file as malicious
     outputs:
-    outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash MD5
       important: true
