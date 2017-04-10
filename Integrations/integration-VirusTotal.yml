@@ -88,17 +88,23 @@ script:
         }
         var md = '';
         var ec = {};
+        ec.dbotScore = [];
+        ec['File/Malicious'] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
-            if (r[i].positives > threshold) {
-                if (!ec.badHashes) {
-                    ec.badHashes = [];
-                }
-                ec.badHashes.push(r[i].md5);
+            var dbotScore = 0;
+            if (r[i].positives >= threshold) {
+                dbotScore = 3;
+                ec['File/Malicious'].push({MD5: r[i].md5});
+            } else if (r[i].positives >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
             }
+            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'VT', score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             if (longFormat === 'true' && r[i].scans) {
                 md += arrToMd(Object.keys(r[i].scans).map(function(curr) {
@@ -110,6 +116,24 @@ script:
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
+
+    var calcRecentDownloads = function(checks) {
+        var badDownloads = 0;
+        var now = Date.now();
+        for (var c=0; c<checks.length; c++) {
+            if (checks[c]) {
+                for (var ci=0; ci<checks[c].length; ci++) {
+                    if (checks[c][ci].date) {
+                        var d = new Date(checks[c][ci].date.replace(' ', 'T'));
+                        if ((now - d.getTime()) / 1000 / 60 / 60 / 24 < 30) {
+                            badDownloads++;
+                        }
+                    }
+                }
+            }
+        }
+        return badDownloads;
+    }
 
     var doIP = function(ip, longFormat, threshold, sampleSize) {
         if (!isIp(ip)) {
@@ -124,9 +148,21 @@ script:
         var res = doReq('GET', 'ip-address/report', {ip: ip});
         var o = res.obj;
         var ec = {};
+        // Calculate score based on recently found downloads
+        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+        var dbotScore = 0;
+        if (badDownloads >= threshold) {
+            dbotScore = 3;
+            ec['IP/Malicious'] = {Address: ip, ASN: o.asn, Geo: {Country: o.country}};
+        } else if (badDownloads >= threshold / 2) {
+            dbotScore = 2;
+        } else {
+            dbotScore = 1;
+        }
+        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'VT', score: dbotScore};
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
         md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
-        md += 'Country: **' + res.obj.country + '**\n';
+        md += 'Country: **' + o.country + '**\n';
         var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
             {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
             {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
@@ -190,23 +226,44 @@ script:
                 }
                 md += arrToMd(curr) + '\n';
             }
+            var dbotScore = 0;
             if (o.positives >= threshold) {
-                if (!ec.badUrls) {
-                    ec.badUrls = [];
-                }
-                ec.badUrls.push(o.url);
+                dbotScore = 3;
+                ec['URL/Malicious'] = url;
+            } else if (o.positives >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
             }
+            ec.dbotScore = {indicator: url, type: 'url', vendor: 'VT', score: dbotScore};
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var doDomain = function(domain, longFormat, sampleSize) {
+    var doDomain = function(domain, threshold, longFormat, sampleSize) {
         if (!sampleSize) {
             sampleSize = 10;
+        }
+        if (!threshold) {
+            threshold = 10;
         }
         var res = doReq('GET', 'domain/report', {domain: domain});
         var o = res.obj;
         var ec = {};
+
+        // Calculate score based on recently found downloads
+        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+        var dbotScore = 0;
+        if (badDownloads >= threshold) {
+            dbotScore = 3;
+            ec['Domain/Malicious'] = {Name: domain};
+        } else if (badDownloads >= threshold / 2) {
+            dbotScore = 2;
+        } else {
+            dbotScore = 1;
+        }
+        ec.dbotScore = {indicator: domain, type: 'domain', vendor: 'VT', score: dbotScore};
+
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";
 
@@ -264,12 +321,16 @@ script:
         if (result.Body === '') {
             throw 'No content recieved. Maybe you tried a private API?.';
         }
-        var obj = JSON.parse(result.Body);
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
         if (obj.response_code !== 1) {
             throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
         }
         var ec = {};
-        ec.hashes = obj.md5;
         ec.vtScanID = obj.scan_id;
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
@@ -327,7 +388,7 @@ script:
         case 'url':
             return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait);
         case 'domain':
-            return doDomain(args.domain, args.long, args.sampleSize);
+            return doDomain(args.domain, args.threshold, args.long, args.sampleSize);
         case 'file-scan':
             return scanFile(args.entryID, args.uploadURL);
         case 'file-rescan':
@@ -366,10 +427,18 @@ script:
         it malicious
       defaultValue: "10"
     outputs:
-    - contextPath: badHashes
-      description: Bad hashes found
+    - contextPath: File/Malicious.MD5
+      description: Bad hash found
       important: true
       importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check file reputation of the given hash
   - name: ip
     deprecated: false
@@ -386,7 +455,7 @@ script:
       description: Should we return full response with detected URLs
       defaultValue: "false"
     - name: threshold
-      description: If number of positive detected URLs is bigger than the threshold
+      description: If number of positive detected IPs is bigger than the threshold
         we will consider it malicious
       defaultValue: "10"
     - name: sampleSize
@@ -394,10 +463,22 @@ script:
         etc.) to display for long format
       defaultValue: "10"
     outputs:
-    - contextPath: badIPs
-      description: Bad IPs found
+    - contextPath: IP/Malicious.Address
+      description: Bad IP Address found
       important: true
       importantDescription: Bad IPs found querying VirusTotal
+    - contextPath: IP/Malicious.ASN
+      description: Bad IP ASN
+    - contextPath: IP/Malicious.Geo.Country
+      description: Bad IP Country
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check IP Reputation
   - name: url
     deprecated: false
@@ -424,10 +505,18 @@ script:
         scanned
       defaultValue: "0"
     outputs:
-    - contextPath: badUrls
+    - contextPath: URL/Malicious
       description: Bad URLs found
       important: true
       importantDescription: Bad URLs found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check URL Reputation
   - name: domain
     deprecated: false
@@ -447,6 +536,23 @@ script:
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
       defaultValue: "10"
+    - name: threshold
+      description: If number of positive detected domains is bigger than the threshold
+        we will consider it malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: Domain/Malicious.Name
+      description: Bad domain found
+      important: true
+      importantDescription: Bad domain found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Check domain reputation
   - name: file-scan
     deprecated: false
@@ -459,8 +565,6 @@ script:
       description: Private API extension. Special upload URL for files bigger than
         32M.
     outputs:
-    - contextPath: hashes
-      description: Hashes being scanned
     - contextPath: vtScanID
       description: Scan IDs of the submitted files
     description: Submit a file for scanning

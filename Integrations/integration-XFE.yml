@@ -76,7 +76,6 @@ script:
         var ec = {};
         var dbotScore = 0;
         if (o && o.family) {
-            ec.badHashes = hash;
             dbotScore = 3;
         } else if (o && o.risk === 'high') {
             dbotScore = 3;
@@ -86,6 +85,10 @@ script:
             dbotScore = 1;
         }
         ec.dbotScore = {indicator: hash, type: 'hash', vendor: 'XFE', score: dbotScore};
+        if (dbotScore === 3) {
+            ec['File/Malicious'] = {};
+            ec['File/Malicious'][o.type.toUpperCase()] = hash;
+        }
         var md = '## X-Force Hash Reputation for: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
         md += 'Type: **' + o.type + '**\n';
         md += 'Risk: **' + o.risk + '**\n';
@@ -130,10 +133,10 @@ script:
         var o = res.reputation;
         var ec = {};
         var dbotScore = 0;
-        if (o.score && o.score > threshold) {
-            ec.badIPs = ip;
+        if (o.score && o.score >= threshold) {
             dbotScore = 3;
-        } else if (o.score && o.score > threshold / 2) {
+            ec['IP/Malicious'] = {Address: ip};
+        } else if (o.score && o.score >= threshold / 2) {
             dbotScore = 2;
         } else if (o.score) {
             dbotScore = 1;
@@ -183,10 +186,10 @@ script:
         var o = res.url;
         var ec = {};
         var dbotScore = 0;
-        if (o.result && o.result.score && o.result.score > threshold) {
-            ec.badUrls = url;
+        if (o.result && o.result.score && o.result.score >= threshold) {
+            ec['URL/Malicious'] = url;
             dbotScore = 3;
-        } else if (o.result && o.result.score && o.result.score > threshold / 2) {
+        } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
             dbotScore = 2;
         } else if (o.result && o.result.score) {
             dbotScore = 1;
@@ -345,7 +348,7 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: badUrls
+    - contextPath: URL/Malicious
       description: Bad URLs found
       important: true
       importantDescription: Bad URLs found querying X-Force
@@ -375,8 +378,16 @@ script:
       description: Should we return full response
       defaultValue: "false"
     outputs:
-    - contextPath: badHashes
-      description: Bad hashes found
+    - contextPath: File/Malicious.MD5
+      description: Bad hash MD5
+      important: true
+      importantDescription: Bad hashes found querying X-Force
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying X-Force
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
       important: true
       importantDescription: Bad hashes found querying X-Force
     - contextPath: dbotScore.indicator
@@ -409,8 +420,8 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: badIPs
-      description: Bad IPs found
+    - contextPath: IP/Malicious.Address
+      description: Bad IP found
       important: true
       importantDescription: Bad IPs found querying X-Force
     - contextPath: dbotScore.indicator
@@ -443,7 +454,7 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: badUrls
+    - contextPath: URL/Malicious
       description: Bad URLs found
       important: true
       importantDescription: Bad URLs found querying X-Force

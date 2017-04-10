@@ -87,6 +87,7 @@ script:
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
 
+        var obj;
         try {
             obj = JSON.parse(result.Body);
         } catch (ex) {
@@ -137,6 +138,7 @@ script:
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
+        var obj;
         try {
             obj = JSON.parse(result.Body);
         } catch (ex) {
