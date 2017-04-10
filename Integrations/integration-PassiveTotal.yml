@@ -1,7 +1,7 @@
 commonfields:
-  id: PassiveTotalNew
+  id: PassiveTotal
   version: -1
-name: PassiveTotalNew
+name: PassiveTotal
 display: PassiveTotal
 category: Data Enrichment
 system: true
@@ -44,7 +44,7 @@ script:
             }
         );
         if (result.StatusCode !== 200 && result.StatusCode !== 201) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', check that username/password are correct';
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', request body: ' + result.Body;
         }
         return result.Body;
     };
