@@ -1,7 +1,7 @@
 commonfields:
-  id: PassiveTotal
+  id: PassiveTotalNew
   version: -1
-name: PassiveTotal
+name: PassiveTotalNew
 display: PassiveTotal
 category: Data Enrichment
 system: true
@@ -99,7 +99,7 @@ script:
                 md += 'Pager:\n';
                 md += objToMd(jsonRes.pager) + '\n';
             }
-            var resolves = [];
+            var contextDomain = {Name: args.query, DNS: []};
             if (jsonRes.results && jsonRes.results.length > 0) {
                 md += 'Query Type | First Seen | Last Seen\n';
                 md += '---------- | ---------- | ---------\n';
@@ -108,31 +108,33 @@ script:
                 md += '------ | ------- | ---------- | ---------\n';
                 for (var i=0; i<jsonRes.results.length; i++) {
                     md += jsonRes.results[i].source.join(',') + ' | ' + jsonRes.results[i].resolve + ' | ' + jsonRes.results[i].firstSeen + ' | ' + jsonRes.results[i].lastSeen + '\n';
-                    resolves.push(jsonRes.results[i].resolve);
+                    if (jsonRes.queryType === 'domain') {
+                        contextDomain.DNS.push({Address: jsonRes.results[i].resolve, FirstSeen: jsonRes.results[i].firstSeen, LastSeen: jsonRes.results[i].lastSeen});
+                    }
                 }
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.resolves': resolves}};
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
         case 'pt-passive-unique':
             var md = '## PassiveTotal Passive Unique DNS for ' + args.query + ' [' + jsonRes.queryType + '] - total: ' + jsonRes.total + '\n';
             if (jsonRes.pager) {
                 md += 'Pager:\n';
                 md += objToMd(jsonRes.pager) + '\n';
             }
-            var resolves = [];
+            var contextDomain = {Name: args.query, DNS: []};
             if (jsonRes.results && jsonRes.results.length > 0) {
                 var frequency = jsonRes.frequency.reduce(function(f, v) {f[v[0]] = v[1]; return f;}, {});
                 md += 'Result | Frequency\n';
                 md += '------ | ---------\n';
                 for (var i=0; i<jsonRes.results.length; i++) {
                     md += jsonRes.results[i] + ' | ' + frequency[jsonRes.results[i]] + '\n';
-                    resolves.push(jsonRes.results[i]);
+                    contextDomain.DNS.push({Address: jsonRes.results[i]});
                 }
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.resolves': resolves}};
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
         case 'pt-dns-keyword':
             var md = '## PassiveTotal Passive DNS Keyword Query: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -145,30 +147,84 @@ script:
             var md = '## PassiveTotal Metadata Enrichment for: ' + args.query + '\n';
             md += objToMd(jsonRes);
             var context = {};
-            if (jsonRes.queryType === 'domain') {
-                if (jsonRes.tags.indexOf('malware') >= 0) {
-                    context.badDomains = jsonRes.queryValue;
+            if (jsonRes.tags.indexOf('malware') >= 0) {
+                if (jsonRes.queryType === 'domain') {
+                    context['Domain/Malicious'] = {Name: jsonRes.queryValue};
+                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 3}
+                } else {
+                    context['IP/Malicious'] = {Address: jsonRes.queryValue};
+                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 3}
                 }
             } else {
-                if (jsonRes.tags.indexOf('malware') >= 0) {
-                    context.badIPs = jsonRes.queryValue;
+                if (jsonRes.queryType === 'domain') {
+                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 1}
+                } else {
+                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 1}
                 }
             }
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
         case 'pt-malware':
             var md = '## PassiveTotal Malware Report for: ' + args.query + '\n';
+            var context = {};
+            if (!args.threshold) {
+                args.threshold = 10;
+            }
+            if (!args.samples) {
+                args.samples = 10;
+            }
             var samples = [];
             if (jsonRes.results && jsonRes.results.length > 0) {
+                // Sort based on date to display the latest
+                jsonRes.results.sort(function(a, b) {
+                    if (a.collectionDate < b.collectionDate) {
+                        return 1;
+                    } else if (a.collectionDate > b.collectionDate) {
+                        return -1;
+                    }
+                    return 0;
+                });
                 md += 'Source | Sample | Date\n';
                 md += '------ | ------ | ----\n';
-                for (var i=0; i<jsonRes.results.length; i++) {
+                for (var i=0; i<jsonRes.results.length && i<args.samples; i++) {
                     md += '[' + jsonRes.results[i].source + '](' + jsonRes.results[i].sourceUrl + ') | ' + jsonRes.results[i].sample + ' | ' + jsonRes.results[i].collectionDate + '\n';
                     samples.push(jsonRes.results[i].sample);
                 }
+                context['File/Malicious'] = [];
+                for (var hash = 0; hash < samples.length; hash++) {
+                    var hashType = samples[hash].length === 32 ? 'MD5' : samples[hash].length === 40 ? 'SHA1' : 'SHA256';
+                    var hashObj = {};
+                    hashObj[hashType] = samples[hash];
+                    context['File/Malicious'].push(hashObj);
+                }
+
+                var recentSampleCount = 0;
+                var now = Date.now();
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    var d = new Date(jsonRes.results[i].collectionDate.replace(' ', 'T'));
+                    if ((now - d.getTime()) / 1000 / 60 / 60 / 24 < 30) {
+                          recentSampleCount++;
+                    } else {
+                        break; // it is sorted
+                    }
+                }
+                var dbotScore = 0;
+                if (recentSampleCount >= args.threshold) {
+                    dbotScore = 3;
+                    if (isIp(args.query)) {
+                        ec['IP/Malicious'] = {Address: args.query};
+                    } else {
+                        ec['Domain/Malicious'] = {Name: args.query};
+                    }
+                } else if (recentSampleCount >= args.threshold / 2) {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: dbotScore};
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {badHashes: samples}};
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
         case 'pt-osint':
             var md = '## PassiveTotal OSINT Report for: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -292,8 +348,10 @@ script:
     - name: timeout
       description: Timeout to use on all source requests
     outputs:
-    - contextPath: passivetotal.resolves
-      description: The various resolves from the passive DNS collection
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
     description: Get passive DNS data
   - name: pt-passive-unique
     arguments:
@@ -312,8 +370,10 @@ script:
     - name: from
       description: 'Only show data up to date: YYYY-mm-dd'
     outputs:
-    - contextPath: passivetotal.resolves
-      description: The unique list of resolves from the passive DNS collection
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
     description: Get unique resolutions from passive DNS data
   - name: pt-dns-keyword
     arguments:
@@ -329,14 +389,22 @@ script:
       default: true
       description: The data to enrich
     outputs:
-    - contextPath: badIPs
+    - contextPath: IP/Malicious.Address
       description: Bad IPs found during enrichment
       important: true
       importantDescription: Bad IPs found during enrichment
-    - contextPath: badDomains
+    - contextPath: Domain/Malicious.Name
       description: Bad domains found during enrichment
       important: true
       importantDescription: Bad domains found during enrichment
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Enrich the given query with metadata
   - name: pt-malware
     arguments:
@@ -344,11 +412,45 @@ script:
       required: true
       default: true
       description: The data to get malware for
+    - name: samples
+      required: false
+      default: false
+      description: The number of malware samples to return
+      defaultValue: "10"
+    - name: threshold
+      required: false
+      default: false
+      description: Above this number of samples we will consider this to be malicious
+      defaultValue: "10"
     outputs:
-    - contextPath: badHashes
-      description: Bad hashes found on the queried entity
+    - contextPath: IP/Malicious.Address
+      description: Bad IPs found during enrichment
       important: true
-      importantDescription: Bad hashes found on the queried entity
+      importantDescription: Bad IPs found during enrichment
+    - contextPath: Domain/Malicious.Name
+      description: Bad domains found during enrichment
+      important: true
+      importantDescription: Bad domains found during enrichment
+    - contextPath: File/Malicious.MD5
+      description: Bad hash MD5
+      important: true
+      importantDescription: Bad hashes found querying X-Force
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying X-Force
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: Bad hashes found querying X-Force
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Get malware data
   - name: pt-osint
     arguments:

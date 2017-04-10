@@ -87,8 +87,6 @@ script: |-
 
   var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, map: 15};
   var formats = {table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
-  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
-  var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -414,6 +412,7 @@ script: |-
 
   /**
    * Query the given object with the given path and retrive it
+   * @deprecated please use dq which has the full functionality
    * @param {Object} obj - the object to query
    * @param {String} path - the path to retrieve from the object
    * @returns {Object} if path is found, then the value at the path, null otherwise
@@ -508,6 +507,8 @@ script: |-
       return res;
   }
 
+  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+  var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
 
