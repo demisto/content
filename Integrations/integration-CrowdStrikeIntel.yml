@@ -228,7 +228,7 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
     };
 
-    var doIndicator = function(ind, title, key) {
+    var doIndicator = function(ind, type, title, appendContextFunc) {
         var a = {equal: ind};
         var res = doReq('GET', 'indicator/v1/search/indicator', a);
         var md = '## ' + title + ': ' + ind + '\n';
@@ -237,9 +237,16 @@ script:
         if (res.obj) {
             for (var i=0; i<res.obj.length; i++) {
                 md += indicatorToMd(res.obj[i]);
-                if (res.obj[i].malicious_confidence in ['high', 'medium']) {
-                    ec[key] = ind;
+                var dbotScore = 0;
+                if (res.obj[i].malicious_confidence === 'high') {
+                    dbotScore = 3;
+                    appendContextFunc(ec);
+                } else if (res.obj[i].malicious_confidence === 'medium') {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
                 }
+                ec.dbotScore = {indicator: ind, type: type, vendor: 'CrowdStrike', score: dbotScore}; // ok to override, we expect only one
                 found = true;
             }
         }
@@ -250,19 +257,29 @@ script:
     };
 
     var doFile = function(hash) {
-        return doIndicator(hash, 'Falcon Intel file reputation for', 'badHashes');
+        return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
+            ec['File/Malicious'] = {};
+            var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
+            ec['File/Malicious'][hashType] = hash;
+        });
     };
 
     var doIP = function(ip) {
-        return doIndicator(ip, 'Falcon Intel IP reputation for', 'badIPs');
+        return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
+            ec['IP/Malicious'] = {Address: ip};
+        });
     };
 
     var doURL = function(url) {
-        return doIndicator(url, 'Falcon Intel URL reputation for', 'badUrls');
+        return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
+            ec['URL/Malicious'] = url;
+        });
     };
 
     var doDomain = function(domain) {
-        return doIndicator(domain, 'Falcon Intel domain reputation for', 'badDomains');
+        return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
+            ec['Domain/Malicious'] = {Name: domain};
+        });
     };
 
     var doReports = function() {
