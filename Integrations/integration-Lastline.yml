@@ -58,7 +58,7 @@ script:
         md += 'Submission Time: ' + data.submission + "\n";
         if (Array.isArray(data.malicious_activity) && data.malicious_activity.length>0) {
             md += '### Suspicious Activity\n';
-            md += objToMd(data.malicious_activity) + "\n";
+            md += arrToMd(data.malicious_activity) + "\n";
         }
         if (key == 'file') {
             md += objToMd(data.analysis_subject);
@@ -197,7 +197,7 @@ script:
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,malicious_score);
             if (result.obj.data.score > malicious_score) {
-                ec['URL/Malicious']=url;
+                ec['File/Malicious'] = {MD5: result.obj.data.analysis_subject.md5};
             }
         } else {
             ec.lastlineTasks=[{'file_id':file_id,'uuid':uuid}];
@@ -285,7 +285,9 @@ script:
         md += dataToMd(data,malicious_score);
 
         if (result.obj.data.score > malicious_score) {
-            ec['File/Malicious']=hash;
+            ec['File/Malicious'] = {};
+            var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
+            ec['File/Malicious'][hashType] = hash;
         }
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
@@ -315,9 +317,9 @@ script:
         if (analysisReady(result.obj.data)) {
             if (result.obj.data.score > malicious_score) {
                 if ('url' in result.obj.data.analysis_subject) {
-                    ec['URL/Malicious']={url:result.obj.data.analysis_subject.url,score:result.obj.data.score};
+                    ec['URL/Malicious']=result.obj.data.analysis_subject.url;
                 } else {
-                    ec['File/Malicious']={md5:obj.data.analysis_subject.md5,sha1:data.analysis_subject.sha1,sha256:data.analysis_subject.sha256,score:result.obj.data.score};
+                    ec['File/Malicious']={MD5:obj.data.analysis_subject.md5,SHA1:data.analysis_subject.sha1,SHA256:data.analysis_subject.sha256,score:result.obj.data.score};
                 }
             }
             md+=dataToMd(result.obj.data,malicious_score);
@@ -416,10 +418,27 @@ script:
       deprecated: false
       description: Score threshold to identify file as malicious
     outputs:
-    - contextPath: File/Malicious
-      description: List of malicious files identified by Lastline analysis
+    outputs:
+    - contextPath: File/Malicious.MD5
+      description: Bad hash MD5
       important: true
       importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Submit a file for analysis
   - name: lastlineUpload
     deprecated: false
