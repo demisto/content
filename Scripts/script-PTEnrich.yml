@@ -26,24 +26,44 @@ args:
   default: true
   description: The IP or domain to enrich
 outputs:
-- contextpath: passivetotal.username
-  description: Username / Key used for PassiveTotal
-- contextpath: passivetotal.whois.email
+- contextPath: subdomains
+  description: List of subdomains as strings
+- contextPath: Domain.Name
+  description: The name of the queries domain
+- contextPath: Domain.DNS.Address
+  description: The resolved address of the domain
+- contextPath: passivetotal.whois.email
   description: Contact email for the queried domain
 - contextpath: passivetotal.resolves
   description: The various resolves from the passive DNS collection
-- contextpath: badIPs
+- contextPath: IP/Malicious.Address
   description: Bad IPs found during enrichment
   important: true
   importantDescription: Bad IPs found during enrichment
-- contextpath: badDomains
+- contextPath: Domain/Malicious.Name
   description: Bad domains found during enrichment
   important: true
   importantDescription: Bad domains found during enrichment
-- contextPath: badHashes
-  description: Bad hashes found on the queried entity
+- contextPath: File/Malicious.MD5
+  description: Bad hash MD5
   important: true
-  importantDescription: Bad hashes found on the queried entity
+  importantDescription: Bad hashes found querying X-Force
+- contextPath: File/Malicious.SHA1
+  description: Bad hash SHA1
+  important: true
+  importantDescription: Bad hashes found querying X-Force
+- contextPath: File/Malicious.SHA256
+  description: Bad hash SHA256
+  important: true
+  importantDescription: Bad hashes found querying X-Force
+- contextPath: dbotScore.indicator
+  description: The indicator we tested
+- contextPath: dbotScore.type
+  description: The type of the indicator
+- contextPath: dbotScore.vendor
+  description: Vendor used to calculate the score
+- contextPath: dbotScore.score
+  description: The actual score
 scripttarget: 0
 dependson:
   must:
