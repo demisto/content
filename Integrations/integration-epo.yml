@@ -110,7 +110,6 @@ script:
         return md;
     }
     var systemToMd = function(system,verbose) {
-        console.log(JSON.stringify(system));
         var md='';
         if (verbose=="true") {
             md += '### '+ system["EPOComputerProperties.ComputerName"]+'\n';
@@ -122,7 +121,6 @@ script:
         } else {
             md +='|';
             for (var key in epoSystemAttributesMap) {
-                console.log(key + "=" + system[key]);
                 md += system[key] +"|";
             }
             md += '\n';
@@ -209,7 +207,6 @@ script:
     var epoGetSystemGroupPath = function(groupId) {
         var result = epoGetSystemTreeGroups();
         result = result.Contents;
-        console.log(JSON.stringify(result));
         for (var i=0;i<result.length;i++) {
             if (groupId == result[i].groupId) {
                 return result[i].groupPath;
