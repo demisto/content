@@ -1,0 +1,128 @@
+id: c19e328d-0cf3-4a94-88b3-df670d984602
+version: 43
+name: SEP Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+    type: start
+    task:
+      id: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: f945ee38-fc19-45ff-8208-31abd5ba4f36
+    type: regular
+    task:
+      id: f945ee38-fc19-45ff-8208-31abd5ba4f36
+      version: 1
+      name: sep-system-info
+      description: Get the system information (version, AV definition).
+      script: SymantecEndpointProtection|||sep-system-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 24584df7-c160-496d-8a6c-f266b024a8b7
+    type: regular
+    task:
+      id: 24584df7-c160-496d-8a6c-f266b024a8b7
+      version: 1
+      name: SEPVerifySystemInfo
+      scriptName: SEPVerifySystemInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+    type: regular
+    task:
+      id: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+      version: 1
+      name: sep-client-content
+      description: Retrieves the client content.
+      script: SymantecEndpointProtection|||sep-client-content
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 4800d344-b9fa-4555-8a50-e47fbbfcc00d
+    type: regular
+    task:
+      id: 4800d344-b9fa-4555-8a50-e47fbbfcc00d
+      version: 1
+      name: SEPVerifyClientContent
+      scriptName: SEPVerifyClientContent
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
