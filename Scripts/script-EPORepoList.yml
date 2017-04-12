@@ -18,6 +18,7 @@ tags:
 - epo
 comment: List all configured instances of ePO integration.
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must:
