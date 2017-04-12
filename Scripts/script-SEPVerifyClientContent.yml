@@ -1,0 +1,45 @@
+commonfields:
+  id: 68669de9-3fed-4b61-85fc-63143a2496cd
+  version: 9
+name: SEPVerifyClientContent
+script: |
+  var includes = function(s, c) {
+      for (var i = 0; i < s.length; i++) {
+          log(s[i]);
+          if (s[i] == c) {
+              return true;
+          }
+      }
+
+      return false;
+  }
+
+  // Verify context
+  if (!invContext.SEPM) {
+      throw 'Context field does not exist: SEPM'
+  }
+  log('Field exists: SEPM.')
+
+  if (!invContext.SEPM.ClientContentVersions) {
+      throw 'Context field does not exist: SEPM.ClientContentVersions';
+  }
+  log('Field exists: SEPM.ClientContentVersions.')
+
+  if (invContext.SEPM.ClientContentVersions[0].clientsCount != 1) {
+      throw 'Bad number of clients.';
+  }
+
+  if (!includes(invContext.SEPM.ClientContentVersions[0].version, '-')) {
+      throw 'Bad client version: {0}'.format(invContext.SEPM.ClientContentVersions[0].version);
+  }
+type: javascript
+tags:
+- sep
+- symantec
+enabled: true
+args:
+- name: entryId
+  default: true
+  description: The entry ID to verify.
+  isArray: true
+scripttarget: 0

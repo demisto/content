@@ -1,0 +1,49 @@
+commonfields:
+  id: 3dee004a-467f-4904-8e6d-d2dd9ea5112d
+  version: 61
+name: SEPVerifySystemInfo
+script: |+
+  var includes = function(s, c) {
+      for (var i = 0; i < s.length; i++) {
+          log(s[i]);
+          if (s[i] == c) {
+              return true;
+          }
+      }
+
+      return false;
+  }
+
+  // Verify context
+  if (!invContext.SEPM) {
+      throw 'Context field does not exist: SEPM'
+  }
+  log('Field exists: SEPM.')
+
+  if (!invContext.SEPM.ServerAVDefVersion) {
+      throw 'Context field does not exist: SEPM.ServerAVDefVersion';
+  }
+  log('Field exists: SEPM.ServerAVDefVersion.')
+
+  // Verify the date field
+  if (!includes(objToStr(invContext.SEPM.ServerAVDefVersion), "/")) {
+      throw 'Field SEPM.ServerAVDefVersion is incorrect, value: {0}.'.format(invContext.SEPM.ServerAVDefVersion);
+  }
+  log('Field verified: SEPM.ServerAVDefVersion.');
+
+
+  // // Verify output
+  // entryId = args.entryId[args.entryId.length - 1];
+  // entry = executeCommand("getEntry", {"id": entryId});
+
+type: javascript
+tags:
+- sep
+- symantec
+enabled: true
+args:
+- name: entryId
+  default: true
+  description: The entry ID to verify.
+  isArray: true
+scripttarget: 0
