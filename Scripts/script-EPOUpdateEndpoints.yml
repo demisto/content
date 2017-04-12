@@ -50,6 +50,7 @@ tags:
 - epo
 comment: Trigger an ePO Client Task to update AV signatures for specific endpoints
 system: true
+deprecated: true
 args:
 - name: endpoints
   required: true

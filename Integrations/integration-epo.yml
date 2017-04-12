@@ -283,7 +283,8 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            return epoHelp();
+            epoHelp();
+            return 'ok';
         case 'epo-help':
             return epoHelp();
         case 'epo-get-latest-dat':

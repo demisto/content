@@ -13,6 +13,7 @@ comment: Holds the logic to choose the ePO repositories to operate on when execu
   the containing playbook. In the simple default script provided, the instance name
   is picked manually.
 system: true
+deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
