@@ -84,6 +84,7 @@ tags:
 - epo
 comment: Check a list of ePO servers to see if they are up to date.
 system: true
+deprecated: true
 args:
 - name: requireddatversion
   required: true
