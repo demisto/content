@@ -2,7 +2,7 @@
   "id": "unknownIncidentsReport",
   "name": "Unknown severity incidents",
   "description": "Report about all unknown severity incidents that may need the analyst attention.",
-  "fromversion": "2.5.0",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",

@@ -2,7 +2,7 @@
   "id": "last30DaysIncidentReport",
   "name": "Last 30 days incidents",
   "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents.",
-  "fromversion": "2.5.0",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
