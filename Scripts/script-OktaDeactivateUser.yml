@@ -20,6 +20,7 @@ script: "\nresp = demisto.executeCommand(\"okta-deactivate-user\", demisto.args(
   )\n"
 scripttarget: 0
 system: true
+deprecated: true
 tags:
 - okta
 timeout: 0s

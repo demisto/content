@@ -101,6 +101,7 @@ script: "\nresp = demisto.executeCommand(\"okta-create-user\", demisto.args())\n
   )\n"
 scripttarget: 0
 system: true
+deprecated: true
 tags:
 - okta
 timeout: 0s

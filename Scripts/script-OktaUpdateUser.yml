@@ -76,7 +76,7 @@ args:
   name: providerName
 comment: Update user with a given login, all fields are optional, fields which are
   not set will not be overriden
-commonfields:
+commonfields: 
   id: OktaUpdateUser
   version: -1
 dependson:
@@ -92,6 +92,7 @@ script: "\nresp = demisto.executeCommand(\"okta-update-user\", demisto.args())\n
   )\n"
 scripttarget: 0
 system: true
+deprecated: true
 tags:
 - okta
 timeout: 0s

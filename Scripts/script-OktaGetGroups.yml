@@ -20,6 +20,7 @@ script: "\nresp = demisto.executeCommand(\"okta-get-groups\", demisto.args())\n\
   )\n"
 scripttarget: 0
 system: true
+deprecated: true
 tags:
 - okta
 timeout: 0s
