@@ -13,8 +13,9 @@ type: javascript
 tags:
 - Condition
 - Utility
-comment: "Contains reports whether substring is within string.\nreturns :\nyes - string contains
-  substring \nno - string does not contain substring "
+comment: Contains reports whether substring is within string. Returns:
+  yes - string contains substring
+  no - string does not contain substring
 enabled: true
 args:
 - name: string
