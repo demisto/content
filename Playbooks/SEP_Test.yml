@@ -1,5 +1,5 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 69
+version: 71
 name: SEP Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": 65
         }
       }
   "3":
@@ -44,7 +44,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 225
         }
       }
   "7":
@@ -70,7 +70,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 400
         }
       }
   "8":
@@ -92,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 910,
+          "y": 575
         }
       }
   "9":
@@ -108,16 +108,13 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 910,
+          "y": 750
         }
       }
   "10":
@@ -139,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 480,
+          "y": 575
         }
       }
   "11":
@@ -165,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 575
         }
       }
   "12":
@@ -181,17 +178,14 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
       extend-context: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 480,
+          "y": 750
         }
       }
   "13":
@@ -206,14 +200,11 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 750
         }
       }
   "14":
@@ -237,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 265,
+          "y": 1100
         }
       }
   "15":
@@ -263,8 +254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 695,
+          "y": 1100
         }
       }
   "16":
@@ -289,32 +280,26 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1070
+          "y": 50
         }
       }
-  "18":
-    id: "18"
-    taskid: 9f321782-37b3-41f2-8d1b-c9341377bdad
+  "20":
+    id: "20"
+    taskid: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
     type: regular
     task:
-      id: 9f321782-37b3-41f2-8d1b-c9341377bdad
+      id: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
       version: 1
-      name: sep-system-info
-      description: Get the system information (version, AV definition).
-      script: SymantecEndpointProtection|||sep-system-info
+      name: DoNothing
+      scriptName: DoNothing
       type: regular
-      iscommand: true
-      brand: SymantecEndpointProtection
-    nexttasks:
-      '#none#':
-      - "14"
-      - "15"
-      - "16"
+      iscommand: false
+      brand: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 882
+          "x": -75,
+          "y": 223
         }
       }
 view: |-
@@ -322,9 +307,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 1240,
-        "x": 50,
+        "height": 1145,
+        "width": 1365,
+        "x": -75,
         "y": 50
       }
     }

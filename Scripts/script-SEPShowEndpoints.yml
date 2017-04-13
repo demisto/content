@@ -1,6 +1,6 @@
 commonfields:
   id: SEPShowEndpoints
-  version: -1
+  version: 1
 name: SEPShowEndpoints
 script: |
   dArgs = {}
@@ -32,4 +32,3 @@ scripttarget: 0
 dependson:
   must:
   - sep-computers
-timeout: 0s

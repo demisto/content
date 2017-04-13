@@ -1,0 +1,11 @@
+commonfields:
+  id: 843e7edf-39ed-4dee-8389-202cc56d2b55
+  version: 4
+name: DoNothing
+script: ""
+type: javascript
+tags:
+- Utility
+enabled: true
+scripttarget: 0
+timeout: 1h40m0s
