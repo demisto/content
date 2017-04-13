@@ -2,7 +2,7 @@
   "id": "MTTRbyIncidentType2Quar",
   "name": "Mean time to Resolve by Incident Type (Last 2 Quarters)",
   "description": "This report generates Mean Time to Resolve by Incident type for last 2 Quarters",
-  "fromversion": "2.5.0",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
