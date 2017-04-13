@@ -26,6 +26,11 @@ comment: |-
   Returns MORE: if firstPercentage >= secondPercentage
   Returns exception if one of the inputs is not a float
 enabled: true
+outputs:
+- contextPath: LESS
+  description: if firstPercentage < secondPercentage
+- contextPath: MORE
+  description: if firstPercentage >= secondPercentage 
 args:
 - name: firstPercentage
   required: true
