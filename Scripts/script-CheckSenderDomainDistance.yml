@@ -53,6 +53,7 @@ type: python
 tags:
 - server
 - phishing
+- Condition
 comment: Get the string distance for the sender from our domain
 system: true
 args:

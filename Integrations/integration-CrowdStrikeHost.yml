@@ -71,7 +71,7 @@ script:
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
         if (obj.errors && obj.errors.length > 0) {
-            throw obj.errors.join(', ');
+            throw JSON.stringify(obj.errors);
         }
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
