@@ -1,8 +1,27 @@
 commonfields:
-  id: 8f947b0f-9d53-4f0b-8656-2eb164c02ffa
-  version: 14
+  id: DeleteContext
+  version: 1
 name: DeleteContext
-script: 'return executeCommand(''delContext'', { key: args.key, id: args.id } );'
+script: |
+  var fieldsToDelete;
+  var shouldDeleteAll = (args.all === 'yes')
+  if(!shouldDeleteAll && !args.key) {
+      return 'You must specify key or all=true';
+  }
+  if(shouldDeleteAll) {
+      fieldsToDelete = Object.keys(invContext);
+
+      // delete each field in context
+      for (var i = 0; i < fieldsToDelete.length; i++) {
+          var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
+          if(!result || result.type === entryTypes.error) {
+              result.Contents = result.Contents + "\nAborted";
+          }
+      }
+      return "Context is now empty";
+  } else {
+      return executeCommand('delContext', { key: args.key });
+  }
 type: javascript
 tags:
 - Utility
@@ -10,9 +29,12 @@ comment: Delete field from context
 enabled: true
 args:
 - name: key
-  required: true
   default: true
   description: The key to delete from the context
-- name: id
-  description: The incident ID to delete context from. Default is current incident
+- name: all
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: if you choose yes - all context will be deleted
 scripttarget: 0
