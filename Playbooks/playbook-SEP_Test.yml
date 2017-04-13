@@ -1,5 +1,5 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 102
+version: 110
 name: SEP Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -194,10 +194,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+    taskid: a6ba6869-5bcb-45ac-8518-5d432da03963
     type: regular
     task:
-      id: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+      id: a6ba6869-5bcb-45ac-8518-5d432da03963
       version: 1
       name: SEPVerifyEndpointsInfo
       scriptName: SEPVerifyEndpointsInfo
@@ -267,10 +267,10 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: fcf5a293-1435-4f0f-8bf0-8ade84832557
+    taskid: 45476e33-76c8-408d-8748-6f2ca0bbcdfa
     type: regular
     task:
-      id: fcf5a293-1435-4f0f-8bf0-8ade84832557
+      id: 45476e33-76c8-408d-8748-6f2ca0bbcdfa
       version: 1
       name: DeleteContextKey (SEPM)
       description: Deletes a key from the context.
@@ -283,6 +283,7 @@ tasks:
       - "3"
       - "8"
     scriptarguments:
+      extend-context: ""
       key: SEPM
     view: |-
       {
