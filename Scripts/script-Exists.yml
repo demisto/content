@@ -27,5 +27,5 @@ outputs:
 - contextPath: yes
   description: if given value exists in the context
 - contextPath: no
-  description: for empty (or empty arrays) in value.  
+  description: for empty (or empty arrays) in value  
 scripttarget: 0
