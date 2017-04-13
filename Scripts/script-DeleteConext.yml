@@ -1,8 +1,8 @@
 commonfields:
   id: 8f947b0f-9d53-4f0b-8656-2eb164c02ffa
-  version: 8
-name: DeleteConext
-script: 'return executeCommand(''delContext'', { key: args.key } );'
+  version: 14
+name: DeleteContext
+script: 'return executeCommand(''delContext'', { key: args.key, id: args.id } );'
 type: javascript
 tags:
 - Utility
@@ -12,5 +12,7 @@ args:
 - name: key
   required: true
   default: true
-  description: Field To delete
+  description: The key to delete from the context
+- name: id
+  description: The incident ID to delete context from. Default is current incident
 scripttarget: 0
