@@ -66,6 +66,7 @@ tags:
 - xfe
 comment: Get reputation for IPs in the incident or given raw text
 system: true
+deprecated: true
 args:
 - name: data
   default: true

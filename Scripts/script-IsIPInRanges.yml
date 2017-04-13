@@ -37,6 +37,7 @@ script: |
 type: python
 tags:
 - ip
+- Condition
 comment: 'Returns True if ip is in one of the ranges provided. '
 system: true
 args:
