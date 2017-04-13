@@ -2,6 +2,7 @@
   "id": "investigationSummaryReport",
   "name": "Investigation Summary",
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
+  "fromversion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
