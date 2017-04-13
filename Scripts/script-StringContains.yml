@@ -1,0 +1,32 @@
+commonfields:
+  id: StringContains
+  version: -1
+name: StringContains
+script: |-
+  var str = args.string;
+  var index = str.indexOf(args.substring);
+  if (index > -1) {
+      return 'yes';
+  }
+  return 'no';
+type: javascript
+tags:
+- Condition
+- Utility
+comment: "Contains reports whether substring is within string.\nreturns :\nyes - string contains
+  substring \nno - string does not contain substring "
+enabled: true
+args:
+- name: string
+  required: true
+  default: true
+  description: String to check in
+- name: substring
+  required: true
+  description: String to see if inside of string arg
+outputs:
+- contextPath: yes
+  description: if string contains substring
+- contextPath: no
+  description: if string does not contain substring
+scripttarget: 0
