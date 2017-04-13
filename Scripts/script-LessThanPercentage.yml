@@ -12,9 +12,9 @@ script: |-
       throw 'firstPercentage is not valid: '+args.secondPercentage;
   }
   if (first < second) {
-      return 'LESS';
+      return 'less';
   } else {
-      return 'MORE';
+      return 'more';
   }
 type: javascript
 tags:
@@ -22,14 +22,14 @@ tags:
 - Condition
 comment: |-
   Checks if one percentage is less than another
-  Returns LESS: if firstPercentage < secondPercentage
-  Returns MORE: if firstPercentage >= secondPercentage
+  Returns less: if firstPercentage < secondPercentage
+  Returns more: if firstPercentage >= secondPercentage
   Returns exception if one of the inputs is not a float
 enabled: true
 outputs:
-- contextPath: LESS
+- contextPath: less
   description: if firstPercentage < secondPercentage
-- contextPath: MORE
+- contextPath: more
   description: if firstPercentage >= secondPercentage 
 args:
 - name: firstPercentage
