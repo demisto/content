@@ -25,7 +25,7 @@ args:
   isArray: true
 outputs:
 - contextPath: yes
-  description: if value exists in context
+  description: if given value exists in context
 - contextPath: no
-  description: if value does not exist in context
+  description: if given value does not exist in context
 scripttarget: 0
