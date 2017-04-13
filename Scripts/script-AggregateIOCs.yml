@@ -16,6 +16,7 @@ type: python
 tags:
 - Utility
 system: true
+deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s

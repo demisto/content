@@ -28,11 +28,9 @@ script: |-
 
           data = data if isinstance(data, list) else [data]
           data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data, "EntryContext": {FOUND_INCIDENTS_IDS_LABEL: incidents_ids}})
       else:
           demisto.results("No results.")
-
-  demisto.setContext(FOUND_INCIDENTS_IDS_LABEL, incidents_ids)
 type: python
 tags:
 - Incident
@@ -50,5 +48,8 @@ args:
   description: Filter by to date (e.g. 2016-01-02T15:04:05Z)
 - name: user
   description: Filter by incident owners (Uses Lucene. Wildcards supported within single terms)
+outputs:
+- contextPath: foundIncidentsIDs
+  description: The found incident IDs based on the search criteria
 scripttarget: 0
 timeout: 0s

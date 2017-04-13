@@ -44,6 +44,7 @@ script: |-
 type: python
 tags:
 - active directory
+- Condition
 comment: Use Active Directory to check if the specified user is a member of the specified
   group. Returns simply yes/no. The user can be specified by name, email or as an
   Active Directory Distinguished Name (DN).
