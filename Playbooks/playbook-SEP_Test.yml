@@ -1,6 +1,7 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 43
+version: 102
 name: SEP Test
+description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,12 +16,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "21"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 265,
+          "y": 65
         }
       }
   "3":
@@ -42,8 +43,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 480,
+          "y": 400
         }
       }
   "7":
@@ -60,14 +61,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "22"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 480,
+          "y": 575
         }
       }
   "8":
@@ -90,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 400
         }
       }
   "9":
@@ -105,13 +106,414 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 575
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 869c953c-ac51-4601-80de-055a4b99b72c
+    type: regular
+    task:
+      id: 869c953c-ac51-4601-80de-055a4b99b72c
+      version: 1
+      name: sep-groups-info
+      description: Get information about groups.
+      script: SymantecEndpointProtection|||sep-groups-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "11":
+    id: "11"
+    taskid: af2c889d-b918-4f3b-8aca-cfd925b11610
+    type: regular
+    task:
+      id: af2c889d-b918-4f3b-8aca-cfd925b11610
+      version: 1
+      name: sep-endpoints-info hostname=WIN-EE8OQ1NRFR0
+      description: Get information about endpoints.
+      script: SymantecEndpointProtection|||sep-endpoints-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      columns: ""
+      hostname: WIN-EE8OQ1NRFR0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 925
+        }
+      }
+  "12":
+    id: "12"
+    taskid: c3d11558-9718-49e2-8aa8-6cedb0ce2dbb
+    type: regular
+    task:
+      id: c3d11558-9718-49e2-8aa8-6cedb0ce2dbb
+      version: 1
+      name: SEPVerifyGroupsInfo
+      scriptName: SEPVerifyGroupsInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+      extend-context: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+  "13":
+    id: "13"
+    taskid: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+    type: regular
+    task:
+      id: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+      version: 1
+      name: SEPVerifyEndpointsInfo
+      scriptName: SEPVerifyEndpointsInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1100
+        }
+      }
+  "16":
+    id: "16"
+    taskid: c63b6bb2-e021-42df-8fb0-776021ff3471
+    type: regular
+    task:
+      id: c63b6bb2-e021-42df-8fb0-776021ff3471
+      version: 1
+      name: SEPScan (by hostname, don't wait)
+      scriptName: SEPScan
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: "1"
+      ip: ""
+      scanType: ScanNow_Quick
+      timeout: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1975
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+    type: regular
+    task:
+      id: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+      version: 1
+      name: DoNothing
+      scriptName: DoNothing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+      - "36"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1275
+        }
+      }
+  "21":
+    id: "21"
+    taskid: fcf5a293-1435-4f0f-8bf0-8ade84832557
+    type: regular
+    task:
+      id: fcf5a293-1435-4f0f-8bf0-8ade84832557
+      version: 1
+      name: DeleteContextKey (SEPM)
+      description: Deletes a key from the context.
+      scriptName: DeleteContextKey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "8"
+    scriptarguments:
+      key: SEPM
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 225
+        }
+      }
+  "22":
+    id: "22"
+    taskid: edd06ae6-ecd5-4a89-82c7-190574dd6f65
+    type: regular
+    task:
+      id: edd06ae6-ecd5-4a89-82c7-190574dd6f65
+      version: 1
+      name: DoNothing
+      scriptName: DoNothing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 750
+        }
+      }
+  "23":
+    id: "23"
+    taskid: f9b01731-ca41-485d-8072-8cdb025462a1
+    type: regular
+    task:
+      id: f9b01731-ca41-485d-8072-8cdb025462a1
+      version: 1
+      name: SEPVerifyCommandStatus (stateId = 0, still running)
+      scriptName: SEPVerifyCommandStatus
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      commandId: ${SEPM.LastCommand.[2].CommandId}
+      entryId: ""
+      stateId: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2325
+        }
+      }
+  "24":
+    id: "24"
+    taskid: cf3edca2-5458-44f7-82dc-c339f4af59f7
+    type: regular
+    task:
+      id: cf3edca2-5458-44f7-82dc-c339f4af59f7
+      version: 1
+      name: sep-command-status (Scan command ID)
+      description: Retrieves the status of a command.
+      script: SymantecEndpointProtection|||sep-command-status
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      commandId: ${SEPM.LastCommand.[2].CommandId}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2150
+        }
+      }
+  "30":
+    id: "30"
+    taskid: a6f99055-c0ff-4655-81c2-a7b8218115b5
+    type: regular
+    task:
+      id: a6f99055-c0ff-4655-81c2-a7b8218115b5
+      version: 1
+      name: All Done!
+      scriptName: DoNothing
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2500
+        }
+      }
+  "36":
+    id: "36"
+    taskid: ba0888b5-13cc-49cd-87fb-1033a1175758
+    type: regular
+    task:
+      id: ba0888b5-13cc-49cd-87fb-1033a1175758
+      version: 1
+      name: sep-update-content (by IP, wait until done)
+      description: Updates the content of the given client.
+      script: SymantecEndpointProtection|||sep-update-content
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      hostname: ""
+      interval: ""
+      ip: ${SEPM.Endpoint.IPAddresses.[0]}
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1450
+        }
+      }
+  "37":
+    id: "37"
+    taskid: e536e6cd-e837-42d8-8a9d-4210d79eed72
+    type: regular
+    task:
+      id: e536e6cd-e837-42d8-8a9d-4210d79eed72
+      version: 1
+      name: 'SEPVerifyCommandStatus (command #1, done)'
+      scriptName: SEPVerifyCommandStatus
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      commandId: ${SEPM.LastCommand.[1].CommandId}
+      entryId: ""
+      stateId: "3"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1800
+        }
+      }
+  "39":
+    id: "39"
+    taskid: 54dc6712-acb0-4c61-8d7d-dc58d3483097
+    type: regular
+    task:
+      id: 54dc6712-acb0-4c61-8d7d-dc58d3483097
+      version: 1
+      name: 'SEPVerifyCommandStatus (command #2, done)'
+      scriptName: SEPVerifyCommandStatus
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      commandId: ${SEPM.LastCommand.[0].CommandId}
+      entryId: ""
+      stateId: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+  "40":
+    id: "40"
+    taskid: 85a3ebf3-c98d-48b8-8a0e-307ef0023426
+    type: regular
+    task:
+      id: 85a3ebf3-c98d-48b8-8a0e-307ef0023426
+      version: 1
+      name: DoNothing
+      scriptName: DoNothing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+      - "37"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1625
+        }
+      }
+  "41":
+    id: "41"
+    taskid: f477ef43-65d3-452e-8273-7104a0d36dff
+    type: regular
+    task:
+      id: f477ef43-65d3-452e-8273-7104a0d36dff
+      version: 1
+      name: sep-quarantine (by hostname, wait until done)
+      description: Quarantines the endpoint according to its policy.
+      script: SymantecEndpointProtection|||sep-quarantine
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      actionType: Quarantine
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: ""
+      ip: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
         }
       }
 view: |-
@@ -119,10 +521,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 380,
+        "height": 2530,
+        "width": 810,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }

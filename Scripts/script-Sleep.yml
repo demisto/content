@@ -1,8 +1,8 @@
 commonfields:
   id: Sleep
-  version: 5
+  version: 7
 name: Sleep
-script: wait(args.seconds);
+script: wait(parseInt(args.seconds));
 type: javascript
 tags:
 - Utility
