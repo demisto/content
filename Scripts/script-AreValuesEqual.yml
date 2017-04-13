@@ -19,6 +19,11 @@ args:
 - name: right
   required: true
   description: Second value for comparison
+outputs:
+- contextPath: yes
+  description: if left is equal to right
+- contextPath: no
+  description: if left is not equal to right
 scripttarget: 0
 comment: Check whether the values provided in arguments are equal.
 dependson: {}

@@ -23,4 +23,9 @@ args:
   default: true
   description: The value to check if exists - can handle arrays as well
   isArray: true
+outputs:
+- contextPath: yes
+  description: if value exists in context
+- contextPath: no
+  description: if value does not exist in context
 scripttarget: 0
