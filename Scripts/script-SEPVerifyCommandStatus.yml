@@ -1,0 +1,49 @@
+commonfields:
+  id: e9df3f30-8d29-4192-8480-8d6e06ed87e8
+  version: 33
+name: SEPVerifyCommandStatus
+script: |
+  verifyContextField('SEPM.LastCommand');
+
+  lastCommands = verifyContextField('SEPM.LastCommand');
+
+  // the LastCommands field can be either an array or a single object
+  var isFound = false;
+  var stateId = null;
+  if (lastCommands instanceof Array) {
+      for (var i = 0; i < lastCommands.length; i++) {
+          if (lastCommands[i].CommandId == args.commandId) {
+              isFound = true;
+              stateId = lastCommands[i].CommandDetails.stateId;
+              break;
+          }
+      }
+  } else {
+      if (lastCommands.CommandId == args.commandId) {
+          isFound = true;
+          stateId = lastCommands.CommandDetails.stateId;
+      }
+  }
+
+  if (!isFound) {
+      throw 'A command with the given Command ID does not exist: {0}'.format(args.commandId);
+  }
+
+  if (stateId != args.stateId) {
+      throw 'State ID does not match, actual: {0}, expected: {1}.'.format(stateId, args.stateId);
+  }
+type: javascript
+tags:
+- sep
+- symantec
+enabled: true
+args:
+- name: entryId
+  default: true
+  description: The entry ID to verify.
+  isArray: true
+- name: commandId
+  description: The command ID to verify.
+- name: stateId
+  description: The expected state ID.
+scripttarget: 0
