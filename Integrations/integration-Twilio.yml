@@ -28,7 +28,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Default sending number
+- display: Default sending number (e.g. +123456789101)
   name: sender
   defaultvalue: ""
   type: 0
@@ -44,56 +44,47 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2+
+  script: |+
+    var sendRequest = function(body) {
+        var res = http(
+            params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
+            {
+                Method: 'POST',
+                Body: body,
+                Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
+                Username: params.sid,
+                Password: params.token
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >=300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        }
+        return res.Body;
+    };
 
+    var encodeToURLQuery = function(to, from, body){
+        return "From="+encodeURIComponent('+')+from.replace(/^\+/, '')+"&To="+encodeURIComponent('+')+to.replace(/^\+/, '')+"&Body="+encodeURIComponent(args.body);
+    };
 
-
-    var sendRequest = function(url, body, headers) {
-            url.replace(/[\/]+$/, '');
-            var res = http(
-                url,
-                {
-                    Method: 'POST',
-                    Body: body,
-                    Headers: headers,
-                    Username: params.sid,
-                    Password: params.token
-                },
-                params.insecure,
-                params.proxy
-            );
-            if (res.StatusCode < 200 || res.StatusCode >=300) {
-                throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-            }
-            return res.Body;
-        };
-
-
-
-
-    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
-    var url = params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json' ;
-    // The command input arg holds the command sent from the user.
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            var body = "From=%2B"+params.sender.replace(/^\+/, '')+"&To=%2B"+params.sender.replace(/^\+/, '')+"&Body="+args.body;
-            sendRequest(url, body, headers);
+            sendRequest(encodeToURLQuery(params.sender,params.sender,'Test'));
             return 'ok';
         default:
-           var body = "From=%2B"+params.sender.replace(/^\+/, '')+"&To=%2B"+args.reciever.replace(/^\+/, '')+"&Body="+args.body;
-           sendRequest(url, body, headers);
+           sendRequest(encodeToURLQuery(args.to,params.sender,args.body));
            return 'Message sent successfully!';
     }
-
-
+  
   type: javascript
   commands:
-  - name: Twilio_sendSMS
+  - name: TwilioSendSMS
     arguments:
-    - name: reciever
+    - name: to
       required: true
-      description: Phone number of SMS reciever
+      description: Phone number of SMS reciever (e.g. +123456789101)
     - name: body
       required: true
       description: Message body
