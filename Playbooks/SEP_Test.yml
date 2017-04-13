@@ -1,0 +1,331 @@
+id: c19e328d-0cf3-4a94-88b3-df670d984602
+version: 69
+name: SEP Test
+description: This playbook tests the SEPM integration commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+    type: start
+    task:
+      id: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: f945ee38-fc19-45ff-8208-31abd5ba4f36
+    type: regular
+    task:
+      id: f945ee38-fc19-45ff-8208-31abd5ba4f36
+      version: 1
+      name: sep-system-info
+      description: Get the system information (version, AV definition).
+      script: SymantecEndpointProtection|||sep-system-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 24584df7-c160-496d-8a6c-f266b024a8b7
+    type: regular
+    task:
+      id: 24584df7-c160-496d-8a6c-f266b024a8b7
+      version: 1
+      name: SEPVerifySystemInfo
+      scriptName: SEPVerifySystemInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "10"
+      - "11"
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+    type: regular
+    task:
+      id: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+      version: 1
+      name: sep-client-content
+      description: Retrieves the client content.
+      script: SymantecEndpointProtection|||sep-client-content
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 4800d344-b9fa-4555-8a50-e47fbbfcc00d
+    type: regular
+    task:
+      id: 4800d344-b9fa-4555-8a50-e47fbbfcc00d
+      version: 1
+      name: SEPVerifyClientContent
+      scriptName: SEPVerifyClientContent
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 869c953c-ac51-4601-80de-055a4b99b72c
+    type: regular
+    task:
+      id: 869c953c-ac51-4601-80de-055a4b99b72c
+      version: 1
+      name: sep-groups-info
+      description: Get information about groups.
+      script: SymantecEndpointProtection|||sep-groups-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    taskid: af2c889d-b918-4f3b-8aca-cfd925b11610
+    type: regular
+    task:
+      id: af2c889d-b918-4f3b-8aca-cfd925b11610
+      version: 1
+      name: sep-endpoints-info hostname=WIN-EE8OQ1NRFR0
+      description: Get information about endpoints.
+      script: SymantecEndpointProtection|||sep-endpoints-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      columns: ""
+      hostname: WIN-EE8OQ1NRFR0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "12":
+    id: "12"
+    taskid: c3d11558-9718-49e2-8aa8-6cedb0ce2dbb
+    type: regular
+    task:
+      id: c3d11558-9718-49e2-8aa8-6cedb0ce2dbb
+      version: 1
+      name: SEPVerifyGroupsInfo
+      scriptName: SEPVerifyGroupsInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      entryId: ${lastCompletedTaskEntries}
+      extend-context: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "13":
+    id: "13"
+    taskid: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+    type: regular
+    task:
+      id: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
+      version: 1
+      name: SEPVerifyEndpointsInfo
+      scriptName: SEPVerifyEndpointsInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 970bbfa2-b107-41dc-8d38-8cc4eb74ee2a
+    type: regular
+    task:
+      id: 970bbfa2-b107-41dc-8d38-8cc4eb74ee2a
+      version: 1
+      name: sep-update-content (by hostname)
+      description: Updates the content of the given client.
+      script: SymantecEndpointProtection|||sep-update-content
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    scriptarguments:
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: ""
+      ip: ${SEPM.Endpoint.IPAddresses}[0]
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 7cfcf628-c768-44d1-8e35-b62ff3a5e1c1
+    type: regular
+    task:
+      id: 7cfcf628-c768-44d1-8e35-b62ff3a5e1c1
+      version: 1
+      name: sep-quarantine (by hostname)
+      description: Quarantines the endpoint according to its policy.
+      script: SymantecEndpointProtection|||sep-quarantine
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    scriptarguments:
+      actionType: Quarantine
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: ""
+      ip: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 16c8bc70-fda5-4d9b-8b2f-233da889ed92
+    type: regular
+    task:
+      id: 16c8bc70-fda5-4d9b-8b2f-233da889ed92
+      version: 1
+      name: SEPScan (by hostname)
+      scriptName: SEPScan
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: ""
+      ip: ""
+      scanType: ScanNow_Quick
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 9f321782-37b3-41f2-8d1b-c9341377bdad
+    type: regular
+    task:
+      id: 9f321782-37b3-41f2-8d1b-c9341377bdad
+      version: 1
+      name: sep-system-info
+      description: Get the system information (version, AV definition).
+      script: SymantecEndpointProtection|||sep-system-info
+      type: regular
+      iscommand: true
+      brand: SymantecEndpointProtection
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "16"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 882
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

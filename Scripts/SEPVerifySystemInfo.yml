@@ -1,0 +1,17 @@
+commonfields:
+  id: 3dee004a-467f-4904-8e6d-d2dd9ea5112d
+  version: 87
+name: SEPVerifySystemInfo
+script: |
+  verifyContextField('SEPM.ServerAVDefVersion', '/', 'stringContains');
+type: javascript
+tags:
+- sep
+- symantec
+enabled: true
+args:
+- name: entryId
+  default: true
+  description: The entry ID to verify.
+  isArray: true
+scripttarget: 0
