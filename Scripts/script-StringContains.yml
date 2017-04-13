@@ -13,7 +13,8 @@ type: javascript
 tags:
 - Condition
 - Utility
-comment: Contains reports whether substring is within string. Returns:
+comment: |
+  Contains reports whether substring is within string. Returns:
   yes - string contains substring
   no - string does not contain substring
 enabled: true
