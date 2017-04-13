@@ -12,14 +12,18 @@ script: |
       fieldsToDelete = Object.keys(invContext);
 
       // delete each field in context
+      var errorsStr = ""
       for (var i = 0; i < fieldsToDelete.length; i++) {
           var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
           if(!result || result.type === entryTypes.error) {
-              result.Contents = result.Contents + "\nAborted";
-              return result;
+              errorsStr = "errorsStr" + "\n" + result.Contents;
           }
       }
-      return "Context is now empty";
+      if(errorsStr) {
+          return "Context cleared with the folloing errors:" + errorsStr;
+      } else {
+          return "Context cleared";
+      }
   } else {
       return executeCommand('delContext', { key: args.key });
   }
