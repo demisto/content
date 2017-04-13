@@ -1,6 +1,6 @@
 commonfields:
   id: LessThanPercentage
-  version: 7
+  version: -1
 name: LessThanPercentage
 script: |-
   first = parseFloat(args.firstPercentage);
@@ -19,9 +19,12 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: "Checks if one percentage is less than another.\nReturns LESS: if firstPercentage
-  < secondPercentage\nReturns MORE: if firstPercentage >= secondPercentage\nReturns
-  exception if one of the inputs is not a float "
+- Condition
+comment: |-
+  Checks if one percentage is less than another
+  Returns LESS: if firstPercentage < secondPercentage
+  Returns MORE: if firstPercentage >= secondPercentage
+  Returns exception if one of the inputs is not a float
 enabled: true
 args:
 - name: firstPercentage
