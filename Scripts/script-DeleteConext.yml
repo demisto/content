@@ -1,0 +1,16 @@
+commonfields:
+  id: 8f947b0f-9d53-4f0b-8656-2eb164c02ffa
+  version: 8
+name: DeleteConext
+script: 'return executeCommand(''delContext'', { key: args.key } );'
+type: javascript
+tags:
+- Utility
+comment: Delete field from context
+enabled: true
+args:
+- name: key
+  required: true
+  default: true
+  description: Field To delete
+scripttarget: 0
