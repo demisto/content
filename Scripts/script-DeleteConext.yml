@@ -16,6 +16,7 @@ script: |
           var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
           if(!result || result.type === entryTypes.error) {
               result.Contents = result.Contents + "\nAborted";
+              return result;
           }
       }
       return "Context is now empty";
