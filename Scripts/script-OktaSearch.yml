@@ -19,6 +19,7 @@ script: "\nresp = demisto.executeCommand(\"okta-search\", demisto.args())\n\nif 
   : data} )\n    else:\n        demisto.results(\"No results.\")\n"
 scripttarget: 0
 system: true
+deprecated: true
 tags:
 - okta
 timeout: 0s
