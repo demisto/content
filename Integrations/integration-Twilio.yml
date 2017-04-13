@@ -29,7 +29,7 @@ configuration:
   type: 4
   required: true
 - display: Default sending number (e.g. +123456789101)
-  name: sender
+  name: from
   defaultvalue: ""
   type: 0
   required: true
@@ -71,13 +71,13 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            sendRequest(encodeToURLQuery(params.sender,params.sender,'Test'));
+            sendRequest(encodeToURLQuery(params.from,params.from,'Test'));
             return 'ok';
         default:
-           sendRequest(encodeToURLQuery(args.to,params.sender,args.body));
+           sendRequest(encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
            return 'Message sent successfully!';
     }
-  
+
   type: javascript
   commands:
   - name: TwilioSendSMS
@@ -88,5 +88,7 @@ script:
     - name: body
       required: true
       description: Message body
+    - name: from
+      description: Phone number of SMS sender (e.g. +123456789101)
     description: send an SMS
 hidden: false
