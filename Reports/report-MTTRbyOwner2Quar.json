@@ -2,6 +2,7 @@
   "id": "MTTRbyOwner2Quar",
   "name": "Mean time to Resolve by Incident Owner (Last 2 Quarters)",
   "description": "This report generates Mean Time to Resolve by Incident Owner for last 2 Quarters",
+  "fromversion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -165,13 +166,13 @@
       "layout": {
         "rowPos": 7,
         "columnPos": 1,
-        "tableColumns": [ "Owner", "Month Closed", "Total Incidents", "Mean Time to Close(days)"],
+        "tableColumns": [ "Owner", "Month closed", "Total incidents", "Mean time to close (days)"],
         "classes": "striped stackable small very compact",
         "readableHeaders": {
           "owner": "Owner",
-          "closed(m)": "Month Closed",
-          "avg|openDuration / (3600*24)": "Mean Time to Close(days)",
-          "count|1": "Total Incidents"
+          "closed(m)": "Month closed",
+          "avg|openDuration / (3600*24)": "Mean time to close (days)",
+          "count|1": "Total incidents"
         }
       }
     }

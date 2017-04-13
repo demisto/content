@@ -2,6 +2,7 @@
   "id": "last24HoursClosedIncidentsReport",
   "name": "Last 24 hours closed incidents",
   "description": "All closed incidents in the last 24 hours. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
+  "fromversion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",

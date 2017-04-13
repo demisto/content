@@ -2,6 +2,7 @@
   "id": "MTTRbyIncidentType2Quar",
   "name": "Mean time to Resolve by Incident Type (Last 2 Quarters)",
   "description": "This report generates Mean Time to Resolve by Incident type for last 2 Quarters",
+  "fromversion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -165,12 +166,12 @@
       "layout": {
         "rowPos": 7,
         "columnPos": 1,
-        "tableColumns": ["Month Closed", "Type", "# Incidents", "Mean Time to Close(days)"],
+        "tableColumns": ["Month closed", "Type", "# Incidents", "Mean time to close (days)"],
         "classes": "striped stackable small very compact",
         "readableHeaders": {
           "type": "Type",
-          "closed(m)": "Month Closed",
-          "avg|openDuration / (3600*24)": "Mean Time to Close(days)",
+          "closed(m)": "Month closed",
+          "avg|openDuration / (3600*24)": "Mean time to close (days)",
           "count|1": "# Incidents"
         }
       }
