@@ -1,0 +1,40 @@
+commonfields:
+  id: IsGreaterThen
+  version: -1
+name: IsGreaterThen
+script: |-
+  first = parseInt(args.first);
+  if (!first) {
+      throw 'first is not valid: '+args.first;
+  }
+  second = parseInt(args.second);
+  if (!second) {
+      throw 'second is not valid: '+args.second;
+  }
+  if (first > second) {
+      return 'yes';
+  } else {
+      return 'no';
+  }
+type: javascript
+tags:
+- Utility
+- Condition
+comment: |-
+  Checks if one number(int) as bigger then the other
+  Returns LESS: if first < secondPercentage
+  Returns MORE: if firstPercentage >= secondPercentage
+  Returns exception if one of the inputs is not a int
+enabled: true
+outputs:
+- contextPath: yes
+  description: if first > second
+- contextPath: no
+  description: if first <= second
+args:
+- name: first
+  required: true
+  default: true
+- name: second
+  required: true
+scripttarget: 0
