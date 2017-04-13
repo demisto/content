@@ -65,7 +65,7 @@ script:
     };
 
     var encodeToURLQuery = function(to, from, body){
-        return "From="+encodeURIComponent('+')+from.replace(/^\+/, '')+"&To="+encodeURIComponent('+')+to.replace(/^\+/, '')+"&Body="+encodeURIComponent(args.body);
+        return "From="+encodeURIComponent('+'+from.replace(/^\+/, ''))+"&To="+encodeURIComponent('+'+to.replace(/^\+/, ''))+"&Body="+encodeURIComponent(args.body);
     };
 
     switch (command) {
