@@ -2,6 +2,7 @@
   "id": "unknownIncidentsReport",
   "name": "Unknown severity incidents",
   "description": "Report about all unknown severity incidents that may need the analyst attention.",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -354,7 +355,16 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "dueDate" ],
+        "tableColumns": ["Name", "Occurred", "Type", "Owner", "Severity", "Status", "Due date" ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "dueDate": "Due date"
+        },
         "classes": "striped stackable small very compact"
       }
     }

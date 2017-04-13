@@ -2,6 +2,7 @@
   "id": "lateIncidentsReport",
   "name": "Late Incidents",
   "description": "All the incidents that passed their SLA due date and the incidents that are at risk to soon pass their SLA.",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -378,7 +379,16 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "dueDate" ],
+        "tableColumns": ["Name", "Occurred", "Type", "Owner", "Severity", "Status", "Due date" ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "dueDate": "Due date"
+        },
         "classes": "striped stackable small very compact"
       }
     }
