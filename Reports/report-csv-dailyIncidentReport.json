@@ -1,6 +1,6 @@
 {
-  "id": "csvDailyIncidentReport",
-  "name": "Daily incidents",
+  "id": "csvDailyIncidentReport111",
+  "name": "Daily incidents111",
   "description": "Daily summary of all current open incidents (CSV format).",
   "tags": [],
   "createdBy": "Demisto",
@@ -121,7 +121,21 @@
       "layout": {
         "rowPos": 4,
         "columnPos": 1,
-        "tableColumns": ["id", "name", "occurred", "created", "type", "owner", "severity", "status", "phase", "dueDate", "details", "openDuration" ],
+        "tableColumns": ["ID", "Name", "Occurred", "Created", "Type", "Owner", "Severity", "Status", "Phase", "Due date", "Details", "Open duration" ],
+        "readableHeaders": {
+          "id": "ID",
+          "name": "Name",
+          "occurred": "Occurred",
+          "created": "Created",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "phase": "Phase",
+          "dueDate": "Due date",
+          "details": "Details",
+          "openDuration": "Open duration"
+        },
         "classes": "striped stackable small very compact"
       }
     }

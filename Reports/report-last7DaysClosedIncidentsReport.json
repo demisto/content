@@ -382,7 +382,17 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "closed", "closeReason" ],
+        "tableColumns": ["Name", "Occurred", "Type", "Owner", "Severity", "Status", "Closed", "Close notes"],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "closed": "Closed",
+          "closeNotes": "Close notes"
+        },
         "classes": "striped stackable small very compact"
       }
     }
