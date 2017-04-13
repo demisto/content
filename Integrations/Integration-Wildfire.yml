@@ -108,8 +108,17 @@ script:
     };
 
     var parseFile = function(body) {
-        var context = {File : [{Type : body.filetype, MD5 : body.md5, SHA1 : body.sha1, SHA256 : body.sha256, Size : body.size, Name : body.filename}]};
-
+        var context = {
+          File : [{
+          	Type : body.filetype, 
+          	MD5 : body.md5, 
+          	SHA1 : body.sha1, 
+          	SHA256 : body.sha256, 
+          	Size : body.size, 
+          	Name : body.filename
+          }]
+      	};
+        
         if(body.malware === 'yes'){
             context['File/Malicious'] = [context.File[0]];
         }
