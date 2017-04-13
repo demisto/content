@@ -9,6 +9,7 @@ script: |
 type: python
 tags:
 - Utility
+- Condition
 system: true
 args:
 - name: left
