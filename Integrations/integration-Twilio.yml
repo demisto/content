@@ -1,0 +1,101 @@
+commonfields:
+  id: Twilio
+  version: -1
+name: Twilio
+display: Twilio
+category: Messaging
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2dpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1REZEMzEzNzEwMjA2ODExODIyQUIxM0U1QzU4NUJFQSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxRDA1MjM3QUY4QTAxMUU1QUZCRDk5MUZFNTQ3NUJEMiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxRDA1MjM3OUY4QTAxMUU1QUZCRDk5MUZFNTQ3NUJEMiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFODREOEYyQjA2MjExMUU0QkY0N0U0MUMzMUQwQkY3OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpFODREOEYyQzA2MjExMUU0QkY0N0U0MUMzMUQwQkY3OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvI3rDcAAAGAUExUReQpNfnO0fjKzepcZeUxPPjGyeU2QeEWI/729uIcKfKcou56geQtOPOgpeIaJ/GVm+tlbfnS1fzk5vra3OEYJfSprv77+++CifrW2PKZn+MnM++Ei+Y/Sfvh4/a9wPCIjuxudvSlq/fBxPzm6Pa6vva2uuIYJfrU1vWtsuxqcvCKkOpgaeY5RP74+P3w8fzq7Pzo6e1yeu11ffve4OEXJOlWX+hMVv3y8/vl5vOjqOhLVOdBS/Omq+lQWvGRl++Bh+EUIeU3QuIfLOdGUOMjL+IeKuMiLuMhLeIfK+IgLOMlMf/9/eIeK+IZJf/+/uY8R+MgLP719uIdKeIbJ/709etjbPGPlf3v8P3t7vSnrP/8/OdFT/73+P3u7+xmbvCMkuEZJf3x8uMjMOMiL+MiLfrZ2+MgLeMfK+dDTf3s7e12fu59hfWxteETIPvc3vzj5f3z9OdIUuhHUe1ze/fEx+MhLv75+uEVIuIhLfjIy+EaJu54f+hJU/Oeo////+MkMB0DFfQAAAOISURBVHja5JbpW9NKFMZLlwyhIbQSqaRFehWqVfTWckALspQ7k82GQgoKqJfivtxFrTva+dfNzARNS0X8qvPpdGZ+ec7ynjON0J9ekV8fMWxCLBMfF8EyqLqUm59SauDax0BMzZwbnxy+3H/nxdnEYCoO3g8QrOmt6I32t1X6/ESzj0Jsd/NUu2utjyrudxFH1ivtHmt4BnBvxGlI0YNbl4f7oulrq8GvS60wE0JkKXDq1vZmVbctrMxm0wGURL2QNb2Pn44MTIFrGRgbpoyM4jDfvJGCHoh7nR+OzbwjoZJCRGzfzcmHEHeTH52aAvrIs4TrpkewVdjlB2c83IU80LkHY1UVN+Mv67Ll0HtN5VWuRgw0xJmi1oVAmW2/9dNJstdGXpyPE9ooT4+sT9Q9k7xmZ2nD6EDumzz2QUSbWf7NBIU8Nx4qZuN2P7NiagcizzKV7E2RR/E/RVpTapDypEbRH8w4qXUgcIFvAvXmgvpllX5hVIA2+AfHImYYUSf4lwvUqt8RN8tmSRg3gRrGOd/YmZNDiMHztVe1/Gb5h198Ki2PCrH85asfuGf5QghZkfaY/HQ/J1ac5acUU9/rk0w8eRY0ZBiSgRBCcszxPtuvllOjm0utqn/RXokt7ee48N0idxGFkXkWQVQUHdTIg2UWqVuI0GXbYVaKIYthpFbf8LfOYd8x3Minr/4/qq9R9WL0aqkSZ4rTeKEvhJE1haXnrOJ/u9niUU/a7sUdZkRZgEIzyXAsuMaaa2dWpqZyQuQ2poleaLf8CqqnQ+U/KCXv4HFEvU9fS7kujEGglnSLdWr1cRhp/s2Vbxhk/m2gE/pUGEOIon0uO4LDyFqcXyiie4T70N7I/St6a3VBNp2HzFqCLvEPst3/Io9JnclxI9+04x9YW2dUujzeDvn1FfGecG1tF+7LSvLz7quP1CH6lYHFBZXCAhfoAHQ3MgxwP3aRaWogpqrhGzKF+RNCdKQbsZVpES1pdIzodwsi68/g8IRpzohcnbmNGkHLUgs5WdE251XcY/QhUfd2f2XWAHBdDanSs6A1E7rdcyZDMpj5q+lKppgqD01sBcMyoXi9xziG1FavMd4+qXvO9x4LyJ0+DJTKjZUjniSZFPs6ga1RCfCRDx/WjNj29ME7djfxvAq1Hz6vhupG5vKZm4vj+zGJgHW8R/yN7AJCoKkr+Pf8D3PU+iLAALieDQsdtR8oAAAAAElFTkSuQmCC
+description: Send SMS notifications
+detaileddescription: "To use Twilio:\n1.\tRegister to Twilio at: https://www.twilio.com/try-twilio\n2.\tAfter
+  completing the registration go to: https://www.twilio.com/user/account/messaging/getting-started\n3.\tSelect
+  “show API credentials”\n4.\tCopy the Account SID and AUTH TOKEN\n5.\tIf you do not
+  have a sending number, Go to: https://www.twilio.com/user/account/phone-numbers/getting-started\nSelect:
+  “get your first Twilio phone number”. Follow the instructions and copy the chosen
+  number.\n6.\tOnce complete use the “!sms-send” command to send text messages"
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.twilio.com/2010-04-01/Accounts
+  type: 0
+  required: true
+- display: Account SID
+  name: sid
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Auth token
+  name: token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Default sending number
+  name: sender
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |2+
+
+
+
+    var sendRequest = function(url, body, headers) {
+            url.replace(/[\/]+$/, '');
+            var res = http(
+                url,
+                {
+                    Method: 'POST',
+                    Body: body,
+                    Headers: headers,
+                    Username: params.sid,
+                    Password: params.token
+                },
+                params.insecure,
+                params.proxy
+            );
+            if (res.StatusCode < 200 || res.StatusCode >=300) {
+                throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            }
+            return res.Body;
+        };
+
+
+
+
+    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
+    var url = params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json' ;
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var body = "From=%2B"+params.sender.replace(/^\+/, '')+"&To=%2B"+params.sender.replace(/^\+/, '')+"&Body="+args.body;
+            sendRequest(url, body, headers);
+            return 'ok';
+        default:
+           var body = "From=%2B"+params.sender.replace(/^\+/, '')+"&To=%2B"+args.reciever.replace(/^\+/, '')+"&Body="+args.body;
+           sendRequest(url, body, headers);
+           return 'Message sent successfully!';
+    }
+
+
+  type: javascript
+  commands:
+  - name: Twilio_sendSMS
+    arguments:
+    - name: reciever
+      required: true
+      description: Phone number of SMS reciever
+    - name: body
+      required: true
+      description: Message body
+    description: send an SMS
+hidden: false
