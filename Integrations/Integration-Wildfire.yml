@@ -213,10 +213,15 @@ script:
       predefined:
       - xml
       - pdf
+    outputs:
+     - contextPath: File
+     - contextPath: File/Malicious
   - name: WildFireUpload
     deprecated: false
     arguments:
     - name: upload
       deprecated: false
       description: File to upload
+    outputs:
+    - contextPath: File
 hidden: false
