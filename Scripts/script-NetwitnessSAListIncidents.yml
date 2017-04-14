@@ -43,5 +43,7 @@ args:
     this argument is not filled/passed, the script will automatically get the first
     device of type INCIDENT_MANAGEMENT from the SA server.'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - nw-list-incidents
 timeout: 0s
