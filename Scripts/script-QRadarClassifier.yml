@@ -51,5 +51,7 @@ comment: |-
   The 'qradar_type_dict' should include The different Types that can be mapped and all the descriptions to classify with.
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - qr-searches
 timeout: 0s
