@@ -142,5 +142,7 @@ tags:
 comment: Classifying TrendMicro incidents
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - trendmicro-alert-status
 timeout: 0s
