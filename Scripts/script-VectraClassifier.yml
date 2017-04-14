@@ -80,5 +80,7 @@ tags:
 comment: Classifying Vectra incidents
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - vec-health
 timeout: 0s

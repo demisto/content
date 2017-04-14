@@ -42,5 +42,7 @@ comment: "Summarize a Vectra  incident (after incident was put into context)\nTh
   script extract malicious ip's and hashes if exists "
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - vec-health
 timeout: 0s
