@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 910,
           "y": 50
         }
       }
@@ -45,8 +45,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 219
+          "x": 910,
+          "y": 195
         }
       }
   "2":
@@ -69,8 +69,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 444
+          "x": 480,
+          "y": 370
         }
       }
   "3":
@@ -93,8 +93,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 444
+          "x": 910,
+          "y": 370
         }
       }
   "4":
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -29,
-          "y": 444
+          "x": 1340,
+          "y": 370
         }
       }
   "5":
@@ -142,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 734
+          "x": 910,
+          "y": 545
         }
       }
   "6":
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1695,
-          "y": 897
+          "x": 50,
+          "y": 690
         }
       }
   "7":
@@ -178,7 +178,7 @@ tasks:
       id: 7cd78939-150e-42da-85ee-18a01fbb16ec
       version: -1
       name: ""
-      playbookId: 6a657146-521c-4814-831e-58562a227647
+      playbookId: VT Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -188,8 +188,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1695,
-          "y": 1175
+          "x": 50,
+          "y": 865
         }
       }
   "8":
@@ -209,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 525,
-          "y": 1401
+          "x": 910,
+          "y": 1040
         }
       }
   "9":
@@ -227,8 +227,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 525,
-          "y": 1619
+          "x": 910,
+          "y": 1185
         }
       }
   "10":
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1206,
-          "y": 897
+          "x": 480,
+          "y": 690
         }
       }
   "11":
@@ -263,7 +263,7 @@ tasks:
       id: acd78e39-a411-432a-85b1-559e0f87b8e4
       version: -1
       name: ""
-      playbookId: 5678bb50-7e66-4b95-8c73-42d2fa006bb5
+      playbookId: CrowdStrike Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -273,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1206,
-          "y": 1175
+          "x": 480,
+          "y": 865
         }
       }
   "12":
@@ -297,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 897
+          "x": 910,
+          "y": 690
         }
       }
   "13":
@@ -309,7 +309,7 @@ tasks:
       id: d819152d-66ac-4a48-8617-325f92b68bce
       version: -1
       name: ""
-      playbookId: 8a31e75e-68b8-4b85-80ca-4bd090d5adb8
+      playbookId: XFE Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 1175
+          "x": 910,
+          "y": 865
         }
       }
   "14":
@@ -343,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272,
-          "y": 897
+          "x": 1340,
+          "y": 690
         }
       }
   "15":
@@ -355,7 +355,7 @@ tasks:
       id: 2680a824-4aa0-4957-8420-ddce6dff5edf
       version: -1
       name: ""
-      playbookId: 6a5fb92a-01c1-4028-809c-125cad6fd64e
+      playbookId: Cylance Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -365,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272,
-          "y": 1175
+          "x": 1340,
+          "y": 865
         }
       }
   "16":
@@ -389,8 +389,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -221,
-          "y": 897
+          "x": 1770,
+          "y": 690
         }
       }
   "18":
@@ -401,7 +401,7 @@ tasks:
       id: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
       version: -1
       name: ""
-      playbookId: b553469a-e916-4231-84b4-82d3c7c5ade0
+      playbookId: WildFire Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -411,8 +411,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -221,
-          "y": 1175
+          "x": 1770,
+          "y": 865
         }
       }
 view: |-
@@ -420,9 +420,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1664,
-        "width": 2296,
-        "x": -221,
+        "height": 1230,
+        "width": 2100,
+        "x": 50,
         "y": 50
       }
     }
