@@ -204,6 +204,12 @@ script:
 
     var generateMdContextCreateIssue = function(data) {
         var createIssueObj = {md: [] , context: {Ticket: []}};
+        if (args.projectName && args.projectName.length > 0 ){
+            data.projectName = args.projectName;
+        }
+        if (args.projectKey && args.projectKey.length > 0 ){
+            data.projectKey = args.projectKey;
+        }
         createIssueObj['md'].push(data);
         var id = dq(data, 'id');
         createIssueObj['context'].Ticket.push({Id: id});
@@ -235,9 +241,9 @@ script:
         data.forEach(function (element) {
             mdObj ={};
             mdObj['id'] = dq(element, 'id');
-            mdObj['key'] = dq(element, 'updateAuthor.key');
-            mdObj['attachment'] = dq(element, 'fields.attachment');
-            mdObj['ticket_link'] = dq(element, 'self');
+            mdObj['issueId'] = args.issueId;
+            mdObj['attachment_name'] = dq(element, 'filename');
+            mdObj['attachment_link'] = dq(element, 'self');
             uploadMd.push(mdObj);
         });
         return uploadMd;
