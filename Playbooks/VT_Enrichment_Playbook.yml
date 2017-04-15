@@ -1,0 +1,149 @@
+id: VT Enrichment Playbook
+version: 2
+name: VT Enrichment Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2380acff-abe1-46f1-8910-1aedfd2dd492
+    type: start
+    task:
+      id: 2380acff-abe1-46f1-8910-1aedfd2dd492
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": -23,
+          "y": 65
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1966e48a-821a-401f-886b-24b3a46fed15
+    type: regular
+    task:
+      id: 1966e48a-821a-401f-886b-24b3a46fed15
+      version: 1
+      name: Check MD5s
+      script: virustotal|||file
+      type: regular
+      iscommand: true
+      brand: virustotal
+    scriptarguments:
+      file: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a1058074-0b89-4abb-89f6-1c579f001707
+    type: regular
+    task:
+      id: a1058074-0b89-4abb-89f6-1c579f001707
+      version: 1
+      name: Check SHA1s
+      script: virustotal|||file
+      type: regular
+      iscommand: true
+      brand: virustotal
+    scriptarguments:
+      file: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 892,
+          "y": 220
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5eb4bb45-ede0-4ab6-82ea-c0cbef36a08d
+    type: regular
+    task:
+      id: 5eb4bb45-ede0-4ab6-82ea-c0cbef36a08d
+      version: 1
+      name: Check SHA256s
+      script: virustotal|||file
+      type: regular
+      iscommand: true
+      brand: virustotal
+    scriptarguments:
+      file: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": -23,
+          "y": 220
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 8341b6ba-1846-41ea-8010-9e58b7220b06
+    type: regular
+    task:
+      id: 8341b6ba-1846-41ea-8010-9e58b7220b06
+      version: 1
+      name: Check IPs
+      script: virustotal|||ip
+      type: regular
+      iscommand: true
+      brand: virustotal
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ${IP.Address}
+    view: |-
+      {
+        "position": {
+          "x": -505,
+          "y": 220
+        }
+      }
+  "6":
+    id: "6"
+    taskid: f5ef3c7c-601c-4b58-8e1d-87c7a0443658
+    type: regular
+    task:
+      id: f5ef3c7c-601c-4b58-8e1d-87c7a0443658
+      version: 1
+      name: Check URLs
+      script: virustotal|||url
+      type: regular
+      iscommand: true
+      brand: virustotal
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ${IP.Address}
+      url: ${URL}
+    view: |-
+      {
+        "position": {
+          "x": -986,
+          "y": 220
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 250,
+        "width": 2258,
+        "x": -986,
+        "y": 65
+      }
+    }
+  }

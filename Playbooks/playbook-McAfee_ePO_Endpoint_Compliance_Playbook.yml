@@ -1,108 +1,271 @@
 id: playbook12
-version: -1
-system: true
+version: 5
 name: McAfee ePO Endpoint Compliance Playbook
 description: Discover endpoints that are not using the latest McAfee AV Signatures
+starttaskid: "0"
 tasks:
-- id: "1"
-  taskid: f5a623c7-65a2-42e7-89b6-6a7d30b50825
-  type: regular
-  task:
-    id: f5a623c7-65a2-42e7-89b6-6a7d30b50825
-    version: 1
-    name: Determine the correct repository to use
-    script: SetContext
-  scriptarguments:
-    key: repo
-    value: ""
-- id: "2"
-  taskid: 858d4f66-8300-4f1f-8249-e2a3f9f0ac7c
-  type: regular
-  task:
-    id: 858d4f66-8300-4f1f-8249-e2a3f9f0ac7c
-    version: 7
-    name: Retrieve ePO's current DAT version
-    script: EPORetrieveCurrentDATVersion
-  scriptarguments:
-    repos: ${repo}
-  results:
-  - repoversions
-- id: "3"
-  taskid: bdcb047f-efb0-40e5-8e87-1d54da611830
-  type: condition
-  task:
-    id: bdcb047f-efb0-40e5-8e87-1d54da611830
-    version: 1
-    name: Are any endpoints outdated and using an older DAT version?
-  condition:
-    "no": []
-    "yes":
-    - id: "4"
-      taskid: bb5a76c4-351b-4a38-841f-034ff888febe
-      type: condition
-      task:
-        id: bb5a76c4-351b-4a38-841f-034ff888febe
-        version: 1
-        name: Are any endpoints faulty and dangerously outdated?
-      condition:
-        "no": []
-        "yes":
-        - id: "5"
-          taskid: a699a654-8e1c-4922-8083-d5ce7ea66197
-          type: regular
-          task:
-            id: a699a654-8e1c-4922-8083-d5ce7ea66197
-            version: 3
-            name: Isolate dangerous systems from network
-        - id: "6"
-          taskid: 36101c53-b936-4d56-8088-2944f2b1c371
-          type: regular
-          task:
-            id: 36101c53-b936-4d56-8088-2944f2b1c371
-            version: 1
-            name: Open ticket with list of problematic endpoints to be handled by
-              the appropriate team
-          scriptarguments:
-            data: ${faultyendpoints}
-      scriptarguments:
-        data: ${faultyendpoints}
-    - id: "7"
-      taskid: 47273e54-850b-4ca8-8bed-42eb26cf655a
+  "0":
+    id: "0"
+    taskid: a3d08d64-ed0b-41ff-886d-00daa3ed7c90
+    type: start
+    task:
+      id: a3d08d64-ed0b-41ff-886d-00daa3ed7c90
+      version: 1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: df058050-a4c5-4c46-8413-626a7b2b0520
+    type: regular
+    task:
+      id: df058050-a4c5-4c46-8413-626a7b2b0520
+      version: 1
+      name: Determine the correct repository to use
+      scriptName: Set
+      issystemtask: true
       type: regular
-      task:
-        id: 47273e54-850b-4ca8-8bed-42eb26cf655a
-        version: 1
-        name: Trigger signature update on outdated endpoints
-      scriptarguments:
-        abortAfterMinutes: ""
-        endpoints: ${outdatedendpoints}
-        eposerver: ${repo}
-        randomizationInterval: ""
-        retryAttempts: ""
-        retryIntervalInSeconds: ""
-        stopAfterMinutes: ""
-  scriptarguments:
-    faultydelta: ""
-    repoversions: ${repoversions}
-    requireddatversion: ""
-- id: "8"
-  taskid: d8cd9924-954c-4301-8583-05c263e67848
-  type: regular
-  task:
-    id: d8cd9924-954c-4301-8583-05c263e67848
-    version: 1
-    name: Display list of AV related tickets from ServiceNow
-    script: SNListTickets
-  scriptarguments:
-    fields: comments,short_description,category,subcategory,state
-    query: subcategory=Antivirus
-- id: "9"
-  taskid: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
-  type: regular
-  task:
-    id: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
-    version: 1
-    name: Close the investigation
-    script: CloseInvestigation
-  scriptarguments:
-    reason: AuditCompleted
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key: repo
+      value: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 22c46908-9ecd-4045-85d2-3bdbf5b5cdc2
+    type: regular
+    task:
+      id: 22c46908-9ecd-4045-85d2-3bdbf5b5cdc2
+      version: 1
+      name: Retrieve ePO's current DAT version
+      scriptName: EPORetrieveCurrentDATVersion
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      repos: ${repo}
+    results:
+    - repoversions
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 372
+        }
+      }
+  "3":
+    id: "3"
+    taskid: bdcb047f-efb0-40e5-8e87-1d54da611830
+    type: condition
+    task:
+      id: bdcb047f-efb0-40e5-8e87-1d54da611830
+      version: 6
+      name: Are any endpoints outdated and using an older DAT version?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    scriptarguments:
+      faultydelta: ""
+      repoversions: ${repoversions}
+      requireddatversion: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: bb5a76c4-351b-4a38-841f-034ff888febe
+    type: condition
+    task:
+      id: bb5a76c4-351b-4a38-841f-034ff888febe
+      version: 6
+      name: Are any endpoints faulty and dangerously outdated?
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      data: ${faultyendpoints}
+    view: |-
+      {
+        "position": {
+          "x": 375,
+          "y": 725
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a699a654-8e1c-4922-8083-d5ce7ea66197
+    type: regular
+    task:
+      id: a699a654-8e1c-4922-8083-d5ce7ea66197
+      version: 6
+      name: Isolate dangerous systems from network
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 668,
+          "y": 921
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 36101c53-b936-4d56-8088-2944f2b1c371
+    type: regular
+    task:
+      id: 36101c53-b936-4d56-8088-2944f2b1c371
+      version: 6
+      name: Open ticket with list of problematic endpoints to be handled by the appropriate
+        team
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      data: ${faultyendpoints}
+    view: |-
+      {
+        "position": {
+          "x": 668,
+          "y": 1119
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 47273e54-850b-4ca8-8bed-42eb26cf655a
+    type: regular
+    task:
+      id: 47273e54-850b-4ca8-8bed-42eb26cf655a
+      version: 6
+      name: Trigger signature update on outdated endpoints
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      abortAfterMinutes: ""
+      endpoints: ${outdatedendpoints}
+      eposerver: ${repo}
+      randomizationInterval: ""
+      retryAttempts: ""
+      retryIntervalInSeconds: ""
+      stopAfterMinutes: ""
+    view: |-
+      {
+        "position": {
+          "x": 375,
+          "y": 1353
+        }
+      }
+  "8":
+    id: "8"
+    taskid: d8cd9924-954c-4301-8583-05c263e67848
+    type: regular
+    task:
+      id: d8cd9924-954c-4301-8583-05c263e67848
+      version: 6
+      name: Display list of AV related tickets from ServiceNow
+      scriptName: SNListTickets
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      fields: comments,short_description,category,subcategory,state
+      query: subcategory=Antivirus
+    view: |-
+      {
+        "position": {
+          "x": 375,
+          "y": 1646
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
+    type: regular
+    task:
+      id: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
+      version: 6
+      name: Close the investigation
+      scriptName: CloseInvestigation
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      reason: AuditCompleted
+    view: |-
+      {
+        "position": {
+          "x": 375,
+          "y": 1872
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1917,
+        "width": 998,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
