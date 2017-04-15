@@ -1,0 +1,427 @@
+id: Enrichment Playbook
+version: 10
+name: Enrichment Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2512f2e4-e596-4f3b-8d6f-10533cc8bc01
+    type: start
+    task:
+      id: 2512f2e4-e596-4f3b-8d6f-10533cc8bc01
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 98cbb514-a766-4d23-824c-a3137ad5cc8a
+    type: regular
+    task:
+      id: 98cbb514-a766-4d23-824c-a3137ad5cc8a
+      version: 1
+      name: Expose Configured Intergrations
+      scriptName: ExposeModules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 219
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 57e032e0-56e9-4af9-8dab-a9533314ba36
+    type: regular
+    task:
+      id: 57e032e0-56e9-4af9-8dab-a9533314ba36
+      version: 1
+      name: Collect Hashes from Incident
+      scriptName: ExtractHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 444
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 2e5fc4c1-6121-470e-8d9e-0b389cfeb43d
+    type: regular
+    task:
+      id: 2e5fc4c1-6121-470e-8d9e-0b389cfeb43d
+      version: 1
+      name: Collect URLs from Incident
+      scriptName: ExtractURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 444
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f303c703-82fc-4bfb-8ede-695c1c0b8072
+    type: regular
+    task:
+      id: f303c703-82fc-4bfb-8ede-695c1c0b8072
+      version: 1
+      name: Collect IPs from Incident
+      scriptName: ExtractIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+    view: |-
+      {
+        "position": {
+          "x": -29,
+          "y": 444
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 18e82d7c-91d3-47e3-8d9f-6009d652193d
+    type: title
+    task:
+      id: 18e82d7c-91d3-47e3-8d9f-6009d652193d
+      version: 1
+      name: Enrich with Integrations
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "10"
+      - "12"
+      - "14"
+      - "16"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 734
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 00b4b5ab-a27f-4cfe-802b-7b46bee94530
+    type: condition
+    task:
+      id: 00b4b5ab-a27f-4cfe-802b-7b46bee94530
+      version: 1
+      name: Is VirusTotal available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      value: ${ConfiguredModules.brand(val == 'VirusTotal')}
+    view: |-
+      {
+        "position": {
+          "x": 1695,
+          "y": 897
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 7cd78939-150e-42da-85ee-18a01fbb16ec
+    type: playbook
+    task:
+      id: 7cd78939-150e-42da-85ee-18a01fbb16ec
+      version: 1
+      name: ""
+      playbookId: 6a657146-521c-4814-831e-58562a227647
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 1695,
+          "y": 1175
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 1be320d7-1677-47a1-871f-036fca9e5a35
+    type: title
+    task:
+      id: 1be320d7-1677-47a1-871f-036fca9e5a35
+      version: 1
+      name: Check Result
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 525,
+          "y": 1401
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 382b07d0-e18c-4a4e-816a-8ccc1372505b
+    type: condition
+    task:
+      id: 382b07d0-e18c-4a4e-816a-8ccc1372505b
+      version: 1
+      name: Were Indicators found?
+      type: condition
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 525,
+          "y": 1619
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 17c5a6a8-9c77-465a-8fa2-6b5aaeaa9fab
+    type: condition
+    task:
+      id: 17c5a6a8-9c77-465a-8fa2-6b5aaeaa9fab
+      version: 1
+      name: Is CrowdStrike available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      value: ${ConfiguredModules.brand(val=='FalconIntel')}
+    view: |-
+      {
+        "position": {
+          "x": 1206,
+          "y": 897
+        }
+      }
+  "11":
+    id: "11"
+    taskid: acd78e39-a411-432a-85b1-559e0f87b8e4
+    type: playbook
+    task:
+      id: acd78e39-a411-432a-85b1-559e0f87b8e4
+      version: 1
+      name: ""
+      playbookId: 5678bb50-7e66-4b95-8c73-42d2fa006bb5
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 1206,
+          "y": 1175
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 1cf92f8f-0eb7-4e5a-8a4d-b52e6cab3e28
+    type: condition
+    task:
+      id: 1cf92f8f-0eb7-4e5a-8a4d-b52e6cab3e28
+      version: 1
+      name: Is XFE available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    scriptarguments:
+      value: ${ConfiguredModules.brand(val=='XFE')}
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 897
+        }
+      }
+  "13":
+    id: "13"
+    taskid: d819152d-66ac-4a48-8617-325f92b68bce
+    type: playbook
+    task:
+      id: d819152d-66ac-4a48-8617-325f92b68bce
+      version: 1
+      name: ""
+      playbookId: 8a31e75e-68b8-4b85-80ca-4bd090d5adb8
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1175
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 3291b826-d891-4d24-8b09-720d8a3a1143
+    type: condition
+    task:
+      id: 3291b826-d891-4d24-8b09-720d8a3a1143
+      version: 1
+      name: Is Cylance available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    scriptarguments:
+      value: ${ConfiguredModules.brand(val=='cylance')}
+    view: |-
+      {
+        "position": {
+          "x": 272,
+          "y": 897
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 2680a824-4aa0-4957-8420-ddce6dff5edf
+    type: playbook
+    task:
+      id: 2680a824-4aa0-4957-8420-ddce6dff5edf
+      version: 1
+      name: ""
+      playbookId: 6a5fb92a-01c1-4028-809c-125cad6fd64e
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 272,
+          "y": 1175
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 71a8d022-e6f5-4d6a-865f-e00e7a7b3041
+    type: condition
+    task:
+      id: 71a8d022-e6f5-4d6a-865f-e00e7a7b3041
+      version: 1
+      name: Is WildFire available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    scriptarguments:
+      value: ${ConfiguredModules.brand(val=='wildfire')}
+    view: |-
+      {
+        "position": {
+          "x": -221,
+          "y": 897
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
+    type: playbook
+    task:
+      id: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
+      version: 1
+      name: ""
+      playbookId: b553469a-e916-4231-84b4-82d3c7c5ade0
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": -221,
+          "y": 1175
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1664,
+        "width": 2296,
+        "x": -221,
+        "y": 50
+      }
+    }
+  }
