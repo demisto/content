@@ -1,5 +1,7 @@
 id: playbook15
-version: 2
+version: -1
+system: true
+fromversion: 2.5.0
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
 starttaskid: "0"

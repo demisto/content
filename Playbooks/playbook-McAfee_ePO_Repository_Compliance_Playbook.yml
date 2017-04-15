@@ -1,5 +1,7 @@
 id: playbook11
-version: 5
+version: -1
+system: true
+fromversion: 2.5.0
 name: McAfee ePO Repository Compliance Playbook
 description: Ensures that ePO servers are updated to the latest McAfee published AV
   signatures (DAT file version).

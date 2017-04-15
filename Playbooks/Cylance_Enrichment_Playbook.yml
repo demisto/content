@@ -1,6 +1,8 @@
 id: Cylance Enrichment Playbook
-version: 2
+version: -1
 name: Cylance Enrichment Playbook
+system: true
+fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":

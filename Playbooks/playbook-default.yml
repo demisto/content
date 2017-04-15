@@ -1,8 +1,10 @@
 id: playbook0
-version: 3
+version: -1
 name: Default
 description: Default playbook to help classify incoming incidents
 starttaskid: "0"
+system: true
+fromversion: 2.5.0
 tasks:
   "0":
     id: "0"

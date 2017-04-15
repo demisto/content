@@ -1,6 +1,7 @@
 id: playbook10
 version: -1
 system: true
+fromversion: 2.5.0
 name: Rapid IOC Hunting Playbook
 description: |
   Playbook to quickly react to discovery of new IOCs. Receive a list of IOCs in a file and hunt rapidly across the infrastructure.

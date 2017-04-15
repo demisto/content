@@ -1,6 +1,8 @@
 id: Enrichment Playbook
-version: 10
+version: -1
 name: Enrichment Playbook
+system: true
+fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":

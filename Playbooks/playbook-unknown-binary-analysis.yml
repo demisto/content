@@ -1,5 +1,7 @@
 id: playbook4id: playbookid: playbook4
-version: 5
+version: -1
+system: true
+fromversion: 2.5.0
 name: Unknown Binary Analysis playbook
 description: |-
   This playbook describes steps for analyzing an unknown binary file discovered on our network.

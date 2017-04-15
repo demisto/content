@@ -1,5 +1,7 @@
 id: playbook9
-version: 2
+version: -1
+system: true
+fromversion: 2.5.0
 name: Symantec Endpoint Compliance Playbook
 description: Check the latest AV Definitions from Symantec Cloud and compare to AV
   Definitions versions in endpoints.

@@ -1,5 +1,7 @@
 id: VT Enrichment Playbook
-version: 2
+version: -1
+system: true
+fromversion: 2.5.0
 name: VT Enrichment Playbook
 starttaskid: "0"
 tasks:
