@@ -11,7 +11,7 @@ tasks:
     type: start
     task:
       id: 2380acff-abe1-46f1-8910-1aedfd2dd492
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -25,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -23,
-          "y": 65
+          "x": 910,
+          "y": 50
         }
       }
   "2":
@@ -35,7 +35,7 @@ tasks:
     type: regular
     task:
       id: 1966e48a-821a-401f-886b-24b3a46fed15
-      version: 1
+      version: -1
       name: Check MD5s
       script: virustotal|||file
       type: regular
@@ -46,8 +46,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 195
         }
       }
   "3":
@@ -56,7 +56,7 @@ tasks:
     type: regular
     task:
       id: a1058074-0b89-4abb-89f6-1c579f001707
-      version: 1
+      version: -1
       name: Check SHA1s
       script: virustotal|||file
       type: regular
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 892,
-          "y": 220
+          "x": 480,
+          "y": 195
         }
       }
   "4":
@@ -77,7 +77,7 @@ tasks:
     type: regular
     task:
       id: 5eb4bb45-ede0-4ab6-82ea-c0cbef36a08d
-      version: 1
+      version: -1
       name: Check SHA256s
       script: virustotal|||file
       type: regular
@@ -88,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -23,
-          "y": 220
+          "x": 910,
+          "y": 195
         }
       }
   "5":
@@ -98,7 +98,7 @@ tasks:
     type: regular
     task:
       id: 8341b6ba-1846-41ea-8010-9e58b7220b06
-      version: 1
+      version: -1
       name: Check IPs
       script: virustotal|||ip
       type: regular
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -505,
-          "y": 220
+          "x": 1340,
+          "y": 195
         }
       }
   "6":
@@ -120,7 +120,7 @@ tasks:
     type: regular
     task:
       id: f5ef3c7c-601c-4b58-8e1d-87c7a0443658
-      version: 1
+      version: -1
       name: Check URLs
       script: virustotal|||url
       type: regular
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -986,
-          "y": 220
+          "x": 1770,
+          "y": 195
         }
       }
 view: |-
@@ -142,10 +142,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 250,
-        "width": 2258,
-        "x": -986,
-        "y": 65
+        "height": 240,
+        "width": 2100,
+        "x": 50,
+        "y": 50
       }
     }
   }

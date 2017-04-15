@@ -10,7 +10,7 @@ tasks:
   type: title
   task:
     id: 41ef22c4-8b99-4a26-872f-4fff097258ed
-    version: 2
+    version: -1
     name: Set context for incident
     clonedfrom: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
 - id: "2"
@@ -18,7 +18,7 @@ tasks:
   type: regular
   task:
     id: 9da02bd7-5e1c-4ac7-8a74-4f4dbcbf511f
-    version: 2
+    version: -1
     name: Set incident to context
     scriptName: IncidentToContext
   results:
@@ -58,14 +58,14 @@ tasks:
   type: title
   task:
     id: 39ddd27e-adce-4ae6-8d16-a8ff9466254b
-    version: 1
+    version: -1
     name: Integration Classifiers
 - id: "4"
   taskid: 7876d574-4e76-45be-8208-f54e8164de4f
   type: condition
   task:
     id: 7876d574-4e76-45be-8208-f54e8164de4f
-    version: 2
+    version: -1
     name: Get Brand Label
     scriptName: GetContextValue
     type: conditional
@@ -76,7 +76,7 @@ tasks:
       type: regular
       task:
         id: ff90e560-c9db-4f34-8ddc-f05a763485c5
-        version: 2
+        version: -1
         name: Trend Micro Classifier
         description: Classify Trend Micro Incidents
         scriptName: TrendMicroClassifier
@@ -88,7 +88,7 @@ tasks:
       type: regular
       task:
         id: f4ceefab-a9be-4afc-80e7-968a319f09d4
-        version: 3
+        version: -1
         name: QRadar Classifier
         description: Classify QRadar Incidents
         scriptName: QRadarClassifier
@@ -99,7 +99,7 @@ tasks:
       type: regular
       task:
         id: 06988f22-32d3-464f-8ce8-7fe5e344d234
-        version: 2
+        version: -1
         name: Vectra classifier
         description: Classify Vectra Incidents
         scriptName: VectraClassifier
@@ -119,7 +119,7 @@ tasks:
   type: title
   task:
     id: fe32e248-6d3d-4583-80ac-160b69932b7f
-    version: 2
+    version: -1
     name: Mail Classifier
     type: section
 - id: "8"
@@ -127,7 +127,7 @@ tasks:
   type: condition
   task:
     id: 6e1ec96e-0055-4e07-8b98-2b69fbd579db
-    version: 7
+    version: -1
     name: Is this an email
     scriptName: IsContextSet
   condition:
@@ -138,7 +138,7 @@ tasks:
       type: regular
       task:
         id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
-        version: 5
+        version: -1
         name: Set type and playbook to Phishing (default type for emails)
         scriptName: IncidentSet
       scriptarguments:
@@ -162,14 +162,14 @@ tasks:
   type: title
   task:
     id: befe6857-6c3a-47a1-84e1-95b8d6d78c66
-    version: 2
+    version: -1
     name: 'Incident type not determined '
 - id: "11"
   taskid: 468f15bb-756e-4da8-8d0e-156fc55af84d
   type: regular
   task:
     id: 468f15bb-756e-4da8-8d0e-156fc55af84d
-    version: 3
+    version: -1
     name: Classifier Notify Admin
     description: |-
       Notify Admin that the classification process had failed.

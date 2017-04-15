@@ -12,7 +12,7 @@ tasks:
     type: start
     task:
       id: 96dbf98e-bc4e-4d21-808f-54cf03241207
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -255,
-          "y": 44
+          "x": -257,
+          "y": 35
         }
       }
   "2":
@@ -33,7 +33,7 @@ tasks:
     type: condition
     task:
       id: 6a0aef28-d546-47af-8947-99f46d77d48a
-      version: 1
+      version: -1
       name: Is this an email
       scriptName: Exists
       issystemtask: true
@@ -61,7 +61,7 @@ tasks:
     type: condition
     task:
       id: 5f274bd6-82a8-4f81-87e9-ca8561e78661
-      version: 1
+      version: -1
       name: Is this email coming from Splunk
       scriptName: Set
       issystemtask: true
@@ -89,7 +89,7 @@ tasks:
     type: regular
     task:
       id: 3e289371-6cd3-4665-8109-6c79c71fbfc2
-      version: 6
+      version: -1
       name: SplunkEmailParser
       scriptName: SplunkEmailParser
       issystemtask: true
@@ -115,7 +115,7 @@ tasks:
     type: condition
     task:
       id: 4225b27f-723a-4a25-8756-1e1cfd7e234f
-      version: 1
+      version: -1
       name: Is this a Nexpose email
       scriptName: Set
       issystemtask: true
@@ -143,7 +143,7 @@ tasks:
     type: regular
     task:
       id: cda168ea-c74d-40b4-89cb-67014f85409d
-      version: 6
+      version: -1
       name: NexposeEmailParser
       scriptName: NexposeEmailParser
       issystemtask: true
@@ -166,7 +166,7 @@ tasks:
     type: condition
     task:
       id: cfb8b77c-fa54-4792-834e-6f3b9d4e278a
-      version: 1
+      version: -1
       name: Is this a SentinelOne email
       scriptName: Set
       issystemtask: true
@@ -194,7 +194,7 @@ tasks:
     type: regular
     task:
       id: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
-      version: 6
+      version: -1
       name: Set incident type and playbook to SentinelOne
       scriptName: IncidentSet
       issystemtask: true
@@ -230,7 +230,7 @@ tasks:
     type: regular
     task:
       id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
-      version: 12
+      version: -1
       name: Set type and playbook to Phishing (default type for emails)
       scriptName: IncidentSet
       issystemtask: true
@@ -266,7 +266,7 @@ tasks:
     type: condition
     task:
       id: f9de0883-2020-490e-85ed-fdfb66a2db87
-      version: 12
+      version: -1
       name: Is this a malware incident
       description: Did it involve a malicious binary running in your environment?
       issystemtask: true
@@ -291,7 +291,7 @@ tasks:
     type: regular
     task:
       id: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -316,7 +316,7 @@ tasks:
     type: condition
     task:
       id: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
-      version: 12
+      version: -1
       name: Is this a phishing incident?
       description: Was this incident created because a suspected email was received?
       issystemtask: true
@@ -341,7 +341,7 @@ tasks:
     type: regular
     task:
       id: 66553f46-579a-42af-8c02-341af3445ba3
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -366,7 +366,7 @@ tasks:
     type: condition
     task:
       id: 93f3f626-0b08-4257-8559-c2d3838cea13
-      version: 12
+      version: -1
       name: Is the incident a C2 communication incident?
       description: Was the incident opened because communication to a known bad actor
         was detected?
@@ -392,7 +392,7 @@ tasks:
     type: regular
     task:
       id: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -417,7 +417,7 @@ tasks:
     type: condition
     task:
       id: bd100974-58ce-4b53-8e32-c3930e215184
-      version: 12
+      version: -1
       name: Is the incident a ransomware incident?
       issystemtask: true
       type: condition
@@ -441,7 +441,7 @@ tasks:
     type: regular
     task:
       id: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -466,7 +466,7 @@ tasks:
     type: condition
     task:
       id: 6cab1990-09da-4e94-8d26-7a67571a6303
-      version: 12
+      version: -1
       name: Is the incident an unknown binary incident?
       issystemtask: true
       type: condition
@@ -490,7 +490,7 @@ tasks:
     type: regular
     task:
       id: bb222001-660e-418c-8849-25341bb74ddc
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -515,7 +515,7 @@ tasks:
     type: condition
     task:
       id: b4f728f9-7690-49ec-8214-216cf28d83e1
-      version: 12
+      version: -1
       name: Does the incident involve a lost or stolen device?
       issystemtask: true
       type: condition
@@ -537,7 +537,7 @@ tasks:
     type: regular
     task:
       id: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
-      version: 12
+      version: -1
       name: SetIncidentType
       scriptName: IncidentSet
       issystemtask: true
@@ -559,7 +559,7 @@ tasks:
     type: title
     task:
       id: cedcbabe-7b14-4b7c-843d-60b04f66e9b2
-      version: 1
+      version: -1
       name: Mail Classifier
       type: title
       iscommand: false
@@ -570,8 +570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -255,
-          "y": 197
+          "x": -257,
+          "y": 216
         }
       }
 view: |-
@@ -579,10 +579,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4364,
+        "height": 4373,
         "width": 1301,
         "x": -257,
-        "y": 44
+        "y": 35
       }
     }
   }

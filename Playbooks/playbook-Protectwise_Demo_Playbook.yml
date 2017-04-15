@@ -15,7 +15,7 @@ tasks:
     type: start
     task:
       id: 05568fd1-7237-4cd0-8c09-afd6ea379404
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -36,10 +36,9 @@ tasks:
     type: regular
     task:
       id: 14dd4695-41d2-454a-8d7c-f34141c06515
-      version: 30
+      version: -1
       name: PWSensors
       scriptName: PWSensors
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -62,10 +61,9 @@ tasks:
     type: regular
     task:
       id: 21ad611d-0cb2-47cc-8cb4-0cba4c3efe16
-      version: 29
+      version: -1
       name: PWEvents
       scriptName: PWEvents
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -100,10 +98,9 @@ tasks:
     type: regular
     task:
       id: bfd8cc23-fd89-48f3-880e-f1413937b612
-      version: 29
+      version: -1
       name: PWEventPcapInfo
       scriptName: PWEventPcapInfo
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -124,11 +121,10 @@ tasks:
     type: regular
     task:
       id: 94419891-a100-4ee6-8ac6-674f6dee2619
-      version: 29
+      version: -1
       name: PWEventPcapDownload
       description: Waits around 5 minutes every 10 files
       scriptName: PWEventPcapDownload
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -152,10 +148,9 @@ tasks:
     type: regular
     task:
       id: c223a464-ea5b-4404-812e-d8d23509aa47
-      version: 29
+      version: -1
       name: PWObservations
       scriptName: PWObservations
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -190,10 +185,9 @@ tasks:
     type: regular
     task:
       id: dc1a1307-cf45-4ae2-83c7-35176079d6e6
-      version: 29
+      version: -1
       name: PWObservationPcapInfo
       scriptName: PWObservationPcapInfo
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -215,11 +209,10 @@ tasks:
     type: regular
     task:
       id: 05cb4857-2411-4af9-8069-16b5b1bbd93a
-      version: 29
+      version: -1
       name: PWObservationPcapDownload
       description: Waits around 5 minutes every 10 files
       scriptName: PWObservationPcapDownload
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -244,10 +237,9 @@ tasks:
     type: regular
     task:
       id: d91a8bac-6a6f-4194-848c-bac3447787f2
-      version: 29
+      version: -1
       name: PrintContext
       scriptName: PrintContext
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -266,10 +258,9 @@ tasks:
     type: regular
     task:
       id: 231e2da6-02d2-4d40-8a3c-44a4d6733a40
-      version: 29
+      version: -1
       name: CloseInvestigation
       scriptName: CloseInvestigation
-      issystemtask: true
       iscommand: false
       brand: ""
     scriptarguments:

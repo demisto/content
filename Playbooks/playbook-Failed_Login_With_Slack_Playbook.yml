@@ -14,7 +14,7 @@ tasks:
     type: start
     task:
       id: e0772674-d7ff-43df-8075-a871655a3f9b
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -25,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 270,
           "y": 50
         }
       }
@@ -35,7 +35,7 @@ tasks:
     type: regular
     task:
       id: cdd77c13-ca81-4c68-8679-19d08de8fb71
-      version: 2
+      version: -1
       name: Confirm failed login with user
       scriptName: SlackAskUser
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 246
+          "x": 270,
+          "y": 200
         }
       }
   "3":
@@ -65,7 +65,7 @@ tasks:
     type: condition
     task:
       id: 58679e35-4e24-4d2a-89ba-22fbd161f308
-      version: 1
+      version: -1
       name: Was the failed login attempt by the user?
       iscommand: false
       brand: ""
@@ -77,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 442
+          "x": 270,
+          "y": 369
         }
       }
   "4":
@@ -87,7 +87,7 @@ tasks:
     type: regular
     task:
       id: ce32bc35-0679-4b9b-842f-e4b0c942a157
-      version: 1
+      version: -1
       name: Raise Incident Severity to High
       scriptName: IncidentSet
       iscommand: false
@@ -108,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -65,
-          "y": 659
+          "x": 48,
+          "y": 545
         }
       }
   "5":
@@ -118,7 +118,7 @@ tasks:
     type: regular
     task:
       id: 987f04ae-98f1-4e27-8ef3-1a4f459acaa2
-      version: 2
+      version: -1
       name: Ask user should we reset her password
       scriptName: SlackAskUser
       type: standard
@@ -136,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 596,
-          "y": 659
+          "x": 480,
+          "y": 545
         }
       }
   "6":
@@ -146,7 +146,7 @@ tasks:
     type: condition
     task:
       id: 6b4648d9-512a-417c-86e6-d468d05c5b63
-      version: 1
+      version: -1
       name: Should we reset the password
       type: conditional
       iscommand: false
@@ -165,8 +165,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 596,
-          "y": 899
+          "x": 480,
+          "y": 720
         }
       }
   "7":
@@ -175,7 +175,7 @@ tasks:
     type: regular
     task:
       id: a12faaf4-cbbe-49ce-8539-f4ed61279deb
-      version: 2
+      version: -1
       name: Expire Password
       scriptName: ADExpirePassword
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
@@ -190,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 816,
-          "y": 1090
+          "x": 693,
+          "y": 894
         }
       }
   "8":
@@ -200,7 +200,7 @@ tasks:
     type: regular
     task:
       id: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
-      version: 1
+      version: -1
       name: Notify User on Slack
       scriptName: SlackSend
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
@@ -219,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 816,
-          "y": 1266
+          "x": 693,
+          "y": 1069
         }
       }
   "9":
@@ -229,7 +229,7 @@ tasks:
     type: regular
     task:
       id: abd944e7-152b-4e45-8e2f-92cd19ea6bb4
-      version: 1
+      version: -1
       name: Close the incident
       scriptName: CloseInvestigation
       type: standard
@@ -241,8 +241,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 816,
-          "y": 1538
+          "x": 480,
+          "y": 1245
         }
       }
 view: |-
@@ -250,9 +250,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1583,
-        "width": 1261,
-        "x": -65,
+        "height": 1290,
+        "width": 1025,
+        "x": 48,
         "y": 50
       }
     }

@@ -15,7 +15,7 @@ tasks:
     type: start
     task:
       id: 3ffe3385-a733-407d-88b8-4bc323efde75
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -36,7 +36,7 @@ tasks:
     type: title
     task:
       id: 850c4685-415d-4625-82b4-5a71add73ddf
-      version: 10
+      version: -1
       name: Triage
       issystemtask: true
       iscommand: false
@@ -57,7 +57,7 @@ tasks:
     type: regular
     task:
       id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
-      version: 10
+      version: -1
       name: Notify and involve appropriate personnel
       description: Depending on regulatory, compliance and legal requirements or company
         procedure, you may need to involve the legal department, PR department, upper
@@ -81,7 +81,7 @@ tasks:
     type: condition
     task:
       id: d58b1e4d-b2a0-4122-8aa0-63f4adc10edc
-      version: 10
+      version: -1
       name: Was the incident reported by a person?
       issystemtask: true
       iscommand: false
@@ -104,7 +104,7 @@ tasks:
     type: regular
     task:
       id: a58e43b1-82d0-4ba9-8f6d-2757d4075efa
-      version: 10
+      version: -1
       name: Display full details for the alert
       issystemtask: true
       iscommand: false
@@ -125,7 +125,7 @@ tasks:
     type: condition
     task:
       id: f2963d5a-6d0b-4f96-8686-67c82746114d
-      version: 10
+      version: -1
       name: Was this person the owner of the device?
       issystemtask: true
       iscommand: false
@@ -148,7 +148,7 @@ tasks:
     type: regular
     task:
       id: 69387c21-89a3-4909-8ea9-ce0c8055398d
-      version: 10
+      version: -1
       name: Interview reporter of the incident and document their full account
       issystemtask: true
       iscommand: false
@@ -169,7 +169,7 @@ tasks:
     type: regular
     task:
       id: e0e04bad-e371-4be7-8056-974a97634a17
-      version: 10
+      version: -1
       name: Retrieve equipment information for the device from ERP software
       issystemtask: true
       iscommand: false
@@ -190,7 +190,7 @@ tasks:
     type: regular
     task:
       id: 2b1a676a-d81d-40fd-8a66-c2617d9b3e01
-      version: 20
+      version: -1
       name: Retrieve device profile from IT asset management software
       issystemtask: true
       iscommand: false
@@ -211,7 +211,7 @@ tasks:
     type: regular
     task:
       id: 85c2c84c-5a80-47e8-8875-a8f5b6ea230a
-      version: 10
+      version: -1
       name: Retrieve employee information of the device's owner from HR software
       issystemtask: true
       iscommand: false
@@ -232,7 +232,7 @@ tasks:
     type: regular
     task:
       id: b7c1f351-0611-4f74-8106-a3ba3d8400cb
-      version: 10
+      version: -1
       name: Interview owner of device and document full account of the incident
       description: |-
         How, where and when was the device lost?
@@ -259,7 +259,7 @@ tasks:
     type: regular
     task:
       id: 6191b9a6-ed52-461d-8d38-f6305b90d848
-      version: 10
+      version: -1
       name: Report theft of device to authorities (including serial numbers)
       issystemtask: true
       iscommand: false
@@ -280,7 +280,7 @@ tasks:
     type: regular
     task:
       id: 6ffc4cdf-0ae8-446a-8fef-f35f15ef9b2d
-      version: 10
+      version: -1
       name: Assess severity by reviewing device details and contents of latest backup
       description: |-
         What was the purpose of device?
@@ -307,7 +307,7 @@ tasks:
     type: title
     task:
       id: 6adc9ae9-f940-44e2-82e5-062b6e4aadad
-      version: 10
+      version: -1
       name: Respond
       issystemtask: true
       iscommand: false
@@ -328,7 +328,7 @@ tasks:
     type: condition
     task:
       id: 03764251-cb89-401e-871b-79e3bca916b6
-      version: 10
+      version: -1
       name: Does the device support remote lockdown?
       issystemtask: true
       iscommand: false
@@ -351,7 +351,7 @@ tasks:
     type: regular
     task:
       id: 7cdd5619-bb34-4795-8b5b-d893f62890d9
-      version: 10
+      version: -1
       name: Activate remote lockdown on the device
       issystemtask: true
       iscommand: false
@@ -372,7 +372,7 @@ tasks:
     type: condition
     task:
       id: 6bfd15de-613e-490b-8e91-ad67c3d6855f
-      version: 10
+      version: -1
       name: Is the device a mobile phone?
       issystemtask: true
       iscommand: false
@@ -395,7 +395,7 @@ tasks:
     type: regular
     task:
       id: 6cfb8ea1-d144-449c-854e-3c8cbc9138d5
-      version: 10
+      version: -1
       name: Contact the mobile server provider to report the device as stolen
       issystemtask: true
       iscommand: false
@@ -406,8 +406,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 315,
-          "y": 2907
+          "x": 317,
+          "y": 2923
         }
       }
   "18":
@@ -416,7 +416,7 @@ tasks:
     type: regular
     task:
       id: 4ee12420-0fe7-4c31-80e2-4232c1d1a0b2
-      version: 10
+      version: -1
       name: Request that the mobile service provider lock the SIM card
       issystemtask: true
       iscommand: false
@@ -437,7 +437,7 @@ tasks:
     type: regular
     task:
       id: 140bf051-e77a-455a-8716-ca6714b812e0
-      version: 10
+      version: -1
       name: Remove the phone number from any 2-factor authentication profiles
       issystemtask: true
       iscommand: false
@@ -458,7 +458,7 @@ tasks:
     type: regular
     task:
       id: 55eacd25-b076-4e40-8c4e-0640f94d1219
-      version: 10
+      version: -1
       name: Cancel any credit cards stored on the device
       issystemtask: true
       iscommand: false
@@ -479,7 +479,7 @@ tasks:
     type: regular
     task:
       id: a8bd072b-c2fb-4d04-83be-1be8a5827868
-      version: 10
+      version: -1
       name: Change password to any financial or bank account stored on the device
       issystemtask: true
       iscommand: false
@@ -500,7 +500,7 @@ tasks:
     type: regular
     task:
       id: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
-      version: 35
+      version: -1
       name: Disable compromised AD user account(s)
       description: Block access to the compromised user account in AD pending investigation
         and cleanup, after which the account will be reinstated by an Active Directory
@@ -524,7 +524,7 @@ tasks:
     type: regular
     task:
       id: 5d152b2c-067d-47ec-829b-fa56b8960307
-      version: 20
+      version: -1
       name: Revoke VPN credentials
       issystemtask: true
       iscommand: false
@@ -545,7 +545,7 @@ tasks:
     type: regular
     task:
       id: 222681ac-e463-4e2c-8f9f-213531fc8bb5
-      version: 10
+      version: -1
       name: Revoke DLP keys/credentials so documents on the device cannot be decrypted
       issystemtask: true
       iscommand: false
@@ -566,7 +566,7 @@ tasks:
     type: regular
     task:
       id: 343dc3dd-5001-49de-8034-abf4a9e4c849
-      version: 10
+      version: -1
       name: Change account passwords for any cloud-based solutions used by the organization
       description: Some accounts do not reside on systems managed by employees but
         the Incident Response staff must be able to revoke, lock or rotate credentials
@@ -590,7 +590,7 @@ tasks:
     type: regular
     task:
       id: 8b83a98e-4916-4a76-80e5-8736a5a207ba
-      version: 20
+      version: -1
       name: Instruct owner to change passwords for any personal accounts
       description: |-
         Personal email, social media, LinkedIn profile - these are in the control of the employee and they must be involved in order to change passwords. IT/Security staff can help to expedite.
@@ -615,7 +615,7 @@ tasks:
     type: regular
     task:
       id: bd9b46ea-07eb-46ee-8308-46888a11640b
-      version: 35
+      version: -1
       name: Lock / Rotate any other compromised accounts, keys and credentials
       description: If the machine contained any authentication keys, accounts to internal
         company resources and information systems, these should be locked and revoked,
@@ -639,7 +639,7 @@ tasks:
     type: condition
     task:
       id: 2964e242-127e-4c35-8b4c-87210110e1d4
-      version: 10
+      version: -1
       name: Was the device managed by an MDM solution?
       issystemtask: true
       iscommand: false
@@ -662,7 +662,7 @@ tasks:
     type: regular
     task:
       id: 11b2fd90-a311-43cc-884b-61b813f42871
-      version: 10
+      version: -1
       name: Mark the device as stolen in MDM
       issystemtask: true
       iscommand: false
@@ -683,7 +683,7 @@ tasks:
     type: condition
     task:
       id: 9fdc659a-7a71-497b-86b5-9df7d296e64f
-      version: 10
+      version: -1
       name: Did the device have tracking software installed?
       issystemtask: true
       iscommand: false
@@ -706,7 +706,7 @@ tasks:
     type: regular
     task:
       id: d9a9e283-da65-4c51-8b71-8d4ae30a5cde
-      version: 10
+      version: -1
       name: Remotely activate tracking software on the device
       issystemtask: true
       iscommand: false
@@ -727,7 +727,7 @@ tasks:
     type: regular
     task:
       id: f926807b-f376-4b87-8719-d07f790e6b94
-      version: 10
+      version: -1
       name: Periodically check if tracking software became active and sent results
       description: If the thief wiped the device or kept it isolated and unable to
         communicate, the tracking software may not be able to report.
@@ -750,7 +750,7 @@ tasks:
     type: condition
     task:
       id: 353aafad-f461-4556-8bb3-047b8bd4d0f3
-      version: 10
+      version: -1
       name: Does the device support remote wiping?
       issystemtask: true
       iscommand: false
@@ -763,8 +763,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1,
-          "y": 5981
+          "x": 0,
+          "y": 5985
         }
       }
   "34":
@@ -773,7 +773,7 @@ tasks:
     type: condition
     task:
       id: 41d383ca-bb97-4a56-8431-913c7a84571a
-      version: 10
+      version: -1
       name: Did the device contain any unique critical business data?
       description: Check with owner and backup records if there is any indication
         that the device contained crucial data and no copies of that data can be recovered
@@ -799,7 +799,7 @@ tasks:
     type: regular
     task:
       id: d10fca7f-ae27-4826-8695-5fdc4057b3d1
-      version: 10
+      version: -1
       name: Remotely wipe the device
       issystemtask: true
       iscommand: false
@@ -820,7 +820,7 @@ tasks:
     type: condition
     task:
       id: 40aae724-fa93-4bc4-8aa8-2bd9b6c0f5c7
-      version: 10
+      version: -1
       name: Was the device encrypted and turned off at the time of theft?
       issystemtask: true
       iscommand: false
@@ -843,7 +843,7 @@ tasks:
     type: regular
     task:
       id: 186926f8-d32d-4eb2-8c5b-fe51e56c13e6
-      version: 10
+      version: -1
       name: Remotely wipe the device
       description: If the device was unencrypted the risk of confidential data leaking
         is too great and we should wipe immediately.
@@ -856,8 +856,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 252,
-          "y": 6469
+          "x": 254,
+          "y": 6480
         }
       }
   "38":
@@ -866,7 +866,7 @@ tasks:
     type: regular
     task:
       id: b17974fa-4c9c-44ab-8fe2-2a61b89fcc31
-      version: 10
+      version: -1
       name: Escalate the decision to management
       description: The decision needs to be made whether the data on the device is
         important enough to defer wiping in the off chance that we can retrieve the
@@ -890,7 +890,7 @@ tasks:
     type: condition
     task:
       id: 6a1e822a-db19-4ce6-8a91-920d3ba295c3
-      version: 10
+      version: -1
       name: Did management decide to wipe the device?
       issystemtask: true
       iscommand: false
@@ -913,7 +913,7 @@ tasks:
     type: regular
     task:
       id: 17ae1afa-f97e-4346-87c8-32b92e5186a3
-      version: 10
+      version: -1
       name: Document the decision including written authorization to not wipe
       issystemtask: true
       iscommand: false
@@ -925,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 6836
+          "y": 6839
         }
       }
   "41":
@@ -934,7 +934,7 @@ tasks:
     type: regular
     task:
       id: cd7480e8-b360-4bf4-8330-2e4b8764b214
-      version: 10
+      version: -1
       name: Remotely wipe the device
       issystemtask: true
       iscommand: false
@@ -955,7 +955,7 @@ tasks:
     type: regular
     task:
       id: 91929b2e-11a6-4882-8948-7095ac0d5a52
-      version: 10
+      version: -1
       name: Remove the stolen device from the organization's domain(s)
       issystemtask: true
       iscommand: false
@@ -976,7 +976,7 @@ tasks:
     type: regular
     task:
       id: 338b43c9-b630-4501-88c8-12ee2929609d
-      version: 10
+      version: -1
       name: Remove the device's MAC address from any whitelists
       issystemtask: true
       iscommand: false
@@ -997,7 +997,7 @@ tasks:
     type: regular
     task:
       id: c3235bb8-65cb-4636-8bdc-5672b358fdcc
-      version: 10
+      version: -1
       name: Blacklist the stolen device in WiFi and NAC
       description: Ensure that the thief cannot use the device to infiltrate our network.
       issystemtask: true
@@ -1019,7 +1019,7 @@ tasks:
     type: regular
     task:
       id: bb6645c4-0c69-4448-809f-b429273b2543
-      version: 10
+      version: -1
       name: Insert device's MAC address to network security watchlists
       description: If the thief attempts to use the device to access the network we
         want to block it and get an immediate critical alert to the SOC.
@@ -1042,7 +1042,7 @@ tasks:
     type: condition
     task:
       id: b37ade68-25c6-45a4-85e7-249c77347bbc
-      version: 10
+      version: -1
       name: Is the organization using an enterprise WiFi solution with individual
         auth?
       issystemtask: true
@@ -1066,7 +1066,7 @@ tasks:
     type: regular
     task:
       id: 4893a678-7b19-4231-8fb0-0c7bf54d93b5
-      version: 10
+      version: -1
       name: Send a memo to users of the affected WiFi network(s) with new password
       description: Must be in a way that the thief will not see - a medium where the
         compromised account used on the device had already been locked, SMS after
@@ -1090,7 +1090,7 @@ tasks:
     type: regular
     task:
       id: b0ce366b-64a7-40bd-8fef-1f08371b084f
-      version: 10
+      version: -1
       name: Change the WiFi passwords for all networks accessible from the compromised
         device
       issystemtask: true
@@ -1112,7 +1112,7 @@ tasks:
     type: regular
     task:
       id: bdd320bd-25c0-474c-846b-c189391e8b8d
-      version: 10
+      version: -1
       name: Revoke WiFi credentials
       issystemtask: true
       iscommand: false
@@ -1133,7 +1133,7 @@ tasks:
     type: title
     task:
       id: cd286bd9-00a9-44e5-83b6-781f3e01c3ba
-      version: 10
+      version: -1
       name: Final steps
       issystemtask: true
       iscommand: false
@@ -1154,7 +1154,7 @@ tasks:
     type: regular
     task:
       id: efc412a5-a348-4072-8e8f-959e3aa3a482
-      version: 10
+      version: -1
       name: Check with owner if they were using a common password shared with other
         users
       description: |-
@@ -1180,7 +1180,7 @@ tasks:
     type: regular
     task:
       id: c2c42f58-b862-4443-8073-2b8b4c322f04
-      version: 10
+      version: -1
       name: Open a ticket for procurement to mark the device as stolen in ERP software
       issystemtask: true
       iscommand: false
@@ -1201,7 +1201,7 @@ tasks:
     type: regular
     task:
       id: 6bbe97d0-af99-43da-88be-ae84ec0c2267
-      version: 10
+      version: -1
       name: Open a ticket for new device to be supplied and provisioned by IT
       issystemtask: true
       iscommand: false
@@ -1222,7 +1222,7 @@ tasks:
     type: regular
     task:
       id: a5a8e072-2d12-46ad-8448-1c958924aa4d
-      version: 35
+      version: -1
       name: Issue report to CISO by email
       issystemtask: true
       iscommand: false
@@ -1236,12 +1236,19 @@ tasks:
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_15_yes": 0.63,
+      "16_20_#default#": 0.84,
+      "28_30_#default#": 0.71,
+      "30_33_#default#": 0.54,
+      "33_42_#default#": 0.73,
+      "5_7_#default#": 0.81
+    },
     "paper": {
       "dimensions": {
         "height": 9264,
-        "width": 1911,
-        "x": 1,
+        "width": 1912,
+        "x": 0,
         "y": 50
       }
     }

@@ -11,7 +11,7 @@ tasks:
     type: start
     task:
       id: 2380acff-abe1-46f1-8910-1aedfd2dd492
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -25,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 910,
           "y": 50
         }
       }
@@ -35,7 +35,7 @@ tasks:
     type: regular
     task:
       id: 3105f277-5117-4c1e-8ccd-ccdd178ca962
-      version: 1
+      version: -1
       name: Check MD5s
       script: crowdstrike-intel|||file
       type: regular
@@ -46,8 +46,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 195
         }
       }
   "3":
@@ -56,7 +56,7 @@ tasks:
     type: regular
     task:
       id: a47488ec-b99f-4b6c-8b1c-8237588a86b7
-      version: 1
+      version: -1
       name: Check SHA1s
       script: crowdstrike-intel|||file
       type: regular
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 893,
-          "y": 220
+          "x": 480,
+          "y": 195
         }
       }
   "4":
@@ -77,7 +77,7 @@ tasks:
     type: regular
     task:
       id: afbc5729-8165-4c29-8f54-7a5af5366906
-      version: 1
+      version: -1
       name: Check SHA256s
       script: crowdstrike-intel|||file
       type: regular
@@ -88,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -23,
-          "y": 220
+          "x": 910,
+          "y": 195
         }
       }
   "5":
@@ -98,7 +98,7 @@ tasks:
     type: regular
     task:
       id: 8aff31d4-dfea-40b2-8f14-e60dea0a9fc9
-      version: 1
+      version: -1
       name: Check IPs
       script: crowdstrike-intel|||ip
       type: regular
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -505,
-          "y": 220
+          "x": 1340,
+          "y": 195
         }
       }
   "6":
@@ -120,7 +120,7 @@ tasks:
     type: regular
     task:
       id: 462ebe6e-30b3-4856-8bec-0275247e7a5b
-      version: 1
+      version: -1
       name: Check URLs
       script: crowdstrike-intel|||url
       type: regular
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -988,
-          "y": 220
+          "x": 1770,
+          "y": 195
         }
       }
 view: |-
@@ -142,9 +142,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 265,
-        "width": 2261,
-        "x": -988,
+        "height": 240,
+        "width": 2100,
+        "x": 50,
         "y": 50
       }
     }
