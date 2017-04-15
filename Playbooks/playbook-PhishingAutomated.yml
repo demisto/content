@@ -26,7 +26,7 @@ tasks:
     type: start
     task:
       id: ea4fb28a-8a76-4708-80c2-28f936d8bf94
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -47,7 +47,7 @@ tasks:
     type: title
     task:
       id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
-      version: 9
+      version: -1
       name: Triage and Engage
       issystemtask: true
       type: title
@@ -69,7 +69,7 @@ tasks:
     type: regular
     task:
       id: 70ba7f7d-290c-4fe5-8e6f-4e6dcd0293c9
-      version: 1
+      version: -1
       name: Auto-respond to acknowledge receipt
       description: Send an auto-response to the target telling them we are on it
       scriptName: SendEmail
@@ -104,7 +104,7 @@ tasks:
     type: regular
     task:
       id: f52cc4d4-43c4-45d2-850f-238b67c27b83
-      version: 1
+      version: -1
       name: Parse attached email and override context
       description: Parse email attachment identified in the previous step and override
         the email context values
@@ -142,7 +142,7 @@ tasks:
     type: condition
     task:
       id: 075441ee-160d-4d67-8b58-6d0be4c35a01
-      version: 6
+      version: -1
       name: Does the email contain a textual body?
       scriptName: IsContextSet
       issystemtask: true
@@ -170,7 +170,7 @@ tasks:
     type: regular
     task:
       id: 1355953b-12b9-471b-8d5d-1d3241ca4bfb
-      version: 8
+      version: -1
       name: Extract IP Addresses from email body
       scriptName: IPExtract
       issystemtask: true
@@ -195,7 +195,7 @@ tasks:
     type: regular
     task:
       id: e0be23d6-55f9-4e3d-8d7c-537e17bf94c5
-      version: 8
+      version: -1
       name: Extract URLs from email body
       scriptName: URLExtract
       issystemtask: true
@@ -220,7 +220,7 @@ tasks:
     type: condition
     task:
       id: 91be5bd5-bd6b-45fa-8abb-3e1391bf51de
-      version: 6
+      version: -1
       name: Does the email contain an html body?
       scriptName: IsContextSet
       issystemtask: true
@@ -248,7 +248,7 @@ tasks:
     type: regular
     task:
       id: f64cf64f-d5f7-4034-8de4-9b7409273fd0
-      version: 6
+      version: -1
       name: Extract IP Addresses from email html body
       scriptName: IPExtract
       issystemtask: true
@@ -273,7 +273,7 @@ tasks:
     type: regular
     task:
       id: eac3a531-7105-4538-8dee-738f845bca9e
-      version: 6
+      version: -1
       name: Extract URLs from email html body
       scriptName: URLExtract
       issystemtask: true
@@ -298,7 +298,7 @@ tasks:
     type: condition
     task:
       id: 737f900f-689d-4ef8-8695-6dfcb5638226
-      version: 8
+      version: -1
       name: Have the email headers been provided?
       scriptName: IsContextSet
       issystemtask: true
@@ -326,7 +326,7 @@ tasks:
     type: regular
     task:
       id: 73cd5f19-4e5d-48c5-87ea-49ca719063fc
-      version: 8
+      version: -1
       name: URLExtract from headers
       description: Extract URLs from the headers
       scriptName: URLExtract
@@ -352,7 +352,7 @@ tasks:
     type: regular
     task:
       id: 433d9980-233d-4bae-80b1-b12ca3855feb
-      version: 8
+      version: -1
       name: IPExtract from headers
       description: Extract URLs from the headers
       scriptName: IPExtract
@@ -378,7 +378,7 @@ tasks:
     type: condition
     task:
       id: 9dedceb6-b38b-4328-8003-2a5edcce0f26
-      version: 8
+      version: -1
       name: Do we have known bad URLs?
       description: Check if we have known bad URLs
       scriptName: CheckURLs
@@ -408,7 +408,7 @@ tasks:
     type: condition
     task:
       id: 08521ef5-dedb-40d7-8630-01e76fd9659f
-      version: 8
+      version: -1
       name: Check if we have known bad IPs
       scriptName: CheckIPs
       issystemtask: true
@@ -437,7 +437,7 @@ tasks:
     type: condition
     task:
       id: a1f2c1a5-457d-44f6-8882-25215e3f102b
-      version: 8
+      version: -1
       name: Are any file hashes in the incident known as malicious?
       description: Iterate on all attachments and check hash reputation
       scriptName: BinaryReputationPy
@@ -465,7 +465,7 @@ tasks:
     type: regular
     task:
       id: 81604b20-c718-4fdf-8cd1-87dcf892edfc
-      version: 1
+      version: -1
       name: Detonate the file in a sandbox
       description: This task will use all the available sandboxes. It supports Cuckoo,
         Wildfire and FireEye.
@@ -494,7 +494,7 @@ tasks:
     type: condition
     task:
       id: c752c128-ee8f-4f94-877a-39bdb10a7d40
-      version: 8
+      version: -1
       name: Is the attachment malicious according to Sandbox report?
       issystemtask: true
       type: condition
@@ -520,7 +520,7 @@ tasks:
     type: title
     task:
       id: 4440a41f-7d53-4a52-86bb-85b49b6722b4
-      version: 8
+      version: -1
       name: 'Manual Investigation Step 1: Initial Inspection'
       issystemtask: true
       type: title
@@ -542,7 +542,7 @@ tasks:
     type: regular
     task:
       id: 24b22999-3ec2-4455-87b3-552d2a330f9f
-      version: 8
+      version: -1
       name: Check sender domain distance
       description: Check if the sender is trying to confuse the user with a domain
         that is very close to one of our own email domains
@@ -570,7 +570,7 @@ tasks:
     type: regular
     task:
       id: 5778ac35-8936-4170-8cf6-8cc09c98a300
-      version: 9
+      version: -1
       name: Manually inspect the email for anything suspicious
       description: Since automatic triage did not find anything wrong, please inspect
         it manually and see if something stands out
@@ -594,7 +594,7 @@ tasks:
     type: regular
     task:
       id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
-      version: 18
+      version: -18
       name: Assign and involve appropriate personnel
       description: 'Invite the relevant users for investigation - malware expert and
         network experts if needed. '
@@ -618,7 +618,7 @@ tasks:
     type: regular
     task:
       id: e76cfd73-35f3-4065-8e59-c37e365cd06c
-      version: 18
+      version: -18
       name: Assess severity
       description: 'Based on the end user affected, and other information assess and
         change the severity if needed. '
@@ -642,7 +642,7 @@ tasks:
     type: title
     task:
       id: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
-      version: 8
+      version: -1
       name: 'Manual Investigation Step 2: Deeper Inspection'
       issystemtask: true
       type: title
@@ -664,7 +664,7 @@ tasks:
     type: condition
     task:
       id: cceb5cd4-a661-434d-87d8-24b9988877c4
-      version: 9
+      version: -1
       name: Check if the hostname in urls is being misrepresented?
       description: |-
         See if the URL text versus the hostname shown are different by hovering
@@ -692,7 +692,7 @@ tasks:
     type: condition
     task:
       id: 2b253833-7a26-45a6-8683-5a65f318c3b1
-      version: 8
+      version: -1
       name: Is Pipl integration available?
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -721,7 +721,7 @@ tasks:
     type: regular
     task:
       id: 8f82336f-6ff8-4440-8a51-8c66d67b03a6
-      version: 8
+      version: -1
       name: Look up sender email address in Pipl
       scriptName: CheckSender
       issystemtask: true
@@ -746,7 +746,7 @@ tasks:
     type: condition
     task:
       id: 5ec6d252-8985-44f8-84d8-8c038d0b3b80
-      version: 9
+      version: -1
       name: Is the sender name or email address identified as bad by threat feeds?
       description: 'Check the sender email and name against threat feed sources. '
       issystemtask: true
@@ -774,7 +774,7 @@ tasks:
     type: title
     task:
       id: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
-      version: 8
+      version: -1
       name: Response
       issystemtask: true
       type: title
@@ -799,7 +799,7 @@ tasks:
     type: regular
     task:
       id: 0b1ba0a2-27cd-48f1-8e70-336942c43e64
-      version: 8
+      version: -1
       name: Send email to user notifying them this email is safe
       scriptName: SendEmail
       issystemtask: true
@@ -832,7 +832,7 @@ tasks:
     type: regular
     task:
       id: b93906e8-2d73-4f04-8c96-cf50eeaa2ec7
-      version: 8
+      version: -1
       name: Close the phishing investigation
       scriptName: CloseInvestigation
       issystemtask: true
@@ -856,7 +856,7 @@ tasks:
     type: regular
     task:
       id: 2e583a63-f01a-4cc2-8aed-4872a41d6334
-      version: 8
+      version: -1
       name: Send email to user notifying them it's a malicious email
       scriptName: SendEmail
       issystemtask: true
@@ -890,7 +890,7 @@ tasks:
     type: condition
     task:
       id: 08c684e8-65b9-4461-8eea-64991f25efef
-      version: 6
+      version: -1
       name: 'Is Mimecast integration available '
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -919,7 +919,7 @@ tasks:
     type: regular
     task:
       id: b97c18b9-ee11-4e6b-82cd-a730863ea41b
-      version: 6
+      version: -1
       name: Get full list of all mailboxes from Exchange server
       scriptName: ADGetEmailForAllUsers
       issystemtask: true
@@ -942,7 +942,7 @@ tasks:
     type: regular
     task:
       id: b0cfd859-df25-4f7b-8e3d-0de46787bc4f
-      version: 6
+      version: -1
       name: Find all mailboxes containing the malicious email using Mimecast
       scriptName: MimecastFindEmail
       issystemtask: true
@@ -981,7 +981,7 @@ tasks:
     type: regular
     task:
       id: 2222e6a2-3a96-431d-8146-98dca313551f
-      version: 6
+      version: -1
       name: Search all mailboxes to find instances of the email
       scriptName: ExchangeSearch
       issystemtask: true
@@ -1012,7 +1012,7 @@ tasks:
     type: condition
     task:
       id: bd4ad1c9-8f76-424f-8292-ce7ea17ff16b
-      version: 6
+      version: -1
       name: Were any emails found on server?
       scriptName: IsContextSet
       issystemtask: true
@@ -1040,7 +1040,7 @@ tasks:
     type: condition
     task:
       id: 952c4981-c88c-475e-8ec3-5f4445256bb1
-      version: 6
+      version: -1
       name: Review found emails and decide whether to go ahead with automatic delete
       issystemtask: true
       type: condition
@@ -1064,7 +1064,7 @@ tasks:
     type: regular
     task:
       id: 370383b4-f933-48fe-8a51-ed24db1b81fe
-      version: 6
+      version: -1
       name: Delete the emails from mailboxes manually
       issystemtask: true
       type: regular
@@ -1086,7 +1086,7 @@ tasks:
     type: regular
     task:
       id: e58b34a6-42f7-48ae-8560-55c9ef407079
-      version: 6
+      version: -1
       name: Delete the instances of the email from Exchange server
       description: "Deleting the infected mails' IDs, useing EWS\nMail IDs are saved
         in context in \"ExchangeItemIDs\" "
@@ -1118,7 +1118,7 @@ tasks:
     type: condition
     task:
       id: 3134f6ad-9de9-4f84-8ccf-d8c8d5ca9dd4
-      version: 8
+      version: -1
       name: Did we find an attachment inside the email and extract its hash?
       scriptName: IsContextSet
       issystemtask: true
@@ -1144,7 +1144,7 @@ tasks:
     type: condition
     task:
       id: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
-      version: 17
+      version: -17
       name: Is Carbon Black Protection (Bit9) Available?
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -1173,7 +1173,7 @@ tasks:
     type: regular
     task:
       id: 24d70a61-8809-48db-878a-428fb81c0bb8
-      version: 8
+      version: -1
       name: Search attachment hash in the Bit9 file catalog
       scriptName: CBPCatalogFindHash
       issystemtask: true
@@ -1198,7 +1198,7 @@ tasks:
     type: regular
     task:
       id: 8b223b77-bcc4-463c-8108-65ab696d9b9f
-      version: 8
+      version: -1
       name: Check if the attachment hash is included in any Bit9 rules
       scriptName: CBPFindRule
       issystemtask: true
@@ -1223,7 +1223,7 @@ tasks:
     type: regular
     task:
       id: fde5176a-66b8-4fb8-8147-f04d174e9c66
-      version: 8
+      version: -1
       name: Review Bit9 results
       issystemtask: true
       type: regular
@@ -1245,7 +1245,7 @@ tasks:
     type: condition
     task:
       id: 6a229223-43ef-4e76-8a7e-2b6003f5bbf0
-      version: 8
+      version: -1
       name: Is Carbon Black Response available?
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -1274,7 +1274,7 @@ tasks:
     type: regular
     task:
       id: aa29ff50-2115-4041-88aa-2995a294f18e
-      version: 8
+      version: -1
       name: Search attachments using Carbon Black
       scriptName: BinarySearchPy
       issystemtask: true
@@ -1299,7 +1299,7 @@ tasks:
     type: condition
     task:
       id: 98e77c76-f6c6-4a85-8f01-902d9f0c0354
-      version: 8
+      version: -1
       name: Did Carbon Black find the attachment on any endpoints?
       description: If someone saved or executed the malicious attachment, we need
         to investigate further
@@ -1330,7 +1330,7 @@ tasks:
     type: regular
     task:
       id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-      version: 16
+      version: -16
       name: Investigate further
       description: Investigate the results of the execution
       issystemtask: true
@@ -1353,7 +1353,7 @@ tasks:
     type: condition
     task:
       id: 3aa9da87-5b96-4fd6-8c5a-89df2bd4de6c
-      version: 8
+      version: -1
       name: Is CrowdStrike Falcon Host available?
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -1380,7 +1380,7 @@ tasks:
     type: regular
     task:
       id: 02fc676f-d98b-4b2a-8052-75a61a96faa7
-      version: 8
+      version: -1
       name: Search for the attachment using CrowdStrike
       scriptName: CSHuntByIOC
       issystemtask: true
@@ -1408,7 +1408,7 @@ tasks:
     type: condition
     task:
       id: 715d5f70-d6a5-4322-8c37-c77bdbeab9f4
-      version: 8
+      version: -1
       name: Did CrowdStrike locate the IOC on any devices?
       scriptName: IsContextSet
       issystemtask: true
@@ -1434,7 +1434,7 @@ tasks:
     type: regular
     task:
       id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-      version: 16
+      version: -16
       name: Investigate further
       description: Investigate the results of the execution
       issystemtask: true
@@ -1454,7 +1454,7 @@ tasks:
     type: regular
     task:
       id: 25920975-3f5e-4511-8a52-edc9a12b8db7
-      version: 1
+      version: -1
       name: Identify email attachments
       scriptName: IdentifyAttachedEmailNew
       type: regular
@@ -1479,7 +1479,7 @@ tasks:
     type: condition
     task:
       id: 95240940-a309-4666-8c05-5a7f55159372
-      version: 1
+      version: -1
       name: Do we have an email attachment?
       scriptName: IsContextSet
       type: condition
@@ -1506,7 +1506,7 @@ tasks:
     type: regular
     task:
       id: 4925f066-d507-42e1-84bf-660de5d63953
-      version: 1
+      version: -1
       name: Copy incident details to context
       scriptName: IncidentToContext
       type: regular
@@ -1560,7 +1560,7 @@ tasks:
     type: title
     task:
       id: 75e0739e-4f37-4859-8ae2-857be0d57d6c
-      version: 1
+      version: -1
       name: Extract indicators
       type: title
       iscommand: false
@@ -1583,7 +1583,7 @@ tasks:
     type: title
     task:
       id: 03606952-f504-44b2-8371-5a548e395048
-      version: 1
+      version: -1
       name: Check indicators
       type: title
       iscommand: false

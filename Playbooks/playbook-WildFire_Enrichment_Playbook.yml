@@ -11,7 +11,7 @@ tasks:
     type: start
     task:
       id: 2380acff-abe1-46f1-8910-1aedfd2dd492
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
-          "y": 63
+          "x": 480,
+          "y": 50
         }
       }
   "2":
@@ -33,7 +33,7 @@ tasks:
     type: regular
     task:
       id: 83da4a35-e4c1-4629-8594-8f3233976205
-      version: 1
+      version: -1
       name: Check MD5s
       script: wildfire|||file
       type: regular
@@ -44,8 +44,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
-          "y": 220
+          "x": 50,
+          "y": 195
         }
       }
   "3":
@@ -54,7 +54,7 @@ tasks:
     type: regular
     task:
       id: d265b63a-1a68-4c58-8c7d-3b3098ba653b
-      version: 1
+      version: -1
       name: Check SHA1s
       script: wildfire|||file
       type: regular
@@ -65,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 893,
-          "y": 220
+          "x": 480,
+          "y": 195
         }
       }
   "4":
@@ -75,7 +75,7 @@ tasks:
     type: regular
     task:
       id: 46461602-d6b8-4d91-870a-525f805859d4
-      version: 1
+      version: -1
       name: Check SHA256s
       script: wildfire|||file
       type: regular
@@ -86,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -23,
-          "y": 220
+          "x": 910,
+          "y": 195
         }
       }
 view: |-
@@ -95,10 +95,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 252,
-        "width": 1296,
-        "x": -23,
-        "y": 63
+        "height": 240,
+        "width": 1240,
+        "x": 50,
+        "y": 50
       }
     }
   }

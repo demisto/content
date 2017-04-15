@@ -13,7 +13,7 @@ tasks:
     type: start
     task:
       id: ee018e04-2610-4998-87d0-f5217127bbad
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -34,14 +34,13 @@ tasks:
     type: regular
     task:
       id: 6c75c302-02bc-43b0-88e1-fb97706eaef6
-      version: 1
+      version: -1
       name: Determine list of repositories to check
       description: |-
         Determine which EPO servers to check (configured as instances under Demisto Settings).
         Sets the eporepos context item to a comma-separated list of instance names exactly as they appearin Settings.
         This can be filled manually or set to a constant value in the playbook such as corp1,dev1,test2
       scriptName: Set
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -64,10 +63,9 @@ tasks:
     type: regular
     task:
       id: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
-      version: 6
+      version: -1
       name: Retrieve DAT version and date from McAfee
       scriptName: EPOCheckLatestDAT
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -89,10 +87,9 @@ tasks:
     type: condition
     task:
       id: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
-      version: 6
+      version: -1
       name: Are any local repositories using older DATs?
       scriptName: EPORepositoryComplianceCheck
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -123,10 +120,9 @@ tasks:
     type: regular
     task:
       id: 18ab6c23-eb90-4f0f-817c-6318dc746338
-      version: 6
+      version: -1
       name: Initiate update task in each local repository
       scriptName: EPOUpdateRepository
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -151,10 +147,9 @@ tasks:
     type: regular
     task:
       id: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
-      version: 6
+      version: -1
       name: Send report to admin with update results
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -182,10 +177,9 @@ tasks:
     type: condition
     task:
       id: c064dd4b-1407-4f65-82af-00f3ba8e57e0
-      version: 6
+      version: -1
       name: Are any repositories faulty and may not be updating correctly?
       scriptName: UtilAnyResults
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -209,10 +203,9 @@ tasks:
     type: regular
     task:
       id: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
-      version: 6
+      version: -1
       name: Send email alert with list of faulty repositories to admin
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -240,10 +233,9 @@ tasks:
     type: regular
     task:
       id: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
-      version: 6
+      version: -1
       name: Display list of AV related tickets from ServiceNow
       scriptName: SNListTickets
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -266,10 +258,9 @@ tasks:
     type: regular
     task:
       id: f9ee1f48-bc46-465b-84c2-6e717f732ba8
-      version: 6
+      version: -1
       name: Send audit report to administrator with list of servers and their results
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -297,10 +288,9 @@ tasks:
     type: regular
     task:
       id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
-      version: 6
+      version: -1
       name: Close the investigation
       scriptName: CloseInvestigation
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -316,7 +306,9 @@ tasks:
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_8_#default#": 0.63
+    },
     "paper": {
       "dimensions": {
         "height": 1862,

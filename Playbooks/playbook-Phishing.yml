@@ -12,7 +12,7 @@ tasks:
     type: start
     task:
       id: 42767ebd-7fcd-4525-859f-be9d16a8517c
-      version: 1
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -33,9 +33,9 @@ tasks:
     type: title
     task:
       id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
-      version: 52
+      version: -1
       name: Engage
-      issystemtask: true
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
@@ -54,10 +54,9 @@ tasks:
     type: regular
     task:
       id: d69a6289-b692-404c-8f90-d37d72aa265c
-      version: 41
+      version: -1
       name: Notify management chain
       description: 'Notify appropriate people inside the organization. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -76,11 +75,10 @@ tasks:
     type: regular
     task:
       id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
-      version: 41
+      version: -1
       name: Initial triage
       description: 1. Make sure that there is relevant information in the incident
         - system name, end user name and initial severity as reported.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -99,9 +97,8 @@ tasks:
     type: title
     task:
       id: b7f2e51f-a39f-4cba-881d-e7efbef2553e
-      version: 29
+      version: -1
       name: 'Investigation Step 1: Initial Inspection'
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -120,11 +117,10 @@ tasks:
     type: regular
     task:
       id: 30e833d0-8336-4ecd-8a36-a997ac1bb100
-      version: 29
+      version: -1
       name: Inspect the email body for malicious URLs
       description: Check the email body attached to the incident and see if it has
         malicious URLs in it using threat feeds
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -143,11 +139,10 @@ tasks:
     type: regular
     task:
       id: 0aba5f0e-c71f-4a1f-8f7a-993f727e3825
-      version: 29
+      version: -1
       name: Inspect the email attachments
       description: Check the attachments with threat services to see if any of them
         is known bad
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -166,10 +161,9 @@ tasks:
     type: regular
     task:
       id: fa90abdd-2ec1-490b-8a9e-2acc6f2f721d
-      version: 29
+      version: -1
       name: Is the sender name or email address identified as bad by threat feeds?
       description: Check the sender email and name against threat feed sources.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -188,12 +182,11 @@ tasks:
     type: regular
     task:
       id: d9fad845-7f5b-4c79-8835-2e8358c84e04
-      version: 29
+      version: -1
       name: Check if the hostname is being misrepresented?
       description: |-
         Check if domain of sender or any hostname in the URLs inside the email body are misrepresented. See if the URL text versus the hostname shown are different by comparing the link with the text. Also carefully inspected the URLs for spelling spoofing which
          is typically a sign of phishing email.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -212,10 +205,9 @@ tasks:
     type: condition
     task:
       id: 5d36d65b-d63f-40b7-8167-2a341e9bed62
-      version: 29
+      version: -1
       name: Is this a real phishing email?
       description: Based on the steps above, is this really a phishing email?
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -236,11 +228,10 @@ tasks:
     type: regular
     task:
       id: b37377be-5c13-41f5-8635-69ea34571af7
-      version: 29
+      version: -1
       name: Close the investigation as false positive
       description: Close the investigation as false positive and reply to the user
         sending the email that it is not malicious.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -249,8 +240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1885
+          "x": 278,
+          "y": 1909
         }
       }
   "12":
@@ -259,11 +250,11 @@ tasks:
     type: regular
     task:
       id: e76cfd73-35f3-4065-8e59-c37e365cd06c
-      version: 58
+      version: -1
       name: Assess severity
       description: 'Based on the end user affected, and other information assess and
         change the severity if needed. '
-      issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -282,11 +273,11 @@ tasks:
     type: regular
     task:
       id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
-      version: 58
+      version: -1
       name: Assign and involve appropriate personnel
       description: 'Invite the relevant users for investigation - malware expert and
         network experts if needed. '
-      issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -296,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1885
+          "y": 1909
         }
       }
   "14":
@@ -305,9 +296,8 @@ tasks:
     type: title
     task:
       id: eb2b0d5a-cc72-4640-8116-85750701ae1d
-      version: 29
+      version: -1
       name: 'Investigation Step 2: Deeper Analysis'
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -317,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2060
+          "y": 2070
         }
       }
   "15":
@@ -326,9 +316,8 @@ tasks:
     type: regular
     task:
       id: 92ae3779-12c5-4a24-827e-56e413088b80
-      version: 29
+      version: -1
       name: Get all the URLs from the email
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -347,9 +336,8 @@ tasks:
     type: regular
     task:
       id: 13e0228e-ad6a-4148-8aa6-55e8143a4620
-      version: 29
+      version: -1
       name: Get all the hostnames inside the email
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -368,11 +356,10 @@ tasks:
     type: regular
     task:
       id: 05855c19-9221-478d-8c83-4145aa2cff16
-      version: 29
+      version: -1
       name: Fetch all the files from the URL
       description: 'Use curl or similar tool to download all the files from the URLs
         in the email. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -391,10 +378,9 @@ tasks:
     type: condition
     task:
       id: 010895a1-9f86-4106-8e56-8f6889d5e228
-      version: 29
+      version: -1
       name: Are the files download malicious - hash inspection?
       description: Check the files MD5 and SHA1 against the threat feed databases.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -415,10 +401,9 @@ tasks:
     type: condition
     task:
       id: 2580b31a-6c04-45b1-8752-959f66084ae3
-      version: 29
+      version: -1
       name: Are the files download malicious - static and dynamic analysis?
       description: Check the files in a sandbox solution to see if they are malicious.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -439,11 +424,10 @@ tasks:
     type: condition
     task:
       id: 24063b39-4c30-4ef2-8e7c-36081b45faaa
-      version: 29
+      version: -1
       name: Is any URL malicious based on sandbox inspection?
       description: 'Use Cuckoo or similar sandbox solutions for fetching the content
         of the URL for deeper analysis. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -464,9 +448,8 @@ tasks:
     type: regular
     task:
       id: 9c572188-54b5-4d56-8e62-95ee93e3a157
-      version: 29
+      version: -1
       name: Consider this email as phishing and move to "Response Section"
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -485,9 +468,8 @@ tasks:
     type: regular
     task:
       id: email_phishing
-      version: 29
+      version: -1
       name: Consider this email as phishing and move to "Response Section"
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -506,9 +488,8 @@ tasks:
     type: regular
     task:
       id: ff551c65-6d74-460d-8e4d-4a5a84517e9b
-      version: 29
+      version: -1
       name: Consider this email as phishing and move to "Response Section"
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -527,9 +508,8 @@ tasks:
     type: title
     task:
       id: 3b29ac0a-190d-46bf-80cf-dbc1197d2f80
-      version: 29
+      version: -1
       name: 'Investigation Step 3: Is it a Campaign?'
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -548,11 +528,10 @@ tasks:
     type: condition
     task:
       id: 78cc334d-fe36-4cb0-8e63-dbb571077edc
-      version: 29
+      version: -1
       name: Did we have a similar phishing email earlier?
       description: Search past phishing investigations for subject sender, email content
         and URLs.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -573,9 +552,8 @@ tasks:
     type: regular
     task:
       id: ec15c113-29a0-4ab5-85fc-3fc1fbe85a70
-      version: 29
+      version: -1
       name: Mark this as a campaign rather than isolated incident.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -594,11 +572,10 @@ tasks:
     type: regular
     task:
       id: e3710c0f-861d-4a9a-8e89-3488f572d74e
-      version: 29
+      version: -1
       name: Link old and new incidents to this master incident.
       description: Future emails with similar subject should be associated with this
         incident
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -617,9 +594,8 @@ tasks:
     type: title
     task:
       id: 0386fa2c-a246-4dd9-8592-976b630148fc
-      version: 29
+      version: -1
       name: Respond
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -638,12 +614,11 @@ tasks:
     type: regular
     task:
       id: faf506e6-c1bd-49ee-8348-bdb258984785
-      version: 29
+      version: -1
       name: Notify internal PR team if this is a campaign
       description: 'If we identified multiple emails with similar content, subject
         and identified this as a campaign, we need to notify our users. Send an email
         to internal communications team with the details - like sender, content etc. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -662,14 +637,13 @@ tasks:
     type: regular
     task:
       id: a0b42339-fa44-4215-8fdd-8dc900011dd8
-      version: 29
+      version: -1
       name: Block email on the server
       description: |-
         Identify the appropriate headers from the initial email beyond subject
          and sender email to make sure we can effectively block this on server. This
          task needs analysis of header to make sure we do not block other emails and
          still be effective in blocking.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -688,11 +662,10 @@ tasks:
     type: regular
     task:
       id: e93a15aa-1c5d-46ff-813c-b1f6eed114f3
-      version: 29
+      version: -1
       name: Notify IT to update SPAM filters
       description: 'Give IT the phishing email so that they can train the SPAM filter
         with this email to avoid future attacks. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -711,12 +684,11 @@ tasks:
     type: regular
     task:
       id: f487ba1c-d67b-40f2-8cf8-85f646b0d768
-      version: 29
+      version: -1
       name: Notify email security vendor
       description: |-
         Forward all the details to your security vendor for email security
          solution. This will help them with the future updates.
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -735,12 +707,11 @@ tasks:
     type: regular
     task:
       id: 1b6d8f94-452c-43b2-8606-da89d3f738c8
-      version: 29
+      version: -1
       name: Remove email from inboxes
       description: 'Work with IT to completely delete similar emails from all user
         inboxes. Search through the SMTP logs to find all the recipients and delete
         the emails. '
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -759,13 +730,12 @@ tasks:
     type: regular
     task:
       id: c47f9b5a-cba2-4b2c-89ca-0c1003e9c295
-      version: 29
+      version: -1
       name: Blackholing phishing domain on Domain Controller
       description: |-
         Work with IT to black hole the phishing domains (this particular
          and related ones from other emails and incidents that were marked duplicate).
          This should be blocked on the domain controller by resolving to 127.0.0.1
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -784,13 +754,12 @@ tasks:
     type: regular
     task:
       id: b3e805e2-2566-4f28-884d-dcc8a8fe3573
-      version: 29
+      version: -1
       name: Blocking download URL
       description: |2-
          1. Try to identify a pattern in the URL. For example if the URL is: http://hackedwebsite.com/dl.php?campaign=ra&id=12731342834923919
          2. Create a reasonable regex like: ^.+/dl.php?.*campaign=ra.$
          3. Contact the proxy team to block URLs based on the pattern
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -809,11 +778,10 @@ tasks:
     type: regular
     task:
       id: ffa62d59-1b44-4305-8324-3cc29f4585ff
-      version: 29
+      version: -1
       name: Report malware sample to AV vendors
       description: Report all the files that were downloaded from URL to AV vendor
         and virustotal like services.
-      issystemtask: true
       iscommand: false
       brand: ""
     view: |-
