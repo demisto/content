@@ -49,7 +49,6 @@ tasks:
       id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
       version: -1
       name: Triage and Engage
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -73,7 +72,6 @@ tasks:
       name: Auto-respond to acknowledge receipt
       description: Send an auto-response to the target telling them we are on it
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -109,7 +107,6 @@ tasks:
       description: Parse email attachment identified in the previous step and override
         the email context values
       scriptName: ParseEmailFile
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -145,7 +142,6 @@ tasks:
       version: -1
       name: Does the email contain a textual body?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -160,7 +156,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1676.5,
           "y": 1185
         }
       }
@@ -173,7 +169,6 @@ tasks:
       version: -1
       name: Extract IP Addresses from email body
       scriptName: IPExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -185,8 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1267.5,
-          "y": 1360
+          "x": 1854.5,
+          "y": 1385
         }
       }
   "11":
@@ -198,7 +193,6 @@ tasks:
       version: -1
       name: Extract URLs from email body
       scriptName: URLExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -210,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1267.5,
-          "y": 1535
+          "x": 1854.5,
+          "y": 1669
         }
       }
   "12":
@@ -223,7 +217,6 @@ tasks:
       version: -1
       name: Does the email contain an html body?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -251,7 +244,6 @@ tasks:
       version: -1
       name: Extract IP Addresses from email html body
       scriptName: IPExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -263,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 1360
+          "x": 655,
+          "y": 1385
         }
       }
   "14":
@@ -276,7 +268,6 @@ tasks:
       version: -1
       name: Extract URLs from email html body
       scriptName: URLExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -288,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 1535
+          "x": 655,
+          "y": 1669
         }
       }
   "15":
@@ -301,7 +292,6 @@ tasks:
       version: -1
       name: Have the email headers been provided?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -316,7 +306,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 175,
           "y": 1185
         }
       }
@@ -330,7 +320,6 @@ tasks:
       name: URLExtract from headers
       description: Extract URLs from the headers
       scriptName: URLExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -342,8 +331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 1360
+          "x": -42,
+          "y": 1385
         }
       }
   "17":
@@ -356,7 +345,6 @@ tasks:
       name: IPExtract from headers
       description: Extract URLs from the headers
       scriptName: IPExtract
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -368,8 +356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 1535
+          "x": -42,
+          "y": 1669
         }
       }
   "18":
@@ -382,7 +370,6 @@ tasks:
       name: Do we have known bad URLs?
       description: Check if we have known bad URLs
       scriptName: CheckURLs
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -398,8 +385,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1855
+          "x": -42,
+          "y": 2131
         }
       }
   "19":
@@ -411,7 +398,6 @@ tasks:
       version: -1
       name: Check if we have known bad IPs
       scriptName: CheckIPs
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -427,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1855
+          "x": 1854.5,
+          "y": 2121
         }
       }
   "20":
@@ -441,7 +427,6 @@ tasks:
       name: Are any file hashes in the incident known as malicious?
       description: Iterate on all attachments and check hash reputation
       scriptName: BinaryReputationPy
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -455,8 +440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1855
+          "x": 930,
+          "y": 2131
         }
       }
   "22":
@@ -470,7 +455,6 @@ tasks:
       description: This task will use all the available sandboxes. It supports Cuckoo,
         Wildfire and FireEye.
       scriptName: SandboxDetonateFile
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -484,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2030
+          "x": 569,
+          "y": 2413
         }
       }
   "23":
@@ -496,7 +480,6 @@ tasks:
       id: c752c128-ee8f-4f94-877a-39bdb10a7d40
       version: -1
       name: Is the attachment malicious according to Sandbox report?
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -510,8 +493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 2205
+          "x": 569,
+          "y": 2616
         }
       }
   "28":
@@ -522,7 +505,6 @@ tasks:
       id: 4440a41f-7d53-4a52-86bb-85b49b6722b4
       version: -1
       name: 'Manual Investigation Step 1: Initial Inspection'
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -533,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 2380
+          "y": 2853
         }
       }
   "30":
@@ -547,7 +529,6 @@ tasks:
       description: Check if the sender is trying to confuse the user with a domain
         that is very close to one of our own email domains
       scriptName: CheckSenderDomainDistance
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -561,7 +542,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 2525
+          "y": 3018
         }
       }
   "31":
@@ -574,7 +555,6 @@ tasks:
       name: Manually inspect the email for anything suspicious
       description: Since automatic triage did not find anything wrong, please inspect
         it manually and see if something stands out
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -585,7 +565,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 2700
+          "y": 3248
         }
       }
   "32":
@@ -594,11 +574,10 @@ tasks:
     type: regular
     task:
       id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
-      version: -18
+      version: -1
       name: Assign and involve appropriate personnel
       description: 'Invite the relevant users for investigation - malware expert and
         network experts if needed. '
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -609,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 2875
+          "y": 3474
         }
       }
   "33":
@@ -618,11 +597,10 @@ tasks:
     type: regular
     task:
       id: e76cfd73-35f3-4065-8e59-c37e365cd06c
-      version: -18
+      version: -1
       name: Assess severity
       description: 'Based on the end user affected, and other information assess and
         change the severity if needed. '
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -633,7 +611,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 3050
+          "y": 3711
         }
       }
   "34":
@@ -644,7 +622,6 @@ tasks:
       id: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
       version: -1
       name: 'Manual Investigation Step 2: Deeper Inspection'
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -655,7 +632,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 3225
+          "y": 3916
         }
       }
   "36":
@@ -670,7 +647,6 @@ tasks:
         See if the URL text versus the hostname shown are different by hovering
          over the link. Also carefully inspected the URL for spelling spoofing which
          is typically a sign of phishing email.
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -683,7 +659,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 3370
+          "y": 4079
         }
       }
   "37":
@@ -695,7 +671,6 @@ tasks:
       version: -1
       name: Is Pipl integration available?
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -711,8 +686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3545
+          "x": 129,
+          "y": 4400
         }
       }
   "38":
@@ -724,7 +699,6 @@ tasks:
       version: -1
       name: Look up sender email address in Pipl
       scriptName: CheckSender
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -736,8 +710,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3720
+          "x": -205,
+          "y": 4563
         }
       }
   "39":
@@ -749,7 +723,6 @@ tasks:
       version: -1
       name: Is the sender name or email address identified as bad by threat feeds?
       description: 'Check the sender email and name against threat feed sources. '
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -764,8 +737,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3895
+          "x": 129,
+          "y": 4737
         }
       }
   "42":
@@ -776,7 +749,6 @@ tasks:
       id: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
       version: -1
       name: Response
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -789,8 +761,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4085
+          "x": 1181,
+          "y": 4903
         }
       }
   "44":
@@ -802,7 +774,6 @@ tasks:
       version: -1
       name: Send email to user notifying them this email is safe
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -822,8 +793,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 4070
+          "x": 129,
+          "y": 5080
         }
       }
   "45":
@@ -835,7 +806,6 @@ tasks:
       version: -1
       name: Close the phishing investigation
       scriptName: CloseInvestigation
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -846,8 +816,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 4245
+          "x": 129,
+          "y": 5313
         }
       }
   "46":
@@ -859,7 +829,6 @@ tasks:
       version: -1
       name: Send email to user notifying them it's a malicious email
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -880,8 +849,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4245
+          "x": 1181,
+          "y": 5080
         }
       }
   "47":
@@ -893,7 +862,6 @@ tasks:
       version: -1
       name: 'Is Mimecast integration available '
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -909,8 +877,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4420
+          "x": 1181,
+          "y": 5313
         }
       }
   "48":
@@ -922,7 +890,6 @@ tasks:
       version: -1
       name: Get full list of all mailboxes from Exchange server
       scriptName: ADGetEmailForAllUsers
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -932,8 +899,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 4595
+          "x": 1463,
+          "y": 5498
         }
       }
   "49":
@@ -945,7 +912,6 @@ tasks:
       version: -1
       name: Find all mailboxes containing the malicious email using Mimecast
       scriptName: MimecastFindEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -971,8 +937,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 4595
+          "x": 887,
+          "y": 5498
         }
       }
   "50":
@@ -984,7 +950,6 @@ tasks:
       version: -1
       name: Search all mailboxes to find instances of the email
       scriptName: ExchangeSearch
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1002,8 +967,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4770
+          "x": 1181,
+          "y": 5684
         }
       }
   "51":
@@ -1015,7 +980,6 @@ tasks:
       version: -1
       name: Were any emails found on server?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1030,8 +994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4945
+          "x": 1181,
+          "y": 5914
         }
       }
   "52":
@@ -1042,7 +1006,6 @@ tasks:
       id: 952c4981-c88c-475e-8ec3-5f4445256bb1
       version: -1
       name: Review found emails and decide whether to go ahead with automatic delete
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1054,8 +1017,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 5120
+          "x": 695,
+          "y": 6081
         }
       }
   "53":
@@ -1066,7 +1029,6 @@ tasks:
       id: 370383b4-f933-48fe-8a51-ed24db1b81fe
       version: -1
       name: Delete the emails from mailboxes manually
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1076,8 +1038,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
-          "y": 5295
+          "x": 930,
+          "y": 6258
         }
       }
   "54":
@@ -1091,7 +1053,6 @@ tasks:
       description: "Deleting the infected mails' IDs, useing EWS\nMail IDs are saved
         in context in \"ExchangeItemIDs\" "
       scriptName: ExchangeDeleteIDsFromContext
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1108,8 +1069,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 5295
+          "x": 467,
+          "y": 6258
         }
       }
   "55":
@@ -1121,7 +1082,6 @@ tasks:
       version: -1
       name: Did we find an attachment inside the email and extract its hash?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1134,8 +1094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 5470
+          "x": 1181,
+          "y": 6512
         }
       }
   "56":
@@ -1144,10 +1104,9 @@ tasks:
     type: condition
     task:
       id: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
-      version: -17
+      version: -1
       name: Is Carbon Black Protection (Bit9) Available?
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1163,8 +1122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 5645
+          "x": 1181,
+          "y": 6776
         }
       }
   "57":
@@ -1176,7 +1135,6 @@ tasks:
       version: -1
       name: Search attachment hash in the Bit9 file catalog
       scriptName: CBPCatalogFindHash
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1188,8 +1146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 5820
+          "x": 842,
+          "y": 6946
         }
       }
   "58":
@@ -1201,7 +1159,6 @@ tasks:
       version: -1
       name: Check if the attachment hash is included in any Bit9 rules
       scriptName: CBPFindRule
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1213,8 +1170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 5995
+          "x": 842,
+          "y": 7145
         }
       }
   "59":
@@ -1225,7 +1182,6 @@ tasks:
       id: fde5176a-66b8-4fb8-8147-f04d174e9c66
       version: -1
       name: Review Bit9 results
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1235,8 +1191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 6170
+          "x": 842,
+          "y": 7355
         }
       }
   "60":
@@ -1248,7 +1204,6 @@ tasks:
       version: -1
       name: Is Carbon Black Response available?
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1264,8 +1219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 6345
+          "x": 1181,
+          "y": 7568
         }
       }
   "61":
@@ -1277,7 +1232,6 @@ tasks:
       version: -1
       name: Search attachments using Carbon Black
       scriptName: BinarySearchPy
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1289,8 +1243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 6520
+          "x": 842,
+          "y": 7736
         }
       }
   "62":
@@ -1304,7 +1258,6 @@ tasks:
       description: If someone saved or executed the malicious attachment, we need
         to investigate further
       scriptName: CBFindHash
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1320,8 +1273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 6695
+          "x": 842,
+          "y": 7981
         }
       }
   "63":
@@ -1330,10 +1283,9 @@ tasks:
     type: regular
     task:
       id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-      version: -16
+      version: -1
       name: Investigate further
       description: Investigate the results of the execution
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1343,8 +1295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 6870
+          "x": 550,
+          "y": 8177
         }
       }
   "64":
@@ -1356,7 +1308,6 @@ tasks:
       version: -1
       name: Is CrowdStrike Falcon Host available?
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1370,8 +1321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 7045
+          "x": 1181,
+          "y": 8648
         }
       }
   "65":
@@ -1383,7 +1334,6 @@ tasks:
       version: -1
       name: Search for the attachment using CrowdStrike
       scriptName: CSHuntByIOC
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1398,8 +1348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 7220
+          "x": 1181,
+          "y": 8925
         }
       }
   "66":
@@ -1411,7 +1361,6 @@ tasks:
       version: -1
       name: Did CrowdStrike locate the IOC on any devices?
       scriptName: IsContextSet
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1424,8 +1373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 7395
+          "x": 1181,
+          "y": 9163
         }
       }
   "67":
@@ -1434,18 +1383,17 @@ tasks:
     type: regular
     task:
       id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
-      version: -16
+      version: -1
       name: Investigate further
       description: Investigate the results of the execution
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 7570
+          "x": 1181,
+          "y": 9422
         }
       }
   "68":
@@ -1456,7 +1404,7 @@ tasks:
       id: 25920975-3f5e-4511-8a52-edc9a12b8db7
       version: -1
       name: Identify email attachments
-      scriptName: IdentifyAttachedEmailNew
+      script: IdentifyAttachedEmailNew
       type: regular
       iscommand: false
       brand: ""
@@ -1597,21 +1545,34 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 1710
+          "y": 1963
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "12_72_#default#": 0.1,
-      "15_72_#default#": 0.26,
-      "9_72_#default#": 0.18
+      "12_72_#default#": 0.36,
+      "15_72_#default#": 0.17,
+      "18_22_#default#": 0.28,
+      "18_42_yes": 0.21,
+      "19_22_#default#": 0.23,
+      "19_42_yes": 0.36,
+      "20_22_#default#": 0.29,
+      "20_42_yes": 0.27,
+      "23_28_#default#": 0.81,
+      "23_42_yes": 0.1,
+      "36_42_yes": 0.11,
+      "39_42_yes": 0.17,
+      "51_52_yes": 0.73,
+      "60_64_#default#": 0.85,
+      "62_64_#default#": 0.46,
+      "9_72_#default#": 0.26
     },
     "paper": {
       "dimensions": {
-        "height": 7615,
-        "width": 1710,
-        "x": 50,
+        "height": 9467,
+        "width": 2439.5,
+        "x": -205,
         "y": 50
       }
     }
