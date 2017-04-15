@@ -56,7 +56,7 @@ tasks:
     type: regular
     task:
       id: 3608118f-e307-4a7e-8478-a74fe26a8747
-     version: -1
+      version: -1
       name: Trigger an update of our IoC repository from all available Threat Intel
         sources
       issystemtask: true
