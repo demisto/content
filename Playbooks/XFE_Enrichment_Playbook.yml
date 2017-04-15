@@ -1,5 +1,7 @@
 id: XFE Enrichment Playbook
-version: 5
+version: -1
+system: true
+fromversion: 2.5.0
 name: XFE Enrichment Playbook
 starttaskid: "0"
 tasks:

@@ -1,5 +1,7 @@
 id: playbook6
-version: 2
+version: -1
+system: true
+fromversion: 2.5.0
 name: Protectwise Demo Playbook
 description: Displays information for all events since 2016-06-17 and all observations
   since 2016-08-15, and downloads all related PCAPs. Waits 5 minutes between each

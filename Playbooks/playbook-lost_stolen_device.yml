@@ -1,6 +1,8 @@
 id: playbook8
-version: 4
-name: 'Lost / Stolen Device Playbook’
+version: -1
+system: true
+fromversion: 2.5.0
+name: Lost / Stolen Device Playbook
 description: |-
   Initial incident details should be the name of the reporting person, or ID of the SIEM alert/incident, and description of the lost device.
   Labels:

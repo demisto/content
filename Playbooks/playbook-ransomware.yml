@@ -1,5 +1,7 @@
 id: playbook3
-version: 2
+version: -1
+system: true
+fromversion: 2.5.0
 name: Ransomware Playbook - Manual
 description: Master playbook for ransomware incidents. This playbook is a manual playbook.
 starttaskid: "0"

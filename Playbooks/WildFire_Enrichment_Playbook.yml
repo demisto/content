@@ -1,5 +1,7 @@
 id: WildFire Enrichment Playbook
-version: 3
+version: -1
+system: true
+fromversion: 2.5.0
 name: WildFire Enrichment Playbook
 starttaskid: "0"
 tasks:

@@ -1,5 +1,7 @@
 id: playbook5
-version: 6
+version: -1
+system: true
+fromversion: 2.5.0
 name: Phishing Playbook - Automated
 description: |-
   This is an automated playbook to investigate suspected Phishing attempts.

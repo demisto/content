@@ -1,6 +1,8 @@
 id: CrowdStrike Enrichment Playbook
-version: 4
+version: -1
 name: CrowdStrike Enrichment Playbook
+system: true
+fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":
