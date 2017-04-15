@@ -22,8 +22,8 @@ tags:
 - Condition
 comment: |-
   Checks if one number(int) as bigger then the other
-  Returns LESS: if first < secondPercentage
-  Returns MORE: if firstPercentage >= secondPercentage
+  Returns yes: if first > second
+  Returns no: if first <= second
   Returns exception if one of the inputs is not a int
 enabled: true
 outputs:
