@@ -5,7 +5,12 @@ name: CountArraySize
 script: |-
   var arr = args.array;
   if (Array.isArray(arr)) {
-      return {Type: entry.note, Contents: arr.length, ContentsFormat: formats.text, EntryContext: {ArraySize: arr.length}}
+      var key = 'ArraySize';
+      if ((args.contextKey) && (args.contextKey.length > 0 )) {
+          key = args.contextKey;
+      }
+      setContext(key,arr.length);
+      return arr.length;
   }
   return 'Given input is not an array';
 type: javascript
@@ -20,6 +25,10 @@ args:
   default: true
   isArray: true
   description: The array to count it's size
+- name: contextKey
+  required: false
+  default: false
+  description: The Context key to place result in, default is ArraySize
 outputs:
 - contextPath: ArraySize
   description: Array size
