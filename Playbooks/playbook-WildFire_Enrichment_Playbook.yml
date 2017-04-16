@@ -35,10 +35,10 @@ tasks:
       id: 83da4a35-e4c1-4629-8594-8f3233976205
       version: -1
       name: Check MD5s
-      script: wildfire|||file
+      script: WildFire|||file
       type: regular
       iscommand: true
-      brand: wildfire
+      brand: WildFire
     scriptarguments:
       file: ${File.MD5}
     view: |-
@@ -56,10 +56,10 @@ tasks:
       id: d265b63a-1a68-4c58-8c7d-3b3098ba653b
       version: -1
       name: Check SHA1s
-      script: wildfire|||file
+      script: WildFire|||file
       type: regular
       iscommand: true
-      brand: wildfire
+      brand: WildFire
     scriptarguments:
       file: ${File.SHA1}
     view: |-
@@ -77,10 +77,10 @@ tasks:
       id: 46461602-d6b8-4d91-870a-525f805859d4
       version: -1
       name: Check SHA256s
-      script: wildfire|||file
+      script: WildFire|||file
       type: regular
       iscommand: true
-      brand: wildfire
+      brand: WildFire
     scriptarguments:
       file: ${File.SHA256}
     view: |-

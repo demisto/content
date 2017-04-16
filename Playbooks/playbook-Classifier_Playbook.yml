@@ -107,7 +107,7 @@ tasks:
     arcsight-esm: []
     arcsight-logger: []
     confer: []
-    crowdstrike-intel: []
+    FalconIntel: []
     elasticsearch: []
     esm: []
     logrhythm: []
