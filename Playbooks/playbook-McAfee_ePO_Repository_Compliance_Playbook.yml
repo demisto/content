@@ -1,148 +1,320 @@
 id: playbook11
 version: -1
 system: true
+fromversion: 2.5.0
 name: McAfee ePO Repository Compliance Playbook
 description: Ensures that ePO servers are updated to the latest McAfee published AV
   signatures (DAT file version).
+starttaskid: "0"
 tasks:
-- id: "1"
-  taskid: 03918ca7-d71d-4796-8952-280a23ce8b3c
-  type: regular
-  task:
-    id: 03918ca7-d71d-4796-8952-280a23ce8b3c
-    version: 1
-    name: Determine list of repositories to check
-    description: |-
-      Determine which EPO servers to check (configured as instances under Demisto Settings).
-      Sets the eporepos context item to a comma-separated list of instance names exactly as they appearin Settings.
-      This can be filled manually or set to a constant value in the playbook such as corp1,dev1,test2
-    script: SetContext
-  scriptarguments:
-    key: eporepos
-    value: ""
-- id: "2"
-  taskid: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
-  type: regular
-  task:
-    id: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
-    version: 1
-    name: Retrieve DAT version and date from McAfee
-    script: EPOCheckLatestDAT
-  results:
-  - latestdat
-- id: "3"
-  taskid: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
-  type: condition
-  task:
-    id: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
-    version: 1
-    name: Are any local repositories using older DATs?
-    script: EPORepositoryComplianceCheck
-  condition:
-    "no": []
-    "yes":
-    - id: "4"
-      taskid: 18ab6c23-eb90-4f0f-817c-6318dc746338
+  "0":
+    id: "0"
+    taskid: ee018e04-2610-4998-87d0-f5217127bbad
+    type: start
+    task:
+      id: ee018e04-2610-4998-87d0-f5217127bbad
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6c75c302-02bc-43b0-88e1-fb97706eaef6
+    type: regular
+    task:
+      id: 6c75c302-02bc-43b0-88e1-fb97706eaef6
+      version: -1
+      name: Determine list of repositories to check
+      description: |-
+        Determine which EPO servers to check (configured as instances under Demisto Settings).
+        Sets the eporepos context item to a comma-separated list of instance names exactly as they appearin Settings.
+        This can be filled manually or set to a constant value in the playbook such as corp1,dev1,test2
+      scriptName: Set
       type: regular
-      task:
-        id: 18ab6c23-eb90-4f0f-817c-6318dc746338
-        version: 1
-        name: Initiate update task in each local repository
-        script: EPOUpdateRepository
-      scriptarguments:
-        repos: ${olddatrepos}
-      results:
-      - repoupdateresultstext
-      - repoupdateresultshtml
-    - id: "5"
-      taskid: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key: eporepos
+      value: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
+    type: regular
+    task:
+      id: e9055a8b-bdcc-424f-8473-9714cf0cd8cb
+      version: -1
+      name: Retrieve DAT version and date from McAfee
+      scriptName: EPOCheckLatestDAT
       type: regular
-      task:
-        id: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
-        version: 1
-        name: Send report to admin with update results
-        script: SendEmail
-      scriptarguments:
-        attachIDs: ""
-        bcc: ""
-        body: ${repoupdateresultstext}
-        cc: ""
-        htmlBody: ""
-        subject: 'Demisto: ePO Update Results'
-        to: ""
-    - id: "6"
-      taskid: c064dd4b-1407-4f65-82af-00f3ba8e57e0
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    results:
+    - latestdat
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
+    type: condition
+    task:
+      id: d2fa687c-f7a1-49a2-8b8b-d8fb8deed0ed
+      version: -1
+      name: Are any local repositories using older DATs?
+      scriptName: EPORepositoryComplianceCheck
       type: condition
-      task:
-        id: c064dd4b-1407-4f65-82af-00f3ba8e57e0
-        version: 4
-        name: Are any repositories faulty and may not be updating correctly?
-        script: UtilAnyResults
-      condition:
-        "no": []
-        "yes":
-        - id: "7"
-          taskid: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
-          type: regular
-          task:
-            id: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
-            version: 1
-            name: Send email alert with list of faulty repositories to admin
-            script: SendEmail
-          scriptarguments:
-            attachIDs: ""
-            bcc: ""
-            body: ${faultyrepostext}
-            cc: ""
-            htmlBody: ""
-            subject: 'Demisto: Faulty ePO Repositories Alert'
-            to: ""
-      scriptarguments:
-        data: ${faultyrepos}
-  scriptarguments:
-    repostocheck: ${eporepos}
-    requireddatversion: ${latestdat}
-  results:
-  - olddatrepos
-  - faultyrepos
-  - faultyrepostext
-  - repocomplianceresultshtml
-  - repocomplianceresultstext
-- id: "8"
-  taskid: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
-  type: regular
-  task:
-    id: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
-    version: 3
-    name: Display list of AV related tickets from ServiceNow
-    script: SNListTickets
-  scriptarguments:
-    fields: comments,short_description,category,subcategory,state
-    query: subcategory=Antivirus
-- id: "9"
-  taskid: f9ee1f48-bc46-465b-84c2-6e717f732ba8
-  type: regular
-  task:
-    id: f9ee1f48-bc46-465b-84c2-6e717f732ba8
-    version: 4
-    name: Send audit report to administrator with list of servers and their results
-    script: SendEmail
-  scriptarguments:
-    attachIDs: ""
-    bcc: ""
-    body: ${repocomplianceresultstext}
-    cc: ""
-    htmlBody: ""
-    subject: 'Demisto: ePO Repository Compliance Report'
-    to: ""
-- id: "10"
-  taskid: 220a0d1d-b7cc-403f-8750-526d3bf55b51
-  type: regular
-  task:
-    id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
-    version: 3
-    name: Close the investigation
-    script: CloseInvestigation
-  scriptarguments:
-    notes: ""
-    reason: AuditCompleted
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    scriptarguments:
+      repostocheck: ${eporepos}
+      requireddatversion: ${latestdat}
+    results:
+    - olddatrepos
+    - faultyrepos
+    - faultyrepostext
+    - repocomplianceresultshtml
+    - repocomplianceresultstext
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 18ab6c23-eb90-4f0f-817c-6318dc746338
+    type: regular
+    task:
+      id: 18ab6c23-eb90-4f0f-817c-6318dc746338
+      version: -1
+      name: Initiate update task in each local repository
+      scriptName: EPOUpdateRepository
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      repos: ${olddatrepos}
+    results:
+    - repoupdateresultstext
+    - repoupdateresultshtml
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 718
+        }
+      }
+  "5":
+    id: "5"
+    taskid: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
+    type: regular
+    task:
+      id: ab38cd4d-22c3-48ac-8afa-ba67f73c32e3
+      version: -1
+      name: Send report to admin with update results
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      attachIDs: ""
+      bcc: ""
+      body: ${repoupdateresultstext}
+      cc: ""
+      htmlBody: ""
+      subject: 'Demisto: ePO Update Results'
+      to: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 894
+        }
+      }
+  "6":
+    id: "6"
+    taskid: c064dd4b-1407-4f65-82af-00f3ba8e57e0
+    type: condition
+    task:
+      id: c064dd4b-1407-4f65-82af-00f3ba8e57e0
+      version: -1
+      name: Are any repositories faulty and may not be updating correctly?
+      scriptName: UtilAnyResults
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    scriptarguments:
+      data: ${faultyrepos}
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 1068
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
+    type: regular
+    task:
+      id: 9a3ce8cf-6716-4163-8ee0-e2f13186af78
+      version: -1
+      name: Send email alert with list of faulty repositories to admin
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attachIDs: ""
+      bcc: ""
+      body: ${faultyrepostext}
+      cc: ""
+      htmlBody: ""
+      subject: 'Demisto: Faulty ePO Repositories Alert'
+      to: ""
+    view: |-
+      {
+        "position": {
+          "x": 707,
+          "y": 1267
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
+    type: regular
+    task:
+      id: 30c8b46b-e0e7-4af6-8dc2-0012c5c37ca8
+      version: -1
+      name: Display list of AV related tickets from ServiceNow
+      scriptName: SNListTickets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      fields: comments,short_description,category,subcategory,state
+      query: subcategory=Antivirus
+    view: |-
+      {
+        "position": {
+          "x": 418,
+          "y": 1437
+        }
+      }
+  "9":
+    id: "9"
+    taskid: f9ee1f48-bc46-465b-84c2-6e717f732ba8
+    type: regular
+    task:
+      id: f9ee1f48-bc46-465b-84c2-6e717f732ba8
+      version: -1
+      name: Send audit report to administrator with list of servers and their results
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      attachIDs: ""
+      bcc: ""
+      body: ${repocomplianceresultstext}
+      cc: ""
+      htmlBody: ""
+      subject: 'Demisto: ePO Repository Compliance Report'
+      to: ""
+    view: |-
+      {
+        "position": {
+          "x": 418,
+          "y": 1634
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+    type: regular
+    task:
+      id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+      version: -1
+      name: Close the investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: AuditCompleted
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 1817
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_8_#default#": 0.63
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1862,
+        "width": 1037,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
