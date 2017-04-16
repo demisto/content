@@ -7,8 +7,35 @@ script: |-
   if ((args.date) && (args.date.length > 0)){
       d =  new Date(args.date);
   }
-  return {Type: entryTypes.note, Contents: String(d), ContentsFormat: formats.text,
-      EntryContext: {TimeNowUnix: String(d.getTime()), TimeNow: String(d)}};
+  prefix = '';
+  if (args.contextKey) {
+      prefix = args.contextKey
+  }
+  var timeStr = String(d);
+  if ((args.dateFormat) && (args.dateFormat.length > 0)){
+      switch(args.dateFormat) {
+          case 'ISO':
+              timeStr = d.toISOString();
+              break;
+          case 'GMT':
+              timeStr = d.toGMTString();
+              break;
+          case 'UTC':
+              timeStr = d.toUTCString();
+              break;
+          case 'Locale':
+              timeStr = d.toLocaleString();
+              break;
+          case 'Date':
+              timeStr = d.toDateString();
+              break;
+          default:
+              throw 'Unsupported date format: '+args.dateFormat
+      }
+  }
+  setContext(prefix+'TimeNowUnix',d.getTime());
+  setContext(prefix+'TimeNow', timeStr);
+  return timeStr;
 type: javascript
 tags:
 - Utility
@@ -19,6 +46,11 @@ args:
 - name: date
   default: true
   description: The date to use in the object
+- name: dateFormat
+  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date
+- name: contextKey
+  default: false
+  description: prefix the keys in the context for the results
 outputs:
 - contextPath: TimeNowUnix
   description: number of milliseconds since 1970/01/01
