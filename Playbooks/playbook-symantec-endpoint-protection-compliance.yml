@@ -1,108 +1,212 @@
 id: playbook9
 version: -1
-name: Symantec Endpoint Compliance Playbook
 system: true
+fromversion: 2.5.0
+name: Symantec Endpoint Compliance Playbook
 description: Check the latest AV Definitions from Symantec Cloud and compare to AV
   Definitions versions in endpoints.
+starttaskid: "0"
 tasks:
-- id: "1"
-  taskid: c211c519-33d4-4c18-81d8-2d45ecb758ff
-  type: regular
-  task:
-    id: c211c519-33d4-4c18-81d8-2d45ecb758ff
-    version: -1
-    name: Retrieve version of latest AV definitions from Symantec
-    description: Query the Symantec Cloud to retrieve the latest AVDEF version available.
-    script: SEPLatestAVDefInfo
-  results:
-  - SEPAVDef
-- id: "2"
-  taskid: 4ddccede-334c-4719-8a7f-cacc2494f81a
-  type: condition
-  task:
-    id: 4ddccede-334c-4719-8a7f-cacc2494f81a
-    version: -1
-    name: Are any endpoints using outdated AV Definitions?
-    description: |-
-      Retrieve the list of versions installed on endpoints and check if any old versions are being used and how many endpoints are using each outdated version.
-      Receives input from previous task which is set in the following context key(s): SEPAVDef
-    script: SEPCheckOutdatedEndpoints
-  condition:
-    "no":
-    - id: "3"
-      taskid: 84f113dc-43c9-4afb-8569-ab2e1999be31
-      type: regular
-      task:
-        id: 84f113dc-43c9-4afb-8569-ab2e1999be31
-        version: -1
-        name: Close the investigation
-        description: Close the investigation as no further actions are required, and
-          document the appropriate notes and reason for closure for future reference
-          and analytics.
-        script: CloseInvestigation
-      scriptarguments:
-        notes: Successfully verified endpoint compliance
-        reason: Resolved
-    "yes":
-    - id: "4"
-      taskid: 5ee1ebe3-8dcc-4167-8b94-e64b127e439e
-      type: regular
-      task:
-        id: 5ee1ebe3-8dcc-4167-8b94-e64b127e439e
-        version: -1
-        name: Set incident severity to High
-        description: Escalate severity since outdated endpoints were found and non-compliance
-          was detected.
-        script: IncidentSet
-      scriptarguments:
-        addLabels: ""
-        customFieldName: ""
-        customFieldValue: ""
-        details: ""
-        labels: ""
-        name: ""
-        owner: ""
-        playbook: ""
-        severity: High
-        stage: ""
-        type: ""
-        updatePlaybookForType: ""
-    - id: "5"
-      taskid: 48757ed1-177d-4db0-8683-5df2310b37a0
-      type: regular
-      task:
-        id: 48757ed1-177d-4db0-8683-5df2310b37a0
-        version: -1
-        name: Open a ServiceNow ticket for updating the non-compliant endpoints
-        description: The created ticket will include details returned from the previous
-          task in the comments field.
-        script: SNOpenTicket
-      scriptarguments:
-        assignmentgroup: Helpdesk
-        category: Security
-        comments: ${txtSEPOutdatedVersions}
-        shortdescription: Outdated Symantec Endpoints
-        subcategory: Antivirus
-    - id: "6"
-      taskid: 599987a6-3e8a-4bce-8012-f9bcf862d34a
-      type: regular
-      task:
-        id: 599987a6-3e8a-4bce-8012-f9bcf862d34a
-        version: -1
-        name: Send email alert
-        description: Send an email alert to notify that non-compliance was detected.
-          Include the details returned by the compliance check (which old version
-          and how many endpoints using each) inside the email.
-        script: SendEmail
-      scriptarguments:
-        attachIDs: ""
-        bcc: ""
-        body: ${txtSEPOutdatedVersions}
-        cc: ""
-        htmlBody: ""
-        subject: Demisto - SEP NonCompliance Alert
-        to: ""
-  scriptarguments:
-    requiredavdefversion: ${SEPAVDef}
-  results:
-  - txtSEPOutdatedVersions
+  "0":
+    id: "0"
+    taskid: 4005fbc2-47af-48c9-8b91-891bd04e0149
+    type: start
+    task:
+      id: 4005fbc2-47af-48c9-8b91-891bd04e0149
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c211c519-33d4-4c18-81d8-2d45ecb758ff
+    type: regular
+    task:
+      id: c211c519-33d4-4c18-81d8-2d45ecb758ff
+      version: -1
+      name: Retrieve version of latest AV definitions from Symantec
+      description: Query the Symantec Cloud to retrieve the latest AVDEF version available.
+      script: SEPLatestAVDefInfo
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4ddccede-334c-4719-8a7f-cacc2494f81a
+    type: condition
+    task:
+      id: 4ddccede-334c-4719-8a7f-cacc2494f81a
+      version: -1
+      name: Are any endpoints using outdated AV Definitions?
+      description: |-
+        Retrieve the list of versions installed on endpoints and check if any old versions are being used and how many endpoints are using each outdated version.
+        Receives input from previous task which is set in the following context key(s): SEPAVDef
+      scriptName: SEPCheckOutdatedEndpoints
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      requiredavdefversion: ${SEPAVDef}
+    results:
+    - txtSEPOutdatedVersions
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 84f113dc-43c9-4afb-8569-ab2e1999be31
+    type: regular
+    task:
+      id: 84f113dc-43c9-4afb-8569-ab2e1999be31
+      version: -1
+      name: Close the investigation
+      description: Close the investigation as no further actions are required, and
+        document the appropriate notes and reason for closure for future reference
+        and analytics.
+      scriptName: CloseInvestigation
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: Successfully verified endpoint compliance
+      reason: Resolved
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5ee1ebe3-8dcc-4167-8b94-e64b127e439e
+    type: regular
+    task:
+      id: 5ee1ebe3-8dcc-4167-8b94-e64b127e439e
+      version: -1
+      name: Set incident severity to High
+      description: Escalate severity since outdated endpoints were found and non-compliance
+        was detected.
+      scriptName: IncidentSet
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      addLabels: ""
+      customFieldName: ""
+      customFieldValue: ""
+      details: ""
+      labels: ""
+      name: ""
+      owner: ""
+      playbook: ""
+      severity: High
+      stage: ""
+      type: ""
+      updatePlaybookForType: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 48757ed1-177d-4db0-8683-5df2310b37a0
+    type: regular
+    task:
+      id: 48757ed1-177d-4db0-8683-5df2310b37a0
+      version: -1
+      name: Open a ServiceNow ticket for updating the non-compliant endpoints
+      description: The created ticket will include details returned from the previous
+        task in the comments field.
+      scriptName: SNOpenTicket
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assignmentgroup: Helpdesk
+      category: Security
+      comments: ${txtSEPOutdatedVersions}
+      shortdescription: Outdated Symantec Endpoints
+      subcategory: Antivirus
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 599987a6-3e8a-4bce-8012-f9bcf862d34a
+    type: regular
+    task:
+      id: 599987a6-3e8a-4bce-8012-f9bcf862d34a
+      version: -1
+      name: Send email alert
+      description: Send an email alert to notify that non-compliance was detected.
+        Include the details returned by the compliance check (which old version and
+        how many endpoints using each) inside the email.
+      scriptName: SendEmail
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      attachIDs: ""
+      bcc: ""
+      body: ${txtSEPOutdatedVersions}
+      cc: ""
+      htmlBody: ""
+      subject: Demisto - SEP NonCompliance Alert
+      to: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

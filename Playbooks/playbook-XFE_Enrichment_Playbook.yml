@@ -1,0 +1,151 @@
+id: XFE Enrichment Playbook
+version: -1
+system: true
+fromversion: 2.5.0
+name: XFE Enrichment Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2380acff-abe1-46f1-8910-1aedfd2dd492
+    type: start
+    task:
+      id: 2380acff-abe1-46f1-8910-1aedfd2dd492
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 74769f79-7ed5-4b93-8169-acea2eafc627
+    type: regular
+    task:
+      id: 74769f79-7ed5-4b93-8169-acea2eafc627
+      version: -1
+      name: Check MD5s
+      script: XFE|||file
+      type: regular
+      iscommand: true
+      brand: XFE
+    scriptarguments:
+      file: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: eaf9526c-d23d-466a-8d93-c4fc265b9a47
+    type: regular
+    task:
+      id: eaf9526c-d23d-466a-8d93-c4fc265b9a47
+      version: -1
+      name: Check SHA1s
+      script: XFE|||file
+      type: regular
+      iscommand: true
+      brand: XFE
+    scriptarguments:
+      file: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a210c0a0-c12a-4197-8550-0010762d561d
+    type: regular
+    task:
+      id: a210c0a0-c12a-4197-8550-0010762d561d
+      version: -1
+      name: Check SHA256s
+      script: XFE|||file
+      type: regular
+      iscommand: true
+      brand: XFE
+    scriptarguments:
+      file: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: ced58cb9-41de-4b6c-85d1-8202be1d063f
+    type: regular
+    task:
+      id: ced58cb9-41de-4b6c-85d1-8202be1d063f
+      version: -1
+      name: Check IPs
+      script: XFE|||ip
+      type: regular
+      iscommand: true
+      brand: XFE
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ${IP.Address}
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b9e7af1d-26f0-45b3-8007-2027355b4a6b
+    type: regular
+    task:
+      id: b9e7af1d-26f0-45b3-8007-2027355b4a6b
+      version: -1
+      name: Check URLs
+      script: XFE|||url
+      type: regular
+      iscommand: true
+      brand: XFE
+    scriptarguments:
+      file: ${File.SHA256}
+      ip: ${IP.Address}
+      url: ${URL}
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
