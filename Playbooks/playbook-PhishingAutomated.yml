@@ -1315,7 +1315,7 @@ tasks:
       "yes":
       - "65"
     scriptarguments:
-      brandname: crowdstrike-host
+      brandname: FalconHost
     results:
     - brandInstances
     view: |-

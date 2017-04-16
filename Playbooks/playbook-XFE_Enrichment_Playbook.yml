@@ -37,10 +37,10 @@ tasks:
       id: 74769f79-7ed5-4b93-8169-acea2eafc627
       version: -1
       name: Check MD5s
-      script: xfe|||file
+      script: XFE|||file
       type: regular
       iscommand: true
-      brand: xfe
+      brand: XFE
     scriptarguments:
       file: ${File.MD5}
     view: |-
@@ -58,10 +58,10 @@ tasks:
       id: eaf9526c-d23d-466a-8d93-c4fc265b9a47
       version: -1
       name: Check SHA1s
-      script: xfe|||file
+      script: XFE|||file
       type: regular
       iscommand: true
-      brand: xfe
+      brand: XFE
     scriptarguments:
       file: ${File.SHA1}
     view: |-
@@ -79,10 +79,10 @@ tasks:
       id: a210c0a0-c12a-4197-8550-0010762d561d
       version: -1
       name: Check SHA256s
-      script: xfe|||file
+      script: XFE|||file
       type: regular
       iscommand: true
-      brand: xfe
+      brand: XFE
     scriptarguments:
       file: ${File.SHA256}
     view: |-
@@ -100,10 +100,10 @@ tasks:
       id: ced58cb9-41de-4b6c-85d1-8202be1d063f
       version: -1
       name: Check IPs
-      script: xfe|||ip
+      script: XFE|||ip
       type: regular
       iscommand: true
-      brand: xfe
+      brand: XFE
     scriptarguments:
       file: ${File.SHA256}
       ip: ${IP.Address}
@@ -122,10 +122,10 @@ tasks:
       id: b9e7af1d-26f0-45b3-8007-2027355b4a6b
       version: -1
       name: Check URLs
-      script: xfe|||url
+      script: XFE|||url
       type: regular
       iscommand: true
-      brand: xfe
+      brand: XFE
     scriptarguments:
       file: ${File.SHA256}
       ip: ${IP.Address}

@@ -730,7 +730,7 @@ tasks:
       - "32"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='twilio')}
+      value: ${ConfiguredModules.brand(val=='Twilio')}
     view: |-
       {
         "position": {
@@ -1009,7 +1009,7 @@ tasks:
       - "44"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='twilio')}
+      value: ${ConfiguredModules.brand(val=='Twilio')}
     view: |-
       {
         "position": {

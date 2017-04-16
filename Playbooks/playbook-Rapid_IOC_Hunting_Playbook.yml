@@ -257,7 +257,7 @@ tasks:
         type: md5
         value: ${md5s}
   scriptarguments:
-    brandname: crowdstrike-host
+    brandname: FalconHost
   results:
   - brandInstances
 - id: "19"
@@ -398,7 +398,7 @@ tasks:
             name: Send SMS alert
             description: ' '
       scriptarguments:
-        brandname: twilio
+        brandname: Twilio
       results:
       - brandInstances
     - id: "30"

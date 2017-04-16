@@ -37,10 +37,10 @@ tasks:
       id: 1966e48a-821a-401f-886b-24b3a46fed15
       version: -1
       name: Check MD5s
-      script: virustotal|||file
+      script: VirusTotal|||file
       type: regular
       iscommand: true
-      brand: virustotal
+      brand: VirusTotal
     scriptarguments:
       file: ${File.MD5}
     view: |-
@@ -58,10 +58,10 @@ tasks:
       id: a1058074-0b89-4abb-89f6-1c579f001707
       version: -1
       name: Check SHA1s
-      script: virustotal|||file
+      script: VirusTotal|||file
       type: regular
       iscommand: true
-      brand: virustotal
+      brand: VirusTotal
     scriptarguments:
       file: ${File.SHA1}
     view: |-
@@ -79,10 +79,10 @@ tasks:
       id: 5eb4bb45-ede0-4ab6-82ea-c0cbef36a08d
       version: -1
       name: Check SHA256s
-      script: virustotal|||file
+      script: VirusTotal|||file
       type: regular
       iscommand: true
-      brand: virustotal
+      brand: VirusTotal
     scriptarguments:
       file: ${File.SHA256}
     view: |-
@@ -100,10 +100,10 @@ tasks:
       id: 8341b6ba-1846-41ea-8010-9e58b7220b06
       version: -1
       name: Check IPs
-      script: virustotal|||ip
+      script: VirusTotal|||ip
       type: regular
       iscommand: true
-      brand: virustotal
+      brand: VirusTotal
     scriptarguments:
       file: ${File.SHA256}
       ip: ${IP.Address}
@@ -122,10 +122,10 @@ tasks:
       id: f5ef3c7c-601c-4b58-8e1d-87c7a0443658
       version: -1
       name: Check URLs
-      script: virustotal|||url
+      script: VirusTotal|||url
       type: regular
       iscommand: true
-      brand: virustotal
+      brand: VirusTotal
     scriptarguments:
       file: ${File.SHA256}
       ip: ${IP.Address}
