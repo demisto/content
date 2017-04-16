@@ -178,7 +178,7 @@ tasks:
       id: 7cd78939-150e-42da-85ee-18a01fbb16ec
       version: -1
       name: ""
-      playbookId: VT Enrichment Playbook
+      playbookName: VT Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -263,7 +263,7 @@ tasks:
       id: acd78e39-a411-432a-85b1-559e0f87b8e4
       version: -1
       name: ""
-      playbookId: CrowdStrike Enrichment Playbook
+      playbookName: CrowdStrike Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -309,7 +309,7 @@ tasks:
       id: d819152d-66ac-4a48-8617-325f92b68bce
       version: -1
       name: ""
-      playbookId: XFE Enrichment Playbook
+      playbookName: XFE Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -355,7 +355,7 @@ tasks:
       id: 2680a824-4aa0-4957-8420-ddce6dff5edf
       version: -1
       name: ""
-      playbookId: Cylance Enrichment Playbook
+      playbookName: Cylance Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
@@ -401,7 +401,7 @@ tasks:
       id: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
       version: -1
       name: ""
-      playbookId: WildFire Enrichment Playbook
+      playbookName: WildFire Enrichment Playbook
       type: playbook
       iscommand: false
       brand: ""
