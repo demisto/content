@@ -1,7 +1,7 @@
 commonfields:
-  id: IsGreaterThen
+  id: IsGreaterThan
   version: -1
-name: IsGreaterThen
+name: IsGreaterThan
 script: |-
   first = parseInt(args.first);
   if (!first) {
@@ -21,7 +21,7 @@ tags:
 - Utility
 - Condition
 comment: |-
-  Checks if one number(int) as bigger then the other
+  Checks if one number(int) as bigger than the other
   Returns yes: if first > second
   Returns no: if first <= second
   Returns exception if one of the inputs is not a int
