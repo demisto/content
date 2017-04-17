@@ -15,7 +15,7 @@ script: |-
       res['destination_ip'] = r.destination_ip
 
       verbose = demisto.get(demisto.args(),'verbose')
-      if verbose.lower() == 'false':
+      if verbose and verbose.lower() == 'false':
           demisto.results(res)
       else:
           data = [ { 'ret_code' : res['ret_code'], 'destination' : res['destination'], 'max_rtt' : res['max_rtt'] , 'avg_rtt' : res['avg_rtt'],  'destination_ip' : res['destination_ip'] } ]
