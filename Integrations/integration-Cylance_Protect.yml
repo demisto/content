@@ -118,11 +118,12 @@ script:
             name: threat.priority + ' ' + threat.name,
             labels: []
         };
-        var keys = Object.keys(incident);
+        delete(threat.name);
+        var keys = Object.keys(threat);
         for (var i = 0; i<keys.length; i++) {
             incident.labels.push({
                 type: keys[i],
-                value: String(incident[keys[i]])
+                value: String(threat[keys[i]])
             });
         }
         return incident;
