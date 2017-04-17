@@ -102,7 +102,7 @@ script:
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
-                ec['File/Malicious'].push({MD5: r[i].md5});
+                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
             } else if (r[i].positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -445,6 +445,14 @@ script:
     outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash found
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
       important: true
       importantDescription: Bad hashes found querying VirusTotal
     - contextPath: dbotScore.indicator
