@@ -1,7 +1,7 @@
 commonfields:
-  id: PassiveTotal1
+  id: PassiveTotal
   version: -1
-name: PassiveTotal1
+name: PassiveTotal
 display: PassiveTotal
 category: Data Enrichment
 system: true
