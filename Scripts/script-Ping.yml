@@ -1,0 +1,49 @@
+commonfields:
+  id: Ping
+  version: -1
+name: Ping
+script: |-
+  import pyping
+  try:
+      r = pyping.ping(demisto.args()['address'])
+      res = {}
+      res['ret_code'] = r.ret_code
+      res['destination'] = r.destination
+      res['max_rtt'] = r.max_rtt
+      res['avg_rtt'] = r.avg_rtt
+      res['min_rtt'] = r.min_rtt
+      res['destination_ip'] = r.destination_ip
+
+      verbose = demisto.get(demisto.args(),'verbose')
+      if verbose.lower() == 'false':
+          demisto.results(res)
+      else:
+          data = [ { 'ret_code' : res['ret_code'], 'destination' : res['destination'], 'max_rtt' : res['max_rtt'] , 'avg_rtt' : res['avg_rtt'],  'destination_ip' : res['destination_ip'] } ]
+          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data})
+
+      key = demisto.get(demisto.args(),'contextKey')
+      if not key:
+          key = 'ping_result'
+      demisto.setContext(key, res)
+  except Exception as e:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(e) } )
+type: python
+tags:
+- Utility
+comment: Pings an IP or url address, to verify it's up 
+enabled: true
+args:
+- name: address
+  required: true
+  default: true
+  description: Address to ping
+  isarray: false
+- name: contextKey
+  description: context key to place result in
+  isarray: false
+- name: verbose
+  description: prettify result in table
+  isarray: false
+scripttarget: 0
+dependson: {}
+dockerimage: demisto/pyping
