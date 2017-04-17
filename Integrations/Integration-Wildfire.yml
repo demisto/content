@@ -140,21 +140,21 @@ script:
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
         var result = JSON.parse(x2j(resXML));
-        var report = result.wildfire.task_info.report;
-        var file_info = result.wildfire.file_info;
+        var report =  dq(result, 'wildfire.task_info.report');
+        var file_info = dq(result, 'wildfire.file_info');
 
         var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'Wildfire', score: 0 }};
-        var body = result.wildfire.file_info;
-        if (body) {
-            if (body.malware === 'yes') {
+        
+        if (file_info) {
+            if (file_info.malware === 'yes') {
                 context.dbotScore.score = 3;
                 context['File/Malicious'] = {
-                                                Type : body.filetype,
-                                                MD5 : body.md5,
-                                                SHA1 : body.sha1,
-                                                SHA256 : body.sha256,
-                                                Size : body.size,
-                                                Name : body.filename
+                                                Type : file_info.filetype,
+                                                MD5 : file_info.md5,
+                                                SHA1 : file_info.sha1,
+                                                SHA256 : file_info.sha256,
+                                                Size : file_info.size,
+                                                Name : file_info.filename
 
                                             };
             } else {
@@ -187,7 +187,6 @@ script:
                   Contents: result,
                   ContentsFormat: formats.json,
                   HumanReadable: md,
-                  ReadableContentsFormat: formats.markdown,
                   EntryContext: context
           };
         }
@@ -196,13 +195,13 @@ script:
       case 'wildfire-upload':
           url += urlDict.upload;
           var result = sendMultipartRequest(url, headers, args.upload, params.token);
-          var md = resToMD(result.wildfire['upload-file-info'],'Wildfire Report');
+          var uploadData = dq(result, 'wildfire.upload-file-info');
+          var md = resToMD(uploadData,'Wildfire Report');
 
           return {Type: entryTypes.note,
                       Contents: result,
                       ContentsFormat: formats.json,
-                      HumanReadable: md,
-                      ReadableContentsFormat: formats.markdown
+                      HumanReadable: md
               };
 
     }
