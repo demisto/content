@@ -618,3 +618,4 @@ script:
     description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
       publications.
 hidden: false
+fromversion: 2.5.0

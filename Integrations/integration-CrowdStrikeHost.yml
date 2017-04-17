@@ -645,3 +645,4 @@ script:
       IDs from the Falcon Host UI or from the Falcon Streaming API.
     execution: true
 hidden: false
+fromversion: 2.5.0
