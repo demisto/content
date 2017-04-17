@@ -450,11 +450,11 @@ script:
     - contextPath: File/Malicious.SHA1
       description: Bad hash SHA1
       important: true
-      importantDescription: Bad hashes found querying X-Force
+      importantDescription: Bad hashes found querying VirusTotal
     - contextPath: File/Malicious.SHA256
       description: Bad hash SHA256
       important: true
-      importantDescription: Bad hashes found querying X-Force
+      importantDescription: Bad hashes found querying VirusTotal
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
