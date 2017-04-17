@@ -1,7 +1,7 @@
 commonfields:
-  id: PassiveTotal
+  id: PassiveTotal1
   version: -1
-name: PassiveTotal
+name: PassiveTotal1
 display: PassiveTotal
 category: Data Enrichment
 system: true
@@ -162,7 +162,11 @@ script:
                     context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 1}
                 }
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+            var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+            if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
+                fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
+            }
+            return fullResult;
         case 'pt-malware':
             var md = '## PassiveTotal Malware Report for: ' + args.query + '\n';
             var context = {};
