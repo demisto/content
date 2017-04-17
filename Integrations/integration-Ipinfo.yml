@@ -33,7 +33,13 @@ script:
             }
             return 'not cool';
         case 'ip':
-            return sendRequest(base+args.ip+jsonSuffix, true);
+            var o = sendRequest(base+args.ip+jsonSuffix, true);
+            var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o)}];
+            if (o.loc) {
+                var parts = o.loc.split(',');
+                reply.push({Type: entryTypes.map, Contents: {lat: parseFloat(parts[0]), lng: parseFloat(parts[1])}, ContentsFormat: formats.json});
+            }
+            return reply;
         case 'ipinfo_field':
             return sendRequest(base+args.ip+'/'+args.field, false);
     }
@@ -55,5 +61,14 @@ script:
       description: IP address to query. E.g. !ip 1.1.1.1
     - name: field
       required: true
-      description: Name of the field to retrieve
+      description: Name of the field to retrieve. Can be org, city, geo, etc.
+      predefined:
+      - "geo"
+      - "loc"
+      - "city"
+      - "region"
+      - "country"
+      - "org"
+      - "hostname"
+      - "phone"
     description: Retrieve value for a specific field from the IP address information
