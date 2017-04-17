@@ -34,24 +34,11 @@ script: |-
           }).join(',');
       } else if (typeof(o) === 'string') {
           return o;
+      } else if (typeof(o) === 'number') {
+          return '' + o;
       } else {
           return JSON.stringify(o);
       }
-  }
-
-  /**
-   * Creates a markdown string from an object
-   * @param {JSON or String} o - the object to create the markdown from
-   * @returns {String} a markdown string which represents the object
-   */
-  function objToMd(o) {
-      var keys = Object.keys(o);
-      keys.sort();
-      var md = 'Key | Value\n- | -\n';
-      for (var i in keys) {
-          md += keys[i] + ' | ' + objToStr(o[keys[i]]) + '\n';
-      }
-      return md;
   }
 
   /**
@@ -77,25 +64,27 @@ script: |-
       return escapedSt;
   }
 
-
   /**
-   * Converts comma separated list to an array
-   * @param {String} arg - the string to convert
-   * @returns {Array} array from the original string-list
+   * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
+   * @param {Object} arg the argument to convert to list
+   * @returns {Array} of strings
    */
-  function argToList(arg){
-      if (!arg){
+  function argToList(arg) {
+      if (!arg) {
           return [];
-      } else if (arg instanceof Array) {
-          return arg;
-      } else if (typeof arg === "string") {
-          if (arg[0] === '[' && arg[-1] === ']'){
-              return JSON.parse(arg);
-          } else {
-              return arg.split(',');
-          }
       }
+      if (Array.isArray(arg)) {
+          return arg;
+      }
+      if (typeof(arg) === 'string') {
+          if (arg[0] === '[' && arg[arg.length - 1] === ']') {
+              return JSON.parse(arg);
+          }
+          return arg.split(',');
+      }
+      return arg;
   }
+
   /**
    * Converts a demisto table in JSON form to a Markdown table
    * @param {String} name - the name of the table
@@ -141,6 +130,7 @@ script: |-
 
   /**
    * Checks if the given string represents a valid IPv4 address
+   * @deprecated please use isValidIP which really checks IP for validity
    * @param {String} ip - the string to check
    * @returns {Boolean} true if valid IPv4 address
    */
@@ -306,27 +296,6 @@ script: |-
   }
 
   /**
-   * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
-   * @param {Object} arg the argument to convert to list
-   * @returns {Array} of strings
-   */
-  function argToList(arg) {
-      if (!arg) {
-          return [];
-      }
-      if (Array.isArray(arg)) {
-          return arg;
-      }
-      if (typeof(arg) === 'string') {
-          if (arg[0] === '[' && arg[arg.length - 1] === ']') {
-              return JSON.parse(arg);
-          }
-          return arg.split(',');
-      }
-      return arg;
-  }
-
-  /**
    * Translate ThreatConnect rating to score
    * @param {rating} TC rating as int
    * @returns {score} int (between 0 and 3)
@@ -414,24 +383,6 @@ script: |-
         }
     }
   }
-  /**
-   * Convert a given object to a simple string
-   * @param {Object} o - the object to convert - can be an array as well
-   * @returns {String} - the converted string
-   */
-  function objToStr(o) {
-      if (Array.isArray(o)) {
-          return o.map(function(v) {
-              return objToStr(v);
-          }).join(',');
-      } else if (typeof(o) === 'string') {
-          return o;
-      } else if (typeof(o) === 'number') {
-          return '' + o;
-      } else {
-          return JSON.stringify(o);
-      }
-  }
 
   var formatCell = objToStr;
 
@@ -444,6 +395,7 @@ script: |-
       var flat = {};
       flattenFields(o, '', flat);
       var keys = Object.keys(flat);
+      keys.sort();
       var md = 'Key | Value\n- | -\n';
       for (var i=0; i<keys.length; i++) {
           md += keys[i] + ' | ' + flat[keys[i]] + '\n';
