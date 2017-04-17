@@ -102,7 +102,7 @@ script:
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
-                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].SHA1, SHA256: r[i].sha256});
+                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
             } else if (r[i].positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
