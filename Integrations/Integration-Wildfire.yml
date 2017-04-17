@@ -70,7 +70,8 @@ script:
             params.proxy
         );
         if (res.StatusCode !==200) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDictReport[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+
         }
         return res.Body;
     };
@@ -107,24 +108,6 @@ script:
         return tblToMd(title, body, Object.keys(body));
     };
 
-    var parseFile = function(body) {
-        var context = {
-          File : [{
-            Type : body.filetype,
-            MD5 : body.md5,
-            SHA1 : body.sha1,
-            SHA256 : body.sha256,
-            Size : body.size,
-            Name : body.filename
-          }]
-        };
-
-        if(body.malware === 'yes'){
-            context['File/Malicious'] = [context.File[0]];
-        }
-        return context;
-    };
-
     var url = params.server.replace(/[\/]+$/, '');
     var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
 
@@ -148,11 +131,11 @@ script:
               return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
           break;
 
-      case 'WildFireReport':
+      case 'wildfire-report':
         url += urlDict.report;
-        var hash = args.md5 || args.sha256;
+        var hash = args.md5 || args.hash;
         if(!hash)
-            throw 'Missing md5/sha256';
+            throw 'Missing md5/hash argument.';
 
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
@@ -160,7 +143,24 @@ script:
         var report = result.wildfire.task_info.report;
         var file_info = result.wildfire.file_info;
 
-        var context = parseFile(result.wildfire.file_info);
+        var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'Wildfire', score: 0 }};
+        var body = result.wildfire.file_info;
+        if (body) {
+            if (body.malware === 'yes') {
+                context.dbotScore.score = 3;
+                context['File/Malicious'] = {
+                                                Type : body.filetype,
+                                                MD5 : body.md5,
+                                                SHA1 : body.sha1,
+                                                SHA256 : body.sha256,
+                                                Size : body.size,
+                                                Name : body.filename
+
+                                            };
+            } else {
+                context.dbotScore.score = 1;
+            }
+        }
 
         if(args.format==='pdf'){
           var bodyPDF = 'apikey='+params.token+'&format=pdf&hash='+hash;
@@ -177,9 +177,11 @@ script:
           };
         }
         else{ /* default format is xml*/
-          var md = resToMD(file_info,'File info');
-          for (var i=0; i<report.length; i++){
-              md += resToMD(report[i],'Report '+i);
+          var md = resToMD(file_info,'Wildfire Report');
+          if (args.verbose) {
+              for (var i=0; i<report.length; i++){
+                  md += resToMD(report[i],'Report '+i);
+              }
           }
           return {Type: entryTypes.note,
                   Contents: result,
@@ -191,43 +193,67 @@ script:
         }
         break;
 
-      case 'WildFireUpload':
+      case 'wildfire-upload':
           url += urlDict.upload;
           var result = sendMultipartRequest(url, headers, args.upload, params.token);
-          var context = parseFile(result.wildfire['upload-file-info']);
           var md = resToMD(result.wildfire['upload-file-info'],'Wildfire Report');
 
           return {Type: entryTypes.note,
                       Contents: result,
                       ContentsFormat: formats.json,
-                      HumanReadable: md, /*todo*/
-                      ReadableContentsFormat: formats.markdown,
-                      EntryContext: context
+                      HumanReadable: md,
+                      ReadableContentsFormat: formats.markdown
               };
 
     }
 
   type: javascript
   commands:
-  - name: WildFireReport
+  - name: wildfire-report
     arguments:
     - name: md5
-    - name: sha256
+      description: MD5 hash to check
+    - name: hash
+      description: SHA256 hash to check
     - name: format
       auto: PREDEFINED
       predefined:
       - xml
       - pdf
+      description: Optional - request a structured report (formatted as XML/PDF)
+    - name: verbose
+      description: Receive extended information from Wildfire
     outputs:
-    - contextPath: File
-      description: ""
-    - contextPath: File/Malicious
-      description: ""
-  - name: WildFireUpload
+    - contextPath: File/Malicious.Name
+      description: Filename
+    - contextPath: File/Malicious.Type
+      description: File type e.g. "PE"
+    - contextPath: File/Malicious.Size
+      description: File size
+    - contextPath: File/Malicious.MD5
+      description: MD5 hash of the file
+      important: true
+      importantDescription: Bad hashes found querying Wildfire
+    - contextPath: File/Malicious.SHA1
+      description: SHA1 hash of the file
+      important: true
+      importantDescription: Bad hashes found querying Wildfire
+    - contextPath: File/Malicious.SHA256
+      description: SHA256 hash of the file
+      important: true
+      importantDescription: Bad hashes found querying Wildfire
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Retrieve results for a file hash using Wildfire
+  - name: wildfire-upload
     arguments:
     - name: upload
-      description: File to upload
-    outputs:
-    - contextPath: File
-      description: ""
+      description: ID of the entry containing the file to upload
+    description: Upload file to wildfire for analysis.
 hidden: false
