@@ -62,6 +62,7 @@ script:
     - name: field
       required: true
       description: Name of the field to retrieve. Can be org, city, geo, etc.
+      auto: PREDEFINED
       predefined:
       - "geo"
       - "loc"
