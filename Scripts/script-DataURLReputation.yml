@@ -4,7 +4,7 @@ commonfields:
 name: DataURLReputation
 script: |-
   var score = -1;
-  var rep = executeCommand('file', {file: args.input});
+  var rep = executeCommand('url', {url: args.input});
   var pt = executeCommand('pt-malware', {query: args.input});
   rep = rep.concat(pt);
   var scores = dq(rep, 'EntryContext.dbotScore.score');
