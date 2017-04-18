@@ -1,27 +1,30 @@
-args:
-- default: true
-  description: Username in Okta to activate
-  name: username
-  required: true
-comment: Activate user
 commonfields:
-  id: OktaActivateUser
-  version: -1
-dependson:
-  must:
-  - okta-activate-user
+  id: 840aa9a7-04b2-4505-8238-8fe85f010dde
+  version: 2
 name: OktaActivateUser
-script: "\nresp = demisto.executeCommand(\"okta-activate-user\", demisto.args())\n\
-  \nif isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
-  \ \"Contents\")\n    if data:\n    \tdata = data if isinstance(data, list) else\
-  \ [data]\n    \tdata = [{k: formatCell(row[k]) for k in row} for row in data]\n\
-  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
-  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
-  )\n"
-scripttarget: 0
-system: true
-deprecated: true
+script: |2
+
+  resp = demisto.executeCommand("okta-activate-user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
 tags:
 - okta
-timeout: 0s
-type: python
+comment: Activate user
+enabled: true
+args:
+- name: username
+  required: true
+  default: true
+  description: Username in Okta to activate
+scripttarget: 0
+deprecated: true
