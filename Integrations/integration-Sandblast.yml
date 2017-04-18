@@ -172,7 +172,7 @@ script:
                 params.insecure
                 );
             if (res.StatusCode < 200 || res.StatusCode >= 300) {
-                throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+                throw 'Failed to sb-upload , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
             saveCookies(res, requestCookies);
             return JSON.parse(res.Body);
