@@ -1,27 +1,19 @@
 commonfields:
   id: FileReputation
-  version: 1
+  version: -1
 name: FileReputation
 script: |-
-  var res = [];
-  var rep = executeCommand('file', {file: args.file});
-  if (rep && Array.isArray(rep)) {
-    for (var i = 0; i < rep.length; i++) {
-      res.push(shortFile(rep[i]));
-    }
-  }
-  return res;
+  return executeCommand('file', {file: args.file});
 type: javascript
 tags:
 - enhancement
-comment: A context script for MD5 entities
+comment: A context script for hash entities
 system: true
-deprecated: true
 args:
 - name: file
   required: true
   default: true
-  description: File MD5 hash to look up
+  description: File hash to look up - supports MD5, SHA1 and SHA256
 scripttarget: 0
 dependson:
   must:
