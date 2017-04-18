@@ -1,22 +1,14 @@
 commonfields:
   id: IPReputation
-  version: 1
+  version: -1
 name: IPReputation
 script: |-
-  var res = [];
-  var rep = executeCommand('ip', {ip: args.ip});
-  if (rep && Array.isArray(rep)) {
-    for (var i = 0; i < rep.length; i++) {
-      res.push(shortIP(rep[i]));
-    }
-  }
-  return res;
+  return executeCommand('ip', {ip: args.ip});
 type: javascript
 tags:
 - enhancement
 comment: A context script for IP entities
 system: true
-deprecated: true
 args:
 - name: ip
   required: true
