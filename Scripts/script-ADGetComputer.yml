@@ -49,7 +49,7 @@ script: |-
       if using:
           args['using'] = using
       resAD = demisto.executeCommand( 'ad-search', args )
-      if isError(resAD[0]):
+      if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'), str) or isinstance(demisto.get(resAD[0],'Contents'), unicode):
           return resAD
       else:
           resAD = prettifyDateTimeADFields(resAD)
@@ -63,7 +63,7 @@ script: |-
           filterstr = r"(&(objectClass=Computer)({0}={1}))".format(queryType,queryValue)
           args['filter'] = filterstr
           resp = demisto.executeCommand('ad-search', args)
-          if isError(resp):
+          if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
               return resp
           else:
               userDN = ""
@@ -125,19 +125,23 @@ script: |-
   if isError(resp):
       demisto.results(resp)
   else:
+      context = {}
       data = demisto.get(resp[0],'Contents')
-      data = data if isinstance(data, list) else [data]
+      if isinstance(data, str) or isinstance(data, unicode) :
+          md = data
+      else:
+          data = data if isinstance(data, list) else [data]
 
-      md = tableToMarkdown("Active Directory Computer", data, headers)
+          md = tableToMarkdown("Active Directory Computer", data, headers)
 
-      endpointContext = createEndpointEntities(data,attrs)
+          context['Endpoint'] = createEndpointEntities(data,attrs)
 
       demisto.results({'Type' : entryTypes['note'],
                       'Contents': data,
                       'ContentsFormat' : formats['json'],
                       'HumanReadable': md,
                       'ReadableContentsFormat' : formats['markdown'],
-                      'EntryContext' : {'Endpoint': endpointContext}})
+                      'EntryContext' : context})
 type: python
 tags:
 - active directory
