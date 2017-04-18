@@ -23,5 +23,7 @@ args:
   description: Full XML contents of the Nexpose report. If not provided, it will be
     taken from the Incident Details.
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - vulnerability-list
 timeout: 0s
