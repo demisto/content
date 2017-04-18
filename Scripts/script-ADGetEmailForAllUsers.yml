@@ -17,12 +17,9 @@ script: |
           mails += [item["mail"]] if item["mail"] else []
 
       demisto.setContext(MAIL_CONTEXT_KEY, ",".join(mails))
-
-      demisto.results('yes')
 type: python
 tags:
 - active directory
-- Condition
 comment: Use Active Directory to retrieve the email address associated with tall users.
 system: true
 scripttarget: 0
@@ -31,10 +28,6 @@ dependson:
   - ad-search
 timeout: 0s
 outputs:
-- contextPath: yes
-  description: if managed to get all users mailboxes
-- contextPath: no
-  description: if did not managed to get all users mailboxes
 - contextPath: Mailboxes
   description: List of all users mailbox addresses
   important: true
