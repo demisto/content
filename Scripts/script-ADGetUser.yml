@@ -181,6 +181,16 @@ dependson:
 timeout: 0s
 outputs:
 - contextPath: Account
-  description: List of Active Directory accounts
-  important: true
-  importantDescription: List of Active Directory accounts
+  description: Active Directory Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+- contextPath: Account.Username
+  description: The Account username
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account.DisplayName
+  description: The Account display name
