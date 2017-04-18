@@ -15,7 +15,7 @@ script: |2
           data = [{k: formatCell(row[k]) for k in row} for row in data]
           demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
       else:
-          demisto.results("No results.")
+          demisto.results("No results.") 
 type: python
 tags:
 - okta
