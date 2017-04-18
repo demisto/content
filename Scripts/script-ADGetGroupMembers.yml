@@ -47,13 +47,18 @@ script: |+
       demisto.results(resp)
   else:
       data = demisto.get(resp[0],'Contents')
-      data = data if isinstance(data, list) else [data]
-      md = tableToMarkdown("Active Directory Group Members", data)
+      md = ""
+      if isinstance(data, str) or isinstance(data, unicode) :
+          md = data
+      else:
+          data = data if isinstance(data, list) else [data]
+          demisto.log(str(data))
+          md = tableToMarkdown("Active Directory Group Members", data)
 
-      if memberType == 'computer':
-          context['Endpoint'] = createEndpointEntities(data,attrs)
-      elif memberType == 'user':
-          context['Account'] = createAccountEntities(data,attrs)
+          if memberType == 'computer':
+              context['Endpoint'] = createEndpointEntities(data,attrs)
+          elif memberType == 'user':
+              context['Account'] = createAccountEntities(data,attrs)
 
       demisto.results({'Type' : entryTypes['note'],
                       'Contents': data,
