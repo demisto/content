@@ -449,6 +449,9 @@ script:
         run_now'
     - name: entryID
       description: entry ID
+    outputs:
+    - contextPath: ATD.taskId
+      description: The task ID of the file upload 
     description: upload a file/web URL for dynamic analysis by using the provided
       Analyzer Profile. Only single file/web URL can be submitted at a time.
   - name: atd-get-task-ids
@@ -465,6 +468,9 @@ script:
         returned value in the File/URL submission step
     - name: jobId
       description: Job id
+    outputs:
+    - contextPath: ATD.status
+      description: The task ID statues (Completed or Analyzing)  
     description: checks the analysis status
   - name: atd-get-report
     arguments:
@@ -493,6 +499,33 @@ script:
         generation is disabled, by default. Use set stixreportstatus enable to enable
         it. • pdf - Portable Document Format • sample - Download sample from McAfee
         Advanced Threat Defense'
+    outputs:
+    - contextPath: File/Malicious.Name
+      description: Filename (only in case of report type=json)
+    - contextPath: File/Malicious.Type
+      description: File type e.g. "PE" (only in case of report type=json)
+    - contextPath: File/Malicious.Size
+      description: File size (only in case of report type=json)
+    - contextPath: File/Malicious.MD5
+      description: MD5 hash of the file (only in case of report type=json)
+      important: true
+      importantDescription: Bad hashes found querying ATD
+    - contextPath: File/Malicious.SHA1
+      description: SHA1 hash of the file (only in case of report type=json)
+      important: true
+      importantDescription: Bad hashes found querying ATD
+    - contextPath: File/Malicious.SHA256
+      description: SHA256 hash of the file (only in case of report type=json)
+      important: true
+      importantDescription: Bad hashes found querying ATD
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested (only in case of report type=json)
+    - contextPath: dbotScore.type
+      description: The type of the indicator (only in case of report type=json)
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score (only in case of report type=json)
+    - contextPath: dbotScore.score
+      description: The actual score (only in case of report type=json)    
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
