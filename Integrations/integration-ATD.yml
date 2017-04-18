@@ -85,17 +85,32 @@ script:
 
     var verifyHash = function() {
         var body = {};
-        body.data = {};
-        body.data.md5 = args.hash;
+        holder = {};
+        holder.md5 = args.hash;
+        //body =  '{\'data\':\''+JSON.stringify(holder)+'\'}';
+        body.data = JSON.stringify(holder);
         return sendRequest('/php/atdHashLookup.php','POST', getHeaders(), body);
     };
 
     var listUsers = function() {
-        return sendRequest('/php/briefUserList.php?userType='+args.userType,'GET', getHeaders());
+        var result = sendRequest('/php/briefUserList.php?userType='+args.userType,'GET', getHeaders());
+
+        var md = tableToMarkdown('ATD User List',result.results);
+        return {Type: entryTypes.note,
+              Contents: JSON.stringify(result),
+              ContentsFormat: formats.json,
+              HumanReadable: md
+        };
     };
 
     var listProfiles = function() {
-        return sendRequest('/php/vmprofiles.php','GET', getHeaders());
+        var result =  sendRequest('/php/vmprofiles.php','GET', getHeaders());
+        var md = tableToMarkdown('ATD VM Profile List',result.results,['name','vmProfileid','vmDesc','sandbox','summary','internet','locBlackList']);
+        return {Type: entryTypes.note,
+              Contents: JSON.stringify(result),
+              ContentsFormat: formats.json,
+              HumanReadable: md
+        };
     };
 
     var heartBeat = function() {
@@ -106,12 +121,51 @@ script:
         return sendRequest('/php/getTaskIdList.php?jobId='+args.jobId,'GET', getHeaders());
     };
 
+    var buildReportContext = function(reportSummary) {
+        var context = {};
+        if ((reportSummary) && (reportSummary.Subject)) {
+            var subject = reportSummary.Subject;
+            context = { dbotScore: {vendor: 'McAfee-Advanced-Threat-Defense', score: 0 }};
+
+            if ( subject.FileType === 0 ) {//file
+                context.dbotScore.indicator = subject.md5;
+                context.dbotScore.type = 'hash';
+                if (subject.Verdict.Severity > 3) {
+                    context.dbotScore.score = 3;
+                    context['File/Malicious'] = {
+                                                Type : subject.Type,
+                                                MD5 : subject.md5,
+                                                SHA1 : subject['sha-1'],
+                                                SHA256 : subject['sha-256'],
+                                                Size : subject.size,
+                                                Name : subject.Name
+                                                };
+                } else {
+                    context.dbotScore.score = 1;
+                }
+            }
+        }
+        return context;
+    };
+
     var getReport = function() {
         uriSuffix = jobOrTaskId();
         if ((args.type) && (args.type === 'json')){
-            return sendRequest('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+            var resString = JSON.stringify(res);
+            var summary = res.Summary;
+            summary.VerdictDescription = summary.Verdict.Description;
+            summary.VerdictSeverity = summary.Verdict.Severity ;
+            var context = buildReportContext(summary);
+            var md = resToMD(summary,'ATD Sandbox Report');
+            return {Type: entryTypes.note,
+              Contents: resString,
+              ContentsFormat: formats.json,
+              HumanReadable: md,
+              EntryContext: context
+            };
         }
-         if (args.type === 'pdf'){
+        if (args.type === 'pdf'){
             var filename = args.jobId;
             if ((!filename) || (filename.length === 0)) {
                 filename = args.taskId;
@@ -125,7 +179,14 @@ script:
 
     var getTaskStatus = function() {
         uriSuffix = jobOrTaskId();
-        return sendRequest('/php/samplestatus.php?'+uriSuffix,'GET', getHeaders());
+        var res = sendRequest('/php/samplestatus.php?'+uriSuffix,'GET', getHeaders());
+        var md = resToMD(res.results,'ATD Sandbox Task Status');
+        return {Type: entryTypes.note,
+              Contents: JSON.stringify(res),
+              ContentsFormat: formats.json,
+              HumanReadable: md,
+              EntryContext: {"ATD.status": res.results.status}
+        };
     };
 
     var jobOrTaskId = function() {
@@ -142,19 +203,35 @@ script:
 
     var getBulkStatus = function() {
         var body = {};
-        body.data = {};
-        body.data.bulkrequest = {};
+        var data = {};
+
+        data.data = {};
+        data.data.bulkrequest = {};
         var total = 0;
         if ((args.jobIDs) && (args.jobIDs.length > 0)) {
-            body.data.bulkrequest.jobIDs = args.jobIDs.split(",");
-            total = body.data.bulkrequest.jobIDs.length;
+            data.data.bulkrequest.jobIDs = stringArrToIntArr(args.jobIDs.split(","));
+            total = data.data.bulkrequest.jobIDs.length;
         }
         if ((args.taskIDs) && (args.taskIDs.length > 0)) {
-            body.data.bulkrequest.taskIDs = args.taskIDs.split(",");
-            total = total + body.data.bulkrequest.taskIDs.length;
+            data.data.bulkrequest.taskIDs = stringArrToIntArr(args.taskIDs.split(","));
+            total = total + data.data.bulkrequest.taskIDs.length;
         }
-        body.data.bulkrequest.numRequest = total;
-        return sendRequest('/php/getBulkStatus.php?','POST', getHeaders(), body);
+        data.data.bulkrequest.numRequest = total;
+        body.data = JSON.stringify(data);
+        //return body;
+        return sendRequest('/php/getBulkStatus.php','POST', getHeaders(), body.data);
+    };
+
+    var stringArrToIntArr = function(stringArr){
+        var intArr = [];
+        for (index = 0; index < stringArr.length; ++index) {
+            intArr.push(parseInt(stringArr[index]));
+        }
+        return intArr;
+    }
+
+    var resToMD = function(body, title) {
+        return tblToMd(title, body, Object.keys(body));
     };
 
     var fileUpload = function() {
@@ -183,7 +260,27 @@ script:
             data.filePriorityQ = 'run_now';
         }
         body.data = JSON.stringify(data);
-        return uploadFile(body,args.entryID)
+        var result =  uploadFile(body,args.entryID);
+
+        var resultObj = JSON.parse(result);
+        var results = resultObj.results;
+        var taskId = '';
+        if ((results) && (results.length > 0)) {
+            var subId = resultObj.subId;
+            resultObj = results[0];
+            taskId = resultObj.taskId;
+            resultObj.subId = subId;// need subId too sometimes
+            if (taskId === -1) {
+                taskId = subId;
+            }
+        }
+        var md = resToMD(resultObj,'ATD sandbox file upload');
+        return {Type: entryTypes.note,
+              Contents: result,
+              ContentsFormat: formats.json,
+              HumanReadable: md,
+              EntryContext: {"ATD.taskId": taskId}
+        };
     };
 
     var uploadFile = function(body,fileParam) {
@@ -209,9 +306,8 @@ script:
         if (uriStr.indexOf("session") === -1) {
             logout();
         }
-        return JSON.parse(b);
+        return b;
     };
-
 
     var logout = function() {
         res = sendRequest('/php/session.php','DELETE', getHeaders());
@@ -224,9 +320,6 @@ script:
         var sess = getSession();
         return {'Accept': ['application/vnd.ve.v1.0+json'],'VE-SDK-API':[Base64.encode(sess.session + ':' + sess.userId)]};
     };
-
-
-
 
     var sendRequestRaw = function(uri,method, headers, body) {
         var res = http(
@@ -257,8 +350,16 @@ script:
             Contents: filename
        };
     }
+
     var sendRequest = function(uri,method, headers, body) {
-        return JSON.parse(sendRequestRaw(uri,method, headers, body));
+        var body = sendRequestRaw(uri,method, headers, body)
+        var res = JSON.parse(body);
+        if (res.success) {
+            if (res.success === 'false') {
+                throw 'ATD Api call to '+uri+' failed with body: '+body;
+            }
+        }
+        return res;
     };
 
     // The command input arg holds the command sent from the user.
@@ -286,22 +387,15 @@ script:
         case 'atd-verify-blacklisted-whitelisted-hashs':
             return verifyHash();
         default:
-            // You can use args[argName] or args.argName to get a specific arg. args are strings.
-            // You can use params[paramName] or params.paramName to get a specific params.
-            // Params are of the type given in the integration page creation.
     }
   type: javascript
   commands:
   - name: atd-file-upload
-    deprecated: false
     arguments:
-    - name: filename
-      description: The name of the sample file. This parameter is optional for URL
-        submissions
     - name: vmProfileList
-      required: false
       description: Analyzer profile ID. The profile ID number can be found in the
-        UI Policy/Analyzer Profile page.
+        UI Policy/Analyzer Profile page, OR using command atd-list-analyzer-profiles,
+        under vmProfileid key result
     - name: submitType
       required: true
       auto: PREDEFINED
@@ -358,24 +452,13 @@ script:
     description: upload a file/web URL for dynamic analysis by using the provided
       Analyzer Profile. Only single file/web URL can be submitted at a time.
   - name: atd-get-task-ids
-    deprecated: false
     arguments:
     - name: jobId
       required: true
       default: true
       description: Serves as an identifier for the previously submitted file.
-    description: ' fetches the list of task id''s associated with a job id'
-  - name: atd-get-bulk-status
-    deprecated: false
-    arguments:
-    - name: jobIDs
-      description: comma separated list of job ID's.
-    - name: taskIDs
-      description: comma separated list of task ID's (jobIDs and taskIDs parameters
-        are mutually exclusive)
-    description: find the status of bulk number of samples in a single query
+    description: 'fetches the list of task id''s associated with a job id'
   - name: atd-check-status
-    deprecated: false
     arguments:
     - name: taskId
       description: This is the returned TaskId value in the submission step, previously
@@ -384,7 +467,6 @@ script:
       description: Job id
     description: checks the analysis status
   - name: atd-get-report
-    deprecated: false
     arguments:
     - name: taskId
       description: This is the returned TaskId value in the submission step, previously
@@ -413,12 +495,10 @@ script:
         Advanced Threat Defense'
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
-    deprecated: false
     arguments: []
     description: ' display the analyzer profiles. Only the analyzer profiles to which
       the user has access are displayed.'
   - name: atd-list-user
-    deprecated: false
     arguments:
     - name: userType
       default: true
@@ -426,16 +506,7 @@ script:
         NSP, MWG, STAND_ALONE and so on.
     description: ' displays the user profile information present on the McAfee Advanced
       Threat Defense.'
-  - name: atd-verify-blacklisted-whitelisted-hashs
-    deprecated: false
-    arguments:
-    - name: hash
-      required: true
-      default: true
-      description: 'md5: Any valid 32 digit hexadecimal number'
-    description: check if a user submitted hash value is either blacklisted or whitelisted.
-      Only single hash value can be verified at a time.
   - name: atd-login
-    deprecated: false
     arguments: []
     description: Returns a logon result for ATD
+hidden: false
