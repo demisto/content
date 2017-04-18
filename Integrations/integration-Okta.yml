@@ -335,7 +335,6 @@ script:
                 term = encodeURIComponent(term);
             }
             res = get(args, params, 'api/v1/users?q=' + term + '&limit=' + limit);
-    console.log(JSON.stringify(res));
             if (res && res.result.length>0) {
                 var md = '### Okta users found:\n';
                 md += usersToMd(res.result,args.verbose);
