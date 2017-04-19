@@ -194,7 +194,7 @@ script:
         if ((args.jobId) && (args.jobId.length > 0)) {
             uriSuffix = 'jobId='+ args.jobId;
         }
-        if ((args.taskId) && (args.taskId.length > 0)) {
+        if (args.taskId) {
             uriSuffix = 'iTaskId='+ args.taskId;
         }
 
@@ -451,7 +451,7 @@ script:
       description: entry ID
     outputs:
     - contextPath: ATD.taskId
-      description: The task ID of the file upload 
+      description: The task ID of the file upload
     description: upload a file/web URL for dynamic analysis by using the provided
       Analyzer Profile. Only single file/web URL can be submitted at a time.
   - name: atd-get-task-ids
@@ -460,7 +460,7 @@ script:
       required: true
       default: true
       description: Serves as an identifier for the previously submitted file.
-    description: 'fetches the list of task id''s associated with a job id'
+    description: fetches the list of task id's associated with a job id
   - name: atd-check-status
     arguments:
     - name: taskId
@@ -470,7 +470,7 @@ script:
       description: Job id
     outputs:
     - contextPath: ATD.status
-      description: The task ID statues (Completed or Analyzing)  
+      description: The task ID statues (Completed or Analyzing)
     description: checks the analysis status
   - name: atd-get-report
     arguments:
@@ -525,7 +525,7 @@ script:
     - contextPath: dbotScore.vendor
       description: Vendor used to calculate the score (only in case of report type=json)
     - contextPath: dbotScore.score
-      description: The actual score (only in case of report type=json)    
+      description: The actual score (only in case of report type=json)
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
