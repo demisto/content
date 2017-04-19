@@ -164,7 +164,7 @@ args:
 - name: customFieldType
   description: Search user by this custom field type
 - name: customFieldData
-  description: Search user by this custom field data (relevant only if `costumeFieldType`
+  description: Search user by this custom field data (relevant only if `customFieldType`
     is provided)
 - name: headers
   description: The columns headers to show by order
