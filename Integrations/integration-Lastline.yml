@@ -8,8 +8,8 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAYCAYAAAAxkDmIAAAAAXN
 description: Submitting resources for analysis and obtaining the results
 configuration:
 - display: Server URL (e.g. https://analysis.lastline.com)
-  name: url 
-  defaultvalue: https://analysis.lastline.com
+  name: url
+  defaultvalue: http://analysis.lastline.com
   type: 0
   required: true
 - display: API Key for accessing Lastline APIs
@@ -58,7 +58,7 @@ script:
         md += 'Submission Time: ' + data.submission + "\n";
         if (Array.isArray(data.malicious_activity) && data.malicious_activity.length>0) {
             md += '### Suspicious Activity\n';
-            md += arrToMd(data.malicious_activity) + "\n";
+            md += objToMd(data.malicious_activity) + "\n";
         }
         if (key == 'file') {
             md += objToMd(data.analysis_subject);
@@ -87,7 +87,6 @@ script:
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
 
-        var obj;
         try {
             obj = JSON.parse(result.Body);
         } catch (ex) {
@@ -98,7 +97,9 @@ script:
         if (obj.error_code && obj.error_code == 106) {
             return {body: null, obj: {data:null}};
         }
-
+        if (obj.success==0) {
+            throw 'Error from Lastline: ' + obj.error;
+        }
         if (obj.error_code) {
             switch (obj.error_code) {
                 case 101:
@@ -108,7 +109,7 @@ script:
                     // analysis report not ready
                     break;
                 default:
-                    throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + ". Error: " + obj.error;
             }
         }
 
@@ -138,7 +139,6 @@ script:
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
-        var obj;
         try {
             obj = JSON.parse(result.Body);
         } catch (ex) {
@@ -197,7 +197,7 @@ script:
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,malicious_score);
             if (result.obj.data.score > malicious_score) {
-                ec['File/Malicious'] = {MD5: result.obj.data.analysis_subject.md5};
+                ec['URL/Malicious']=url;
             }
         } else {
             ec.lastlineTasks=[{'file_id':file_id,'uuid':uuid}];
@@ -285,9 +285,7 @@ script:
         md += dataToMd(data,malicious_score);
 
         if (result.obj.data.score > malicious_score) {
-            ec['File/Malicious'] = {};
-            var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
-            ec['File/Malicious'][hashType] = hash;
+            ec['File/Malicious']=hash;
         }
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
@@ -317,9 +315,9 @@ script:
         if (analysisReady(result.obj.data)) {
             if (result.obj.data.score > malicious_score) {
                 if ('url' in result.obj.data.analysis_subject) {
-                    ec['URL/Malicious']=result.obj.data.analysis_subject.url;
+                    ec['URL/Malicious']={url:result.obj.data.analysis_subject.url,score:result.obj.data.score};
                 } else {
-                    ec['File/Malicious']={MD5:obj.data.analysis_subject.md5,SHA1:data.analysis_subject.sha1,SHA256:data.analysis_subject.sha256,score:result.obj.data.score};
+                    ec['File/Malicious']={md5:obj.data.analysis_subject.md5,sha1:data.analysis_subject.sha1,sha256:data.analysis_subject.sha256,score:result.obj.data.score};
                 }
             }
             md+=dataToMd(result.obj.data,malicious_score);
@@ -351,52 +349,38 @@ script:
   type: javascript
   commands:
   - name: lastlineGet
-    deprecated: false
     arguments:
     - name: uuid
       required: true
-      deprecated: false
       default: true
       description: Analysis report ID
     - name: timeout
-      deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
       defaultValue: "0"
     - name: interval
-      deprecated: false
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
     - name: malicious_score
-      deprecated: false
       description: Score threshold to identify file as malicious
     outputs:
     - contextPath: URL/Malicious
       description: List of malicious URLs identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious URLs identified by Lastline analysis
     - contextPath: File/Malicious
-      description: List of malicious files identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
+      description: List of malicious URLs identified by Lastline analysis
     description: Get analysis report
   - name: url
-    deprecated: false
     arguments:
     - name: url
       required: true
-      deprecated: false
       default: true
-      description: URL to be analyzed
+      description: 'URL to be analyzed '
     - name: timeout
-      deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
       defaultValue: "0"
     - name: interval
-      deprecated: false
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
     - name: malicious_score
-      deprecated: false
       description: Score threshold to identify file as malicious
     outputs:
     - contextPath: lastlineTasks
@@ -407,57 +391,33 @@ script:
       importantDescription: List of malicious URLs identified by Lastline analysis
     description: Submit URL for analysis
   - name: file
-    deprecated: false
     arguments:
     - name: file
       required: true
-      deprecated: false
       default: true
       description: File hash to be checked (supporting MD5, SHA1, SHA256)
     - name: malicious_score
-      deprecated: false
       description: Score threshold to identify file as malicious
     outputs:
-    - contextPath: File/Malicious.MD5
-      description: Bad hash MD5
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA1
-      description: Bad hash SHA1
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA256
-      description: Bad hash SHA256
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: dbotScore.indicator
-      description: The indicator we tested
-    - contextPath: dbotScore.type
-      description: The type of the indicator
-    - contextPath: dbotScore.vendor
-      description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
-      description: The actual score
+    - contextPath: File/Malicious
+      description: List of malicious file hashes identified by Lastline analysis
     description: Submit a file for analysis
   - name: lastlineUpload
-    deprecated: false
     arguments:
     - name: file_id
       required: true
-      deprecated: false
       default: true
       description: File ID to be uploaded
     - name: malicious_score
-      deprecated: false
       description: Score threshold to identify file as malicious
     - name: timeout
-      deprecated: false
       description: Timeout (in seconds) to wait for analysis to complete
     - name: interval
-      deprecated: false
       description: Interval (in seconds) to poll for the analysis status
     outputs:
-    - contextPath: lastlineTasks
-      description: List of the submitted Lastline analysis tasks
+    - contextPath: lastlineTasks.file_id
+      description: File ID of submitted Lastline analysis tasks
+    - contextPath: lastlineTasks.uuid
+      description: Task UUID of submitted Lastline analysis
     description: Upload file for analysis
 hidden: false
