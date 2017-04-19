@@ -121,5 +121,7 @@ args:
 - name: reportdata
   description: 'The report to be parsed '
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - ck-report
 timeout: 0s

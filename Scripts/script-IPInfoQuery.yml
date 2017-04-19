@@ -30,6 +30,7 @@ args:
   default: true
   description: IP address to query. E.g. !ip 1.1.1.1
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - ipinfo_field
