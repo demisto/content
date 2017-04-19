@@ -8,7 +8,7 @@ script: |
   if (isValidRes(res)) {
       return {Type: entryTypes.note, Contents: res[0].Contents, ContentsFormat: formats.json, HumanReadable:
           tableToMarkdown('Users', res[0].Contents, ['username', 'email', 'name', 'phone', 'roles']),
-          EntryContext: {DemistoUsers: res[0].Contents.filter(function(u) {return {username: u.username, email: u.email, phone: u.phone, name: u.name, roles: u.roles};})}};
+          EntryContext: {DemistoUsers: res[0].Contents.map(function(u) {return {username: u.username, email: u.email, phone: u.phone, name: u.name, roles: u.roles};})}};
   }
   return res;
 type: javascript
