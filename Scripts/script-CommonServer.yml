@@ -164,6 +164,8 @@ script: |-
               }
           }
       }
+
+      return value;
   }
 
   /**
