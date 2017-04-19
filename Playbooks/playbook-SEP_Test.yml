@@ -1,5 +1,5 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 110
+version: 23
 name: SEP Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -21,15 +21,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 65
+          "y": 50
         }
       }
   "3":
     id: "3"
-    taskid: f945ee38-fc19-45ff-8208-31abd5ba4f36
+    taskid: 902ca921-3e39-4e75-8c5a-c4e3acab59c0
     type: regular
     task:
-      id: f945ee38-fc19-45ff-8208-31abd5ba4f36
+      id: 902ca921-3e39-4e75-8c5a-c4e3acab59c0
       version: 1
       name: sep-system-info
       description: Get the system information (version, AV definition).
@@ -43,8 +43,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 400
+          "x": 50,
+          "y": 370
         }
       }
   "7":
@@ -67,16 +67,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 575
+          "x": 50,
+          "y": 545
         }
       }
   "8":
     id: "8"
-    taskid: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+    taskid: a72628c1-8c8d-4061-8675-bd244c841950
     type: regular
     task:
-      id: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
+      id: a72628c1-8c8d-4061-8675-bd244c841950
       version: 1
       name: sep-client-content
       description: Retrieves the client content.
@@ -90,8 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 400
+          "x": 480,
+          "y": 370
         }
       }
   "9":
@@ -114,16 +114,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 575
+          "x": 480,
+          "y": 545
         }
       }
   "10":
     id: "10"
-    taskid: 869c953c-ac51-4601-80de-055a4b99b72c
+    taskid: e02eff34-c648-44d5-863f-3684775ac34a
     type: regular
     task:
-      id: 869c953c-ac51-4601-80de-055a4b99b72c
+      id: e02eff34-c648-44d5-863f-3684775ac34a
       version: 1
       name: sep-groups-info
       description: Get information about groups.
@@ -138,15 +138,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 895
         }
       }
   "11":
     id: "11"
-    taskid: af2c889d-b918-4f3b-8aca-cfd925b11610
+    taskid: 2186a3f5-eb6f-4b0e-872a-383d35b2def7
     type: regular
     task:
-      id: af2c889d-b918-4f3b-8aca-cfd925b11610
+      id: 2186a3f5-eb6f-4b0e-872a-383d35b2def7
       version: 1
       name: sep-endpoints-info hostname=WIN-EE8OQ1NRFR0
       description: Get information about endpoints.
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 925
+          "y": 895
         }
       }
   "12":
@@ -189,7 +189,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
   "13":
@@ -211,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1100
+          "y": 1070
         }
       }
   "16":
@@ -239,15 +239,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1975
+          "y": 1945
         }
       }
   "20":
     id: "20"
-    taskid: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+    taskid: 0e42a0b7-7a97-4fb9-8e8e-ab594152fe46
     type: regular
     task:
-      id: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+      id: 0e42a0b7-7a97-4fb9-8e8e-ab594152fe46
       version: 1
       name: DoNothing
       scriptName: DoNothing
@@ -262,15 +262,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1275
+          "y": 1245
         }
       }
   "21":
     id: "21"
-    taskid: 45476e33-76c8-408d-8748-6f2ca0bbcdfa
+    taskid: 618c65ce-3ea7-4683-8456-766915b61e22
     type: regular
     task:
-      id: 45476e33-76c8-408d-8748-6f2ca0bbcdfa
+      id: 618c65ce-3ea7-4683-8456-766915b61e22
       version: 1
       name: DeleteContextKey (SEPM)
       description: Deletes a key from the context.
@@ -289,15 +289,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 225
+          "y": 195
         }
       }
   "22":
     id: "22"
-    taskid: edd06ae6-ecd5-4a89-82c7-190574dd6f65
+    taskid: b6af1074-e1ce-4786-8890-516907c81862
     type: regular
     task:
-      id: edd06ae6-ecd5-4a89-82c7-190574dd6f65
+      id: b6af1074-e1ce-4786-8890-516907c81862
       version: 1
       name: DoNothing
       scriptName: DoNothing
@@ -306,13 +306,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
       - "11"
+      - "10"
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 750
+          "y": 720
         }
       }
   "23":
@@ -338,15 +338,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2325
+          "y": 2295
         }
       }
   "24":
     id: "24"
-    taskid: cf3edca2-5458-44f7-82dc-c339f4af59f7
+    taskid: 28d371e7-f4d8-4dc6-8c8c-5d6e39461960
     type: regular
     task:
-      id: cf3edca2-5458-44f7-82dc-c339f4af59f7
+      id: 28d371e7-f4d8-4dc6-8c8c-5d6e39461960
       version: 1
       name: sep-command-status (Scan command ID)
       description: Retrieves the status of a command.
@@ -363,15 +363,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2150
+          "y": 2120
         }
       }
   "30":
     id: "30"
-    taskid: a6f99055-c0ff-4655-81c2-a7b8218115b5
+    taskid: 5aecec64-8df0-4c3c-8a1b-dfdb02dfbb45
     type: regular
     task:
-      id: a6f99055-c0ff-4655-81c2-a7b8218115b5
+      id: 5aecec64-8df0-4c3c-8a1b-dfdb02dfbb45
       version: 1
       name: All Done!
       scriptName: DoNothing
@@ -382,15 +382,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2500
+          "y": 2470
         }
       }
   "36":
     id: "36"
-    taskid: ba0888b5-13cc-49cd-87fb-1033a1175758
+    taskid: bd63e308-de7c-4f4b-806f-e159d2415e10
     type: regular
     task:
-      id: ba0888b5-13cc-49cd-87fb-1033a1175758
+      id: bd63e308-de7c-4f4b-806f-e159d2415e10
       version: 1
       name: sep-update-content (by IP, wait until done)
       description: Updates the content of the given client.
@@ -409,8 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1450
+          "x": 50,
+          "y": 1420
         }
       }
   "37":
@@ -435,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1800
+          "x": 50,
+          "y": 1770
         }
       }
   "39":
@@ -461,16 +461,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1800
+          "x": 480,
+          "y": 1770
         }
       }
   "40":
     id: "40"
-    taskid: 85a3ebf3-c98d-48b8-8a0e-307ef0023426
+    taskid: aec99eeb-f4fa-4c1e-84c9-6beb2277e7d8
     type: regular
     task:
-      id: 85a3ebf3-c98d-48b8-8a0e-307ef0023426
+      id: aec99eeb-f4fa-4c1e-84c9-6beb2277e7d8
       version: 1
       name: DoNothing
       scriptName: DoNothing
@@ -485,15 +485,15 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1625
+          "y": 1595
         }
       }
   "41":
     id: "41"
-    taskid: f477ef43-65d3-452e-8273-7104a0d36dff
+    taskid: e016b106-b523-4bab-8647-cc552f3d0bbb
     type: regular
     task:
-      id: f477ef43-65d3-452e-8273-7104a0d36dff
+      id: e016b106-b523-4bab-8647-cc552f3d0bbb
       version: 1
       name: sep-quarantine (by hostname, wait until done)
       description: Quarantines the endpoint according to its policy.
@@ -513,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1450
+          "x": 480,
+          "y": 1420
         }
       }
 view: |-
@@ -522,10 +522,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2530,
+        "height": 2515,
         "width": 810,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
