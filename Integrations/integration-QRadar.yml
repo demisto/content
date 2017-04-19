@@ -291,4 +291,3 @@ script:
       description: Table headers
     description: List all assets found in the model
   isfetch: true
-hidden: false
