@@ -29,7 +29,7 @@ configuration:
   required: false
 script:
   script: |+
-    var lastlineDefaults = {interval:10, timeout:0, malicious_score:50};
+    var lastlineDefaults = {interval:10, timeout:0, threshold:50};
 
     var serverUrl = params.url;
     if (serverUrl[serverUrl.length - 1] !== '/') {
@@ -37,7 +37,7 @@ script:
     }
 
     // print data report as markdown
-    var dataToMd = function(data,malicious_score) {
+    var dataToMd = function(data,threshold) {
         var key;
         var name;
         if ('url' in data.analysis_subject) {
@@ -48,7 +48,7 @@ script:
             name = 'MD5:'+data.analysis_subject.md5;
         }
         var md = '';
-        if (data.score>=malicious_score) {
+        if (data.score>=threshold) {
             name = name+ ' :red_circle:';
         }
         md += '### Lastline analysis for ' + key + ': **' + name +'**\n';
@@ -117,8 +117,7 @@ script:
     }
 
     // send http multipart request (post file)
-    var doFile = function (entry_id) {
-        var parameters;
+    var doFile = function (entry_id,parameters) {
         if (!parameters) {
             parameters = {};
         }
@@ -162,14 +161,23 @@ script:
     }
 
     // poll for analysis report
-    var analysisPoll = function(uuid,malicious_score,timeout,interval) {
-        var result = doReq('POST', '/analysis/get', {uuid: uuid, full_report_score:malicious_score});
+    var analysisPoll = function(uuid,threshold,timeout,interval) {
+        if (!timeout) {
+            timeout = lastlineDefaults.timeout;
+        }
+        if (!interval) {
+            interval = lastlineDefaults.interval;
+        }
+        if (!threshold) {
+            threshold = lastlineDefaults.threshold;
+        }
+        var result = doReq('POST', '/analysis/get', {uuid: uuid, full_report_score:threshold});
 
         var waited=0;
         while (!analysisReady(result.obj.data) && parseInt(timeout)>waited) {
             wait(parseInt(interval));
             waited+=interval;
-            result = doReq('POST', 'analysis/get', {uuid: uuid, full_report_score:malicious_score});
+            result = doReq('POST', 'analysis/get', {uuid: uuid, full_report_score:threshold});
         }
         return result;
     }
@@ -182,8 +190,17 @@ script:
     // submit file for analysis
     // optional - wait for analysis to copmplete and print results
     // if not waiting - add uuid to context
-    var fileSubmit = function (file_id,malicious_score,timeout,interval) {
-        result = doFile(file_id);
+    var fileSubmit = function (file_id,threshold,timeout,interval) {
+        if (!timeout) {
+            timeout = lastlineDefaults.timeout;
+        }
+        if (!interval) {
+            interval = lastlineDefaults.interval;
+        }
+        if (!threshold) {
+            threshold = lastlineDefaults.threshold;
+        }
+        result = doFile(file_id,{full_report_score:threshold});
 
         var uuid = result.obj.data.task_uuid;
 
@@ -194,10 +211,15 @@ script:
             result = analysisPoll(uuid,timeout,interval);
         }
 
+        var dbotScore = {indicator: analysis.md5, type: 'hash', vendor: 'Lastline', score:0};
         if (analysisReady(result.obj.data)) {
-            md=dataToMd(result.obj.data,malicious_score);
-            if (result.obj.data.score > malicious_score) {
-                ec['URL/Malicious']=url;
+            md=dataToMd(result.obj.data,threshold);
+            if (result.obj.data.score > threshold) {
+                var analysis = result.obj.data.analysis_subject;
+                ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
+                dbotScore.score=3;
+            } else {
+                dbotScore.score=1;
             }
         } else {
             ec.lastlineTasks=[{'file_id':file_id,'uuid':uuid}];
@@ -205,37 +227,42 @@ script:
             md += 'File submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
+        ec['dbotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     }
 
     // submit URL for analysis and get its report
     // if analysis exists - return it immediately.
     // if analysis does not exist - submit it and either wait or put task id into context
-    var urlGetSubmit = function (url,malicious_score,timeout,interval) {
+    var urlGetSubmit = function (url,threshold,timeout,interval) {
         if (!timeout) {
             timeout = lastlineDefaults.timeout;
         }
         if (!interval) {
             interval = lastlineDefaults.interval;
         }
-        if (!malicious_score) {
-            malicious_score = lastlineDefaults.malicious_score;
+        if (!threshold) {
+            threshold = lastlineDefaults.threshold;
         }
 
-        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:malicious_score});
+        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:threshold});
         var uuid = result.obj.data.task_uuid;
 
         var ec = {};
         var md = '';
 
         if (!analysisReady(result.obj.data) && timeout > 0) {
-            result = analysisPoll(uuid,malicious_score,timeout,interval);
+            result = analysisPoll(uuid,threshold,timeout,interval);
         }
 
+        var dbotScore = {indicator: url, type: 'url', vendor: 'Lastline', score:0};
         if (analysisReady(result.obj.data)) {
-            md=dataToMd(result.obj.data,malicious_score);
-            if (result.obj.data.score > malicious_score) {
+            md=dataToMd(result.obj.data,threshold);
+            if (result.obj.data.score > threshold) {
                 ec['URL/Malicious']=url;
+                dbotScore.score=3;
+            } else {
+                dbotScore.score=1;
             }
         } else {
             ec.lastlineTasks=[{'url':url,'uuid':uuid}];
@@ -243,20 +270,19 @@ script:
             md += 'URL submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
+        ec['dbotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
 
     // get file hash analysis.
     // If hash is not known - retuern error
-    var hashGet = function(hash, malicious_score, full_report_score) {
-        if (!malicious_score) {
-            malicious_score = lastlineDefaults.malicious_score;
+    var hashGet = function(hash, threshold) {
+        if (!threshold) {
+            threshold = lastlineDefaults.threshold;
         }
-        if (!full_report_score) {
-            full_report_score = lastlineDefaults.full_report_score;
-        }
-        var fileParams={full_report_score:malicious_score};
+
+        var fileParams={full_report_score:threshold};
 
         switch (hash.length) {
             case 32:
@@ -282,26 +308,32 @@ script:
             throw 'File hash not found in Lastline';
         }
         var data = result.obj.data;
-        md += dataToMd(data,malicious_score);
+        md += dataToMd(data,threshold);
 
-        if (result.obj.data.score > malicious_score) {
-            ec['File/Malicious']=hash;
+        var dbotScore = {indicator: hash, type: 'hash', vendor: 'Lastline', score: 0};
+        if (result.obj.data.score > threshold) {
+            var analysis = result.obj.data.analysis_subject;
+            ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
+            dbotScore.score= 3;
+        } else {
+            dbotScore.score= 1;
         }
+        ec['dbotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
 
     // get analysis report based on uuid
     // if report not ready - either wait or return waiting message
-    var analysisGet = function(uuid,malicious_score,timeout,interval) {
+    var analysisGet = function(uuid,threshold,timeout,interval) {
         if (!timeout) {
             timeout = lastlineDefaults.timeout;
         }
         if (!interval) {
             interval = lastlineDefaults.interval;
         }
-        if (!malicious_score) {
-            malicious_score = lastlineDefaults.malicious_score;
+        if (!threshold) {
+            threshold = lastlineDefaults.threshold;
         }
         if (!uuid || uuid == '') {
             throw 'No task UUID provided';
@@ -309,22 +341,36 @@ script:
         var ec = {};
         var md = '';
 
-        result = analysisPoll(uuid,malicious_score,timeout,interval);
+        result = analysisPoll(uuid,threshold,timeout,interval);
 
-
+        var dbotScore = {vendor: 'Lastline', score: 0};
         if (analysisReady(result.obj.data)) {
-            if (result.obj.data.score > malicious_score) {
-                if ('url' in result.obj.data.analysis_subject) {
-                    ec['URL/Malicious']={url:result.obj.data.analysis_subject.url,score:result.obj.data.score};
+            var analysis = result.obj.data.analysis_subject;
+            if ('url' in analysis) {
+                dbotScore.type = 'url';
+                dbotScore.indicator = analysis.url;
+                if (result.obj.data.score > threshold) {
+                    ec['URL/Malicious']={url:analysis.url,score:result.obj.data.score};
+                    dbotScore = 3;
                 } else {
-                    ec['File/Malicious']={md5:obj.data.analysis_subject.md5,sha1:data.analysis_subject.sha1,sha256:data.analysis_subject.sha256,score:result.obj.data.score};
+                    dbotScore = 1;
+                }
+            } else {
+                dbotScore.type = 'hash';
+                dbotScore.indicator = analysis.md5;
+                if (result.obj.data.score > threshold) {
+                    ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
+                    dbotcore = 3;
+                } else {
+                    dbotScore=1;
                 }
             }
-            md+=dataToMd(result.obj.data,malicious_score);
+            md+=dataToMd(result.obj.data,threshold);
         } else {
             md += '#### Report not ready.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
+        ec['dbotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
@@ -335,13 +381,16 @@ script:
             urlGetSubmit('google.com');
             return 'ok';
         case 'url':
-            return urlGetSubmit(args.url, args.malicious_score, args.timeout, args.interval);
+            return urlGetSubmit(args.url, args.threshold, args.timeout, args.interval);
         case 'file':
-            return hashGet(args.file, args.malicious_score);
+            return hashGet(args.file, args.threshold,args.threshold);
         case 'lastlineUpload':
-            return fileSubmit(args.file_id, args.malicious_score, args.timeout, args.interval);
+            return fileSubmit(args.file_id, args.threshold, args.timeout, args.interval);
         case 'lastlineGet':
-            return analysisGet(args.uuid, args.malicious_score, args.timeout, args.interval);
+            if (!args.threshold) {
+                args.threshold = lastlineDefaults.threshold;
+            }
+            return analysisGet(args.uuid, args.threshold, args.timeout, args.interval);
         default:
             throw 'Unknown command - ' + command;
     }
@@ -360,13 +409,34 @@ script:
     - name: interval
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
-    - name: malicious_score
+    - name: threshold
       description: Score threshold to identify file as malicious
+      defaultValue: "50"
     outputs:
     - contextPath: URL/Malicious
       description: List of malicious URLs identified by Lastline analysis
-    - contextPath: File/Malicious
-      description: List of malicious URLs identified by Lastline analysis
+      important: true
+      importantDescription: List of malicious URLs identified by Lastline analysis
+    - contextPath: File/Malicious.MD5
+      description: Bad hash MD5
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Get analysis report
   - name: url
     arguments:
@@ -380,8 +450,9 @@ script:
     - name: interval
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
-    - name: malicious_score
+    - name: threshold
       description: Score threshold to identify file as malicious
+      defaultValue: "50"
     outputs:
     - contextPath: lastlineTasks
       description: List of the submitted Lastline analysis tasks
@@ -389,6 +460,14 @@ script:
       description: List of malicious URLs identified by Lastline analysis
       important: true
       importantDescription: List of malicious URLs identified by Lastline analysis
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Submit URL for analysis
   - name: file
     arguments:
@@ -396,11 +475,30 @@ script:
       required: true
       default: true
       description: File hash to be checked (supporting MD5, SHA1, SHA256)
-    - name: malicious_score
+    - name: threshold
       description: Score threshold to identify file as malicious
+      defaultValue: "50"
     outputs:
-    - contextPath: File/Malicious
-      description: List of malicious file hashes identified by Lastline analysis
+    - contextPath: File/Malicious.MD5
+      description: Bad hash MD5
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: List of malicious files identified by Lastline analysis
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
     description: Submit a file for analysis
   - name: lastlineUpload
     arguments:
@@ -408,12 +506,15 @@ script:
       required: true
       default: true
       description: File ID to be uploaded
-    - name: malicious_score
+    - name: threshold
       description: Score threshold to identify file as malicious
+      defaultValue: "50"
     - name: timeout
       description: Timeout (in seconds) to wait for analysis to complete
+      defaultValue: "0"
     - name: interval
       description: Interval (in seconds) to poll for the analysis status
+      defaultValue: "10"
     outputs:
     - contextPath: lastlineTasks.file_id
       description: File ID of submitted Lastline analysis tasks
