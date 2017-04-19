@@ -13,6 +13,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     /**
@@ -120,6 +130,8 @@ script:
 
     var merakiUrlPrefix = 'https://dashboard.meraki.com/api/v0/';
     var apiKey = params.apiKey;
+    var insecure = params.insecure;
+    var proxy = params.proxy;
 
     var sendRequest = function(url, method, body) {
 
@@ -138,8 +150,8 @@ script:
         var res = http(
             requestUrl,
             httpParams,
-            false,
-            false,
+            insecure,
+            proxy,
             true // no redirect (e.i. request is not automatically redirect - instead it will return 302)
         );
 
