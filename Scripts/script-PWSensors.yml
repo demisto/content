@@ -44,5 +44,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - sensors
+  - ProtectWise|||sensors
 timeout: 0s

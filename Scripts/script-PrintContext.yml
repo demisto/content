@@ -17,7 +17,7 @@ script: |-
       demisto.results('Context empty.')
 type: python
 tags:
-- infra
+- Utility
 comment: Pretty-print the contents of the playbook context
 system: true
 args:

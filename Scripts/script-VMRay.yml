@@ -33,5 +33,7 @@ args:
   default: true
   description: The ID of a file entry to upload
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - VMRay|||upload_sample
 timeout: 0s

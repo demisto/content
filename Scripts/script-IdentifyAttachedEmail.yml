@@ -15,11 +15,17 @@ type: python
 tags:
 - phishing
 - email
+- Condition
 comment: Identify whether the incident includes an email message attached as an eml
   or msg file and return the answer to playbook. Also saves the identified entry ID
   to context for use by later scripts such as  ParseEmailFile. Commonly used in automated
   playbooks that handle phishing reports sent to a special phishing mailbox set up
   by the security team.
+outputs:
+- contextPath: yes
+  description: If incident contains an email attachment
+- contextPath: no
+  description: If incident does not contain an email attachment
 system: true
 scripttarget: 0
 dependson: {}

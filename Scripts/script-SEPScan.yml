@@ -60,3 +60,5 @@ args:
   description: The polling interval of the command.
 scripttarget: 0
 timeout: 600ns
+  must:
+  - sep-command-status

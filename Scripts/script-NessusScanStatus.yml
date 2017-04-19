@@ -31,5 +31,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - scan-details
+  - Nessus|||scan-details
 timeout: 0s

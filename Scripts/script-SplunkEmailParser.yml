@@ -80,5 +80,7 @@ args:
 - name: subject
   description: Subject of the email
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - splunk|||search
 timeout: 0s
