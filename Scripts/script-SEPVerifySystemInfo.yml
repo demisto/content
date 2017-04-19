@@ -1,6 +1,6 @@
 commonfields:
-  id: 3dee004a-467f-4904-8e6d-d2dd9ea5112d
-  version: 87
+  id: 90fc21ab-b154-4143-8cd4-d5f243063d49
+  version: 2
 name: SEPVerifySystemInfo
 script: |
   verifyContextField('SEPM.ServerAVDefVersion', '/', 'stringContains');
