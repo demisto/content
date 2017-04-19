@@ -38,7 +38,7 @@ type: python
 tags:
 - ip
 - Condition
-comment: 'Returns True if ip is in one of the ranges provided. '
+comment: 'Returns Yes if ip is in one of the ranges provided.'
 system: true
 args:
 - name: ip
@@ -51,3 +51,8 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+outputs:
+- contextPath: yes
+  description: if given value is an IP range
+- contextPath: no
+  description: if given value is not a IP range

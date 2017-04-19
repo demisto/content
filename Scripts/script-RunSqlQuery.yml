@@ -28,6 +28,7 @@ args:
 - name: limit
   description: 'Limit amount of rows results to be displayed, Default: 100'
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - query

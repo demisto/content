@@ -52,3 +52,6 @@ comment: |
   Will ignore second notification, but will process first notification into incidents.
 system: true
 scripttarget: 0
+dependson:
+  must:
+  - dam-get-latest-by-rule

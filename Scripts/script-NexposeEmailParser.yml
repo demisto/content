@@ -81,5 +81,7 @@ args:
 - name: defaultNexposeSeverity
   description: Severity to be set on triggered incidents
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - nexpose
 timeout: 0s
