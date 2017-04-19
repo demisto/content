@@ -1,11 +1,11 @@
 commonfields:
-  id: 3a8c4e48-6d2a-4401-8332-dbb6e34e95d9
-  version: 8
+  id: d886d6ed-0978-41e5-8f4f-c69e940f66aa
+  version: 3
 name: SEPVerifyEndpointsInfo
 script: |
   verifyContextField('SEPM.Endpoint.Domain', 'WORKGROUP');
   verifyContextField('SEPM.Endpoint.Hostname', 'WIN-EE8OQ1NRFR0');
-  verifyContextField('SEPM.Endpoint.IPAddresses[0]', '172.31.7.250');
+  verifyContextField('SEPM.Endpoint.IPAddresses.[0]', '172.31.7.250');
   verifyContextField('SEPM.Endpoint.OS', 'Windows Server', 'stringContains');
   verifyContextField('SEPM.Endpoint.OS', 'x64', 'stringContains');
 type: javascript

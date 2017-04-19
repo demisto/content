@@ -1,10 +1,10 @@
 commonfields:
-  id: 4bebfe67-a612-4de4-8502-92f2c1f93d5b
-  version: 8
+  id: 98f455f2-8a2c-4c7b-8556-a920e8582d76
+  version: 3
 name: SEPVerifyGroupsInfo
 script: |-
-  verifyContextField('SEPM.Groups[0].fullPathName', 'My Company\\Default Group');
-  verifyContextField('SEPM.Groups[1].fullPathName', 'My Company');
+  verifyContextField('SEPM.Groups.[0].fullPathName', 'My Company\\Default Group');
+  verifyContextField('SEPM.Groups.[1].fullPathName', 'My Company');
 type: javascript
 tags:
 - sep
