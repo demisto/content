@@ -42,168 +42,232 @@ script:
     var apiVersion = '2016-09-15';
 
     var sendRequest = function(method, url) {
-            var res = http(
-                    url,
-                    {
-                        Method: method,
-                        AuthProtocol: ['aws',accessKey,secret]
-                    },
-                    insecure
-                );
-            if (res.StatusCode < 200 || res.StatusCode >= 300) {
-                throw 'Failed to use url ' + url + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-            }
-            return JSON.parse(x2j(res.Body));
+        var res = http(
+            url,
+            {
+                Method: method,
+                AuthProtocol: ['aws',accessKey,secret]
+            },
+            insecure
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to use url ' + url + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return JSON.parse(x2j(res.Body));
     };
 
+    var buildMdAndContext = function (data, actionName, contextMapper) {
+        var mdContext = {md: [], context: {VM : []}};
+        if(!Array.isArray(data)) {
+            data = [data];
+        }
+        data.forEach(function (element) {
+            var contextObj ={};
+            element = dq(element, actionName + 'Response');
+            for(prop in contextMapper) {
+                var dqRes = dq(element, contextMapper[prop]);
+                contextObj[prop] = dqRes !== undefined ? dqRes : "";
+            }
+            if(Object.keys(contextObj).length !== 0) {
+                mdContext.context.VM.push(contextObj);
+            }
+            mdContext.md.push(treeToFlattenObject(element));
+        });
+        return mdContext;
+    };
+
+    var postAwsWithParams = function (urlArgs, contextMapper) {
+        try {
+            var responseObj = sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+            var mdAndContext = buildMdAndContext(responseObj, urlArgs.Action, contextMapper);
+            var md = tblToMd(command, mdAndContext['md'], argToList(args.headers));
+            return {Type: entryTypes.note, Contents: responseObj, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: mdAndContext['context']};
+        } catch (err) {
+            return err;
+        }
+    }
+
     var createInstance = function(imageId, instanceType, keyName, subnetId, privateIpAddress, availabilityZone, securityGroup) {
-            var urlArgs = {};
-            urlArgs.ImageId = imageId;
-            urlArgs.MaxCount = 1;
-            urlArgs.MinCount = 1;
-            urlArgs.Action = 'RunInstances';
-            urlArgs.Version = apiVersion;
-            if ((instanceType) && (instanceType.length > 0)) {
-                 urlArgs.InstanceType = instanceType;
-            }
-            if ((keyName) && (keyName.length > 0)) {
-                 urlArgs.KeyName = keyName;
-            }
-            if ((subnetId) && (subnetId.length > 0)) {
-                 urlArgs.SubnetId = subnetId;
-            }
-            if ((privateIpAddress) && (privateIpAddress.length > 0)) {
-                 urlArgs.PrivateIpAddress = privateIpAddress;
-            }
-            if ((privateIpAddress) && (privateIpAddress.length > 0)) {
-                 urlArgs.PrivateIpAddress = privateIpAddress;
-            }
-            if ((availabilityZone) && (availabilityZone.length > 0)) {
-                 urlArgs['Placement.AvailabilityZone'] = availabilityZone;
-            }
-            if ((securityGroup) && (securityGroup.length > 0)) {
-                 urlArgs['SecurityGroup.1'] = securityGroup;
-            }
-
-
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        var urlArgs = {};
+        urlArgs.ImageId = imageId;
+        urlArgs.MaxCount = 1;
+        urlArgs.MinCount = 1;
+        urlArgs.Action = 'RunInstances';
+        urlArgs.Version = apiVersion;
+        if ((instanceType) && (instanceType.length > 0)) {
+            urlArgs.InstanceType = instanceType;
+        }
+        if ((keyName) && (keyName.length > 0)) {
+            urlArgs.KeyName = keyName;
+        }
+        if ((subnetId) && (subnetId.length > 0)) {
+            urlArgs.SubnetId = subnetId;
+        }
+        if ((privateIpAddress) && (privateIpAddress.length > 0)) {
+            urlArgs.PrivateIpAddress = privateIpAddress;
+        }
+        if ((privateIpAddress) && (privateIpAddress.length > 0)) {
+            urlArgs.PrivateIpAddress = privateIpAddress;
+        }
+        if ((availabilityZone) && (availabilityZone.length > 0)) {
+            urlArgs['Placement.AvailabilityZone'] = availabilityZone;
+        }
+        if ((securityGroup) && (securityGroup.length > 0)) {
+            urlArgs['SecurityGroup.1'] = securityGroup;
+        }
+        var contextMapper =     {
+            ID: 'instancesSet.item.instanceId',
+            ImageID: 'instancesSet.item.imageId',
+            State: 'instancesSet.item.instanceState.name',
+            IPAddress: 'instancesSet.item.ipAddress',
+            PrivateIPAddress: 'instancesSet.item.privateIpAddress',
+            Region: 'instancesSet.item.placement.availabilityZone',
+            Hypervisor: 'instancesSet.item.hypervisor',
+            Name: 'instancesSet.item.tagSet.item.key',
+            Type: 'instancesSet.item.instanceType',
+            LaunchTime: 'instancesSet.item.launchTime',
+            DNSName: 'instancesSet.item.dnsName'
+        };
+        return postAwsWithParams(urlArgs, contextMapper);
     };
 
     var stopInstance = function(instanceId, force) {
-            var urlArgs = {};
-            urlArgs.Action = 'StopInstances';
-            urlArgs['InstanceId.1']= instanceId;
-            urlArgs.Version = apiVersion;
-            if ((force) && (force.length > 0) && (force == 'true')) {
-                 urlArgs.Force = true;
-            }
-
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        var urlArgs = {};
+        urlArgs.Action = 'StopInstances';
+        urlArgs['InstanceId.1']= instanceId;
+        urlArgs.Version = apiVersion;
+        if ((force) && (force.length > 0) && (force == 'true')) {
+            urlArgs.Force = true;
+        }
+        var contextMapper = {
+            ID: 'instancesSet.item.instanceId',
+            State: 'instancesSet.item.currentState.name',
+        };
+        return postAwsWithParams(urlArgs, contextMapper);
     };
 
     var startInstance = function(instanceId) {
-            var urlArgs = {};
-            urlArgs.Action = 'StartInstances';
-            urlArgs['InstanceId.1']= instanceId;
-            urlArgs.Version = apiVersion;
-
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        var urlArgs = {};
+        urlArgs.Action = 'StartInstances';
+        urlArgs['InstanceId.1']= instanceId;
+        urlArgs.Version = apiVersion;
+        var contextMapper = {
+            ID: 'instancesSet.item.instanceId',
+            State: 'instancesSet.item.currentState.name',
+        };
+        return postAwsWithParams(urlArgs, contextMapper);
     };
 
     var createImage = function(instanceId,name,noReboot,description) {
-            var urlArgs = {};
-            urlArgs.Action = 'CreateImage';
-            urlArgs.InstanceId = instanceId;
-            urlArgs.Version = apiVersion;
-            urlArgs.Name = name;
-            if ((noReboot) && (noReboot.length > 0) && (noReboot == 'true')) {
-                 urlArgs.NoReboot = true;
-            }
-            if ((description) && (description.length > 0)) {
-                urlArgs.Description = description;
-            }
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        var urlArgs = {};
+        urlArgs.Action = 'CreateImage';
+        urlArgs.InstanceId = instanceId;
+        urlArgs.Version = apiVersion;
+        urlArgs.Name = name;
+        if ((noReboot) && (noReboot.length > 0) && (noReboot == 'true')) {
+            urlArgs.NoReboot = true;
+        }
+        if ((description) && (description.length > 0)) {
+            urlArgs.Description = description;
+        }
+
+        return postAwsWithParams(urlArgs);
     };
 
     var createVolSnapshot = function(volId,description) {
-            var urlArgs = {};
-            urlArgs.Action = 'CreateSnapshot';
-            urlArgs.VolumeId = volId;
-            urlArgs.Version = apiVersion;
+        var urlArgs = {};
+        urlArgs.Action = 'CreateSnapshot';
+        urlArgs.VolumeId = volId;
+        urlArgs.Version = apiVersion;
 
-            if ((description) && (description.length > 0)) {
-                urlArgs.Description = description;
-            }
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        if ((description) && (description.length > 0)) {
+            urlArgs.Description = description;
+        }
+        return postAwsWithParams(urlArgs);
     };
 
     var getInstanceInfo = function(instanceId,ip,keyName) {
-            var urlArgs = {};
-            urlArgs.Action = 'DescribeInstances';
-            urlArgs.Version = apiVersion;
+        var urlArgs = {};
+        urlArgs.Action = 'DescribeInstances';
+        urlArgs.Version = apiVersion;
 
-            var filterid = 1;
-            var filter;
+        var filterid = 1;
+        var filter;
 
-            if ((instanceId) && (instanceId.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'instance-id';
-                urlArgs[filter+'.Value'] = instanceId;
-                filterid = filterid + 1;
+        if ((instanceId) && (instanceId.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'instance-id';
+            urlArgs[filter+'.Value'] = instanceId;
+            filterid = filterid + 1;
 
-            }
-            if ((ip) && (ip.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'ip-address';
-                urlArgs[filter+'.Value'] = ip;
-                filterid = filterid + 1;
+        }
+        if ((ip) && (ip.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'ip-address';
+            urlArgs[filter+'.Value'] = ip;
+            filterid = filterid + 1;
 
-            }
-           if ((keyName) && (keyName.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'key-name';
-                urlArgs[filter+'.Value'] = keyName;
-                filterid = filterid + 1;
-            }
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        }
+        if ((keyName) && (keyName.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'key-name';
+            urlArgs[filter+'.Value'] = keyName;
+            filterid = filterid + 1;
+        }
+        var contentMapper =         {
+            ID: 'reservationSet.item.instancesSet.item.instanceId',
+            ImageID: 'reservationSet.item.instancesSet.item.imageId',
+            State: 'reservationSet.item.instancesSet.item.instanceState.name',
+            IPAddress: 'reservationSet.item.instancesSet.item.ipAddress',
+            PrivateIPAddress: 'reservationSet.item.instancesSet.item.privateIpAddress',
+            Region: 'reservationSet.item.instancesSet.item.placement.availabilityZone',
+            Hypervisor: 'reservationSet.item.instancesSet.item.hypervisor',
+            Name: 'reservationSet.item.instancesSet.item.tagSet.item.key',
+            Type: 'reservationSet.item.instancesSet.item.instanceType',
+            LaunchTime: 'reservationSet.item.instancesSet.item.launchTime',
+            DNSName: 'reservationSet.item.instancesSet.item.dnsName'
+        };
+        return postAwsWithParams(urlArgs, contentMapper);
     };
+
     var getSecurityGroupInfo = function(sgId,sgName) {
-            var urlArgs = {};
-            urlArgs.Action = 'DescribeSecurityGroups';
-            urlArgs.Version = apiVersion;
+        var urlArgs = {};
+        urlArgs.Action = 'DescribeSecurityGroups';
+        urlArgs.Version = apiVersion;
 
-            var filterid = 1;
-            var filter;
+        var filterid = 1;
+        var filter;
 
-            if ((sgId) && (sgId.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'group-id';
-                urlArgs[filter+'.Value'] = sgId;
-                filterid = filterid + 1;
-            }
-            if ((sgName) && (sgName.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'group-name';
-                urlArgs[filter+'.Value'] = sgName;
-                filterid = filterid + 1;
-            }
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        if ((sgId) && (sgId.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'group-id';
+            urlArgs[filter+'.Value'] = sgId;
+            filterid = filterid + 1;
+        }
+        if ((sgName) && (sgName.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'group-name';
+            urlArgs[filter+'.Value'] = sgName;
+            filterid = filterid + 1;
+        }
+        return postAwsWithParams(urlArgs);
     };
+
     var getEbsVolumeInfo = function(volumeId) {
-            var urlArgs = {};
-            urlArgs.Action = 'DescribeVolumes';
-            urlArgs.Version = apiVersion;
+        var urlArgs = {};
+        urlArgs.Action = 'DescribeVolumes';
+        urlArgs.Version = apiVersion;
 
-            var filterid = 1;
-            var filter;
+        var filterid = 1;
+        var filter;
 
-            if ((volumeId) && (volumeId.length > 0)) {
-                filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = 'volume-id';
-                urlArgs[filter+'.Value'] = volumeId;
-                filterid = filterid + 1;
-            }
-            return sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
+        if ((volumeId) && (volumeId.length > 0)) {
+            filter = 'Filter.'+filterid.toString();
+            urlArgs[filter+'.Name'] = 'volume-id';
+            urlArgs[filter+'.Value'] = volumeId;
+            filterid = filterid + 1;
+        }
+        return postAwsWithParams(urlArgs);
     };
 
     switch (command) {
@@ -213,26 +277,26 @@ script:
             urlArgs.Version = apiVersion;
             sendRequest('GET', awsUrl + encodeToURLQuery(urlArgs));
             return 'ok';
-        case 'run-instance':
+        case 'aws-run-instance':
             return createInstance(args.imageId, args.instanceType, args.keyName, args.subnetId, args.privateIpAddress, args.availabilityZone, args.securityGroup);
-        case 'stop-instance':
+        case 'aws-stop-instance':
             return stopInstance(args.instanceId, args.force);
-        case 'start-instance':
+        case 'aws-start-instance':
             return startInstance(args.instanceId);
-        case 'create-image':
+        case 'aws-create-image':
             return createImage(args.instanceId, args.name, args.noReboot, args.description);
-        case 'create-volume-snapshot':
+        case 'aws-create-volume-snapshot':
             return createVolSnapshot(args.volumeId, args.description);
-        case 'get-instance-info':
+        case 'aws-get-instance-info':
             return getInstanceInfo(args.instanceId, args.ipAddress, args.keyName);
-        case 'get-sg-info':
+        case 'aws-get-sg-info':
             return getSecurityGroupInfo(args.sgId, args.sgName);
-        case 'get-ebs-volume-info':
+        case 'aws-get-ebs-volume-info':
             return getEbsVolumeInfo(args.volumeId);
     }
   type: javascript
   commands:
-  - name: run-instance
+  - name: aws-run-instance
     arguments:
     - name: imageId
       required: true
@@ -256,8 +320,10 @@ script:
     - name: securityGroup
       description: 'Security group name, Default: Amazon EC2 uses the default security
         group.'
+    - name: headers
+      description: Headers to display in Human readable format
     description: create ec2 aws instances from image
-  - name: stop-instance
+  - name: aws-stop-instance
     arguments:
     - name: instanceId
       required: true
@@ -268,8 +334,10 @@ script:
         do not have an opportunity to flush file system caches or file system metadata.
         If you use this option, you must perform file system check and repair procedures.
         This option is not recommended for Windows instances.'
+    - name: headers
+      description: Headers to display in Human readable format
     description: stop ec2 aws instances
-  - name: create-image
+  - name: aws-create-image
     arguments:
     - name: instanceId
       required: true
@@ -288,16 +356,20 @@ script:
         be guaranteed.
     - name: description
       description: A description for the new image
+    - name: headers
+      description: Headers to display in Human readable format
     description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
       that is either running or stopped.
-  - name: start-instance
+  - name: aws-start-instance
     arguments:
     - name: instanceId
       required: true
       default: true
       description: instance ID
+    - name: headers
+      description: Headers to display in Human readable format
     description: Starts an Amazon EBS-backed AMI that you've previously stopped.
-  - name: create-volume-snapshot
+  - name: aws-create-volume-snapshot
     arguments:
     - name: volumeId
       required: true
@@ -305,10 +377,12 @@ script:
       description: The ID of the EBS volume
     - name: description
       description: A description for the snapshot
+    - name: headers
+      description: Headers to display in Human readable format
     description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
       can use snapshots for backups, to make copies of EBS volumes, and to save data
       before shutting down an instance.
-  - name: get-instance-info
+  - name: aws-get-instance-info
     arguments:
     - name: instanceId
       default: true
@@ -317,19 +391,25 @@ script:
       description: Filter search by public IPv4 address of the instance.
     - name: keyName
       description: Filter by the name of the key pair used when the instance was launched.
+    - name: headers
+      description: Headers to display in Human readable format
     description: Describe Instances - Describes one of your instances.
-  - name: get-sg-info
+  - name: aws-get-sg-info
     arguments:
     - name: sgId
       default: true
       description: Security Group ID
     - name: sgName
       description: Security Group Name
+    - name: headers
+      description: Headers to display in Human readable format
     description: Get EC2 Security Group Information
-  - name: get-ebs-volume-info
+  - name: aws-get-ebs-volume-info
     arguments:
     - name: volumeId
       required: true
       default: true
       description: EBS Volume ID
+    - name: headers
+      description: Headers to display in Human readable format
     description: Get EC2 EBS Volume Information
