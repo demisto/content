@@ -113,7 +113,6 @@ script:
         if (range) {
             headers.Range = ['items=' + range];
         }
-        var urlArgs = {};
         return sendRequest('GET', server + 'api/ariel/searches/' + search_id + '/results', headers, 'get search results');
     }
 
@@ -132,12 +131,12 @@ script:
         return sendRequest('GET', server + 'api/asset_model/assets' + encodeToURLQuery(urlArgs), headers, 'get-assets');
     }
 
-    var addHumanRedable = function(object, title, headers) {
+    var addHumanRedable = function(object, title, headers, path) {
         return {
                     Type: entryTypes.note,
                     Contents: object,
                     ContentsFormat: formats.json,
-                    HumanReadable: tblToMd(title, object, headers)
+                    HumanReadable: tblToMd(title, path ? dq(object, path) : object, headers)
               };
     }
 
@@ -190,11 +189,11 @@ script:
         case 'qr-update-offense':
             return addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers);
         case 'qr-searches':
-            return addHumanRedable(search(args.query_expression, args.fields)), 'QRadar searches', headers;
+            return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
         case 'qr-get-search':
             return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
         case 'qr-get-search-results':
-            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get serach results', headers);
+            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get serach results', headers, 'events');
     }
   type: javascript
   commands:
