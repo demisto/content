@@ -28,6 +28,7 @@ args:
   default: true
   description: Domains to do WHOIS lookup on (comma-separated)
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - whois

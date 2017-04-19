@@ -40,5 +40,7 @@ args:
   required: true
   description: The osquery query to execute on remote system
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - RemoteExec
 timeout: 0s

@@ -69,5 +69,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - file
+  - VirusTotal|||file
 timeout: 0s

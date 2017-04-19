@@ -55,5 +55,7 @@ args:
     Only use if not working with Triton as a RemoteAccess integration instance ‐ if
     so, use the "remoteaccessname" argument instead.
 scripttarget: 0
-dependson: {}
+dependson:
+    must:
+    - ssh
 timeout: 0s

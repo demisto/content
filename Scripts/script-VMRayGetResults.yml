@@ -38,5 +38,7 @@ args:
   required: true
   default: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - VMRay|||get_job_sample
 timeout: 0s

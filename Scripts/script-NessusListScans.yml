@@ -39,5 +39,5 @@ system: true
 scripttarget: 0
 dependson:
   must:
-  - scans-list
+  - Nessus|||scans-list
 timeout: 0s

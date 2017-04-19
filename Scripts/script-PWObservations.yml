@@ -87,5 +87,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - observation-search
+  - ProtectWise|||observation-search
 timeout: 0s
