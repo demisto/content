@@ -208,11 +208,11 @@ script:
         data.data = {};
         data.data.bulkrequest = {};
         var total = 0;
-        if ((args.jobIDs) && (args.jobIDs.length > 0)) {
+        if (args.jobIDs) {
             data.data.bulkrequest.jobIDs = stringArrToIntArr(args.jobIDs.split(","));
             total = data.data.bulkrequest.jobIDs.length;
         }
-        if ((args.taskIDs) && (args.taskIDs.length > 0)) {
+        if (args.taskIDs) {
             data.data.bulkrequest.taskIDs = stringArrToIntArr(args.taskIDs.split(","));
             total = total + data.data.bulkrequest.taskIDs.length;
         }
@@ -246,13 +246,13 @@ script:
         data.data.messageId = args.messageId;
         data.data.srcIp = args.srcIp;
         data.data.destIp = args.destIp;
-        if ((args.skipTaskId) && (args.skipTaskId.length > 0)) {
+        if (args.skipTaskId) {
             data.data.skipTaskId = parseInt(args.skipTaskId);
         }
-        if ((args.analyzeAgain) && (args.analyzeAgain.length > 0)) {
+        if (args.analyzeAgain) {
             data.data.analyzeAgain = parseInt(args.analyzeAgain);
         }
-        if ((args.xMode) && (args.xMode.length > 0)) {
+        if (args.xMode) {
             data.data.xMode = parseInt(args.xMode);
         }
         data.filePriorityQ = args.filePriorityQ;
