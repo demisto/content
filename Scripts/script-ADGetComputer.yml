@@ -9,7 +9,7 @@ script: |-
           endpoint = {}
           endpoint['Type'] = 'AD'
           endpoint['ID'] = demisto.get(l,'dn')
-          endpoint['Username'] = demisto.get(l,'name')
+          endpoint['Hostname'] = demisto.get(l,'name')
           endpoint['Groups'] = demisto.get(l,'memberOf')
           for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
               endpoint[attr.title()] = demisto.get(l,attr)
@@ -113,7 +113,7 @@ script: |-
       queryType = "name"
   elif demisto.get(demisto.args(), 'customFieldType'):
       if not demisto.get(demisto.args(), 'customFieldData'):
-          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do costume search both "costumeFieldType" and "costumeFieldData" should be provided' })
+          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search both "customFieldType" and "customFieldData" should be provided' })
       else:
           queryValue = demisto.args()['customFieldData']
           queryType = demisto.args()['customFieldType']
@@ -146,22 +146,22 @@ type: python
 tags:
 - active directory
 comment: |-
-  Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+  Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filters are provided, the result will show all computers.
 system: true
 args:
 - name: dn
   default: true
-  description: Active Directory Distinguished Name for the desired user
+  description: Active Directory Distinguished Name for the desired computer
 - name: name
-  description: Name of the desired user
+  description: Name of the desired computer
 - name: attributes
   description: Include these AD attributes of the resulting objects in addition to
     the default ones
 - name: customFieldType
-  description: Search user by this custom field type
+  description: Search computer by this custom field type
 - name: customFieldData
-  description: Search user by this custom field data (relevant only if `costumeFieldType`
+  description: Search computer by this custom field data (relevant only if `customFieldType`
     is provided)
 - name: headers
   description: The columns headers to show by order
