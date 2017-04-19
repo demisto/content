@@ -149,7 +149,7 @@ script: |-
   function verifyContextField(fieldName, expectedValue, comparisonType) {
       value = dq(invContext, fieldName);
 
-      if (!value) {
+      if (value == undefined) {
           throw 'Field does not exist: {0}.'.format(fieldName);
       }
 
