@@ -789,6 +789,28 @@ script: |-
     }
     return entry;
   }
+
+  /**
+     * Flat all Json tree object to key-value format
+     * @returns {Object} the formatted object (key-value format)
+     */
+  var treeToFlattenObject = function(object) {
+      var retVal = {};
+
+      for (var i in object) {
+          if (!object.hasOwnProperty(i)) continue;
+          if ((typeof object[i]) == 'object' && (!Array.isArray(object[i]) || !(object[i].length == 0 || (typeof object[i][0] != 'object')))) {
+              var flatObject = treeToFlattenObject(object[i]);
+              for (var x in flatObject) {
+                  if (!flatObject.hasOwnProperty(x)) continue;
+                  retVal[i + '.' + x] = flatObject[x];
+              }
+          } else {
+              retVal[i] = object[i];
+          }
+      }
+      return retVal;
+  };
 type: javascript
 tags:
 - infra
