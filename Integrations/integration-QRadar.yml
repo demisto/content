@@ -20,7 +20,7 @@ configuration:
   required: true
 - display: Query to fetch offenses
   name: query
-  defaultvalue: aaa
+  defaultvalue: ""
   type: 0
   required: false
 - display: Fetch incidents
