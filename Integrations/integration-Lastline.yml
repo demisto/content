@@ -223,7 +223,7 @@ script:
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
                 var analysis = result.obj.data.analysis_subject;
-                ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
+                ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,score:result.obj.data.score};
                 dbotScore.score=3;
             } else {
                 dbotScore.score=1;
