@@ -31,36 +31,15 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |2-
 
     var base = params.baseUrl;
-
-    var Base64 = {
-      _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-      encode: function(input) {
-        var output = "";
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-        var i = 0;
-        while (i < input.length) {
-          chr1 = input.charCodeAt(i++);
-          chr2 = input.charCodeAt(i++);
-          chr3 = input.charCodeAt(i++);
-          enc1 = chr1 >> 2;
-          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-          enc4 = chr3 & 63;
-          if (isNaN(chr2)) {
-            enc3 = enc4 = 64;
-          } else if (isNaN(chr3)) {
-            enc4 = 64;
-          }
-          output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
-        }
-
-        return output;
-      }
-    };
 
     var getSession = function() {
         res = sendRequest('/php/session.php','GET', loginHeaders);
@@ -78,6 +57,7 @@ script:
     var username = params.username;
     var password = params.password;
     var insecure = params.insecure;
+    var proxy = params.proxy;
 
     var loginHeaders = {'Accept': ['application/vnd.ve.v1.0+json'], 'Content-Type': ['application/json'], 'VE-SDK-API':[Base64.encode(username + ':' + password)]};
 
@@ -87,7 +67,6 @@ script:
         var body = {};
         holder = {};
         holder.md5 = args.hash;
-        //body =  '{\'data\':\''+JSON.stringify(holder)+'\'}';
         body.data = JSON.stringify(holder);
         return sendRequest('/php/atdHashLookup.php','POST', getHeaders(), body);
     };
@@ -218,7 +197,6 @@ script:
         }
         data.data.bulkrequest.numRequest = total;
         body.data = JSON.stringify(data);
-        //return body;
         return sendRequest('/php/getBulkStatus.php','POST', getHeaders(), body.data);
     };
 
@@ -294,7 +272,7 @@ script:
             },
             body,
             insecure,
-            true,//proxy
+            proxy,
             false,
             'amas_filename'
         );
@@ -329,7 +307,8 @@ script:
                     Headers: headers,
                     Body: body
                 },
-                insecure
+                insecure,
+                proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to use uri ' + base+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
