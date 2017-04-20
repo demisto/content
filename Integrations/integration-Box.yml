@@ -35,9 +35,6 @@ script:
         // remove before merging. This allows running Box integration with different name (so no conflict with exiting integration)
         brandData = {"client_secret":"2i8aeVLJxFffKeWDvcBAZs6nJ6SgEVlw","client_id":"hznnisyhdf09nu9saf2eyfzupawrn9b2"};
         
-        // currently supporting only moving root folder (id:0) so setting it here hard-coded
-        args.folder_id=0;
-
         var sendRequest = function(method, url, body, token) {
             return http(
                     url,
@@ -173,6 +170,9 @@ script:
                     delete args['user_id'];
                     break;
                 case 'box_move_folder':
+                    // currently supporting only moving root folder (id:0) so setting it here hard-coded
+                    args['folder_id']=0;
+
                     base += args['from_user_id'] + '/folders/' + args['folder_id'];
                     delete args['from_user_id'];
                     delete args['folder_id'];
@@ -463,3 +463,4 @@ script:
       the root folder of a Box account (Currently only moving of the root folder (0)
       is supported)
 hidden: false
+systen: true
