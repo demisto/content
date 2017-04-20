@@ -32,9 +32,6 @@ script:
         var currentTime = new Date();
         var twoGraceMinute = 2 * 60 * 1000;
 
-        // remove before merging. This allows running Box integration with different name (so no conflict with exiting integration)
-        brandData = {"client_secret":"2i8aeVLJxFffKeWDvcBAZs6nJ6SgEVlw","client_id":"hznnisyhdf09nu9saf2eyfzupawrn9b2"};
-        
         var sendRequest = function(method, url, body, token) {
             return http(
                     url,
