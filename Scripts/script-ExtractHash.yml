@@ -3,17 +3,21 @@ commonfields:
   version: -1
 name: ExtractHash
 script: |-
+  var text = args.text;
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+  }
   var matches = [], found;
   var regMD5 = /\b[a-fA-F\d]{32}\b/gm;
-  while (found = regMD5.exec(args.text)) {
+  while (found = regMD5.exec(text)) {
       matches.push(found[0]);
   }
   var regSHA1 = /\b[a-fA-F\d]{40}\b/gm;
-  while (found = regSHA1.exec(args.text)) {
+  while (found = regSHA1.exec(text)) {
       matches.push(found[0]);
   }
   var regSHA256 = /\b[a-fA-F\d]{64}\b/gm;
-  while (found = regSHA256.exec(args.text)) {
+  while (found = regSHA256.exec(text)) {
       matches.push(found[0]);
   }
   var ec = {File: []};
@@ -37,7 +41,7 @@ args:
 - name: text
   required: true
   default: true
-  description: The text to extract hashes from
+  description: The text to extract hashes from. If object will convert to JSON.
 outputs:
 - contextPath: File.MD5
   description: Extracted MD5
