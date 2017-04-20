@@ -24,6 +24,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Use system proxy settings
+  name: insecure
+  defaultvalue: "True"
+  type: 8
+  required: false
 script:
   script: |2-
         var base = 'https://api.box.com/2.0/';
@@ -40,7 +45,8 @@ script:
                         Headers: token ? {'Authorization': ['Bearer ' + token]} : {},
                         Body: body,
                     },
-                    false
+                    false,
+                    params.proxy
                 );
         }
 
