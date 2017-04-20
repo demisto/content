@@ -23,13 +23,13 @@ configuration:
   type: 4
   required: true
 - display: Use system proxy settings
-  name: insecure
+  name: proxy
   defaultvalue: "True"
   type: 8
   required: false
 script:
   script: |+
-    var lastlineDefaults = {interval:10, timeout:0, threshold:50};
+    var lastlineDefaults = {interval:10, timeout:0, threshold:50, pushToPortal:true};
 
     var serverUrl = params.url;
     if (serverUrl[serverUrl.length - 1] !== '/') {
@@ -81,7 +81,8 @@ script:
                 Headers: {'Content-Type': ['application/json']},
                 Method: method
             },
-            params.insecure
+            false,
+            params.proxy
         );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
@@ -132,10 +133,11 @@ script:
             {
                 Method: 'POST',
                 Headers: {'Content-Type': ['application/json']}
-            },{},
-            params.insecure
-
-            );
+            },
+            {},
+            false,
+            params.proxy
+        );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
@@ -192,7 +194,7 @@ script:
     // submit file for analysis
     // optional - wait for analysis to copmplete and print results
     // if not waiting - add uuid to context
-    var fileSubmit = function (file_id,threshold,timeout,interval) {
+    var fileSubmit = function (file_id,threshold,timeout,interval,pushToPortal) {
         if (!timeout) {
             timeout = lastlineDefaults.timeout;
         }
@@ -202,7 +204,10 @@ script:
         if (!threshold) {
             threshold = lastlineDefaults.threshold;
         }
-        result = doFile(file_id,{full_report_score:threshold});
+        if (!pushToPortal) {
+            pushToPortal = lastlineDefaults.pushToPortal;
+        }
+        result = doFile(file_id,{full_report_score:threshold, push_to_portal:pushToPortal});
 
         var uuid = result.obj.data.task_uuid;
 
@@ -236,7 +241,7 @@ script:
     // submit URL for analysis and get its report
     // if analysis exists - return it immediately.
     // if analysis does not exist - submit it and either wait or put task id into context
-    var urlGetSubmit = function (url,threshold,timeout,interval) {
+    var urlGetSubmit = function (url,threshold,timeout,interval, pushToPortal) {
         if (!timeout) {
             timeout = lastlineDefaults.timeout;
         }
@@ -246,8 +251,12 @@ script:
         if (!threshold) {
             threshold = lastlineDefaults.threshold;
         }
+        if (!pushToPortal) {
+            pushToPortal = lastlineDefaults.pushToPortal;
+        }
 
-        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:threshold});
+
+        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:threshold, push_to_portal:pushToPortal});
         var uuid = result.obj.data.task_uuid;
 
         var ec = {};
@@ -315,7 +324,7 @@ script:
         var dbotScore = {indicator: hash, type: 'hash', vendor: 'Lastline', score: 0};
         if (result.obj.data.score > threshold) {
             var analysis = result.obj.data.analysis_subject;
-            ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
+            ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,score:result.obj.data.score};
             dbotScore.score= 3;
         } else {
             dbotScore.score= 1;
@@ -353,18 +362,18 @@ script:
                 dbotScore.indicator = analysis.url;
                 if (result.obj.data.score > threshold) {
                     ec['URL/Malicious']={url:analysis.url,score:result.obj.data.score};
-                    dbotScore = 3;
+                    dbotScore.score = 3;
                 } else {
-                    dbotScore = 1;
+                    dbotScore.score = 1;
                 }
             } else {
                 dbotScore.type = 'hash';
                 dbotScore.indicator = analysis.md5;
                 if (result.obj.data.score > threshold) {
-                    ec['File/Malicious']={md5:analysis.md5,sha1:analysis.sha1,sha256:analysis.sha256,score:result.obj.data.score};
-                    dbotcore = 3;
+                    ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,score:result.obj.data.score};
+                    dbotScore.score = 3;
                 } else {
-                    dbotScore=1;
+                    dbotScore.score = 1;
                 }
             }
             md+=dataToMd(result.obj.data,threshold);
@@ -383,11 +392,11 @@ script:
             urlGetSubmit('google.com');
             return 'ok';
         case 'url':
-            return urlGetSubmit(args.url, args.threshold, args.timeout, args.interval);
+            return urlGetSubmit(args.url, args.threshold, args.timeout, args.interval, args.pushToPortal);
         case 'file':
             return hashGet(args.file, args.threshold,args.threshold);
         case 'lastlineUpload':
-            return fileSubmit(args.file_id, args.threshold, args.timeout, args.interval);
+            return fileSubmit(args.file_id, args.threshold, args.timeout, args.interval, args.pushToPortal);
         case 'lastlineGet':
             if (!args.threshold) {
                 args.threshold = lastlineDefaults.threshold;
@@ -455,6 +464,12 @@ script:
     - name: threshold
       description: Score threshold to identify file as malicious
       defaultValue: "50"
+    - name: pushToPortal
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add the request to the Lastline portal
     outputs:
     - contextPath: lastlineTasks
       description: List of the submitted Lastline analysis tasks
@@ -517,6 +532,12 @@ script:
     - name: interval
       description: Interval (in seconds) to poll for the analysis status
       defaultValue: "10"
+    - name: pushToPortal
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add the request to the Lastline portal
     outputs:
     - contextPath: lastlineTasks.file_id
       description: File ID of submitted Lastline analysis tasks
