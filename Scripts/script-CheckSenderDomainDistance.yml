@@ -27,19 +27,22 @@ script: |-
       res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from arguments'})
   else:
       sender = demisto.get(demisto.args(), 'sender')
-      if not sender:
-          sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
-          sender = sender.group(1) if sender else ''
       if sender:
           parts = sender.split('@')
           if len(parts) == 2:
               if not parts[1] in domains:
+                  distances = []
                   for domain in domains:
-                      demisto.log('[*] Checking sender ' + sender + ' against domain ' + domain)
                       distance = levenshtein(domain, parts[1])
-                      if distance > 0 and distance < 3:
+                      distances.append(distance)
+                      closeDistance = demisto.get(demisto.args(), 'distance')
+                      closeDistanceInt = int(closeDistance) if closeDistance else 3
+                      if distance > 0 and distance < closeDistanceInt:
                           res.append({'Type': entryTypes['note'], 'ContentsFormat': formats['text'], 'Contents': 'Domain ' + parts[1] + ' is suspiciously close to ' + domain})
                           found = True
+                  if len(distances) > 0:
+                      # Override the context on each run
+                      demisto.setContext('LevenshteinDistance', distances if len(distances) > 1 else distances[0])
           else:
               res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract domain from sender - ' + sender})
       else:
@@ -66,6 +69,13 @@ args:
 - name: sender
   required: true
   description: Sender email address
+- name: distance
+  required: false
+  description: Distance that is considered close
+  defaultValue: "3"
+outputs:
+- contextPath: LevenshteinDistance
+  description: The closeness of the sender domain to our configured domains
 scripttarget: 0
 dependson: {}
 timeout: 0s
