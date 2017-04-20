@@ -72,7 +72,11 @@ script:
     };
 
     var listUsers = function() {
-        var result = sendRequest('/php/briefUserList.php?userType='+args.userType,'GET', getHeaders());
+        var userType = 'STAND_ALONE';
+        if (args.userType) {
+            userType = args.userType;
+        }
+        var result = sendRequest('/php/briefUserList.php?userType='+userType,'GET', getHeaders());
 
         var md = tableToMarkdown('ATD User List',result.results);
         return {Type: entryTypes.note,
@@ -515,7 +519,7 @@ script:
     - name: userType
       default: true
       description: This is the user type associated with a user profile. For example
-        NSP, MWG, STAND_ALONE and so on.
+        NSP, MWG, STAND_ALONE (default) and so on.
     description: ' displays the user profile information present on the McAfee Advanced
       Threat Defense.'
   - name: atd-login
