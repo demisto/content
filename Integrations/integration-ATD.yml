@@ -162,13 +162,21 @@ script:
 
     var getTaskStatus = function() {
         uriSuffix = jobOrTaskId();
+
         var res = sendRequest('/php/samplestatus.php?'+uriSuffix,'GET', getHeaders());
-        var md = resToMD(res.results,'ATD Sandbox Task Status');
+
+        var status = res.status;
+        resForMd = res;
+        if ((res) && (res.results)) { // when you use TaskID, you get results in res.results
+            resForMd = res.results;
+            status = res.results.status;
+        }
+        var md = resToMD(resForMd,'ATD Sandbox Task Status');
         return {Type: entryTypes.note,
               Contents: JSON.stringify(res),
               ContentsFormat: formats.json,
               HumanReadable: md,
-              EntryContext: {"ATD.status": res.results.status}
+              EntryContext: {"ATD.status": status}
         };
     };
 
@@ -216,26 +224,35 @@ script:
         return tblToMd(title, body, Object.keys(body));
     };
 
+    var castToInt = function(val) {
+        if (typeof val === 'string') {
+            return parseInt(val);
+        } else {
+            return val;
+        }
+    };
+
     var fileUpload = function() {
         var body = {};
         body.data = {};
 
         data = {};
         data.data = {};
-        data.data.vmProfileList = parseInt(args.vmProfileList);
-        data.data.submitType = parseInt(args.submitType);
+        data.data.vmProfileList = castToInt(args.vmProfileList);
+        data.data.submitType = castToInt(args.submitType);
+
         data.data.url = args.url;
         data.data.messageId = args.messageId;
         data.data.srcIp = args.srcIp;
         data.data.destIp = args.destIp;
         if (args.skipTaskId) {
-            data.data.skipTaskId = parseInt(args.skipTaskId);
+            data.data.skipTaskId = castToInt(args.skipTaskId);
         }
         if (args.analyzeAgain) {
-            data.data.analyzeAgain = parseInt(args.analyzeAgain);
+            data.data.analyzeAgain = castToInt(args.analyzeAgain);
         }
         if (args.xMode) {
-            data.data.xMode = parseInt(args.xMode);
+            data.data.xMode = castToInt(args.xMode);
         }
         data.filePriorityQ = args.filePriorityQ;
         if (!body.filePriorityQ) {
