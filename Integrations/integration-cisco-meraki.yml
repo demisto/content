@@ -448,7 +448,7 @@ script:
             rules = [rule];
         } else {
             rules = sendRequest('networks/' + networkId + '/ssids/' + number + '/l3FirewallRules');
-            rules = rules.splice(-1, 2) // remove defulat & local LAN access rules
+            rules = rules.slice(0, -2); // remove defulat & local LAN access rules
             rules.push(rule);
         }
         var body = {
