@@ -77,6 +77,6 @@ outputs:
 scripttarget: 0
 dependson:
   must:
-  - file
+  - cylance|||file
   - cy-upload
 timeout: 0s
