@@ -13,6 +13,9 @@ script: |-
       contextKey = args.contextKey;
   }
   var array = data.split(seperator);
+  for (var i=0; i<array.length; i++) {
+      array[i]= array[i].trim();
+  }
   var context = {};
   context[contextKey] = array;
   return {Type: entryTypes.note,
