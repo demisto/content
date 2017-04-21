@@ -194,7 +194,7 @@ script:
         case 'qr-get-search':
             return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
         case 'qr-get-search-results':
-            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get serach results', headers, 'events');
+            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
     }
   type: javascript
   commands:
