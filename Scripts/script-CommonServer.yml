@@ -93,12 +93,12 @@ script: |-
    * @returns {Array} array from the original string-list
    */
   function tableToMarkdown(name, t, headers) {
-      if (!(t instanceof Array)){
+      if (t && !(t instanceof Array)){
           t = [t];
       }
 
       //in case of headers was not provided (backward compatibility)
-      if (!(headers instanceof Array && headers.length > 0) || !headers){
+      if (t && (!(headers instanceof Array && headers.length > 0) || !headers)){
           headers = Object.keys(t[0]);
       }
 
