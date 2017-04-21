@@ -116,7 +116,7 @@ function tableToMarkdown(name, t, headers) {
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push(!!entry[h] ? stringEscapeMD(formatCell(entry[h])) : ' ');
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h])) : ' ');
               });
               mdResults += vals.join('|') + '\n';
           });

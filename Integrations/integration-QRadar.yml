@@ -133,12 +133,14 @@ script:
     }
 
     var addHumanRedable = function(object, title, headers, path) {
-        return {
-                    Type: entryTypes.note,
-                    Contents: object,
-                    ContentsFormat: formats.json,
-                    HumanReadable: tblToMd(title, path ? dq(object, path) : object, headers)
-              };
+      var obj = path ? dq(object, path) : object;
+      console.log(JSON.stringify(obj))
+      return {
+        Type: entryTypes.note,
+        Contents: object,
+        ContentsFormat: formats.json,
+        HumanReadable: obj && ((obj instanceof Array && obj.length >0) || (obj instanceof Object && Object.keys(obj).length > 0)) ? tblToMd(title, obj, headers) : 'no results'
+      };
     }
 
     var updateOffense = function(offense_id, args) {
@@ -184,21 +186,120 @@ script:
             setLastRun({startTime: startTime});
             return JSON.stringify(incidents);
         case 'qr-offenses':
+        case 'qradar-offenses':
             return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offeneses', headers);
         case 'qr-get-assets':
+        case 'qradar-get-assets':
             return addHumanRedable(getAssets(args.filter, args.fields, args.range), 'QRadar get assets', headers);
         case 'qr-update-offense':
+        case 'qradar-update-offense':
             return addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers);
         case 'qr-searches':
+        case 'qradar-searches':
             return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
         case 'qr-get-search':
+        case 'qradar-get-search':
             return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
         case 'qr-get-search-results':
+        case 'qradar-get-search-results':
             return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
     }
   type: javascript
   commands:
+  - name: qradar-offenses
+    arguments:
+    - name: filter
+      description: Query to filter offenses
+    - name: fields
+      description: 'Fields to filter in '
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
+    description: Gets offenses from qradar
+  - name: qradar-searches
+    arguments:
+    - name: query_expression
+      required: true
+      default: true
+      description: The query expressions in AQL
+    - name: fields
+      description: Fields to filter in
+    - name: headers
+      description: Table headers
+    description: Searches in QRadar
+  - name: qradar-get-search
+    arguments:
+    - name: search_id
+      required: true
+      default: true
+      description: The search id
+    - name: fields
+      description: Fields to filter in
+    - name: headers
+      description: Table headers
+    description: Gets a specific search id
+  - name: qradar-get-search-results
+    arguments:
+    - name: search_id
+      required: true
+      default: true
+      description: The search id
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
+    description: Gets search results
+  - name: qradar-update-offense
+    arguments:
+    - name: offense_id
+      required: true
+      default: true
+      description: The ID of the offense to update
+    - name: protected
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to protect the offense
+    - name: follow_up
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to set the follow up flag on the offense
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - HIDDEN
+      - CLOSED
+      description: he new status for the offense
+    - name: closing_reason_id
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense
+    - name: assigned_to
+      description: A user to assign the offense to
+    - name: headers
+      description: Table headers
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get
+        back in the response. Fields that are not named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas
+    description: Update an offense
+  - name: qradar-get-assets
+    arguments:
+    - name: range
+      description: Number of results in return
+    - name: fields
+      description: Fields to filter in
+    - name: filter
+      description: Query to filter offenses
+    - name: headers
+      description: Table headers
+    description: List all assets found in the model
   - name: qr-offenses
+    deprecated: true
     arguments:
     - name: filter
       description: Query to filter offenses
@@ -210,6 +311,7 @@ script:
       description: Table headers
     description: Gets offenses from qradar
   - name: qr-searches
+    deprecated: true
     arguments:
     - name: query_expression
       required: true
@@ -221,6 +323,7 @@ script:
       description: Table headers
     description: Searches in QRadar
   - name: qr-get-search
+    deprecated: true
     arguments:
     - name: search_id
       required: true
@@ -232,6 +335,7 @@ script:
       description: Table headers
     description: Gets a specific search id
   - name: qr-get-search-results
+    deprecated: true
     arguments:
     - name: search_id
       required: true
@@ -243,6 +347,7 @@ script:
       description: Table headers
     description: Gets search results
   - name: qr-update-offense
+    deprecated: true
     arguments:
     - name: offense_id
       required: true
@@ -280,6 +385,7 @@ script:
         in brackets and multiple fields in the same object are separated by commas
     description: Update an offense
   - name: qr-get-assets
+    deprecated: true
     arguments:
     - name: range
       description: Number of results in return
