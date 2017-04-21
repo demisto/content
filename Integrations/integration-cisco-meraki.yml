@@ -83,8 +83,8 @@ script:
                 var val;
                 headers.forEach(function(key) {
                     val = '-';
-                    if (obj[key] !== undefined) {
-                       val = obj[key];
+                    if (obj[key] || obj[key] === '0' || obj[key] === '0') {
+                        val = obj[key];
                     }
                     values.push(val);
                 });
@@ -156,7 +156,7 @@ script:
         );
 
         // catch redirect response
-        if (!res || res.StatusCode === 302) {
+        if (res && (res.StatusCode === 302 || res.StatusCode === 308)) {
             var redirectUrl = res.Headers.Location;
 
             res = http(
@@ -194,13 +194,13 @@ script:
         return function(obj) {
             var res = {};
             mapFields.forEach(function(f) {
-               res[f.to] = obj[f.from] || null;
+               res[f.to] = (obj[f.from] !== undefined) ? obj[f.from] : null;
             });
             return res;
         }
     }
 
-    // map device api-object to context-object
+    // maps device api-object to context-object
     var mapDeviceFunction = mapObjFunction([
         { from: 'serial', to: 'Serial' },
         { from: 'name', to: 'Name' },
@@ -214,6 +214,15 @@ script:
         { from: 'model', to: 'Model' },
         { from: 'claimedAt', to: 'ClaimedAt' },
         { from: 'publicIp', to: 'PublicIp' }
+    ]);
+
+    // maps firewall api-object to context-object
+    var mapFirewallFunction = mapObjFunction([
+        { from: 'comment', to: 'Comment' },
+        { from: 'policy', to: 'Policy' },
+        { from: 'protocol', to: 'Protocol' },
+        { from: 'destPort', to: 'DestPort' },
+        { from: 'destCidr', to: 'DestCidr' }
     ]);
 
     // --------- organizations ------- //
@@ -363,7 +372,7 @@ script:
            }
         });
 
-        device = sendRequest(url, 'PUT', JSON.stringify(body));
+        var device = sendRequest(url, 'PUT', JSON.stringify(body));
 
         // create context
         var context = {};
@@ -392,18 +401,24 @@ script:
         // get result from http
         var ssids = sendRequest('networks/' + networkId + '/ssids');
 
+
          // create context
         var context = {};
         if(ssids && ssids.length) {
-            context.SSID = ssids.map(mapObjFunction([
+            context.SSID = ssids
+            .map(mapObjFunction([
                 { from: 'name', to: 'Name' },
                 { from: 'splashPage', to: 'SplashPage' },
                 { from: 'bandSelection', to: 'BandSelection' },
                 { from: 'enabled', to: 'Enabled' },
                 { from: 'authMode', to: 'AuthMode' },
                 { from: 'walledGardenRanges', to: 'WalledGardenRanges' },
-                //{ from: 'ip', to: 'IP' }
-            ]));
+                { from: 'number', to: 'Number' }
+            ]))
+            .map(function(ssid) {
+                ssid.NetworkId = networkId;
+                return ssid;
+            });
         }
         return createTableEntry("SSIDs", ssids, context, headers);
     };
@@ -411,19 +426,50 @@ script:
     var fetchFirewallRules = function(networkId, number, headers) {
         // get result from http
         var firewalls = sendRequest('networks/' + networkId + '/ssids/' + number + '/l3FirewallRules');
+         // create context
+        var context = {};
+        if(firewalls && firewalls.length) {
+            context.Firewall = firewalls
+            .map(mapFirewallFunction)
+            .map(function(fireWall) {
+                fireWall.NetworkId = networkId;
+                fireWall.Number = number;
+                return fireWall;
+            });
+        }
+        return createTableEntry("Firewall Rules", firewalls, context, headers);
+    };
+
+    var updateFirewallRules = function(networkId, number, allowLanAccess, removeOthers, rule) {
+        var url = 'networks/' + networkId + '/ssids/' + number + '/l3FirewallRules';
+
+        var rules;
+        if(removeOthers) {
+            rules = [rule];
+        } else {
+            rules = sendRequest('networks/' + networkId + '/ssids/' + number + '/l3FirewallRules');
+            rules = rules.slice(0, -2); // remove defulat & local LAN access rules
+            rules.push(rule);
+        }
+        var body = {
+            allowLanAccess: allowLanAccess,
+            rules: rules
+        };
+
+        var firewalls = sendRequest(url, 'PUT', JSON.stringify(body));
 
          // create context
         var context = {};
         if(firewalls && firewalls.length) {
-            context.Firewall = firewalls.map(mapObjFunction([
-                { from: 'comment', to: 'Comment' },
-                { from: 'policy', to: 'Policy' },
-                { from: 'proto', to: 'Protocol' },
-                { from: 'dst_port', to: 'DestPort' },
-                { from: 'dst_cidr', to: 'DestCidr' }
-            ]));
+            context.Firewall = firewalls
+            .map(mapFirewallFunction)
+            .map(function(fireWall) {
+                fireWall.NetworkId = networkId;
+                fireWall.Number = number;
+                return fireWall;
+            });
         }
-        return createTableEntry("Networks", firewalls, context, headers);
+        return createTableEntry("Firewall Rules", firewalls, context);
     };
 
 
@@ -488,7 +534,7 @@ script:
             );
         case 'meraki-fetch-clients':
             return fetchDeviceClients(
-                args.networkId,
+                args.serial,
                 args.timespan,
                 args.headers && args.headers.split(',')
             );
@@ -497,6 +543,20 @@ script:
                 args.networkId,
                 args.number,
                 args.headers && args.headers.split(',')
+            );
+        case 'meraki-update-firewall-rules':
+            return updateFirewallRules(
+                args.networkId,
+                args.number,
+                (args.allowLanAccess === "true"),
+                (args.removeOthers === "true"),
+                {
+                    policy: args.policy,
+                    protocol: args.protocol,
+                    destPort: args.destPort,
+                    destCidr: args.destCidr,
+                    comment: args.comment
+                }
             );
         case 'meraki-remove-device':
             var networkId = args.networkId;
@@ -586,8 +646,8 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: SSID
-      description: List of SSIDs, each includes Name, SplashPage, BandSelection, Enabled,
-        AuthMode & WalledGardenRanges
+      description: List of SSIDs, each includes Number, NetworkId, Name, SplashPage,
+        BandSelection, Enabled, AuthMode & WalledGardenRanges
     description: List the SSIDs in a network
   - name: meraki-fetch-clients
     arguments:
@@ -617,8 +677,8 @@ script:
       description: Table's headers to be shown by order
     outputs:
     - contextPath: Firewall
-      description: List of firewalls, each includes Policy, Protocol, DestPort, DestCidr
-        & Comment
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
+        DestPort, DestCidr & Comment
     description: List of L3 firewall rules for an SSID
   - name: meraki-remove-device
     arguments:
@@ -640,7 +700,7 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Serial
+    - contextPath: Device
       description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
         Tags, MAC & Address
     description: Get a single device
@@ -676,4 +736,60 @@ script:
       required: true
       description: Device serial to claim
     description: Claim a device into a network
+  - name: meraki-update-firewall-rules
+    arguments:
+    - name: networkId
+      required: true
+      description: Network id
+    - name: number
+      required: true
+      description: SSID number
+      defaultValue: ' '
+    - name: allowLanAccess
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: allow or deny wireless client access to local LAN, true allows
+        access and false denies access
+    - name: policy
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      description: ' Whether or not you want to allow or deny a protocol (value must
+        be ''allow'' or ''deny'')'
+    - name: protocol
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      - any
+      description: The type of protocol (must be 'tcp','udp', 'icmp' or 'any')
+    - name: destPort
+      required: true
+      description: ' The destination port (can be ''any'' or an integer within the
+        range of 1-65535)'
+    - name: destCidr
+      required: true
+      description: The destination IP address or subnet in CIDR form, can also be
+        'any'
+    - name: comment
+      description: A note about the rule
+    - name: removeOthers
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: true to remove all others rule, false to only add rule
+    outputs:
+    - contextPath: Firewall
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
+        DestPort, DestCidr & Comment
+    description: update rule to L3 firewall rules of an SSID
 hidden: false
