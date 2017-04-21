@@ -134,7 +134,6 @@ script:
 
     var addHumanRedable = function(object, title, headers, path) {
       var obj = path ? dq(object, path) : object;
-      console.log(JSON.stringify(obj))
       return {
         Type: entryTypes.note,
         Contents: object,

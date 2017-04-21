@@ -92,7 +92,7 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-function tableToMarkdown(name, t, headers) {
+  function tableToMarkdown(name, t, headers) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
