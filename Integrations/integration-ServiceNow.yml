@@ -671,6 +671,7 @@ script:
     arguments:
     - name: limit
       description: Limit for how many tickets to retrieve
+      defaultValue: "10"
     - name: sysparm_query
       description: Query
     outputs:
