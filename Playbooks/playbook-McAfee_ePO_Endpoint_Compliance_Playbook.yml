@@ -139,11 +139,11 @@ tasks:
       version: 1
       name: Open ServiceNow ticket with list of problematic endpoints to be handled
         by the appropriate team
-      script: ServiceNowV2|||servicenow-incident-create
+      script: ServiceNow|||servicenow-incident-create
       issystemtask: true
       type: regular
       iscommand: true
-      brand: ServiceNowV2
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "8"
@@ -260,11 +260,11 @@ tasks:
       id: 99679543-7b3b-4f76-8cc7-fec535710df0
       version: 1
       name: Display list of AV related tickets from ServiceNow
-      script: ServiceNowV2|||servicenow-incidents-query
+      script: ServiceNow|||servicenow-incidents-query
       issystemtask: true
       type: regular
       iscommand: true
-      brand: ServiceNowV2
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "13"
