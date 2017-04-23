@@ -1,5 +1,7 @@
 id: playbook11
-version: 5
+version: -1
+system: true
+fromversion: -1
 name: McAfee ePO Repository Compliance Playbook
 description: Ensures that ePO servers are updated to the latest McAfee published AV
   signatures (DAT file version).
@@ -11,7 +13,7 @@ tasks:
     type: start
     task:
       id: ee018e04-2610-4998-87d0-f5217127bbad
-      version: 1
+      version: -1
       name: start_task
       issystemtask: true
       type: start
@@ -34,7 +36,7 @@ tasks:
     type: regular
     task:
       id: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
-      version: 1
+      version: -1
       name: Retrieve DAT version and date from McAfee
       script: epo|||epo-get-latest-dat
       issystemtask: true
@@ -57,7 +59,7 @@ tasks:
     type: regular
     task:
       id: b7e28ac8-487e-4946-8316-7361f08ac1c5
-      version: 1
+      version: -1
       name: Initiate update task in each local repository
       script: epo|||epo-update-repository
       issystemtask: true
@@ -82,7 +84,7 @@ tasks:
     type: regular
     task:
       id: 620023d1-63b0-4834-81a2-74dd20437dda
-      version: 1
+      version: -1
       name: Send report to admin with update results
       scriptName: SendEmail
       issystemtask: true
@@ -114,7 +116,7 @@ tasks:
     type: regular
     task:
       id: dccfaaf4-cca5-44d3-8818-6a5131b502ed
-      version: 1
+      version: -1
       name: Send email alert with list of faulty repositories to admin
       scriptName: SendEmail
       issystemtask: true
@@ -147,7 +149,7 @@ tasks:
     type: regular
     task:
       id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
-      version: 1
+      version: -1
       name: Close the investigation
       scriptName: CloseInvestigation
       issystemtask: true
@@ -170,7 +172,7 @@ tasks:
     type: regular
     task:
       id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
-      version: 1
+      version: -1
       name: epo-get-current-dat
       description: check the existing DAT file version in ePO
       script: epo|||epo-get-current-dat
@@ -193,7 +195,7 @@ tasks:
     type: condition
     task:
       id: 4405829c-0e70-4c29-8a33-3c17a9644b00
-      version: 1
+      version: -1
       name: Check if ePO has latest DAT from McAfee
       description: Check whether the values provided in arguments are equal.
       scriptName: AreValuesEqual
@@ -223,7 +225,7 @@ tasks:
     type: regular
     task:
       id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
-      version: 1
+      version: -1
       name: Wait for 5 minutes
       description: Sleep for X seconds
       scriptName: Sleep
@@ -248,7 +250,7 @@ tasks:
     type: regular
     task:
       id: b766e4a2-8988-46e1-84ab-d91d118d48a7
-      version: 1
+      version: -1
       name: Get ePO current DAT version
       description: check the existing DAT file version in ePO
       script: epo|||epo-get-current-dat
@@ -273,7 +275,7 @@ tasks:
     type: condition
     task:
       id: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
-      version: 1
+      version: -1
       name: Check if ePO has latest DAT from McAfee
       description: Check whether the values provided in arguments are equal.
       scriptName: AreValuesEqual
@@ -303,7 +305,7 @@ tasks:
     type: regular
     task:
       id: 5e480762-0617-4ad1-80e3-8bead4c6adf5
-      version: 1
+      version: -1
       name: Set incident to High severity
       description: Modify incident info such as name, owner, type, etc.
       scriptName: IncidentSet
