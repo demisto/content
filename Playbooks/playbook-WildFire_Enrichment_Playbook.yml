@@ -40,7 +40,6 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      file: ${File.MD5}
       format: ""
       hash: ""
       md5: ${File.MD5}
@@ -65,7 +64,6 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      file: ${File.SHA1}
       format: ""
       hash: ${File.SHA1}
       md5: ""
@@ -90,7 +88,6 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      file: ${File.SHA256}
       format: ""
       hash: ${File.SHA256}
       md5: ""
