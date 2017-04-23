@@ -27,6 +27,7 @@ type: python
 tags:
 - servicenow
 system: true
+deprecated: true
 args:
 - name: query
   default: true
