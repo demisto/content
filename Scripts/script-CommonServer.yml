@@ -98,7 +98,7 @@ script: |-
       }
 
       //in case of headers was not provided (backward compatibility)
-      if (t && (!(headers instanceof Array && headers.length > 0) || !headers)){
+      if ((!headers || !headers instanceof Array) && t && t.length > 0){
           headers = Object.keys(t[0]);
       }
 
@@ -106,7 +106,7 @@ script: |-
       if (name) {
           mdResults = '### ' + name + '\n';
       }
-      if (t) {
+      if (t && t.length) {
           mdResults += headers.join('|') + '\n';
           var sep = [];
           headers.forEach(function(h){
