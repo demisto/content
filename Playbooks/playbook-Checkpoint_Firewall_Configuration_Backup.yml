@@ -11,7 +11,7 @@ tasks:
     type: start
     task:
       id: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
-      version: 3
+      version: -1
       name: start_task
       issystemtask: true
       type: start
