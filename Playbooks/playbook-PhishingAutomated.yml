@@ -398,8 +398,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 2633
+          "x": 695,
+          "y": 2863
         }
       }
   "23":
@@ -424,8 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 2784
+          "x": 695,
+          "y": 3011
         }
       }
   "28":
@@ -1707,14 +1707,40 @@ tasks:
       "no":
       - "28"
       "yes":
-      - "22"
+      - "84"
     scriptarguments:
       value: ${File.EntryID}
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 2490
+          "y": 2558
+        }
+      }
+  "84":
+    id: "84"
+    taskid: b246b78b-af64-44c0-8ca2-f3e137f44794
+    type: condition
+    task:
+      id: b246b78b-af64-44c0-8ca2-f3e137f44794
+      version: -1
+      name: 'Is there any file found in this investigation which is not attachment? '
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "22"
+    scriptarguments:
+      value: ${File.EntryID(val!=val1---EmailAttachment)}
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2653
         }
       }
 view: |-
@@ -1730,6 +1756,9 @@ view: |-
       "60_64_#default#": 0.85,
       "62_64_#default#": 0.46,
       "78_81_no": 0.9,
+      "83_28_no": 0.46,
+      "84_22_yes": 0.61,
+      "84_28_no": 0.67,
       "9_72_#default#": 0.26
     },
     "paper": {
