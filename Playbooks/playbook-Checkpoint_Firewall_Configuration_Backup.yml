@@ -1,10 +1,8 @@
 id: playbook14
 version: -1
-name: Checkpoint Firewall Configuration Backup Playbook
+name: Checkpoint Firewall Configuration Backup Playbook_copy
 description: Triggers a backup task on each firewall appliance and pulls the resulting
   file into the war room via SCP.
-system: true
-fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -13,14 +11,15 @@ tasks:
     type: start
     task:
       id: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
-      version: -1
+      version: 3
       name: start_task
+      issystemtask: true
       type: start
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     view: |-
       {
         "position": {
@@ -28,38 +27,13 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 230eed7b-c702-4c0f-87f0-700bd9d630b1
-    type: regular
-    task:
-      id: 230eed7b-c702-4c0f-87f0-700bd9d630b1
-      version: -1
-      name: Determine list of devices to be backed up
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      key: chkpdevicestobackup
-      value: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
   "2":
     id: "2"
-    taskid: 6eb6a468-79cc-460b-8e2c-cada1799b034
+    taskid: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
     type: regular
     task:
-      id: 6eb6a468-79cc-460b-8e2c-cada1799b034
-      version: -1
+      id: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
+      version: 1
       name: Trigger backup on each device
       scriptName: CPCreateBackup
       issystemtask: true
@@ -70,7 +44,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      devices: ${chkpdevicestobackup}
+      devices: ${incident.labels.CheckpointDevice}
     results:
     - chkpbackupstarted
     - devicesbackuperrorstarting
@@ -78,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 195
         }
       }
   "3":
@@ -87,7 +61,7 @@ tasks:
     type: regular
     task:
       id: 143e5bcf-7746-409b-8c53-ff761a2d4b99
-      version: -1
+      version: 3
       name: Show status for initiated backup tasks
       scriptName: CPShowBackupStatus
       issystemtask: true
@@ -108,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
   "4":
@@ -117,7 +91,7 @@ tasks:
     type: condition
     task:
       id: 1e1e3c6f-5703-47ea-8d70-871327266a2b
-      version: -1
+      version: 3
       name: Have any backups failed?
       scriptName: UtilAnyResults
       issystemtask: true
@@ -135,16 +109,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+    taskid: aa0f5d93-0db2-4b35-85b4-0be5b82e7f46
     type: regular
     task:
-      id: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
-      version: -1
+      id: aa0f5d93-0db2-4b35-85b4-0be5b82e7f46
+      version: 1
       name: Open ticket on ServiceNow with list of problematic devices
       scriptName: SNOpenTicket
       issystemtask: true
@@ -163,17 +137,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 293,
-          "y": 903
+          "x": 501,
+          "y": 719
         }
       }
   "6":
     id: "6"
-    taskid: 36723772-43f0-4619-872f-f54d53770054
+    taskid: d406f402-c523-4126-889b-a5dcab1f836d
     type: regular
     task:
-      id: 36723772-43f0-4619-872f-f54d53770054
-      version: -1
+      id: d406f402-c523-4126-889b-a5dcab1f836d
+      version: 1
       name: Retrieve the backup files from the devices
       scriptName: SCPPullFiles
       issystemtask: true
@@ -184,21 +158,21 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      systems2files: ${devicesbackupfiles}
+      systems2files: ${incident.labels.CheckpointFilePath}
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1097
+          "x": 50,
+          "y": 932
         }
       }
   "7":
     id: "7"
-    taskid: d187c4cc-630c-4edd-8048-40678669101b
+    taskid: 362bae09-4ea1-4a37-8b15-d74374cac4e0
     type: regular
     task:
-      id: d187c4cc-630c-4edd-8048-40678669101b
-      version: -1
+      id: 362bae09-4ea1-4a37-8b15-d74374cac4e0
+      version: 1
       name: Email a report of backup results
       scriptName: SendEmail
       issystemtask: true
@@ -214,22 +188,23 @@ tasks:
       body: ${backupsreporttext}
       cc: ""
       htmlBody: ""
+      noteEntryID: ""
       subject: Demisto - Checkpoint Backup Report
-      to: ""
+      to: ${incident.labels.CheckpointOwner}
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1291
+          "x": 53,
+          "y": 1134
         }
       }
   "8":
     id: "8"
-    taskid: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+    taskid: e27863cf-0239-418a-8b9e-7e0967464941
     type: regular
     task:
-      id: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
-      version: -1
+      id: e27863cf-0239-418a-8b9e-7e0967464941
+      version: 1
       name: CloseInvestigation
       scriptName: CloseInvestigation
       issystemtask: true
@@ -242,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1485
+          "x": 50,
+          "y": 1331
         }
       }
 view: |-
@@ -251,8 +226,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1530,
-        "width": 623,
+        "height": 1376,
+        "width": 831,
         "x": 50,
         "y": 50
       }
