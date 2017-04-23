@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2380acff-abe1-46f1-8910-1aedfd2dd492
+    taskid: start-enrich
     type: start
     task:
-      id: 2380acff-abe1-46f1-8910-1aedfd2dd492
+      id: start-enrich
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3105f277-5117-4c1e-8ccd-ccdd178ca962
+    taskid: falcon-md5
     type: regular
     task:
-      id: 3105f277-5117-4c1e-8ccd-ccdd178ca962
+      id: falcon-md5
       version: -1
       name: Check MD5s
       script: FalconIntel|||file
@@ -52,10 +52,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: a47488ec-b99f-4b6c-8b1c-8237588a86b7
+    taskid: falcon-file-sha1
     type: regular
     task:
-      id: a47488ec-b99f-4b6c-8b1c-8237588a86b7
+      id: falcon-file-sha1
       version: -1
       name: Check SHA1s
       script: FalconIntel|||file
@@ -73,10 +73,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: afbc5729-8165-4c29-8f54-7a5af5366906
+    taskid: falcon-file-sha256
     type: regular
     task:
-      id: afbc5729-8165-4c29-8f54-7a5af5366906
+      id: falcon-file-sha256
       version: -1
       name: Check SHA256s
       script: FalconIntel|||file
@@ -94,10 +94,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 8aff31d4-dfea-40b2-8f14-e60dea0a9fc9
+    taskid: falcon-file-ip
     type: regular
     task:
-      id: 8aff31d4-dfea-40b2-8f14-e60dea0a9fc9
+      id: falcon-file-ip
       version: -1
       name: Check IPs
       script: FalconIntel|||ip
@@ -105,7 +105,6 @@ tasks:
       iscommand: true
       brand: FalconIntel
     scriptarguments:
-      file: ${File.SHA256}
       ip: ${IP.Address}
     view: |-
       {
@@ -116,10 +115,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 462ebe6e-30b3-4856-8bec-0275247e7a5b
+    taskid: falcon-file-url
     type: regular
     task:
-      id: 462ebe6e-30b3-4856-8bec-0275247e7a5b
+      id: falcon-file-url
       version: -1
       name: Check URLs
       script: FalconIntel|||url
@@ -127,8 +126,6 @@ tasks:
       iscommand: true
       brand: FalconIntel
     scriptarguments:
-      file: ${File.SHA256}
-      ip: ${IP.Address}
       url: ${URL}
     view: |-
       {
@@ -139,11 +136,11 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: bfd8fbc4-2f42-4dc0-8e18-8c04a4d572c2
+    taskid: is-md5-exists
     type: condition
     task:
-      id: bfd8fbc4-2f42-4dc0-8e18-8c04a4d572c2
-      version: 1
+      id: is-md5-exists
+      version: -1
       name: Is MD5 exists in incident
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -167,11 +164,11 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: b6d7ada6-dfd8-4c6c-83bf-5e9b13e90cc5
+    taskid: is-sha1-exists
     type: condition
     task:
-      id: b6d7ada6-dfd8-4c6c-83bf-5e9b13e90cc5
-      version: 1
+      id: is-sha1-exists
+      version: -1
       name: Is SHA1 exists in incident
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -195,11 +192,11 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 2d59c415-6f7b-446b-8175-f1c1ef961e33
+    taskid: is-url-exists
     type: condition
     task:
-      id: 2d59c415-6f7b-446b-8175-f1c1ef961e33
-      version: 1
+      id: is-url-exists
+      version: -1
       name: Is URL exists in Incident
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -223,11 +220,11 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 9bb5684d-53d6-47b3-83c3-5cbd1dfb734e
+    taskid: is-ip-exists
     type: condition
     task:
-      id: 9bb5684d-53d6-47b3-83c3-5cbd1dfb734e
-      version: 1
+      id: is-ip-exists
+      version: -1
       name: Is IP exists in incident
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -251,11 +248,11 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 08e1c7d5-eeb6-4233-82ca-c19dfab17daf
+    taskid: is-sha256-exists
     type: condition
     task:
-      id: 08e1c7d5-eeb6-4233-82ca-c19dfab17daf
-      version: 1
+      id: is-sha256-exists
+      version: -1
       name: Is SHA256 exists in incident
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -279,18 +276,19 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: d536069b-6d4e-47e2-8303-3c5503d7aa51
-    type: title
+    taskid: enrich-done
+    type: regular
     task:
-      id: d536069b-6d4e-47e2-8303-3c5503d7aa51
-      version: 1
+      id: enrich-done
+      version: -1
       name: Done
+      issystemtask: true
+      type: regular
       scriptName: Print
-      type: title
       iscommand: false
       brand: ""
     scriptarguments:
-      value: Done
+      value: Crowdstrike enrichment done
     view: |-
       {
         "position": {
