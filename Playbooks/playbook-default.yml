@@ -14,17 +14,18 @@ tasks:
       id: 96dbf98e-bc4e-4d21-808f-54cf03241207
       version: -1
       name: start_task
+      issystemtask: true
       type: start
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "2"
     view: |-
       {
         "position": {
-          "x": -257,
-          "y": 35
+          "x": 1350,
+          "y": 50
         }
       }
   "2":
@@ -41,54 +42,26 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "10"
+      "no":
+      - "23"
       "yes":
-      - "3"
+      - "22"
     scriptarguments:
       key: Label/Email/from
       value: ${incident.labels.Email/from}
     view: |-
       {
         "position": {
-          "x": -257,
-          "y": 391
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 5f274bd6-82a8-4f81-87e9-ca8561e78661
-    type: condition
-    task:
-      id: 5f274bd6-82a8-4f81-87e9-ca8561e78661
-      version: -1
-      name: Is this email coming from Splunk
-      scriptName: Set
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    scriptarguments:
-      key: incident.labels.Email/from
-      value: set-to-splunk-sender
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 583
+          "x": 1350,
+          "y": 195
         }
       }
   "4":
     id: "4"
-    taskid: 3e289371-6cd3-4665-8109-6c79c71fbfc2
+    taskid: 610f12ea-ce4f-444c-8dfe-3a4ffb6df6f9
     type: regular
     task:
-      id: 3e289371-6cd3-4665-8109-6c79c71fbfc2
+      id: 610f12ea-ce4f-444c-8dfe-3a4ffb6df6f9
       version: -1
       name: SplunkEmailParser
       scriptName: SplunkEmailParser
@@ -98,43 +71,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "30"
     scriptarguments:
-      body: ${Label/Email/html}
-      subject: ${Label/Email/subject}
+      body: ${incident.labels.Email/html}
+      subject: ${incident.labels.Email/subject}
     view: |-
       {
         "position": {
-          "x": 573,
-          "y": 749
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 4225b27f-723a-4a25-8756-1e1cfd7e234f
-    type: condition
-    task:
-      id: 4225b27f-723a-4a25-8756-1e1cfd7e234f
-      version: -1
-      name: Is this a Nexpose email
-      scriptName: Set
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "6"
-    scriptarguments:
-      key: incident.labels.Email/from
-      value: set-to-nexpose-sender
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 917
+          "x": 1360,
+          "y": 690
         }
       }
   "6":
@@ -152,40 +97,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "30"
     view: |-
       {
         "position": {
-          "x": 552,
-          "y": 1081
-        }
-      }
-  "7":
-    id: "7"
-    taskid: cfb8b77c-fa54-4792-834e-6f3b9d4e278a
-    type: condition
-    task:
-      id: cfb8b77c-fa54-4792-834e-6f3b9d4e278a
-      version: -1
-      name: Is this a SentinelOne email
-      scriptName: Set
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "8"
-    scriptarguments:
-      key: incident.labels.Email/from
-      value: set-to-sentinelone-sender
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1255
+          "x": 1795,
+          "y": 690
         }
       }
   "8":
@@ -203,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "30"
     scriptarguments:
       addLabels: ""
       customFieldName: ""
@@ -220,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 542.5,
-          "y": 1428
+          "x": 2323,
+          "y": 690
         }
       }
   "9":
@@ -237,9 +154,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
     scriptarguments:
       addLabels: ""
       customFieldName: ""
@@ -256,301 +170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 53,
-          "y": 1620
-        }
-      }
-  "10":
-    id: "10"
-    taskid: f9de0883-2020-490e-85ed-fdfb66a2db87
-    type: condition
-    task:
-      id: f9de0883-2020-490e-85ed-fdfb66a2db87
-      version: -1
-      name: Is this a malware incident
-      description: Did it involve a malicious binary running in your environment?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "11"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1919
-        }
-      }
-  "11":
-    id: "11"
-    taskid: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
-    type: regular
-    task:
-      id: c5d0e4fe-72db-40e2-8016-b86b944f2c9f
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      type: Malware
-    view: |-
-      {
-        "position": {
-          "x": 413,
-          "y": 2088
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
-    type: condition
-    task:
-      id: 7b1823dd-b38e-4cd6-874d-87ede0be1f9e
-      version: -1
-      name: Is this a phishing incident?
-      description: Was this incident created because a suspected email was received?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "13"
-    view: |-
-      {
-        "position": {
-          "x": 413,
-          "y": 2353
-        }
-      }
-  "13":
-    id: "13"
-    taskid: 66553f46-579a-42af-8c02-341af3445ba3
-    type: regular
-    task:
-      id: 66553f46-579a-42af-8c02-341af3445ba3
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      type: Phishing
-    view: |-
-      {
-        "position": {
-          "x": 598,
-          "y": 2576
-        }
-      }
-  "14":
-    id: "14"
-    taskid: 93f3f626-0b08-4257-8559-c2d3838cea13
-    type: condition
-    task:
-      id: 93f3f626-0b08-4257-8559-c2d3838cea13
-      version: -1
-      name: Is the incident a C2 communication incident?
-      description: Was the incident opened because communication to a known bad actor
-        was detected?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "15"
-    view: |-
-      {
-        "position": {
-          "x": 307,
-          "y": 2797
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
-    type: regular
-    task:
-      id: 070a2204-c59e-4c9c-88cf-95d5cd4a14ad
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      type: C2Communication
-    view: |-
-      {
-        "position": {
-          "x": 552,
-          "y": 2965
-        }
-      }
-  "16":
-    id: "16"
-    taskid: bd100974-58ce-4b53-8e32-c3930e215184
-    type: condition
-    task:
-      id: bd100974-58ce-4b53-8e32-c3930e215184
-      version: -1
-      name: Is the incident a ransomware incident?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "18"
-      "yes":
-      - "17"
-    view: |-
-      {
-        "position": {
-          "x": 305,
-          "y": 3188
-        }
-      }
-  "17":
-    id: "17"
-    taskid: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
-    type: regular
-    task:
-      id: 8a09e454-e0cc-4c4c-8b1b-77ccc402fabf
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      type: Ransomware
-    view: |-
-      {
-        "position": {
-          "x": 626,
-          "y": 3363
-        }
-      }
-  "18":
-    id: "18"
-    taskid: 6cab1990-09da-4e94-8d26-7a67571a6303
-    type: condition
-    task:
-      id: 6cab1990-09da-4e94-8d26-7a67571a6303
-      version: -1
-      name: Is the incident an unknown binary incident?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "19"
-    view: |-
-      {
-        "position": {
-          "x": 307,
-          "y": 3565
-        }
-      }
-  "19":
-    id: "19"
-    taskid: bb222001-660e-418c-8849-25341bb74ddc
-    type: regular
-    task:
-      id: bb222001-660e-418c-8849-25341bb74ddc
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      type: UnknownBinary
-    view: |-
-      {
-        "position": {
-          "x": 664,
-          "y": 3730
-        }
-      }
-  "20":
-    id: "20"
-    taskid: b4f728f9-7690-49ec-8214-216cf28d83e1
-    type: condition
-    task:
-      id: b4f728f9-7690-49ec-8214-216cf28d83e1
-      version: -1
-      name: Does the incident involve a lost or stolen device?
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    view: |-
-      {
-        "position": {
-          "x": 307,
-          "y": 4027
-        }
-      }
-  "21":
-    id: "21"
-    taskid: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
-    type: regular
-    task:
-      id: 3e019db0-5b05-45e4-86ca-c5944a9fdd48
-      version: -1
-      name: SetIncidentType
-      scriptName: IncidentSet
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      type: DeviceLost
-    view: |-
-      {
-        "position": {
-          "x": 307,
-          "y": 4313
+          "x": 2530,
+          "y": 988
         }
       }
   "22":
@@ -561,17 +182,187 @@ tasks:
       id: cedcbabe-7b14-4b7c-843d-60b04f66e9b2
       version: -1
       name: Mail Classifier
+      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "33"
     view: |-
       {
         "position": {
-          "x": -257,
-          "y": 216
+          "x": 2057,
+          "y": 370
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 40ab3f30-8252-4f50-8aec-dbcd2f85a1ec
+    type: title
+    task:
+      id: 40ab3f30-8252-4f50-8aec-dbcd2f85a1ec
+      version: -1
+      name: Classify by Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 8cb3c6b3-18fd-4814-871c-9f8bd44f3e4d
+    type: regular
+    task:
+      id: 8cb3c6b3-18fd-4814-871c-9f8bd44f3e4d
+      version: -1
+      name: QRadar Classifier
+      scriptName: QRadarClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 690
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 8bf6dc34-f9e0-4502-829a-995cd5c7332f
+    type: condition
+    task:
+      id: 8bf6dc34-f9e0-4502-829a-995cd5c7332f
+      version: -1
+      name: Get Brand
+      description: Prints text to war room
+      scriptName: Print
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      QRadar:
+      - "26"
+      Trend Micro:
+      - "29"
+      Vectra:
+      - "28"
+    scriptarguments:
+      value: ${incident.labels.Brand}
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 515
+        }
+      }
+  "28":
+    id: "28"
+    taskid: a4bf35f1-1ba6-41cf-8ecf-963e4342abff
+    type: regular
+    task:
+      id: a4bf35f1-1ba6-41cf-8ecf-963e4342abff
+      version: -1
+      name: 'Vectra Classifier '
+      scriptName: VectraClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 37ef2cf4-f0f1-4f02-8083-c8e9355c3eb7
+    type: regular
+    task:
+      id: 37ef2cf4-f0f1-4f02-8083-c8e9355c3eb7
+      version: -1
+      name: Trendmicro Classifier
+      scriptName: TrendMicroClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "30":
+    id: "30"
+    taskid: e3e6429a-96e9-4e6a-8fe2-2882c8033ba4
+    type: regular
+    task:
+      id: e3e6429a-96e9-4e6a-8fe2-2882c8033ba4
+      version: -1
+      name: Manually decide playbook
+      description: Could not decide incident type automatically, please set playbook
+        Manually
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 988
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 34ab0da0-429c-41a3-85a4-246bbcd982d6
+    type: condition
+    task:
+      id: 34ab0da0-429c-41a3-85a4-246bbcd982d6
+      version: -1
+      name: Get Email Sender
+      description: Prints text to war room
+      scriptName: Print
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      NEXPOSE_SENDER@PLACEHOLDER.COM:
+      - "6"
+      SENTINAL_SENDER@PLACEHOLDER.COM:
+      - "8"
+      SPLUNK_SENDER@PLACEHOLDER.COM:
+      - "4"
+    scriptarguments:
+      value: ${incident.labels.Email/from}
+    view: |-
+      {
+        "position": {
+          "x": 2057,
+          "y": 500
         }
       }
 view: |-
@@ -579,10 +370,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4373,
-        "width": 1301,
-        "x": -257,
-        "y": 35
+        "height": 1033,
+        "width": 2860,
+        "x": 50,
+        "y": 50
       }
     }
   }
