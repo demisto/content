@@ -323,10 +323,11 @@ tasks:
       id: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
       version: -1
       name: Store list of unmanaged endpoints to context key epoUnmanagedEndpoint
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+        the entryId input parameter.
       scriptName: commentsToContextV2
       type: regular
       iscommand: false
@@ -353,10 +354,11 @@ tasks:
       id: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
       version: -1
       name: Store non-communicating endpoints to context key epoNonCommunicatingEndpoint
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+        the entryId input parameter.
       scriptName: commentsToContextV2
       type: regular
       iscommand: false
