@@ -7,35 +7,37 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2380acff-abe1-46f1-8910-1aedfd2dd492
+    taskid: start-enrich
     type: start
     task:
-      id: 2380acff-abe1-46f1-8910-1aedfd2dd492
-      version: -1
+      id: start-enrich
+      version: 8
       name: ""
+      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
-      - "4"
+      - "7"
+      - "9"
+      - "12"
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1115,
           "y": 50
         }
       }
   "2":
     id: "2"
-    taskid: 345cf584-a3f1-4fe1-817b-a6e26570737d
+    taskid: cy-file-md5
     type: regular
     task:
-      id: 345cf584-a3f1-4fe1-817b-a6e26570737d
-      version: -1
+      id: cy-file-md5
+      version: 1
       name: Check MD5s
       script: cylance|||file
+      issystemtask: true
       type: regular
       iscommand: true
       brand: cylance
@@ -44,19 +46,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": -22,
+          "y": 474
         }
       }
   "3":
     id: "3"
-    taskid: db41f9c4-55e5-4e7b-8163-b382e5be5f7f
+    taskid: cy-file-sha1
     type: regular
     task:
-      id: db41f9c4-55e5-4e7b-8163-b382e5be5f7f
-      version: -1
+      id: cy-file-sha1
+      version: 1
       name: Check SHA1s
       script: cylance|||file
+      issystemtask: true
       type: regular
       iscommand: true
       brand: cylance
@@ -65,19 +68,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 852,
+          "y": 474
         }
       }
   "4":
     id: "4"
-    taskid: 789d4680-b76a-4092-8626-63c3675586ca
+    taskid: cy-file-sha256
     type: regular
     task:
-      id: 789d4680-b76a-4092-8626-63c3675586ca
-      version: -1
+      id: cy-file-sha256
+      version: 1
       name: Check SHA256s
       script: cylance|||file
+      issystemtask: true
       type: regular
       iscommand: true
       brand: cylance
@@ -86,18 +90,134 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 195
+          "x": 1964,
+          "y": 474
+        }
+      }
+  "7":
+    id: "7"
+    taskid: is-md5-exists
+    type: condition
+    task:
+      id: is-md5-exists
+      version: 8
+      name: Is MD5 exists in incident
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+    scriptarguments:
+      value: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 438,
+          "y": 254
+        }
+      }
+  "9":
+    id: "9"
+    taskid: is-sha1-exists
+    type: condition
+    task:
+      id: is-sha1-exists
+      version: 8
+      name: Is SHA1 exists in incident
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "3"
+    scriptarguments:
+      value: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 254
+        }
+      }
+  "12":
+    id: "12"
+    taskid: is-sha256-exists
+    type: condition
+    task:
+      id: is-sha256-exists
+      version: 8
+      name: Is SHA256 exists in incident
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "4"
+    scriptarguments:
+      value: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 254
+        }
+      }
+  "13":
+    id: "13"
+    taskid: enrich-done
+    type: regular
+    task:
+      id: enrich-done
+      version: -1
+      name: Done
+      issystemtask: true
+      type: regular
+      scriptName: Print
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Cylance enrichment done
+    view: |-
+      {
+        "position": {
+          "x": 1118,
+          "y": 1008
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_13_#default#": 0.23,
+      "12_4_yes": 0.5,
+      "7_13_#default#": 0.1,
+      "7_2_yes": 0.31,
+      "9_13_#default#": 0.14,
+      "9_3_yes": 0.39
+    },
     "paper": {
       "dimensions": {
-        "height": 240,
-        "width": 1240,
-        "x": 50,
+        "height": 1023,
+        "width": 2366,
+        "x": -22,
         "y": 50
       }
     }
