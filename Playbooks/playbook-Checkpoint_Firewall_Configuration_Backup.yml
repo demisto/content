@@ -1,6 +1,6 @@
 id: playbook14
 version: -1
-name: Checkpoint Firewall Configuration Backup Playbook_copy
+name: Checkpoint Firewall Configuration Backup Playbook
 description: Triggers a backup task on each firewall appliance and pulls the resulting
   file into the war room via SCP.
 starttaskid: "0"
@@ -33,7 +33,7 @@ tasks:
     type: regular
     task:
       id: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
-      version: 1
+      version: -1
       name: Trigger backup on each device
       scriptName: CPCreateBackup
       issystemtask: true
@@ -61,7 +61,7 @@ tasks:
     type: regular
     task:
       id: 143e5bcf-7746-409b-8c53-ff761a2d4b99
-      version: 3
+      version: -1
       name: Show status for initiated backup tasks
       scriptName: CPShowBackupStatus
       issystemtask: true
@@ -91,7 +91,7 @@ tasks:
     type: condition
     task:
       id: 1e1e3c6f-5703-47ea-8d70-871327266a2b
-      version: 3
+      version: -1
       name: Have any backups failed?
       scriptName: UtilAnyResults
       issystemtask: true
@@ -118,7 +118,7 @@ tasks:
     type: regular
     task:
       id: aa0f5d93-0db2-4b35-85b4-0be5b82e7f46
-      version: 1
+      version: -1
       name: Open ticket on ServiceNow with list of problematic devices
       scriptName: SNOpenTicket
       issystemtask: true
@@ -147,7 +147,7 @@ tasks:
     type: regular
     task:
       id: d406f402-c523-4126-889b-a5dcab1f836d
-      version: 1
+      version: -1
       name: Retrieve the backup files from the devices
       scriptName: SCPPullFiles
       issystemtask: true
@@ -172,7 +172,7 @@ tasks:
     type: regular
     task:
       id: 362bae09-4ea1-4a37-8b15-d74374cac4e0
-      version: 1
+      version: -1
       name: Email a report of backup results
       scriptName: SendEmail
       issystemtask: true
@@ -204,7 +204,7 @@ tasks:
     type: regular
     task:
       id: e27863cf-0239-418a-8b9e-7e0967464941
-      version: 1
+      version: -1
       name: CloseInvestigation
       scriptName: CloseInvestigation
       issystemtask: true
