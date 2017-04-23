@@ -120,11 +120,11 @@ tasks:
       id: ae91f6de-f608-43a4-8b5b-7e0bf48a89d6
       version: 1
       name: Open ticket on ServiceNow with list of problematic devices
-      script: ServiceNowV2|||servicenow-incident-create
+      script: ServiceNow|||servicenow-incident-create
       issystemtask: true
       type: regular
       iscommand: true
-      brand: ServiceNowV2
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "6"
