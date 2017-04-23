@@ -1,6 +1,6 @@
 commonfields:
   id: Cisco Meraki
-  version: -1
+  version: 1
 name: Cisco Meraki
 display: Cisco Meraki
 category: Analytics & SIEM
