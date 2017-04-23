@@ -1,7 +1,5 @@
 id: playbook11
-version: -1
-system: true
-fromversion: 2.5.0
+version: 5
 name: McAfee ePO Repository Compliance Playbook
 description: Ensures that ePO servers are updated to the latest McAfee published AV
   signatures (DAT file version).
@@ -49,8 +47,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 246
+          "x": 284,
+          "y": 186
         }
       }
   "4":
@@ -74,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 604
+          "x": 284,
+          "y": 524
         }
       }
   "5":
@@ -106,8 +104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 109,
-          "y": 1361
+          "x": 115,
+          "y": 1177
         }
       }
   "7":
@@ -140,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 603,
-          "y": 1321
+          "y": 1177
         }
       }
   "10":
@@ -162,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1710
+          "x": -204,
+          "y": 1356
         }
       }
   "11":
@@ -185,18 +183,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -173,
-          "y": 246
+          "x": -175,
+          "y": 186
         }
       }
   "12":
     id: "12"
-    taskid: 65c71a36-2fdb-413e-8c8d-80c60d16d91f
+    taskid: 4405829c-0e70-4c29-8a33-3c17a9644b00
     type: condition
     task:
-      id: 65c71a36-2fdb-413e-8c8d-80c60d16d91f
+      id: 4405829c-0e70-4c29-8a33-3c17a9644b00
       version: 1
-      name: AreValuesEqual
+      name: Check if ePO has latest DAT from McAfee
       description: Check whether the values provided in arguments are equal.
       scriptName: AreValuesEqual
       type: condition
@@ -216,17 +214,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 422
+          "y": 355
         }
       }
   "13":
     id: "13"
-    taskid: d758c9d9-7e76-4b0b-8991-eef780abdf82
+    taskid: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
     type: regular
     task:
-      id: d758c9d9-7e76-4b0b-8991-eef780abdf82
+      id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
       version: 1
-      name: Sleep
+      name: Wait for 5 minutes
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -236,22 +234,22 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      seconds: "60"
+      seconds: "300"
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 770
+          "x": 284,
+          "y": 683
         }
       }
   "14":
     id: "14"
-    taskid: ea2cbbde-9240-4626-80b1-be87ef9175e0
+    taskid: b766e4a2-8988-46e1-84ab-d91d118d48a7
     type: regular
     task:
-      id: ea2cbbde-9240-4626-80b1-be87ef9175e0
+      id: b766e4a2-8988-46e1-84ab-d91d118d48a7
       version: 1
-      name: epo-get-current-dat
+      name: Get ePO current DAT version
       description: check the existing DAT file version in ePO
       script: epo|||epo-get-current-dat
       type: regular
@@ -265,18 +263,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 950
+          "x": 284,
+          "y": 837
         }
       }
   "15":
     id: "15"
-    taskid: 38be8d12-a8eb-47d8-857c-f3a824fbce20
+    taskid: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
     type: condition
     task:
-      id: 38be8d12-a8eb-47d8-857c-f3a824fbce20
+      id: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
       version: 1
-      name: AreValuesEqual
+      name: Check if ePO has latest DAT from McAfee
       description: Check whether the values provided in arguments are equal.
       scriptName: AreValuesEqual
       type: condition
@@ -295,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 1130
+          "x": 284,
+          "y": 1003
         }
       }
   "16":
@@ -329,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 603,
-          "y": 1540
+          "y": 1356
         }
       }
 view: |-
@@ -337,9 +335,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 1173,
-        "x": -190,
+        "height": 1401,
+        "width": 1187,
+        "x": -204,
         "y": 50
       }
     }
