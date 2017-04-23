@@ -162,7 +162,7 @@ tasks:
       option1: ""
       option2: ""
       task: "6"
-      user: ${Label/Email}
+      user: ${incident.labels.Email}
     view: |-
       {
         "position": {
