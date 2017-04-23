@@ -1,7 +1,5 @@
 id: playbook13
-version: -1
-system: true
-fromversion: 2.5.0
+version: 3
 name: McAfee ePO Endpoint Connectivity Diagnostics Playbook
 description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
   or lost connectivity with ePO and take steps to return to valid state.
@@ -317,12 +315,12 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 76f163ce-192f-4f1c-85c5-d6509ce013bd
+    taskid: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
     type: regular
     task:
-      id: 76f163ce-192f-4f1c-85c5-d6509ce013bd
+      id: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
       version: 1
-      name: commentsToContext
+      name: Store list of unmanaged endpoints to context key epoUnmanagedEndpoint
       description: "Takes the comments of a given entry ID and stores them in the
         incident context, under a provided context key. \nFor accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
@@ -347,12 +345,12 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 9aa83376-2068-4ec7-834e-1b500bff307a
+    taskid: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
     type: regular
     task:
-      id: 9aa83376-2068-4ec7-834e-1b500bff307a
+      id: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
       version: 1
-      name: commentsToContext
+      name: Store non-communicating endpoints to context key epoNonCommunicatingEndpoint
       description: "Takes the comments of a given entry ID and stores them in the
         incident context, under a provided context key. \nFor accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
