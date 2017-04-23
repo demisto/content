@@ -335,10 +335,11 @@ tasks:
       id: 370580ad-016e-4515-8a0e-e76cd0e55373
       version: -1
       name: Store system names to context key outdatedEndpoints
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+        the entryId input parameter.
       scriptName: commentsToContextV2
       type: regular
       iscommand: false
@@ -365,10 +366,11 @@ tasks:
       id: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
       version: -1
       name: Store system names to context key endpointsToIsolate
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+        the entryId input parameter.
       scriptName: commentsToContextV2
       type: regular
       iscommand: false
