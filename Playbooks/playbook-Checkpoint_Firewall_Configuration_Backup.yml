@@ -1,8 +1,6 @@
 id: playbook14
-version: -1
+version: 7
 name: Checkpoint Firewall Configuration Backup Playbook
--system: true
--fromversion: 2.5.0
 description: Triggers a backup task on each firewall appliance and pulls the resulting
   file into the war room via SCP.
 starttaskid: "0"
@@ -13,7 +11,7 @@ tasks:
     type: start
     task:
       id: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
-      version: -1
+      version: 2
       name: start_task
       issystemtask: true
       type: start
@@ -35,7 +33,7 @@ tasks:
     type: regular
     task:
       id: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
-      version: -1
+      version: 1
       name: Trigger backup on each device
       scriptName: CPCreateBackup
       issystemtask: true
@@ -63,7 +61,7 @@ tasks:
     type: regular
     task:
       id: 143e5bcf-7746-409b-8c53-ff761a2d4b99
-      version: -1
+      version: 2
       name: Show status for initiated backup tasks
       scriptName: CPShowBackupStatus
       issystemtask: true
@@ -93,7 +91,7 @@ tasks:
     type: condition
     task:
       id: 1e1e3c6f-5703-47ea-8d70-871327266a2b
-      version: -1
+      version: 2
       name: Have any backups failed?
       scriptName: UtilAnyResults
       issystemtask: true
@@ -116,30 +114,91 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: aa0f5d93-0db2-4b35-85b4-0be5b82e7f46
+    taskid: ae91f6de-f608-43a4-8b5b-7e0bf48a89d6
     type: regular
     task:
-      id: aa0f5d93-0db2-4b35-85b4-0be5b82e7f46
-      version: -1
+      id: ae91f6de-f608-43a4-8b5b-7e0bf48a89d6
+      version: 1
       name: Open ticket on ServiceNow with list of problematic devices
-      scriptName: SNOpenTicket
+      script: ServiceNowV2|||servicenow-incident-create
       issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ServiceNowV2
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
       assignmentgroup: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
       category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
       comments: ${devicesbackuperror}
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Checkpoint configuration backups - Failed
       shortdescription: Checkpoint configuration backups - Failed
+      sla_due: ""
       subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
     view: |-
       {
         "position": {
-          "x": 501,
+          "x": 500,
           "y": 719
         }
       }
@@ -149,7 +208,7 @@ tasks:
     type: regular
     task:
       id: d406f402-c523-4126-889b-a5dcab1f836d
-      version: -1
+      version: 1
       name: Retrieve the backup files from the devices
       scriptName: SCPPullFiles
       issystemtask: true
@@ -174,7 +233,7 @@ tasks:
     type: regular
     task:
       id: 362bae09-4ea1-4a37-8b15-d74374cac4e0
-      version: -1
+      version: 1
       name: Email a report of backup results
       scriptName: SendEmail
       issystemtask: true
@@ -206,7 +265,7 @@ tasks:
     type: regular
     task:
       id: e27863cf-0239-418a-8b9e-7e0967464941
-      version: -1
+      version: 1
       name: CloseInvestigation
       scriptName: CloseInvestigation
       issystemtask: true
@@ -229,7 +288,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1376,
-        "width": 831,
+        "width": 830,
         "x": 50,
         "y": 50
       }
