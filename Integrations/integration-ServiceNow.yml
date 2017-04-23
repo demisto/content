@@ -47,6 +47,16 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+- display: Trust self-signed certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: ServiceNow API Version
+  name: api_version
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     var username = params.username;
@@ -138,13 +148,17 @@ script:
             };
         }
         body = (body)?body:'';
-        var url = serverUrl + path;
+        var api = '/api/now/';
+        if (params.api_version) {
+            api += params.api_version + '/';
+        }
+        var url = serverUrl + api + path;
 
         var res;
         if (file_id) {
-            res = httpMultipart(url,file_id,{Method: 'POST',Headers: headers},{},false,params.proxy);
+            res = httpMultipart(url,file_id,{Method: 'POST',Headers: headers},{},params.insecure,params.proxy);
         } else {
-            res = http(url,{Method: method,Headers: headers,Body: body},true,params.proxy);
+            res = http(url,{Method: method,Headers: headers,Body: body},params.insecure,params.proxy);
         }
         try {
             obj = JSON.parse(res.Body);
@@ -255,16 +269,15 @@ script:
     }
 
     var incidentsGetIncident = function() {
-
         if (args.id) {
-            var path = "api/now/table/incident/"+args['id'];
+            var path = "table/incident/"+args['id'];
         } else if (args.number) {
-            var path = "api/now/table/incident" + encodeToURLQuery({sysparm_query:"number="+args.number});
+            var path = "table/incident" + encodeToURLQuery({sysparm_query:"number="+args.number});
         } else {
             throw 'incindet-get requires either incident ID (sys_id) or incdent number';
         }
         res = sendRequest('GET',path);
-        if (res && res.obj && res.obj.result && res.obj.result.length>0) {
+        if (res && res.obj && res.obj.result) {
             var md = "### Service now incident\n";
             md += dataToMd(command,res.obj.result);
             var ec = {};
@@ -277,7 +290,7 @@ script:
 
     var incidentUpdate = function(){
         var body = getBody();
-        var path = "api/now/table/incident/"+args["id"];
+        var path = "table/incident/"+args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident updated\n";
         md += dataToMd(command,res.obj.result);
@@ -286,7 +299,7 @@ script:
 
     var incidentCreate = function(){
         var body = getBody();
-        var path = "/api/now/table/incident";
+        var path = "table/incident";
         var res = sendRequest('POST',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident created\n";
         md += dataToMd(command,res.obj.result);
@@ -299,7 +312,7 @@ script:
         var text=(args.text)? args.text+' (' + args.link + ')':args.link;
         var body={};
         body[key]=text;
-        var path = "api/now/table/incident/" + args["id"];
+        var path = "table/incident/" + args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### Link added to ServiceNow incident\n";
         md += dataToMd(command,res.obj.result);
@@ -313,7 +326,7 @@ script:
         if (args.sysparm_query) {
             parameters.sysparm_query = args.sysparm_query;
         }
-        var path = "api/now/table/incident" + encodeToURLQuery(parameters);
+        var path = "table/incident" + encodeToURLQuery(parameters);
         res = sendRequest('GET',path);
         var md = "### ServiceNow incidents\n";
         md += dataToMd(command,res.obj.result);
@@ -360,7 +373,7 @@ script:
         }
         parameters.sysparm_limit = (params.fetch_limit) ? params.fetch_limit : defaults.fetch_limit;
 
-        var path = "api/now/table/incident" + encodeToURLQuery(parameters);
+        var path = "table/incident" + encodeToURLQuery(parameters);
 
         res = sendRequest('GET',path);
 
@@ -402,7 +415,7 @@ script:
             parameters.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
         }
 
-        var path = "api/now/attachment/file" + encodeToURLQuery(parameters);
+        var path = "attachment/file" + encodeToURLQuery(parameters);
         var res = sendRequest('POST',path,null,null,args.file_id);
 
         var result = res.obj.result;
@@ -429,7 +442,7 @@ script:
             return fetchIncidents();
         case 'test-module':
             var method='GET';
-            var path = "api/now/table/problem?sysparm_limit=1";
+            var path = "table/problem?sysparm_limit=1";
             var headers =  {
                 Accept: ['application/json'],
                 Authorization: [auth]
@@ -448,7 +461,6 @@ script:
   - name: servicenow-incidents-get-incident
     arguments:
     - name: id
-      required: false
       default: true
       description: Incident ID to retrieve
     - name: number
@@ -783,7 +795,8 @@ script:
       required: true
       description: War-room entry ID that includes the file
     - name: file_name
-      description: Filename of uploaded file to override the existing file name in entry
+      description: Filename of uploaded file to override the existing file name in
+        entry
     description: Upload new file
   isfetch: true
 hidden: false
