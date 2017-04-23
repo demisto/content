@@ -1,6 +1,6 @@
 commonfields:
-  id: 1d257d60-2af0-47fa-80dd-1281875e278b
-  version: 7
+  id: ShowOnMap
+  version: 1
 name: ShowOnMap
 script: |
   var lat = parseFloat(args.lat);
