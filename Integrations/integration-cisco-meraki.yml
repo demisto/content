@@ -275,7 +275,7 @@ script:
                 { from: 'organizationId', to: 'OrganizationId' },
                 { from: 'type', to: 'Type' },
                 { from: 'name', to: 'Name' },
-                { from: 'timezone', to: 'Timezone' },
+                { from: 'timeZone', to: 'Timezone' },
                 { from: 'tags', to: 'Tags' },
             ]));
         }
