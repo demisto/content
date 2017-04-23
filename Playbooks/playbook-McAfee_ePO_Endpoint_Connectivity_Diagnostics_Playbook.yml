@@ -92,11 +92,11 @@ tasks:
       id: a6a568b4-7902-40da-8d7d-bb87db62debc
       version: 1
       name: Open ServiceNow ticket for admin to install agents
-      script: ServiceNowV2|||servicenow-incident-create
+      script: ServiceNow|||servicenow-incident-create
       issystemtask: true
       type: regular
       iscommand: true
-      brand: ServiceNowV2
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "4"
