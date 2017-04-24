@@ -5,8 +5,11 @@ name: TaniumFindRunningProcesses
 script: |-
   var table = {
       Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: "",
+      EntryContext: {}
   };
   // "Get Computer Name"
   var selects = '\
@@ -125,7 +128,13 @@ script: |-
               for (var i=0; i<table.Contents.length; i++) {
                   hosts.push(table.Contents[i]["Computer Name"]);
               }
-              setContext('TaniumFoundHostnames', hosts.join(','));
+
+              var hostArray = [];
+              for (var key in hosts){
+                  hostArray.push({Hostname:hosts[key]});
+              }
+              table.EntryContext.Endpoint = hostArray;
+              table.HumanReadable = tableToMarkdown("Running Processes", table.Contents);
               return table;
           }
       }
@@ -147,6 +156,9 @@ args:
   description: Prefix of the process name to search
 - name: pollfreq
   description: Poll every Y seconds.
+outputs:
+- contextPath: Endpoint
+  description: List of endpoints where the process was found
 scripttarget: 0
 dependson:
   must:

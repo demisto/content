@@ -19,8 +19,10 @@ script: |-
 
   var table = {
       Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
   };
   if (!args.name && !args.id)
       return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'You must provide name or id.' };
@@ -90,6 +92,9 @@ script: |-
       if (table.Contents.length === 0) {
          return 'No Results';
       }
+      var title = 'name' in args ? args.name : "Tanium ask question";
+      var headers = 'headers' in args ? argToList(args.headers) : null;
+      table.HumanReadable = tableToMarkdown(title, table.Contents, headers);
       return table;
   }
   return res;
@@ -115,6 +120,8 @@ args:
     fully by Tanium).  Default is 30 seconds.
 - name: pollfreq
   description: Frequency of polling Tanium for more answers. Default is each second.
+- name: headers
+  description: Table's headers to be shown by order
 scripttarget: 0
 dependson:
   must:
