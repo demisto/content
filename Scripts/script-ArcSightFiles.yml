@@ -23,7 +23,7 @@ script:
     import lxml.etree
     import datetime
     import json
-    # import pprint
+    import os
 
     SECURITY_EVENT_START_TAG = '<SecurityEvent id="%s"'
     SECURITY_EVENT_END_TAG = '</SecurityEvent>'
@@ -37,10 +37,6 @@ script:
 
 
     def build_case_data(case):
-        '''
-        Returns a dictionary with information about the given case.
-        '''
-
         case_data = {case_child.tag: case_child.text for case_child in case}
 
         # fix timestamp entries
@@ -53,6 +49,12 @@ script:
             list_entry = case.find(name)
             if list_entry is not None:
                 case_data[name] = json.dumps([ref_to_dict(item) for item in list_entry[0]])
+
+        # convert to a list of 'type' and 'value'
+        case_data = [
+            {'type': key, 'value': value}
+            for key, value in case_data.iteritems()
+        ]
 
         return case_data
 
@@ -95,28 +97,29 @@ script:
             all_cases.append(case_data)
             all_events.append(case_events)
 
-            demisto.log(str(case_data) + '\n\n')
-            demisto.log(case_events)
+            # demisto.log(str(case_data) + '\n\n')
+            # demisto.log(case_events)
+
+        os.remove(filepath)
 
         return create_incidents(all_cases, all_events)
 
 
     if __name__ == '__main__':
-        # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
             demisto.results('ok')
             sys.exit(0)
 
         if demisto.command() == 'fetch-incidents':
-            # # You can store the last run time...
-            # demisto.setLastRun({'time': 'now'})
-            # # And retrieve it for use later:
-            # lastRun = demisto.getLastRun()
-            # lastRun is a dictionary, with value "now" for key "time".
+            files = glob.glob('/Users/nitzanshapira/xmls/*')
+            if len(files) > 0:
+                incidents = parse_arcsight_xml(files[0])
+            else:
+                incidents = {}
 
-            # JSON of the incident type created by this integration
-            demisto.incidents([{"Name":"Beautiful!"}])
+            demisto.incidents(incidents)
+
+            # demisto.incidents([{'Name': 'Beautiful222!', 'Details': 'So much stuff!!\nyes yes.', 'Labels': [{'type': 'aaa', 'value': 'bbb'}]}])
 
             sys.exit(0)
 
