@@ -1,0 +1,33 @@
+commonfields:
+  id: eccea40d-921c-4a52-875a-738855531f58
+  version: -1
+name: ReadFile
+script: |-
+  res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
+  with open(res[0]['Contents']['path'], 'r') as f:
+      data = f.read()
+  if data:
+      message = 'Read %d bytes from file.' % (len(data))
+      demisto.results({"Type" : entryTypes["note"],
+                       "ContentsFormat" : formats["text"],
+                       "Contents" : message,
+                       "HumanReadable": message,
+                       "EntryContext": {"FileData": data}
+                       })
+  else:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No data could be read.' } )
+type: python
+tags:
+- Utility
+- ingestion
+comment: Load the contents of a file into context.
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: War room entryID of the file to read.
+outputs:
+- contextPath: FileData
+  description: Data read from war room file
+scripttarget: 0
