@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: TaniumFindRunningProcesses
 script: |-
-  var table = {
+  var entry = {
       Type: 1,
       ContentsFormat: 'json',
       Contents: [],
@@ -112,30 +112,30 @@ script: |-
                   for (var i=0; i < cs.c.length; i++) {
                       row[cs.c[i].dn] = rs.r.c[i].v;
                   }
-                  table.Contents.push(row);
+                  entry.Contents.push(row);
               } else {
                   for (var item=0; item < itemCount; item++) {
                       var row = {};
                       for (var j=0; j < cs.c.length; j++) {
                           row[cs.c[j].dn] = rs.r[item].c[j].v;
                       }
-                      table.Contents.push(row);
+                      entry.Contents.push(row);
                   }
               }
-              if (table.Contents.length === 0) {
+              if (entry.Contents.length === 0) {
                  return 'No Results';
               }
-              for (var i=0; i<table.Contents.length; i++) {
-                  hosts.push(table.Contents[i]["Computer Name"]);
+              for (var i=0; i<entry.Contents.length; i++) {
+                  hosts.push(entry.Contents[i]["Computer Name"]);
               }
 
               var hostArray = [];
               for (var key in hosts){
                   hostArray.push({Hostname:hosts[key]});
               }
-              table.EntryContext.Endpoint = hostArray;
-              table.HumanReadable = tableToMarkdown("Running Processes", table.Contents);
-              return table;
+              entry.EntryContext.Endpoint = hostArray;
+              entry.HumanReadable = tableToMarkdown("Running Processes", entry.Contents);
+              return entry;
           }
       }
   }

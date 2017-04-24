@@ -63,7 +63,7 @@ script: |
   getObjArgs["object-data"] = requestPendingObjects;
 
   var res = executeCommand('tn-get-object', getObjArgs);
-  var table = {
+  var entry = {
       Type: 1,
       ContentsFormat: 'json',
       Contents: [],
@@ -108,10 +108,10 @@ script: |
       return "No actions were approved.";
   else {
       for (var i=0; i < approvedSummary.length; i++)
-          table.Contents.push(formatAsRow(approvedSummary[i],fieldsToDisplay));
+          entry.Contents.push(formatAsRow(approvedSummary[i],fieldsToDisplay));
 
-      table.HumanReadable = tableToMarkdown("Tanium approve pending actions", table.Contents, null);
-      return table;
+      entry.HumanReadable = tableToMarkdown("Tanium approve pending actions", entry.Contents, null);
+      return entry;
   }
 type: javascript
 tags:

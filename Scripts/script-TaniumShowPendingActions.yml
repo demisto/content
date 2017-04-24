@@ -67,7 +67,7 @@ script: |
   getObjArgs["object-data"] = requestPendingObjects;
 
   var res = executeCommand('tn-get-object', getObjArgs);
-  var table = {
+  var entry = {
       Type: 1,
       ContentsFormat: 'json',
       Contents: [],
@@ -99,10 +99,10 @@ script: |
           return savedActions;
       else {
           for (var i=0; i < savedActions.length; i++)
-              table.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
+              entry.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
 
-          table.HumanReadable = tableToMarkdown("Tanium pending actions", table.Contents, null);
-          return table;
+          entry.HumanReadable = tableToMarkdown("Tanium pending actions", entry.Contents, null);
+          return entry;
       }
   }
 type: javascript
