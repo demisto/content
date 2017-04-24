@@ -25,6 +25,8 @@ script:
     import json
     import os
 
+    INPUT_DIRPATH = '/Users/nitzanshapira/xmls'
+
     SECURITY_EVENT_START_TAG = '<SecurityEvent id="%s"'
     SECURITY_EVENT_END_TAG = '</SecurityEvent>'
 
@@ -51,10 +53,7 @@ script:
                 case_data[name] = json.dumps([ref_to_dict(item) for item in list_entry[0]])
 
         # convert to a list of 'type' and 'value'
-        case_data = [
-            {'type': key, 'value': value}
-            for key, value in case_data.iteritems()
-        ]
+        case_data = [{'type': key, 'value': value} for key, value in case_data.iteritems()]
 
         return case_data
 
@@ -97,12 +96,18 @@ script:
             all_cases.append(case_data)
             all_events.append(case_events)
 
-            # demisto.log(str(case_data) + '\n\n')
-            # demisto.log(case_events)
-
         os.remove(filepath)
 
         return create_incidents(all_cases, all_events)
+
+
+    def get_incidents_from_xmls():
+        filepaths = glob.glob(os.path.join(INPUT_DIRPATH, '*.xml'))
+        incidents = []
+        for filepath in filepaths:
+            incidents += parse_arcsight_xml(filepath)
+
+        return incidents
 
 
     if __name__ == '__main__':
@@ -111,57 +116,10 @@ script:
             sys.exit(0)
 
         if demisto.command() == 'fetch-incidents':
-            files = glob.glob('/Users/nitzanshapira/xmls/*')
-            if len(files) > 0:
-                incidents = parse_arcsight_xml(files[0])
-            else:
-                incidents = {}
-
+            incidents = get_incidents_from_xmls()
             demisto.incidents(incidents)
 
-            # demisto.incidents([{'Name': 'Beautiful222!', 'Details': 'So much stuff!!\nyes yes.', 'Labels': [{'type': 'aaa', 'value': 'bbb'}]}])
-
             sys.exit(0)
-
-        if demisto.command() == 'scan-dir':
-            filepath = glob.glob('/Users/nitzanshapira/xmls/*')[0]
-            incidents = parse_arcsight_xml(filepath)
-
-            demisto.results(incidents)
-
-            # demisto.results(parse_arcsight_xml(filepath))
-            # demisto.results(filepath)
-
-            sys.exit(0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   type: python
   commands:
