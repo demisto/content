@@ -1,0 +1,89 @@
+id: playbook17
+fromversion: 2.5.0
+system: true
+version: -1
+name: Carbon black Protection Rapid IOC Hunting
+description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
+  black Protection (Bit9).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
+    type: start
+    task:
+      id: a68f66e4-9f00-4be5-82d5-66a604a8e127
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 22d51942-a473-44a5-8782-a95f9619a5fa
+    type: regular
+    task:
+      id: 22d51942-a473-44a5-8782-a95f9619a5fa
+      version: -1
+      name: Search observed hashes in the Bit9 file catalog
+      scriptName: CBPCatalogFindHash
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      md5: ${File/Malicious.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 243
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 2adc216f-c75a-4f64-8c95-da21f736b349
+    type: regular
+    task:
+      id: 2adc216f-c75a-4f64-8c95-da21f736b349
+      version: -1
+      name: Check if the hashes are included in any Bit9 rules
+      scriptName: CBPFindRule
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      hash: ${File/Malicious.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 464
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 509,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
