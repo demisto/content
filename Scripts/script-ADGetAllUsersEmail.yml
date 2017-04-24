@@ -1,7 +1,7 @@
 commonfields:
-  id: ADGetEmailForAllUsers
+  id: ADGetAllUsersEmail
   version: -1
-name: ADGetEmailForAllUsers
+name: ADGetAllUsersEmail
 script: |
   mails = []
   MAIL_CONTEXT_KEY = "Mailboxes"
@@ -17,17 +17,17 @@ script: |
           mails += [item["mail"]] if item["mail"] else []
 
       demisto.setContext(MAIL_CONTEXT_KEY, ",".join(mails))
-
-      demisto.results('yes')
 type: python
 tags:
 - active directory
 comment: Use Active Directory to retrieve the email address associated with tall users.
 system: true
 scripttarget: 0
-deprecated: true
 dependson:
   must:
   - ad-search
 timeout: 0s
+outputs:
+- contextPath: Mailboxes
+  description: List of all users mailbox addresses
 
