@@ -2,6 +2,7 @@ commonfields:
   id: TaniumDeployAction
   version: 1
 name: TaniumDeployAction
+name: TaniumDeployAction_update
 script: |-
   // An example script for deploying Tanium action with filter
   if (!args.packageName && !args.packageID) {
@@ -41,7 +42,19 @@ script: |-
         'target-group': targetGroup,
       };
   var res = executeCommand('tn-deploy-package', taniumArgs);
-  return res
+  if (isError(res[0])) {
+      return res;
+  }
+
+  var table = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: dq(res[0],'Contents'),
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: tableToMarkdown("Tanium deploy action", dq(res[0],'Contents'), null)
+  };
+
+  return table;
 type: javascript
 tags:
 - tanium
