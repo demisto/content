@@ -73,7 +73,7 @@ script: |-
 type: javascript
 tags:
 - QRadar
-comment: This Script runs a QRadar query and return it's results to the war-room.
+comment: This Script runs a QRadar query and return its results to the war-room.
 system: true
 args:
 - name: query_expression
