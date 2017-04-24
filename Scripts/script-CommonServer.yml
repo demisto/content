@@ -98,11 +98,11 @@ script: |-
       }
 
       //in case of headers was not provided (backward compatibility)
-      if ((!headers || !(headers instanceof Array)) && t && t.length > 0){
+      if ((!headers || !headers instanceof Array) && t && t.length > 0){
           headers = Object.keys(t[0]);
       }
 
-      if(!headers || !(headers instanceof Array) || headers.length === 0) {
+      if(!headers || !headers instanceof Array || !!headers.length) {
           return 'No data returned\n';
       }
 
