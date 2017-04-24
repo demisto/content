@@ -85,7 +85,7 @@ tags:
 - QRadar
 - Classifier
 comment: "This script Classifies QRadar incidents.\nThe 'QRADAR_CATEGORIES' dictionary
-  translate QRadar 'High level Categories' to it's 'Demisto Types' counterpart.\n\nFor
+  translate QRadar 'High level Categories' to its 'Demisto Types' counterpart.\n\nFor
   custom categories, use the 'customCategories' argument.\nThe offense high level
   category will be put to context "
 system: true
