@@ -165,8 +165,8 @@ script:
         };
         var table = {
             // will be override in case result contains any
-            'Content Catecories': 'No Content Categories Were Found',
-            'Security Catecories': 'No Security Categories Were Found'
+            'Content Categories': 'No Content Categories Were Found',
+            'Security Categories': 'No Security Categories Were Found'
         };
         if (categorization) {
             if (categorization.status !== undefined) {
@@ -174,12 +174,13 @@ script:
             }
             if (categorization.content_categories && categorization.content_categories.length > 0) {
                 var contentCategories = categorization.content_categories.join(',');
-                table['Content Catecories'] = contentCategories;
-                domainContext.ContentCategory = contentCategories;
+                table['Content Categories'] = contentCategories;
+                domainContext.ContentCategories = contentCategories;
             }
             if (categorization.security_categories && categorization.security_categories.length > 0) {
                 var securityCategories = categorization.security_categories.join(',');
-                table['Security Catecories'] = securityCategories
+                table['Security Categories'] = securityCategories
+                domainContext.SecurityCategories = securityCategories;
             }
         }
 
@@ -412,8 +413,8 @@ script:
         });
 
         context = {
-            IP: {
-                Address: address,
+            Domain: {
+                Name: domain,
                 DNSHistory: DNSHistoryContext
             }
         }
@@ -550,8 +551,10 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.Score
-      description: Domain score - value range between 0 and 1
+    - contextPath: Domain.CoOccurrences.Name
+      description: Co-occurrence domain name
+    - contextPath: Domain.CoOccurrences.Score
+      description: Co-occurrence domain score - value range between 0 and 1
     description: Get a list of related domains back and returns a list of co-occurences
       for the specified domain. A co-occurrence is when two or more domains are being
       accessed by the same users within a small window of time. Being a co-occurrence
@@ -567,7 +570,9 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.Score
+    - contextPath: Domain.Related.Name
+      description: Related domain name
+    - contextPath: Domain.Related.Score
       description: This is a score reflecting the number of client IPs looking up
         related sites within 60 seconds of the original request
     description: This will return a list of domain names that have been frequently
@@ -604,7 +609,7 @@ script:
       description: Prefix ranks domains given their IP prefixes (an IP prefix is the
         first three octets in an IP address) and the reputation score of these prefixes.
         Ranges from -100 to 0, -100 being very suspicious
-    - contextPath: Domain.Security.RipScore
+    - contextPath: Domain.Security.RIPScore
       description: RIP ranks domains given their IP addresses and the reputation score
         of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
     - contextPath: Domain.Security.Popularity
@@ -657,61 +662,61 @@ script:
       default: true
       description: Enter a domain like (www.cnn.com)
     outputs:
-    - contextPath: IP.Address
-      description: IP address
-    - contextPath: IP.DNSHistory.Age
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.DNSHistory.Age
       description: The day in days between now and the last request for this domain.
         This value is only useful if present
-    - contextPath: IP.DNSHistory.TtlsMin
+    - contextPath: Domain.DNSHistory.TtlsMin
       description: Minimum amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMax
+    - contextPath: Domain.DNSHistory.TtlsMax
       description: Maximum amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMean
+    - contextPath: Domain.DNSHistory.TtlsMean
       description: Average amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMedian
+    - contextPath: Domain.DNSHistory.TtlsMedian
       description: Median amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsStddev
+    - contextPath: Domain.DNSHistory.TtlsStddev
       description: Standard deviation of the amount of time set that DNS records should
         be cached
-    - contextPath: IP.DNSHistory.CountryCodes
+    - contextPath: Domain.DNSHistory.CountryCodes
       description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
         to'
-    - contextPath: IP.DNSHistory.CountryCount
+    - contextPath: Domain.DNSHistory.CountryCount
       description: Number of countries the IPs are hosted in
-    - contextPath: IP.DNSHistory.Asns
+    - contextPath: Domain.DNSHistory.Asns
       description: List of ASN numbers the IPs are in
-    - contextPath: IP.DNSHistory.AsnsCount
+    - contextPath: Domain.DNSHistory.AsnsCount
       description: Number of ASNs the IPs map to
-    - contextPath: IP.DNSHistory.Prefixes
+    - contextPath: Domain.DNSHistory.Prefixes
       description: List of network prefixes the IPs map to
-    - contextPath: IP.DNSHistory.PrefixesCount
+    - contextPath: Domain.DNSHistory.PrefixesCount
       description: Number of network prefixes the IPs map to
-    - contextPath: IP.DNSHistory.Rips
+    - contextPath: Domain.DNSHistory.Rips
       description: Number of IPs seen for the domain name
-    - contextPath: IP.DNSHistory.DivRips
+    - contextPath: Domain.DNSHistory.DivRips
       description: The number of prefixes over the number of IPs
-    - contextPath: IP.DNSHistory.Locations
+    - contextPath: Domain.DNSHistory.Locations
       description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
         mapping to
-    - contextPath: IP.DNSHistory.LocationsCount
+    - contextPath: Domain.DNSHistory.LocationsCount
       description: Number of distinct geo coordinates the IPs are mapping to
-    - contextPath: IP.DNSHistory.GeoDistanceSum
+    - contextPath: Domain.DNSHistory.GeoDistanceSum
       description: Minimum sum of distance between locations, in kilometers
-    - contextPath: IP.DNSHistory.GeoDistancMean
+    - contextPath: Domain.DNSHistory.GeoDistancMean
       description: Mean distance between the geo median and each location, in kilometers
-    - contextPath: IP.DNSHistory.MailExchanger
+    - contextPath: Domain.DNSHistory.MailExchanger
       description: Boolean, If an MX query for this domain name has been seen
-    - contextPath: IP.DNSHistory.NonRoutable
+    - contextPath: Domain.DNSHistory.NonRoutable
       description: Boolean. If one of the IPs is in a reserved, non-routable IP range
-    - contextPath: IP.DNSHistory.FfCandidate
+    - contextPath: Domain.DNSHistory.FfCandidate
       description: Boolean. If the domain name looks like a candidate for fast flux.
         This does not necessarily mean the domain is in fast flux, but rather that
         the IP address the domain resolves to changes rapidly
-    - contextPath: IP.DNSHistory.RipsStability
+    - contextPath: Domain.DNSHistory.RipsStability
       description: 1.0 divided by the number of times the set of IP addresses changed
-    - contextPath: IP.DNSHistory.BaseDomain
+    - contextPath: Domain.DNSHistory.BaseDomain
       description: The base domain of the requested domain
-    - contextPath: IP.DNSHistory.IsSubdomain
+    - contextPath: Domain.DNSHistory.IsSubdomain
       description: Boolean. True if the requested domain is a subdomain of another
     description: 'The DNS database can be used to query the history that Umbrella
       has seen for a given domain. The most common use case is to obtain the RRs (Resource
@@ -789,9 +794,9 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.FirstSeean
+    - contextPath: Domain.FirstSeen
       description: First seen time in Epoch format
-    - contextPath: Domain.FirstSeeanISO
+    - contextPath: Domain.FirstSeenISO
       description: First seen time in ISO format
     - contextPath: Domain. SecurityCategories
       description: Matching Umbrella Security Categories
