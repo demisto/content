@@ -255,7 +255,7 @@ script:
             data.data.xMode = castToInt(args.xMode);
         }
         data.filePriorityQ = args.filePriorityQ;
-        if (!body.filePriorityQ) {
+        if (!data.filePriorityQ) {
             data.filePriorityQ = 'run_now';
         }
         body.data = JSON.stringify(data);
