@@ -12,7 +12,7 @@ tasks:
     type: start
     task:
       id: e4894164-409a-4adc-87bc-96a530ba8a27
-      version: 2
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -35,7 +35,7 @@ tasks:
     type: condition
     task:
       id: 295e9ac6-c665-4a4e-8d23-a0903a666143
-      version: 1
+      version: -1
       name: Are there known bad Domains
       description: Check if a context key is set. Can also optionally provide a value
         argument to compare against context data for this key.
@@ -44,7 +44,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "9"
       "yes":
       - "5"
@@ -64,7 +64,7 @@ tasks:
     type: condition
     task:
       id: ddaf36d8-5125-4b61-8f48-190aee2586f0
-      version: 1
+      version: -1
       name: Are there known bad MD5s
       description: Check if a context key is set. Can also optionally provide a value
         argument to compare against context data for this key.
@@ -73,7 +73,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "9"
       "yes":
       - "6"
@@ -93,7 +93,7 @@ tasks:
     type: condition
     task:
       id: ca2f470d-41dd-4d21-8c26-98a5169bc0cd
-      version: 1
+      version: -1
       name: Are there known bad SHA1s
       description: Check if a context key is set. Can also optionally provide a value
         argument to compare against context data for this key.
@@ -102,7 +102,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "9"
       "yes":
       - "7"
@@ -122,7 +122,7 @@ tasks:
     type: condition
     task:
       id: 0f812845-70a9-4408-83cf-74c92d1915a2
-      version: 1
+      version: -1
       name: Are there known bad SHA256s
       description: Check if a context key is set. Can also optionally provide a value
         argument to compare against context data for this key.
@@ -131,7 +131,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "9"
       "yes":
       - "8"
@@ -151,7 +151,7 @@ tasks:
     type: regular
     task:
       id: 892f37be-8fb0-493f-8c86-b64fedf6b049
-      version: 1
+      version: -1
       name: Hunt for devices accessing bad domains
       description: Returns a list of device IDs on which an indicator ran
       script: FalconHost|||cs-device-ran-on
@@ -178,7 +178,7 @@ tasks:
     type: regular
     task:
       id: 79c5b224-634c-4ea7-8604-a94bd0637419
-      version: 1
+      version: -1
       name: Hunt for devices running MD5
       description: |
         Returns a list of device IDs on which an indicator ran
@@ -206,7 +206,7 @@ tasks:
     type: regular
     task:
       id: f42da4b9-e44a-47f7-8bd3-58ebc367fd29
-      version: 1
+      version: -1
       name: Hunt for devices accessing SHA1
       description: Returns a list of device IDs on which an indicator ran
       script: FalconHost|||cs-device-ran-on
@@ -233,7 +233,7 @@ tasks:
     type: regular
     task:
       id: 85fdaa12-b5f9-44c3-81e9-029353b53de2
-      version: 1
+      version: -1
       name: Hunt for devices accessing SHA256
       description: Returns a list of device IDs on which an indicator ran
       script: FalconHost|||cs-device-ran-on
@@ -260,7 +260,7 @@ tasks:
     type: title
     task:
       id: fee08a36-3893-425d-8329-77cea06d0d53
-      version: 1
+      version: -1
       name: Get device details and email
       type: title
       iscommand: false
@@ -281,7 +281,7 @@ tasks:
     type: regular
     task:
       id: ee1c2ef3-3993-4227-8e33-cd0baedeff6a
-      version: 1
+      version: -1
       name: Get device details
       script: FalconHost|||cs-device-search
       type: regular
@@ -309,7 +309,7 @@ tasks:
     type: regular
     task:
       id: ef5f10f1-f006-47d8-84b7-fed029b29add
-      version: 1
+      version: -1
       name: Notify analyst to review information
       scriptName: SendEmail
       type: regular
@@ -341,7 +341,7 @@ tasks:
     type: regular
     task:
       id: 4fde6e6e-c916-4a95-83e0-d716d9e58435
-      version: 1
+      version: -1
       name: Analyst - review information
       type: regular
       iscommand: false
@@ -359,7 +359,7 @@ tasks:
     type: condition
     task:
       id: 6275c1bc-a359-444b-89aa-c6baf47db456
-      version: 1
+      version: -1
       name: Found any devices?
       scriptName: Exists
       type: condition

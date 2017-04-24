@@ -12,7 +12,7 @@ tasks:
     type: start
     task:
       id: bba2ed1f-ba17-4fcc-81b3-990115ff1608
-      version: 2
+      version: -1
       name: start_task
       type: start
       iscommand: false
@@ -33,7 +33,7 @@ tasks:
     type: title
     task:
       id: a815b6ec-64bf-4a15-8314-5055c5d6d89d
-      version: 12
+      version: -1
       name: Set up the investigation and acquire IOCs
       issystemtask: true
       type: title
@@ -58,7 +58,7 @@ tasks:
     type: condition
     task:
       id: 7e822405-36be-4341-857e-bcc4e6b98402
-      version: 1
+      version: -1
       name: Need to Load data from attached text files?
       scriptName: Exists
       type: condition
@@ -84,7 +84,7 @@ tasks:
     type: regular
     task:
       id: ef989693-4e8e-472e-84bf-bf6566ef1851
-      version: 1
+      version: -1
       name: Extract hashes from text file
       scriptName: ExtractHash
       type: regular
@@ -109,7 +109,7 @@ tasks:
     type: regular
     task:
       id: 43ddbd9e-84f5-42c1-8398-e94851c85cff
-      version: 1
+      version: -1
       name: Extract IP address from text file
       scriptName: ExtractIP
       type: regular
@@ -134,7 +134,7 @@ tasks:
     type: title
     task:
       id: c105e3b1-8e9a-40cd-8249-5337e8417b06
-      version: 12
+      version: -1
       name: Hunt
       issystemtask: true
       type: title
@@ -156,7 +156,7 @@ tasks:
     type: condition
     task:
       id: 4f99d705-6351-4cce-8c81-6000d67aa164
-      version: 1
+      version: -1
       name: Is Carbon Black Protection (Bit9) Available?
       scriptName: Exists
       type: condition
@@ -183,7 +183,7 @@ tasks:
     type: regular
     task:
       id: 37fc767e-b23c-463a-84da-40a94e6b1b6a
-      version: 1
+      version: -1
       name: Collect Hashes from incident
       scriptName: ExtractHash
       type: regular
@@ -209,7 +209,7 @@ tasks:
     type: regular
     task:
       id: 7845e26f-f375-4a41-8720-0d186a052382
-      version: 1
+      version: -1
       name: Collect IPs from incident
       scriptName: ExtractIP
       type: regular
@@ -235,7 +235,7 @@ tasks:
     type: regular
     task:
       id: c62b76f9-7972-47a7-82b5-e6d2e47e3725
-      version: 1
+      version: -1
       name: Retrieve configured integrations
       scriptName: ExposeModules
       type: regular
@@ -258,7 +258,7 @@ tasks:
     type: regular
     task:
       id: 5e13d196-7f69-48e0-88d8-e9347d2b0567
-      version: 1
+      version: -1
       name: Load contents of attached textual files
       scriptName: ReadFile
       type: regular
@@ -283,7 +283,7 @@ tasks:
     type: condition
     task:
       id: 14eab902-dff5-455f-81c0-5bc267802a9e
-      version: 1
+      version: -1
       name: Is CrowdStrike Available?
       scriptName: Exists
       type: condition
@@ -310,7 +310,7 @@ tasks:
     type: playbook
     task:
       id: 6c1cc553-9b69-434a-8b5a-b4adb74e8bb6
-      version: 2
+      version: -1
       name: ""
       playbookName: Carbon black Protection Rapid IOC Hunting
       type: playbook
@@ -329,7 +329,7 @@ tasks:
     type: playbook
     task:
       id: 6dff94fc-8ecb-416a-80b4-6154008d1b6c
-      version: 2
+      version: -1
       name: ""
       playbookName: CrowdStrike Rapid IOC Hunting
       type: playbook
@@ -348,7 +348,7 @@ tasks:
     type: regular
     task:
       id: 41007d8b-b092-4c62-8bb4-9176b3b8ad62
-      version: 1
+      version: -1
       name: Collect URLs from incident
       scriptName: ExtractURL
       type: regular
@@ -374,7 +374,7 @@ tasks:
     type: regular
     task:
       id: 80ca226e-af97-4a74-818b-5cbc2f74e7e5
-      version: 1
+      version: -1
       name: Analyst work - hunt manually
       scriptName: Print
       type: regular
