@@ -1,0 +1,168 @@
+commonfields:
+  id: ArcSight-Files
+  version: -1
+name: ArcSight-Files
+display: ArcSight-Files
+category: Analytics & SIEM
+image: data:image/png;base64,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
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |+
+    import glob
+    import xml.etree.ElementTree as ET
+    import lxml.etree
+    import datetime
+    import json
+    # import pprint
+
+    SECURITY_EVENT_START_TAG = '<SecurityEvent id="%s"'
+    SECURITY_EVENT_END_TAG = '</SecurityEvent>'
+
+    LIST_CASE_ENTRIES = ['caseEvents', 'childOf', 'ownedBy']
+    TIME_CASE_ENTRIES = ['detectionTime', 'estimatedStartTime']
+
+
+    def ref_to_dict(item):
+        return {'type': item.get('type'), 'uri': item.get('uri'), 'id': item.get('id')}
+
+
+    def build_case_data(case):
+        '''
+        Returns a dictionary with information about the given case.
+        '''
+
+        case_data = {case_child.tag: case_child.text for case_child in case}
+
+        # fix timestamp entries
+        for name in TIME_CASE_ENTRIES:
+            if name in case_data:
+                case_data[name] = str(datetime.datetime.fromtimestamp(int(case_data[name]) / 1000))
+
+        # fix list entries
+        for name in LIST_CASE_ENTRIES:
+            list_entry = case.find(name)
+            if list_entry is not None:
+                case_data[name] = json.dumps([ref_to_dict(item) for item in list_entry[0]])
+
+        return case_data
+
+
+    def create_incidents(all_labels, all_details):
+        incidents = []
+        for labels, details in zip(all_labels, all_details):
+            incident = {
+                'Name': 'ArcSight File Event',
+                'Labels': labels,
+                'Details': details
+            }
+
+            incidents.append(incident)
+
+        return incidents
+
+
+    def parse_arcsight_xml(filepath):
+        with open(filepath, 'rb') as f:
+            xml_content = f.read()
+
+        tree = ET.parse(filepath)
+        root = tree.getroot()
+
+        security_events = root.findall('SecurityEvent')
+        all_cases = []
+        all_events = []
+        for case in root.findall('Case'):
+            case_data  = build_case_data(case)
+            event_ids = [event_ref.get('id') for event_ref in case.find('caseEvents')[0]]
+            events_xml = []
+            for event_id in event_ids:
+                start_index = xml_content.find(SECURITY_EVENT_START_TAG % (event_id))
+                end_index = start_index + xml_content[start_index:].find(SECURITY_EVENT_END_TAG) + len(SECURITY_EVENT_END_TAG)
+                events_xml.append('   ' + xml_content[start_index : end_index])
+
+            case_events = '\n\n'.join(events_xml)
+
+            all_cases.append(case_data)
+            all_events.append(case_events)
+
+            demisto.log(str(case_data) + '\n\n')
+            demisto.log(case_events)
+
+        return create_incidents(all_cases, all_events)
+
+
+    if __name__ == '__main__':
+        # The command demisto.command() holds the command sent from the user.
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            demisto.results('ok')
+            sys.exit(0)
+
+        if demisto.command() == 'fetch-incidents':
+            # # You can store the last run time...
+            # demisto.setLastRun({'time': 'now'})
+            # # And retrieve it for use later:
+            # lastRun = demisto.getLastRun()
+            # lastRun is a dictionary, with value "now" for key "time".
+
+            # JSON of the incident type created by this integration
+            demisto.incidents([{"Name":"Beautiful!"}])
+
+            sys.exit(0)
+
+        if demisto.command() == 'scan-dir':
+            filepath = glob.glob('/Users/nitzanshapira/xmls/*')[0]
+            incidents = parse_arcsight_xml(filepath)
+
+            demisto.results(incidents)
+
+            # demisto.results(parse_arcsight_xml(filepath))
+            # demisto.results(filepath)
+
+            sys.exit(0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  type: python
+  commands:
+  - name: scan-dir
+    arguments: []
+  isfetch: true
+hidden: false
