@@ -14,130 +14,111 @@ tasks:
       id: a3d08d64-ed0b-41ff-886d-00daa3ed7c90
       version: -1
       name: start_task
+      issystemtask: true
       type: start
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: df058050-a4c5-4c46-8413-626a7b2b0520
-    type: regular
-    task:
-      id: df058050-a4c5-4c46-8413-626a7b2b0520
-      version: -1
-      name: Determine the correct repository to use
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
+      - "10"
       - "2"
-    scriptarguments:
-      key: repo
-      value: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": -87
         }
       }
   "2":
     id: "2"
-    taskid: 22c46908-9ecd-4045-85d2-3bdbf5b5cdc2
+    taskid: cdd9fe08-f2d7-4b2f-8e62-ec21ed9e3715
     type: regular
     task:
-      id: 22c46908-9ecd-4045-85d2-3bdbf5b5cdc2
+      id: cdd9fe08-f2d7-4b2f-8e62-ec21ed9e3715
       version: -1
       name: Retrieve ePO's current DAT version
-      scriptName: EPORetrieveCurrentDATVersion
+      script: epo|||epo-get-current-dat
+      issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: epo
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       repos: ${repo}
-    results:
-    - repoversions
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 372
+          "x": 313,
+          "y": 40
         }
       }
   "3":
     id: "3"
-    taskid: bdcb047f-efb0-40e5-8e87-1d54da611830
+    taskid: b8d7abd0-0a4f-4e52-8aac-5fd4e6949fd6
     type: condition
     task:
-      id: bdcb047f-efb0-40e5-8e87-1d54da611830
+      id: b8d7abd0-0a4f-4e52-8aac-5fd4e6949fd6
       version: -1
       name: Are any endpoints outdated and using an older DAT version?
+      description: Type list of systems in comments - comma separated
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "4"
+      "No":
+      - "9"
+      "Yes":
+      - "11"
     scriptarguments:
       faultydelta: ""
       repoversions: ${repoversions}
-      requireddatversion: ""
+      requireddatversion: -1
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 209
         }
       }
   "4":
     id: "4"
-    taskid: bb5a76c4-351b-4a38-841f-034ff888febe
+    taskid: aa4a2429-7901-440e-8d5a-e46557154f5b
     type: condition
     task:
-      id: bb5a76c4-351b-4a38-841f-034ff888febe
+      id: aa4a2429-7901-440e-8d5a-e46557154f5b
       version: -1
       name: Are any endpoints faulty and dangerously outdated?
+      description: Type system names in comments - comma separated
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "No":
       - "7"
-      "yes":
-      - "5"
+      "Yes":
+      - "12"
     scriptarguments:
       data: ${faultyendpoints}
     view: |-
       {
         "position": {
-          "x": 387,
-          "y": 723
+          "x": 313,
+          "y": 553
         }
       }
   "5":
     id: "5"
-    taskid: a699a654-8e1c-4922-8083-d5ce7ea66197
+    taskid: 64ae7dd1-592c-4f0a-8b57-3107a6e4040a
     type: regular
     task:
-      id: a699a654-8e1c-4922-8083-d5ce7ea66197
+      id: 64ae7dd1-592c-4f0a-8b57-3107a6e4040a
       version: -1
       name: Isolate dangerous systems from network
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -147,48 +128,116 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 668,
-          "y": 909
+          "x": 598,
+          "y": 890
         }
       }
   "6":
     id: "6"
-    taskid: 36101c53-b936-4d56-8088-2944f2b1c371
+    taskid: 05cac450-0b26-47b5-82ab-23e64849c2c3
     type: regular
     task:
-      id: 36101c53-b936-4d56-8088-2944f2b1c371
+      id: 05cac450-0b26-47b5-82ab-23e64849c2c3
       version: -1
-      name: Open ticket with list of problematic endpoints to be handled by the appropriate
-        team
+      name: Open ServiceNow ticket with list of problematic endpoints to be handled
+        by the appropriate team
+      script: ServiceNow|||servicenow-incident-create
+      issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ServiceNow
     nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: Software
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ${endpointsToIsolate}
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
       data: ${faultyendpoints}
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: "3"
+      short_description: ""
+      sla_due: ""
+      subcategory: Antivirus
+      sys_updated_by: ""
+      sys_updated_on: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
     view: |-
       {
         "position": {
-          "x": 668,
-          "y": 1119
+          "x": 598,
+          "y": 1063
         }
       }
   "7":
     id: "7"
-    taskid: 47273e54-850b-4ca8-8bed-42eb26cf655a
+    taskid: 6d0b0842-0873-4629-8e39-9b4b873f46cb
     type: regular
     task:
-      id: 47273e54-850b-4ca8-8bed-42eb26cf655a
+      id: 6d0b0842-0873-4629-8e39-9b4b873f46cb
       version: -1
       name: Trigger signature update on outdated endpoints
+      script: epo|||epo-update-client-dat
+      issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: epo
     nexttasks:
       '#none#':
-      - "8"
+      - "9"
     scriptarguments:
       abortAfterMinutes: ""
       endpoints: ${outdatedendpoints}
@@ -197,36 +246,40 @@ tasks:
       retryAttempts: ""
       retryIntervalInSeconds: ""
       stopAfterMinutes: ""
+      systems: ${outdatedEndpoints}
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 1354
+          "x": 62,
+          "y": 713
         }
       }
   "8":
     id: "8"
-    taskid: d8cd9924-954c-4301-8583-05c263e67848
+    taskid: 99679543-7b3b-4f76-8cc7-fec535710df0
     type: regular
     task:
-      id: d8cd9924-954c-4301-8583-05c263e67848
+      id: 99679543-7b3b-4f76-8cc7-fec535710df0
       version: -1
       name: Display list of AV related tickets from ServiceNow
-      scriptName: SNListTickets
+      script: ServiceNow|||servicenow-incidents-query
+      issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ServiceNow
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       fields: comments,short_description,category,subcategory,state
+      limit: ""
       query: subcategory=Antivirus
+      sysparm_query: subcategory=Antivirus
     view: |-
       {
         "position": {
-          "x": 347,
-          "y": 1641
+          "x": 598,
+          "y": 1248
         }
       }
   "9":
@@ -238,6 +291,7 @@ tasks:
       version: -1
       name: Close the investigation
       scriptName: CloseInvestigation
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -246,21 +300,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 348,
-          "y": 1850
+          "x": 62,
+          "y": 1428
+        }
+      }
+  "10":
+    id: "10"
+    taskid: a8019bd1-dd82-4437-8b23-a38d82a0fe5e
+    type: regular
+    task:
+      id: a8019bd1-dd82-4437-8b23-a38d82a0fe5e
+      version: -1
+      name: Get McAfee latest DAT Version
+      description: Check the latest DAT file in McAfee repository
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    scriptarguments: {}
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": -204,
+          "y": 40
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 370580ad-016e-4515-8a0e-e76cd0e55373
+    type: regular
+    task:
+      id: 370580ad-016e-4515-8a0e-e76cd0e55373
+      version: -1
+      name: Store system names to context key outdatedEndpoints
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey: outdatedEndpoints
+      entryId: ${lastCompletedTaskEntries.[0]}
+      listSeperator: ','
+    view: |-
+      {
+        "position": {
+          "x": 313,
+          "y": 381
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
+    type: regular
+    task:
+      id: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
+      version: -1
+      name: Store system names to context key endpointsToIsolate
+      description: Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key.
+        For accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      contextKey: endpointsToIsolate
+      entryId: ${lastCompletedTaskEntries.[0]}
+      listSeperator: ""
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 713
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ce5e0dfc-c502-4f3c-8569-38e2b4c7baee
+    type: regular
+    task:
+      id: ce5e0dfc-c502-4f3c-8569-38e2b4c7baee
+      version: -1
+      name: Set incident severity to High
+      description: Modify incident info such as name, owner, type, etc.
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addLabels: ""
+      customFieldName: ""
+      customFieldValue: ""
+      details: ""
+      labels: ""
+      name: ""
+      owner: ""
+      playbook: ""
+      severity: High
+      stage: ""
+      type: ""
+      updatePlaybookForType: ""
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 1428
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {
-      "3_8_#default#": 0.7
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1895,
-        "width": 998,
-        "x": 50,
-        "y": 50
+        "height": 1610,
+        "width": 1182,
+        "x": -204,
+        "y": -87
       }
     }
   }
