@@ -46,7 +46,7 @@ script: |-
       return res;
   }
 
-  var table = {
+  var entry = {
       Type: 1,
       ContentsFormat: 'json',
       Contents: dq(res[0],'Contents'),
@@ -54,7 +54,7 @@ script: |-
       HumanReadable: tableToMarkdown("Tanium deploy action", dq(res[0],'Contents'), null)
   };
 
-  return table;
+  return entry;
 type: javascript
 tags:
 - tanium

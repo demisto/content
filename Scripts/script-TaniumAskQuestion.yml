@@ -17,7 +17,7 @@ script: |-
   // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
   // timeout - seconds to wait while waiting for the question's result
 
-  var table = {
+  var entry = {
       Type: 1,
       ContentsFormat: 'json',
       Contents: [],
@@ -79,23 +79,23 @@ script: |-
           for (var i=0; i < cs.c.length; i++) {
               row[cs.c[i].dn] = formatCell(rs.r.c[i].v);
           }
-          table.Contents.push(row);
+          entry.Contents.push(row);
       } else {
           for (var item=0; item < itemCount; item++) {
               var row = {};
               for (var j=0; j < cs.c.length; j++) {
                   row[cs.c[j].dn] = formatCell(rs.r[item].c[j].v);
               }
-              table.Contents.push(row);
+              entry.Contents.push(row);
           }
       }
-      if (table.Contents.length === 0) {
+      if (entry.Contents.length === 0) {
          return 'No Results';
       }
-      var title = 'name' in args ? args.name : "Tanium ask question";
+      var title = args.name ? args.name : "Tanium ask question";
       var headers = 'headers' in args ? argToList(args.headers) : null;
-      table.HumanReadable = tableToMarkdown(title, table.Contents, headers);
-      return table;
+      entry.HumanReadable = tableToMarkdown(title, entry.Contents, headers);
+      return entry;
   }
   return res;
 type: javascript
