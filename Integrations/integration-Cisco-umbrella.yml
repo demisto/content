@@ -10,7 +10,7 @@ detaileddescription: 'Cisco Investigate is part of the Cisco Umbrella package. W
   you log into the CIsco Umbrella portal you will need to obtain the API Token for
   the Cisco Investigate Feature. '
 configuration:
-- display: Cisco Umbrella API toke
+- display: Cisco Umbrella API token
   name: APIToken
   defaultvalue: ""
   type: 4
