@@ -63,6 +63,7 @@ args:
 - name: nestedSearch
   description: Enter any value to allow nested groups check as well
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - ad-search
