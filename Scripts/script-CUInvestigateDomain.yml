@@ -1,0 +1,269 @@
+commonfields:
+  id: CUInvestigateDomain
+  version: -1
+name: CUInvestigateDomain
+system: true
+script: |+
+  var responseData = [];
+  var domainArg = args.domain;
+  var domainregex = args.domainregex;
+  var startTime = args.start;
+
+  responseData.push({ContentsFormat: 'markdown', Contents: '# Cisco Umbrella Investigate Results For: ' + args.domain, Type: 1});
+  //log('Domain:' + domainArg);
+  // Calling all domain Commands and Merge Results...
+  var domainCategory = executeCommand('domain-category', {domain: domainArg});
+  var domainCatInfo = JSON.parse(domainCategory[0].Contents.Body);
+  formatDomainCategory(domainArg, domainCatInfo, responseData);
+
+
+  var domainDNS = executeCommand('domain-dns', {domain: domainArg});
+  var domainDNSInfo = JSON.parse(domainDNS[0].Contents.Body);
+  formatDomainDNSInfo(domainArg, domainDNSInfo, responseData);
+
+
+  // Fetches list of related domains
+  var domainLinks = executeCommand('domain-links',{domain: domainArg});
+  var domainLinksInfo = JSON.parse(domainLinks[0].Contents.Body);
+  //log('DomainLinksInfo : ' + JSON.stringify(domainLinksInfo));
+  formatDomainLinksInfo(domainArg, domainLinksInfo, responseData);
+
+
+  //var domainSearch = executeCommand('domain-search', {domain: domainregex, start: args.start});
+  //log('DomainSearch'+JSON.stringify(domainSearch));
+  //var domainSearchInfo = JSON.parse(domainSearch[0].Contents.Body);
+  //formatDomainSearchInfo(domainArg, domainSearchInfo, responseData);
+
+  var domainSecurity = executeCommand('domain-security',{domain: domainArg});
+  var domainSecurityInfo = JSON.parse(domainSecurity[0].Contents.Body);
+  formatDomainSecurityInfo(domainArg, domainSecurityInfo, responseData);
+
+  // Fetches Date Range of when domain was added to block list
+  var domainTags = executeCommand('domain-tags',{domain: domainArg});
+  var domainTagsInfo = JSON.parse(domainTags[0].Contents.Body);
+  //log('DomainTagsInfo :' + JSON.stringify(domainTagsInfo));
+  formatDomainTagsInfo(domainArg, domainTagsInfo, responseData);
+
+
+
+  // Formatters for Domain Information
+  // Accepts DomainArgs, Information, and Response Data Array
+
+  function formatDomainCategory(domainArg, domainCatInfo, resp) {
+      //log('DomainCatInfo' + JSON.stringify(domainCatInfo[domainArg]['content_categories']));
+      //var dcInfo = JSON.parse(domainCatInfo[0]);
+      //log('Content Categories' + JSON.stringify(dcInfo[domainArg]));
+      //rows = [ { col1 : 'val1', col2 : 1 } , { col1 : 'val2', col2 : 2 } ]
+      var catList = domainCatInfo[domainArg]['content_categories'];
+      var rowList = [];
+      var dataObject = {};
+      if(!catList || catList === '' || catList.length === 0) {
+          catList = ['No Categories Were Found'];
+      }
+      //log('CatLIst' + catList);
+      dataObject['Categories'] = catList.join(',');
+      rowList.push(dataObject);
+      var tableFormatter = getTableFormatterObj(rowList);
+      var returnData = addTableFormatterToResponse(tableFormatter, resp);
+      //log('ReturnData' + JSON.stringify(returnData));
+      return returnData;
+  }
+
+
+  function formatDomainDNSInfo(domainArg, dnsInfoData, resp) {
+      addTableFormatterToResponse(formatTableTitle('Domain DNS information for: ' + domainArg), resp);
+      //log('formatDNSInfo' + JSON.stringify(dnsInfoData));
+      //log('dnsInfoData' + JSON.stringify(dnsInfoData));
+      //log(dnsInfoData.rrs)
+      var dnsFeatures = dnsInfoData.features;
+      //log('dnsFeatures' + JSON.stringify(dnsInfoData));
+      var dnsRss =  dnsInfoData.rrs_tf[0].rrs[0].rr;
+      dnsFeatures.rr = dnsRss;
+      var featuresList = [];
+      var contentString = '';
+      contentString += '\n| Name        | Info           |';
+      contentString += '\n| ------------- |:-------------:|';
+
+      var keyList = Object.keys(dnsFeatures).sort();
+
+      for(var a=0; a<keyList.length; a++){
+          var keyname = keyList[a];
+          name = keyname.replace(/_/g,' ');
+          var value = JSON.stringify(dnsFeatures[keyname]);
+          var contentData = '';
+          if(name.toUpperCase() == 'LOCATIONS') {
+              var locationList = dnsFeatures[keyname];
+              //log('LocationList' + locationList);
+              value = '';
+              for(var i=0; i<locationList.length; i++) {
+                  var lat = locationList[i].lat;
+                  var lon = locationList[i].lon;
+                  value += '   [' + lat + ',' + lon + ']'+'(https://www.google.com/maps/place/' + lat + ',' + lon + ')';
+                  //log('StrinkLink'+stringLink);
+                  //value += encodeURIComponent(stringLink);
+                  //value += ' https://www.google.com/maps/place/' + lat + ',' + lon + ',';
+                  //[This link](http://example.net/)
+                  //https://www.google.com/maps/place/
+              }
+              contentData = '\n|' + name.toUpperCase() + ' | ' + value + '|';
+          } else {
+
+              contentData = '\n|' + name.toUpperCase() + ' | ' + value + '|';
+          }
+          contentString += contentData;
+
+      }
+      var tbFormatter = {ContentsFormat: 'markdown', Contents: contentString, Type: 1}
+      featuresList.push(tbFormatter);
+      //log('FeaturesList' + JSON.stringify(featuresList));
+      //var tableFormatter = getTableFormatterObj(featuresList);
+      var returnData = addTableFormatterToResponse(featuresList, resp);
+      return returnData;
+
+  }
+
+
+
+  function formatDomainSecurityInfo(domainArg, domainSecurityInfo, resp) {
+      addTableFormatterToResponse(formatTableTitle('Domain Securty information for:' + domainArg), resp);
+      //log('domainSecurityInfo' + JSON.stringify(domainSecurityInfo));
+      var secInfo = domainSecurityInfo;
+      var content = '';
+      if(secInfo.found === false) {
+          resp.push(formatContent('### No Security Information Was Found For: ' + domainArg));
+      }
+
+      content += '\n| Name        | Score           | Info  |';
+      content += '\n| ------------- |:-------------:| ----- |';
+      content += '\n| DGA: | ' + secInfo.dga_score + '| Domain Generation Algorithm. This score is generated based on the likeliness of the domain name being generated by an algorithm rather than a human. This algorithm is designed to identify domains which have been created using an automated randomization strategy, which is a common evasion technique in malware kits or botnets. This score ranges from -100 (suspicious) to 0 (benign).|';
+      content += '\n| Perplexity: |' + secInfo.perplexity + '| A second score on the likeliness of the name to be algorithmically generated, on a scale from 0 to 1. This score is to be used in conjunction with DGA.|';
+      content += '\n| Entropy: |' + secInfo.entropy + '| The number of bits required to encode the domain name, as a score. This score is to be used in conjunction with DGA and Perplexity. |';
+      content += '\n| SecureRank: |' + secInfo.securerank2 + '| Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign). |';
+      content += '\n| PageRank: |' + secInfo.pagerank + '| Popularity according to Google\'s pagerank algorithm |';
+      content += '\n| ASN Score: |' + secInfo.asn_score + '| ASN reputation score, ranges from -100 to 0 with -100 being very suspicious |';
+      content += '\n| Prefix Score: |' + secInfo.prefix_score + '| Prefix ranks domains given their IP prefixes (an IP prefix is the first three octets in an IP address) and the reputation score of these prefixes. Ranges from -100 to 0, -100 being very suspicious. |';
+      content += '\n| RIP Score: |' + secInfo.rip_score + '| RIP ranks domains given their IP addresses and the reputation score of these IP addresses. Ranges from -100 to 0, -100 being very suspicious. |'
+      content += '\n| Popularity: |' + secInfo.popularity + '| The number of unique client IPs visiting this site, relative to the all requests to all sites. A score of how many different client/unique IPs go to this domain compared to others. |';
+      content += '\n| GeoScore: |' + secInfo.geoscore + '| A score that represents how far the different physical locations serving this name are from each other. |';
+      content += '\n| Kolmoorov-Smirnov: |' + secInfo.ks_test + '| Kolmogorov–Smirnov test on geodiversity. 0 means that the client traffic matches what is expected for this TLD. |';
+      content += '\n| Attack Name: |' + secInfo.attack + '| The name of any known attacks associated with this domain. Returns blank if no known threat associated with domain. |';
+      content += '\n| Threat Type: |' + secInfo.threat_type + '| The type of the known attack, such as botnet or APT. Returns blank if no known threat associated with domain. |';
+      var geoDiversity = (secInfo.geodiversity)? secInfo.geodiversity : '';
+      //content += '\n| GeoDiversity: |' + JSON.stringify(geoDiversity) + '| A score representing the number of queries from clients visiting the domain, broken down by country. Score is a non-normalized ratio between 0 and 1. |';
+      var geoDiversityNormalized = (secInfo.geodiversity_normalized)? JSON.stringify(secInfo.geodiversity_normalized) : '';
+      //content += '\n| GeoDiversity Normalized: |' + geoDiversityNormalized + '| A score representing the amount of queries for clients visiting the domain, broken down by country. Score is a normalized ratio between 0 and 1. |';
+      var tldGeoDiversity = JSON.stringify(secInfo.tld_geodiversity).replace('\],','\]\n,');
+      //content += '\n| TLD GeoDiversity: |' + tldGeoDiversity + '| A score that represents the TLD country code geodiversity as a percentage of clients visiting the domain. Occurs most often with domains that have a ccTLD. Score is normalized ratio between 0 and 1. |';
+
+      resp.push(formatContent(content));
+      return resp;
+  }
+
+  /*
+
+  Formats the domain dates that were tag for the given domain
+
+  {
+      "period": {
+        "begin": "2014-04-07",
+        "end": "Current"
+      },
+      "category": "Malware",
+      "url": "http://ancgrli.prophp.org/"
+    },
+    {
+      "period": {
+        "begin": "2014-03-04",
+        "end": "2014-03-05"
+      },
+      "category": "Malware",
+      "url": "http://ancgrli.prophp.org/34/45791.html"
+    }
+
+    */
+
+  function formatDomainTagsInfo(domainArg, domainTagsInfo, resp) {
+      // if no data just return immediately
+      if(!domainTagsInfo || domainTagsInfo.length === 0) {
+          //resp.push(formatContent('* Unknown Date Range'));
+          return resp;
+      }
+      addTableFormatterToResponse(formatTableTitle('Date Range When Umbrella Added To Blocklist'), resp);
+      //log('domainTagsInfo' + JSON.stringify(domainTagsInfo));
+
+      return resp;
+  }
+
+  /*
+
+  Formats related domains or linked domains
+  for a given domain
+
+  */
+  function formatDomainLinksInfo(domainArg, domainLinksInfo, resp) {
+      // just return if nothing found
+      if(!domainLinksInfo || domainLinksInfo.found === false) {
+          //resp.push(formatContent('* Unknown Date Range'));
+          return resp;
+      }
+      addTableFormatterToResponse(formatTableTitle('Related Domains for: ' + domainArg), resp);
+      //log('domainLinksInfo' + JSON.stringify(domainLinksInfo));
+      var content = '\n>The score below is the number of client IP requests to the site around the same time as the site being looked up. This is a score reflecting the number of client IPs looking up related sites within 60 seconds of the original request.';
+      content += '\n\n';
+      content += '\n| Name        | Score           |';
+      content += '\n| ------------- |:-------------:|';
+      var relDomains = (domainLinksInfo.tb1)? domainLinksInfo.tb1 : [];
+      for(var i=0; i<relDomains.length; i++) {
+          var relatedDomainName = relDomains[i][0];
+          var relatedDomainScore = relDomains[i][1];
+          content += '\n| ' + relatedDomainName + ' | ' + relatedDomainScore + ' |';
+      }
+      resp.push(formatContent(content));
+      return resp;
+  }
+
+
+
+  ///// Markdown display holders
+
+  //////////////////////////
+  // Adds a table object to the response object
+  function addTableFormatterToResponse(tableFormatter, resp) {
+      resp.push(tableFormatter);
+      return resp;
+  }
+
+  //////////////////////////
+  // Returns a tableFormatter Markdown Object
+  // Pass in [ { col1 : 'val1', col2 : 1 } , { col1 : 'val2', col2 : 2 } ]
+  function getTableFormatterObj(rowData) {
+         // rows = [ { col1 : 'val1', col2 : 1 } , { col1 : 'val2', col2 : 2 } ]
+
+      return {ContentsFormat: formats.table, Type: entryTypes.note, Contents: rowData};
+  }
+
+  function formatTableTitle(tableTitleInfo) {
+      return {ContentsFormat: 'markdown', Contents: '## ' + tableTitleInfo, Type: 1}
+  }
+
+  function formatContent(markDownContent) {
+      return {ContentsFormat: 'markdown', Contents: markDownContent, Type: 1}
+  }
+
+  return responseData;
+
+type: javascript
+tags:
+enabled: true
+args:
+- name: domain
+  default: true
+- name: domainregex
+  description: Using a regex will search for the domains that match a regular expression
+    a.*b.com
+- name: start
+  description: Used in Conjuction with the domainregex argument only - Example -2weeks,
+    -2days, -32days, EPOCH TIME
+scripttarget: 0
+dependson: {}
+timeout: 0s
