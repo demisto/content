@@ -324,7 +324,7 @@ tasks:
         For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
         the entryId input parameter.
-      scriptName: commentsToContextV2
+      scriptName: commentsToContext
       type: regular
       iscommand: false
       brand: ""
@@ -355,7 +355,7 @@ tasks:
         For accessing the last executed
         task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
         the entryId input parameter.
-      scriptName: commentsToContextV2
+      scriptName: commentsToContext
       type: regular
       iscommand: false
       brand: ""
