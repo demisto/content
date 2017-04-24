@@ -1,16 +1,21 @@
 commonfields:
-  id: eccea40d-921c-4a52-875a-738855531f58
+  id: ReadFile1
   version: -1
-name: ReadFile
+name: ReadFile1
 script: |-
+  maxFileSize = demisto.get(demisto.args(), 'maxFileSize')
+  if maxFileSize:
+      maxFileSize = int(maxFileSize)
+  else:
+      maxFileSize = 1024**2
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
-      data = f.read()
+      data = f.read(maxFileSize)
   if data:
       message = 'Read %d bytes from file.' % (len(data))
       demisto.results({"Type" : entryTypes["note"],
                        "ContentsFormat" : formats["text"],
-                       "Contents" : message,
+                       "Contents" : {"FileData": data},
                        "HumanReadable": message,
                        "EntryContext": {"FileData": data}
                        })
@@ -27,6 +32,10 @@ args:
   required: true
   default: true
   description: War room entryID of the file to read.
+- name: maxFileSize
+  required: false
+  default: false
+  description: Maximal file size to load, in bytes. Default is 1MB.
 outputs:
 - contextPath: FileData
   description: Data read from war room file
