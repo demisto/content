@@ -75,10 +75,6 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
-    scriptarguments:
-      computers: ${epounmanagedendpoints}
-      groupdn: ""
-      reverse: ""
     view: |-
       {
         "position": {

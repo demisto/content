@@ -317,6 +317,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
+    scriptarguments: {}
     nexttasks:
       '#none#':
       - "3"
