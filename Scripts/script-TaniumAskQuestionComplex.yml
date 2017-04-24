@@ -158,6 +158,7 @@ args:
   description: Force Tanium to respond after x seconds (even if data was not collected
     fully by Tanium)
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - tn-result-data
