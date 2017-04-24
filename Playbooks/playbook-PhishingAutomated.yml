@@ -38,8 +38,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": -111
+          "x": 715,
+          "y": 50
         }
       }
   "1":
@@ -56,12 +56,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "82"
+      - "4"
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 40
+          "x": 715,
+          "y": 195
         }
       }
   "4":
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "77"
+      - "93"
     scriptarguments:
       attachIDs: ""
       bcc: ""
@@ -95,16 +95,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 715,
           "y": 340
         }
       }
   "7":
     id: "7"
-    taskid: f52cc4d4-43c4-45d2-850f-238b67c27b83
+    taskid: d81d9531-5ded-45d1-86ba-15609e562898
     type: regular
     task:
-      id: f52cc4d4-43c4-45d2-850f-238b67c27b83
+      id: d81d9531-5ded-45d1-86ba-15609e562898
       version: -1
       name: Parse attached email and override context
       description: Parse email attachment identified in the previous step and override
@@ -133,124 +133,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1337,
-          "y": 881
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 205acc88-9a0d-4b9b-8e41-f6eb8a45f3ab
-    type: condition
-    task:
-      id: 205acc88-9a0d-4b9b-8e41-f6eb8a45f3ab
-      version: -1
-      name: Does the email contain a textual body?
-      scriptName: Exists
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "72"
-      "yes":
-      - "10"
-    scriptarguments:
-      key: Label/Email/text
-      value: ${incident.labels.Email/text}
-    view: |-
-      {
-        "position": {
-          "x": 1676.5,
-          "y": 1185
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 7e22e45b-22c2-4b99-8e8a-23debfe52c0a
-    type: regular
-    task:
-      id: 7e22e45b-22c2-4b99-8e8a-23debfe52c0a
-      version: -1
-      name: Extract IP Addresses from email body
-      scriptName: ExtractIP
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      text: ${incident.labels.Email/text}
-    view: |-
-      {
-        "position": {
-          "x": 1854.5,
-          "y": 1385
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 1d46420f-dc6e-4913-8bea-b669a1f26841
-    type: regular
-    task:
-      id: 1d46420f-dc6e-4913-8bea-b669a1f26841
-      version: -1
-      name: Extract URLs from email body
-      scriptName: ExtractURL
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "72"
-    scriptarguments:
-      text: ${incident.labels.Email/text}
-    view: |-
-      {
-        "position": {
-          "x": 1854.5,
-          "y": 1669
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 8f42f9c7-1126-48f6-87dd-240b4b2456af
-    type: condition
-    task:
-      id: 8f42f9c7-1126-48f6-87dd-240b4b2456af
-      version: -1
-      name: Does the email contain an html body?
-      scriptName: Exists
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "72"
-      "yes":
-      - "13"
-    scriptarguments:
-      key: Label/Email/html
-      value: ${incident.labels.Email/html}
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 1185
+          "x": 959.5,
+          "y": 865
         }
       }
   "13":
     id: "13"
-    taskid: 1b4dae74-ceff-446a-858c-9af723ddbebe
+    taskid: ced360a2-de15-498b-8bf1-eef7f38b5d0a
     type: regular
     task:
-      id: 1b4dae74-ceff-446a-858c-9af723ddbebe
+      id: ced360a2-de15-498b-8bf1-eef7f38b5d0a
       version: -1
-      name: Extract IP Addresses from email html body
+      name: Extract IP Addresses from email
       scriptName: ExtractIP
       issystemtask: true
       type: regular
@@ -260,22 +154,23 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      text: ${incident.labels.Email/html}
+      text: '${.={html: val[''Label/Email/html''], text: val[''Label/Email/text''],
+        headers: val[''Label/Email/headers'']}}'
     view: |-
       {
         "position": {
-          "x": 655,
-          "y": 1385
+          "x": 715,
+          "y": 1710
         }
       }
   "14":
     id: "14"
-    taskid: 711bbd79-6ac0-4f8d-8e96-a3ec1edc801a
+    taskid: d60f2cb4-cfff-4557-8f1f-09cd7f03ccfe
     type: regular
     task:
-      id: 711bbd79-6ac0-4f8d-8e96-a3ec1edc801a
+      id: d60f2cb4-cfff-4557-8f1f-09cd7f03ccfe
       version: -1
-      name: Extract URLs from email html body
+      name: Extract URLs from email
       scriptName: ExtractURL
       issystemtask: true
       type: regular
@@ -285,92 +180,13 @@ tasks:
       '#none#':
       - "72"
     scriptarguments:
-      text: ${incident.labels.Email/html}
+      text: '${.={html: val[''Label/Email/html''], text: val[''Label/Email/text''],
+        headers: val[''Label/Email/headers'']}}'
     view: |-
       {
         "position": {
-          "x": 655,
-          "y": 1669
-        }
-      }
-  "15":
-    id: "15"
-    taskid: da130fbb-afd0-4ad3-8638-810422701be4
-    type: condition
-    task:
-      id: da130fbb-afd0-4ad3-8638-810422701be4
-      version: -1
-      name: Have the email headers been provided?
-      scriptName: Exists
-      issystemtask: true
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "72"
-      "yes":
-      - "16"
-    scriptarguments:
-      key: Label/Email/headers
-      value: ${incident.labels.Email/headers}
-    view: |-
-      {
-        "position": {
-          "x": 175,
-          "y": 1185
-        }
-      }
-  "16":
-    id: "16"
-    taskid: c9d578da-53cf-4309-8c8f-770e2838bb6d
-    type: regular
-    task:
-      id: c9d578da-53cf-4309-8c8f-770e2838bb6d
-      version: -1
-      name: URLExtract from headers
-      description: Extract URLs from the headers
-      scriptName: ExtractURL
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      text: ${incident.labels.Email/headers}
-    view: |-
-      {
-        "position": {
-          "x": -42,
-          "y": 1385
-        }
-      }
-  "17":
-    id: "17"
-    taskid: 7c94856f-ef22-4331-8a09-ab7b8e3451fa
-    type: regular
-    task:
-      id: 7c94856f-ef22-4331-8a09-ab7b8e3451fa
-      version: -1
-      name: IPExtract from headers
-      description: Extract URLs from the headers
-      scriptName: ExtractIP
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "72"
-    scriptarguments:
-      text: ${incident.labels.Email/headers}
-    view: |-
-      {
-        "position": {
-          "x": -42,
-          "y": 1669
+          "x": 715,
+          "y": 1885
         }
       }
   "22":
@@ -398,8 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2863
+          "x": 1062.5,
+          "y": 2905
         }
       }
   "23":
@@ -424,8 +240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3011
+          "x": 1062.5,
+          "y": 3080
         }
       }
   "28":
@@ -446,41 +262,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 2946
+          "x": 602.5,
+          "y": 3255
         }
       }
   "30":
     id: "30"
-    taskid: 61debf06-37d0-4ce0-875a-b6ca6c9bb44f
-    type: condition
+    taskid: bdd1b2ef-e6cf-40f2-81c0-ce12ebdaa931
+    type: regular
     task:
-      id: 61debf06-37d0-4ce0-875a-b6ca6c9bb44f
+      id: bdd1b2ef-e6cf-40f2-81c0-ce12ebdaa931
       version: -1
       name: Check sender domain distance
       description: Check if the sender is trying to confuse the user with a domain
         that is very close to one of our own email domains
       scriptName: CheckSenderDomainDistance
       issystemtask: true
-      type: condition
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "32"
-      LevenshteinDistance:
-      - "31"
+      '#none#':
+      - "89"
     scriptarguments:
       distance: ""
       domain: company.com, companymail.com, companyeurope.com
-      sender: ${incident.labels.Email/from}
+      sender: ${Label/Email/from}
     results:
     - LevenshteinDistance
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 3078
+          "x": 602.5,
+          "y": 3400
         }
       }
   "31":
@@ -503,8 +317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 3300
+          "x": 602.5,
+          "y": 3750
         }
       }
   "32":
@@ -527,8 +341,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 3474
+          "x": 602.5,
+          "y": 3925
         }
       }
   "33":
@@ -551,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 3711
+          "x": 602.5,
+          "y": 4100
         }
       }
   "34":
@@ -573,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 3916
+          "x": 602.5,
+          "y": 4275
         }
       }
   "36":
@@ -601,8 +415,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 4079
+          "x": 602.5,
+          "y": 4420
         }
       }
   "37":
@@ -630,16 +444,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 129,
-          "y": 4400
+          "x": 490,
+          "y": 4595
         }
       }
   "38":
     id: "38"
-    taskid: 41e41e12-c3f7-4d92-8eb1-b0e598adca78
+    taskid: 0fb2db0c-1ca2-4a84-8145-a58bce62ef3a
     type: regular
     task:
-      id: 41e41e12-c3f7-4d92-8eb1-b0e598adca78
+      id: 0fb2db0c-1ca2-4a84-8145-a58bce62ef3a
       version: -1
       name: Look up sender email address in Pipl
       script: pipl|||pipl-search
@@ -655,7 +469,7 @@ tasks:
       city: ""
       columns: ""
       country: ""
-      email: ${incident.labels.Email/from}
+      email: ${Label/Email/from}
       first-name: ""
       last-name: ""
       middle-name: ""
@@ -668,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -205,
-          "y": 4563
+          "x": 602.5,
+          "y": 4770
         }
       }
   "39":
@@ -696,8 +510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 129,
-          "y": 4737
+          "x": 490,
+          "y": 4945
         }
       }
   "42":
@@ -721,16 +535,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 4903
+          "x": 715,
+          "y": 5135
         }
       }
   "44":
     id: "44"
-    taskid: 0b1ba0a2-27cd-48f1-8e70-336942c43e64
+    taskid: 0f08061a-6e53-4d75-8686-a2fb4d355db4
     type: regular
     task:
-      id: 0b1ba0a2-27cd-48f1-8e70-336942c43e64
+      id: 0f08061a-6e53-4d75-8686-a2fb4d355db4
       version: -1
       name: Send email to user notifying them this email is safe
       scriptName: SendEmail
@@ -744,18 +558,19 @@ tasks:
     scriptarguments:
       attachIDs: ""
       bcc: ""
-      body: Hi ${originalFrom},\nWe've concluded that the email you forwarded to us
-        is safe.\nThank you for your alertness and your participation in keeping our
-        organization secure.\nCordially,\n  Your security team
+      body: Hi ${Label/Email/from},\nWe've concluded that the email you forwarded
+        to us is safe.\nThank you for your alertness and your participation in keeping
+        our organization secure.\nCordially,\n  Your security team
       cc: ""
       htmlBody: ""
-      subject: 'Re: Phishing Investigation - ${name}'
-      to: ${originalFrom}
+      noteEntryID: ""
+      subject: 'Re: Phishing Investigation - ${incident.name}'
+      to: ${Label/Email/from}
     view: |-
       {
         "position": {
-          "x": 129,
-          "y": 5080
+          "x": 50,
+          "y": 5120
         }
       }
   "45":
@@ -778,16 +593,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 129,
-          "y": 5313
+          "x": 50,
+          "y": 5295
         }
       }
   "46":
     id: "46"
-    taskid: 2e583a63-f01a-4cc2-8aed-4872a41d6334
+    taskid: aba6117e-c314-4229-8e5f-2b3ab83e6483
     type: regular
     task:
-      id: 2e583a63-f01a-4cc2-8aed-4872a41d6334
+      id: aba6117e-c314-4229-8e5f-2b3ab83e6483
       version: -1
       name: Send email to user notifying them it's a malicious email
       scriptName: SendEmail
@@ -801,19 +616,22 @@ tasks:
     scriptarguments:
       attachIDs: ""
       bcc: ""
-      body: Hi ${originalFrom},\nWe've concluded that the email you forwarded to us
-        is malicious. We've taken steps to blacklist the sender and quarantine the
-        email. Good job on detecting and forwarding it to us!\nAll the best, Your
-        security team
+      body: |-
+        Hi ${Label/Email/from},
+        We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+
+        All the best,
+          Your security team
       cc: ""
       htmlBody: ""
-      subject: 'Re: Phishing Investigation - ${name}'
-      to: ${originalFrom}
+      noteEntryID: ""
+      subject: 'Re: Phishing Investigation - ${incident.name}'
+      to: ${Label/Email/from}
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 5080
+          "x": 715,
+          "y": 5295
         }
       }
   "47":
@@ -841,8 +659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 5313
+          "x": 715,
+          "y": 5470
         }
       }
   "48":
@@ -864,8 +682,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1463,
-          "y": 5498
+          "x": 500,
+          "y": 5645
         }
       }
   "49":
@@ -903,16 +721,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 888,
-          "y": 5498
+          "x": 930,
+          "y": 5645
         }
       }
   "50":
     id: "50"
-    taskid: e88d41c2-b772-4d8b-849a-8fdafa84e275
+    taskid: 007b26a1-f6e0-43e4-8ec0-1b86d3016662
     type: regular
     task:
-      id: e88d41c2-b772-4d8b-849a-8fdafa84e275
+      id: 007b26a1-f6e0-43e4-8ec0-1b86d3016662
       version: -1
       name: Search all mailboxes to find instances of the email
       scriptName: ExchangeSearch
@@ -927,15 +745,15 @@ tasks:
       attachmentName: ${incident.labels.Email/attachments}
       body: ""
       mailbox: ${Mailboxes}
-      sender: ${incident.labels.Email/from}
-      subject: ${incident.labels.Email/subject}
+      sender: ${Label/Email/from}
+      subject: ${Label/Email/subject}
     results:
     - ExchangeItemIDs
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 5684
+          "x": 715,
+          "y": 5820
         }
       }
   "51":
@@ -962,8 +780,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 5914
+          "x": 715,
+          "y": 5995
         }
       }
   "52":
@@ -986,8 +804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6081
+          "x": 602.5,
+          "y": 6170
         }
       }
   "53":
@@ -1008,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 6258
+          "x": 387.5,
+          "y": 6345
         }
       }
   "54":
@@ -1040,16 +858,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 467,
-          "y": 6258
+          "x": 817.5,
+          "y": 6345
         }
       }
   "55":
     id: "55"
-    taskid: 015e68ff-2a6a-4c7f-86bc-bd52ef4516a9
+    taskid: 53f1e043-8102-45f0-8146-556e4ee7ebe0
     type: condition
     task:
-      id: 015e68ff-2a6a-4c7f-86bc-bd52ef4516a9
+      id: 53f1e043-8102-45f0-8146-556e4ee7ebe0
       version: -1
       name: Did we find an attachment inside the email and extract its hash?
       scriptName: Exists
@@ -1058,16 +876,18 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "91"
       "yes":
       - "56"
     scriptarguments:
       key: AttachmentMD5
-      value: ${AttachmentMD5}
+      value: ${File.EntryID(val!=val1---EmailAttachment)}
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 6512
+          "x": 715,
+          "y": 6520
         }
       }
   "56":
@@ -1095,16 +915,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 6776
+          "x": 602.5,
+          "y": 6695
         }
       }
   "57":
     id: "57"
-    taskid: 26fa11ee-26d9-4285-8b54-b4cc3af07498
+    taskid: 7cc132b7-9bae-4a0f-87fe-0d4b2583fff9
     type: regular
     task:
-      id: 26fa11ee-26d9-4285-8b54-b4cc3af07498
+      id: 7cc132b7-9bae-4a0f-87fe-0d4b2583fff9
       version: -1
       name: Search attachment hash in the Bit9 file catalog
       scriptName: CBPCatalogFindHash
@@ -1116,20 +936,20 @@ tasks:
       '#none#':
       - "58"
     scriptarguments:
-      md5: ${AttachmentMD5}
+      md5: ${File(val.EntryID != val1---EmailAttachment).MD5}
     view: |-
       {
         "position": {
-          "x": 842,
-          "y": 6946
+          "x": 827.5,
+          "y": 6870
         }
       }
   "58":
     id: "58"
-    taskid: 48383ba8-94c2-4706-890e-500599ff88c9
+    taskid: 9a075c4f-97c2-42e1-8fec-a039c5a95580
     type: regular
     task:
-      id: 48383ba8-94c2-4706-890e-500599ff88c9
+      id: 9a075c4f-97c2-42e1-8fec-a039c5a95580
       version: -1
       name: Check if the attachment hash is included in any Bit9 rules
       scriptName: CBPFindRule
@@ -1141,12 +961,12 @@ tasks:
       '#none#':
       - "59"
     scriptarguments:
-      hash: ${AttachmentMD5}
+      hash: ${File(val.EntryID != val1---EmailAttachment).MD5}
     view: |-
       {
         "position": {
-          "x": 842,
-          "y": 7145
+          "x": 827.5,
+          "y": 7045
         }
       }
   "59":
@@ -1167,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 842,
-          "y": 7355
+          "x": 827.5,
+          "y": 7220
         }
       }
   "60":
@@ -1196,16 +1016,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 7568
+          "x": 602.5,
+          "y": 7395
         }
       }
   "61":
     id: "61"
-    taskid: 38ad4e5c-33d8-4fa8-834b-d1f556a567e0
+    taskid: 8224c836-3b29-4630-8b55-e0ff119ae2e3
     type: regular
     task:
-      id: 38ad4e5c-33d8-4fa8-834b-d1f556a567e0
+      id: 8224c836-3b29-4630-8b55-e0ff119ae2e3
       version: -1
       name: Search attachments using Carbon Black
       scriptName: CBFindHash
@@ -1217,14 +1037,14 @@ tasks:
       '#none#':
       - "62"
     scriptarguments:
-      md5: ${AttachmentMD5}
+      md5: ${File(val.EntryID != val1---EmailAttachment).MD5}
     results:
     - found_file_locations
     view: |-
       {
         "position": {
-          "x": 842,
-          "y": 7736
+          "x": 715,
+          "y": 7570
         }
       }
   "62":
@@ -1253,8 +1073,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 842,
-          "y": 7981
+          "x": 715,
+          "y": 7745
         }
       }
   "63":
@@ -1276,8 +1096,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 8177
+          "x": 827.5,
+          "y": 7920
         }
       }
   "64":
@@ -1303,16 +1123,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 8648
+          "x": 602.5,
+          "y": 8095
         }
       }
   "65":
     id: "65"
-    taskid: 4fc02298-53a2-48bb-80bc-a83ae5532a52
+    taskid: 4798ffd7-34a3-4fe3-83c3-12997f48570c
     type: regular
     task:
-      id: 4fc02298-53a2-48bb-80bc-a83ae5532a52
+      id: 4798ffd7-34a3-4fe3-83c3-12997f48570c
       version: -1
       name: Search for the attachment using CrowdStrike
       script: FalconHost|||cs-device-ran-on
@@ -1325,12 +1145,12 @@ tasks:
       - "66"
     scriptarguments:
       type: md5
-      value: ${AttachmentMD5}
+      value: ${File(val.EntryID != val1---EmailAttachment).MD5}
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 8925
+          "x": 602.5,
+          "y": 8270
         }
       }
   "66":
@@ -1347,6 +1167,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "91"
       "yes":
       - "67"
     scriptarguments:
@@ -1355,8 +1177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 9163
+          "x": 602.5,
+          "y": 8445
         }
       }
   "67":
@@ -1372,11 +1194,14 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
     view: |-
       {
         "position": {
-          "x": 1181,
-          "y": 9422
+          "x": 490,
+          "y": 8620
         }
       }
   "71":
@@ -1393,14 +1218,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
-      - "12"
-      - "15"
+      - "13"
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1040
+          "x": 715,
+          "y": 1607
         }
       }
   "72":
@@ -1423,33 +1246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1963
-        }
-      }
-  "73":
-    id: "73"
-    taskid: f2d9e172-91b2-4de3-8a29-71c78a92d550
-    type: regular
-    task:
-      id: f2d9e172-91b2-4de3-8a29-71c78a92d550
-      version: -1
-      name: Add email attachment to context
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      key: EmailAttachment
-      value: ${reportedemailentryid}
-    view: |-
-      {
-        "position": {
-          "x": 1337,
-          "y": 722
+          "x": 715,
+          "y": 2060
         }
       }
   "74":
@@ -1461,6 +1259,7 @@ tasks:
       version: -1
       name: Check URL's
       scriptName: URLReputation
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1472,8 +1271,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -52,
-          "y": 2283
+          "x": 162.5,
+          "y": 2380
         }
       }
   "75":
@@ -1485,6 +1284,7 @@ tasks:
       version: -1
       name: Check IP's
       scriptName: IPReputation
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1498,8 +1298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1854.5,
-          "y": 2283
+          "x": 1062.5,
+          "y": 2380
         }
       }
   "76":
@@ -1511,6 +1311,7 @@ tasks:
       version: -1
       name: Check Files
       scriptName: FileReputation
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -1523,34 +1324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2283
-        }
-      }
-  "77":
-    id: "77"
-    taskid: ce27906a-2475-4014-8c05-611f430a6f9e
-    type: condition
-    task:
-      id: ce27906a-2475-4014-8c05-611f430a6f9e
-      version: -1
-      name: Do we have an email attachment?
-      scriptName: IdentifyAttachedEmail
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "71"
-      "yes":
-      - "73"
-    results:
-    - reportedemailentryid
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 510
+          "x": 612.5,
+          "y": 2380
         }
       }
   "78":
@@ -1578,8 +1353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -52,
-          "y": 2103
+          "x": 162.5,
+          "y": 2205
         }
       }
   "79":
@@ -1607,8 +1382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2103
+          "x": 612.5,
+          "y": 2205
         }
       }
   "80":
@@ -1636,8 +1411,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1854.5,
-          "y": 2103
+          "x": 1062.5,
+          "y": 2205
         }
       }
   "81":
@@ -1649,72 +1424,20 @@ tasks:
       version: -1
       name: Was any malicious indicator found?
       scriptName: IsMaliciousIndicatorFound
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "no":
-      - "83"
+      - "84"
       "yes":
       - "42"
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2463
-        }
-      }
-  "82":
-    id: "82"
-    taskid: f8a8784d-2df0-4b10-8436-114f6a2c10a5
-    type: regular
-    task:
-      id: f8a8784d-2df0-4b10-8436-114f6a2c10a5
-      version: -1
-      name: Store the reporting person's email address for later replies
-      description: Save the original "from" sender because it might be overridden
-        by eml/msg attachments
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      key: originalFrom
-      value: ${incident.labels.Email/from}
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 168
-        }
-      }
-  "83":
-    id: "83"
-    taskid: 166201cb-cab1-4d3e-82b9-4389aa1b1031
-    type: condition
-    task:
-      id: 166201cb-cab1-4d3e-82b9-4389aa1b1031
-      version: -1
-      name: Is there any file found in this investigation?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "28"
-      "yes":
-      - "84"
-    scriptarguments:
-      value: ${File.EntryID}
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 2558
+          "x": 500,
+          "y": 2555
         }
       }
   "84":
@@ -1726,6 +1449,7 @@ tasks:
       version: -1
       name: 'Is there any file found in this investigation which is not attachment? '
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1739,15 +1463,257 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2653
+          "x": 612.5,
+          "y": 2730
+        }
+      }
+  "85":
+    id: "85"
+    taskid: 9a20b1a7-16d4-48c0-811c-fc3f07c2cd94
+    type: regular
+    task:
+      id: 9a20b1a7-16d4-48c0-811c-fc3f07c2cd94
+      version: -1
+      name: Set headers to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      key: Label/Email/headers
+      value: ${incident.labels.Email/headers}
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 407.5,
+          "y": 865
+        }
+      }
+  "86":
+    id: "86"
+    taskid: a85a2814-95b2-4fda-8384-b867f0784045
+    type: regular
+    task:
+      id: a85a2814-95b2-4fda-8384-b867f0784045
+      version: -1
+      name: Set html body to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      key: Label/Email/html
+      value: ${incident.labels.Email/html}
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 407.5,
+          "y": 1040
+        }
+      }
+  "87":
+    id: "87"
+    taskid: 526866b0-2f64-4e25-8ee3-167e5dd8b2d7
+    type: regular
+    task:
+      id: 526866b0-2f64-4e25-8ee3-167e5dd8b2d7
+      version: -1
+      name: Set text body to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      key: Label/Email/text
+      value: ${incident.labels.Email/text}
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 407.5,
+          "y": 1215
+        }
+      }
+  "88":
+    id: "88"
+    taskid: e926127d-0acf-456e-8599-10c35d126285
+    type: regular
+    task:
+      id: e926127d-0acf-456e-8599-10c35d126285
+      version: -1
+      name: Find email attachment
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key: EmailAttachment
+      value: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
+        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
+        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+        >= 0).EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 959.5,
+          "y": 664
+        }
+      }
+  "89":
+    id: "89"
+    taskid: a2f77d09-4dc1-431a-8d7f-538f3b285e56
+    type: condition
+    task:
+      id: a2f77d09-4dc1-431a-8d7f-538f3b285e56
+      version: -1
+      name: Is the distance really small
+      scriptName: Exists
+      issystemtask: true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "31"
+      "yes":
+      - "42"
+    scriptarguments:
+      value: ${LevenshteinDistance(val > 0 && val < 3}
+    view: |-
+      {
+        "position": {
+          "x": 1047,
+          "y": 3588
+        }
+      }
+  "90":
+    id: "90"
+    taskid: a13a1633-1d6c-476a-8ae1-c2dea6f97634
+    type: regular
+    task:
+      id: a13a1633-1d6c-476a-8ae1-c2dea6f97634
+      version: -1
+      name: Set sender to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      key: Label/Email/from
+      value: ${incident.labels.Email/from}
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 407.5,
+          "y": 1374
+        }
+      }
+  "91":
+    id: "91"
+    taskid: 2e785868-8ecb-47b8-8123-66e817a31f57
+    type: regular
+    task:
+      id: 2e785868-8ecb-47b8-8123-66e817a31f57
+      version: -1
+      name: Review all results and decide should we close investigation
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 8795
+        }
+      }
+  "92":
+    id: "92"
+    taskid: 3b076dc4-184a-486f-8464-efa8757deb0f
+    type: regular
+    task:
+      id: 3b076dc4-184a-486f-8464-efa8757deb0f
+      version: -1
+      name: Set subject to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      issystemtask: true
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      key: Label/Email/subject
+      value: ${incident.labels.Email/subject}
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": -19,
+          "y": 1388
+        }
+      }
+  "93":
+    id: "93"
+    taskid: b784f079-0efd-47b1-8817-3b25baf07e7f
+    type: condition
+    task:
+      id: b784f079-0efd-47b1-8817-3b25baf07e7f
+      version: -1
+      name: Has email attachment
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "85"
+      "yes":
+      - "88"
+    scriptarguments:
+      value: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
+        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
+        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
+        >= 0).EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 504
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "12_72_#default#": 0.36,
-      "15_72_#default#": 0.17,
       "23_28_#default#": 0.81,
       "23_42_yes": 0.1,
       "36_42_yes": 0.11,
@@ -1756,17 +1722,15 @@ view: |-
       "60_64_#default#": 0.85,
       "62_64_#default#": 0.46,
       "78_81_no": 0.9,
-      "83_28_no": 0.46,
       "84_22_yes": 0.61,
-      "84_28_no": 0.67,
-      "9_72_#default#": 0.26
+      "84_28_no": 0.67
     },
     "paper": {
       "dimensions": {
-        "height": 9628,
-        "width": 2439.5,
-        "x": -205,
-        "y": -111
+        "height": 8840,
+        "width": 1461.5,
+        "x": -19,
+        "y": 50
       }
     }
   }
