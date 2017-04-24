@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1677.5,
           "y": 50
         }
       }
@@ -42,8 +42,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "23"
+      '#default#':
+      - "34"
       "yes":
       - "22"
     scriptarguments:
@@ -52,7 +52,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1677.5,
           "y": 195
         }
       }
@@ -78,8 +78,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 690
+          "x": 1158,
+          "y": 712
         }
       }
   "6":
@@ -101,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1795,
-          "y": 690
+          "x": 207,
+          "y": 807
         }
       }
   "8":
@@ -137,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2323,
-          "y": 690
+          "x": 905,
+          "y": 865
         }
       }
   "9":
@@ -170,8 +170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2530,
-          "y": 988
+          "x": 525,
+          "y": 1129
         }
       }
   "22":
@@ -192,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2057,
-          "y": 370
+          "x": 695,
+          "y": 385
         }
       }
   "23":
@@ -213,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 370
+          "x": 2005,
+          "y": 560
         }
       }
   "26":
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 690
+          "x": 2608,
+          "y": 865
         }
       }
   "27":
@@ -266,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 515
+          "x": 2005,
+          "y": 692
         }
       }
   "28":
@@ -288,8 +288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 690
+          "x": 2193,
+          "y": 902
         }
       }
   "29":
@@ -310,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 1713,
+          "y": 865
         }
       }
   "30":
@@ -330,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 988
+          "x": 1677.5,
+          "y": 1108
         }
       }
   "33":
@@ -361,18 +361,54 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2057,
-          "y": 500
+          "x": 542,
+          "y": 545
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 5ae67300-d763-4671-8f0c-78a34bb2bb41
+    type: condition
+    task:
+      id: 5ae67300-d763-4671-8f0c-78a34bb2bb41
+      version: 1
+      name: Does incident include "Brand" label?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "23"
+    scriptarguments:
+      value: ${incident.labels.Brand}
+    view: |-
+      {
+        "position": {
+          "x": 1779,
+          "y": 394
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "27_30_#default#": 0.21,
+      "2_34_#default#": 0.62,
+      "33_4_SPLUNK_SENDER@PLACEHOLDER.COM": 0.62,
+      "33_6_NEXPOSE_SENDER@PLACEHOLDER.COM": 0.56,
+      "33_8_SENTINELONE_SENDER@PLACEHOLDER.COM": 0.63,
+      "33_9_#default#": 0.64,
+      "34_30_#default#": 0.16
+    },
     "paper": {
       "dimensions": {
-        "height": 1033,
-        "width": 2860,
-        "x": 50,
+        "height": 1174,
+        "width": 2781,
+        "x": 207,
         "y": 50
       }
     }
