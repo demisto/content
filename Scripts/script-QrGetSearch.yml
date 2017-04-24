@@ -21,6 +21,7 @@ tags:
 - QRadar
 comment: Gets a specific search id
 system: true
+deprecated: true
 args:
 - default: true
   description: The search id

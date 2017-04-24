@@ -21,6 +21,7 @@ tags:
 - QRadar
 comment: Gets offenses from qradar
 system: true
+deprecated: true
 args:
 - description: Query to filter offenses
   name: filter
