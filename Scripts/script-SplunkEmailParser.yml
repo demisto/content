@@ -60,7 +60,7 @@ script: |-
       type: type,
       details: details,
       severity: severity,
-      incName: incName,
+      name: incName,
       systems: systems
   }));
   return res;
