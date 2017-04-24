@@ -348,7 +348,7 @@ tasks:
       - "15"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='passivetotal')}
+      value: ${ConfiguredModules.brand(val=='PassiveTotal')}
     view: |-
       {
         "position": {
@@ -400,7 +400,7 @@ tasks:
       - "17"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='csintel')}
+      value: ${ConfiguredModules.brand(val=='FalconIntel')}
     view: |-
       {
         "position": {
