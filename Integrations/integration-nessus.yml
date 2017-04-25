@@ -30,13 +30,6 @@ configuration:
   required: false
 script:
   script: |
-    /** ######  Delete!!! ########
-     q1: in which format will we recieve the folders/scansHeaders variable?
-     q2: tabletomd converts 0's to null's
-     q3: tblToMD - how to treat empty tables?
-    ######  end Delete!!! ########**/
-
-
     var getReadyURL = function() {
         u = params.url;
         if (u && u[u.length - 1] !== '/') {
