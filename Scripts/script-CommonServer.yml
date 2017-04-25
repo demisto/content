@@ -102,7 +102,7 @@ script: |-
           headers = Object.keys(t[0]);
       }
 
-      if(!headers || !headers instanceof Array || !!headers.length) {
+      if(!headers || !headers instanceof Array || headers.length === 0) {
           return 'No data returned\n';
       }
 
