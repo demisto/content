@@ -71,8 +71,12 @@ script:
             params.proxy
         );
         if (res.StatusCode !==200) {
+          if(res.StatusCode === 404){
+            return undefined;
+          }
+          else{
             throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
-
+          }
         }
         return res.Body;
     };
@@ -141,6 +145,9 @@ script:
 
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
+        if(!resXML){
+          return 'No results yet';
+        }
         var result = JSON.parse(x2j(resXML));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
