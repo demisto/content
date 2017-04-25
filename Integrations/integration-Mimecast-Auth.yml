@@ -9,7 +9,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAQCAYAAADdw7vlAAAR0Ul
 description: Creates Access Key and  Secret Key for Mimecast API
 detaileddescription: |-
   This is strictly to manage (create/refresh/discover)  Mimecast API Access Keys and  Secret Keys .
-  Use mimecast-discover command to fetch the region you can authenticate agienst, update it in the integration base url field.
+  Use mimecast-discover command to fetch the region you can authenticate against, update it in the integration base url field.
   Then use mime-cast login to generate Access Key and  Secret Key, that you can use in Mimecast integration.
 configuration:
 - display: BaseUrl

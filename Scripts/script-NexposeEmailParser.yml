@@ -49,7 +49,7 @@ script: |-
                                     type: 'Nexpose alert',
                                     details: nodes[i],
                                     severity: sev,
-                                    incName: data.Address + ' vulnerability count ' + data.Vulnerabilities + ' risk score ' + data.Risk,
+                                    name: data.Address + ' vulnerability count ' + data.Vulnerabilities + ' risk score ' + data.Risk,
                                     systems: data.Address
                                 });
               }
@@ -81,5 +81,7 @@ args:
 - name: defaultNexposeSeverity
   description: Severity to be set on triggered incidents
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - nexpose
 timeout: 0s

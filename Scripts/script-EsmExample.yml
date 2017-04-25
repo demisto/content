@@ -28,5 +28,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - search
+  - esm|||search
 timeout: 0s

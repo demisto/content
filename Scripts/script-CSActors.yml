@@ -49,6 +49,7 @@ tags:
 comment: Query CrowdStrike actors based on given parameters. For fields like countries
   and industries, multiple values can be passed separated by ','.
 system: true
+deprecated: true
 args:
 - name: q
   default: true

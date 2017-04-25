@@ -2,8 +2,8 @@ commonfields:
   id: QRadar
   version: -1
 name: QRadar
-display: QRadar
 system: true
+display: QRadar
 category: Analytics & SIEM
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAfCAYAAADUdfLHAAAACXBIWXMAAC4jAAAuIwF4pT92AAA4JWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wMi0xNlQyMDozNTozNiswMjowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTAzLTA3VDE5OjM1KzAyOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wMy0wN1QxOTozNSswMjowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDo2MzI4N2NmZC1hYjc1LTRjOWUtOTc3Yy01Yzk0MTBhZTBhNGI8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6NjMyODdjZmQtYWI3NS00YzllLTk3N2MtNWM5NDEwYWUwYTRiPC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6NjMyODdjZmQtYWI3NS00YzllLTk3N2MtNWM5NDEwYWUwYTRiPC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjYzMjg3Y2ZkLWFiNzUtNGM5ZS05NzdjLTVjOTQxMGFlMGE0Yjwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xNlQyMDozNTozNiswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+MzAwMDAwMC8xMDAwMDwvdGlmZjpYUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6WVJlc29sdXRpb24+MzAwMDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT42NTUzNTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MTE1PC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjMxPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAg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
 description: Get incidents and search QRadar
@@ -33,6 +33,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     // The command input arg holds the command sent from the user.
@@ -41,6 +46,7 @@ script:
     var server = params.server+'/';
     var insecure = params.insecure;
     var query = params.query;
+    var incidentsPerCall = 50;
 
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
@@ -111,6 +117,31 @@ script:
         return sendRequest('GET', server + 'api/ariel/searches/' + search_id + '/results', headers, 'get search results');
     }
 
+    var getAssets = function(query_expression, fields, range) {
+        var headers = {'Content-Type': ['application/json']};
+        if (range) {
+            headers.Range = ['items=' + range];
+        }
+        var urlArgs = {};
+        if (fields) {
+            urlArgs.fields = fields;
+        }
+        if (query_expression) {
+            urlArgs.query_expression = query_expression;
+        }
+        return sendRequest('GET', server + 'api/asset_model/assets' + encodeToURLQuery(urlArgs), headers, 'get-assets');
+    }
+
+    var addHumanRedable = function(object, title, headers, path) {
+      var obj = path ? dq(object, path) : object;
+      return {
+        Type: entryTypes.note,
+        Contents: object,
+        ContentsFormat: formats.json,
+        HumanReadable: obj && ((obj instanceof Array && obj.length >0) || (obj instanceof Object && Object.keys(obj).length > 0)) ? tblToMd(title, obj, headers) : 'no results'
+      };
+    }
+
     var updateOffense = function(offense_id, args) {
         var booleanFields = ['protected', 'follow_up'];
         var keys = Object.keys(args);
@@ -129,17 +160,22 @@ script:
             JSON.stringify(args)
             );
     }
+    var headers = args.headers;
+    if (headers) {
+        headers = headers.split(',');
+    }
+    delete(args.headers);
 
     switch (command) {
         case 'test-module':
-            if (getOffenses()) {
+            if (getOffenses(undefined, undefined, '0-1')) {
                 return 'ok';
             }
             return 'not ok';
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''));
+            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + incidentsPerCall);
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
@@ -149,19 +185,27 @@ script:
             setLastRun({startTime: startTime});
             return JSON.stringify(incidents);
         case 'qr-offenses':
-            return getOffenses(args.filter, args.fields, args.range);
+        case 'qradar-offenses':
+            return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offeneses', headers);
+        case 'qr-get-assets':
+        case 'qradar-get-assets':
+            return addHumanRedable(getAssets(args.filter, args.fields, args.range), 'QRadar get assets', headers);
         case 'qr-update-offense':
-            return updateOffense(args.offense_id, args);
+        case 'qradar-update-offense':
+            return addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers);
         case 'qr-searches':
-            return search(args.query_expression, args.fields);
+        case 'qradar-searches':
+            return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
         case 'qr-get-search':
-            return getSearch(args.search_id, args.fields);
+        case 'qradar-get-search':
+            return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
         case 'qr-get-search-results':
-            return getSearchResults(args.search_id, args.range);
+        case 'qradar-get-search-results':
+            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
     }
   type: javascript
   commands:
-  - name: qr-offenses
+  - name: qradar-offenses
     arguments:
     - name: filter
       description: Query to filter offenses
@@ -169,8 +213,10 @@ script:
       description: 'Fields to filter in '
     - name: range
       description: Number of results in return
+    - name: headers
+      description: Table headers
     description: Gets offenses from qradar
-  - name: qr-searches
+  - name: qradar-searches
     arguments:
     - name: query_expression
       required: true
@@ -178,8 +224,10 @@ script:
       description: The query expressions in AQL
     - name: fields
       description: Fields to filter in
+    - name: headers
+      description: Table headers
     description: Searches in QRadar
-  - name: qr-get-search
+  - name: qradar-get-search
     arguments:
     - name: search_id
       required: true
@@ -187,8 +235,10 @@ script:
       description: The search id
     - name: fields
       description: Fields to filter in
+    - name: headers
+      description: Table headers
     description: Gets a specific search id
-  - name: qr-get-search-results
+  - name: qradar-get-search-results
     arguments:
     - name: search_id
       required: true
@@ -196,8 +246,10 @@ script:
       description: The search id
     - name: range
       description: Number of results in return
+    - name: headers
+      description: Table headers
     description: Gets search results
-  - name: qr-update-offense
+  - name: qradar-update-offense
     arguments:
     - name: offense_id
       required: true
@@ -227,9 +279,120 @@ script:
         when you close an offense
     - name: assigned_to
       description: A user to assign the offense to
+    - name: headers
+      description: Table headers
     - name: fields
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas
     description: Update an offense
+  - name: qradar-get-assets
+    arguments:
+    - name: range
+      description: Number of results in return
+    - name: fields
+      description: Fields to filter in
+    - name: filter
+      description: Query to filter offenses
+    - name: headers
+      description: Table headers
+    description: List all assets found in the model
+  - name: qr-offenses
+    deprecated: true
+    arguments:
+    - name: filter
+      description: Query to filter offenses
+    - name: fields
+      description: 'Fields to filter in '
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
+    description: Gets offenses from qradar
+  - name: qr-searches
+    deprecated: true
+    arguments:
+    - name: query_expression
+      required: true
+      default: true
+      description: The query expressions in AQL
+    - name: fields
+      description: Fields to filter in
+    - name: headers
+      description: Table headers
+    description: Searches in QRadar
+  - name: qr-get-search
+    deprecated: true
+    arguments:
+    - name: search_id
+      required: true
+      default: true
+      description: The search id
+    - name: fields
+      description: Fields to filter in
+    - name: headers
+      description: Table headers
+    description: Gets a specific search id
+  - name: qr-get-search-results
+    deprecated: true
+    arguments:
+    - name: search_id
+      required: true
+      default: true
+      description: The search id
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
+    description: Gets search results
+  - name: qr-update-offense
+    deprecated: true
+    arguments:
+    - name: offense_id
+      required: true
+      default: true
+      description: The ID of the offense to update
+    - name: protected
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to protect the offense
+    - name: follow_up
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to set the follow up flag on the offense
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - HIDDEN
+      - CLOSED
+      description: he new status for the offense
+    - name: closing_reason_id
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense
+    - name: assigned_to
+      description: A user to assign the offense to
+    - name: headers
+      description: Table headers
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get
+        back in the response. Fields that are not named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas
+    description: Update an offense
+  - name: qr-get-assets
+    deprecated: true
+    arguments:
+    - name: range
+      description: Number of results in return
+    - name: fields
+      description: Fields to filter in
+    - name: filter
+      description: Query to filter offenses
+    - name: headers
+      description: Table headers
+    description: List all assets found in the model
   isfetch: true

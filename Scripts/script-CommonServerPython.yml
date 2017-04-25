@@ -218,18 +218,27 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tblToMd(name, t):
-      mdResult = '### ' + name + '\n'
-      if t:
-          headers = t[0].keys()
-          mdResult += '|'.join(headers) + '\n'
-          mdResult += '|'.join(['-'] * len(headers)) + '\n'
-          for entry in t:
-              vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
-              mdResult += '|'.join(vals) + '\n'
-      else:
-          mdResult += '**No entries.**\n'
-      return mdResult
+  def tableToMarkdown(name, t, headers = None):
+    # in case of headers was not provided (backward compatibility)
+    if not headers:
+        headers = t[0].keys()
+
+    mdResult = ''
+    if name:
+        mdResult = '### ' + name + '\n'
+
+    if t:
+        mdResult += '|'.join(headers) + '\n'
+        mdResult += '|'.join(['-'] * len(headers)) + '\n'
+        for entry in t:
+            vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
+            mdResult += '|'.join(vals) + '\n'
+    else:
+        mdResult += '**No entries.**\n'
+    return mdResult
+    
+    
+  tblToMd = tableToMarkdown
 
 
   def sectionsToMarkdown(root):
@@ -244,19 +253,18 @@ script: |-
 
 
   def fileResult(filename, data):
-      from uuid import uuid4
-      temp = str(uuid4())
+      temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
-
-
+      
+      
   def flattenRow(rowDict):
-    return {k: formatCell(rowDict[k]) for k in rowDict}
+      return {k: formatCell(rowDict[k]) for k in rowDict}
 
 
   def flattenTable(tableDict):
-    return [flattenRow(row) for row in tableDict]
+      return [flattenRow(row) for row in tableDict]
  
   MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
 
@@ -284,8 +292,6 @@ script: |-
           return item[fieldName]
       else:
           return item
-  
-  
   def isCommandAvailable(cmd):
       modules = demisto.getAllSupportedCommands();
       for m in modules:
@@ -294,6 +300,13 @@ script: |-
                   if c['name'] == cmd:
                       return True
       return False
+
+  def epochToTimestamp(epoch):
+      return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+  def formatTimeColumns(data, timeColumnNames):
+      for row in data:
+          for k in timeColumnNames:
+              row[k] = epochToTimestamp(row[k])
 type: python
 tags:
 - infra

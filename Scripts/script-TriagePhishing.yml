@@ -89,6 +89,7 @@ tags:
 comment: Process a suspected email and check URLs, attachments and sender via reputation
   services
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must: []

@@ -9,6 +9,13 @@ script: |-
       dArgs['htmlBody'] = Template(dArgs['htmlBody'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
   elif 'body' in dArgs:
       dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  elif 'noteEntryID' in dArgs:
+      entry = demisto.executeCommand( 'getEntry', { 'id' : demisto.args()['noteEntryID'] } )[0]
+      if isError(entry):
+          demisto.results(entry)
+          sys.exit()
+      else:
+          dArgs['body'] = entry['Contents']
   else:
       dArgs['body'] = ''
   if 'subject' in dArgs:
@@ -47,6 +54,8 @@ args:
 - name: htmlBody
   description: Send an html formatted email - overrides "body" argument, cannot use
     both.
+- name: noteEntryID
+  description: Send the textual contents of an entry
 scripttarget: 0
 dependson:
   must:

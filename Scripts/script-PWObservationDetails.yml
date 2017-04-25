@@ -6,7 +6,7 @@ script: |
   res = []
   dArgs = demisto.args()
   dArgs["using-brand"] = "ProtectWise"
-  dArgs['sensorId'] = argToList(demisto.get(dArgs, 'sensorId'))
+  dArgs['sensorId'] = demisto.get(dArgs, 'sensorId')
 
   resCmd = demisto.executeCommand("pw-observation-get", dArgs)
   try:

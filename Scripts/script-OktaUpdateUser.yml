@@ -1,98 +1,102 @@
-args:
-- description: Given name of the user (givenName)
-  name: firstName
-- description: Family name of the user (familyName)
-  name: lastName
-- description: primary email address of user
-  name: email
-- description: Unique identifier for the user (login)
-  name: username
-  required: true
-- description: Secondary email address of user typically used for account recovery
-  name: secondEmail
-- description: Middle name(s) of the user
-  name: middleName
-- description: Honorific prefix(es) of the user, or title in most Western languages
-  name: honorificPrefix
-- description: honorific suffix(es) of the user
-  name: honorificSuffix
-- description: "User\u2019s title, such as \u201CVice President\u201D"
-  name: title
-- description: Name of the user, suitable for display to end-users
-  name: displayName
-- description: Casual way to address the user in real life
-  name: nickName
-- description: "Url of user\u2019s online profile (e.g. a web page)"
-  name: profileUrl
-- description: Primary phone number of user such as home number
-  name: primaryPhone
-- description: mobile phone number of user
-  name: mobilePhone
-- description: "Full street address component of user\u2019s address"
-  name: streetAddress
-- description: "City or locality component of user\u2019s address (locality)"
-  name: city
-- description: "State or region component of user\u2019s address (region)"
-  name: state
-- description: "Zipcode or postal code component of user\u2019s address (postalCode)"
-  name: zipCode
-- description: "Country name component of user\u2019s address (country)"
-  name: countryCode
-- description: "Mailing address component of user\u2019s address"
-  name: postalAddress
-- description: "User\u2019s preferred written or spoken languages"
-  name: preferredLanguage
-- description: "User\u2019s default location for purposes of localizing items such\
-    \ as currency, date time format, numerical representations, etc."
-  name: locale
-- description: "User\u2019s time zone"
-  name: timezone
-- description: "Used to identify the organization to user relationship such as \u201C\
-    Employee\u201D or \u201CContractor\u201D"
-  name: userType
-- description: Organization or company assigned unique identifier for the user
-  name: employeeNumber
-- description: name of a cost center assigned to
-  name: costCenter
-- description: "Name of user\u2019s organization"
-  name: organization
-- description: "Name of user\u2019s division"
-  name: division
-- description: "Name of user\u2019s department"
-  name: department
-- description: "ID of a user\u2019s manager"
-  name: managerId
-- description: "DisplayName of the user\u2019s manager"
-  name: manager
-- description: Password for new user
-  name: password
-- description: Password question for new user
-  name: passwordQuestion
-- description: Password answer for question supplied
-  name: passwordAnswer
-- description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
-  name: providerType
-- description: Name of provider
-  name: providerName
-comment: Update user with a given login, all fields are optional, fields which are
-  not set will not be overriden
 commonfields:
-  id: OktaUpdateUser
-  version: -1
-dependson:
-  must:
-  - okta-update-user
+  id: 514ec833-c02c-49a3-8ac6-d982198f5fa0
+  version: 2
 name: OktaUpdateUser
-script: "\nresp = demisto.executeCommand(\"okta-update-user\", demisto.args())\n\n\
-  if isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
-  \ \"Contents\")\n    if data:\n    \tdata = data if isinstance(data, list) else\
-  \ [data]\n    \tdata = [{k: formatCell(row[k]) for k in row} for row in data]\n\
-  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
-  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
-  )\n"
-scripttarget: 0
-system: true
+script: |2
+
+  resp = demisto.executeCommand("okta-update-user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.") 
+type: python
 tags:
 - okta
-timeout: 0s
-type: python
+comment: Update user with a given login, all fields are optional, fields which are
+  not set will not be overriden
+enabled: true
+args:
+- name: firstName
+  description: Given name of the user (givenName)
+- name: lastName
+  description: Family name of the user (familyName)
+- name: email
+  description: primary email address of user
+- name: username
+  required: true
+  description: Unique identifier for the user (login)
+- name: secondEmail
+  description: Secondary email address of user typically used for account recovery
+- name: middleName
+  description: Middle name(s) of the user
+- name: honorificPrefix
+  description: Honorific prefix(es) of the user, or title in most Western languages
+- name: honorificSuffix
+  description: honorific suffix(es) of the user
+- name: title
+  description: User’s title, such as “Vice President”
+- name: displayName
+  description: Name of the user, suitable for display to end-users
+- name: nickName
+  description: Casual way to address the user in real life
+- name: profileUrl
+  description: Url of user’s online profile (e.g. a web page)
+- name: primaryPhone
+  description: Primary phone number of user such as home number
+- name: mobilePhone
+  description: mobile phone number of user
+- name: streetAddress
+  description: Full street address component of user’s address
+- name: city
+  description: City or locality component of user’s address (locality)
+- name: state
+  description: State or region component of user’s address (region)
+- name: zipCode
+  description: Zipcode or postal code component of user’s address (postalCode)
+- name: countryCode
+  description: Country name component of user’s address (country)
+- name: postalAddress
+  description: Mailing address component of user’s address
+- name: preferredLanguage
+  description: User’s preferred written or spoken languages
+- name: locale
+  description: User’s default location for purposes of localizing items such as currency,
+    date time format, numerical representations, etc.
+- name: timezone
+  description: User’s time zone
+- name: userType
+  description: Used to identify the organization to user relationship such as “Employee”
+    or “Contractor”
+- name: employeeNumber
+  description: Organization or company assigned unique identifier for the user
+- name: costCenter
+  description: name of a cost center assigned to
+- name: organization
+  description: Name of user’s organization
+- name: division
+  description: Name of user’s division
+- name: department
+  description: Name of user’s department
+- name: managerId
+  description: ID of a user’s manager
+- name: manager
+  description: DisplayName of the user’s manager
+- name: password
+  description: Password for new user
+- name: passwordQuestion
+  description: Password question for new user
+- name: passwordAnswer
+  description: Password answer for question supplied
+- name: providerType
+  description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+- name: providerName
+  description: Name of provider
+scripttarget: 0
+deprecated: true

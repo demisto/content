@@ -2,6 +2,7 @@ commonfields:
   id: WildfireUpload
   version: -1
 name: WildfireUpload
+deprecated: true
 script: |-
   var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
   if (!raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {

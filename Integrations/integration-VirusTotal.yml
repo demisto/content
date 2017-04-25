@@ -1,0 +1,648 @@
+commonfields:
+  id: VirusTotal
+  version: -1
+name: VirusTotal
+display: VirusTotal
+category: Data Enrichment
+image: data:image/png;base64,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/GMzLdsAADhtaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzExMSA3OS4xNTgzMjUsIDIwMTUvMDkvMTAtMDE6MTA6MjAgICAgICAgICI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgICAgICAgICB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgICAgICAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8eG1wOkNyZWF0b3JUb29sPkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpPC94bXA6Q3JlYXRvclRvb2w+CiAgICAgICAgIDx4bXA6Q3JlYXRlRGF0ZT4yMDE2LTAyLTE2VDIwOjQ4OjMwKzAyOjAwPC94bXA6Q3JlYXRlRGF0ZT4KICAgICAgICAgPHhtcDpNb2RpZnlEYXRlPjIwMTYtMDMtMDdUMTk6MzU6MDErMDI6MDA8L3htcDpNb2RpZnlEYXRlPgogICAgICAgICA8eG1wOk1ldGFkYXRhRGF0ZT4yMDE2LTAzLTA3VDE5OjM1OjAxKzAyOjAwPC94bXA6TWV0YWRhdGFEYXRlPgogICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3BuZzwvZGM6Zm9ybWF0PgogICAgICAgICA8cGhvdG9zaG9wOkNvbG9yTW9kZT4yPC9waG90b3Nob3A6Q29sb3JNb2RlPgogICAgICAgICA8cGhvdG9zaG9wOklDQ1Byb2ZpbGU+c1JHQiBJRUM2MTk2Ni0yLjE8L3Bob3Rvc2hvcDpJQ0NQcm9maWxlPgogICAgICAgICA8eG1wTU06SW5zdGFuY2VJRD54bXAuaWlkOjUzNTliYjI4LWFhZWEtNDUxZS1iYjE2LTZhZWUyMWFlODI0OTwveG1wTU06SW5zdGFuY2VJRD4KICAgICAgICAgPHhtcE1NOkRvY3VtZW50SUQ+eG1wLmRpZDo1MzU5YmIyOC1hYWVhLTQ1MWUtYmIxNi02YWVlMjFhZTgyNDk8L3htcE1NOkRvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+eG1wLmRpZDo1MzU5YmIyOC1hYWVhLTQ1MWUtYmIxNi02YWVlMjFhZTgyNDk8L3htcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD4KICAgICAgICAgPHhtcE1NOkhpc3Rvcnk+CiAgICAgICAgICAgIDxyZGY6U2VxPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5jcmVhdGVkPC9zdEV2dDphY3Rpb24+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDppbnN0YW5jZUlEPnhtcC5paWQ6NTM1OWJiMjgtYWFlYS00NTFlLWJiMTYtNmFlZTIxYWU4MjQ5PC9zdEV2dDppbnN0YW5jZUlEPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6d2hlbj4yMDE2LTAyLTE2VDIwOjQ4OjMwKzAyOjAwPC9zdEV2dDp3aGVuPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6c29mdHdhcmVBZ2VudD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC94bXBNTTpIaXN0b3J5PgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpYUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOllSZXNvbHV0aW9uPjcyMDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj4xMTU8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+MTY8L2V4aWY6UGl4ZWxZRGltZW5zaW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/Pi0iQwMAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAAwBQTFRFD3W8vb7AS5jNh7rdzs7Qw9zu3t7f7u/v8Pb7Hn7Apcvm4e73LYbEPI/J0uXyaanVWqDRlsLieLLZwcLE1tbY+/v7tNTqxcbI5ufn9/f38/PzycrM2tvc6uvr0tLU4uLj////ISEhIiIiIyMjJCQkJSUlJiYmJycnKCgoKSkpKioqKysrLCwsLS0tLi4uLy8vMDAwMTExMjIyMzMzNDQ0NTU1NjY2Nzc3ODg4OTk5Ojo6Ozs7PDw8PT09Pj4+Pz8/QEBAQUFBQkJCQ0NDRERERUVFRkZGR0dHSEhISUlJSkpKS0tLTExMTU1NTk5OT09PUFBQUVFRUlJSU1NTVFRUVVVVVlZWV1dXWFhYWVlZWlpaW1tbXFxcXV1dXl5eX19fYGBgYWFhYmJiY2NjZGRkZWVlZmZmZ2dnaGhoaWlpampqa2trbGxsbW1tbm5ub29vcHBwcXFxcnJyc3NzdHR0dXV1dnZ2d3d3eHh4eXl5enp6e3t7fHx8fX19fn5+f39/gICAgYGBgoKCg4ODhISEhYWFhoaGh4eHiIiIiYmJioqKi4uLjIyMjY2Njo6Oj4+PkJCQkZGRkpKSk5OTlJSUlZWVlpaWl5eXmJiYmZmZmpqam5ubnJycnZ2dnp6en5+foKCgoaGhoqKio6OjpKSkpaWlpqamp6enqKioqampqqqqq6urrKysra2trq6ur6+vsLCwsbGxsrKys7OztLS0tbW1tra2t7e3uLi4ubm5urq6u7u7vLy8vb29vr6+v7+/wMDAwcHBwsLCw8PDxMTExcXFxsbGx8fHyMjIycnJysrKy8vLzMzMzc3Nzs7Oz8/P0NDQ0dHR0tLS09PT1NTU1dXV1tbW19fX2NjY2dnZ2tra29vb3Nzc3d3d3t7e39/f4ODg4eHh4uLi4+Pj5OTk5eXl5ubm5+fn6Ojo6enp6urq6+vr7Ozs7e3t7u7u7+/v8PDw8fHx8vLy8/Pz9PT09fX19vb29/f3+Pj4+fn5+vr6+/v7/Pz8/f39/v7+////2Vpp8AAAACF0Uk5T//////////////////////////////////////////8An8HQIQAAAUVJREFUeNq81dFSwjAQBdB7a4MCtsWO4KAzev//K31omt2kiQw+sC+EADmbTbYAAHCQLgBmAcqDJHU7sPlhaxYAgFEalhHmx5jSHj4eY+ao/hV3m9LkTNsZY4ik+vi6zPfSlelzny8AYG8nB6TBbLOSpGP6xpnkz2pqNXcszDNrZkp9qJiAz0Q+A9rSZrI0SXK3RLF6BwA41UyfFbz5VTPTxp25ObnD0nbp0PLzvBQmXmX6stGepP40v0szq9m8uUOl6etM09rmpx2nN5/87Yxm16jt0VeZ5HsEmqY+PJrMbmuG1nmiMNfF2qY9NOq1xWY2N4sbLCvaXeYE4GVzh+qm3uJzVzfNGL1in1htrVe6shcrtR0U09MUM7rSM1XTxs9a/yTK7guN/gwhxM2NIaQ3dVPa9aUZqxyyLj+tBesASGNu/g4AkdVwApEomLgAAAAASUVORK5CYII=
+description: Analyze suspicious hashes, URLs, domains and IP addresses
+detaileddescription: |-
+  Don’t have a Virustotal key?
+  Register at https://www.virustotal.com
+  After signing in click on your user name (top right) and go to “My API Key”
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: Server
+  defaultvalue: https://www.virustotal.com/vtapi/v2/
+  type: 0
+  required: true
+- display: API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: true
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: false
+  type: 8
+  required: false
+script:
+  script: |-
+    var serverUrl = params.Server;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var doReq = function(method, path, parameters) {
+        if (!parameters) {
+            parameters = {};
+        }
+        parameters.apikey = params.APIKey;
+        var result = http(
+            serverUrl + path + (method === 'GET' ? encodeToURLQuery(parameters) : ''),
+            {
+                Headers: {'Content-Type': ['application/x-www-form-urlencoded'], 'Accept': ['application/json']},
+                Method: method,
+                Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''
+            },
+            params.insecure,
+            params.useproxy
+        );
+
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        if (result.Body === '' && result.StatusCode == 204) {
+            throw 'No content recieved. Possible API rate limit reached.';
+        }
+        if (result.Body === '') {
+            throw 'No content recieved. Maybe you tried a private API?.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (!Array.isArray(obj) && obj.response_code !== 1 && obj.response_code !== 0) {
+            throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+    };
+
+    var doFile = function(hash, longFormat, threshold) {
+        if (!threshold) {
+            threshold = 10;
+        }
+        var res = doReq('POST', 'file/report', {resource: hash});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
+        }
+        var r = [];
+        if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
+            r = res.obj;
+        } else {
+            r = [res.obj];
+        }
+        var md = '';
+        var ec = {};
+        ec.dbotScore = [];
+        ec['File/Malicious'] = [];
+        for (var i=0; i<r.length; i++) {
+            md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
+            md += 'Scan ID: **' + r[i].scan_id + '**\n';
+            md += 'Scan date: **' + r[i].scan_date + '**\n';
+            md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
+            var dbotScore = 0;
+            if (r[i].positives >= threshold) {
+                dbotScore = 3;
+                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
+            } else if (r[i].positives >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'VT', score: dbotScore});
+            md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
+            if (longFormat === 'true' && r[i].scans) {
+                md += arrToMd(Object.keys(r[i].scans).map(function(curr) {
+                    var o = r[i].scans[curr];
+                    return {Engine: curr, Detected: o.detected, Result: o.result, Update: o.update};
+                }));
+            }
+            md += '\n';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var calcRecentDownloads = function(checks) {
+        var badDownloads = 0;
+        var now = Date.now();
+        for (var c=0; c<checks.length; c++) {
+            if (checks[c]) {
+                for (var ci=0; ci<checks[c].length; ci++) {
+                    if (checks[c][ci].date) {
+                        var d = new Date(checks[c][ci].date.replace(' ', 'T'));
+                        if ((now - d.getTime()) / 1000 / 60 / 60 / 24 < 30) {
+                            badDownloads++;
+                        }
+                    }
+                }
+            }
+        }
+        return badDownloads;
+    }
+
+    var doIP = function(ip, longFormat, threshold, sampleSize) {
+        if (!isValidIP(ip)) {
+            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
+        }
+        if (!threshold) {
+            threshold = 10;
+        }
+        if (!sampleSize) {
+            sampleSize = 10;
+        }
+        var res = doReq('GET', 'ip-address/report', {ip: ip});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+        }
+        var o = res.obj;
+        var ec = {};
+        // Calculate score based on recently found downloads
+        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+        var dbotScore = 0;
+        if (badDownloads >= threshold) {
+            dbotScore = 3;
+            ec['IP/Malicious'] = {Address: ip, ASN: o.asn, Geo: {Country: o.country}};
+        } else if (badDownloads >= threshold / 2) {
+            dbotScore = 2;
+        } else {
+            dbotScore = 1;
+        }
+        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'VT', score: dbotScore};
+        var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
+        md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
+        md += 'Country: **' + o.country + '**\n';
+        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
+            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
+            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
+        for (var i=0; i<arrTitle.length; i++) {
+            if (arrTitle[i].a) {
+                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+            }
+        }
+        if (longFormat === 'true') {
+            for (var j=0; j<arrTitle.length; j++) {
+                if (arrTitle[j].a) {
+                    md += '### ' + arrTitle[j].t + '\n';
+                    // Print only the first 10 rows
+                    var curr = [];
+                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
+                        curr.push(arrTitle[j].a[k]);
+                    }
+                    md += arrToMd(curr) + '\n';
+                }
+            }
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doURL = function(url, threshold, longFormat, sampleSize, submitWait) {
+        if (!submitWait) {
+            submitWait = 0;
+        }
+        if (!sampleSize) {
+            sampleSize = 10;
+        }
+        if (!threshold) {
+            threshold = 10;
+        }
+        var res = doReq('POST', 'url/report', {resource: url, scan:1});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
+        }
+
+        var o = res.obj;
+        var ec = {};
+        var md = '## VirusTotal URL Reputation for: ' + url + '\n';
+
+        if (!o.scans && submitWait>0) {
+            wait(parseInt(submitWait));
+            res = doReq('GET', 'url/report', {resource: url});
+            o = res.obj;
+        }
+        if (!o.scans) {
+            md += 'URL submitted for scan. Please retry command later\n';
+            md += 'Scan ID: **' + o.scan_id + '**\n\n';
+        } else {
+            md += 'Last scan date: *' + o.scan_date + '*\n';
+            md += 'Scan ID: **' + o.scan_id + '**\n\n';
+            md += 'Total scans: **' + o.total + '**\n';
+            md += 'Positive scans: **' + o.positives + '**\n';
+
+            if (longFormat === 'true') {
+                md += '### Scans\n';
+                // Print only the first 10 rows
+                var curr = [];
+                for (var i=0; i<Math.min(Object.keys(o.scans).length, sampleSize); i++) {
+                    curr.push({Site: Object.keys(o.scans)[i], Detected: o.scans[Object.keys(o.scans)[i]].detected, Result: o.scans[Object.keys(o.scans)[i]].result});
+                }
+                md += arrToMd(curr) + '\n';
+            }
+            var dbotScore = 0;
+            if (o.positives >= threshold) {
+                dbotScore = 3;
+                ec['URL/Malicious'] = url;
+            } else if (o.positives >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.dbotScore = {indicator: url, type: 'url', vendor: 'VT', score: dbotScore};
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doDomain = function(domain, threshold, longFormat, sampleSize) {
+        if (!sampleSize) {
+            sampleSize = 10;
+        }
+        if (!threshold) {
+            threshold = 10;
+        }
+        var res = doReq('GET', 'domain/report', {domain: domain});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
+        }
+        var o = res.obj;
+        var ec = {};
+
+        // Calculate score based on recently found downloads
+        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+        var dbotScore = 0;
+        if (badDownloads >= threshold) {
+            dbotScore = 3;
+            ec['Domain/Malicious'] = {Name: domain};
+        } else if (badDownloads >= threshold / 2) {
+            dbotScore = 2;
+        } else {
+            dbotScore = 1;
+        }
+        ec.dbotScore = {indicator: domain, type: 'domain', vendor: 'VT', score: dbotScore};
+
+        var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
+        md += '#### Domain categories: *' + o.categories + "*\n";
+
+        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
+            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
+            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
+        for (var i=0; i<arrTitle.length; i++) {
+            if (arrTitle[i].a) {
+                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+            }
+        }
+        if (longFormat === 'true') {
+            for (var j=0; j<arrTitle.length; j++) {
+                if (arrTitle[j].a) {
+                    md += '### ' + arrTitle[j].t + '\n';
+                    // Print only the first 10 rows
+                    var curr = [];
+                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
+                        curr.push(arrTitle[j].a[k]);
+                    }
+                    md += arrToMd(curr) + '\n';
+                }
+            }
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var scanURL = function(url) {
+        var res = doReq('POST', 'url/scan', {url: url});
+        var r = [];
+        if (Array.isArray(res.obj)) { // Got multiple URLs so need to nicely iterate
+            r = res.obj;
+        } else {
+            r = [res.obj];
+        }
+        var md = '';
+        var ec = {vtScanID: []};
+        for (var i=0; i<r.length; i++) {
+            md += '## VirusTotal URL scan for: [' + r[i].url + '](' + r[i].permalink + ')\n';
+            md += 'Scan ID: **' + r[i].scan_id + '**\n';
+            ec.vtScanID.push(r[i].scan_id);
+            md += 'Scan Date: **' + r[i].scan_date + '**\n\n';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var scanFile = function(entry, uploadURL) {
+        var result = httpMultipart(uploadURL ? uploadURL : serverUrl + 'file/scan', entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        if (result.Body === '' && result.StatusCode == 204) {
+            throw 'No content recieved. Possible API rate limit reached.';
+        }
+        if (result.Body === '') {
+            throw 'No content recieved. Maybe you tried a private API?.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (obj.response_code !== 1) {
+            throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
+        }
+        var ec = {};
+        ec.vtScanID = obj.scan_id;
+        var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
+        md += 'Resource: **' + obj.resource + '**\n';
+        md += 'Scan ID: **' + obj.scan_id + '**\n';
+        md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
+        return {Type: entryTypes.note, Contents: result.Body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var rescanFile = function(hash) {
+        var res = doReq('POST', 'file/rescan', {resource: hash});
+        var r = [];
+        if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
+            r = res.obj;
+        } else {
+            r = [res.obj];
+        }
+        var md = '';
+        var ec = {vtScanID: []};
+        for (var i=0; i<r.length; i++) {
+            md += '## VirusTotal File Rescan for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
+            md += 'Scan ID: **' + r[i].scan_id + '**\n';
+            ec.vtScanID.push(r[i].scan_id);
+            md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n\n';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doComments = function(resource, comment) {
+        var res = doReq('POST', 'comments/put', {resource: resource, comment: comment});
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.verbose_msg};
+    }
+
+    var getComments = function(resource, before) {
+        var params = {resource: resource};
+        if (before) {
+            params.before = before;
+        }
+        var res = doReq('GET', 'comments/get', params);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: arrToMd(res.obj.comments)};
+    }
+
+    var fileScanUploadURL = function() {
+        var res = doReq('GET', 'file/scan/upload_url');
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
+    }
+
+    switch (command) {
+        case 'test-module':
+            doIP('8.8.8.8'); // Check IP 8.8.8.8 - it will throw an error if not successful
+            return true;
+        case 'file':
+            return doFile(args.file, args.long, args.threshold);
+        case 'ip':
+            return doIP(args.ip, args.long, args.threshold, args.sampleSize);
+        case 'url':
+            return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait);
+        case 'domain':
+            return doDomain(args.domain, args.threshold, args.long, args.sampleSize);
+        case 'file-scan':
+            return scanFile(args.entryID, args.uploadURL);
+        case 'file-rescan':
+            return rescanFile(args.file);
+        case 'url-scan':
+            return scanURL(args.url);
+        case 'vt-comments-add':
+            return doComments(args.resource, args.comment);
+        case 'vt-comments-get':
+            return getComments(args.resource, args.before);
+        case 'vt-file-scan-upload-url':
+            return fileScanUploadURL();
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: file
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice
+        that you can pass comma-separated multiple values to efficiently retrieve
+        multiple responses.
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with scans
+      defaultValue: "false"
+    - name: threshold
+      description: If number of positives is bigger than the threshold we will consider
+        it malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: File/Malicious.MD5
+      description: Bad hash found
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check file reputation of the given hash
+  - name: ip
+    deprecated: false
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with detected URLs
+      defaultValue: "false"
+    - name: threshold
+      description: If number of positive detected IPs is bigger than the threshold
+        we will consider it malicious
+      defaultValue: "10"
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format
+      defaultValue: "10"
+    outputs:
+    - contextPath: IP/Malicious.Address
+      description: Bad IP Address found
+      important: true
+      importantDescription: Bad IPs found querying VirusTotal
+    - contextPath: IP/Malicious.ASN
+      description: Bad IP ASN
+    - contextPath: IP/Malicious.Geo.Country
+      description: Bad IP Country
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check IP Reputation
+  - name: url
+    deprecated: false
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format
+      defaultValue: "10"
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with detected URLs
+      defaultValue: "false"
+    - name: threshold
+      description: If number of positive detected URLs is bigger than the threshold
+        we will consider it malicious
+    - name: submitWait
+      description: Seconds to wait if the URL does not exist and is submitted to be
+        scanned
+      defaultValue: "0"
+    outputs:
+    - contextPath: URL/Malicious
+      description: Bad URLs found
+      important: true
+      importantDescription: Bad URLs found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check URL Reputation
+  - name: domain
+    deprecated: false
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check reputation
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with detected URLs
+      defaultValue: "false"
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format
+      defaultValue: "10"
+    - name: threshold
+      description: If number of positive detected domains is bigger than the threshold
+        we will consider it malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: Domain/Malicious.Name
+      description: Bad domain found
+      important: true
+      importantDescription: Bad domain found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check domain reputation
+  - name: file-scan
+    deprecated: false
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit
+    - name: uploadURL
+      description: Private API extension. Special upload URL for files bigger than
+        32M.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files
+    description: Submit a file for scanning
+  - name: file-rescan
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to re-scan. Supports MD5, SHA1 and SHA256.
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted files
+    description: Rescan an already submitted file to save time and not upload
+  - name: url-scan
+    deprecated: false
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan
+    outputs:
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted URLs
+    description: Scan a given URL
+  - name: vt-comments-add
+    deprecated: false
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The hash (md5/sha1/sha256) or URL you're commenting on
+    - name: comment
+      required: true
+      description: 'The actual review, you can tag it using the "#" twitter-like syntax
+        (e.g. #disinfection #zbot) and reference users using the "@" syntax (e.g.
+        @VirusTotalTeam).'
+    description: Add comments for files and URLs
+  - name: vt-file-scan-upload-url
+    deprecated: false
+    arguments: []
+    outputs:
+    - contextPath: vtUploadURL
+      description: The special upload URL for large files
+    description: Private API. Get a special URL for files above 32M.
+  - name: vt-comments-get
+    deprecated: false
+    arguments:
+    - name: resource
+      required: true
+      default: true
+      description: The hash (md5/sha1/sha256) or URL you're retrieving comments for
+    - name: before
+      description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
+    description: Private API. Retrieve comments for a given resource
+hidden: false
+fromversion: 2.5.0

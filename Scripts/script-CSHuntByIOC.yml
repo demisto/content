@@ -26,6 +26,7 @@ tags:
 comment: |
   List devices that match a specific IOC - an IOC ran on them - limited to sha256, sha1, md5 and domain types
 system: true
+deprecated: true
 args:
 - name: type
   required: true

@@ -11,7 +11,7 @@ script: |-
   demisto.results(res)
 type: python
 tags:
-- schedule
+- Utility
 comment: 'This stops the scheduled task whose ID is given in the taskID argument.'
 system: true
 args:
