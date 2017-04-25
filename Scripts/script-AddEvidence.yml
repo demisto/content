@@ -1,7 +1,7 @@
 commonfields:
   id: 621defb8-bfb6-4f03-898f-699442880b37
   version: 6
-name: AddEvidenceJS
+name: AddEvidence
 fromversion: 2.5.0
 script: |-
   if (!args.entryIDs) {
