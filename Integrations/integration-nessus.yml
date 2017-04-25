@@ -374,8 +374,7 @@ script:
             throw 'Failed to launch scans list, request status code: ' + result.StatusCode + ', body='+result.Body;
         }
         logout(token);
-        //return JSON.parse(result.Body).file;
-
+        
         return {
             Type: entryTypes.note,
             Contents: result.Body,
