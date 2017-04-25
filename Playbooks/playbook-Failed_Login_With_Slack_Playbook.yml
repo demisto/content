@@ -39,7 +39,7 @@ tasks:
       name: Confirm failed login with user
       scriptName: SlackAskUser
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
-      type: standard
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -51,7 +51,7 @@ tasks:
       option1: ""
       option2: ""
       task: "3"
-      user: ${Label/Email}
+      user: ${incident.labels.Email}
     view: |-
       {
         "position": {
@@ -78,7 +78,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 369
+          "y": 370
         }
       }
   "4":
@@ -90,6 +90,7 @@ tasks:
       version: -1
       name: Raise Incident Severity to High
       scriptName: IncidentSet
+      type: regular
       iscommand: false
       brand: ""
     scriptarguments:
@@ -121,7 +122,7 @@ tasks:
       version: -1
       name: Ask user should we reset her password
       scriptName: SlackAskUser
-      type: standard
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -131,8 +132,8 @@ tasks:
       message: Should we reset your password?
       option1: ""
       option2: ""
-      task: "8"
-      user: ${Label/Email}
+      task: "6"
+      user: ${incident.labels.Email}
     view: |-
       {
         "position": {
@@ -147,12 +148,12 @@ tasks:
     task:
       id: 6b4648d9-512a-417c-86e6-d468d05c5b63
       version: -1
-      name: Should we reset the password
-      type: conditional
+      name: Should we reset the password?
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "no":
       - "9"
       "yes":
       - "7"
@@ -161,7 +162,7 @@ tasks:
       option1: ""
       option2: ""
       task: "6"
-      user: ${Label/Email}
+      user: ${incident.labels.Email}
     view: |-
       {
         "position": {
@@ -179,47 +180,48 @@ tasks:
       name: Expire Password
       scriptName: ADExpirePassword
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
-      type: standard
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      username: ${Label/User}
+      username: ${incident.labels.User}
     view: |-
       {
         "position": {
-          "x": 693,
+          "x": 732,
           "y": 894
         }
       }
   "8":
     id: "8"
-    taskid: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
+    taskid: 1ee5c1f2-3fc5-43ce-8a2e-2b5ab5e7b6b0
     type: regular
     task:
       id: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
       version: -1
       name: Notify User on Slack
-      scriptName: SlackSend
+      script: slack|||slack-send
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
-      type: standard
-      iscommand: false
-      brand: ""
+      type: regular
+      iscommand: true
+      brand: slack
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
+      IgnoreAddURL: ""
       channel: ""
       entry: ""
       group: ""
       message: Your password was reset
-      to: ${Label/Email}
+      to: ${incident.labels.Email}
     view: |-
       {
         "position": {
-          "x": 693,
+          "x": 732,
           "y": 1069
         }
       }
@@ -232,7 +234,7 @@ tasks:
       version: -1
       name: Close the incident
       scriptName: CloseInvestigation
-      type: standard
+      type: regular
       iscommand: false
       brand: ""
     scriptarguments:
@@ -247,11 +249,13 @@ tasks:
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "6_9_no": 0.71
+    },
     "paper": {
       "dimensions": {
         "height": 1290,
-        "width": 1025,
+        "width": 1064,
         "x": 48,
         "y": 50
       }

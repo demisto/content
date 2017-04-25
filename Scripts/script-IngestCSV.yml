@@ -2,6 +2,7 @@ commonfields:
   id: IngestCSV
   version: -1
 name: IngestCSV
+deprecated: true
 script: |+
   # Find the CSV attachment
   entries = demisto.executeCommand('getEntries', {})

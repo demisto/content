@@ -46,7 +46,7 @@ script: |-
                                         type: 'Nexpose alert',
                                         details: JSON.stringify(element.labels),
                                         severity: args.defaultNexposeSeverity,
-                                        incName: key,
+                                        name: key,
                                         systems: labels
                                     });
       }
