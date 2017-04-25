@@ -1,0 +1,48 @@
+commonfields:
+  id: 5e125fdd-72f1-455f-89fa-e6f9405174a4
+  version: 9
+name: NotInContextVerification
+script: |+
+  var val = invContext.keyToWatch;
+  var argumentsVal = args.cmdArguments;
+  var argsArr = argumentsVal.split(",");
+
+  var argsToCmd = {};
+  for (i = 0; i < argsArr.length ; i++) {
+      var keyval = argsArr[i].split("=");
+      if (keyval.length == 2) {
+          argsToCmd[keyval[0]] = keyval[1];
+      }
+  }
+
+  var entry = executeCommand(args.cmdToRun, argsToCmd);
+  if(!entry[0].EntryContext[args.keyToWatch]){
+      return entry;
+  }
+  else{
+      throw args.keyToWatch + ' in context is not empty';
+  }
+
+
+type: javascript
+tags:
+- Utility
+comment: |
+  While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
+  Please make sure timeout of the script also sufficient for the loop.
+enabled: true
+args:
+- name: cmdToRun
+  required: true
+  default: true
+  description: Command or Automation script to execute each while loop iteration
+- name: cmdArguments
+  required: true
+  description: 'comma separated list of command/automation arguments and values to
+    run: key=val,key=val,key=val'
+- name: keyToWatch
+  required: true
+  description: watch this key, if it is equal to value argument (${key}==value) then
+    exit while loop, otherwise continue to next loop iteration (will run command again)
+scripttarget: 0
+timeout: 900ns
