@@ -23,11 +23,12 @@ script: |-
 type: python
 tags:
 - email
-- util
+- Condition
 comment: Identify whether the incident includes an attached file. Optional typefilter
   argument can be used to only match if the filetype includes that string. Same for filename.
   Filetype is according to the linux "file" command (filemagic format identification).
 system: true
+deprecated: true
 args:
 - name: typefilter
   description: (Optional) Substring of the filetype to match
@@ -37,3 +38,8 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+outputs:
+- contextPath: yes
+  description: if there incident has an attached file
+- contextPath: no
+  description: if incident does not contain an attached file

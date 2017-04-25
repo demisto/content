@@ -45,6 +45,7 @@ args:
   default: true
   description: Input for the WHOIS query
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - whois

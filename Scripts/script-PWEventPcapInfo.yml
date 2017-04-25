@@ -43,5 +43,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - event-pcap-info
+  - ProtectWise|||event-pcap-info
 timeout: 0s

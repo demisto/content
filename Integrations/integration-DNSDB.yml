@@ -1,0 +1,258 @@
+commonfields:
+  id: Farsight DNSDB
+  version: -1
+name: Farsight DNSDB
+display: Farsight DNSDB
+category: Data Enrichment
+image: data:image/png;base64,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
+description: Query Farsight DNSDB service
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: DNSDB Service URL
+  name: url
+  defaultvalue: https://api.dnsdb.info/
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |
+    var serverUrl = params.url;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var dict = {
+        rdata: {
+            url: 'lookup/rdata/',
+            defaultLimit:100,
+            tableColumns: {
+                rrname:'',
+                rrtype:'',
+                rdata:'',
+                count:'',
+                time_first:'ts',
+                time_last:'ts',
+                zone_time_first:'ts',
+                zone_time_last:'ts'
+            }
+        },
+        rrset: {
+            url: 'lookup/rrset/name/',
+            defaultLimit:100,
+            tableColumns: {
+                rrname:'',
+                rrtype:'',
+                rdata:'',
+                bailiwick:'',
+                count:'',
+                time_first:'ts',
+                time_last:'ts',
+                zone_time_first:'ts',
+                zone_time_last:'ts'
+            }
+        },
+        limit: {
+            url: 'lookup/rate_limit/'
+        }
+    }
+    var valueExist = function(data,key) {
+        var array = (Array.isArray(data)) ? data : [data];
+
+        for (var i=0;i<array.length;i++) {
+            if (array[i][key]) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    var tsToTime = function(ts) {
+        if (ts) {
+            var date = new Date(ts*1000);
+            var hours = date.getHours();
+            var minutes = "0" + date.getMinutes();
+            var seconds = "0" + date.getSeconds();
+            var formattedTime = date + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+            return formattedTime;
+        } else {
+            return '';
+        }
+    }
+
+    var arrToNewLines = function (data) {
+        var md='';
+        if (Array.isArray(data)) {
+            for (var i=0;i<data.length;i++) {
+                md += data[i] + '<br>';
+            }
+
+        } else {
+            md=data;
+        }
+        return md;
+    }
+
+    var dataToMd = function (api,data) {
+        var keys={};
+        for (key in dict[api].tableColumns) {
+            if (valueExist(data,key)) {
+                keys[key]=dict[api].tableColumns[key];
+            }
+        }
+        var head='|';
+        var line='-';
+        for (key in keys) {
+            head+=key+'|';
+            line+='-|';
+        }
+        var md=head+'\n'+line+'\n';
+        for (var i = 0; i<data.length; i++) {
+            md += '|';
+            for (key in keys) {
+                if (keys[key] == 'ts') {
+                    md += tsToTime(data[i][key])+'|';
+                } else {
+                    md += arrToNewLines(data[i][key]) + '|';
+                }
+            }
+            md += '\n';
+        }
+        return md;
+    }
+
+    var sendRequest = function(requestUrl,parameters) {
+        var url = serverUrl + requestUrl + encodeToURLQuery(parameters);
+        var res = http(
+            url,
+            {
+                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: {
+                    'Accept': ['application/json'],
+                    'X-API-Key': [params.apiKey]
+                }
+            },
+            false,
+            params.useproxy
+
+        );
+        if (res.StatusCode < 200 || res.StatusCode>299) {
+            throw 'Error ' + res.StatusCode + '. ' + res.Status;
+        }
+        var obj={};
+        obj.entries=[];
+        var array = res.Body.split('\n');
+        for (var i=0;i<array.length;i++) {
+            if (array[i] && array[i].length > 0) {
+                try {
+                    obj.entries.push(JSON.parse(array[i]));
+                } catch (err) {
+                    // doing nothing when JSON fails to parse a specific line.
+                    // due to illegal structure the service may return.
+                    // Simply ignoring those lines and keep parsing other lines
+                }
+            }
+        }
+        return obj;
+    };
+
+    var lookupRequest = function(api,requestUrl) {
+        var parameters={};
+        parameters.limit = (args.limit) ? args.limit : dict[api].defaultLimit;
+
+        if (args.time_first_before) {
+            parameters.time_first_before = args.time_first_before*-1;
+        }
+        if (args.time_first_after) {
+            parameters.time_first_after = args.time_first_after*-1;
+        }
+        if (args.time_last_before) {
+            parameters.time_last_before = args.time_last_before*-1;
+        }
+        if (args.time_last_after) {
+            parameters.time_last_after = args.time_last_after*-1;
+        }
+        var res= sendRequest(requestUrl,parameters);
+        var md = dataToMd(api,res.entries);
+        return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            res = sendRequest(dict.limit.url);
+            return 'ok';
+        case 'dnsdb-rdata':
+            // /lookup/rdata/TYPE/VALUE/RRTYPE
+            var requestUrl = dict.rdata.url + args.type + '/' + args.value;
+            requestUrl += (args.rrtype) ? '/' + args.rrtype : '';
+            return lookupRequest('rdata',requestUrl);
+        case 'dnsdb-rrset':
+            // /lookup/rrset/name/OWNER_NAME/RRTYPE/BAILIWICK
+            var requestUrl = dict.rrset.url + args.owner;
+            requestUrl += (args.rrtype) ? '/' + args.rrtype : '';
+            requestUrl += (args.bailiwick) ? '/' + args.bailiwick : '';
+            return lookupRequest('rrset',requestUrl);
+        default:
+            throw 'Unknown command ' + command;
+    }
+  type: javascript
+  commands:
+  - name: dnsdb-rdata
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - name
+      - ip
+      - raw
+      description: query type
+    - name: value
+      required: true
+      description: query value
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "100"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (seconds)
+    - name: time_last_before
+      description: Filter results for entries seen last time before (seconds)
+    - name: time_first_after
+      description: filter results for entries seen first time after (seconds)
+    - name: time_last_after
+      description: filter results for entries seen last time after (seconds)
+    - name: rrtype
+      description: query rrtype
+    description: Lookup rdata records
+  - name: dnsdb-rrset
+    arguments:
+    - name: owner
+      required: true
+      description: Owner name to query
+    - name: rrtype
+      description: rrtype value to query
+    - name: bailiwick
+      description: Bailiwick value to query
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "100"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (seconds)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (seconds)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (seconds)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (seconds)
+    description: Lookup rrser records
+hidden: false

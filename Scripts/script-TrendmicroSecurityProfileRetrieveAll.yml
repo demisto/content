@@ -1,0 +1,28 @@
+commonfields:
+  id: TrendmicroSecurityProfileRetrieveAll
+  version: -1
+name: TrendmicroSecurityProfileRetrieveAll
+script: |2
+
+  resp = demisto.executeCommand("trendmicro-security-profile-retrieve-all", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.securityProfileRetrieveAllResponse.securityProfileRetrieveAllReturn")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Trend Micro
+comment: Get all security profiles
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - trendmicro-security-profile-retrieve-all
+timeout: 0s

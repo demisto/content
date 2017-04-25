@@ -1,0 +1,29 @@
+commonfields:
+  id: TrendmicroSecurityProfileAssignToHost
+  version: -1
+name: TrendmicroSecurityProfileAssignToHost
+script: |2
+
+  resp = demisto.executeCommand("trendmicro-security-profile-assign-to-host", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      demisto.results("The request was sent to the server.")
+type: python
+tags:
+- Trend Micro
+comment: Get all security profiles
+system: true
+args:
+- name: securityProfileID
+  required: true
+  description: security profile ID that will be assigned to the hosts
+- name: hostIDs
+  required: true
+  description: list of host IDs, separated by commas
+scripttarget: 0
+dependson:
+  must:
+  - trendmicro-security-profile-assign-to-host
+timeout: 0s

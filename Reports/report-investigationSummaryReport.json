@@ -2,6 +2,7 @@
   "id": "investigationSummaryReport",
   "name": "Investigation Summary",
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -16,6 +17,7 @@
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
+    "incident.severity.0.5": { "type": "string", "value": "Informational" },
     "incident.severity.1": { "type": "string", "value": "Low" },
     "incident.severity.2": { "type": "string", "value": "Medium" },
     "incident.severity.3": { "type": "string", "value": "High" },
@@ -672,7 +674,12 @@
       "layout": {
         "rowPos": 300020,
         "columnPos": 100,
-        "tableColumns": ["occurred", "description", "id"],
+        "tableColumns": ["Occurred", "Description", "ID"],
+        "readableHeaders": {
+          "occurred": "Occurred",
+          "description": "Description",
+          "id": "ID"
+        },
         "classes": "selectable celled fixed unstackable"
       }
     },

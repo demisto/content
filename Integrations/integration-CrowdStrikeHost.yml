@@ -1,0 +1,661 @@
+commonfields:
+  id: FalconHost
+  version: -1
+name: FalconHost
+display: Falcon Host
+category: End point
+image: data:image/png;base64,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
+description: Crowdstrike IOCs and detections API
+detaileddescription: |-
+  Please provide the API id and key for the CrowsStrike Falcon Host API.
+  API Key Pairs can be requested by emailing support@crowdstrike.com.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://falconapi.crowdstrike.com/
+  type: 0
+  required: true
+- display: API ID
+  name: id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    var serverUrl = params.url;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var doReq = function(method, path, query, body) {
+        var result = http(
+            serverUrl + path + encodeToURLQuery(query),
+            {
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Username: params.id,
+                Password: params.key,
+                Method: method,
+                Body: body ? JSON.stringify(body) : ''
+            },
+            params.insecure,
+            params.useproxy
+        );
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            if (result.StatusCode === 404 && result.Body.indexOf('Resource Not Found') > -1) {
+                    // Skip this error - it just means query returned no results. Handle as no results.
+            } else {
+                throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+            }
+        }
+
+
+        if (result.Body === '') {
+            throw 'No content received.';
+        } else
+        {
+            var obj;
+            try {
+                obj = JSON.parse(result.Body);
+            } catch (ex) {
+                throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+            }
+
+            if (obj.errors && obj.errors.length > 0) {
+                if (dq(obj, 'errors.[0].code') === 404 && dq(obj, 'errors.[0].message').indexOf('Resource Not Found') > -1) {
+                    // Skip this error - it just means query returned no results. Handle as no results.
+                } else {
+                    throw JSON.stringify(obj.errors);
+                }
+            }
+            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        }
+    };
+
+    var dateToEpoch = function(d) {
+        return d ? new Date(d).getTime() : null;
+    };
+
+    var uploadIOC = function() {
+        var res = doReq('POST', 'indicators/entities/iocs/v1', {}, [args]);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: 'IOC [' + args.value + '] uploaded'};
+    };
+
+    var getIOC = function() {
+        var res = doReq('GET', 'indicators/entities/iocs/v1', {ids: args.type + ':' + args.value});
+        var md = '### Falcon Host custom IOC retrieval\n';
+        if (res.obj.resources) {
+            for (var i=0; i<res.obj.resources.length; i++) {
+                md += objToList(res.obj.resources[i], res.obj.resources[i].value) + '\n';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    // add args to a if exists
+    var add = function(a, k, f) {
+        if (args[k]) {
+            var parts = argToList(args[k]);
+            for (var i=0; i<parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+            a[k] = f ? f(args[k]) : parts.length > 1 ? parts : parts[0];
+        }
+    };
+
+    var updateIOC = function() {
+        var a = {};
+        add(a, 'policy');
+        add(a, 'share_level');
+        add(a, 'expiration_days');
+        add(a, 'source');
+        add(a, 'description');
+        var res = doReq('PATCH', 'indicators/entities/iocs/v1', {ids: args.type + ':' + args.value}, a);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: 'IOC [' + args.value + '] updated'};
+    };
+
+    var deleteIOC = function() {
+        var a = {};
+        var res = doReq('DELETE', 'indicators/entities/iocs/v1', {ids: args.type + ':' + args.value});
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: 'IOC [' + args.value + '] deleted'};
+    };
+
+    var searchIOCs = function() {
+        var a = {};
+        add(a, 'types');
+        add(a, 'values');
+        add(a, 'policies');
+        add(a, 'share_levels');
+        add(a, 'sources');
+        add(a, 'sort');
+        add(a, 'limit');
+        add(a, 'offset');
+        if (args.from_expiration_date) {
+            a['from.expiration_timestamp'] = args.from_expiration_date + 'T00:00:00';
+        }
+        if (args.to_expiration_date) {
+            a['to.expiration_timestamp'] = args.to_expiration_date + 'T23:59:59';
+        }
+        var res = doReq('GET', 'indicators/queries/iocs/v1', a);
+        var md = '## Falcon Host IOC Search\n';
+        if (res.obj.resources) {
+            var fullRes = doReq('GET', 'indicators/entities/iocs/v1', {ids: res.obj.resources});
+            if (fullRes.obj.resources) {
+                for (var i=0; i<fullRes.obj.resources.length; i++) {
+                    md += objToList(fullRes.obj.resources[i], fullRes.obj.resources[i].value) + '\n';
+                }
+                res.obj.resources = fullRes.obj.resources;
+            } else {
+                md += 'No result found';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var deviceSearch = function() {
+        var a = {};
+        add(a, 'filter');
+        add(a, 'limit');
+        add(a, 'offset');
+        if (args.query) {
+            a.q = args.query;
+        }
+        var res = doReq('GET', 'devices/queries/devices/v1', a);
+        var md = '## Falcon Host Device Search\n';
+        var ec = {};
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            ec.FalconHostDevices = res.obj.resources;
+            md += '### Devices\n';
+            for (var i=0; i<res.obj.resources.length; i++) {
+                md += res.obj.resources[i] + '\n';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var deviceDetails = function() {
+        var ids = argToList(args.ids);
+        var res = doReq('GET', 'devices/entities/devices/v1', {ids: ids});
+        var md = '## Falcon Host Device Details\n';
+        var found = false;
+        if (res.obj.resources) {
+            for (var i=0; i<res.obj.resources.length; i++) {
+                var o = res.obj.resources[i];
+                var cleanObj = {};
+                var keys = Object.keys(o);
+                for (var j=0; j<keys.length; j++) {
+                    if (keys[j] !== 'policies' && keys[j] !== 'meta') {
+                        cleanObj[keys[j]] = o[keys[j]];
+                    }
+                }
+                md += objToList(cleanObj, o.hostname) + '\n';
+                if (o.policies) {
+                    md += '#### Policies\n';
+                    md += arrToMd(o.policies) + '\n';
+                }
+                if (o.meta) {
+                    md += objToList(o.meta, 'Meta') + '\n';
+                }
+                found = true;
+            }
+        }
+        if (!found) {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var deviceCountIOC = function() {
+        var res = doReq('GET', 'indicators/aggregates/devices-count/v1', args);
+        var md = '## Falcon Host IOC Device Count\n';
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            md += arrToMd(res.obj.resources);
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var deviceRanOn = function() {
+        var res = doReq('GET', 'indicators/queries/devices/v1', args);
+        var md = '## Falcon Host IOC Device Ran On\n';
+        var ec = {};
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            ec.FalconHostDevices = res.obj.resources;
+            md += '### Devices\n';
+            for (var i=0; i<res.obj.resources.length; i++) {
+                md += res.obj.resources[i] + '\n';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var processesRanOn = function() {
+        var res = doReq('GET', 'indicators/queries/processes/v1', args);
+        var md = '## Falcon Host IOC Processes Ran On Device\n';
+        var ec = {};
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            ec.FalconHostProcesses = res.obj.resources;
+            md += '### Processes\n';
+            for (var i=0; i<res.obj.resources.length; i++) {
+                md += res.obj.resources[i] + '\n';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var processDetails = function() {
+        var ids = argToList(args.ids);
+        var res = doReq('GET', 'processes/entities/processes/v1', {ids: ids});
+        var md = '## Falcon Host Process Details\n';
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            md += arrToMd(res.obj.resources);
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var resolveDetection = function() {
+        var ids = argToList(args.ids);
+        var res = doReq('PATCH', 'detects/entities/detects/v2', {}, {ids: ids, status: args.status});
+        var md = '## Falcon Host Process Details\n';
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            md += arrToMd(res.obj.resources);
+        } else {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    switch (command) {
+        case 'test-module':
+            args = {filter: "platform_name:'Windows'"};
+            deviceSearch();
+            return true;
+        case 'cs-upload-ioc':
+            return uploadIOC();
+        case 'cs-get-ioc':
+            return getIOC();
+        case 'cs-update-ioc':
+            return updateIOC();
+        case 'cs-delete-ioc':
+            return deleteIOC();
+        case 'cs-search-iocs':
+            return searchIOCs();
+        case 'cs-device-search':
+            return deviceSearch();
+        case 'cs-device-details':
+            return deviceDetails();
+        case 'cs-device-count-ioc':
+            return deviceCountIOC();
+        case 'cs-device-ran-on':
+            return deviceRanOn();
+        case 'cs-processes-ran-on':
+            return processesRanOn();
+        case 'cs-process-details':
+            return processDetails();
+        case 'cs-resolve-detection':
+            return resolveDetection();
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: cs-upload-ioc
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The type of the indicator
+    - name: value
+      required: true
+      deprecated: false
+      description: The string representation of the indicator
+    - name: policy
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - none
+      description: The policy that should be enacted when the value is detected on
+        a host. none is equivalent to turning the indicator off.
+      defaultValue: detect
+    - name: share_level
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - red
+      description: This represents the level the indicator will be shared. Currently
+        only red share level (not shared) is supported, indicating that the IOC isn't
+        shared with other FH customers.
+    - name: expiration_days
+      deprecated: false
+      description: This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types. Default os 30 if not provided.
+    - name: source
+      deprecated: false
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      deprecated: false
+      description: The friendly description of the indicator. Limit 200 characters.
+    description: Allows you to upload one or more indicators that you want CrowdStrike
+      to watch
+    execution: true
+  - name: cs-get-ioc
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to retrieve
+    - name: value
+      required: true
+      deprecated: false
+      description: The IOC value to retrieve
+    description: Get the full definition of one or more indicators that you are watching
+  - name: cs-update-ioc
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to update
+    - name: value
+      required: true
+      deprecated: false
+      description: The IOC value to update
+    - name: policy
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - none
+      description: The policy that should be enacted when the value is detected on
+        a host
+      defaultValue: detect
+    - name: share_level
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - red
+      description: This represents the level the indicator will be shared. Currently,
+        the only share level supported is "red" (not shared), indicating that the
+        IOC isn't shared with other FH customers.
+    - name: expiration_days
+      deprecated: false
+      description: This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types. Default is 30.
+    - name: source
+      deprecated: false
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limit 200 characters.
+    - name: description
+      deprecated: false
+      description: The friendly description of the indicator. Limit 200 characters.
+    description: Updates one or more indicators that you have uploaded
+    execution: true
+  - name: cs-delete-ioc
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      description: The IOC type to delete
+    - name: value
+      deprecated: false
+      description: The IOC value to delete
+    description: Allows you to delete an indicator that you are watching
+    execution: true
+  - name: cs-search-iocs
+    deprecated: false
+    arguments:
+    - name: types
+      deprecated: false
+      description: A list of indicator types. Separate multiple types by comma. Valid
+        types are sha256, sha1, md5, domain, ipv4, ipv6.
+      isArray: true
+    - name: values
+      deprecated: false
+      description: A list of indicator values separated by comma
+      isArray: true
+    - name: policies
+      deprecated: false
+      description: A list of indicator policies separated by comma
+      isArray: true
+    - name: share_levels
+      deprecated: false
+      description: A list of share levels. At this time, only red is supported.
+      isArray: true
+    - name: sources
+      deprecated: false
+      description: A list of IOC sources separated by comma
+      isArray: true
+    - name: from_expiration_date
+      deprecated: false
+      description: starting date range to search in YYYY-MM-DD format
+    - name: to_expiration_date
+      deprecated: false
+      description: ending date range to search in YYYY-MM-DD format
+    - name: sort
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - type.asc
+      - type.desc
+      - value.asc
+      - value.desc
+      - policy.asc
+      - policy.desc
+      - share_level.asc
+      - share_level.desc
+      - expiration_timestamp.asc
+      - expiration_timestamp.desc
+      description: The order of the results. Format is field.asc or field.desc.
+    - name: limit
+      deprecated: false
+      description: The maximum number of records to return. The minimum is 1 and the
+        maximum is 500. Default is 100.
+    - name: offset
+      deprecated: false
+      description: The offset to begin the list from. i.e. start from the 10th records
+        and return the list. Default is 0.
+    description: Returns a list of your uploaded IOCs that match the search criteria
+  - name: cs-device-search
+    deprecated: false
+    arguments:
+    - name: query
+      deprecated: false
+      default: true
+      description: search for a value across all fields
+    - name: filter
+      deprecated: false
+      description: Filter devices using query syntax of "field:value+field:value"
+        where string values are enclosed in single quotes or as arrays in single quotes
+        (['x', 'y']). Numerical fields and dates also support operators like field:>value.
+        Please see list of relevant fields in the CrowdStrike documentation.
+    - name: limit
+      deprecated: false
+      description: Number of results to return
+    - name: offset
+      deprecated: false
+      description: Starting from which result
+    outputs:
+    - contextPath: FalconHostDevices
+      description: Device IDs found by device search
+    description: Search for devices in your environment by platform, host name, IP,
+      or a number of other parameters
+  - name: cs-device-details
+    deprecated: false
+    arguments:
+    - name: ids
+      required: true
+      deprecated: false
+      default: true
+      description: The ID to retrieve details. Supports multiple IDs separated by
+        comma.
+    description: Get details on one or more devices, given a device ID
+  - name: cs-device-count-ioc
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      description: The type of indicator
+    - name: value
+      required: true
+      deprecated: false
+      default: true
+      description: The actual string representation of your indicator
+    description: Returns the number of devices on which an IOC ran, given a type and
+      value of an IOC
+  - name: cs-device-ran-on
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      description: The type of indicator from the list of supported indicator types.
+    - name: value
+      required: true
+      deprecated: false
+      description: The actual string representation of your indicator
+    outputs:
+    - contextPath: FalconHostDevices
+      description: Device IDs found by device IOC search
+    description: Returns a list of device IDs on which an indicator ran
+  - name: cs-processes-ran-on
+    deprecated: false
+    arguments:
+    - name: type
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      description: The type of indicator from the list of supported indicator types.
+    - name: value
+      required: true
+      deprecated: false
+      description: The actual string representation of your indicator
+    - name: device_id
+      required: true
+      deprecated: false
+      description: The device ID you want to specifically check against
+    outputs:
+    - contextPath: FalconHostProcesses
+      description: List of processes of the searched indicators
+    description: Returns the process ID of the indicator if it ran on given device
+      recently
+  - name: cs-process-details
+    deprecated: false
+    arguments:
+    - name: ids
+      required: true
+      deprecated: false
+      default: true
+      description: The ID of the process. Allows multiple values separated by comma.
+    description: Retrieves the details of a process that is running or that previously
+      ran, given a process ID.
+  - name: cs-resolve-detection
+    deprecated: false
+    arguments:
+    - name: ids
+      required: true
+      deprecated: false
+      default: true
+      description: 'The IDs of the detections you wish to resolve. Note that with
+        the launch of v2 of this api, CrowdStrike detection ids are in the following
+        format:  ldt:[first field]:[second field] e.g. ldt:cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142.'
+    - name: status
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - true_positive
+      - false_positive
+      - ignored
+      description: The status to which you want to transition a detection
+    description: Dets the state of a detection in Falcon Host. You can obtain detection
+      IDs from the Falcon Host UI or from the Falcon Streaming API.
+    execution: true
+hidden: false
+fromversion: 2.5.0

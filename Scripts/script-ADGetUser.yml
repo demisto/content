@@ -1,0 +1,197 @@
+commonfields:
+  id: ADGetUser
+  version: -1
+name: ADGetUser
+script: |2-
+
+  def createAccountEntities(t,attrs):
+      accounts = []
+      for l in t:
+          account = {}
+          account['Type'] = 'AD'
+          account['ID'] = demisto.get(l,'dn')
+          account['Email'] = demisto.get(l,'mail')
+          account['Username'] = demisto.get(l,'name')
+          account['DisplayName'] = demisto.get(l,'displayName')
+          account['Groups'] = demisto.get(l,'memberOf')
+          for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
+              account[attr.title()] = demisto.get(l,attr)
+          accounts.append(account)
+
+      return accounts
+
+
+  def prettifyDateTimeADFields(resAD):
+      try:
+          for m in resAD:
+              if isError(m):
+                  continue
+              m['ContentsFormat'] = formats['table']
+              for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime' , 'lastLogonTimestamp' ]:
+                  if f not in m['Contents'][0]:
+                      continue
+                  if  m['Contents'][0][f] == "0":
+                      m['Contents'][0][f] = "N/A"
+                  else:
+                      try:
+                          m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f] )
+                      except:
+                          pass # Could not prettify timestamp - return as is
+              for f in [ 'whenChanged' , 'whenCreated' ]:
+                  try:
+                      m['Contents'][0][f] = PrettifyCompactedTimestamp( m['Contents'][0][f] )
+                  except:
+                      pass # Could not prettify timestamp - return as is
+          return resAD
+      except Exception as ex:
+          return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
+
+  def listAll(attrs, using):
+      args = {}
+      args['filter'] = "(objectClass=User)"
+      args['attributes'] = attrs
+      if using:
+          args['using'] = using
+      resAD = demisto.executeCommand( 'ad-search', args )
+      if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'), str) or isinstance(demisto.get(resAD[0],'Contents'), unicode):
+          return resAD
+      else:
+          resAD = prettifyDateTimeADFields(resAD)
+          return resAD
+
+  def queryBuilder(queryType,queryValue,attrs,nested,using):
+      args = {}
+      if using:
+          args['using'] = using
+      if not queryType == "distinguishedName":
+          filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType,queryValue)
+          args['filter'] = filterstr
+          resp = demisto.executeCommand('ad-search', args)
+          if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
+              return resp
+          else:
+              userDN = ""
+              try:
+                  userDN = resp[0]['Contents'][0]['dn']
+              except Exception as ex:
+                  return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) }
+              queryType = "distinguishedName"
+              queryValue = userDN
+
+      filterstr = r"(&(objectClass=User)(distinguishedName=" + queryValue + "))"
+      args['filter'] = filterstr
+      args['attributes'] = attrs
+      resAD = demisto.executeCommand( 'ad-search', args )
+      if nested:
+          group_attrs = 'name'
+          filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
+          group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs } )
+          if isError(group_resp[0]):
+              return group_resp
+          else:
+              data = demisto.get(group_resp[0],'Contents')
+              data = data if isinstance(data, list) else [data]
+              memberOf = ",".join([demisto.get(k,'dn') for k in data])
+      resAD = prettifyDateTimeADFields(resAD)
+      try:
+          resAD[0]['Contents']['memberOf'] = memberOf
+      except:
+          pass # Could not get nested groups - return as is
+
+      return resAD
+
+  attrs = 'name,displayName,memberOf,mail'
+  queryValue, queryType = "",""
+  headers = argToList(demisto.get(demisto.args(), 'headers'))
+
+  nestedSearch = True if demisto.get(demisto.args(), 'nestedSearch') == 'true' else False
+
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+
+  if demisto.get(demisto.args(), 'dn'):
+      queryValue = demisto.args()['dn']
+      queryType = "distinguishedName"
+  elif demisto.get(demisto.args(), 'name'):
+      queryValue = demisto.args()['name']
+      queryType = "name"
+  elif demisto.get(demisto.args(), 'customFieldType'):
+      if not demisto.get(demisto.args(), 'customFieldData'):
+          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search, both "customFieldType" and "customFieldData" should be provided' })
+      else:
+          queryValue = demisto.args()['customFieldData']
+          queryType = demisto.args()['customFieldType']
+  resp = None
+  if queryValue and queryType:
+      resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'))
+  else:
+      resp = listAll(attrs, demisto.get(demisto.args(),'using'))
+
+  if isError(resp):
+      demisto.results(resp)
+  else:
+      context = {}
+      data = demisto.get(resp[0],'Contents')
+      if isinstance(data, str) or isinstance(data, unicode) :
+          md = data
+      else:
+          data = data if isinstance(data, list) else [data]
+          md = tableToMarkdown("Active Directory User", data, headers)
+          context['Account'] = createAccountEntities(data,attrs)
+
+      demisto.results({'Type' : entryTypes['note'],
+                      'Contents': data,
+                      'ContentsFormat' : formats['json'],
+                      'HumanReadable': md,
+                      'ReadableContentsFormat' : formats['markdown'],
+                      'EntryContext' : context})
+type: python
+tags:
+- active directory
+comment: |-
+  Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+  If no filter is provided, the result will show all users.
+system: true
+args:
+- name: dn
+  default: true
+  description: Active Directory Distinguished Name for the desired user
+- name: name
+  description: Name of the desired user
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+- name: customFieldType
+  description: Search user by this custom field type
+- name: customFieldData
+  description: Search user by this custom field data (relevant only if `customFieldType`
+    is provided)
+- name: headers
+  description: The columns headers to show by order
+- name: nestedSearch
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: ' Enter ''true'' to allow nested groups search as well (only works
+    on a single user query)'
+scripttarget: 0
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+outputs:
+- contextPath: Account
+  description: Active Directory Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+- contextPath: Account.Username
+  description: The Account username
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account.DisplayName
+  description: The Account display name

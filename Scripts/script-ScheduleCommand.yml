@@ -5,7 +5,7 @@ name: ScheduleCommand
 script: return executeCommand("scheduleEntry", args);
 type: javascript
 tags:
-- infra
+- Utility
 system: true
 args:
 - name: command

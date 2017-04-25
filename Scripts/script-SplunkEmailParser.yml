@@ -60,7 +60,7 @@ script: |-
       type: type,
       details: details,
       severity: severity,
-      incName: incName,
+      name: incName,
       systems: systems
   }));
   return res;
@@ -80,5 +80,7 @@ args:
 - name: subject
   description: Subject of the email
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - splunk|||search
 timeout: 0s

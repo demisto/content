@@ -1,0 +1,42 @@
+commonfields:
+  id: TrendMicroGetPolicyID
+  version: -1
+name: TrendMicroGetPolicyID
+script: |-
+  ID_LABEL = 'Label/PolicyID'
+
+  policies = argToList(demisto.get(demisto.args(),'policy'))
+  ID = []
+  res = []
+  if policies:
+      resp = demisto.executeCommand("TrendmicroSecurityProfileRetrieveAll", {})
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          for policy in policies:
+              policyRes = {"policy": policy, 'ID': ''}
+              for policyItem in resp[0]["Contents"]:
+                  if str(policyItem["name"]) == policy:
+                      policyRes["ID"] = policyItem["ID"]
+                      ID += [policyItem["ID"]]
+                      break;
+              res += [policyRes]
+          demisto.setContext(ID_LABEL,",".join(ID))
+          demisto.results([{"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents":res}])
+  else:
+      demisto.results([{ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Policy was not provided' }])
+type: python
+tags:
+- Trend Micro
+comment: Returns a table of policies and their TrendMicro IDs
+system: true
+args:
+- name: policy
+  required: true
+  default: true
+  description: Policy to retrive it's ID (Could be a list)
+scripttarget: 0
+dependson:
+  must:
+  - trendmicro-security-profile-retrieve-all
+timeout: 0s

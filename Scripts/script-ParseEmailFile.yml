@@ -5,6 +5,8 @@ name: ParseEmailFile
 script: |-
   from email import message_from_string
   from email.header import decode_header
+  global_res = []
+  temp_res = []
   from base64 import b64decode
   from re import match
   import pip
@@ -147,6 +149,9 @@ script: |-
       '403D': 'To adrtype (uncertain)',
       '403E': 'To email (uncertain)',
       '5FF6': 'To (uncertain)'}
+
+
+
   def windowsUnicode(string):
       if string is None:
           return None
@@ -467,6 +472,19 @@ script: |-
               attachments.append(fname)
               demisto.setContext('AttachmentName', fname)
               r.append(fileResult(fname, a.data))
+
+      md = "### Results:\n"
+      md += "* {0}:\t{1}\n".format('Label/Email',extractAddress(msg.to))
+      md += "* {0}:\t{1}\n".format('Label/Email/cc', extractAddress(msg.cc))
+      md += "* {0}:\t{1}\n".format('Label/Email/from', extractAddress(msg.sender))
+      md += u"* {0}:\t{1}\n".format('Label/Email/html', msg.body)
+      md += u"* {0}:\t{1}\n".format('Label/Email/text', msg.body)
+      md += "* {0}:\t{1}\n".format('Label/Email/subject', msg.subject)
+      md += "* {0}:\t{1}\n".format('Label/Email/attachments', '' if not attachments else ','.join(attachments))
+      md += "* {0}:\t{1}\n".format('Label/Email/headers', '\n'.join(headers))
+
+      temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
+
       demisto.setContext('Label/Email', extractAddress(msg.to))
       demisto.setContext('Label/Email/cc', extractAddress(msg.cc))
       demisto.setContext('Label/Email/from', extractAddress(msg.sender))
@@ -474,9 +492,10 @@ script: |-
       demisto.setContext('Label/Email/html', msg.body)
       demisto.setContext('Label/Email/text', msg.body)
       demisto.setContext('Label/Email/subject', msg.subject)
-      demisto.setContext('Label/Email/attachments', ','.join(attachments))
+      demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
       demisto.setContext('Label/Email/headers', '\n'.join(headers))
-      return r
+
+      return r, temp_res
 
 
   def handleEml(filePath, b64 = False):
@@ -503,15 +522,17 @@ script: |-
                   demisto.setContext('AttachmentName', part.get_filename())
                   r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
-                  html = part.get_payload(decode=True)
+                  html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
               elif part.get_content_type() == 'text/plain':
-                  text = part.get_payload(decode=True)
+                  text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  
 
           try:
               subjenc, encoding = decode_header(eml['Subject'])[0]
               subj = subjenc.decode(encoding)
           except:
               subj = eml['Subject']
+          subj = unicode(subj).encode('utf-8')
           demisto.setContext('Label/Email', extractAddress(eml['To']))
           demisto.setContext('Label/Email/cc', extractAddress(eml['Cc']))
           demisto.setContext('Label/Email/from', extractAddress(eml['From']))
@@ -519,9 +540,22 @@ script: |-
           demisto.setContext('Label/Email/html', html)
           demisto.setContext('Label/Email/text', text)
           demisto.setContext('Label/Email/subject', subj)
-          demisto.setContext('Label/Email/attachments', ','.join(attachments))
+          demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
           demisto.setContext('Label/Email/headers', headers)
-          return r
+
+          md = "### Results:\n"
+          md += "* {0}:\t{1}\n".format('Label/Email',extractAddress(eml['To']))
+          md += "* {0}:\t{1}\n".format('Label/Email/cc', extractAddress(eml['Cc']))
+          md += "* {0}:\t{1}\n".format('Label/Email/from', extractAddress(eml['From']))
+          md += "* {0}:\t{1}\n".format('Label/Email/html', html)
+          md += "* {0}:\t{1}\n".format('Label/Email/text', text)
+          md += "* {0}:\t{1}\n".format('Label/Email/subject', subj)
+          md += "* {0}:\t{1}\n".format('Label/Email/attachments', '' if not attachments else ','.join(attachments))
+          md += "* {0}:\t{1}\n".format('Label/Email/headers', headers)
+
+          temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
+
+          return r, temp_res
 
 
   res = []
@@ -533,21 +567,37 @@ script: |-
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
   if 'Composite Document File V2 Document'.lower() in fileType.lower():
-      res += handleMsg(filePath)
+      temp1, temp2 =  handleMsg(filePath)
+      res += temp1
+      res += temp2
   elif 'rfc 822 mail' in fileType.lower():
-      res += handleEml(filePath)
+      temp1, temp2 = handleEml(filePath)
+      res += temp1
+      res += temp2
   elif 'ASCII text, with CRLF line terminators' in fileType:
       try:
-          with open(filePath, 'rb') as possibleB64:
-              innerText = b64decode(possibleB64.read())
-          if 'Content-Type:' in innerText and 'Received:' in innerText:
-              res += handleEml(filePath, b64 = True)
+          # Try to open the email as-is
+          with open(filePath, 'rb') as f:
+              filecontents = f.read()
+          if 'Content-Type:'.lower() in filecontents.lower():
+              temp1, temp2 = handleEml(filePath, b64 = False)
+              res += temp1
+              res += temp2
           else:
-              res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Could not extract email from file. Base64 decode did not include rfc 822 strings"}]
-      except:
-          res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Exception while trying to decode email from within base64."}]
+              # Try a base64 decode
+              decodedBase64 = b64decode(filecontents)
+              if 'Content-Type:'.lower() in filecontents.lower():
+                  temp1, temp2 = handleEml(filePath, b64 = True)
+                  res += temp1
+                  res += temp2
+              else:
+                  res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Could not extract email from file. Base64 decode did not include rfc 822 strings"}]
+      except Exception as e:
+          res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Exception while trying to decode email from within base64: " + str(e)}]
   else:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Unknown file format: " + fileType}]
+
+  res += global_res
 
   demisto.results(res if res else 'Done.')
 type: python
