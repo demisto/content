@@ -7,7 +7,7 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
-  
+
   /**
    * Formats a string in place
    * @returns {String} the formatted string
@@ -86,6 +86,22 @@ script: |-
   }
 
   /**
+   * Get all properties of objects in array.
+   * @param t - Array of elements to get properties
+   * @returns {Array} - Array of objects properties
+   * @constructor
+   */
+  function getAllObjectsProperties(t) {
+      var properties = {};
+      t.forEach(function (element) {
+          for(var prop in element) {
+              properties[prop] ='';
+          }
+      });
+      return  Object.keys(properties);
+  }
+
+  /**
    * Converts a demisto table in JSON form to a Markdown table
    * @param {String} name - the name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
@@ -99,7 +115,7 @@ script: |-
 
       //in case of headers was not provided (backward compatibility)
       if ((!headers || !headers instanceof Array) && t && t.length > 0){
-          headers = Object.keys(t[0]);
+          headers = getAllObjectsProperties(t);
       }
 
       if(!headers || !headers instanceof Array || headers.length === 0) {
