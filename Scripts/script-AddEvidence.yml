@@ -34,6 +34,7 @@ args:
 - name: entryIDs
   description: Entry IDs to add its output to Evidence Board
   defaultValue: ${lastCompletedTaskEntries}
+  required: true
 - name: desc
   default: true
   description: Description to add to Evidence Board
