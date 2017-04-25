@@ -1,0 +1,145 @@
+id: 6a9d97b2-19e3-435f-867d-099c596d2d32
+version: 13
+name: Wildfire - Not Malicious
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10995f6b-340c-4daa-8bea-0b37f5a023f6
+    type: start
+    task:
+      id: 10995f6b-340c-4daa-8bea-0b37f5a023f6
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 254,
+          "y": -30
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6459817e-56fb-43d6-8d05-fa0ded6bd28e
+    type: regular
+    task:
+      id: 6459817e-56fb-43d6-8d05-fa0ded6bd28e
+      version: 1
+      name: wildfire-report
+      description: Retrieve results for a file hash using Wildfire
+      script: WildFire1|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire1
+    scriptarguments:
+      format: json
+      hash: ""
+      md5: ${File.MD5}
+      verbose: ""
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 619
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 94b9d594-5767-4d93-81d0-0c68fe934481
+    type: regular
+    task:
+      id: 94b9d594-5767-4d93-81d0-0c68fe934481
+      version: 1
+      name: wildfire-upload
+      description: Upload file to wildfire for analysis.
+      script: WildFire1|||wildfire-upload
+      type: regular
+      iscommand: true
+      brand: WildFire1
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      upload: ${File.EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 254,
+          "y": 115
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5c68a761-0c0c-4723-823b-708f069f53e4
+    type: regular
+    task:
+      id: 5c68a761-0c0c-4723-823b-708f069f53e4
+      version: 1
+      name: WhileNotMdLoop
+      description: |
+        While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
+        Please make sure timeout of the script also sufficient for the loop.
+      scriptName: WhileNotMdLoop
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      cmdArguments: ${File='md5=' + val.MD5}
+      cmdToRun: wildfire-report
+      keyToWatch: ""
+      maxIterations: "10"
+      sleepTime: ""
+      value: No results yet
+    view: |-
+      {
+        "position": {
+          "x": 254,
+          "y": 292
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b830c09b-e391-4f98-8c9a-8c85a739fa9b
+    type: regular
+    task:
+      id: b830c09b-e391-4f98-8c9a-8c85a739fa9b
+      version: 1
+      name: NotInContextVerification
+      description: |
+        While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
+        Please make sure timeout of the script also sufficient for the loop.
+      scriptName: NotInContextVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      cmdArguments: ${File='md5=' + val.MD5}
+      cmdToRun: wildfire-report
+      keyToWatch: File/Malicious
+    view: |-
+      {
+        "position": {
+          "x": 254,
+          "y": 449
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 744,
+        "width": 381,
+        "x": 254,
+        "y": -30
+      }
+    }
+  }
