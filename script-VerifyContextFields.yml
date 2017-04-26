@@ -1,0 +1,32 @@
+commonfields:
+  id: 2f5bb82f-4d60-4259-8229-f10062cbe89f
+  version: 15
+name: VerifyContextFields
+script: |
+  var verifyField = function(field, value) {
+      verifyContextField(field, value);
+  }
+
+  var fields = [args.field1, args.field2, args.field3, args.field4];
+  var values = [args.value1, args.value2, args.value3, args.value4];
+
+  for (i = 0; i < fields.length; i++) {
+      if (fields[i] !== undefined) {
+          verifyContextField(fields[i], values[i]);
+      }
+  }
+type: javascript
+tags:
+- Utility
+enabled: true
+args:
+- name: field1
+  default: true
+- name: value1
+- name: field2
+- name: value2
+- name: field3
+- name: value3
+- name: field4
+- name: value4
+scripttarget: 0
