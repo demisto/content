@@ -2,9 +2,9 @@ id: playbook0
 version: -1
 name: Default
 description: Default playbook to help classify incoming incidents
-starttaskid: "0"
 system: true
 fromversion: 2.5.0
+starttaskid: "0"
 tasks:
   "0":
     id: "0"
@@ -14,7 +14,6 @@ tasks:
       id: 96dbf98e-bc4e-4d21-808f-54cf03241207
       version: -1
       name: start_task
-      issystemtask: true
       type: start
       iscommand: false
       brand: ""
@@ -24,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
+          "x": 1360,
           "y": 50
         }
       }
@@ -37,7 +36,6 @@ tasks:
       version: -1
       name: Is this an email
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -52,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
+          "x": 1360,
           "y": 195
         }
       }
@@ -65,21 +63,20 @@ tasks:
       version: -1
       name: SplunkEmailParser
       scriptName: SplunkEmailParser
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     scriptarguments:
       body: ${incident.labels.Email/html}
       subject: ${incident.labels.Email/subject}
     view: |-
       {
         "position": {
-          "x": 1158,
-          "y": 712
+          "x": 910,
+          "y": 865
         }
       }
   "6":
@@ -91,18 +88,17 @@ tasks:
       version: -1
       name: NexposeEmailParser
       scriptName: NexposeEmailParser
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     view: |-
       {
         "position": {
-          "x": 207,
-          "y": 807
+          "x": 50,
+          "y": 865
         }
       }
   "8":
@@ -114,13 +110,12 @@ tasks:
       version: -1
       name: Set incident type and playbook to SentinelOne
       scriptName: IncidentSet
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     scriptarguments:
       addLabels: ""
       customFieldName: ""
@@ -137,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 905,
+          "x": 480,
           "y": 865
         }
       }
@@ -150,7 +145,6 @@ tasks:
       version: -1
       name: Set type and playbook to Phishing (default type for emails)
       scriptName: IncidentSet
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -170,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 525,
-          "y": 1129
+          "x": 1340,
+          "y": 865
         }
       }
   "22":
@@ -182,7 +176,6 @@ tasks:
       id: cedcbabe-7b14-4b7c-843d-60b04f66e9b2
       version: -1
       name: Mail Classifier
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -193,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 385
+          "y": 545
         }
       }
   "23":
@@ -213,16 +206,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2005,
-          "y": 560
+          "x": 2127.5,
+          "y": 545
         }
       }
   "26":
     id: "26"
-    taskid: 8cb3c6b3-18fd-4814-871c-9f8bd44f3e4d
+    taskid: f2869c16-1168-482c-87b1-3740a0d6c0a9
     type: regular
     task:
-      id: 8cb3c6b3-18fd-4814-871c-9f8bd44f3e4d
+      id: f2869c16-1168-482c-87b1-3740a0d6c0a9
       version: -1
       name: QRadar Classifier
       scriptName: QRadarClassifier
@@ -231,11 +224,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
+    scriptarguments:
+      contextOutput: ${inputs.ClassifierContext}
+      customCategories: ${inputs.CustomCategories}
     view: |-
       {
         "position": {
-          "x": 2608,
+          "x": 2670,
           "y": 865
         }
       }
@@ -254,7 +250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+      - "35"
       QRadar:
       - "26"
       Trend Micro:
@@ -266,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2005,
-          "y": 692
+          "x": 2127.5,
+          "y": 690
         }
       }
   "28":
@@ -284,12 +280,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     view: |-
       {
         "position": {
-          "x": 2193,
-          "y": 902
+          "x": 2240,
+          "y": 865
         }
       }
   "29":
@@ -306,11 +302,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     view: |-
       {
         "position": {
-          "x": 1713,
+          "x": 1790,
           "y": 865
         }
       }
@@ -331,38 +327,40 @@ tasks:
       {
         "position": {
           "x": 1677.5,
-          "y": 1108
+          "y": 1215
         }
       }
   "33":
     id: "33"
-    taskid: 34ab0da0-429c-41a3-85a4-246bbcd982d6
+    taskid: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
     type: condition
     task:
-      id: 34ab0da0-429c-41a3-85a4-246bbcd982d6
+      id: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
       version: -1
       name: Get Email Sender
       description: Prints text to war room
-      scriptName: Print
+      scriptName: MapValues
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "9"
-      NEXPOSE_SENDER@PLACEHOLDER.COM:
+      nexpose:
       - "6"
-      SENTINELONE_SENDER@PLACEHOLDER.COM:
+      sentinel:
       - "8"
-      SPLUNK_SENDER@PLACEHOLDER.COM:
+      splunk:
       - "4"
     scriptarguments:
-      value: ${incident.labels.Email/from}
+      input: ${incident.labels.Email/from}
+      translated: splunk,sentinel,nexpose
+      values: ${inputs.SplunkSender},${inputs.SentinelSender},${inputs.NexposeSender}
     view: |-
       {
         "position": {
-          "x": 542,
-          "y": 545
+          "x": 695,
+          "y": 690
         }
       }
   "34":
@@ -371,7 +369,7 @@ tasks:
     type: condition
     task:
       id: 5ae67300-d763-4671-8f0c-78a34bb2bb41
-      version: 1
+      version: -1
       name: Does incident include "Brand" label?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
@@ -381,7 +379,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+      - "35"
       "yes":
       - "23"
     scriptarguments:
@@ -389,27 +387,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1779,
-          "y": 394
+          "x": 1902.5,
+          "y": 370
+        }
+      }
+  "35":
+    id: "35"
+    taskid: 5db2091c-bd4b-4827-8318-e26fa57e938c
+    type: playbook
+    task:
+      id: 5db2091c-bd4b-4827-8318-e26fa57e938c
+      version: -1
+      name: ""
+      playbookName: Enrichment Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 1040
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "27_30_#default#": 0.21,
       "2_34_#default#": 0.62,
-      "33_4_SPLUNK_SENDER@PLACEHOLDER.COM": 0.62,
-      "33_6_NEXPOSE_SENDER@PLACEHOLDER.COM": 0.56,
-      "33_8_SENTINELONE_SENDER@PLACEHOLDER.COM": 0.63,
-      "33_9_#default#": 0.64,
-      "34_30_#default#": 0.16
+      "33_9_#default#": 0.64
     },
     "paper": {
       "dimensions": {
-        "height": 1174,
-        "width": 2781,
-        "x": 207,
+        "height": 1260,
+        "width": 3000,
+        "x": 50,
         "y": 50
       }
     }
   }
+inputs:
+- key: SplunkSender
+  value: splunk@placeholder.com
+  description: If your splunk sends incidents via email, what is the sender email
+    address?
+- key: NexposeSender
+  value: nexpose@placeholder.com
+  description: If Nexpose sends incidents via email, what is the sender email address?
+- key: SentinelSender
+  value: sentinel@placeholder.com
+  description: If Sentinel sends incidents via email, what is the sender email address?
+- key: ClassifierContext
+  value: Classifier/Description
+  description: This context key will contain the description of the incident properties
+    that we tried to classify
+- key: CustomCategories
+  value: ""
+  description: 'Option to add custom categories to the classifier, JSON with SIEM
+    categories and their Demisto type counterparts. i.e {"SIEMCategory1": "DemistoType1",
+    "SIEMCategory2": "DemistoType2"}'

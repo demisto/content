@@ -13,7 +13,6 @@ tasks:
       id: start-enrich
       version: -1
       name: ""
-      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -35,7 +34,6 @@ tasks:
       version: -1
       name: Expose Configured Intergrations
       scriptName: ExposeModules
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -53,14 +51,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: collect-hashes
+    taskid: dcc3f55d-363e-43e5-8c6f-e06d8ad05616
     type: regular
     task:
-      id: collect-hashes
+      id: dcc3f55d-363e-43e5-8c6f-e06d8ad05616
       version: -1
       name: Collect Hashes from Incident
       scriptName: ExtractHash
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -68,7 +65,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
     view: |-
       {
         "position": {
@@ -78,14 +75,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: collect-urls
+    taskid: f71ff25a-89d4-450f-8a31-405a1c04bd9d
     type: regular
     task:
-      id: collect-urls
+      id: f71ff25a-89d4-450f-8a31-405a1c04bd9d
       version: -1
       name: Collect URLs from Incident
       scriptName: ExtractURL
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -93,7 +89,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
     view: |-
       {
         "position": {
@@ -103,14 +99,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: collect-ips
+    taskid: 32791778-d581-4cb4-8f9e-ec3f2cadb002
     type: regular
     task:
-      id: collect-ips
+      id: 32791778-d581-4cb4-8f9e-ec3f2cadb002
       version: -1
       name: Collect IPs from Incident
       scriptName: ExtractIP
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -118,7 +113,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
     view: |-
       {
         "position": {
@@ -134,7 +129,6 @@ tasks:
       id: enrich-integ
       version: -1
       name: Enrich with Integrations
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -161,7 +155,6 @@ tasks:
       version: -1
       name: Is VirusTotal available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -188,7 +181,6 @@ tasks:
       version: -1
       name: ""
       playbookName: VT Enrichment Playbook
-      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -210,7 +202,6 @@ tasks:
       id: check-res
       version: -1
       name: Check Result
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -231,9 +222,8 @@ tasks:
     task:
       id: enrich-done
       version: -1
-      name: Enrichment Done
+      name: Done
       scriptName: Print
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -255,7 +245,6 @@ tasks:
       version: -1
       name: Is CrowdStrike available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -282,7 +271,6 @@ tasks:
       version: -1
       name: ""
       playbookName: CrowdStrike Enrichment Playbook
-      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -305,7 +293,6 @@ tasks:
       version: -1
       name: Is XFE available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -332,7 +319,6 @@ tasks:
       version: -1
       name: ""
       playbookName: XFE Enrichment Playbook
-      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -355,7 +341,6 @@ tasks:
       version: -1
       name: Is Cylance available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -382,7 +367,6 @@ tasks:
       version: -1
       name: ""
       playbookName: Cylance Enrichment Playbook
-      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -405,7 +389,6 @@ tasks:
       version: -1
       name: Is WildFire available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -432,7 +415,6 @@ tasks:
       version: -1
       name: ""
       playbookName: WildFire Enrichment Playbook
-      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -464,3 +446,4 @@ view: |-
       }
     }
   }
+inputs: []
