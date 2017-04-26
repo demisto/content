@@ -2,6 +2,7 @@ commonfields:
   id: JiraIssueAddLink
   version: -1
 name: JiraIssueAddLink
+deprecated: true
 script: |2
 
   resp = demisto.executeCommand("jira-issue-add-link", demisto.args())
