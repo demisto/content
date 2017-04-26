@@ -1,5 +1,5 @@
 id: 6a9d97b2-19e3-435f-867d-099c596d2d32
-version: 7
+version: -1
 name: Wildfire - Not Malicious
 starttaskid: "0"
 tasks:
@@ -9,7 +9,7 @@ tasks:
     type: start
     task:
       id: 10995f6b-340c-4daa-8bea-0b37f5a023f6
-      version: 2
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -29,7 +29,7 @@ tasks:
     type: regular
     task:
       id: fa51674d-2c20-4a3a-806d-fdd9a52ca0c0
-      version: 1
+      version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using Wildfire
       script: WildFire|||wildfire-report
@@ -54,7 +54,7 @@ tasks:
     type: regular
     task:
       id: 620b0f62-bb31-4918-8ef7-cc55b1ab532e
-      version: 1
+      version: -1
       name: wildfire-upload
       description: Upload file to wildfire for analysis.
       script: WildFire|||wildfire-upload
