@@ -28,7 +28,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Defauot ticket type of commands. Can be incident, problem or change_reuquest.
+- display: Default ticket type of commands. Can be incident, problem or change_reuquest.
     Commands also take ticket_type argument
   name: ticket_type
   defaultvalue: incident
