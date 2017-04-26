@@ -112,7 +112,7 @@ script:
         if (!headers) {
             headers = {
                 'Accept': ['application/json'],
-                'Content-Type': ['application/json'],
+                'Content-Type': ['application/json']
             };
         }
         body = (body) ? body : {};
