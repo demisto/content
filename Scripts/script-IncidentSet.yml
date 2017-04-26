@@ -11,7 +11,7 @@ script: |-
   if demisto.get(inArgs, 'stage'):
       res += demisto.executeCommand("setStage", {'stage': inArgs['stage']})
   if demisto.get(inArgs, 'name'):
-      dArgs['incName'] = inArgs['name']
+      dArgs['name'] = inArgs['name']
   if demisto.get(inArgs, 'details'):
       dArgs['details'] = inArgs['details']
   if demisto.get(inArgs, 'severity'):
