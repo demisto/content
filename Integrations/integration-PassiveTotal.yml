@@ -215,9 +215,9 @@ script:
                 if (recentSampleCount >= args.threshold) {
                     dbotScore = 3;
                     if (isIp(args.query)) {
-                        ec['IP/Malicious'] = {Address: args.query};
+                        context['IP/Malicious'] = {Address: args.query};
                     } else {
-                        ec['Domain/Malicious'] = {Name: args.query};
+                        context['Domain/Malicious'] = {Name: args.query};
                     }
                 } else if (recentSampleCount >= args.threshold / 2) {
                     dbotScore = 2;

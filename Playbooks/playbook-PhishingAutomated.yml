@@ -1114,6 +1114,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "91"
       "yes":
       - "65"
     scriptarguments:
@@ -1124,7 +1126,7 @@ tasks:
       {
         "position": {
           "x": 602.5,
-          "y": 8095
+          "y": 8100
         }
       }
   "65":
