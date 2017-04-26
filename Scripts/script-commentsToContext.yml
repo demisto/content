@@ -9,7 +9,15 @@ script: |-
 
   var md =  'Comments set to context - '+key+':' + comments + '\n';
   var ec={};
-  ec[key]=comments;
+  if (args.listSeperator) {
+      ec[key]=[];
+      var list = comments.split(args.listSeperator);
+      for (var i=0;i<list.length;i++) {
+          ec[key].push(list[i].trim());
+      }
+  } else {
+      ec[key]=comments;
+  }
 
   return {Type: entryTypes.note, Contents: entry, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
@@ -27,4 +35,6 @@ args:
 - name: contextKey
   required: true
   description: Context key to store comments into
+- name: listSeperator
+  description: If value is list - provide list seperator 
 scripttarget: 0

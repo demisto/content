@@ -7,7 +7,7 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
-  
+
   /**
    * Formats a string in place
    * @returns {String} the formatted string
@@ -98,15 +98,19 @@ script: |-
       }
 
       //in case of headers was not provided (backward compatibility)
-      if (t && (!(headers instanceof Array && headers.length > 0) || !headers)){
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
           headers = Object.keys(t[0]);
+      }
+
+      if(!headers || !headers instanceof Array || headers.length === 0) {
+          return 'No data returned\n';
       }
 
       var mdResults = '';
       if (name) {
           mdResults = '### ' + name + '\n';
       }
-      if (t) {
+      if (t && t.length) {
           mdResults += headers.join('|') + '\n';
           var sep = [];
           headers.forEach(function(h){
@@ -187,7 +191,7 @@ script: |-
 
   /**
    * Sets fields of the incident. The incident must be related to current investigation and be the only incident in it.
-   * @param {Object} args - has 5 optional keys: type, severity, details, incName and systems of the incident.
+   * @param {Object} args - has 5 optional keys: type, severity, details, name and systems of the incident.
    *                        systems should follow this string template: '1.1.1.1,10.10.10.10'
    * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
    */
@@ -198,7 +202,7 @@ script: |-
   /**
    * Create a new incident with the fields specified, only if an incident with the same name does not exist as an active incident.
    * If an active incident with the same name exists, ignore the request.
-   * @param {Object} args - has 5 optional keys: type, severity, details, incName and system of the incident.
+   * @param {Object} args - has 5 optional keys: type, severity, details, name and system of the incident.
    * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
    */
   function createNewIncident(args) {

@@ -51,6 +51,51 @@ script:
         return toReturn;
     };
 
+    /**
+       * Converts a demisto table in JSON form to a Markdown table
+       * @param {String} name - the name of the table
+       * @param {Object | Array<Object>} table - the JSON table - Array of objects with the same keys
+       * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
+       * @returns {String} Markdown representation of the original list
+    */
+    var tableToMd = function(name, table, headers) {
+
+        if (!(table instanceof Array)){
+              table = [table];
+          }
+
+        var res = '### ' + name + '\n';
+        table = table.map(flattenObject);
+        if(table && table.length) {
+            // use table's keys if headers are not provieded
+            if(!headers) {
+                headers = Object.keys(table[0]);
+            }
+
+            // headers
+            res += headers.join('|') + '\n';
+            res += headers.map(function(h) { return '-'; }).join('|') + '\n';
+
+            // body
+            for(var i = 0; i< table.length; i++) {
+                var obj = table[i];
+                var values = [];
+                var val;
+                headers.forEach(function(key) {
+                    val = '-';
+                    if (obj[key] || obj[key] === '0' || obj[key] === '0') {
+                        val = obj[key];
+                    }
+                    values.push(val);
+                });
+                res += values.join('|') + '\n';
+            }
+        } else {
+            res += '**No entries.**\n';
+        }
+        return res;
+    }
+
     var createTableEntry = function (name, contents, context, headers) {
         return {
             // type
@@ -58,7 +103,7 @@ script:
              // contents
             ContentsFormat: formats.json, Contents: contents,
             // human-readable
-            ReadableContentsFormat: formats.markdown, HumanReadable: tableToMarkdown(name, contents, headers),
+            ReadableContentsFormat: formats.markdown, HumanReadable: tableToMd(name, contents, headers),
             // context
             EntryContext: context
         };
@@ -230,7 +275,7 @@ script:
                 { from: 'organizationId', to: 'OrganizationId' },
                 { from: 'type', to: 'Type' },
                 { from: 'name', to: 'Name' },
-                { from: 'timeZone', to: 'Timezone' },
+                { from: 'timezone', to: 'Timezone' },
                 { from: 'tags', to: 'Tags' },
             ]));
         }
@@ -531,10 +576,8 @@ script:
   - name: meraki-fetch-organizations
     arguments: []
     outputs:
-    - contextPath: Organization.ID
-      description: Organization id
-    - contextPath: Organization.Name
-      description: Organization name
+    - contextPath: Organization
+      description: List of organizations, each includes ID & Name
     description: List the organizations that the api-key has privileges on
   - name: meraki-get-organization-license-state
     arguments:
@@ -552,18 +595,9 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Device.Serial
-      description: Device serial identification
-    - contextPath: Device.NetworkId
-      description: Network id that contain this device
-    - contextPath: Device.Model
-      description: Device model
-    - contextPath: Device.ClaimedAt
-      description: Device claimed at ( e.g. '1476339871.62389')
-    - contextPath: Device.PublicIp
-      description: Device public ip
-    - contextPath: Device.MAC
-      description: Device MAC address
+    - contextPath: Devices
+      description: List of devices, each includes Serial, NetworkId, Model, ClaimedAt,
+        PublicIp & Mac
     description: List of Inventories for an organization
   - name: meraki-fetch-networks
     arguments:
@@ -573,18 +607,9 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Network.ID
-      description: Network id
-    - contextPath: Network.Name
-      description: Network name
-    - contextPath: Network.Type
-      description: Network type (e.g. 'combined')
-    - contextPath: Network.OrganizationId
-      description: Organization id which the network belongs to
-    - contextPath: Network.Tags
-      description: Network tags (e.g. 'US/Mountain')
-    - contextPath: Network.TimeZone
-      description: Network timezone (e.g. 'US/Mountain')
+    - contextPath: Network
+      description: List of networks, each includes ID, Name, Type, OrganizationId,
+        Tags & TimeZone
     description: List the networks in an organization
   - name: meraki-fetch-devices
     arguments:
@@ -594,24 +619,9 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Device.Serial
-      description: Device serial identification
-    - contextPath: Device.Name
-      description: Device name
-    - contextPath: Device.Lat
-      description: Device latitude coordinate (e.g. 37.41809510)
-    - contextPath: Device.Lng
-      description: Device longitude coordinate (e.g. 103.8338541)
-    - contextPath: Device.NetworkId
-      description: Network id which device is belong to
-    - contextPath: Device.Tags
-      description: Device tags
-    - contextPath: Device.MAC
-      description: Device MAC address
-    - contextPath: Device.Model
-      description: Device model
-    - contextPath: Device.Address
-      description: Device ip address
+    - contextPath: Device
+      description: List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC & Address
     description: List the devices in a network
   - name: meraki-fetch-device-uplink
     arguments:
@@ -624,10 +634,8 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Uplink.Status
-      description: Uplink status (e.g. 'Active')
-    - contextPath: Uplink.Interface
-      description: Uplink interface (e.g. 'WAN 1')
+    - contextPath: Uplink
+      description: List of device uplink, each includes Status & Interface
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
     arguments:
@@ -637,55 +645,25 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: SSID.Number
-      description: SSID number (e.g. '0', '1' ..)
-    - contextPath: SSID.NetworkId
-      description: SSID network id
-    - contextPath: SSID.Name
-      description: SSID name
-    - contextPath: SSID.SplashPage
-      description: SSID splash-page
-    - contextPath: SSID.BandSelection
-      description: SSID band-selection
-    - contextPath: SSID.Enabled
-      description: true if SSID is enabled
-    - contextPath: SSID.AuthMode
-      description: SSID auth-mode (e.g. 'open', 'psk')
-    - contextPath: SSID.WalledGardenRanges
-      description: SSId walled-garden-ranges (e.g. '127.0.0.1/32')
+    - contextPath: SSID
+      description: List of SSIDs, each includes Number, NetworkId, Name, SplashPage,
+        BandSelection, Enabled, AuthMode & WalledGardenRanges
     description: List the SSIDs in a network
   - name: meraki-fetch-clients
     arguments:
     - name: serial
       required: true
-      description: Device serial number
+      description: Device serial#
     - name: timespan
       required: true
       description: ' The timespan(in seconds) for which clients will be fetched. Must
-        be at most one month and in seconds (e.g. 1 day is 86400 seconds, 1 month
-        is 2592000 seconds).'
-      defaultValue: "2592000"
+        be at most one month and in seconds (e.g. 1 day is 86400 seconds).'
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Client.ID
-      description: Client id
-    - contextPath: Client.MAC
-      description: Client MAC address
-    - contextPath: Client.IP
-      description: Client ip address
-    - contextPath: Client.Description
-      description: Client description
-    - contextPath: Client.mDNSName
-      description: Client mDNS name
-    - contextPath: Client.Hostname
-      description: Client hostname
-    - contextPath: Client.VLAN
-      description: Client VLAN
-    - contextPath: Client.Usage.sent
-      description: Client sent usage
-    - contextPath: Client.Usage.recv
-      description: Client received usage
+    - contextPath: Client
+      description: List of clients, each includes ID, MAC, IP, Description, mDNSName,
+        Hostname, Usage & VLAN
     description: List the clients of a device, up to a maximum of a month ago
   - name: meraki-fetch-firewall-rules
     arguments:
@@ -698,23 +676,9 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Firewall.Number
-      description: Firewall related SSID number
-      importantDescription: List of firewalls, each includes Number,,,,
-    - contextPath: Firewall.NetworkId
-      description: Firewall networkId
-    - contextPath: Firewall.Policy
-      description: Firewall policy ('allow'/'deny')
-    - contextPath: Firewall.Protocol
-      description: Firewall protocol ('tcp','udp', 'icmp' or 'any')
-    - contextPath: Firewall.DestPort
-      description: Firewall Destination. Can be 'any' or an integer within the range
-        of 1-65535
-    - contextPath: Firewall.DestCidr
-      description: ' Destination Cidr. IP address or subnet in CIDR form, can also
-        be ''any'''
-    - contextPath: Firewall.Comment
-      description: Firewall comment
+    - contextPath: Firewall
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
+        DestPort, DestCidr & Comment
     description: List of L3 firewall rules for an SSID
   - name: meraki-remove-device
     arguments:
@@ -736,24 +700,9 @@ script:
     - name: headers
       description: Table's headers to be shown by order
     outputs:
-    - contextPath: Device.Serial
-      description: Device serial identification
-    - contextPath: Device.Name
-      description: Device name
-      importantDescription: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
+    - contextPath: Device
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
         Tags, MAC & Address
-    - contextPath: Device.Lat
-      description: Device latitude coordinate (e.g. 37.41809510)
-    - contextPath: Device.Lng
-      description: Device longitude coordinate (e.g. 103.8338541)
-    - contextPath: Device.NetworkId
-      description: Network id which device is belong to
-    - contextPath: Device.Tags
-      description: Device tags
-    - contextPath: Device.MAC
-      description: Device MAC address
-    - contextPath: Device.Address
-      description: Device ip address
     description: Get a single device
   - name: meraki-update-device
     arguments:
@@ -774,24 +723,9 @@ script:
     - name: lng
       description: New longitude of the device
     outputs:
-    - contextPath: Device.Name
-      description: Device name
-    - contextPath: Device.Name
-      description: Device name
-    - contextPath: Device.Lat
-      description: Device latitude coordinate (e.g. 37.41809510)
-    - contextPath: Device.Lng
-      description: Device longitude coordinate (e.g. 103.8338541)
-    - contextPath: Device.Model
-      description: Device model
-    - contextPath: Device.NetworkId
-      description: Network id that contain this device
-    - contextPath: Device.Tags
-      description: Device tags
-    - contextPath: Device.MAC
-      description: Device MAC address
-    - contextPath: Device.Address
-      description: Device IP address
+    - contextPath: Device
+      description: Updated evice which includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC & Address
     description: Update the attributes of a device
   - name: meraki-claim-device
     arguments:
@@ -854,21 +788,8 @@ script:
       - "false"
       description: true to remove all others rule, false to only add rule
     outputs:
-    - contextPath: Firewall.Number
-      description: Firewall related SSID number
-    - contextPath: Firewall.NetworkId
-      description: Firewall networkId
-    - contextPath: Firewall.Policy
-      description: Firewall policy ('allow'/'deny')
-    - contextPath: Firewall.Protocol
-      description: Firewall protocol ('tcp','udp', 'icmp' or 'any')
-    - contextPath: Firewall.DestPort
-      description: Firewall Destination. Can be 'any' or an integer within the range
-        of 1-65535
-    - contextPath: Firewall.DestCidr
-      description: ' Destination Cidr. IP address or subnet in CIDR form, can also
-        be ''any'''
-    - contextPath: Firewall.Comment
-      description: Firewall comment
+    - contextPath: Firewall
+      description: List of firewalls, each includes Number, NetworkId, Policy, Protocol,
+        DestPort, DestCidr & Comment
     description: update rule to L3 firewall rules of an SSID
 hidden: false

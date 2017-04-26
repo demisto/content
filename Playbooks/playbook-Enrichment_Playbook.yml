@@ -7,12 +7,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2512f2e4-e596-4f3b-8d6f-10533cc8bc01
+    taskid: start-enrich
     type: start
     task:
-      id: 2512f2e4-e596-4f3b-8d6f-10533cc8bc01
+      id: start-enrich
       version: -1
       name: ""
+      issystemtask: true
       iscommand: false
       brand: ""
     nexttasks:
@@ -27,13 +28,14 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 98cbb514-a766-4d23-824c-a3137ad5cc8a
+    taskid: conf-modules
     type: regular
     task:
-      id: 98cbb514-a766-4d23-824c-a3137ad5cc8a
+      id: conf-modules
       version: -1
       name: Expose Configured Intergrations
-      script: ExposeModules
+      scriptName: ExposeModules
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -51,13 +53,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 57e032e0-56e9-4af9-8dab-a9533314ba36
+    taskid: collect-hashes
     type: regular
     task:
-      id: 57e032e0-56e9-4af9-8dab-a9533314ba36
+      id: collect-hashes
       version: -1
       name: Collect Hashes from Incident
       scriptName: ExtractHash
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -75,13 +78,14 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 2e5fc4c1-6121-470e-8d9e-0b389cfeb43d
+    taskid: collect-urls
     type: regular
     task:
-      id: 2e5fc4c1-6121-470e-8d9e-0b389cfeb43d
+      id: collect-urls
       version: -1
       name: Collect URLs from Incident
       scriptName: ExtractURL
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -99,13 +103,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: f303c703-82fc-4bfb-8ede-695c1c0b8072
+    taskid: collect-ips
     type: regular
     task:
-      id: f303c703-82fc-4bfb-8ede-695c1c0b8072
+      id: collect-ips
       version: -1
       name: Collect IPs from Incident
       scriptName: ExtractIP
+      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -123,12 +128,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 18e82d7c-91d3-47e3-8d9f-6009d652193d
+    taskid: enrich-integ
     type: title
     task:
-      id: 18e82d7c-91d3-47e3-8d9f-6009d652193d
+      id: enrich-integ
       version: -1
       name: Enrich with Integrations
+      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -148,17 +154,20 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 00b4b5ab-a27f-4cfe-802b-7b46bee94530
+    taskid: is-vt
     type: condition
     task:
-      id: 00b4b5ab-a27f-4cfe-802b-7b46bee94530
+      id: is-vt
       version: -1
       name: Is VirusTotal available?
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "7"
     scriptarguments:
@@ -172,13 +181,14 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 7cd78939-150e-42da-85ee-18a01fbb16ec
+    taskid: enrich-vt-pb
     type: playbook
     task:
-      id: 7cd78939-150e-42da-85ee-18a01fbb16ec
+      id: enrich-vt-pb
       version: -1
       name: ""
       playbookName: VT Enrichment Playbook
+      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -189,17 +199,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 880
         }
       }
   "8":
     id: "8"
-    taskid: 1be320d7-1677-47a1-871f-036fca9e5a35
+    taskid: check-res
     type: title
     task:
-      id: 1be320d7-1677-47a1-871f-036fca9e5a35
+      id: check-res
       version: -1
       name: Check Result
+      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -210,40 +221,47 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1040
+          "y": 1097
         }
       }
   "9":
     id: "9"
-    taskid: 382b07d0-e18c-4a4e-816a-8ccc1372505b
-    type: condition
+    taskid: enrich-done
+    type: regular
     task:
-      id: 382b07d0-e18c-4a4e-816a-8ccc1372505b
+      id: enrich-done
       version: -1
-      name: Were Indicators found?
-      type: condition
+      name: Enrichment Done
+      scriptName: Print
+      issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      value: Enrichment done
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1185
+          "y": 1230
         }
       }
   "10":
     id: "10"
-    taskid: 17c5a6a8-9c77-465a-8fa2-6b5aaeaa9fab
+    taskid: is-cs
     type: condition
     task:
-      id: 17c5a6a8-9c77-465a-8fa2-6b5aaeaa9fab
+      id: is-cs
       version: -1
       name: Is CrowdStrike available?
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "11"
     scriptarguments:
@@ -257,13 +275,14 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: acd78e39-a411-432a-85b1-559e0f87b8e4
+    taskid: cs-enrich-pb
     type: playbook
     task:
-      id: acd78e39-a411-432a-85b1-559e0f87b8e4
+      id: cs-enrich-pb
       version: -1
       name: ""
       playbookName: CrowdStrike Enrichment Playbook
+      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -274,22 +293,25 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 865
+          "y": 880
         }
       }
   "12":
     id: "12"
-    taskid: 1cf92f8f-0eb7-4e5a-8a4d-b52e6cab3e28
+    taskid: is-xfe
     type: condition
     task:
-      id: 1cf92f8f-0eb7-4e5a-8a4d-b52e6cab3e28
+      id: is-xfe
       version: -1
       name: Is XFE available?
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "13"
     scriptarguments:
@@ -303,13 +325,14 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: d819152d-66ac-4a48-8617-325f92b68bce
+    taskid: xfe-enrich-pb
     type: playbook
     task:
-      id: d819152d-66ac-4a48-8617-325f92b68bce
+      id: xfe-enrich-pb
       version: -1
       name: ""
       playbookName: XFE Enrichment Playbook
+      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -320,22 +343,25 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 880
         }
       }
   "14":
     id: "14"
-    taskid: 3291b826-d891-4d24-8b09-720d8a3a1143
+    taskid: is-cylance
     type: condition
     task:
-      id: 3291b826-d891-4d24-8b09-720d8a3a1143
+      id: is-cylance
       version: -1
       name: Is Cylance available?
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "15"
     scriptarguments:
@@ -349,13 +375,14 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 2680a824-4aa0-4957-8420-ddce6dff5edf
+    taskid: cylance-enrich-pb
     type: playbook
     task:
-      id: 2680a824-4aa0-4957-8420-ddce6dff5edf
+      id: cylance-enrich-pb
       version: -1
       name: ""
       playbookName: Cylance Enrichment Playbook
+      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -366,22 +393,25 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 865
+          "y": 880
         }
       }
   "16":
     id: "16"
-    taskid: 71a8d022-e6f5-4d6a-865f-e00e7a7b3041
+    taskid: is-wf
     type: condition
     task:
-      id: 71a8d022-e6f5-4d6a-865f-e00e7a7b3041
+      id: is-wf
       version: -1
       name: Is WildFire available?
       scriptName: Exists
+      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "8"
       "yes":
       - "18"
     scriptarguments:
@@ -395,13 +425,14 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
+    taskid: wf-enrich-pb
     type: playbook
     task:
-      id: 38f860d9-3e60-4279-8ba3-0e21226b7ffc
+      id: wf-enrich-pb
       version: -1
       name: ""
       playbookName: WildFire Enrichment Playbook
+      issystemtask: true
       type: playbook
       iscommand: false
       brand: ""
@@ -412,15 +443,21 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 865
+          "y": 880
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_8_#default#": 0.2,
+      "12_8_#default#": 0.25,
+      "14_8_#default#": 0.22,
+      "16_8_#default#": 0.16,
+      "6_8_#default#": 0.19
+    },
     "paper": {
       "dimensions": {
-        "height": 1230,
+        "height": 1275,
         "width": 2100,
         "x": 50,
         "y": 50
