@@ -54,6 +54,7 @@ args:
   description: Include these AD attributes of the resulting objects in addition to
     the default ones
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - ad-search

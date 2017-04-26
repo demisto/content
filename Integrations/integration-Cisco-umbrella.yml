@@ -1,0 +1,808 @@
+commonfields:
+  id: Cisco Umbrella Investigate
+  version: -1
+name: Cisco Umbrella Investigate
+display: Cisco Umbrella Investigate
+category: Data Enrichment
+image: data:image/png;base64,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
+description: Cisco Umbrella Investigate
+detaileddescription: 'Cisco Investigate is part of the Cisco Umbrella package. When
+  you log into the CIsco Umbrella portal you will need to obtain the API Token for
+  the Cisco Investigate Feature. '
+configuration:
+- display: Cisco Umbrella API token
+  name: APIToken
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Base URL
+  name: baseURL
+  defaultvalue: https://investigate.api.umbrella.com
+  type: 0
+  required: true
+script:
+  script: |2+
+
+
+    // This object describe the result of the http request of getDomainSecurity function
+    // each field has Name,Iinfo & ContextKey  - thats just looks scarry
+    var SecurityResultInfo = {
+        dga_score: { Name: 'DGA', Info: 'Domain Generation Algorithm. This score is generated based on the likeliness of the domain ' +
+                            'name being generated by an algorithm rather than a human. This algorithm is designed to identify ' +
+                            'domains which have been created using an automated randomization strategy, which is a common evasion ' +
+                            'technique in malware kits or botnets. This score ranges from -100 (suspicious) to 0 (benign)' },
+        perplexity: { Name: 'Perplexity', Info: 'A second score on the likeliness of the name to be algorithmically generated, ' +
+                            'on a scale from 0 to 1. This score is to be used in conjunction with DGA' },
+        entropy: { Name: 'Entropy', Info: 'The number of bits required to encode the domain name, as a score. This score is to ' +
+                            'be used in conjunction with DGA and Perplexity' },
+        securerank2: { Name: 'SecureRank', Info: 'Suspicious rank for a domain that reviews based on the lookup behavior of client ' +
+                            'IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but ' +
+                            'never requested by clean clients, assuming these domains are more likely to be bad. Scores returned ' +
+                            'range from -100 (suspicious) to 100 (benign)' },
+        pagerank: { Name: 'PageRank', Info: 'Popularity according to Google\'s pagerank algorithm' },
+        asn_score: { Name: 'ASN Score', ContextKey: 'ASNScore', Info: 'ASN reputation score, ranges from -100 to 0 with -100 being very suspicious' },
+        prefix_score: { Name: 'Prefix Score', ContextKey: 'PrefixScore', Info: 'Prefix ranks domains given their IP prefixes (an IP prefix is the first ' +
+                            'three octets in an IP address) and the reputation score of these prefixes. Ranges from -100 to 0,' +
+                            ' -100 being very suspicious' },
+        rip_score: { Name: 'RIP Score', ContextKey: 'RIPScore', Info: 'RIP ranks domains given their IP addresses and the reputation score of these IP ' +
+                            'addresses. Ranges from -100 to 0, -100 being very suspicious' },
+        popularity: { Name: 'Popularity', Info: 'The number of unique client IPs visiting this site, relative to the all ' +
+                            'requests to all sites. A score of how many different client/unique IPs go to this domain compared to others' },
+        geoscore: { Name: 'GeoScore', Info: 'A score that represents how far the different physical locations serving this name are from each other' },
+        ks_test: { Name: 'Kolmoorov-Smirnov', ContextKey: 'KolmoorovSmirnov', Info: 'Kolmogorov–Smirnov test on geodiversity. 0 means that the client traffic matches what is expected for this TLD' },
+        attack: { Name: 'Attack Name', ContextKey: 'AttackName', Info: 'The name of any known attacks associated with this domain. Returns blank if no known threat associated with domain' },
+        threat_type: { Name: 'Threat Type', ContextKey: 'ThreatType',Info: 'The type of the known attack, such as botnet or APT. Returns blank if no known threat associated with domain' }
+    }
+
+    // used to describe result on getDomainDNSHistory function
+    var IpDnsFeatureInfo = {
+        rr_count: 'Number of records of that type mapping to the given IP',
+        ld2_count: 'Number of 2-level names mapping to the given IP',
+        ld3_count: 'Number of 3-level names mapping to the given IP',
+        ld2_1_count: 'Number of 2-level names, without the TLD, mapping to the given IP',
+        ld2_2_count: 'Number of 3-level names, without the TLD, mapping to a given IP',
+        div_ld2: 'ld2_count divided by the number of records',
+        div_ld3: 'ld3_count divided by the number of records',
+        div_ld2_1: 'ld2_1_count divided by the number of records',
+        div_ld2_2: 'ld2_2_count divided by the number of record'
+    }
+
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+    var apitoken = params.APIToken;
+    var baseURL = params.baseURL;
+
+    var domainArg = (args.domain) ? args.domain : '';
+    domainArg = domainArg.replace(/^https?:\/\//i, '');
+
+    // removes 'http://'/'https://'' prefix
+    var domainWithoutProtocol = function(domain) {
+        return domain && domain.replace(/^https?:\/\//i, '');
+    }
+
+    // "one_two" to "One Two"
+    var keyToTableKey = function(s) {
+        return s && s.replace(/_/g, ' ')
+                .replace(/\w+/g, function(w){return w[0].toUpperCase() + w.slice(1).toLowerCase();});
+    }
+
+    // "one_two" to "OneTwo"
+    var keyToContextKey = function(s) {
+        return s && keyToTableKey(s).replace(/\s+/g, '');
+    }
+
+    var createTableEntry = function (name, contents, context, headers) {
+        return {
+            // type
+            Type: entryTypes.note,
+             // contents
+            ContentsFormat: formats.json,
+            Contents: contents,
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, contents, headers),
+            // context
+            EntryContext: context
+        };
+    }
+
+    var sendRequest = function(requestUrl) {
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Authorization: ['Bearer ' + apitoken],
+                    Accept: ['application/json']
+                }
+            },
+            insecure,
+            proxy
+        );
+
+
+        if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
+            var errorString = '';
+            var body = JSON.parse(res.Body);
+
+            if (body && body.error == 'unauthorized') {
+                errorString = '\n\nError: Unauthorized check your API token\n';
+            }
+            errorString += '\nRequest Failed'
+                + '\nRequestUrl: ' + requestUrl
+                + '\nStatus code: ' + res.StatusCode
+                + '\nResponse: ' + JSON.stringify(res);
+            throw errorString;
+        }
+
+        var resBody = JSON.parse(res.Body);
+        if (resBody === undefined) {
+           throw 'Request Failed, returned response with no body';
+        }
+        return resBody;
+    };
+
+    var getDomainCategorization = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/domains/categorization/' + encodeURIComponent(domain) + '?showLabels';
+
+        var res = sendRequest(url);
+        var categorization = res && res[domain];
+
+        // build context & table
+        var domainContext = {
+            Name: domain
+        };
+        var table = {
+            // will be override in case result contains any
+            'Content Categories': 'No Content Categories Were Found',
+            'Security Categories': 'No Security Categories Were Found'
+        };
+        if (categorization) {
+            if (categorization.status !== undefined) {
+                table['Status'] = categorization.status
+            }
+            if (categorization.content_categories && categorization.content_categories.length > 0) {
+                var contentCategories = categorization.content_categories.join(',');
+                table['Content Categories'] = contentCategories;
+                domainContext.ContentCategories = contentCategories;
+            }
+            if (categorization.security_categories && categorization.security_categories.length > 0) {
+                var securityCategories = categorization.security_categories.join(',');
+                table['Security Categories'] = securityCategories
+                domainContext.SecurityCategories = securityCategories;
+            }
+        }
+
+        // build context
+        var context = {
+            Domain: domainContext
+        };
+        if (categorization.status === 1) {
+            context['Domain/Malicious'] = domainContext;
+        }
+
+        return createTableEntry("Categorization:", table, context);
+    }
+
+    var getDomainSearch = function(regex, start) {
+        var url = baseURL + '/search/' + encodeURIComponent(regex) + '?includecategory=true';
+        var startParam = start ? encodeURIComponent(start.replace(/\s/g,'')) : '-31days';
+
+        url += '&start=' + startParam;
+        var res = sendRequest(url);
+        var matches = res && res.matches;
+
+        if (!matches || !(matches instanceof Array )) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        }
+
+        // build table
+        var table = matches.map(function(match) {
+           return {
+                'Name': match.name,
+                'First Seen': match.firstSeenISO,
+                'Security Categories': match.securityCategories.join(',') || "-"
+           };
+        });
+
+        // build context
+        var domainContext = [];
+        var domainMaliciousContext = [];
+
+        // map matches to domains & check if matches is malare
+        matches.forEach(function (match) {
+            var securityCategoriesStr = match.securityCategories.join(',');
+            var domain = {
+                SecurityCategory: securityCategoriesStr,
+                FirstSeen: match.firstSeen,
+                FirstSeenISO:match.firstSeenISO
+            };
+            domainContext.push(domain);
+            if(securityCategoriesStr.indexOf('Malware') > -1) {
+                domainMaliciousContext.push(domain);
+            }
+        });
+
+        var context = {
+            Domain: domainContext
+        };
+
+        if(domainMaliciousContext.length > 0) {
+            context['Domain/Malicious'] = domainMaliciousContext;
+        }
+        return createTableEntry("Search Results:", table, context);
+    }
+
+    var getDomainCooccurrences = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/recommendations/name/' + encodeURIComponent(domain) + '.json';
+        var res = sendRequest(url);
+
+        var occurrences = res && res.pfs2;
+        if (!occurrences || !(occurrences instanceof Array )) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        }
+
+        // table
+        var table = occurrences.map(function(occurrence) {
+           return {
+               Name: occurrence[0],
+               Score: occurrence[1]
+           }
+        });
+
+        // context
+        var context = {};
+        if (occurrences.length > 0) {
+            context.Domain = {
+                Name: domain,
+                CoOccurrences: table
+            };
+        }
+        return createTableEntry("Co-occurrences:", table, context);
+    }
+
+    var getDomainRelated = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/links/name/' + encodeURIComponent(domainArg) + '.json';
+        var res = sendRequest(url);
+
+        var related = res && res.tb1;
+        if (!related || !(related instanceof Array )) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        }
+
+        // table
+        var table = related.map(function(r) {
+           return {
+               Name: r[0],
+               Score: r[1]
+           }
+        });
+
+        // context
+        var context = {};
+        if (related.length > 0) {
+            context.Domain = {
+                Name: domain,
+                Related: table
+            };
+        }
+        return createTableEntry("Related Domains:", table, context);
+    }
+
+    var getDomainSecurity = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/security/name/' + encodeURIComponent(domainArg) + '.json';
+        var res = sendRequest(url);
+
+        if (!res) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        }
+
+        // each key in SecurityResultInfo corrispond to a key in 'res'
+        // we get the score from 'res' & add Name & Info from SecurityResultInfo
+        var table = Object.keys(SecurityResultInfo).map(function(key) {
+            var infoObj = SecurityResultInfo[key];
+            return {
+                Name: infoObj.Name,
+                Score: res[key],
+                Info: infoObj.Info
+            }
+        });
+
+        // context
+        var domainSecurityContext = {};
+        Object.keys(SecurityResultInfo).forEach(function(key) {
+            var contextKey = SecurityResultInfo[key].ContextKey || SecurityResultInfo[key].Name;
+            domainSecurityContext[contextKey] = res[key];
+        });
+        var context = {
+            Domain: {
+                Name: domain,
+                Security: domainSecurityContext
+            }
+        };
+
+        return createTableEntry("Domain Security Info:", table, context);
+    }
+
+    var getDomainTags = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/domains/' + encodeURIComponent(domain) + '/latest_tags';
+        var tags = sendRequest(url);
+
+        var table = tags.map(function(tag) {
+            return {
+                'Period Begin': tag.period.begin,
+                'Period End': tag.period.end,
+                Category: tag.Category,
+                Url: tag.url
+            }
+        });
+
+        var context = {
+            Name: domain,
+            Tags: tags.map(function(tag) {
+                return {
+                    Period: {
+                        Begin: tag.period.begin,
+                        End: tag.period.end
+                    },
+                    Category: tag.Category,
+                    Url: tag.url
+                };
+            })
+        };
+
+        return createTableEntry("Tags:", table, context);
+    }
+
+    var getDomainDNSHistory = function(domain) {
+        domain = domainWithoutProtocol(domain);
+        var url = baseURL + '/dnsdb/name/a/' + encodeURIComponent(domain) + '.json';
+        var res = sendRequest(url);
+
+        var features = res && res.features;
+        if (!features) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        };
+        var address = res.rrs_tf && res.rrs_tf[0] && res.rrs_tf[0].rrs && res.rrs_tf[0].rrs[0] && res.rrs_tf[0].rrs[0].rr;
+        features.ip = address;
+
+        var table = {};
+        var DNSHistoryContext = {};
+
+        // change features object with the following:
+        // - change keys to pascal cases
+        // - change array-values to string
+        // - special handle 'locations' key
+        Object.keys(features).forEach(function(key) {
+            var tableKey = keyToTableKey(key);
+            var contextKey = keyToContextKey(key);
+
+            var value = features[key];
+
+            // context
+            DNSHistoryContext[contextKey] = value;
+
+            if(key === 'locations') {
+                table[tableKey] = value.map(function(location) {
+                    return '[ ' + location.lat + ', ' + location.lon + ' ]';
+                }).join();
+            } else {
+                // table
+                if (value instanceof Array) {
+                    // array-values
+                    table[tableKey] = value.join();
+                } else {
+                    table[tableKey] = value;
+                }
+            }
+        });
+
+        context = {
+            Domain: {
+                Name: domain,
+                DNSHistory: DNSHistoryContext
+            }
+        }
+        return createTableEntry("DNS History:", table, context);
+    }
+
+    var getIpDNSHistory = function(ip) {
+        var url = baseURL + '/dnsdb/ip/a/' + ip + '.json';
+        var res = sendRequest(url);
+
+        // this command return 2 entries - but the context update is done with the 2nd entry
+        var rrs = res && res.rrs;
+        var features = res && res.features;
+        if (!rrs || !features) {
+            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+        };
+
+        var rrsTable = rrs.map(function(obj) {
+            return {
+                RR: obj.rr,
+                TTL: obj.ttl,
+                Class: obj.class,
+                Type: obj.type,
+                Name: obj.name
+            }
+        });
+
+        var rrsEntry = createTableEntry("RRS:", rrsTable, {});
+
+        var featuresTable = {};
+        var featuresContext = {};
+        // transform feature to table & context
+        Object.keys(IpDnsFeatureInfo).forEach(function(key) {
+            // table
+            var tableKey = keyToTableKey(key);
+            featuresTable[tableKey] = features[key];
+            // context
+            var contextKey = keyToContextKey(key);
+            featuresContext[contextKey] = features[key];
+        });
+
+        var context = {
+            IP: {
+                Address: ip,
+                DNSHistory: {
+                    RRS: rrsTable,
+                    Features: featuresContext
+                }
+            }
+        };
+
+        var featuresEntry = createTableEntry("Features:", featuresTable, context);
+        return [rrsEntry, featuresEntry];
+    }
+
+    var getIpMaliciousDomains = function(ip) {
+        var url = baseURL + '/ips/' + ip + '/latest_domains';
+        var res = sendRequest(url);
+
+        var table = res.map(function(obj) {
+            return {
+                Name: obj.name
+            }
+        });
+
+        var context = {};
+        if (table.length > 0) {
+            context = {
+                Address: ip,
+                Domain: table
+                'Domain/Malicious': table
+            }
+        }
+        return createTableEntry("Malicious Domains:", table, context);
+    }
+
+    switch (command) {
+        case 'test-module':
+            getDomainSearch('www.demisto.com');
+            return 'ok';
+        case 'umbrella-domain-categorization':
+            return getDomainCategorization(args.domain);
+        case 'umbrella-domain-search':
+            return getDomainSearch(args.regex, args.start);
+        case 'umbrella-domain-co-occurrences':
+            return getDomainCooccurrences(args.domain);
+        case 'umbrella-domain-related':
+            return getDomainRelated(args.domain);
+        case 'umbrella-domain-security':
+            return getDomainSecurity(args.domain);
+        case 'umbrella-domain-tags':
+            return getDomainTags(args.domain);
+        case 'umbrella-domain-dns-history':
+            return getDomainDNSHistory(args.domain);
+        case 'umbrella-ip-dns-history':
+            return getIpDNSHistory(args.ip);
+        case 'umbrella-ip-malicious-domains':
+            return getIpMaliciousDomains(args.ip);
+    }
+
+  type: javascript
+  commands:
+  - name: umbrella-domain-categorization
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter the domain you would like to categorize (e.g. amazon.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      importantDescription: ' '
+    - contextPath: Domain.SecurityCategories
+      description: The Umbrella security category, or categories, that match this
+        domain
+    - contextPath: Domain.ContentCategories
+      description: The Umbrella content category or categories that match this domain
+    - contextPath: Domain/Malicious.Name
+      description: Malicious Domain name
+    - contextPath: Domain/Malicious.SecurityCategories
+      description: The Umbrella security category, or categories, that match this
+        malicious domain
+    - contextPath: Domain/Malicious.ContentCategories
+      description: The Umbrella content category, or categories, that match this malicious
+        domain
+    description: Returns the category of a domain. e.g. domain=amazon.com returns
+      Ecommerce/Shopping
+  - name: umbrella-domain-co-occurrences
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.CoOccurrences.Name
+      description: Co-occurrence domain name
+    - contextPath: Domain.CoOccurrences.Score
+      description: Co-occurrence domain score - value range between 0 and 1
+    description: Get a list of related domains back and returns a list of co-occurences
+      for the specified domain. A co-occurrence is when two or more domains are being
+      accessed by the same users within a small window of time. Being a co-occurrence
+      isn't necessarily a bad thing, legitimate sites co-occur with each other as
+      a part of normal web activity. However, unusual or suspicious co-occurence can
+      provide additional information regarding attacks
+  - name: umbrella-domain-related
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Related.Name
+      description: Related domain name
+    - contextPath: Domain.Related.Score
+      description: This is a score reflecting the number of client IPs looking up
+        related sites within 60 seconds of the original request
+    description: This will return a list of domain names that have been frequently
+      seen requested b around the same time (up to 60 seconds before or after) as
+      the given domain name, but that are not frequently associated with other domain
+      names.
+  - name: umbrella-domain-security
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Security.DGA
+      description: Domain Generation Algorithm. This score is generated based on the
+        likeliness of the domain name being generated by an algorithm rather than
+        a human
+    - contextPath: Domain.Security.Perplexity
+      description: A second score on the likeliness of the name to be algorithmically
+        generated, on a scale from 0 to 1
+    - contextPath: Domain.Security.Entropy
+      description: The number of bits required to encode the domain name, as a score
+    - contextPath: Domain.Security.SecureRank
+      description: Suspicious rank for a domain that reviews based on the lookup behavior
+        of client IP for the domain
+    - contextPath: Domain.Security.PageRank
+      description: Popularity according to Google's pagerank algorithm
+    - contextPath: Domain.Security.ASNScore
+      description: ASN reputation score, ranges from -100 to 0 with -100 being very
+        suspicious
+    - contextPath: Domain.Security.PrefixScore
+      description: Prefix ranks domains given their IP prefixes (an IP prefix is the
+        first three octets in an IP address) and the reputation score of these prefixes.
+        Ranges from -100 to 0, -100 being very suspicious
+    - contextPath: Domain.Security.RIPScore
+      description: RIP ranks domains given their IP addresses and the reputation score
+        of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
+    - contextPath: Domain.Security.Popularity
+      description: The number of unique client IPs visiting this site, relative to
+        the all requests to all sites
+    - contextPath: Domain.Security.GeoScore
+      description: A score that represents how far the different physical locations
+        serving this name are from each other
+    - contextPath: Domain.Security.KolmoorovSmirnov
+      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
+        traffic matches what is expected for this TLD
+    - contextPath: Domain.Security.AttackName
+      description: The name of any known attacks associated with this domain, or blank
+        if no known threat
+    - contextPath: Domain.Security.ThreatType
+      description: The type of the known attack, such as botnet or APT, or blank if
+        no known threat
+    description: This contains multiple scores or security features, each of which
+      can be used to determine relevant datapoints to build insight on the reputation
+      or security risk posed by the site. See security information about this specific
+      domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
+  - name: umbrella-domain-tags
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Category
+      description: The Umbrella security category or categories that match this domain
+    - contextPath: Domain.Url
+      description: The full URL containing the malicious code at the domain requested.
+        or null if URL is not available
+    - contextPath: Domain.Period.Begin
+      description: 'The beginning date of domain being added to block list '
+    - contextPath: Domain.Period.End
+      description: The end date of domain being added to block list, if domain is
+        currently blocked - value will be 'Current'
+    description: This command returns the date range when the domain being queried
+      was a part of the Umbrella block list. A common use case is to find how long
+      a domain has been in the block list for domains being blocked currently. However
+      it will also show a record of the history of the domain in the Umbrella block
+      list.
+  - name: umbrella-domain-dns-history
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.DNSHistory.Age
+      description: The day in days between now and the last request for this domain.
+        This value is only useful if present
+    - contextPath: Domain.DNSHistory.TtlsMin
+      description: Minimum amount of time set that DNS records should be cached
+    - contextPath: Domain.DNSHistory.TtlsMax
+      description: Maximum amount of time set that DNS records should be cached
+    - contextPath: Domain.DNSHistory.TtlsMean
+      description: Average amount of time set that DNS records should be cached
+    - contextPath: Domain.DNSHistory.TtlsMedian
+      description: Median amount of time set that DNS records should be cached
+    - contextPath: Domain.DNSHistory.TtlsStddev
+      description: Standard deviation of the amount of time set that DNS records should
+        be cached
+    - contextPath: Domain.DNSHistory.CountryCodes
+      description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
+        to'
+    - contextPath: Domain.DNSHistory.CountryCount
+      description: Number of countries the IPs are hosted in
+    - contextPath: Domain.DNSHistory.Asns
+      description: List of ASN numbers the IPs are in
+    - contextPath: Domain.DNSHistory.AsnsCount
+      description: Number of ASNs the IPs map to
+    - contextPath: Domain.DNSHistory.Prefixes
+      description: List of network prefixes the IPs map to
+    - contextPath: Domain.DNSHistory.PrefixesCount
+      description: Number of network prefixes the IPs map to
+    - contextPath: Domain.DNSHistory.Rips
+      description: Number of IPs seen for the domain name
+    - contextPath: Domain.DNSHistory.DivRips
+      description: The number of prefixes over the number of IPs
+    - contextPath: Domain.DNSHistory.Locations
+      description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
+        mapping to
+    - contextPath: Domain.DNSHistory.LocationsCount
+      description: Number of distinct geo coordinates the IPs are mapping to
+    - contextPath: Domain.DNSHistory.GeoDistanceSum
+      description: Minimum sum of distance between locations, in kilometers
+    - contextPath: Domain.DNSHistory.GeoDistancMean
+      description: Mean distance between the geo median and each location, in kilometers
+    - contextPath: Domain.DNSHistory.MailExchanger
+      description: Boolean, If an MX query for this domain name has been seen
+    - contextPath: Domain.DNSHistory.NonRoutable
+      description: Boolean. If one of the IPs is in a reserved, non-routable IP range
+    - contextPath: Domain.DNSHistory.FfCandidate
+      description: Boolean. If the domain name looks like a candidate for fast flux.
+        This does not necessarily mean the domain is in fast flux, but rather that
+        the IP address the domain resolves to changes rapidly
+    - contextPath: Domain.DNSHistory.RipsStability
+      description: 1.0 divided by the number of times the set of IP addresses changed
+    - contextPath: Domain.DNSHistory.BaseDomain
+      description: The base domain of the requested domain
+    - contextPath: Domain.DNSHistory.IsSubdomain
+      description: Boolean. True if the requested domain is a subdomain of another
+    description: 'The DNS database can be used to query the history that Umbrella
+      has seen for a given domain. The most common use case is to obtain the RRs (Resource
+      Record) history for a given domain, passing in the record query type as a parameter,
+      to help build intelligence around an domain. '
+  - name: umbrella-ip-dns-history
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'Enter an IP Address:'
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.DNSHistory.RRS.Name
+      description: The looked up IP addres
+    - contextPath: IP.DNSHistory.RRS.Class
+      description: DNS class type
+    - contextPath: IP.DNSHistory.RRS.Type
+      description: Query type
+    - contextPath: IP.DNSHistory.RRS.RR
+      description: Resource record owner
+    - contextPath: IP.DNSHistory.RRS.TTL
+      description: Time to live for this record
+    - contextPath: IP.DNSHistory.Feature.RrCount
+      description: Number of records of that type mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld2Count
+      description: Number of 2-level names mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld3Count
+      description: Number of 3-level names mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld21Count
+      description: Number of 2-level names, without the TLD, mapping to the given
+        IP
+    - contextPath: IP.DNSHistory.Feature.Ld22Count
+      description: Number of 3-level names, without the TLD, mapping to the given
+        IP
+    - contextPath: IP.DNSHistory.Feature.DivLd2
+      description: ld2_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd3
+      description: ld3_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd21
+      description: ld2_1_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd22
+      description: ld2_2_count divided by the number of records
+    description: The DNS database can be used to query the history that Umbrella has
+      seen for a given IP address. The most common use case is to obtain the DNS Resource
+      Record (RR) history for a given IP, passing in the record query type as a parameter,
+      to help build intelligence around an IP or a range of IPs. The information provided
+      is from within the last 90 days.
+  - name: umbrella-ip-malicious-domains
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: An IP Address
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain/Malicious.Name
+      description: Malicious domain name
+    description: This command  shows whether the IP address you’ve entered as input
+      has any known malicious domains associated with it. The domains that appear
+      when using this endpoint are those that currently exist in the Umbrella block
+      list. This endpoint will return an array with a single domain name for each
+      domain associated with the IP, along with an id number that can be ignored.
+  - name: umbrella-domain-search
+    arguments:
+    - name: regex
+      required: true
+      default: true
+      description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
+        use double backslash ("\\\\")
+    - name: start
+      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.FirstSeen
+      description: First seen time in Epoch format
+    - contextPath: Domain.FirstSeenISO
+      description: First seen time in ISO format
+    - contextPath: Domain. SecurityCategories
+      description: Matching Umbrella Security Categories
+    description: This produces a list of matching domains based on a regular expression.
+      You could use this for domain squatting. The pattern search functionality in
+      Investigate uses regular expressions (RegEx) to search against the Investigate
+      database. There are several excellent tools online such as http://regexr.com
+      to help if you’re not familiar with building RegEx.
+hidden: false
