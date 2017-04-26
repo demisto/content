@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 96dbf98e-bc4e-4d21-808f-54cf03241207
+    taskid: default-start
     type: start
     task:
-      id: 96dbf98e-bc4e-4d21-808f-54cf03241207
+      id: default-start
       version: -1
       name: start_task
       type: start
@@ -29,10 +29,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 6a0aef28-d546-47af-8947-99f46d77d48a
+    taskid: is-email
     type: condition
     task:
-      id: 6a0aef28-d546-47af-8947-99f46d77d48a
+      id: is-email
       version: -1
       name: Is this an email
       scriptName: Exists
@@ -56,10 +56,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 610f12ea-ce4f-444c-8dfe-3a4ffb6df6f9
+    taskid: splunk-email-parser
     type: regular
     task:
-      id: 610f12ea-ce4f-444c-8dfe-3a4ffb6df6f9
+      id: splunk-email-parser
       version: -1
       name: SplunkEmailParser
       scriptName: SplunkEmailParser
@@ -81,10 +81,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: cda168ea-c74d-40b4-89cb-67014f85409d
+    taskid: nexpose-email-parser
     type: regular
     task:
-      id: cda168ea-c74d-40b4-89cb-67014f85409d
+      id: nexpose-email-parser
       version: -1
       name: NexposeEmailParser
       scriptName: NexposeEmailParser
@@ -103,10 +103,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
+    taskid: sentinelone-email-parser
     type: regular
     task:
-      id: d7ea35bb-e794-4c1a-80d9-24137e2bd9db
+      id: sentinelone-email-parser
       version: -1
       name: Set incident type and playbook to SentinelOne
       scriptName: IncidentSet
@@ -127,7 +127,7 @@ tasks:
       playbook: ""
       severity: ""
       stage: ""
-      type: set-to-sentinelone-type
+      type: ${inputs.SentinelOneType}
       updatePlaybookForType: "yes"
     view: |-
       {
@@ -138,10 +138,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: cf75ade9-a303-4814-8d99-6ec9d09fbc02
+    taskid: incident-set-phishing
     type: regular
     task:
-      id: cf75ade9-a303-4814-8d99-6ec9d09fbc02
+      id: incident-set-phishing
       version: -1
       name: Set type and playbook to Phishing (default type for emails)
       scriptName: IncidentSet
@@ -170,10 +170,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: cedcbabe-7b14-4b7c-843d-60b04f66e9b2
+    taskid: mail-classifier
     type: title
     task:
-      id: cedcbabe-7b14-4b7c-843d-60b04f66e9b2
+      id: mail-classifier
       version: -1
       name: Mail Classifier
       type: title
@@ -191,10 +191,10 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: 40ab3f30-8252-4f50-8aec-dbcd2f85a1ec
+    taskid: brand-classifier
     type: title
     task:
-      id: 40ab3f30-8252-4f50-8aec-dbcd2f85a1ec
+      id: brand-classifier
       version: -1
       name: Classify by Brand
       type: title
@@ -212,10 +212,10 @@ tasks:
       }
   "26":
     id: "26"
-    taskid: f2869c16-1168-482c-87b1-3740a0d6c0a9
+    taskid: qradar-classifier
     type: regular
     task:
-      id: f2869c16-1168-482c-87b1-3740a0d6c0a9
+      id: qradar-classifier
       version: -1
       name: QRadar Classifier
       scriptName: QRadarClassifier
@@ -237,10 +237,10 @@ tasks:
       }
   "27":
     id: "27"
-    taskid: 8bf6dc34-f9e0-4502-829a-995cd5c7332f
+    taskid: branch-by-brand
     type: condition
     task:
-      id: 8bf6dc34-f9e0-4502-829a-995cd5c7332f
+      id: branch-by-brand
       version: -1
       name: Get Brand
       description: Prints text to war room
@@ -268,10 +268,10 @@ tasks:
       }
   "28":
     id: "28"
-    taskid: a4bf35f1-1ba6-41cf-8ecf-963e4342abff
+    taskid: vectra-classifier
     type: regular
     task:
-      id: a4bf35f1-1ba6-41cf-8ecf-963e4342abff
+      id: vectra-classifier
       version: -1
       name: 'Vectra Classifier '
       scriptName: VectraClassifier
@@ -290,10 +290,10 @@ tasks:
       }
   "29":
     id: "29"
-    taskid: 37ef2cf4-f0f1-4f02-8083-c8e9355c3eb7
+    taskid: trend-classifier
     type: regular
     task:
-      id: 37ef2cf4-f0f1-4f02-8083-c8e9355c3eb7
+      id: trend-classifier
       version: -1
       name: Trendmicro Classifier
       scriptName: TrendMicroClassifier
@@ -312,10 +312,10 @@ tasks:
       }
   "30":
     id: "30"
-    taskid: e3e6429a-96e9-4e6a-8fe2-2882c8033ba4
+    taskid: manually-decide
     type: regular
     task:
-      id: e3e6429a-96e9-4e6a-8fe2-2882c8033ba4
+      id: manually-decide
       version: -1
       name: Manually decide playbook
       description: Could not decide incident type automatically, please set playbook
@@ -332,12 +332,12 @@ tasks:
       }
   "33":
     id: "33"
-    taskid: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
+    taskid: get-email-sender-map
     type: condition
     task:
       id: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
       version: -1
-      name: Get Email Sender
+      name: get-email-sender-map
       description: Prints text to war room
       scriptName: MapValues
       type: condition
@@ -365,10 +365,10 @@ tasks:
       }
   "34":
     id: "34"
-    taskid: 5ae67300-d763-4671-8f0c-78a34bb2bb41
+    taskid: incident-has-brand
     type: condition
     task:
-      id: 5ae67300-d763-4671-8f0c-78a34bb2bb41
+      id: incident-has-brand
       version: -1
       name: Does incident include "Brand" label?
       description: Check if a given value exists in the context. Will return 'no'
@@ -393,10 +393,10 @@ tasks:
       }
   "35":
     id: "35"
-    taskid: 5db2091c-bd4b-4827-8318-e26fa57e938c
+    taskid: call-enrichment
     type: playbook
     task:
-      id: 5db2091c-bd4b-4827-8318-e26fa57e938c
+      id: call-enrichment
       version: -1
       name: ""
       playbookName: Enrichment Playbook
@@ -448,3 +448,7 @@ inputs:
   description: 'Option to add custom categories to the classifier, JSON with SIEM
     categories and their Demisto type counterparts. i.e {"SIEMCategory1": "DemistoType1",
     "SIEMCategory2": "DemistoType2"}'
+- key: SentinelOneType
+  value: ""
+  description: If you have SentinelOne, what is the incident type for SentinelOne
+    incidents
