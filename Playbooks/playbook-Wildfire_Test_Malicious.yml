@@ -1,5 +1,5 @@
 id: c9973e73-8735-4e96-8e20-2eeb226316c8
-version: 5
+version: -1
 name: Wildfire - Malicious
 starttaskid: "0"
 tasks:
@@ -9,7 +9,7 @@ tasks:
     type: start
     task:
       id: 10995f6b-340c-4daa-8bea-0b37f5a023f6
-      version: 2
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -29,7 +29,7 @@ tasks:
     type: regular
     task:
       id: d36a7660-72c3-43ed-8db2-a23f0edecbf6
-      version: 1
+      version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using Wildfire
       script: WildFire|||wildfire-report
@@ -54,7 +54,7 @@ tasks:
     type: regular
     task:
       id: d4f6ec79-3976-473f-8c1d-bab9639b3559
-      version: 1
+      version: -1
       name: wildfire-upload
       description: Upload file to wildfire for analysis.
       script: WildFire|||wildfire-upload
@@ -79,7 +79,7 @@ tasks:
     type: regular
     task:
       id: 62cfd790-0ebc-457d-8116-db5d8c636743
-      version: 2
+      version: -1
       name: WhileNotExistLoop
       description: |
         While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
