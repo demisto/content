@@ -115,7 +115,7 @@ script:
                 'Content-Type': ['application/json']
             };
         }
-        body = (body) ? body : {};
+        body = (body) ? body : '';
 
         var api = '/api/now/';
         if (params.api_version) {
