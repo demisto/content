@@ -32,10 +32,10 @@ tasks:
       version: 1
       name: wildfire-report
       description: Retrieve results for a file hash using Wildfire
-      script: WildFire1|||wildfire-report
+      script: WildFire|||wildfire-report
       type: regular
       iscommand: true
-      brand: WildFire1
+      brand: WildFire
     scriptarguments:
       format: json
       hash: ""
@@ -57,10 +57,10 @@ tasks:
       version: 1
       name: wildfire-upload
       description: Upload file to wildfire for analysis.
-      script: WildFire1|||wildfire-upload
+      script: WildFire|||wildfire-upload
       type: regular
       iscommand: true
-      brand: WildFire1
+      brand: WildFire
     nexttasks:
       '#none#':
       - "4"
