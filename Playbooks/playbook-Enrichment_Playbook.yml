@@ -51,10 +51,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: dcc3f55d-363e-43e5-8c6f-e06d8ad05616
+    taskid: collect-hashes
     type: regular
     task:
-      id: dcc3f55d-363e-43e5-8c6f-e06d8ad05616
+      id: collect-hashes
       version: -1
       name: Collect Hashes from Incident
       scriptName: ExtractHash
@@ -75,10 +75,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: f71ff25a-89d4-450f-8a31-405a1c04bd9d
+    taskid: collect-urls
     type: regular
     task:
-      id: f71ff25a-89d4-450f-8a31-405a1c04bd9d
+      id: collect-urls
       version: -1
       name: Collect URLs from Incident
       scriptName: ExtractURL
@@ -99,10 +99,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 32791778-d581-4cb4-8f9e-ec3f2cadb002
+    taskid: collect-ips
     type: regular
     task:
-      id: 32791778-d581-4cb4-8f9e-ec3f2cadb002
+      id: collect-ips
       version: -1
       name: Collect IPs from Incident
       scriptName: ExtractIP
@@ -222,7 +222,7 @@ tasks:
     task:
       id: enrich-done
       version: -1
-      name: Done
+      name: Enrichment Done
       scriptName: Print
       type: regular
       iscommand: false
