@@ -534,6 +534,20 @@ script: |-
       return res;
   }
 
+  /**
+   * Get list data which is comma-separated into an array
+   * @param {String} listName - the name of the list
+   * @returns {Array} the list as an array
+   */
+  function getCSVListAsArray(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          var data = res[0].Contents.split(',');
+          return data.filter(function(v) {return v;}).map(function(v) {return v.trim();});
+      }
+      return [];
+  }
+
   var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
