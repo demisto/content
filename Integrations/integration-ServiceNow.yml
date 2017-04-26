@@ -112,10 +112,11 @@ script:
         if (!headers) {
             headers = {
                 'Accept': ['application/json'],
-                'Content-Type': ['application/json']
+                'Content-Type': ['application/json'],
             };
         }
-        body = (body)?body:'';
+        body = (body) ? body : {};
+
         var api = '/api/now/';
         if (params.api_version) {
             api += params.api_version + '/';
@@ -124,7 +125,7 @@ script:
 
         var res;
         if (file_id) {
-            res = httpMultipart(url,file_id,{Method: 'POST',Headers: headers, Username: username,Password: password},{},params.insecure,params.proxy);
+            res = httpMultipart(url,file_id,{Headers: headers, Username: username,Password: password},body,params.insecure,params.proxy,false,'uploadFile', body.file_name);
         } else {
             res = http(url,{Method: method,Headers: headers,Body: body, Username: username,Password: password},params.insecure,params.proxy);
         }
@@ -334,6 +335,32 @@ script:
         return sertime;
     }
 
+    var incidentUploadFile = function(){
+        var headers = {
+            'Accept': ['application/json'],
+            'Content-Type': ['multipart/form-data']
+            };
+        var body = {
+            table_name:'incident',
+            table_sys_id: args['id']
+        };
+        if (args.file_name) {
+            body.file_name = args['file_name'];
+        } else {
+            body.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
+        }
+        body.file_name = (Array.isArray(body.file_name)) ? body.file_name[0]: body.file_name;
+
+        var path = "attachment/upload";
+        var res = sendRequest('POST',path,headers,body,args.file_id);
+
+        var result = res.obj.result;
+        var md='### File uploaded\n';
+        md += dataToMd(command,result);
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': result, "HumanReadable": md} );
+    }
+
 
     var fetchIncidents = function() {
         var parameters={};
@@ -385,25 +412,6 @@ script:
         return (JSON.stringify(incidents));
     }
 
-    var incidentUploadFile = function(){
-        var parameters={};
-        parameters.table_name='incident';
-        parameters.table_sys_id = args['id'];
-        if (args.file_name) {
-            parameters.file_name = args['file_name'];
-        } else {
-            parameters.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
-        }
-
-        var path = "attachment/file" + encodeToURLQuery(parameters);
-        var res = sendRequest('POST',path,null,null,args.file_id);
-
-        var result = res.obj.result;
-        var md='### File uploaded\n';
-        md += dataToMd(command,result);
-
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': result, "HumanReadable": md} );
-    }
 
     switch (command) {
         case "servicenow-incidents-get-incident":
