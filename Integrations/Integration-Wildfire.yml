@@ -103,12 +103,6 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    /*MD table with title "Wildfire Report", starting at 'wildfire'
-    In content, File Entity object with the relevant field from the integration.
-    a. if file is malicious, context name is File/Malicious else File
-    */
-
-    //var contextFunc = function(body){}
     var resToMD = function(body, title) {
         return tblToMd(title, body, Object.keys(body));
     };
