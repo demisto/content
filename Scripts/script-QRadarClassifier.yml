@@ -39,7 +39,7 @@ script: |
       CONTEXT_OUTPUT = args.contextOutput;
   }
 
-  var QUERY = "SELECT CATEGORYNAME(highlevelcategory) FROM events WHERE INOFFENSE({0}) AND \"CRE Name\"<>NULL START {1}";
+  var QUERY = "SELECT CATEGORYNAME(highlevelcategory) FROM events WHERE INOFFENSE({0}) START {1}";
 
   var incident = incidents[0];
 
