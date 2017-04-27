@@ -223,7 +223,7 @@ script:
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
                 var analysis = result.obj.data.analysis_subject;
-                ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
+                ec[outputPaths.fileMalicious]={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
                 dbotScore.score=3;
             } else {
                 dbotScore.score=1;
@@ -270,7 +270,7 @@ script:
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
-                ec['URL/Malicious']=url;
+                ec[outputPaths.urlMalicious]=url;
                 dbotScore.score=3;
             } else {
                 dbotScore.score=1;
@@ -324,7 +324,7 @@ script:
         var dbotScore = {indicator: hash, type: 'hash', vendor: 'Lastline', score: 0};
         if (result.obj.data.score > threshold) {
             var analysis = result.obj.data.analysis_subject;
-            ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
+            ec[outputPaths.fileMalicious]={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
             dbotScore.score= 3;
         } else {
             dbotScore.score= 1;
@@ -361,7 +361,7 @@ script:
                 dbotScore.type = 'url';
                 dbotScore.indicator = analysis.url;
                 if (result.obj.data.score > threshold) {
-                    ec['URL/Malicious']={url:analysis.url,score:result.obj.data.score};
+                    ec[outputPaths.urlMalicious]={url:analysis.url,score:result.obj.data.score};
                     dbotScore.score = 3;
                 } else {
                     dbotScore.score = 1;
@@ -370,7 +370,7 @@ script:
                 dbotScore.type = 'hash';
                 dbotScore.indicator = analysis.md5;
                 if (result.obj.data.score > threshold) {
-                    ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
+                    ec[outputPaths.fileMalicious]={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
                     dbotScore.score = 3;
                 } else {
                     dbotScore.score = 1;
@@ -426,20 +426,12 @@ script:
     outputs:
     - contextPath: URL/Malicious
       description: List of malicious URLs identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious URLs identified by Lastline analysis
     - contextPath: File/Malicious.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: File/Malicious.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: File/Malicious.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -448,6 +440,13 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: URL/Malicious
+      description: Malicious URLs
+      related: URL
+    - contextPath: File/Malicious
+      description: Malicious Files
+      related: File
     description: Get analysis report
   - name: url
     arguments:
@@ -475,8 +474,6 @@ script:
       description: List of the submitted Lastline analysis tasks
     - contextPath: URL/Malicious
       description: List of malicious URLs identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious URLs identified by Lastline analysis
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -485,6 +482,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: URL/Malicious
+      description: Malicious URLs
+      related: URL
     description: Submit URL for analysis
   - name: file
     arguments:
@@ -498,16 +499,10 @@ script:
     outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: File/Malicious.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: File/Malicious.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -516,6 +511,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: File/Malicious
+      description: Malicious Files
+      related: File
     description: Submit a file for analysis
   - name: lastlineUpload
     arguments:
