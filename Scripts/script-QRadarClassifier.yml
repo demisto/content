@@ -104,5 +104,6 @@ dependson:
 outputs:
 - contextPath: Classifier/Description
   description: The QRadar offense 'High level category'
-  important: true
-  importantDescription: The QRadar offense 'High level category'
+important:
+- contextPath: Classifier/Description
+  description: The QRadar offense 'High level category'

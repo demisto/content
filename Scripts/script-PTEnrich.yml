@@ -38,24 +38,14 @@ outputs:
   description: The various resolves from the passive DNS collection
 - contextPath: IP/Malicious.Address
   description: Bad IPs found during enrichment
-  important: true
-  importantDescription: Bad IPs found during enrichment
 - contextPath: Domain/Malicious.Name
   description: Bad domains found during enrichment
-  important: true
-  importantDescription: Bad domains found during enrichment
 - contextPath: File/Malicious.MD5
   description: Bad hash MD5
-  important: true
-  importantDescription: Bad hashes found querying X-Force
 - contextPath: File/Malicious.SHA1
   description: Bad hash SHA1
-  important: true
-  importantDescription: Bad hashes found querying X-Force
 - contextPath: File/Malicious.SHA256
   description: Bad hash SHA256
-  important: true
-  importantDescription: Bad hashes found querying X-Force
 - contextPath: dbotScore.indicator
   description: The indicator we tested
 - contextPath: dbotScore.type
@@ -64,6 +54,16 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: dbotScore.score
   description: The actual score
+important:
+- contextPath: File/Malicious
+  description: Malicious Files
+  related: File
+- contextPath: IP/Malicious
+  description: Malicious IPs
+  related: IP
+- contextPath: Domain/Malicious
+  description: Malicious Domains
+  related: Domain
 scripttarget: 0
 dependson:
   must:
