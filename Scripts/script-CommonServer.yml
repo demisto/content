@@ -7,7 +7,7 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
-  
+
   /**
    * Formats a string in place
    * @returns {String} the formatted string
@@ -98,11 +98,11 @@ script: |-
       }
 
       //in case of headers was not provided (backward compatibility)
-      if ((!headers || !headers instanceof Array) && t && t.length > 0){
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
           headers = Object.keys(t[0]);
       }
 
-      if(!headers || !headers instanceof Array || !!headers.length) {
+      if(!headers || !headers instanceof Array || headers.length === 0) {
           return 'No data returned\n';
       }
 
@@ -532,6 +532,37 @@ script: |-
           res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
       }
       return res;
+  }
+
+  /**
+   * Get list data which is comma-separated into an array
+   * @param {String} listName - the name of the list
+   * @returns {Array} the list as an array
+   */
+  function getCSVListAsArray(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          var data = res[0].Contents.split(',');
+          return data.filter(function(v) {return v;}).map(function(v) {return v.trim();});
+      }
+      return [];
+  }
+
+  /**
+   * Get list data which is JSON format into an object that can be an array as well
+   * @param {String} listName - the name of the list
+   * @returns {Object} the list as an object
+   */
+  function getJSONListAsObject(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          try {
+              return JSON.parse(res[0].Contents);
+          } catch (ex) {
+              throw 'Error parsing list - ' + res[0].Contents + ' - ' + ex;
+          }
+      }
+      return null;
   }
 
   var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};

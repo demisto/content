@@ -2,6 +2,7 @@ commonfields:
   id: JiraIssueAddComment
   version: -1
 name: JiraIssueAddComment
+deprecated: true
 script: |2
 
   resp = demisto.executeCommand("jira-issue-add-comment", demisto.args())
