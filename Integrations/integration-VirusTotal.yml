@@ -93,7 +93,7 @@ script:
         var md = '';
         var ec = {};
         ec.dbotScore = [];
-        ec['File/Malicious'] = [];
+        ec[outputPaths.fileMalicious] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
@@ -102,7 +102,7 @@ script:
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
-                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
+                ec[outputPaths.fileMalicious].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
             } else if (r[i].positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -161,7 +161,7 @@ script:
         var dbotScore = 0;
         if (badDownloads >= threshold) {
             dbotScore = 3;
-            ec['IP/Malicious'] = {Address: ip, ASN: o.asn, Geo: {Country: o.country}};
+            ec[outputPaths.ipMalicious] = {Address: ip, ASN: o.asn, Geo: {Country: o.country}};
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
@@ -241,7 +241,7 @@ script:
             var dbotScore = 0;
             if (o.positives >= threshold) {
                 dbotScore = 3;
-                ec['URL/Malicious'] = url;
+                ec[outputPaths.urlMalicious] = url;
             } else if (o.positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -272,7 +272,7 @@ script:
         var dbotScore = 0;
         if (badDownloads >= threshold) {
             dbotScore = 3;
-            ec['Domain/Malicious'] = {Name: domain};
+            ec[outputPaths.domainMalicious] = {Name: domain};
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
@@ -445,16 +445,10 @@ script:
     outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash found
-      important: true
-      importantDescription: Bad hashes found querying VirusTotal
     - contextPath: File/Malicious.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: Bad hashes found querying VirusTotal
     - contextPath: File/Malicious.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: Bad hashes found querying VirusTotal
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -463,6 +457,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: File/Malicious
+      description: Malicious Files
+      related: File
     description: Check file reputation of the given hash
   - name: ip
     deprecated: false
@@ -489,8 +487,6 @@ script:
     outputs:
     - contextPath: IP/Malicious.Address
       description: Bad IP Address found
-      important: true
-      importantDescription: Bad IPs found querying VirusTotal
     - contextPath: IP/Malicious.ASN
       description: Bad IP ASN
     - contextPath: IP/Malicious.Geo.Country
@@ -503,6 +499,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: IP/Malicious
+      description: Malicious IPs
+      related: IP
     description: Check IP Reputation
   - name: url
     deprecated: false
@@ -531,8 +531,6 @@ script:
     outputs:
     - contextPath: URL/Malicious
       description: Bad URLs found
-      important: true
-      importantDescription: Bad URLs found querying VirusTotal
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -541,6 +539,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: URL/Malicious
+      description: Malicious URLs
+      related: URL
     description: Check URL Reputation
   - name: domain
     deprecated: false
@@ -567,8 +569,6 @@ script:
     outputs:
     - contextPath: Domain/Malicious.Name
       description: Bad domain found
-      important: true
-      importantDescription: Bad domain found querying VirusTotal
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -577,6 +577,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: Domain/Malicious
+      description: Malicious Domains
+      related: Domain
     description: Check domain reputation
   - name: file-scan
     deprecated: false

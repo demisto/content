@@ -258,27 +258,27 @@ script:
 
     var doFile = function(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
-            ec['File/Malicious'] = {};
+            ec[outputPaths.fileMalicious] = {};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
-            ec['File/Malicious'][hashType] = hash;
+            ec[outputPaths.fileMalicious][hashType] = hash;
         });
     };
 
     var doIP = function(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
-            ec['IP/Malicious'] = {Address: ip};
+            ec[outputPaths.ipMalicious] = {Address: ip};
         });
     };
 
     var doURL = function(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
-            ec['URL/Malicious'] = url;
+            ec[outputPaths.urlMalicious] = url;
         });
     };
 
     var doDomain = function(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
-            ec['Domain/Malicious'] = {Name: domain};
+            ec[outputPaths.domainMalicious] = {Name: domain};
         });
     };
 
@@ -367,16 +367,10 @@ script:
     outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
     - contextPath: File/Malicious.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
     - contextPath: File/Malicious.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -385,6 +379,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: File/Malicious
+      description: Malicious Files
+      related: File
     description: Check file reputation
   - name: url
     deprecated: false
@@ -397,8 +395,6 @@ script:
     outputs:
     - contextPath: URL/Malicious
       description: Bad URL
-      important: true
-      importantDescription: Bad URLs found querying Falcon Intel
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -407,6 +403,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: URL/Malicious
+      description: Malicious URLs
+      related: URL
     description: Check the given URL reputation
   - name: domain
     deprecated: false
@@ -419,8 +419,6 @@ script:
     outputs:
     - contextPath: Domain/Malicious.Name
       description: Bad domain
-      important: true
-      importantDescription: Bad domains found querying Falcon Intel
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -429,6 +427,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: Domain/Malicious
+      description: Malicious Domains
+      related: Domain
     description: Check the given URL reputation
   - name: ip
     deprecated: false
@@ -441,8 +443,6 @@ script:
     outputs:
     - contextPath: IP/Malicious.Address
       description: Bad IP
-      important: true
-      importantDescription: Bad IPs found querying Falcon Intel
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -451,6 +451,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: IP/Malicious
+      description: Malicious IPs
+      related: IP
     description: Check IP reputation
   - name: cs-actors
     deprecated: false

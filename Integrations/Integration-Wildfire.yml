@@ -150,7 +150,7 @@ script:
         if (file_info) {
             if (file_info.malware === 'yes') {
                 context.dbotScore.score = 3;
-                context['File/Malicious'] = {
+                context[outputPaths.fileMalicious] = {
                                                 Type : file_info.filetype,
                                                 MD5 : file_info.md5,
                                                 SHA1 : file_info.sha1,
@@ -233,16 +233,10 @@ script:
       description: File size
     - contextPath: File/Malicious.MD5
       description: MD5 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
     - contextPath: File/Malicious.SHA1
       description: SHA1 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
     - contextPath: File/Malicious.SHA256
       description: SHA256 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -251,6 +245,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
+    important:
+    - contextPath: File/Malicious
+      description: Malicious Files
+      related: File
     description: Retrieve results for a file hash using Wildfire
   - name: file
     description: Retrieve results for a file hash using Wildfire

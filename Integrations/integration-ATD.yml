@@ -115,7 +115,7 @@ script:
                 context.dbotScore.type = 'hash';
                 if (subject.Verdict.Severity > 3) {
                     context.dbotScore.score = 3;
-                    context['File/Malicious'] = {
+                    context[outputPaths.fileMalicious] = {
                                                 Type : subject.Type,
                                                 MD5 : subject.md5,
                                                 SHA1 : subject['sha-1'],
@@ -508,16 +508,10 @@ script:
       description: File size (only in case of report type=json)
     - contextPath: File/Malicious.MD5
       description: MD5 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
     - contextPath: File/Malicious.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
     - contextPath: File/Malicious.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
     - contextPath: dbotScore.indicator
       description: The indicator we tested (only in case of report type=json)
     - contextPath: dbotScore.type
@@ -526,6 +520,10 @@ script:
       description: Vendor used to calculate the score (only in case of report type=json)
     - contextPath: dbotScore.score
       description: The actual score (only in case of report type=json)
+    important:
+    - contextPath: File/Malicious
+      description: Malicious files
+      related: File
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []

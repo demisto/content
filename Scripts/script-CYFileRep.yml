@@ -56,16 +56,10 @@ args:
 outputs:
 - contextPath: File/Malicious.MD5
   description: Bad hash MD5
-  important: true
-  importantDescription: Bad hashes found querying Cylance
 - contextPath: File/Malicious.SHA1
   description: Bad hash SHA1
-  important: true
-  importantDescription: Bad hashes found querying Cylance
 - contextPath: File/Malicious.SHA256
   description: Bad hash SHA256
-  important: true
-  importantDescription: Bad hashes found querying Cylance
 - contextPath: dbotScore.indicator
   description: The indicator we tested
 - contextPath: dbotScore.type
@@ -74,6 +68,10 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: dbotScore.score
   description: The actual score
+important:
+- contextPath: File/Malicious
+  description: Malicious Files
+  related: File
 scripttarget: 0
 dependson:
   must:
