@@ -40,5 +40,5 @@ args:
   default: true
   description: Context path (e.g. 'Incidents')
 - name: fields
-  description: Comma separated values to verify that are in context(e.g. 'one,to,three')
+  description: Comma separated values to verify that are in context(e.g. 'one,two,three')
 scripttarget: 0
