@@ -1,0 +1,52 @@
+commonfields:
+  id: GoogleSearch
+  version: -1
+name: GoogleSearch
+display: GoogleSearch
+fromversion: 2.5.0
+category: Utilities
+image: data:image/png;base64,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
+description: Search Google
+configuration:
+- display: Number of pages to retrieve
+  name: pages
+  defaultvalue: "3"
+  type: 0
+  required: true
+script:
+  script: |
+    from google import google
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == "googlesearch":
+        results = google.search(demisto.args()["q"], int(demisto.params()["pages"]))
+        i = 1;
+        ec = {};
+        if (results):
+            md = "### Google results for "+demisto.args()["q"]+"\n"
+            for res in results:
+                md += "#### "+str(i) + " - " + res.name+"\n"
+                md += "["+res.link+"]("+res.link+")\n"
+                md += res.description + "\n\n\n"
+                i += 1
+        else:
+            md = "### No results\n"
+
+        demisto.results( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': {}, "HumanReadable": md, "EntryContext": ec} );
+
+    if demisto.command() == 'test-module':
+        results = google.search("demisto", 1)
+        if (results):
+            demisto.results('ok')
+        else:
+            demisto.results('error')
+        sys.exit(0)
+  type: python
+  commands:
+  - name: googlesearch
+    arguments:
+    - name: q
+      required: true
+      default: true
+  dockerimage: demisto/googlesearch
+hidden: false
+system: true
