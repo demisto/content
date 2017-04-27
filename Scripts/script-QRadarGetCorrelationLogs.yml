@@ -1,0 +1,47 @@
+commonfields:
+  id: QRadarGetCorrelationLogs1be
+  version: -1
+name: QRadarGetCorrelationLogs
+script: |-
+  QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid) from events where \"CRE Name\" IS NULL AND INOFFENSE({1}) START '{2}'"
+
+  d_args = demisto.args()
+
+  offense_id = demisto.get(d_args, 'offenseID')
+  start_time = demisto.get(d_args, 'startTime')
+  correlation_id = demisto.get(d_args, 'qid')
+
+  d_args["query_expression"] = QUERY.format(correlation_id,offense_id,start_time)
+
+  demisto.results(demisto.executeCommand('QRadarFullSearch',d_args))
+type: python
+tags:
+- QRadar
+comment: Return the QRadar Correlation logs if exist
+system: true
+args:
+- name: offenseID
+  required: true
+  default: true
+  description: The offense ID to query, can be found in label under ${incident.labels.id}
+- name: startTime
+  required: true
+  description: The offense startTime to query (in timestamp format), can be found
+    in label under ${incident.labels.id}
+- name: headers
+  description: Table headers
+- name: range
+  description: Number of results in return
+- name: interval
+  description: Interval to poll for results. Default is 10 seconds.
+- name: timeout
+  description: Timeout in seconds. Default is 10 minutes.
+- name: fields
+  description: Fields to filter in
+- name: qid
+  required: true
+  description: The Correlation QID to query, can be found under ${Correlation.QID}
+scripttarget: 0
+dependson:
+  must:
+  - qradar-searches
