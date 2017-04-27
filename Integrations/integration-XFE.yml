@@ -507,3 +507,4 @@ script:
       description: The CVE description
     description: Return the latest vulnerabilities found
 hidden: false
+fromversion: 2.5.0

@@ -69,7 +69,7 @@ script:
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
-        if (!Array.isArray(obj) && obj.response_code !== 1) {
+        if (!Array.isArray(obj) && obj.response_code !== 1 && obj.response_code !== 0) {
             throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
         }
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
@@ -80,6 +80,10 @@ script:
             threshold = 10;
         }
         var res = doReq('POST', 'file/report', {resource: hash});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
+        }
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
             r = res.obj;
@@ -98,7 +102,7 @@ script:
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
-                ec['File/Malicious'].push({MD5: r[i].md5});
+                ec['File/Malicious'].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
             } else if (r[i].positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -136,8 +140,8 @@ script:
     }
 
     var doIP = function(ip, longFormat, threshold, sampleSize) {
-        if (!isIp(ip)) {
-            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IPv4', ContentsFormat: formats.text};
+        if (!isValidIP(ip)) {
+            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
         if (!threshold) {
             threshold = 10;
@@ -146,6 +150,10 @@ script:
             sampleSize = 10;
         }
         var res = doReq('GET', 'ip-address/report', {ip: ip});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+        }
         var o = res.obj;
         var ec = {};
         // Calculate score based on recently found downloads
@@ -198,6 +206,10 @@ script:
             threshold = 10;
         }
         var res = doReq('POST', 'url/report', {resource: url, scan:1});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
+        }
 
         var o = res.obj;
         var ec = {};
@@ -248,6 +260,10 @@ script:
             threshold = 10;
         }
         var res = doReq('GET', 'domain/report', {domain: domain});
+        if (res.obj.response_code === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
+        }
         var o = res.obj;
         var ec = {};
 
@@ -429,6 +445,14 @@ script:
     outputs:
     - contextPath: File/Malicious.MD5
       description: Bad hash found
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
       important: true
       importantDescription: Bad hashes found querying VirusTotal
     - contextPath: dbotScore.indicator
@@ -621,3 +645,4 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
 hidden: false
+fromversion: 2.5.0

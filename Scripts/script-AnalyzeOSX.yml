@@ -65,4 +65,5 @@ dependson:
   must:
   - file
   - url
+  - Osxcollector
 timeout: 0s

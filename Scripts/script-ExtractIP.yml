@@ -3,10 +3,17 @@ commonfields:
   version: -1
 name: ExtractIP
 script: |-
+  var text = args.text;
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+  }
   var matches = [], found;
   var reg = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
-  while (found = reg.exec(args.text)) {
-      matches.push(found[0]);
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+  while (found = reg.exec(text)) {
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches.push(found[0]);
+      }
   }
   var ec = {IP: []};
   var md = '### Extract IP\n';
@@ -21,14 +28,14 @@ type: javascript
 tags:
 - Utility
 comment: Extract IPs from the given text and place them both as output and in the
-  context of a playbook
+  context of a playbook.
 system: true
 enabled: true
 args:
 - name: text
   required: true
   default: true
-  description: The text to extract ip from
+  description: The text to extract ip from. If object will convert to JSON.
 outputs:
 - contextPath: IP.Address
   description: Extracted IPs

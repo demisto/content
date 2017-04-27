@@ -162,7 +162,11 @@ script:
                     context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 1}
                 }
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+            var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+            if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
+                fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
+            }
+            return fullResult;
         case 'pt-malware':
             var md = '## PassiveTotal Malware Report for: ' + args.query + '\n';
             var context = {};
@@ -211,9 +215,9 @@ script:
                 if (recentSampleCount >= args.threshold) {
                     dbotScore = 3;
                     if (isIp(args.query)) {
-                        ec['IP/Malicious'] = {Address: args.query};
+                        context['IP/Malicious'] = {Address: args.query};
                     } else {
-                        ec['Domain/Malicious'] = {Name: args.query};
+                        context['Domain/Malicious'] = {Name: args.query};
                     }
                 } else if (recentSampleCount >= args.threshold / 2) {
                     dbotScore = 2;

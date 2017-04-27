@@ -35,5 +35,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - scan-launch
+  - Nessus|||scan-launch
 timeout: 0s

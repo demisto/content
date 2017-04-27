@@ -55,7 +55,7 @@ script: |
     d = {};
     for (var k in jsonSavedAction)
       if (fieldsToDisplay.indexOf(k)>-1)
-        d[k] = JSON.stringify(jsonSavedAction[k]);
+        d[k] = jsonSavedAction[k];
     return d;
   }
 
@@ -63,13 +63,14 @@ script: |
   getObjArgs["object-data"] = requestPendingObjects;
 
   var res = executeCommand('tn-get-object', getObjArgs);
-  var table = {
+  var entry = {
       Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
   };
 
-  
   responseData = res[0].Contents.Envelope.Body.return.result_object;
   respObj = JSON.parse(responseData);
   var savedActions = [];
@@ -107,8 +108,10 @@ script: |
       return "No actions were approved.";
   else {
       for (var i=0; i < approvedSummary.length; i++)
-          table.Contents.push(formatAsRow(approvedSummary[i],fieldsToDisplay));
-      return table;
+          entry.Contents.push(formatAsRow(approvedSummary[i],fieldsToDisplay));
+
+      entry.HumanReadable = tableToMarkdown("Tanium approve pending actions", entry.Contents, null);
+      return entry;
   }
 type: javascript
 tags:

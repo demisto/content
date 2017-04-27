@@ -54,5 +54,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - search
+  - splunk|||search
 timeout: 0s

@@ -55,5 +55,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - observation-pcap-download
+  - ProtectWise|||observation-pcap-download
 timeout: 3.6µs

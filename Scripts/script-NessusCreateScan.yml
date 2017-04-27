@@ -72,5 +72,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - scan-create
+  - Nessus|||scan-create
 timeout: 0s

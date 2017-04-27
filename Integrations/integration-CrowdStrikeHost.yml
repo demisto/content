@@ -58,22 +58,35 @@ script:
             params.insecure,
             params.useproxy
         );
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            if (result.StatusCode === 404 && result.Body.indexOf('Resource Not Found') > -1) {
+                    // Skip this error - it just means query returned no results. Handle as no results.
+            } else {
+                throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+            }
         }
+
+
         if (result.Body === '') {
-            throw 'No content recieved.';
+            throw 'No content received.';
+        } else
+        {
+            var obj;
+            try {
+                obj = JSON.parse(result.Body);
+            } catch (ex) {
+                throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+            }
+
+            if (obj.errors && obj.errors.length > 0) {
+                if (dq(obj, 'errors.[0].code') === 404 && dq(obj, 'errors.[0].message').indexOf('Resource Not Found') > -1) {
+                    // Skip this error - it just means query returned no results. Handle as no results.
+                } else {
+                    throw JSON.stringify(obj.errors);
+                }
+            }
+            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
         }
-        var obj;
-        try {
-            obj = JSON.parse(result.Body);
-        } catch (ex) {
-            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
-        }
-        if (obj.errors && obj.errors.length > 0) {
-            throw JSON.stringify(obj.errors);
-        }
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
     var dateToEpoch = function(d) {
@@ -645,3 +658,4 @@ script:
       IDs from the Falcon Host UI or from the Falcon Streaming API.
     execution: true
 hidden: false
+fromversion: 2.5.0
