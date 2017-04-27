@@ -1,7 +1,7 @@
 commonfields:
-  id: ReadFile1
+  id: ReadFile
   version: -1
-name: ReadFile1
+name: ReadFile
 script: |-
   maxFileSize = demisto.get(demisto.args(), 'maxFileSize')
   if maxFileSize:
