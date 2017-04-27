@@ -9,8 +9,11 @@ script: |-
   }
   var matches = [], found;
   var reg = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
-      matches.push(found[0]);
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches.push(found[0]);
+      }
   }
   var ec = {IP: []};
   var md = '### Extract IP\n';
