@@ -1,6 +1,6 @@
 commonfields:
-  id: 621defb8-bfb6-4f03-898f-699442880b37
-  version: 6
+  id: AddEvidence
+  version: -1
 name: AddEvidence
 fromversion: 2.5.0
 script: |-
@@ -14,13 +14,20 @@ script: |-
   for (var i=0;i<entryIDs.length;i++) {
       var entryID = entryIDs[i];
       entries = executeCommand('getEntry', {'id': entryID});
-      entries = (Array.isArray(entries)) ? entries : [entries];
-      for (var j=0;j<entries.length;j++){
-          var ent=entries[j];
-          if (((ent.ContentsFormat == 'table' || ent.ContentsFormat == 'markdown') && ent.Contents) || ent.Type == entryTypes['file']) {
-              executeCommand('markAsEvidence', {'id': entryID, 'description': desc})
+      if (isValidRes(entries)) {
+          for (var j=0;j<entries.length;j++){
+              var ent=entries[j];
+              if (((ent.ContentsFormat == 'table' || ent.ContentsFormat == 'markdown') && ent.Contents) || ent.Type == entryTypes['file']) {
+                  var res = executeCommand('markAsEvidence', {'id': entryID, 'description': desc});
+                  if (!isValidRes(res)) {
+                      return res;
+                  }
+              }
           }
+      } else {
+          return entries;
       }
+
   }
 
   return "Entry ID " + entryIDs + " added to evidence";
@@ -28,7 +35,7 @@ type: javascript
 tags:
 - Utility
 comment: |
-  Adds provided entries to the incident Evidence Board. In playbook. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+  Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
 enabled: true
 args:
 - name: entryIDs
