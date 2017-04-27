@@ -298,6 +298,7 @@ script:
         var res = doReq('GET', 'vulnerabilities', {limit: limit});
         var o = res.obj;
         var md = '## X-Force Latest CVEs\n';
+        var context = {};
         var ec = [];
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {

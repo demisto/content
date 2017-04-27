@@ -106,4 +106,4 @@ outputs:
   description: The QRadar offense 'High level category'
 important:
 - contextPath: Classifier/Description
-  description: The QRadar offense 'High level category'
+  description: Classifier Description
