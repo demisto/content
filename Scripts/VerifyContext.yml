@@ -8,13 +8,17 @@ script: |-
 
   var verifyFields = function(obj) {
       fields.forEach(function(field) {
-          if(obj[field] === undefined) {
+          if(dq(obj, field) === undefined) {
               throw 'field ' + field + ' is missing from ' + JSON.stringify(obj);
           }
       });
   }
 
-  var contextObject = verifyContextField(path);
+  var contextObject = dq(invContext, path);
+  if(contextObject === undefined) {
+        throw 'path ' + path + ' is not in context';
+  }
+
   var isArray = contextObject instanceof Array;
 
   if(isArray) {
@@ -24,7 +28,11 @@ script: |-
   }
 type: javascript
 tags:
-- Utilities
+- context
+comment: |-
+  Verify path exists in context.
+  If matching object is array - verify fields exists in each object in array.
+  If matching object is not array - verify fields exists in matching object.
 enabled: true
 args:
 - name: path
