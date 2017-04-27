@@ -41,7 +41,7 @@ script:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
     demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'Unrecognized command'})
-  type: python
+  type: python 
   commands:
   - name: rasterize
     arguments:
