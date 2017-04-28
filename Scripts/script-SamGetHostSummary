@@ -1,0 +1,55 @@
+commonfields:
+  id: db03e3dd-987c-47c3-83be-27391132765a
+  version: 29
+name: SamGetHostSummary
+script: |
+  computers = []
+  hostnames = []
+
+  if ',' in demisto.args()['q']:
+      hostnames = demisto.args()['q'].split(',')
+  else:
+      hostnames.append(demisto.args()['q'])
+
+  for i in range(len(hostnames)):
+      res = demisto.executeCommand( 'sam-hardware', { 'param' : 'name', 'query' : hostnames[i] } )
+
+      if demisto.get(res[i], 'Contents.id') == None:
+          continue
+
+      for i in range(len(res)):
+          hostname = str(demisto.get(res[i], 'Contents.name'))
+          category = str(demisto.get(res[i], 'Contents.category.name'))
+          model = str(demisto.get(res[i], 'Contents.model'))
+          os = str(demisto.get(res[i], 'Contents.operating_system'))
+          os_ver = str(demisto.get(res[i], 'Contents.operating_system_version'))
+          timestamp = str(demisto.get(res[i], 'Contents.updated_at'))
+          networks = demisto.get(res[i], 'Contents.networks')
+
+          network = ''
+          for j in range(len(networks)):
+              nic = demisto.get(networks[j], 'status')
+              if demisto.get(networks[j], 'status') == 'Up':
+                  mac = demisto.get(networks[j], 'mac_address')
+                  ip_address = demisto.get(networks[j], 'dhcp')
+                  if ip_address and ip_address!='0.0.0.0':
+                      network = network + ip_address + "\n" + mac + "\n"
+
+          computers.append( { 'hostname' : hostname, 'type' : category, 'model' : model, 'network' : network, 'os' : os + "\n" + os_ver, 'updated_at' : timestamp[:-19] } )
+
+  if computers:
+      demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': computers } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : 'No results found' } )
+type: python
+tags:
+- samanage
+enabled: true
+args:
+- name: q
+  required: true
+  default: true
+  description: Hostname(s) to query for. Wildcards and CSV accepted.
+scripttarget: 0
+dependson: {}
+timeout: 0s
