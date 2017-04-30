@@ -52,7 +52,7 @@ script:
             params.useproxy
         );
 
-        if (result.StatusCode < 200 || result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299 && result.StatusCode != 404) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
@@ -72,6 +72,10 @@ script:
 
     var doFile = function(hash, longFormat) {
         var res = doReq('GET', 'malware/' + hash);
+        if (res.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + hash};
+        }
         var o = res.obj.malware;
         var ec = {};
         var dbotScore = 0;
@@ -128,6 +132,10 @@ script:
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var ipRes = doReq('GET', 'ipr/' + ip);
+        if (ipRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + ip};
+        }
         var malwareRes = doReq('GET', 'ipr/malware/' + ip);
         res.reputation = ipRes.obj;
         res.malware = malwareRes.obj;
@@ -174,6 +182,10 @@ script:
         var res = {};
         var resolutionRes = doReq('GET', 'resolve/' + url);
         var urlRes = doReq('GET', 'url/' + url);
+        if (urlRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + url};
+        }
         var malwareRes = doReq('GET', 'url/malware/' + url);
         res.resolution = resolutionRes.obj;
         res.url = urlRes.obj;
