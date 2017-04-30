@@ -181,9 +181,13 @@ script:
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var resolutionRes = doReq('GET', 'resolve/' + url);
+        if (resolutionRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + url};
+        }
         var urlRes = doReq('GET', 'url/' + url);
         if (urlRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+            return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
                 HumanReadable: 'XFE does not have details about ' + url};
         }
         var malwareRes = doReq('GET', 'url/malware/' + url);
