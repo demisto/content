@@ -54,7 +54,7 @@ script:
             params.useproxy
         );
 
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
         if (result.Body === '' && result.StatusCode == 204) {
@@ -93,7 +93,7 @@ script:
         var md = '';
         var ec = {};
         ec.dbotScore = [];
-        ec[outputPaths.fileMalicious] = [];
+        ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
@@ -102,7 +102,14 @@ script:
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
-                ec[outputPaths.fileMalicious].push({MD5: r[i].md5, SHA1: r[i].sha1, SHA256: r[i].sha256});
+                var malFile = {};
+                addMalicious(malFile, outputPaths.file, {
+                    MD5: r[i].md5,
+                    SHA1: r[i].sha1,
+                    SHA256: r[i].sha256,
+                    Malicious: {Vendor: 'VT', Description: 'Positives / Total: ' + r[i].positives + '/' + r[i].total}
+                });
+                ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else if (r[i].positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -137,7 +144,7 @@ script:
             }
         }
         return badDownloads;
-    }
+    };
 
     var doIP = function(ip, longFormat, threshold, sampleSize) {
         if (!isValidIP(ip)) {
@@ -161,7 +168,12 @@ script:
         var dbotScore = 0;
         if (badDownloads >= threshold) {
             dbotScore = 3;
-            ec[outputPaths.ipMalicious] = {Address: ip, ASN: o.asn, Geo: {Country: o.country}};
+            addMalicious(ec, outputPaths.ip,{
+                Address: ip,
+                ASN: o.asn,
+                Geo: {Country: o.country},
+                Malicious: {Vendor: 'VT', Description: 'Recent malicious downloads: ' + badDownloads}
+            });
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
@@ -241,7 +253,10 @@ script:
             var dbotScore = 0;
             if (o.positives >= threshold) {
                 dbotScore = 3;
-                ec[outputPaths.urlMalicious] = url;
+                addMalicious(ec, outputPaths.url, {
+                    Data: url,
+                    Malicious: {Vendor: 'VT', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total}
+                });
             } else if (o.positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
@@ -272,7 +287,8 @@ script:
         var dbotScore = 0;
         if (badDownloads >= threshold) {
             dbotScore = 3;
-            ec[outputPaths.domainMalicious] = {Name: domain};
+            addMalicious(ec, outputPaths.domain, {Name: domain,
+                Malicious: {Vendor: 'VT', Description: 'Recent malicious downloads: ' + badDownloads}});
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
@@ -328,7 +344,7 @@ script:
 
     var scanFile = function(entry, uploadURL) {
         var result = httpMultipart(uploadURL ? uploadURL : serverUrl + 'file/scan', entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
         if (result.Body === '' && result.StatusCode == 204) {
@@ -443,12 +459,16 @@ script:
         it malicious
       defaultValue: "10"
     outputs:
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: Bad hash found
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -458,9 +478,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: File/Malicious
+    - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: File
     description: Check file reputation of the given hash
   - name: ip
     deprecated: false
@@ -485,12 +504,16 @@ script:
         etc.) to display for long format
       defaultValue: "10"
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IP Address found
-    - contextPath: IP/Malicious.ASN
+    - contextPath: IP.ASN
       description: Bad IP ASN
-    - contextPath: IP/Malicious.Geo.Country
+    - contextPath: IP.Geo.Country
       description: Bad IP Country
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -500,9 +523,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: IP/Malicious
+    - contextPath: IP(val.Malicious)
       description: Malicious IPs
-      related: IP
     description: Check IP Reputation
   - name: url
     deprecated: false
@@ -529,8 +551,12 @@ script:
         scanned
       defaultValue: "0"
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -540,9 +566,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: URL/Malicious
+    - contextPath: URL(val.Malicious)
       description: Malicious URLs
-      related: URL
     description: Check URL Reputation
   - name: domain
     deprecated: false
@@ -567,8 +592,12 @@ script:
         we will consider it malicious
       defaultValue: "10"
     outputs:
-    - contextPath: Domain/Malicious.Name
+    - contextPath: Domain.Name
       description: Bad domain found
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -578,9 +607,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: Domain/Malicious
+    - contextPath: Domain(val.Malicious)
       description: Malicious Domains
-      related: Domain
     description: Check domain reputation
   - name: file-scan
     deprecated: false

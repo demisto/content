@@ -36,15 +36,27 @@ outputs:
   description: Contact email for the queried domain
 - contextpath: passivetotal.resolves
   description: The various resolves from the passive DNS collection
-- contextPath: IP/Malicious.Address
+- contextPath: IP.Address
   description: Bad IPs found during enrichment
-- contextPath: Domain/Malicious.Name
+- contextPath: IP.Malicious.Vendor
+  description: For malicious IPs, the vendor that made the decision
+- contextPath: IP.Malicious.Description
+  description: For malicious IPs, the reason for the vendor to make the decision
+- contextPath: Domain.Name
   description: Bad domains found during enrichment
-- contextPath: File/Malicious.MD5
+- contextPath: Domain.Malicious.Vendor
+  description: For malicious domains, the vendor that made the decision
+- contextPath: Domain.Malicious.Description
+  description: For malicious domains, the reason for the vendor to make the decision
+- contextPath: File.MD5
   description: Bad hash MD5
-- contextPath: File/Malicious.SHA1
+- contextPath: File.SHA1
   description: Bad hash SHA1
-- contextPath: File/Malicious.SHA256
+- contextPath: File.SHA256
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
   description: Bad hash SHA256
 - contextPath: dbotScore.indicator
   description: The indicator we tested
@@ -55,15 +67,12 @@ outputs:
 - contextPath: dbotScore.score
   description: The actual score
 important:
-- contextPath: File/Malicious
+- contextPath: File(val.Malicious)
   description: Malicious Files
-  related: File
-- contextPath: IP/Malicious
+- contextPath: IP(val.Malicious)
   description: Malicious IPs
-  related: IP
-- contextPath: Domain/Malicious
+- contextPath: Domain(val.Malicious)
   description: Malicious Domains
-  related: Domain
 scripttarget: 0
 dependson:
   must:
