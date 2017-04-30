@@ -365,13 +365,13 @@ script:
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
     important:
     - contextPath: URL(val.Malicious)
@@ -406,13 +406,13 @@ script:
       description: For malicious files, the reason for the vendor to make the decision
     - contextPath: File.Malicious.Score
       description: For malicious files, the score from the vendor
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
     important:
     - contextPath: File(val.Malicious)
@@ -448,13 +448,13 @@ script:
       description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: IP.Malicious.Score
       description: For malicious IPs, the score from the vendor
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
     important:
     - contextPath: IP(val.Malicious)
@@ -490,13 +490,13 @@ script:
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
     important:
     - contextPath: URL(val.Malicious)

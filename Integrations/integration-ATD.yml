@@ -111,10 +111,10 @@ script:
             context = { dbotScore: {vendor: 'McAfee-Advanced-Threat-Defense', score: 0 }};
 
             if ( subject.FileType === 0 ) {//file
-                context.dbotScore.indicator = subject.md5;
-                context.dbotScore.type = 'hash';
+                context.DBotScore.Indicator = subject.md5;
+                context.DBotScore.Type = 'hash';
                 if (subject.Verdict.Severity > 3) {
-                    context.dbotScore.score = 3;
+                    context.DBotScore.Score = 3;
                     addMalicious(context, outputPaths.file, {
                         Type : subject.Type,
                         MD5 : subject.md5,
@@ -126,7 +126,7 @@ script:
                             Description: 'Severity: ' + subject.Verdict.Severity}
                     });
                 } else {
-                    context.dbotScore.score = 1;
+                    context.DBotScore.Score = 1;
                 }
             }
         }
@@ -518,13 +518,13 @@ script:
       description: For malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
     important:
     - contextPath: File(val.Malicious)
