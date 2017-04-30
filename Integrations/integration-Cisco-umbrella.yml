@@ -469,7 +469,8 @@ script:
         var table = res.map(function(obj) {
             return {
                 Name: obj.name,
-                Malicious: {Vendor: 'Cisco Umbrella', Description: 'For IP: ' + ip}
+                Malicious: {Vendor: 'Cisco Umbrella', Description: 'For IP: ' + ip},
+                properties_to_append: ['Malicious']
             }
         });
 
