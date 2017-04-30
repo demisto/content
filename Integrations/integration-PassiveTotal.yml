@@ -152,18 +152,18 @@ script:
                     addMalicious(context, outputPaths.domain, {
                         Name: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
                     });
-                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 3}
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 3}
                 } else {
                     addMalicious(context, outputPaths.ip, {
                         Address: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
                     });
-                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 3}
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 3}
                 }
             } else {
                 if (jsonRes.queryType === 'domain') {
-                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 1}
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 1}
                 } else {
-                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 1}
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 1}
                 }
             }
             var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
@@ -234,7 +234,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: dbotScore};
+                context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: dbotScore};
             } else {
                 md += 'No results found!';
             }

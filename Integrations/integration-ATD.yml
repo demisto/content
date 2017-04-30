@@ -108,7 +108,7 @@ script:
         var context = {};
         if ((reportSummary) && (reportSummary.Subject)) {
             var subject = reportSummary.Subject;
-            context = { dbotScore: {vendor: 'McAfee-Advanced-Threat-Defense', score: 0 }};
+            context = { DBotScore: {Vendor: 'McAfee-Advanced-Threat-Defense', Score: 0 }};
 
             if ( subject.FileType === 0 ) {//file
                 context.DBotScore.Indicator = subject.md5;
