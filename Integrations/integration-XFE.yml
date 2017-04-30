@@ -88,7 +88,7 @@ script:
         } else if (o) {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: hash, type: 'hash', vendor: 'XFE', score: dbotScore};
+        ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE', Score: dbotScore};
         if (dbotScore === 3) {
             var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
             malFile[o.type.toUpperCase()] = hash;
@@ -150,7 +150,7 @@ script:
         } else if (o.score) {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'XFE', score: dbotScore};
+        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
         var md = '## X-Force IP Reputation for: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
         md += 'Score: **' + o.score + '**\n';
         md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
@@ -211,7 +211,7 @@ script:
         } else if (o.result && o.result.score) {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: url, type: 'url', vendor: 'XFE', score: dbotScore};
+        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
         var md = '## X-Force URL Reputation for: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + url + ')\n';
         if (o.result) {
             md += 'Score: **' + o.result.score + '**\n';

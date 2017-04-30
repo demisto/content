@@ -218,7 +218,7 @@ script:
             result = analysisPoll(uuid,timeout,interval);
         }
 
-        var dbotScore = {indicator: analysis.md5, type: 'hash', vendor: 'Lastline', score:0};
+        var dbotScore = {Indicator: analysis.md5, Type: 'hash', Vendor: 'Lastline', Score:0};
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
@@ -239,7 +239,7 @@ script:
             md += 'File submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     }
 
@@ -271,7 +271,7 @@ script:
             result = analysisPoll(uuid,threshold,timeout,interval);
         }
 
-        var dbotScore = {indicator: url, type: 'url', vendor: 'Lastline', score:0};
+        var dbotScore = {Indicator: url, Type: 'url', Vendor: 'Lastline', Score:0};
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
@@ -289,7 +289,7 @@ script:
             md += 'URL submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
@@ -329,7 +329,7 @@ script:
         var data = result.obj.data;
         md += dataToMd(data,threshold);
 
-        var dbotScore = {indicator: hash, type: 'hash', vendor: 'Lastline', score: 0};
+        var dbotScore = {Indicator: hash, Type: 'hash', Vendor: 'Lastline', Score: 0};
         if (result.obj.data.score > threshold) {
             var analysis = result.obj.data.analysis_subject;
             addMalicious(ec, outputPaths.file, {
@@ -342,7 +342,7 @@ script:
         } else {
             DBotScore.Score= 1;
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
@@ -367,7 +367,7 @@ script:
 
         result = analysisPoll(uuid,threshold,timeout,interval);
 
-        var dbotScore = {vendor: 'Lastline', score: 0};
+        var dbotScore = {Vendor: 'Lastline', Score: 0};
         if (analysisReady(result.obj.data)) {
             var analysis = result.obj.data.analysis_subject;
             if ('url' in analysis) {
@@ -402,7 +402,7 @@ script:
             md += '#### Report not ready.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 

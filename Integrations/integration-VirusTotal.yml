@@ -92,7 +92,7 @@ script:
         }
         var md = '';
         var ec = {};
-        ec.dbotScore = [];
+        ec.DBotScore = [];
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
@@ -115,7 +115,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'VirusTotal', score: dbotScore});
+            ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             if (longFormat === 'true' && r[i].scans) {
                 md += arrToMd(Object.keys(r[i].scans).map(function(curr) {
@@ -179,7 +179,7 @@ script:
         } else {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'VirusTotal', score: dbotScore};
+        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
         md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
         md += 'Country: **' + o.country + '**\n';
@@ -262,7 +262,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.dbotScore = {indicator: url, type: 'url', vendor: 'VirusTotal', score: dbotScore};
+            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
@@ -294,7 +294,7 @@ script:
         } else {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: domain, type: 'domain', vendor: 'VirusTotal', score: dbotScore};
+        ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
 
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";

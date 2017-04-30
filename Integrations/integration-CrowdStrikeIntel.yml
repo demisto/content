@@ -246,7 +246,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec.dbotScore = {indicator: ind, type: type, vendor: 'CrowdStrike', score: dbotScore}; // ok to override, we expect only one
+                ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: dbotScore}; // ok to override, we expect only one
                 found = true;
             }
         }

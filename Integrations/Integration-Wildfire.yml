@@ -145,7 +145,7 @@ script:
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
 
-        var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'WildFire', score: 0 }};
+        var context = { DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }};
         
         if (file_info) {
             if (file_info.malware === 'yes') {
