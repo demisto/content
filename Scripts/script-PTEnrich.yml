@@ -58,13 +58,13 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   description: Bad hash SHA256
-- contextPath: dbotScore.indicator
+- contextPath: DBotScore.Indicator
   description: The indicator we tested
-- contextPath: dbotScore.type
+- contextPath: DBotScore.Type
   description: The type of the indicator
-- contextPath: dbotScore.vendor
+- contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score
-- contextPath: dbotScore.score
+- contextPath: DBotScore.Score
   description: The actual score
 important:
 - contextPath: File(val.Malicious)

@@ -149,7 +149,7 @@ script:
         
         if (file_info) {
             if (file_info.malware === 'yes') {
-                context.dbotScore.score = 3;
+                context.DBotScore.Score = 3;
                 addMalicious(context, outputPaths.file, {
                     Type : file_info.filetype,
                     MD5 : file_info.md5,
@@ -160,7 +160,7 @@ script:
                     Malicious: {Vendor: 'Wildfire'}
                 });
             } else {
-                context.dbotScore.score = 1;
+                context.DBotScore.Score = 1;
             }
         }
 
@@ -239,13 +239,13 @@ script:
       description: SHA256 hash of the file
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    - contextPath: dbotScore.indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
     important:
     - contextPath: File(val.Malicious)
