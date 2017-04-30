@@ -149,10 +149,14 @@ script:
             var context = {};
             if (jsonRes.tags.indexOf('malware') >= 0) {
                 if (jsonRes.queryType === 'domain') {
-                    context[outputPaths.domainMalicious] = {Name: jsonRes.queryValue};
+                    addMalicious(context, outputPaths.domain, {
+                        Name: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
                     context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 3}
                 } else {
-                    context[outputPaths.ipMalicious] = {Address: jsonRes.queryValue};
+                    addMalicious(context, outputPaths.ip, {
+                        Address: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
                     context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 3}
                 }
             } else {
@@ -193,12 +197,14 @@ script:
                     md += '[' + jsonRes.results[i].source + '](' + jsonRes.results[i].sourceUrl + ') | ' + jsonRes.results[i].sample + ' | ' + jsonRes.results[i].collectionDate + '\n';
                     samples.push(jsonRes.results[i].sample);
                 }
-                context[outputPaths.fileMalicious] = [];
+                context[outputPaths.file] = [];
                 for (var hash = 0; hash < samples.length; hash++) {
                     var hashType = samples[hash].length === 32 ? 'MD5' : samples[hash].length === 40 ? 'SHA1' : 'SHA256';
-                    var hashObj = {};
+                    var hashObj = {Malicious: {Vendor: 'PassiveTotal', Description: 'Malware sample'}};
                     hashObj[hashType] = samples[hash];
-                    context[outputPaths.fileMalicious].push(hashObj);
+                    var malFile = {};
+                    addMalicious(malFile, outputPaths.file, hashObj);
+                    context[outputPaths.file].push(malFile[outputPaths.file]);
                 }
 
                 var recentSampleCount = 0;
@@ -215,9 +221,13 @@ script:
                 if (recentSampleCount >= args.threshold) {
                     dbotScore = 3;
                     if (isIp(args.query)) {
-                        context[outputPaths.ipMalicious] = {Address: args.query};
+                        addMalicious(context, outputPaths.ip, {
+                            Address: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
                     } else {
-                        context[outputPaths.domainMalicious] = {Name: args.query};
+                        addMalicious(context, outputPaths.domain, {
+                            Name: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
                     }
                 } else if (recentSampleCount >= args.threshold / 2) {
                     dbotScore = 2;
@@ -393,10 +403,18 @@ script:
       default: true
       description: The data to enrich
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IPs found during enrichment
-    - contextPath: Domain/Malicious.Name
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
       description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -406,12 +424,10 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: IP/Malicious
+    - contextPath: IP(val.Malicious)
       description: Malicious IPs
-      related: IP
-    - contextPath: Domain/Malicious
+    - contextPath: Domain(val.Malicious)
       description: Malicious Domains
-      related: Domain
     description: Enrich the given query with metadata
   - name: pt-malware
     arguments:
@@ -430,16 +446,28 @@ script:
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IPs found during enrichment
-    - contextPath: Domain/Malicious.Name
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
       description: Bad domains found during enrichment
-    - contextPath: File/Malicious.MD5
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: File.MD5
       description: Bad hash MD5
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -449,15 +477,12 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: File/Malicious
+    - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: File
-    - contextPath: IP/Malicious
+    - contextPath: IP(val.Malicious)
       description: Malicious IPs
-      related: IP
-    - contextPath: Domain/Malicious
+    - contextPath: Domain(val.Malicious)
       description: Malicious Domains
-      related: Domain
     description: Get malware data
   - name: pt-osint
     arguments:

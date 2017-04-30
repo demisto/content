@@ -52,7 +52,7 @@ script:
             params.useproxy
         );
 
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
@@ -86,8 +86,9 @@ script:
         }
         ec.dbotScore = {indicator: hash, type: 'hash', vendor: 'XFE', score: dbotScore};
         if (dbotScore === 3) {
-            ec[outputPaths.fileMalicious] = {};
-            ec[outputPaths.fileMalicious][o.type.toUpperCase()] = hash;
+            var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
+            malFile[o.type.toUpperCase()] = hash;
+            addMalicious(ec, outputPaths.file, malFile);
         }
         var md = '## X-Force Hash Reputation for: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
         md += 'Type: **' + o.type + '**\n';
@@ -135,7 +136,7 @@ script:
         var dbotScore = 0;
         if (o.score && o.score >= threshold) {
             dbotScore = 3;
-            ec[outputPaths.ipMalicious] = {Address: ip};
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.score}});
         } else if (o.score && o.score >= threshold / 2) {
             dbotScore = 2;
         } else if (o.score) {
@@ -187,7 +188,7 @@ script:
         var ec = {};
         var dbotScore = 0;
         if (o.result && o.result.score && o.result.score >= threshold) {
-            ec[outputPaths.urlMalicious] = url;
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
             dbotScore = 3;
         } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
             dbotScore = 2;
@@ -356,8 +357,14 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -367,9 +374,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: URL/Malicious
+    - contextPath: URL(val.Malicious)
       description: Malicious URLs
-      related: URL
     description: Check the given URL reputation
   - name: file
     deprecated: false
@@ -388,12 +394,18 @@ script:
       description: Should we return full response
       defaultValue: "false"
     outputs:
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: Bad hash MD5
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -403,7 +415,7 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: File/Malicious
+    - contextPath: File(val.Malicious)
       description: Malicious Files
       related: File
     description: Check file reputation
@@ -428,8 +440,14 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IP found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: IP.Malicious.Score
+      description: For malicious IPs, the score from the vendor
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -439,7 +457,7 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: IP/Malicious
+    - contextPath: IP(val.Malicious)
       description: Malicious IPs
       related: IP
     description: Check IP reputation
@@ -464,8 +482,14 @@ script:
       description: If the score is above the given threshold, will be considered malicious
       defaultValue: "7"
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -475,7 +499,7 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: URL/Malicious
+    - contextPath: URL(val.Malicious)
       description: Malicious URLs
       related: URL
     description: Check domain reputation

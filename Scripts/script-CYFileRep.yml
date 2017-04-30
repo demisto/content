@@ -54,12 +54,16 @@ args:
   default: true
   description: The ID of a file entry to upload
 outputs:
-- contextPath: File/Malicious.MD5
+- contextPath: File.MD5
   description: Bad hash MD5
-- contextPath: File/Malicious.SHA1
+- contextPath: File.SHA1
   description: Bad hash SHA1
-- contextPath: File/Malicious.SHA256
+- contextPath: File.SHA256
   description: Bad hash SHA256
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
 - contextPath: dbotScore.indicator
   description: The indicator we tested
 - contextPath: dbotScore.type
@@ -69,7 +73,7 @@ outputs:
 - contextPath: dbotScore.score
   description: The actual score
 important:
-- contextPath: File/Malicious
+- contextPath: File(val.Malicious)
   description: Malicious Files
   related: File
 scripttarget: 0

@@ -1,0 +1,27 @@
+commonfields:
+  id: DBotAverageScore
+  version: -1
+name: DBotAverageScore
+script: |
+  var scores = dq(invContext, 'dbotScore(val.indicator && val.score)');
+  var s = {};
+  for (i=0; i<scores.length; i++) {
+      if (!s[scores[i].indicator]) {
+          s[scores[i].indicator] = [];
+      }
+      s[scores[i].indicator].push(scores[i].score);
+  }
+  var avg = Object.keys(s).map(function(ind) {
+      var sum = 0;
+      s[ind].forEach(function(i) {sum += i;});
+      return {indicator: ind, score: sum / s[ind].length};
+  });
+  return {Type: entryTypes.note, Contents: avg, ContentsFormat: formats.json, HumanReadable: 'Scores average calculated', EntryContext: {dbotAvgScore: avg}};
+type: javascript
+tags:
+- Utility
+outputs:
+- contextPath: dbotAvgScore
+  description: The average score per indicator
+enabled: true
+scripttarget: 0

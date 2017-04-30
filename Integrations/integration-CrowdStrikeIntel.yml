@@ -258,27 +258,28 @@ script:
 
     var doFile = function(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
-            ec[outputPaths.fileMalicious] = {};
+            var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
-            ec[outputPaths.fileMalicious][hashType] = hash;
+            malFile[hashType] = hash;
+            addMalicious(ec, outputPaths.file, malFile);
         });
     };
 
     var doIP = function(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
-            ec[outputPaths.ipMalicious] = {Address: ip};
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
     var doURL = function(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
-            ec[outputPaths.urlMalicious] = url;
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
     var doDomain = function(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
-            ec[outputPaths.domainMalicious] = {Name: domain};
+            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
@@ -365,12 +366,16 @@ script:
       default: true
       description: The file hash md5/sha1/sha256 to check
     outputs:
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: Bad hash MD5
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -380,9 +385,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: File/Malicious
+    - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: File
     description: Check file reputation
   - name: url
     deprecated: false
@@ -393,8 +397,12 @@ script:
       default: true
       description: URL to be checked
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: Bad URL
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -404,9 +412,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: URL/Malicious
+    - contextPath: URL(val.Malicious)
       description: Malicious URLs
-      related: URL
     description: Check the given URL reputation
   - name: domain
     deprecated: false
@@ -417,8 +424,12 @@ script:
       default: true
       description: Domain to be checked
     outputs:
-    - contextPath: Domain/Malicious.Name
+    - contextPath: Domain.Name
       description: Bad domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -428,9 +439,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: Domain/Malicious
+    - contextPath: Domain(val.Malicious)
       description: Malicious Domains
-      related: Domain
     description: Check the given URL reputation
   - name: ip
     deprecated: false
@@ -441,8 +451,12 @@ script:
       default: true
       description: IP to check
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IP
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -452,9 +466,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: IP/Malicious
+    - contextPath: IP(val.Malicious)
       description: Malicious IPs
-      related: IP
     description: Check IP reputation
   - name: cs-actors
     deprecated: false

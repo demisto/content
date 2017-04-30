@@ -49,7 +49,7 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      value: ${Domain/Malicious}
+      value: ${Domain}
     continueonerror: true
     view: |-
       {
@@ -78,7 +78,7 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      value: ${File/Malicious.MD5}
+      value: ${File.MD5}
     continueonerror: true
     view: |-
       {
@@ -107,7 +107,7 @@ tasks:
       "yes":
       - "7"
     scriptarguments:
-      value: ${File/Malicious.SHA1}
+      value: ${File.SHA1}
     continueonerror: true
     view: |-
       {
@@ -136,7 +136,7 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      value: ${File/Malicious.SHA256}
+      value: ${File.SHA256}
     continueonerror: true
     view: |-
       {
@@ -163,7 +163,7 @@ tasks:
       - "9"
     scriptarguments:
       type: domain
-      value: ${Domain/Malicious}
+      value: ${Domain.Name}
     continueonerror: true
     view: |-
       {
@@ -191,7 +191,7 @@ tasks:
       - "9"
     scriptarguments:
       type: md5
-      value: ${File/Malicious.MD5}
+      value: ${File.MD5}
     continueonerror: true
     view: |-
       {
@@ -218,7 +218,7 @@ tasks:
       - "9"
     scriptarguments:
       type: sha1
-      value: ${File/Malicious.SHA1}
+      value: ${File.SHA1}
     continueonerror: true
     view: |-
       {
@@ -245,7 +245,7 @@ tasks:
       - "9"
     scriptarguments:
       type: sha256
-      value: ${File/Malicious.SHA256}
+      value: ${File.SHA256}
     continueonerror: true
     view: |-
       {

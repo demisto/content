@@ -150,15 +150,15 @@ script:
         if (file_info) {
             if (file_info.malware === 'yes') {
                 context.dbotScore.score = 3;
-                context[outputPaths.fileMalicious] = {
-                                                Type : file_info.filetype,
-                                                MD5 : file_info.md5,
-                                                SHA1 : file_info.sha1,
-                                                SHA256 : file_info.sha256,
-                                                Size : file_info.size,
-                                                Name : file_info.filename
-
-                                            };
+                addMalicious(context, outputPaths.file, {
+                    Type : file_info.filetype,
+                    MD5 : file_info.md5,
+                    SHA1 : file_info.sha1,
+                    SHA256 : file_info.sha256,
+                    Size : file_info.size,
+                    Name : file_info.filename,
+                    Malicious: {Vendor: 'Wildfire'}
+                });
             } else {
                 context.dbotScore.score = 1;
             }
@@ -225,18 +225,20 @@ script:
     - name: verbose
       description: Receive extended information from Wildfire
     outputs:
-    - contextPath: File/Malicious.Name
+    - contextPath: File.Name
       description: Filename
-    - contextPath: File/Malicious.Type
+    - contextPath: File.Type
       description: File type e.g. "PE"
-    - contextPath: File/Malicious.Size
+    - contextPath: File.Size
       description: File size
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: MD5 hash of the file
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: SHA1 hash of the file
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: SHA256 hash of the file
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
     - contextPath: dbotScore.indicator
       description: The indicator we tested
     - contextPath: dbotScore.type
@@ -246,9 +248,8 @@ script:
     - contextPath: dbotScore.score
       description: The actual score
     important:
-    - contextPath: File/Malicious
+    - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: File
     description: Retrieve results for a file hash using Wildfire
   - name: file
     description: Retrieve results for a file hash using Wildfire
