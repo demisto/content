@@ -192,7 +192,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {
@@ -218,7 +218,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {
@@ -357,7 +357,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {
