@@ -1,0 +1,437 @@
+commonfields:
+  id: ThreatExchange2
+  version: -1
+name: ThreatExchange2
+display: ThreatExchange2
+category: Data Enrichment
+image: data:image/png;base64,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
+description: Receive threat intelligence about applications, IP addresses, URls and
+  hashes, a service by Facebook
+detaileddescription: 'For more info look at : https://developers.facebook.com/products/threat-exchange'
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: Server
+  defaultvalue: https://graph.facebook.com
+  type: 0
+  required: true
+- display: App ID
+  name: appID
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: App Secret
+  name: appSecret
+  defaultvalue: ""
+  type: 4
+  required: true  
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Api version
+  name: apiVersion
+  defaultvalue: v2.8
+  type: 0
+  required: true
+script:
+  script: |-
+    var serverUrl = params.Server;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var defaultLimit = 20;
+
+    var doReq = function(method, path, parameters) {
+        if (!parameters) {
+            parameters = {};
+        }
+        parameters.access_token = params.appID + '|' + params.appSecret;
+        var result = http(
+            serverUrl + '/' + params.apiVersion + '/'+ path + (method === 'GET' ? encodeToURLQuery(parameters) : ''),
+            {
+                Headers: {'Content-Type': ['application/x-www-form-urlencoded'], 'Accept': ['application/json']},
+                Method: method,
+                Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''
+            },
+            params.insecure,
+            params.useproxy
+        );
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ' with Body: '+ result.Body;
+        }
+        if (result.Body === '') {
+            throw 'No content recieved. Maybe you tried a private API?.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+    };
+
+    var doFile = function(hash) {
+        var limit = defaultLimit;
+        if (args.limit) {
+            limit = args.limit;
+        }
+        var argsForCall = {text: hash, limit: limit, strict_text: true};
+        if (args.since) {
+            argsForCall.since = args.since;
+        }
+        if (args.until) {
+            argsForCall.until = args.until;
+        }
+        var res = doReq('GET', 'malware_analyses', argsForCall);
+        var data = res.obj.data;
+        if (data.length === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n'};
+        }
+        var ec = {};
+        ec.dbotScore = [];
+        ec['File/Malicious'] = [];
+        var md = tblToMd('ThreatExchange Hash Reputation', data, argToList(args.headers));
+        for (var i=0; i<data.length; i++) {
+            var dbotScore = 0;
+            if (data[i].status == 'MALICIOUS') {
+                dbotScore = 3;
+                ec['File/Malicious'].push({MD5: data[i].md5, SHA1: data[i].sha1, SHA256: data[i].sha256});
+            } else if (data[i].status == 'SUSPICIOUS') {
+                dbotScore = 2;
+            } else if (data[i].status == 'NON_MALICIOUS'){
+                dbotScore = 1;
+            }
+            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', score: dbotScore});
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doIP = function(ip) {
+        if (!isValidIP(ip)) {
+            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
+        }
+        var limit = defaultLimit;
+        if (args.limit) {
+            limit = args.limit;
+        }
+        var argsForCall = {text: ip, limit: limit, strict_text: true, type: 'IP_ADDRESS'};
+        if (args.since) {
+            argsForCall.since = args.since;
+        }
+        if (args.until) {
+            argsForCall.until = args.until;
+        }
+        var res = doReq('GET', 'threat_descriptors', argsForCall);
+        var data = res.obj.data;
+        if (data.length === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n'};
+        }
+        var ec = {};
+        ec.dbotScore = [];
+        ec['IP/Malicious'] = [];
+        var md = tblToMd('ThreatExchange IP Reputation', data, argToList(args.headers));
+        for (var i=0; i<data.length; i++) {
+            var dbotScore = 0;
+            if (data[i].status == 'MALICIOUS') {
+                dbotScore = 3;
+                ec['IP/Malicious'].push({Address: ip});
+            } else if (data[i].status == 'SUSPICIOUS') {
+                dbotScore = 2;
+            } else if (data[i].status == 'NON_MALICIOUS'){
+                dbotScore = 1;
+            }
+            ec.dbotScore.push({indicator: ip, type: 'ip', vendor: 'ThreatExchange', score: dbotScore});
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doURL = function(url) {
+        var limit = defaultLimit;
+        if (args.limit) {
+            limit = args.limit;
+        }
+        var argsForCall = {text: url, limit: limit, strict_text: true, type: 'URI'};
+        if (args.since) {
+            argsForCall.since = args.since;
+        }
+        if (args.until) {
+            argsForCall.until = args.until;
+        }
+        var res = doReq('GET', 'threat_descriptors', argsForCall);
+        var data = res.obj.data;
+        if (data.length === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n'};
+        }
+        var ec = {};
+        ec.dbotScore = [];
+        ec['URL/Malicious'] = [];
+        var md = tblToMd('ThreatExchange URL Reputation', data, argToList(args.headers));
+        for (var i=0; i<data.length; i++) {
+            var dbotScore = 0;
+            if (data[i].status == 'MALICIOUS') {
+                dbotScore = 3;
+                ec['URL/Malicious'].push({Name: url});
+            } else if (data[i].status == 'SUSPICIOUS'){
+                dbotScore = 2;
+            } else if (data[i].status == 'NON_MALICIOUS'){
+                dbotScore = 1;
+            }
+            ec.dbotScore.push({indicator: url, type: 'url', vendor: 'ThreatExchange', score: dbotScore});
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doDomain = function(domain) {
+        var limit = defaultLimit;
+        if (args.limit) {
+            limit = args.limit;
+        }
+        var argsForCall = {text: domain, limit: limit, strict_text: true, type: 'DOMAIN'};
+        if (args.since) {
+            argsForCall.since = args.since;
+        }
+        if (args.until) {
+            argsForCall.until = args.until;
+        }
+        var res = doReq('GET', 'threat_descriptors', argsForCall);
+        var data = res.obj.data;
+        if (data.length === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n'};
+        }
+        var ec = {};
+        ec.dbotScore = [];
+        ec['Domain/Malicious'] = [];
+        var md = tblToMd('ThreatExchange Domain Reputation', data, argToList(args.headers));
+        for (var i=0; i<data.length; i++) {
+            var dbotScore = 0;
+            if (data[i].status == 'MALICIOUS') {
+                dbotScore = 3;
+                ec['Domain/Malicious'].push({Name: domain});
+            } else if (data[i].status == 'SUSPICIOUS') {
+                dbotScore = 2;
+            } else if (data[i].status == 'NON_MALICIOUS'){
+                dbotScore = 1;
+            }
+            ec.dbotScore.push({indicator: domain, type: 'domain', vendor: 'ThreatExchange', score: dbotScore});
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doQuery = function(text) {
+        var limit = defaultLimit;
+        if (args.limit) {
+            limit = args.limit;
+        }
+        var argsForCall = {limit: limit, strict_text: false};
+        if (args.type) {
+            argsForCall.type = args.type;
+        }
+        if (args.text) {
+            argsForCall.text = args.text;
+        }
+        if (args.since) {
+            argsForCall.since = args.since;
+        }
+        if (args.until) {
+            argsForCall.until = args.until;
+        }
+        var res = doReq('GET', 'threat_descriptors', argsForCall);
+        var data = res.obj.data;
+        if (data.length === 0) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + text + '\n'};
+        }
+        var ec = {};
+        ec.queryResult = data;
+        var md = tblToMd('ThreatExchange Query Result', data, argToList(args.headers));
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doMembers = function() {
+        var res = doReq('GET', 'threat_exchange_members', {});
+        var data = res.obj.data;
+        var md = tblToMd('ThreatExchange Members', data, argToList(args.headers));
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    switch (command) {
+        case 'test-module':
+            doFile('d2b4a84e2b69856ba8e234f55b1fbc4b'); // Check File Hash d2b4a84e2b69856ba8e234f55b1fbc4b - it will throw an error if not successful
+            return true;
+        case 'file':
+            return doFile(args.file);
+        case 'ip':
+            return doIP(args.ip);
+        case 'url':
+            return doURL(args.url);
+        case 'domain':
+            return doDomain(args.domain);
+        case 'threatexchange-query':
+            return doQuery(args.text);
+        case 'threatexchange-members':
+            return doMembers();
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256.
+    - name: limit
+      description: Defines the maximum size of a page of results. The maximum is 1000.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: ' Returns malware collected after a timestamp, format: 1391813489'
+    - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
+    outputs:
+    - contextPath: File/Malicious.MD5
+      description: Bad hash found
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA1
+      description: Bad hash SHA1
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: File/Malicious.SHA256
+      description: Bad hash SHA256
+      important: true
+      importantDescription: Bad hashes found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check file reputation of the given hash
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    outputs:
+    - contextPath: IP/Malicious.Address
+      description: Bad IP Address found
+      important: true
+      importantDescription: Bad IPs found querying VirusTotal
+    - contextPath: IP/Malicious.ASN
+      description: Bad IP ASN
+    - contextPath: IP/Malicious.Geo.Country
+      description: Bad IP Country
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check IP Reputation
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked
+    - name: limit
+      description: Defines the maximum size of a page of results. The maximum is 1000.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: ' Returns malware collected after a timestamp, format: 1391813489'
+    - name: until
+    outputs:
+    - contextPath: URL/Malicious
+      description: Bad URLs found
+      important: true
+      importantDescription: Bad URLs found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check URL Reputation
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check reputation
+    - name: limit
+      description: Defines the maximum size of a page of results. The maximum is 1000.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: ' Returns malware collected after a timestamp, format: 1391813489'
+    - name: until
+    outputs:
+    - contextPath: Domain/Malicious.Name
+      description: Bad domain found
+      important: true
+      importantDescription: Bad domain found querying VirusTotal
+    - contextPath: dbotScore.indicator
+      description: The indicator we tested
+    - contextPath: dbotScore.type
+      description: The type of the indicator
+    - contextPath: dbotScore.vendor
+      description: Vendor used to calculate the score
+    - contextPath: dbotScore.score
+      description: The actual score
+    description: Check domain reputation
+  - name: threatexchange-query
+    arguments:
+    - name: text
+      default: true
+      description: Freeform text field with a value to search for. This can be a file
+        hash or a string found in other fields of the objects
+    - name: type
+      description: 'The type of descriptor to search for, look at: https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
+    - name: limit
+      description: Defines the maximum size of a page of results. The maximum is 1000.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: ' Returns malware collected after a timestamp, format: 1391813489'
+    - name: until
+    description: ' Searching for subjective opinions on indicators of compromise stored
+      in ThreatExchange'
+  - name: threatexchange-members
+    arguments: []
+    description: Returns a list of current members of the ThreatExchange, alphabetized
+      by application name. Each application may also include an optional contact email
+      address. You can set this address, if desired, under the settings panel for
+      your application
+hidden: false
