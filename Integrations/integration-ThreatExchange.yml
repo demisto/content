@@ -324,8 +324,10 @@ script:
       description: For malicious files, the reason for the vendor to make the decision
     - contextPath: File.Malicious.Score
       description: For malicious files, the score from the vendor
+    important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
+      related: ""
     description: Check file reputation of the given hash
   - name: ip
     arguments:
@@ -353,6 +355,10 @@ script:
       description: The actual score
     - contextPath: IP.Malicious.Score
       description: For malicious IPs, the score from the vendor
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+      related: ""
     description: Check IP Reputation
   - name: url
     arguments:
@@ -379,14 +385,16 @@ script:
       description: Vendor used to calculate the score
     - contextPath: dbotScore.score
       description: The actual score
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: ""
     description: Check URL Reputation
   - name: domain
     arguments:
@@ -418,8 +426,10 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+    important:
     - contextPath: Domain(val.Malicious)
       description: Malicious Domains
+      related: ""
     description: Check domain reputation
   - name: threatexchange-query
     arguments:
