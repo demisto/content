@@ -107,7 +107,7 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
-                    Malicious: {Vendor: 'VT', Description: 'Positives / Total: ' + r[i].positives + '/' + r[i].total}
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + r[i].positives + '/' + r[i].total}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else if (r[i].positives >= threshold / 2) {
@@ -115,7 +115,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'VT', score: dbotScore});
+            ec.dbotScore.push({indicator: hash, type: 'hash', vendor: 'VirusTotal', score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             if (longFormat === 'true' && r[i].scans) {
                 md += arrToMd(Object.keys(r[i].scans).map(function(curr) {
@@ -172,14 +172,14 @@ script:
                 Address: ip,
                 ASN: o.asn,
                 Geo: {Country: o.country},
-                Malicious: {Vendor: 'VT', Description: 'Recent malicious downloads: ' + badDownloads}
+                Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}
             });
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'VT', score: dbotScore};
+        ec.dbotScore = {indicator: ip, type: 'ip', vendor: 'VirusTotal', score: dbotScore};
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
         md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
         md += 'Country: **' + o.country + '**\n';
@@ -255,14 +255,14 @@ script:
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
-                    Malicious: {Vendor: 'VT', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total}
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total}
                 });
             } else if (o.positives >= threshold / 2) {
                 dbotScore = 2;
             } else {
                 dbotScore = 1;
             }
-            ec.dbotScore = {indicator: url, type: 'url', vendor: 'VT', score: dbotScore};
+            ec.dbotScore = {indicator: url, type: 'url', vendor: 'VirusTotal', score: dbotScore};
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
@@ -288,13 +288,13 @@ script:
         if (badDownloads >= threshold) {
             dbotScore = 3;
             addMalicious(ec, outputPaths.domain, {Name: domain,
-                Malicious: {Vendor: 'VT', Description: 'Recent malicious downloads: ' + badDownloads}});
+                Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}});
         } else if (badDownloads >= threshold / 2) {
             dbotScore = 2;
         } else {
             dbotScore = 1;
         }
-        ec.dbotScore = {indicator: domain, type: 'domain', vendor: 'VT', score: dbotScore};
+        ec.dbotScore = {indicator: domain, type: 'domain', vendor: 'VirusTotal', score: dbotScore};
 
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";
