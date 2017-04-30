@@ -9,7 +9,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAyCAYAAAAweqkjAAAACXB
 description: Perform malware dynamic analysis
 detaileddescription: |-
   Don’t have a WildFire API key?
-  Go to your Wildfire account,
+  Go to your WildFire account,
   Login to: https://wildfire.paloaltonetworks.com/wildfire/account
   Select the “Account” tab
   Copy your API Key
@@ -145,7 +145,7 @@ script:
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
 
-        var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'Wildfire', score: 0 }};
+        var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'WildFire', score: 0 }};
         
         if (file_info) {
             if (file_info.malware === 'yes') {
@@ -157,7 +157,7 @@ script:
                     SHA256 : file_info.sha256,
                     Size : file_info.size,
                     Name : file_info.filename,
-                    Malicious: {Vendor: 'Wildfire'}
+                    Malicious: {Vendor: 'WildFire'}
                 });
             } else {
                 context.DBotScore.Score = 1;
@@ -179,7 +179,7 @@ script:
           };
         }
         else{ /* default format is xml*/
-          var md = resToMD(file_info,'Wildfire Report');
+          var md = resToMD(file_info,'WildFire Report');
           if (args.verbose) {
               for (var i=0; i<report.length; i++){
                   md += resToMD(report[i],'Report '+i);
@@ -223,7 +223,7 @@ script:
       - pdf
       description: Optional - request a structured report (formatted as XML/PDF)
     - name: verbose
-      description: Receive extended information from Wildfire
+      description: Receive extended information from WildFire
     outputs:
     - contextPath: File.Name
       description: Filename
@@ -250,9 +250,9 @@ script:
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
-    description: Retrieve results for a file hash using Wildfire
+    description: Retrieve results for a file hash using WildFire
   - name: file
-    description: Retrieve results for a file hash using Wildfire
+    description: Retrieve results for a file hash using WildFire
     deprecated: true
     arguments:
     - name: file
@@ -261,5 +261,5 @@ script:
     arguments:
     - name: upload
       description: ID of the entry containing the file to upload
-    description: Upload file to wildfire for analysis.
+    description: Upload file to WildFire for analysis.
 hidden: false
