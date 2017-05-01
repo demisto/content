@@ -3,9 +3,9 @@ commonfields:
   version: -1
 name: IsMaliciousIndicatorFound
 script: |-
-  var files = dq(invContext,'File/Malicious');
-  var urls = dq(invContext,'URL/Malicious');
-  var ips = dq(invContext,'IP/Malicious');
+  var files = dq(invContext,'File(val.Malicious)');
+  var urls = dq(invContext,'URL(val.Malicious)');
+  var ips = dq(invContext,'IP(val.Malicious)');
 
   if ((files) && (files.length > 0)){
       return 'yes';

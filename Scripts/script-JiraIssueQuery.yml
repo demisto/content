@@ -2,6 +2,7 @@ commonfields:
   id: JiraIssueQuery
   version: -1
 name: JiraIssueQuery
+deprecated: true
 script: |2
 
   resp = demisto.executeCommand("jira-issue-query", demisto.args())

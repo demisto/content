@@ -1114,6 +1114,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "91"
       "yes":
       - "65"
     scriptarguments:
@@ -1124,7 +1126,7 @@ tasks:
       {
         "position": {
           "x": 602.5,
-          "y": 8095
+          "y": 8100
         }
       }
   "65":
@@ -1267,7 +1269,7 @@ tasks:
       '#none#':
       - "81"
     scriptarguments:
-      url: ${URL}
+      url: ${URL.Data}
     view: |-
       {
         "position": {
@@ -1348,8 +1350,7 @@ tasks:
       "yes":
       - "74"
     scriptarguments:
-      data: ${urls}
-      value: ${URL}
+      value: ${URL.Data}
     view: |-
       {
         "position": {
@@ -1377,7 +1378,6 @@ tasks:
       "yes":
       - "76"
     scriptarguments:
-      data: ${urls}
       value: ${File}
     view: |-
       {
@@ -1406,7 +1406,6 @@ tasks:
       "yes":
       - "75"
     scriptarguments:
-      data: ${urls}
       value: ${IP}
     view: |-
       {
