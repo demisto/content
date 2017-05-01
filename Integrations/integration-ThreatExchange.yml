@@ -146,6 +146,7 @@ script:
             var dbotScore = 0;
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
+                // not really an array, so I can override
                 addMalicious(ec,outputPaths.ip,{Address: ip, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
             } else if (data[i].status == 'SUSPICIOUS') {
                 dbotScore = 2;
@@ -183,6 +184,7 @@ script:
             var dbotScore = 0;
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
+                // not really an array, so I can override
                 addMalicious(ec,outputPaths.url,{Data: url, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
             } else if (data[i].status == 'SUSPICIOUS'){
                 dbotScore = 2;
