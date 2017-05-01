@@ -17,10 +17,12 @@ script: |-
   // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
   // timeout - seconds to wait while waiting for the question's result
 
-  var table = {
+  var entry = {
       Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
   };
   if (!args.name && !args.id)
       return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'You must provide name or id.' };
@@ -77,20 +79,23 @@ script: |-
           for (var i=0; i < cs.c.length; i++) {
               row[cs.c[i].dn] = formatCell(rs.r.c[i].v);
           }
-          table.Contents.push(row);
+          entry.Contents.push(row);
       } else {
           for (var item=0; item < itemCount; item++) {
               var row = {};
               for (var j=0; j < cs.c.length; j++) {
                   row[cs.c[j].dn] = formatCell(rs.r[item].c[j].v);
               }
-              table.Contents.push(row);
+              entry.Contents.push(row);
           }
       }
-      if (table.Contents.length === 0) {
+      if (entry.Contents.length === 0) {
          return 'No Results';
       }
-      return table;
+      var title = args.name ? args.name : "Tanium ask question";
+      var headers = 'headers' in args ? argToList(args.headers) : null;
+      entry.HumanReadable = tableToMarkdown(title, entry.Contents, headers);
+      return entry;
   }
   return res;
 type: javascript
@@ -115,6 +120,8 @@ args:
     fully by Tanium).  Default is 30 seconds.
 - name: pollfreq
   description: Frequency of polling Tanium for more answers. Default is each second.
+- name: headers
+  description: Table's headers to be shown by order
 scripttarget: 0
 dependson:
   must:

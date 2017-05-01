@@ -149,17 +149,21 @@ script:
             var context = {};
             if (jsonRes.tags.indexOf('malware') >= 0) {
                 if (jsonRes.queryType === 'domain') {
-                    context['Domain/Malicious'] = {Name: jsonRes.queryValue};
-                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 3}
+                    addMalicious(context, outputPaths.domain, {
+                        Name: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 3}
                 } else {
-                    context['IP/Malicious'] = {Address: jsonRes.queryValue};
-                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 3}
+                    addMalicious(context, outputPaths.ip, {
+                        Address: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 3}
                 }
             } else {
                 if (jsonRes.queryType === 'domain') {
-                    context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: 1}
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 1}
                 } else {
-                    context.dbotScore = {indicator: args.query, type: 'ip', vendor: 'PassiveTotal', score: 1}
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 1}
                 }
             }
             var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
@@ -193,12 +197,14 @@ script:
                     md += '[' + jsonRes.results[i].source + '](' + jsonRes.results[i].sourceUrl + ') | ' + jsonRes.results[i].sample + ' | ' + jsonRes.results[i].collectionDate + '\n';
                     samples.push(jsonRes.results[i].sample);
                 }
-                context['File/Malicious'] = [];
+                context[outputPaths.file] = [];
                 for (var hash = 0; hash < samples.length; hash++) {
                     var hashType = samples[hash].length === 32 ? 'MD5' : samples[hash].length === 40 ? 'SHA1' : 'SHA256';
-                    var hashObj = {};
+                    var hashObj = {Malicious: {Vendor: 'PassiveTotal', Description: 'Malware sample'}};
                     hashObj[hashType] = samples[hash];
-                    context['File/Malicious'].push(hashObj);
+                    var malFile = {};
+                    addMalicious(malFile, outputPaths.file, hashObj);
+                    context[outputPaths.file].push(malFile[outputPaths.file]);
                 }
 
                 var recentSampleCount = 0;
@@ -215,16 +221,20 @@ script:
                 if (recentSampleCount >= args.threshold) {
                     dbotScore = 3;
                     if (isIp(args.query)) {
-                        ec['IP/Malicious'] = {Address: args.query};
+                        addMalicious(context, outputPaths.ip, {
+                            Address: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
                     } else {
-                        ec['Domain/Malicious'] = {Name: args.query};
+                        addMalicious(context, outputPaths.domain, {
+                            Name: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
                     }
                 } else if (recentSampleCount >= args.threshold / 2) {
                     dbotScore = 2;
                 } else {
                     dbotScore = 1;
                 }
-                context.dbotScore = {indicator: args.query, type: 'domain', vendor: 'PassiveTotal', score: dbotScore};
+                context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: dbotScore};
             } else {
                 md += 'No results found!';
             }
@@ -393,22 +403,31 @@ script:
       default: true
       description: The data to enrich
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IPs found during enrichment
-      important: true
-      importantDescription: Bad IPs found during enrichment
-    - contextPath: Domain/Malicious.Name
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
       description: Bad domains found during enrichment
-      important: true
-      importantDescription: Bad domains found during enrichment
-    - contextPath: dbotScore.indicator
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Enrich the given query with metadata
   - name: pt-malware
     arguments:
@@ -427,34 +446,43 @@ script:
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IPs found during enrichment
-      important: true
-      importantDescription: Bad IPs found during enrichment
-    - contextPath: Domain/Malicious.Name
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
       description: Bad domains found during enrichment
-      important: true
-      importantDescription: Bad domains found during enrichment
-    - contextPath: File/Malicious.MD5
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: File.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: Bad hashes found querying X-Force
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: Bad hashes found querying X-Force
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: Bad hashes found querying X-Force
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Get malware data
   - name: pt-osint
     arguments:

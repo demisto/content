@@ -68,6 +68,7 @@ type: python
 tags:
 - QRadar
 system: true
+deprecated: true
 args:
 - name: query_expression
   required: true
