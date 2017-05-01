@@ -104,7 +104,9 @@ script:
             var dbotScore = 0;
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
-                addMalicious(ec,outputPaths.file,{MD5: data[i].md5, SHA1: data[i].sha1, SHA256: data[i].sha256, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
+                var malFile = {};
+                addMalicious(malFile,outputPaths.file,{MD5: data[i].md5, SHA1: data[i].sha1, SHA256: data[i].sha256, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
+                ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else if (data[i].status == 'SUSPICIOUS') {
                 dbotScore = 2;
             } else if (data[i].status == 'NON_MALICIOUS'){
