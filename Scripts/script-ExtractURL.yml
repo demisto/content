@@ -16,10 +16,11 @@ script: |-
           matches[found[0]] = true;
       }
   }
-  uniqueMatches = Object.keys(matches);
-  var ec = {URL: uniqueMatches};
+  var uniqueMatches = Object.keys(matches);
+  var ec = {URL: []};
   var md = '### Extract URL\n';
   for (var i=0; i < uniqueMatches; i++) {
+      ec.URL.push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches + '\n';
   }
   return {Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
