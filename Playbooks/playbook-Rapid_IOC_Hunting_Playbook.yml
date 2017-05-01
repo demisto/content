@@ -94,7 +94,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      extend-context: File/Malicious.MD5=MD5::File/Malicious.SHA1=SHA1::File/Malicious.SHA256=SHA256
       text: ${FileData}
     view: |-
       {
@@ -119,7 +118,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      extend-context: IP/Malicious.Address=Address
       text: ${FileData}
     view: |-
       {
@@ -194,7 +192,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {
@@ -220,7 +218,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {
@@ -359,7 +357,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context: ""
-      text: ${incident=JSON.stringify(val).replace(/\\n/g,' ')}
+      text: ${incident}
       value: ${File.Extension(val.indexOf('csv')>=0)}
     view: |-
       {

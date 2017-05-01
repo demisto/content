@@ -16,7 +16,10 @@ script: |-
           matches.push(found[0]);
       }
   }
-  var ec = {URL: matches};
+  var ec = {};
+  if (matches.length > 0) {
+      ec[outputPaths.url] = matches.map(function(match) {return {Data: match};});
+  }
   var md = '### Extract URL\n';
   for (var i=0; i<matches.length; i++) {
       md += '- ' + matches[i] + '\n';
@@ -34,6 +37,6 @@ args:
   default: true
   description: The text to extract URLs from. If object will convert to JSON.
 outputs:
-- contextPath: URL
+- contextPath: URL.Data
   description: Extracted URLs
 scripttarget: 0

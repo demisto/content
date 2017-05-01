@@ -218,15 +218,20 @@ script:
             result = analysisPoll(uuid,timeout,interval);
         }
 
-        var dbotScore = {indicator: analysis.md5, type: 'hash', vendor: 'Lastline', score:0};
+        var dbotScore = {Indicator: analysis.md5, Type: 'hash', Vendor: 'Lastline', Score:0};
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
                 var analysis = result.obj.data.analysis_subject;
-                ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
-                dbotScore.score=3;
+                addMalicious(ec, outputPaths.file, {
+                    MD5: analysis.md5,
+                    SHA1: analysis.sha1,
+                    SHA256: analysis.sha256,
+                    Malicious: {Vendor: 'Lastline', Description: 'Score above ' + threshold, Score: result.obj.data.score}
+                });
+                DBotScore.Score=3;
             } else {
-                dbotScore.score=1;
+                DBotScore.Score=1;
             }
         } else {
             ec.lastlineTasks=[{'file_id':file_id,'uuid':uuid}];
@@ -234,7 +239,7 @@ script:
             md += 'File submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     }
 
@@ -266,14 +271,17 @@ script:
             result = analysisPoll(uuid,threshold,timeout,interval);
         }
 
-        var dbotScore = {indicator: url, type: 'url', vendor: 'Lastline', score:0};
+        var dbotScore = {Indicator: url, Type: 'url', Vendor: 'Lastline', Score:0};
         if (analysisReady(result.obj.data)) {
             md=dataToMd(result.obj.data,threshold);
             if (result.obj.data.score > threshold) {
-                ec['URL/Malicious']=url;
-                dbotScore.score=3;
+                addMalicious(ec, outputPaths.url, {
+                    Data: url,
+                    Malicious: {Vendor: 'Lastline', Description: 'Score above ' + threshold, Score: result.obj.data.score}
+                });
+                DBotScore.Score=3;
             } else {
-                dbotScore.score=1;
+                DBotScore.Score=1;
             }
         } else {
             ec.lastlineTasks=[{'url':url,'uuid':uuid}];
@@ -281,7 +289,7 @@ script:
             md += 'URL submitted for analysis.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
@@ -321,15 +329,20 @@ script:
         var data = result.obj.data;
         md += dataToMd(data,threshold);
 
-        var dbotScore = {indicator: hash, type: 'hash', vendor: 'Lastline', score: 0};
+        var dbotScore = {Indicator: hash, Type: 'hash', Vendor: 'Lastline', Score: 0};
         if (result.obj.data.score > threshold) {
             var analysis = result.obj.data.analysis_subject;
-            ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
-            dbotScore.score= 3;
+            addMalicious(ec, outputPaths.file, {
+                MD5: analysis.md5,
+                SHA1: analysis.sha1,
+                SHA256: analysis.sha256,
+                Malicious: {Vendor: 'Lastline', Description: 'Score above ' + threshold, Score: result.obj.data.score}
+            });
+            DBotScore.Score= 3;
         } else {
-            dbotScore.score= 1;
+            DBotScore.Score= 1;
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 
     }
@@ -354,26 +367,34 @@ script:
 
         result = analysisPoll(uuid,threshold,timeout,interval);
 
-        var dbotScore = {vendor: 'Lastline', score: 0};
+        var dbotScore = {Vendor: 'Lastline', Score: 0};
         if (analysisReady(result.obj.data)) {
             var analysis = result.obj.data.analysis_subject;
             if ('url' in analysis) {
-                dbotScore.type = 'url';
-                dbotScore.indicator = analysis.url;
+                DBotScore.Type = 'url';
+                DBotScore.Indicator = analysis.url;
                 if (result.obj.data.score > threshold) {
-                    ec['URL/Malicious']={url:analysis.url,score:result.obj.data.score};
-                    dbotScore.score = 3;
+                    addMalicious(ec, outputPaths.url, {
+                        Data: url,
+                        Malicious: {Vendor: 'Lastline', Description: 'Score above ' + threshold, Score: result.obj.data.score}
+                    });
+                    DBotScore.Score = 3;
                 } else {
-                    dbotScore.score = 1;
+                    DBotScore.Score = 1;
                 }
             } else {
-                dbotScore.type = 'hash';
-                dbotScore.indicator = analysis.md5;
+                DBotScore.Type = 'hash';
+                DBotScore.Indicator = analysis.md5;
                 if (result.obj.data.score > threshold) {
-                    ec['File/Malicious']={MD5:analysis.md5,SHA1:analysis.sha1,SHA256:analysis.sha256,Score:result.obj.data.score};
-                    dbotScore.score = 3;
+                    addMalicious(ec, outputPaths.file, {
+                        MD5: analysis.md5,
+                        SHA1: analysis.sha1,
+                        SHA256: analysis.sha256,
+                        Malicious: {Vendor: 'Lastline', Description: 'Score above ' + threshold, Score: result.obj.data.score}
+                    });
+                    DBotScore.Score = 3;
                 } else {
-                    dbotScore.score = 1;
+                    DBotScore.Score = 1;
                 }
             }
             md+=dataToMd(result.obj.data,threshold);
@@ -381,7 +402,7 @@ script:
             md += '#### Report not ready.\n';
             md += 'Task UUID: ' + uuid + '\n';
         }
-        ec['dbotScore']=dbotScore;
+        ec['DBotScore']=dbotScore;
         return {Type: entryTypes.note, Contents: result.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
@@ -424,30 +445,41 @@ script:
       description: Score threshold to identify file as malicious
       defaultValue: "50"
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: List of malicious URLs identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious URLs identified by Lastline analysis
-    - contextPath: File/Malicious.MD5
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: File.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: URL
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+      related: File
     description: Get analysis report
   - name: url
     arguments:
@@ -473,18 +505,26 @@ script:
     outputs:
     - contextPath: lastlineTasks
       description: List of the submitted Lastline analysis tasks
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: List of malicious URLs identified by Lastline analysis
-      important: true
-      importantDescription: List of malicious URLs identified by Lastline analysis
-    - contextPath: dbotScore.indicator
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: URL
     description: Submit URL for analysis
   - name: file
     arguments:
@@ -496,26 +536,30 @@ script:
       description: Score threshold to identify file as malicious
       defaultValue: "50"
     outputs:
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: List of malicious files identified by Lastline analysis
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+      related: File
     description: Submit a file for analysis
   - name: lastlineUpload
     arguments:
