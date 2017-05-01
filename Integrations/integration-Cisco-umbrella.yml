@@ -183,14 +183,12 @@ script:
             }
         }
 
-        // build context
-        var context = {
-            Domain: domainContext
-        };
         if (categorization.status === 1) {
-            context['Domain/Malicious'] = domainContext;
+            domainContext.Malicious = {Vendor: 'Cisco Umbrella', Description: 'Categorized as 1'};
         }
-
+        // build context
+        var context = {};
+        addMalicious(context, outputPaths.domain, domainContext);
         return createTableEntry("Categorization:", table, context);
     }
 
@@ -217,7 +215,6 @@ script:
 
         // build context
         var domainContext = [];
-        var domainMaliciousContext = [];
 
         // map matches to domains & check if matches is malare
         matches.forEach(function (match) {
@@ -227,19 +224,15 @@ script:
                 FirstSeen: match.firstSeen,
                 FirstSeenISO:match.firstSeenISO
             };
-            domainContext.push(domain);
             if(securityCategoriesStr.indexOf('Malware') > -1) {
-                domainMaliciousContext.push(domain);
+                domain.Malicious = {Vendor: 'Cisco Umbrella', Description: 'Tagged as malware'};
+                domain.properties_to_append = ['Malicious'];
             }
+            domainContext.push(domain);
         });
 
-        var context = {
-            Domain: domainContext
-        };
-
-        if(domainMaliciousContext.length > 0) {
-            context['Domain/Malicious'] = domainMaliciousContext;
-        }
+        var context = {};
+        context[outputPaths.domain] = domainContext;
         return createTableEntry("Search Results:", table, context);
     }
 
@@ -475,17 +468,15 @@ script:
 
         var table = res.map(function(obj) {
             return {
-                Name: obj.name
+                Name: obj.name,
+                Malicious: {Vendor: 'Cisco Umbrella', Description: 'For IP: ' + ip},
+                properties_to_append: ['Malicious']
             }
         });
 
         var context = {};
         if (table.length > 0) {
-            context = {
-                Address: ip,
-                Domain: table
-                'Domain/Malicious': table
-            }
+            context[outputPaths.domain] = table;
         }
         return createTableEntry("Malicious Domains:", table, context);
     }
@@ -525,20 +516,18 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-      importantDescription: ' '
     - contextPath: Domain.SecurityCategories
       description: The Umbrella security category, or categories, that match this
         domain
     - contextPath: Domain.ContentCategories
       description: The Umbrella content category or categories that match this domain
-    - contextPath: Domain/Malicious.Name
-      description: Malicious Domain name
-    - contextPath: Domain/Malicious.SecurityCategories
-      description: The Umbrella security category, or categories, that match this
-        malicious domain
-    - contextPath: Domain/Malicious.ContentCategories
-      description: The Umbrella content category, or categories, that match this malicious
-        domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: umbrella-domain-co-occurrences
@@ -770,8 +759,13 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain/Malicious.Name
-      description: Malicious domain name
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: This command  shows whether the IP address you’ve entered as input
       has any known malicious domains associated with it. The domains that appear
       when using this endpoint are those that currently exist in the Umbrella block
