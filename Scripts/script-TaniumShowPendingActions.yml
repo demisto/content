@@ -51,7 +51,7 @@ script: |
           if (typeof(jsonSavedAction[field]) === 'string') {
               d[field] = jsonSavedAction[field];
           } else {
-              d[field] = JSON.stringify(jsonSavedAction[field]);
+              d[field] = jsonSavedAction[field];
           }
       }
 
@@ -67,10 +67,12 @@ script: |
   getObjArgs["object-data"] = requestPendingObjects;
 
   var res = executeCommand('tn-get-object', getObjArgs);
-  var table = {
+  var entry = {
       Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
   };
 
   responseData = res[0].Contents.Envelope.Body.return.result_object;
@@ -97,8 +99,10 @@ script: |
           return savedActions;
       else {
           for (var i=0; i < savedActions.length; i++)
-              table.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
-          return table;
+              entry.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
+
+          entry.HumanReadable = tableToMarkdown("Tanium pending actions", entry.Contents, null);
+          return entry;
       }
   }
 type: javascript

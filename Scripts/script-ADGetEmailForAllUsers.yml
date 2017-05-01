@@ -25,7 +25,9 @@ tags:
 comment: Use Active Directory to retrieve the email address associated with tall users.
 system: true
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - ad-search
 timeout: 0s
+

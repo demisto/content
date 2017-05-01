@@ -29,7 +29,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Insecure
+- display: Allow insecure HTTP
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -582,9 +582,9 @@ script:
     - name: projectKey
       description: Project key to associate the issue
     - name: issueTypeName
-      description: Issue type name, like - Incident
+      description: Choose issue type by name - e.g. Problem
     - name: issueTypeId
-      description: Issue type id - format number
+      description: Choose issue type by its numeric ID
     - name: projectName
       description: Project name to associate the issue
     - name: description
