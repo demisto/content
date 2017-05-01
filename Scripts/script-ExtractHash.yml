@@ -7,18 +7,25 @@ script: |-
   if (typeof text !== 'string') {
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
   var matches = [], found;
   var regMD5 = /\b[a-fA-F\d]{32}\b/gm;
   while (found = regMD5.exec(text)) {
-      matches.push(found[0]);
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches.push(found[0]);
+      }
   }
   var regSHA1 = /\b[a-fA-F\d]{40}\b/gm;
   while (found = regSHA1.exec(text)) {
-      matches.push(found[0]);
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches.push(found[0]);
+      }
   }
   var regSHA256 = /\b[a-fA-F\d]{64}\b/gm;
   while (found = regSHA256.exec(text)) {
-      matches.push(found[0]);
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches.push(found[0]);
+      }
   }
   var ec = {File: []};
   var md = '### Extract hash\n';

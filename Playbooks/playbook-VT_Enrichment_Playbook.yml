@@ -127,7 +127,7 @@ tasks:
       iscommand: true
       brand: VirusTotal
     scriptarguments:
-      url: ${URL}
+      url: ${URL.Data}
     view: |-
       {
         "position": {
@@ -211,7 +211,7 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      value: ${URL}
+      value: ${URL.Data}
     view: |-
       {
         "position": {
