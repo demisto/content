@@ -28,7 +28,7 @@ type: javascript
 tags:
 - Utility
 comment: |
-  Not in context verification is a script that verifies that the specified field is not in the context. 
+  Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. 
 enabled: true
 args:
 - name: cmdToRun
