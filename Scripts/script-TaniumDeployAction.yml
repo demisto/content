@@ -41,7 +41,19 @@ script: |-
         'target-group': targetGroup,
       };
   var res = executeCommand('tn-deploy-package', taniumArgs);
-  return res
+  if (isError(res[0])) {
+      return res;
+  }
+
+  var entry = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: dq(res[0],'Contents'),
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: tableToMarkdown("Tanium deploy action", dq(res[0],'Contents'), null)
+  };
+
+  return entry;
 type: javascript
 tags:
 - tanium

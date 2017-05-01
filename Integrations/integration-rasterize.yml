@@ -56,4 +56,4 @@ script:
     - name: type
       description: pdf or image. Default is png.
     description: Rasterize a URL into image or PDF
-  dockerimage: slavikm/rasterize
+  dockerimage: demisto/rasterize
