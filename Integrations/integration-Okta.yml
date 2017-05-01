@@ -604,7 +604,7 @@ script:
     - contextPath: Account.Type
       description: Type of create account - Okta
     description: Creates a new user with an option of setting password, recovery question
-      & answer. The new user will immediately be able to login after activation with
+      and answer. The new user will immediately be able to login after activation with
       the assigned password. This flow is common when developing a custom user registration
       experience.
     execution: true
