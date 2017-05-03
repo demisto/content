@@ -563,6 +563,37 @@ script: |-
       return res;
   }
 
+  /**
+   * Get list data which is comma-separated into an array
+   * @param {String} listName - the name of the list
+   * @returns {Array} the list as an array
+   */
+  function getCSVListAsArray(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          var data = res[0].Contents.split(',');
+          return data.filter(function(v) {return v;}).map(function(v) {return v.trim();});
+      }
+      return [];
+  }
+
+  /**
+   * Get list data which is JSON format into an object that can be an array as well
+   * @param {String} listName - the name of the list
+   * @returns {Object} the list as an object
+   */
+  function getJSONListAsObject(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          try {
+              return JSON.parse(res[0].Contents);
+          } catch (ex) {
+              throw 'Error parsing list - ' + res[0].Contents + ' - ' + ex;
+          }
+      }
+      return null;
+  }
+
   var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
@@ -847,9 +878,9 @@ script: |-
 
 
   /**
-     * Base64 encode utiliy
-     * @returns Base64 encoded string
-     */
+   * Base64 encode utiliy
+   * @returns Base64 encoded string
+   */
   var Base64 = {
         _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
         encode: function(input) {
@@ -874,6 +905,19 @@ script: |-
 
           return output;
         }
+  };
+  // Add the given obj to the path while making sure to append Malicious property
+  function addMalicious(context, path, obj) {
+      obj['properties_to_append'] = ['Malicious'];
+      context[path] = obj;
+  }
+  // Constants for common merge paths
+  var outputPaths = {
+      file: 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
+      ip: 'IP(val.Address && val.Address == obj.Address)',
+      url: 'URL(val.Data && val.Data == obj.Data)',
+      domain: 'Domain(val.Name && val.Name == obj.Name)',
+      cve: 'CVE(val.ID && val.ID == obj.ID)'
   };
 type: javascript
 tags:

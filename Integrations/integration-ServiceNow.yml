@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: ServiceNow
 display: ServiceNow
+fromversion: 2.5.0
 category: IT Services
 image: data:image/png;base64,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
 description: IT service management
@@ -27,6 +28,12 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Default ticket type of commands. Can be incident, problem or change_reuquest.
+    Commands also take ticket_type argument
+  name: ticket_type
+  defaultvalue: incident
+  type: 0
+  required: true
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   defaultvalue: ""
@@ -57,10 +64,13 @@ script:
     var username = params.credentials.identifier;
     var password = params.credentials.password;
     var serverUrl = params.url;
+
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
     }
+
     var defaults = {limit:10, fetch_limit:10};
+
     var identLevel = function(count) {
         var ret='';
         for (var i=0;i<count;i++) {
@@ -68,6 +78,7 @@ script:
         }
         return ret;
     };
+
     var flattenValue = function(value,level) {
         if (!level) {
             level=0;
@@ -110,7 +121,7 @@ script:
                 'Content-Type': ['application/json']
             };
         }
-        body = (body)?body:'';
+        body = (body) ? body : '';
         var api = '/api/now/';
         if (params.api_version) {
             api += params.api_version + '/';
@@ -119,7 +130,7 @@ script:
 
         var res;
         if (file_id) {
-            res = httpMultipart(url,file_id,{Method: 'POST',Headers: headers, Username: username,Password: password},{},params.insecure,params.proxy);
+            res = httpMultipart(url,file_id,{Headers: headers, Username: username,Password: password},body,params.insecure,params.proxy,false,'uploadFile', body.file_name,true);
         } else {
             res = http(url,{Method: method,Headers: headers,Body: body, Username: username,Password: password},params.insecure,params.proxy);
         }
@@ -164,6 +175,23 @@ script:
             closed_at:'Resolved at',
             sla_due:'SLA due',
             short_description:'Short description',
+        },
+        'servicenow-create': {
+            number:'Number',
+            sys_id:'Sys ID',
+            state:  'State',
+            impact: 'Impact',
+            priority:'Priority',
+            severity:'Severity',
+            urgency:'Urgency',
+            sys_created_on:'Created On',
+            sys_created_by:'Created by',
+            short_description:'Short description'
+        },
+        'servicenow-upload-file': {
+            file_name: 'Filename',
+            download_link: 'Download link',
+            sys_id: 'System ID'
         },
         'servicenow-incident-create': {
             number:'Number',
@@ -231,11 +259,12 @@ script:
         return md;
     }
 
-    var incidentsGetIncident = function() {
+    var SNGetIncident = function() {
+        var ticket_type = getTableName();
         if (args.id) {
-            var path = "table/incident/"+args['id'];
+            var path = "table/"+ticket_type+"/"+args['id'];
         } else if (args.number) {
-            var path = "table/incident" + encodeToURLQuery({sysparm_query:"number="+args.number});
+            var path = "table/"+ticket_type + encodeToURLQuery({sysparm_query:"number="+args.number});
         } else {
             throw 'incindet-get requires either incident ID (sys_id) or incdent number';
         }
@@ -251,18 +280,20 @@ script:
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
     }
 
-    var incidentUpdate = function(){
+    var SNUpdate = function(){
+        var ticket_type = getTableName();
         var body = getBody();
-        var path = "table/incident/"+args["id"];
+        var path = "table/"+ticket_type+"/"+args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident updated\n";
         md += dataToMd(command,res.obj.result);
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
     }
 
-    var incidentCreate = function(){
+    var SNCreate = function(){
         var body = getBody();
-        var path = "table/incident";
+        var ticket_type = getTableName();
+        var path = "table/"+ticket_type;
         var res = sendRequest('POST',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident created\n";
         md += dataToMd(command,res.obj.result);
@@ -270,38 +301,53 @@ script:
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
     }
 
-    var incidentAddLink = function(){
+    var SNAddLink = function(){
         var key=(args['post-as-comment']=='true')?'comments':'work_notes';
+        var ticket_type = getTableName();
         var text=(args.text) ? args.text : args.link;
         var link='[code]<a class="web" target="_blank" href="'+args.link+'" >'+text+'</a>[/code]';
         var body={};
         body[key]=link;
-        var path = "table/incident/" + args["id"];
+        var path = "table/"+ticket_type+"/" + args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### Link added to ServiceNow incident\n";
         md += dataToMd(command,res.obj.result);
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
     }
 
-    var incidentAddComment = function(){
+    var SNAddComment = function(){
         var key=(args['post-as-comment']=='true')?'comments':'work_notes';
+        var ticket_type = getTableName();
         var text=args.comment;
         var body={};
         body[key]=text;
-        var path = "table/incident/" + args["id"];
+        var path = "table/"+ticket_type+"/" + args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### Link added to ServiceNow incident\n";
         md += dataToMd(command,res.obj.result);
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
     }
 
-    var incidentsQuery = function(){
+    var getTableName = function(){
+        if (args.ticket_type !== undefined){
+            return args.ticket_type;
+        }else {
+            if (params.ticket_type !== undefined){
+                return params.ticket_type;
+            }else {
+                return "incident";
+            }
+        }
+    }
+    var SNQuery = function(){
         var parameters={};
         parameters.sysparm_limit = (args.limit) ? args.limit : defaults.limit;
         if (args.sysparm_query) {
             parameters.sysparm_query = args.sysparm_query;
         }
-        var path = "table/incident" + encodeToURLQuery(parameters);
+
+        var ticket_type = getTableName();
+        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
         res = sendRequest('GET',path);
         var md = "### ServiceNow incidents\n";
         md += dataToMd(command,res.obj.result);
@@ -327,6 +373,33 @@ script:
         var timeOld = hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
         sertime = dateOld+" "+timeOld;
         return sertime;
+    }
+
+    var SNUploadFile = function(){
+        var headers = {
+            'Accept': ['application/json'],
+            'Content-Type': ['multipart/form-data']
+            };
+        var ticket_type = getTableName();
+        var body = {
+            table_name:ticket_type,
+            table_sys_id: args['id']
+        };
+        if (args.file_name) {
+            body.file_name = args['file_name'];
+        } else {
+            body.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
+        }
+        body.file_name = (Array.isArray(body.file_name)) ? body.file_name[0]: body.file_name;
+
+        var path = "attachment/upload";
+        var res = sendRequest('POST',path,headers,body,args.file_id);
+
+        var result = res.obj.result;
+        var md='### File uploaded\n';
+        md += dataToMd(command,result);
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': result, "HumanReadable": md} );
     }
 
 
@@ -380,41 +453,29 @@ script:
         return (JSON.stringify(incidents));
     }
 
-    var incidentUploadFile = function(){
-        var parameters={};
-        parameters.table_name='incident';
-        parameters.table_sys_id = args['id'];
-        if (args.file_name) {
-            parameters.file_name = args['file_name'];
-        } else {
-            parameters.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
-        }
-
-        var path = "attachment/file" + encodeToURLQuery(parameters);
-        var res = sendRequest('POST',path,null,null,args.file_id);
-
-        var result = res.obj.result;
-        var md='### File uploaded\n';
-        md += dataToMd(command,result);
-
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': result, "HumanReadable": md} );
-    }
 
     switch (command) {
-        case "servicenow-incidents-get-incident":
-            return incidentsGetIncident();
+        case "servicenow-get":
+        case "servicenow-incident-get":
+            return SNGetIncident();
+        case "servicenow-query":
         case "servicenow-incidents-query":
-            return incidentsQuery();
+            return SNQuery();
+        case 'servicenow-update':
         case 'servicenow-incident-update':
-            return incidentUpdate();
+            return SNUpdate();
+        case "servicenow-create":
         case "servicenow-incident-create":
-            return incidentCreate();
-        case 'servicenow-incident-add-link':
-            return incidentAddLink();
-        case 'servicenow-incident-add-comment':
-            return incidentAddComment();
+            return SNCreate();
+        case "servicenow-add-link":
+        case "servicenow-incident-add-link":
+            return SNAddLink();
+        case "servicenow-add-comment":
+        case "servicenow-incident-add-comment":
+            return SNAddComment();
+        case "servicenow-upload-file":
         case "servicenow-incident-upload-file":
-            return incidentUploadFile();
+            return SNUploadFile();
         case 'fetch-incidents':
             return fetchIncidents();
         case 'test-module':
@@ -430,11 +491,19 @@ script:
     }
   type: javascript
   commands:
-  - name: servicenow-incidents-get-incident
+  - name: servicenow-get
     arguments:
     - name: id
       default: true
       description: Incident ID to retrieve
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: number
       description: Incident number to retrieve
     outputs:
@@ -449,10 +518,46 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
     description: Retrieve ticket information by specific ticket ID
-  - name: servicenow-incident-create
+  - name: servicenow-incident-get
+    deprecated: true
+    arguments:
+    - name: id
+      default: true
+      description: Incident ID to retrieve
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: number
+      description: Incident number to retrieve
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow incident ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve ticket information by specific ticket ID
+  - name: servicenow-create
     arguments:
     - name: short_description
       description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: assignment_group
       description: The group that created the ticket
     - name: urgency
@@ -591,10 +696,169 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
     description: Create new ServiceNow ticket
-  - name: servicenow-incident-update
+  - name: servicenow-incident-create
+    deprecated: true
     arguments:
     - name: short_description
       description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: assignment_group
+      description: The group that created the ticket
+    - name: urgency
+      description: Ticket urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set incident as Active
+    - name: activity_due
+      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+    - name: order
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+    - name: reopen_count
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+    - name: watch_list
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+    - name: assignment_group
+      description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - name: impact
+      description: integer
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Create new ServiceNow ticket
+  - name: servicenow-update
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: assignment_group
       description: The group that created the ticket
     - name: urgency
@@ -722,12 +986,160 @@ script:
       required: true
       description: Id(UID) of the ticket to update
     description: Update specific ticket by providing ticket id
-  - name: servicenow-incident-add-link
+  - name: servicenow-incident-update
+    deprecated: true
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: assignment_group
+      description: The group that created the ticket
+    - name: urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the ticket active(true/false)
+    - name: activity_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+    - name: order
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+    - name: reopen_count
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+    - name: watch_list
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+    - name: assignment_group
+      description: UID
+    - name: impact
+      description: integer
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+    - name: id
+      required: true
+      description: Id(UID) of the ticket to update
+    description: Update specific ticket by providing ticket id
+  - name: servicenow-add-link
     arguments:
     - name: id
       required: true
       description: Incident ID , also known in the api as sys_id - format is uuid
         like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: link
       required: true
       description: The actual link to publish in ServiceNow incident, valid url format,
@@ -738,12 +1150,45 @@ script:
     - name: text
       description: The text to represent the link
     description: Add link to specific ticket by providing ticket id
-  - name: servicenow-incident-add-comment
+  - name: servicenow-incident-add-link
+    deprecated: true
     arguments:
     - name: id
       required: true
       description: Incident ID , also known in the api as sys_id - format is uuid
         like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: link
+      required: true
+      description: The actual link to publish in ServiceNow incident, valid url format,
+        like http://www.demisto.com
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, by default true, if
+        false will publish the link as WorkNote, format bool
+    - name: text
+      description: The text to represent the link
+    description: Add link to specific ticket by providing ticket id
+  - name: servicenow-add-comment
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: comment
       required: true
       description: Comment to add
@@ -751,13 +1196,43 @@ script:
       description: Publish the link as comment on the incident, by default true, if
         false will publish the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
-  - name: servicenow-incidents-query
+  - name: servicenow-incident-add-comment
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: comment
+      required: true
+      description: Comment to add
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, by default true, if
+        false will publish the link as WorkNote, format bool
+    description: Add comment to specific ticket by providing ticket id
+  - name: servicenow-query
     arguments:
     - name: limit
       description: Limit for how many tickets to retrieve
       defaultValue: "10"
     - name: sysparm_query
       description: Query
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
@@ -770,12 +1245,70 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
     description: Retrieve info with query
-  - name: servicenow-incident-upload-file
+  - name: servicenow-incidents-query
+    deprecated: true
+    arguments:
+    - name: limit
+      description: Limit for how many tickets to retrieve
+      defaultValue: "10"
+    - name: sysparm_query
+      description: Query
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve info with query
+  - name: servicenow-upload-file
     arguments:
     - name: id
       required: true
       description: Incident ID , also known in the api as sys_id - format is uuid
         like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: file_id
+      required: true
+      description: War-room entry ID that includes the file
+    - name: file_name
+      description: Filename of uploaded file to override the existing file name in
+        entry
+    description: Upload new file
+  - name: servicenow-incident-upload-file
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
     - name: file_id
       required: true
       description: War-room entry ID that includes the file
@@ -785,3 +1318,4 @@ script:
     description: Upload new file
   isfetch: true
 hidden: false
+system: true
