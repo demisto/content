@@ -2,7 +2,6 @@ commonfields:
   id: TaniumDeployAction
   version: 1
 name: TaniumDeployAction
-name: TaniumDeployAction_update
 script: |-
   // An example script for deploying Tanium action with filter
   if (!args.packageName && !args.packageID) {
