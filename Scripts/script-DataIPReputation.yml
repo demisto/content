@@ -5,7 +5,7 @@ name: DataIPReputation
 script: |-
   var score = -1;
   var rep = executeCommand('ip', {ip: args.input});
-  var scores = dq(rep, 'EntryContext.dbotScore.score');
+  var scores = dq(rep, 'EntryContext.DBotScore.Score');
   for (var i = 0; scores && i < scores.length; i++) {
     if (scores[i] && score < scores[i]) {
       score = scores[i];
