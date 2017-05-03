@@ -16,8 +16,13 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Directory from which to get XML files.
-  name: dirPath
+- display: Directory from which to get XML files and create incidents.
+  name: inputDirPath
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Directory to which put command XML files.
+  name: commandsDirPath
   defaultvalue: ""
   type: 0
   required: true
@@ -35,6 +40,31 @@ script:
 
     LIST_CASE_ENTRIES = ['caseEvents', 'childOf', 'ownedBy']
     TIME_CASE_ENTRIES = ['detectionTime', 'estimatedStartTime']
+
+    SYSTEM = ''
+    URI_PREFIX = ''
+    TOREPLACE = '\\"\\<\\>\\(\\)'
+
+    XML_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE archive SYSTEM "../../schema/xml/archive/arcsight-archive.dtd">
+    <archive buildVersion="6.9.1.2195.0" buildTime="2-9-2016_19:0:8" createTime="{0}">
+        <ArchiveCreationParameters>
+            <action>insert</action>
+            <format>xml.external.case</format>
+            <include>
+                <list>
+                    <ref type="Case" uri="{2}" id="{1}"/>
+                </list>
+            </include>
+        </ArchiveCreationParameters>
+        <Case id="{1}" name="{3}" action="insert" >
+            <stage>{4}</stage>
+        </Case>
+    </archive>"""
+
+    FILENAME_TEMPLATE = 'ExternalEventTrackingData_{0}.xml'
+
+    res = []
 
 
     def ref_to_dict(item):
@@ -105,7 +135,7 @@ script:
 
 
     def get_incidents_from_xmls():
-        filepaths = glob.glob(os.path.join(demisto.params()['dirPath'], '*.xml'))
+        filepaths = glob.glob(os.path.join(demisto.params()['inputDirPath'], '*.xml'))
         incidents = []
         for filepath in filepaths:
             incidents += parse_arcsight_xml(filepath)
@@ -113,16 +143,67 @@ script:
         return incidents
 
 
+    def create_file_remotely(data, filename):
+        cmd = "echo %s > %s" % (data, filename)
+        result = demisto.executeCommand('RemoteExec', {'system': SYSTEM, 'cmd': cmd})
+        if isError(result):
+            raise 'RemoteExec error: %s' % (cmd, )
+
+        return result
+
+
+    def create_file_locally(data, filepath):
+        with open(filepath, 'w') as f:
+            f.write(data)
+
+
+    def update_case():
+        case_id = demisto.args()['caseId']
+        name = demisto.args()['name']
+        stage = demisto.args()['stage']
+        uri = URI_PREFIX + demisto.args()['name']
+        now = time.strftime('%m-%d-%Y_%H-%M-%S.000')
+
+        filename = FILENAME_TEMPLATE.format(now)
+        filepath = os.path.join(demisto.params()['commandsDirPath'], filename)
+        data = XML_TEMPLATE.format(now, case_id, uri, name, stage)
+
+        # uncomment this if you want to create the file remotely
+        # result = create_file_remotely(data, filepath)
+        # if not isError(result[0]):
+        #    res.append('Modified stage to %s in case %s' % (stage, case_id)
+
+        create_file_locally(data, filepath)
+
+        demisto.results('Modified stage to %s in case %s.' % (stage, case_id))
+
+
     if __name__ == '__main__':
         if demisto.command() == 'test-module':
             demisto.results('ok')
             sys.exit(0)
 
-        if demisto.command() == 'fetch-incidents':
+        elif demisto.command() == 'fetch-incidents':
             incidents = get_incidents_from_xmls()
             demisto.incidents(incidents)
             sys.exit(0)
 
+        elif demisto.command() == 'arcsight-update-case':
+            update_case()
+
   type: python
+  commands:
+  - name: arcsight-update-case
+    arguments:
+    - name: caseId
+      required: true
+      description: ID of the case.
+    - name: name
+      required: true
+      description: Name of the case.
+    - name: stage
+      required: true
+      description: The stage of the case.
+    description: Create an XML to update a case.
   isfetch: true
 hidden: false
