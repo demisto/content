@@ -64,8 +64,6 @@ script:
 
     FILENAME_TEMPLATE = 'ExternalEventTrackingData_{0}.xml'
 
-    res = []
-
 
     def ref_to_dict(item):
         return {'type': item.get('type'), 'uri': item.get('uri'), 'id': item.get('id')}
@@ -143,15 +141,6 @@ script:
         return incidents
 
 
-    def create_file_remotely(data, filename):
-        cmd = "echo %s > %s" % (data, filename)
-        result = demisto.executeCommand('RemoteExec', {'system': SYSTEM, 'cmd': cmd})
-        if isError(result):
-            raise 'RemoteExec error: %s' % (cmd, )
-
-        return result
-
-
     def create_file_locally(data, filepath):
         with open(filepath, 'w') as f:
             f.write(data)
@@ -167,11 +156,6 @@ script:
         filename = FILENAME_TEMPLATE.format(now)
         filepath = os.path.join(demisto.params()['commandsDirPath'], filename)
         data = XML_TEMPLATE.format(now, case_id, uri, name, stage)
-
-        # uncomment this if you want to create the file remotely
-        # result = create_file_remotely(data, filepath)
-        # if not isError(result[0]):
-        #    res.append('Modified stage to %s in case %s' % (stage, case_id)
 
         create_file_locally(data, filepath)
 
