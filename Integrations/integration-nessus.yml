@@ -124,7 +124,7 @@ script:
         var ret = {};
         for(var key in newKeys){
             if(newKeys[key]){
-                ret[newKeys[key]] = dq(origObj, '.'+key);
+                ret[newKeys[key]] = dq(origObj, key);
             }
         }
         return ret;
