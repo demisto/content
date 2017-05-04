@@ -344,7 +344,16 @@ script:
 
     var scanFile = function(entry, uploadURL) {
         var url = uploadURL ? uploadURL : serverUrl + 'file/scan';
-        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
+        var fileName = dq(invContext, "File(val.EntryID == '" + entry + "').Name");
+        if (Array.isArray(fileName)) {
+            if (fileName.length > 0) {
+                fileName = fileName[0];
+            } else {
+                fileName = undefined;
+            }
+        }
+        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.APIKey},
+            params.insecure, params.proxy, undefined, 'file', fileName);
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + url + ', request status code: ' + result.StatusCode;
         }
