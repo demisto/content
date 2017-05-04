@@ -2,6 +2,7 @@ test:
   override:
     - chmod +x yamlvalidator
     - ./yamlvalidator
+    - chmod +x ensurefilenames.sh
     - ./ensurefilenames.sh
   post:
     - mkdir bundle
