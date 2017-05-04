@@ -321,7 +321,7 @@ script:
     if (command === 'threat-grid-get-threat-summary-by-id' && returnObject.Score >= TERSHOLD) {
         var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
         addMalicious(ec, outputPaths.file, {
-            MD5: md5[0],
+            MD5: Array.isArray(md5) ? md5[0] : md5,
             Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
         });
     }
