@@ -29,7 +29,7 @@ script: |
       'Asset Profiler' : 'Network'
   };
 
-  if ("customCategories" in args){
+  if (args.customCategories){
       var customObj = JSON.parse(args.customCategories);
       for (var attrname in customObj) { QRADAR_CATEGORIES[attrname] = customObj[attrname];}
   }
@@ -39,7 +39,7 @@ script: |
       CONTEXT_OUTPUT = args.contextOutput;
   }
 
-  var QUERY = "SELECT CATEGORYNAME(highlevelcategory) FROM events WHERE INOFFENSE({0}) AND \"CRE Name\"<>NULL START {1}";
+  var QUERY = "SELECT CATEGORYNAME(highlevelcategory) FROM events WHERE INOFFENSE({0}) START {1}";
 
   var incident = incidents[0];
 
@@ -104,5 +104,6 @@ dependson:
 outputs:
 - contextPath: Classifier/Description
   description: The QRadar offense 'High level category'
-  important: true
-  importantDescription: The QRadar offense 'High level category'
+important:
+- contextPath: Classifier/Description
+  description: Classifier Description

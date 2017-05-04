@@ -8,33 +8,34 @@ script: |-
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
   var whitelist = getCSVListAsArray('Indicators Whitelist');
-  var matches = [], found;
+  var matches = {}, found;
   var regMD5 = /\b[a-fA-F\d]{32}\b/gm;
   while (found = regMD5.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
-          matches.push(found[0]);
+          matches[found[0]] = true;
       }
   }
   var regSHA1 = /\b[a-fA-F\d]{40}\b/gm;
   while (found = regSHA1.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
-          matches.push(found[0]);
+          matches[found[0]] = true;
       }
   }
   var regSHA256 = /\b[a-fA-F\d]{64}\b/gm;
   while (found = regSHA256.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
-          matches.push(found[0]);
+          matches[found[0]] = true;
       }
   }
+  var uniqueMatches = Object.keys(matches);
   var ec = {File: []};
   var md = '### Extract hash\n';
-  for (var i=0; i<matches.length; i++) {
+  for (var i=0; i < uniqueMatches.length; i++) {
       var f = {};
-      var hashType = matches[i].length === 32 ? 'MD5' : matches[i].length === 40 ? 'SHA1' : 'SHA256';
-      f[hashType] = matches[i];
+      var hashType = uniqueMatches[i].length === 32 ? 'MD5' : uniqueMatches[i].length === 40 ? 'SHA1' : 'SHA256';
+      f[hashType] = uniqueMatches[i];
       ec.File.push(f);
-      md += '- ' + matches[i] + '\n';
+      md += '- ' + uniqueMatches[i] + '\n';
   }
   return {Type: entryTypes.note, Contents: ec.File, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
