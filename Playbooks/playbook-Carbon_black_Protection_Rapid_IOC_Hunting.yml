@@ -45,7 +45,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      md5: ${File/Malicious.MD5}
+      md5: ${File.MD5}
     view: |-
       {
         "position": {
@@ -67,7 +67,7 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      hash: ${File/Malicious.MD5}
+      hash: ${File.MD5}
     view: |-
       {
         "position": {

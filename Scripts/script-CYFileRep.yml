@@ -54,26 +54,28 @@ args:
   default: true
   description: The ID of a file entry to upload
 outputs:
-- contextPath: File/Malicious.MD5
+- contextPath: File.MD5
   description: Bad hash MD5
-  important: true
-  importantDescription: Bad hashes found querying Cylance
-- contextPath: File/Malicious.SHA1
+- contextPath: File.SHA1
   description: Bad hash SHA1
-  important: true
-  importantDescription: Bad hashes found querying Cylance
-- contextPath: File/Malicious.SHA256
+- contextPath: File.SHA256
   description: Bad hash SHA256
-  important: true
-  importantDescription: Bad hashes found querying Cylance
-- contextPath: dbotScore.indicator
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
   description: The indicator we tested
-- contextPath: dbotScore.type
+- contextPath: DBotScore.Type
   description: The type of the indicator
-- contextPath: dbotScore.vendor
+- contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score
-- contextPath: dbotScore.score
+- contextPath: DBotScore.Score
   description: The actual score
+important:
+- contextPath: File(val.Malicious)
+  description: Malicious Files
+  related: File
 scripttarget: 0
 dependson:
   must:
