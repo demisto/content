@@ -343,9 +343,10 @@ script:
     };
 
     var scanFile = function(entry, uploadURL) {
-        var result = httpMultipart(uploadURL ? uploadURL : serverUrl + 'file/scan', entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
+        var url = uploadURL ? uploadURL : serverUrl + 'file/scan';
+        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
         if (result.StatusCode < 200 || result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+            throw 'Failed to perform request ' + url + ', request status code: ' + result.StatusCode;
         }
         if (result.Body === '' && result.StatusCode == 204) {
             throw 'No content recieved. Possible API rate limit reached.';
