@@ -71,14 +71,16 @@ script:
 
     var doCVE = function(cve) {
         var res = sendRequest('http://cve.circl.lu/api/cve/' + args.cveId.toUpperCase());
-        var ec = cveToContext(res.obj);
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec ? {CVE: ec} : {}};
+        var ec = {}
+        ec[outputPaths.cve] = cveToContext(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec[outputPaths.cve] ? ec : {}};
     };
 
     var doLatest = function() {
         var res = sendRequest('http://cve.circl.lu/api/last');
         var o = res.obj.results;
         var md = '## cicle.lu Latest CVEs\n';
+        var context = {};
         var ec = [];
         if (o && Array.isArray(o)) {
             for (var i=0; i<o.length; i++) {
@@ -88,10 +90,13 @@ script:
                     ec.push(ecl);
                 }
             }
+            if (ec.length > 0) {
+                context[outputPaths.cve] = ec;
+            }
         } else {
             md += 'No result found.';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec.length > 0 ? {CVE: ec} : {}};
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
     };
 
     // The command input arg holds the command sent from the user.
