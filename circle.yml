@@ -7,7 +7,6 @@ test:
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
     - cp Integrations/* bundle/
     - cp Misc/* bundle/
-    - cp TestPlaybooks/* bundle/
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
     - cp $(find Scripts -type f -print) bundle/
