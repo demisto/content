@@ -187,6 +187,10 @@ script:
     }
 
     var commandToPath = {
+      'netwitness-msearch': '/sdk?msg=msearch',
+      'netwitness-search': '/sdk?msg=search',
+      'netwitness-content': '/sdk?msg=content',
+      'netwitness-query': '/sdk?msg=query',
       'nw-sdk-session': '/sdk?msg=session',
       'nw-sdk-cancel': '/sdk?msg=cancel',
       'nw-sdk-query': '/sdk?msg=query',
@@ -349,6 +353,82 @@ script:
     }
   type: javascript
   commands:
+  - name: netwitness-msearch
+    arguments:
+    - name: sessions
+      description: <string, optional> The session ID ranges to search
+    - name: packets
+      description: <string, optional> The packet ID ranges to search
+    - name: search
+      required: true
+      description: <string> The search string to use
+    - name: where
+      description: <string, optional> The where clause used to identify sessions to
+        consider for the search
+    - name: limit
+      description: <uint64, optional> The maximum number of sessions to traverse for
+        this search
+    - name: flags
+      description: <string, optional> Flags to use for search.  This is a comma separated
+        list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+    description: Search for pattern matches in many sessions or packets
+  - name: netwitness-search
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to search
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: search
+      required: true
+      description: <string> The search string to use
+    description: Searches for matches in session/packet content
+  - name: netwitness-content
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to retrieve packet content for
+    - name: packet
+      description: <uint64, optional> The packet id of the first packet of the session,
+        in case the session has rolled out
+    - name: maxSize
+      description: <size, optional> The max number of bytes to return, zero means
+        no limit
+    - name: failOnCacheMiss
+      description: <bool, optional> If true, the content call fails if the NWD is
+        not in the cache.  This is used by optimized caching code only.
+    - name: renderType
+      description: <uint32, optional> The render type (see NwContentTypes in NwSDK.h),
+        pass zero to pick best option.  Not specifying this parameter always results
+        in an NWD and renderFlags and renderOptions are not considered.
+    - name: renderFlags
+      description: <uint32, optional> Bitwise mask to control options, (see NwContentFlags
+        in NwSDK.h)
+    - name: renderOptions
+      description: <string, optional> An encoded string params containing additional
+        options for controlling the operation.
+    description: Returns the packet content for a session
+  - name: netwitness-query
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting meta id (to run the query from
+        most recent to oldest meta, make id1 larger than id2)
+    - name: id2
+      description: <uint64, optional> The ending meta id
+    - name: size
+      description: <uint32, optional> The max number of entries to return, or just
+        stream back all results if zero
+    - name: query
+      description: <string, optional> The query string to use
+    - name: flags
+      description: <string, optional> The flags to use for query.  Can be a number
+        (bitwise mask) or comma separated values like query-log.
+    - name: threshold
+      description: <uint64, optional> Query optimization to stop processing results
+        after the threshold is reached (useful with select aggregate functions).  Zero
+        means no threshold (the default).
+    description: Performs a query against the meta database
   - name: nw-sdk-session
     arguments:
     - name: id1
@@ -365,6 +445,7 @@ script:
       description: <uint32> The channel handle running the query
     description: Cancel a running query, regardless of the user
   - name: nw-sdk-query
+    deprecated: true
     arguments:
     - name: id1
       description: <uint64, optional> The starting meta id (to run the query from
@@ -412,6 +493,7 @@ script:
         for
     description: Retrieves aliases for the specified key
   - name: nw-sdk-content
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -490,6 +572,7 @@ script:
     arguments: []
     description: Removes the channel from the node as a monitor
   - name: nw-sdk-msearch
+    deprecated: true
     arguments:
     - name: sessions
       description: <string, optional> The session ID ranges to search
@@ -528,6 +611,7 @@ script:
     arguments: []
     description: Returns detailed information about the node
   - name: nw-sdk-search
+    deprecated: true
     arguments:
     - name: session
       required: true
