@@ -497,7 +497,7 @@ script:
             throw 'Failed to get scan editors, request status code: ' + result.StatusCode + ', body='+result.Body;
         }
         logout(token);
-        //return {m:JSON.parse(result.Body).templates};
+
         var res = JSON.parse(result.Body).templates;
         var md = tblToMd('Nessus Scans Editors',res,
                         ['title','name','desc','uuid','cloud_only','subscription_only','is_agent','more_info','manager_only','unsupported']);
