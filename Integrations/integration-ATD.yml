@@ -108,23 +108,25 @@ script:
         var context = {};
         if ((reportSummary) && (reportSummary.Subject)) {
             var subject = reportSummary.Subject;
-            context = { dbotScore: {vendor: 'McAfee-Advanced-Threat-Defense', score: 0 }};
+            context = { DBotScore: {Vendor: 'McAfee-Advanced-Threat-Defense', Score: 0 }};
 
             if ( subject.FileType === 0 ) {//file
-                context.dbotScore.indicator = subject.md5;
-                context.dbotScore.type = 'hash';
+                context.DBotScore.Indicator = subject.md5;
+                context.DBotScore.Type = 'hash';
                 if (subject.Verdict.Severity > 3) {
-                    context.dbotScore.score = 3;
-                    context['File/Malicious'] = {
-                                                Type : subject.Type,
-                                                MD5 : subject.md5,
-                                                SHA1 : subject['sha-1'],
-                                                SHA256 : subject['sha-256'],
-                                                Size : subject.size,
-                                                Name : subject.Name
-                                                };
+                    context.DBotScore.Score = 3;
+                    addMalicious(context, outputPaths.file, {
+                        Type : subject.Type,
+                        MD5 : subject.md5,
+                        SHA1 : subject['sha-1'],
+                        SHA256 : subject['sha-256'],
+                        Size : subject.size,
+                        Name : subject.Name,
+                        Malicious: {Vendor: 'McAfee-Advanced-Threat-Defense',
+                            Description: 'Severity: ' + subject.Verdict.Severity}
+                    });
                 } else {
-                    context.dbotScore.score = 1;
+                    context.DBotScore.Score = 1;
                 }
             }
         }
@@ -500,32 +502,33 @@ script:
         it. • pdf - Portable Document Format • sample - Download sample from McAfee
         Advanced Threat Defense'
     outputs:
-    - contextPath: File/Malicious.Name
+    - contextPath: File.Name
       description: Filename (only in case of report type=json)
-    - contextPath: File/Malicious.Type
+    - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
-    - contextPath: File/Malicious.Size
+    - contextPath: File.Size
       description: File size (only in case of report type=json)
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
-      important: true
-      importantDescription: Bad hashes found querying ATD
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious files
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
