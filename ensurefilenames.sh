@@ -1,3 +1,5 @@
+### this script ensure all files starts with the right prefix
+
 # ensures all files in dir starting with prefix
 ensurePrefix() {
     dir="$1"
@@ -9,8 +11,8 @@ ensurePrefix() {
         #echo "$filename"
         if ! [[ $filename == $2* ]]
         then
-        	echo "found"
-        	echo "$filename"
+        	echo "file $dir/$filename should start with $prefix"
+        	exit 1
         fi
     done
 }
