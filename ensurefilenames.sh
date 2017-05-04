@@ -1,43 +1,22 @@
-# ensure integration
-for entry in Integrations/*
-do
-    filename=$(basename $entry)
-    #echo "$filename"
-    if ! [[ $filename == integration-* ]]
-    then
-    	echo "found"
-    fi
-done
+# ensures all files in dir starting with prefix
+ensurePrefix() {
+    dir="$1"
+    prefix="$2"
 
-# ensure playbooks
-for entry in Playbooks/*
-do
-    filename=$(basename $entry)
-    #echo "$filename"
-    if ! [[ $filename == playbook-* ]]
-    then
-    	echo "found"
-    fi
-done
+    for entry in $1/*
+    do
+        filename=$(basename $entry)
+        #echo "$filename"
+        if ! [[ $filename == $2* ]]
+        then
+        	echo "found"
+        	echo "$filename"
+        fi
+    done
+}
 
-# ensure reports
-for entry in Reports/*
-do
-    filename=$(basename $entry)
-    #echo "$filename"
-    if ! [[ $filename == report-* ]]
-    then
-    	echo "found"
-    fi
-done
+ensurePrefix Integrations integration-
+ensurePrefix Playbooks playbook-
+ensurePrefix Reports report-
+ensurePrefix Scripts script-
 
-# ensure scripts
-for entry in Scripts/*
-do
-    filename=$(basename $entry)
-    #echo "$filename"
-    if ! [[ $filename == scripts-* ]]
-    then
-    	echo "found"
-    fi
-done
