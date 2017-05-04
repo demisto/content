@@ -60,8 +60,11 @@ script: |-
   //do action on params
   var res = supportedActions[action]();
 
+  // We need to override the context value so we use setContext
   if (args.contextKey) {
       setContext(args.contextKey, res);
+  } else {
+      setContext('MathResult', res);
   }
 
   return {ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: lh + ' ' + action + ' ' + rh + ' = ' + res};
@@ -93,6 +96,9 @@ args:
   description: Radix for right hand value, defaults to 10
 - name: contextKey
   description: Path where to store result
+outputs:
+- contextPath: MathResult
+  description: The result of the *last* math action. Might be overriden by contextKey.
 scripttarget: 0
 dependson: {}
 timeout: 0s

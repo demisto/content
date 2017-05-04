@@ -1,0 +1,44 @@
+commonfields:
+  id: VerifyContext
+  version: 1
+name: VerifyContext
+script: |-
+  var path = args.path;
+  var fields = args.fields ? args.fields.split(",") : [];
+
+  var verifyFields = function(obj) {
+      fields.forEach(function(field) {
+          if(dq(obj, field) === undefined) {
+              throw 'field ' + field + ' is missing from ' + JSON.stringify(obj);
+          }
+      });
+  }
+
+  var contextObject = dq(invContext, path);
+  if(contextObject === undefined) {
+        throw 'path ' + path + ' is not in context';
+  }
+
+  var isArray = contextObject instanceof Array;
+
+  if(isArray) {
+      contextObject.forEach(verifyFields);
+  } else {
+      verifyFields(contextObject);
+  }
+type: javascript
+tags:
+- context
+comment: |-
+  Verify path exists in context.
+  If matching object is array - verify fields exists in each object in array.
+  If matching object is not array - verify fields exists in matching object.
+enabled: true
+args:
+- name: path
+  required: true
+  default: true
+  description: Context path (e.g. 'Incidents')
+- name: fields
+  description: Comma separated values to verify that are in context(e.g. 'one,two,three')
+scripttarget: 0
