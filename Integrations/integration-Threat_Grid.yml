@@ -148,7 +148,7 @@ script:
             return undefined;
         }
         if (titleDictionary[command]) {
-            return tableToMarkdown(titleDictionary[command], returnObject);
+            return tableToMarkdown(titleDictionary[command], object);
         }
         return undefined;
     }
@@ -313,19 +313,17 @@ script:
     var contextData = contextDictionary[command];
     var ec = {};
     var returnObject = objectDictionary[command] &&
-    mapObjFunction(objectDictionary[command])(dq(rawResponse, contextData.ContentPath));
+      mapObjFunction(objectDictionary[command])(dq(rawResponse, contextData.ContentPath));
     ec[contextData.ContextPath] = returnObject;
     if (returnObject && !returnObject.ID) {
         returnObject.ID = id;
     }
     if (command === 'threat-grid-get-threat-summary-by-id' && returnObject.Score >= TERSHOLD) {
-        var md5 = dq(invContext, 'ThreatGrid.Sample(val=val.ID==\'' + returnObject.ID + '\').MD5');
-        var malFile = {};
-        addMalicious(malFile, outputPaths.file, {
+        var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
+        addMalicious(ec, outputPaths.file, {
             MD5: md5[0],
             Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
         });
-        ec[outputPaths.file]= [malFile[outputPaths.file]];
     }
 
     return {
