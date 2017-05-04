@@ -126,7 +126,7 @@ tasks:
       iscommand: true
       brand: FalconIntel
     scriptarguments:
-      url: ${URL}
+      url: ${URL.Data}
     view: |-
       {
         "position": {
@@ -210,7 +210,7 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      value: ${URL}
+      value: ${URL.Data}
     view: |-
       {
         "position": {
