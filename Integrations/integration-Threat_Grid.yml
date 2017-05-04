@@ -73,7 +73,7 @@ script:
                 params.proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request to ThreadGrid ' + path + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            throw 'Request to ThreatGrid ' + path + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         // If file name is provided, we should save to file
         return filename ?
@@ -293,7 +293,7 @@ script:
                 args.filename
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request to ThreadGrid ' + urlDict[command] + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            throw 'Request to ThreatGrid ' + urlDict[command] + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         rawResponse = JSON.parse(res.Body);
         break;
@@ -560,29 +560,29 @@ script:
     - name: user_only
       description: If “true”, will only match against samples you submitted
     outputs:
-    - contextPath: ThreadGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.ID
       description: The sample id
-    - contextPath: ThreadGrid.Sample.Filename
+    - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
-    - contextPath: ThreadGrid.Sample.State
+    - contextPath: ThreatGrid.Sample.State
       description: The sample state
-    - contextPath: ThreadGrid.Sample.Status
+    - contextPath: ThreatGrid.Sample.Status
       description: The sample status
-    - contextPath: ThreadGrid.Sample.MD5
+    - contextPath: ThreatGrid.Sample.MD5
       description: The sample md5
-    - contextPath: ThreadGrid.Sample.SHA1
+    - contextPath: ThreatGrid.Sample.SHA1
       description: The sample sha1
-    - contextPath: ThreadGrid.Sample.SHA256
+    - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreadGrid.Sample.OS
+    - contextPath: ThreatGrid.Sample.OS
       description: The sample os
-    - contextPath: ThreadGrid.Sample.OSVer
+    - contextPath: ThreatGrid.Sample.OSVer
       description: The sample ov version
-    - contextPath: ThreadGrid.Sample.SubmittedAt
+    - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
-    - contextPath: ThreadGrid.Sample.StartedAt
+    - contextPath: ThreatGrid.Sample.StartedAt
       description: The sample analysis starting time
-    - contextPath: ThreadGrid.Sample.CompletedAt
+    - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
     description: Get samples from threat grid
   - name: threat-grid-get-sample-by-id
@@ -592,29 +592,29 @@ script:
       default: true
       description: The sample ID
     outputs:
-    - contextPath: ThreadGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.ID
       description: The sample id
-    - contextPath: ThreadGrid.Sample.Filename
+    - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
-    - contextPath: ThreadGrid.Sample.State
+    - contextPath: ThreatGrid.Sample.State
       description: The sample state
-    - contextPath: ThreadGrid.Sample.Status
+    - contextPath: ThreatGrid.Sample.Status
       description: The sample status
-    - contextPath: ThreadGrid.Sample.MD5
+    - contextPath: ThreatGrid.Sample.MD5
       description: The sample md5
-    - contextPath: ThreadGrid.Sample.SHA1
+    - contextPath: ThreatGrid.Sample.SHA1
       description: The sample sha1
-    - contextPath: ThreadGrid.Sample.SHA256
+    - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreadGrid.Sample.OS
+    - contextPath: ThreatGrid.Sample.OS
       description: The sample os
-    - contextPath: ThreadGrid.Sample.OSVer
+    - contextPath: ThreatGrid.Sample.OSVer
       description: The sample ov version
-    - contextPath: ThreadGrid.Sample.SubmittedAt
+    - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
-    - contextPath: ThreadGrid.Sample.StartedAt
+    - contextPath: ThreatGrid.Sample.StartedAt
       description: The sample analysis starting time
-    - contextPath: ThreadGrid.Sample.CompletedAt
+    - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
     description: Get threat grid sample by id
   - name: threat-grid-get-sample-state-by-id
@@ -624,9 +624,9 @@ script:
       default: true
       description: The sample ID
     outputs:
-    - contextPath: ThreadGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.ID
       description: The sample id
-    - contextPath: ThreadGrid.Sample.State
+    - contextPath: ThreatGrid.Sample.State
       description: The sample state
     description: Get threat grid sample state by id
   - name: threat-grid-get-samples-state
@@ -659,25 +659,25 @@ script:
     - name: tags
       description: A comma-separated list of tags applied to this sample.
     outputs:
-    - contextPath: ThreadGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.ID
       description: The sample id
-    - contextPath: ThreadGrid.Sample.Filename
+    - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
-    - contextPath: ThreadGrid.Sample.State
+    - contextPath: ThreatGrid.Sample.State
       description: The sample state
-    - contextPath: ThreadGrid.Sample.Status
+    - contextPath: ThreatGrid.Sample.Status
       description: The sample status
-    - contextPath: ThreadGrid.Sample.MD5
+    - contextPath: ThreatGrid.Sample.MD5
       description: The sample md5
-    - contextPath: ThreadGrid.Sample.SHA1
+    - contextPath: ThreatGrid.Sample.SHA1
       description: The sample sha1
-    - contextPath: ThreadGrid.Sample.SHA256
+    - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreadGrid.Sample.OS
+    - contextPath: ThreatGrid.Sample.OS
       description: The sample os
-    - contextPath: ThreadGrid.Sample.OSVer
+    - contextPath: ThreatGrid.Sample.OSVer
       description: The sample ov version
-    - contextPath: ThreadGrid.Sample.SubmittedAt
+    - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     description: Submits a sample to threat grid for analysis
   - name: threat-grid-search-submissions
@@ -773,15 +773,15 @@ script:
       default: true
       description: The sample id
     outputs:
-    - contextPath: ThreadGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.ID
       description: The sample id
-    - contextPath: ThreadGrid.Sample.MaxSeverity
+    - contextPath: ThreatGrid.Sample.MaxSeverity
       description: The sample max severity
-    - contextPath: ThreadGrid.Sample.Score
+    - contextPath: ThreatGrid.Sample.Score
       description: The sample score
-    - contextPath: ThreadGrid.Sample.Count
+    - contextPath: ThreatGrid.Sample.Count
       description: The sample count
-    - contextPath: ThreadGrid.Sample.MaxConfidence
+    - contextPath: ThreatGrid.Sample.MaxConfidence
       description: The sample max confidence
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
