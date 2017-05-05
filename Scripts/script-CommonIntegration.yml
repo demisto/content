@@ -63,6 +63,7 @@ tags:
 - server
 comment: Common code that will be merged into each server integration when it runs
 system: true
+deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
