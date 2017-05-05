@@ -601,7 +601,7 @@ script:
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit
-      defaultValue: "2"
+      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
