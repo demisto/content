@@ -64,7 +64,7 @@ script:
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
-        if (obj.error) {
+        if (obj.error && result.StatusCode != 404) {
             throw 'XFE error - ' + obj.error;
         }
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
