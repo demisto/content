@@ -97,7 +97,7 @@ script:
             throw 'No content received. Possible API rate limit reached.';
         }
         return res;
-    }
+    };
 
     var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
