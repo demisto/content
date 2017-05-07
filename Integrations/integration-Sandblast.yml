@@ -363,8 +363,26 @@ script:
     - name: file_name
       description: File name - service calculates the file name from the part name
     outputs:
-    - contextPath: File
-      description: The queried file metadata
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as maliciouse    
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware 
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
@@ -450,8 +468,26 @@ script:
       required: true
       description: The file id
     outputs:
-    - contextPath: File
-      description: The uploaded file metadata
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as maliciouse    
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware 
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
