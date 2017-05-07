@@ -49,6 +49,61 @@ script:
         return url;
     };
 
+    var isObjectEmpty = function (obj) {
+        return Object.keys(obj).length === 0;
+    }
+
+    var mapTypeToValue = function (fields) {
+        var result = {};
+        var TYPE = 'type';
+        var VALUE = 'value';
+        if(fields && Array.isArray(fields)) {
+            fields.forEach(function (element) {
+                if (element.hasOwnProperty(TYPE) && element[TYPE]) {
+                    if(!Array.isArray(result[element[TYPE]])) {
+                        result[element[TYPE]] = [];
+                    }
+                    if(element.hasOwnProperty(VALUE) && element[VALUE]) {
+                        result[element[TYPE]].push(element[VALUE]);
+                    }
+                }
+            });
+        }
+        return result;
+    }
+
+    var buildHrAndContext = function (data) {
+        //Check if we have values
+        var retVal = {md:[], context: {Netwitness:{Events:[]}}};
+        var typeToValue;
+
+        if((typeof data) ==='object' && Array.isArray(data)) {
+            data.forEach(function (element) {
+                var fields = dq(element, 'results.fields');
+                typeToValue = mapTypeToValue(fields)
+
+                if(!isObjectEmpty(typeToValue)) {
+                    retVal.md.push(typeToValue);
+                    retVal.context.Netwitness.Events.push(typeToValue);
+                }
+            })
+        }
+        else if ((typeof data) ==='object') {
+            var fields = dq(data, 'results.fields');
+            typeToValue = mapTypeToValue(fields);
+            if(!isObjectEmpty(typeToValue)) {
+                retVal.md.push(typeToValue);
+                retVal.context.Netwitness.Events.push(typeToValue);
+            }
+        }
+        if(retVal.md.length > 0) {
+            var hr = tblToMd(command, retVal.md,'', '<br>');
+            return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
+        }else {
+            return JSON.stingify(data);
+        }
+    };
+
     var parseResponse = function(resp) {
         if (resp.StatusCode === 200) {
             try {
@@ -56,17 +111,35 @@ script:
                 if (Array.isArray(res)) {
                     return { results: res };
                 }
-                
+
                 return res;
             } catch (e) {
                 return resp.Body;
             }
         } else {
-          err = resp.Status;
-          if (resp.Body) {
-              err += '\n' + resp.Body;
-          }
-          throw err;
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
+        }
+    };
+
+    var buildMdAndContext = function(resp) {
+        var mdAndContext
+        if (resp.StatusCode === 200) {
+            try {
+                var res = JSON.parse(resp.Body);
+                return buildHrAndContext(res);
+            } catch (e) {
+                return resp.Body;
+            }
+        } else {
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
         }
     };
 
@@ -127,7 +200,7 @@ script:
         var res = http(
             fullUrl,
             {
-                Method: 'GET',
+                Method: method,
                 Username: params.username,
                 Password: params.password,
                 Accept: responseType,
@@ -348,6 +421,14 @@ script:
         case 'nw-decoder-parsers-upload':
             var res = decoderImport('/decoder/parsers/upload');
             return res;
+        case  'netwitness-msearch':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case  'netwitness-search':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case  'netwitness-content':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case  'netwitness-query':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
