@@ -52,11 +52,12 @@ args:
 - name: offenseID
   required: true
   default: true
-  description: The offense ID to query, can be found in label under ${incident.labels.id}
+  description: The offense ID to query.
+  defaultValue: ${incident.labels.id}
 - name: startTime
   required: true
-  description: query from startTime (in timestamp format), can be found in label under
-    ${incident.labels.id}
+  description: query from startTime (in timestamp format).    
+  defaultValue: ${incident.labels.start_time}
 - name: headers
   description: Table headers
 - name: range
