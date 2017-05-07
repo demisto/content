@@ -290,6 +290,10 @@ script:
 
     var doCVE = function(cve) {
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
+        if (res.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + cve};
+        }
         var o = res.obj;
         var md = '## X-Force CVE Search for: ' + cve + '\n';
         var context = {};
@@ -313,6 +317,11 @@ script:
             limit = '30';
         }
         var res = doReq('GET', 'vulnerabilities', {limit: limit});
+        // This should never happen
+        if (res.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have a list of latest vulnerabilities'};
+        }
         var o = res.obj;
         var md = '## X-Force Latest CVEs\n';
         var context = {};
