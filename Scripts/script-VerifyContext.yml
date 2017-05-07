@@ -35,7 +35,7 @@ script: |-
       } catch (e) {
           value = expectedValue;
       }
-      if(value != contextObject) {
+      if(JSON.stringify(value) !== JSON.stringify(contextObject)) {
           throw 'context path ' + path + ' is not equal to expected value';
       }
   }
