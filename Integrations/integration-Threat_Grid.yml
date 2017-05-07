@@ -786,12 +786,8 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
     important:
-    - contextPath: File.Malicious.Vendor
-      description: The vendor that marked file as malicious
-      related: ""
-    - contextPath: File.Malicious.Description
-      description: Malicious description
-      related: ""
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
     description: Returns a summary of the threats detected during analysis
   - name: threat-grid-get-html-report-by-id
     arguments:
