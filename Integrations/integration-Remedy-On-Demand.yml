@@ -61,15 +61,6 @@ script:
         Object.keys(obj).forEach(function(key) { !obj[key] && delete obj[key]; });
     }
 
-    var getUsers = function() {
-        var url = 'api/arsys/v1/users/';
-        var token = login();
-
-        var res = sendRequest(url, token);
-
-        return stringify(res);
-    }
-
     var sendRequest = function(url, token, method, body) {
 
         var res = http(
