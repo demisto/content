@@ -78,12 +78,14 @@ script:
     var withRetries = function(waitForRateLimit, retries, reqCall) {
         if (waitForRateLimit) {
             waitForRateLimit = parseInt(waitForRateLimit);
-        } else {
+        }
+        if (!waitForRateLimit) {
             waitForRateLimit = 60;
         }
         if (retries) {
             retries = parseInt(retries);
-        } else {
+        }
+        if (!retries) {
             retries = 0;
         }
         var res = reqCall();
