@@ -23,11 +23,12 @@ args:
 - name: offenseID
   required: true
   default: true
-  description: The offense ID to query, can be found in label under ${incident.labels.id}
+  description: The offense ID to query.
+  defaultValue: ${incident.labels.id}
 - name: startTime
   required: true
-  description: The offense startTime to query (in timestamp format), can be found
-    in label under ${incident.labels.id}
+  description: query from startTime (in timestamp format).    
+  defaultValue: ${incident.labels.start_time}
 - name: headers
   description: Table headers
 - name: range
@@ -40,7 +41,8 @@ args:
   description: Fields to filter in
 - name: qid
   required: true
-  description: The Correlation QID to query, can be found under ${Correlation.QID}
+  description: The Correlation QID to query.
+  defaultValue: ${Correlation.QID}
 scripttarget: 0
 dependson:
   must:
