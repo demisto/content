@@ -125,6 +125,24 @@ script:
         }
     };
 
+    var parseDownloadResponse = function(resp) {
+        if (resp.StatusCode === 200) {
+            try {
+                var currentTime = new Date();
+                var fileName = command + '_at_' + currentTime.getTime();
+                return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
+            } catch (e) {
+                return e;
+            }
+        } else {
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
+        }
+    };
+
     var buildMdAndContext = function(resp) {
         var mdAndContext
         if (resp.StatusCode === 200) {
@@ -262,14 +280,14 @@ script:
     var commandToPath = {
       'netwitness-msearch': '/sdk?msg=msearch',
       'netwitness-search': '/sdk?msg=search',
-      'netwitness-content': '/sdk?msg=content',
       'netwitness-query': '/sdk?msg=query',
+      'netwitness-packets': '/sdk/packets?',
       'nw-sdk-session': '/sdk?msg=session',
       'nw-sdk-cancel': '/sdk?msg=cancel',
       'nw-sdk-query': '/sdk?msg=query',
       'nw-sdk-validate': '/sdk?msg=validate',
       'nw-sdk-aliases': '/sdk?msg=aliases',
-      'nw-sdk-content': '/sdk?msg=content',
+      'nw-sdk-content': '/sdk/?msg=content',
       'nw-sdk-ls': '/sdk?msg=ls',
       'nw-sdk-count': '/sdk?msg=count',
       'nw-sdk-timeline': '/sdk?msg=timeline',
@@ -425,10 +443,10 @@ script:
             return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
         case  'netwitness-search':
             return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case  'netwitness-content':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
         case  'netwitness-query':
             return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case 'netwitness-packets':
+            return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
@@ -465,31 +483,6 @@ script:
       required: true
       description: <string> The search string to use
     description: Searches for matches in session/packet content
-  - name: netwitness-content
-    arguments:
-    - name: session
-      required: true
-      description: <uint64> The session id to retrieve packet content for
-    - name: packet
-      description: <uint64, optional> The packet id of the first packet of the session,
-        in case the session has rolled out
-    - name: maxSize
-      description: <size, optional> The max number of bytes to return, zero means
-        no limit
-    - name: failOnCacheMiss
-      description: <bool, optional> If true, the content call fails if the NWD is
-        not in the cache.  This is used by optimized caching code only.
-    - name: renderType
-      description: <uint32, optional> The render type (see NwContentTypes in NwSDK.h),
-        pass zero to pick best option.  Not specifying this parameter always results
-        in an NWD and renderFlags and renderOptions are not considered.
-    - name: renderFlags
-      description: <uint32, optional> Bitwise mask to control options, (see NwContentFlags
-        in NwSDK.h)
-    - name: renderOptions
-      description: <string, optional> An encoded string params containing additional
-        options for controlling the operation.
-    description: Returns the packet content for a session
   - name: netwitness-query
     arguments:
     - name: id1
@@ -510,6 +503,31 @@ script:
         after the threshold is reached (useful with select aggregate functions).  Zero
         means no threshold (the default).
     description: Performs a query against the meta database
+  - name: netwitness-packets
+    arguments:
+    - name: op
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform
+        (start, cancel, processed)
+    - name: sessions
+      required: true
+      description: <string, optional> A comma separated list of session ids or session
+        id ranges (#-#) whose packets will be streamed back.
+    - name: packets
+      description: <string, optional> A comma separated list of packet ids or session/packet
+        ids (#&#) that will be streamed back.
+    - name: where
+      description: <string, optional> Where clause which will be evaluated to determine
+        which sessions to stream back
+    - name: time1
+      description: <date-time, optional> A starting time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 09:00:00")
+    - name: time2
+      description: <date-time, optional> An ending time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 10:00:00")
+    - name: flags
+      description: <uint32, optional> Additional flags as defined by the NwPackets
+        SDK function
+    description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
     - name: id1
@@ -574,7 +592,6 @@ script:
         for
     description: Retrieves aliases for the specified key
   - name: nw-sdk-content
-    deprecated: true
     arguments:
     - name: session
       required: true
@@ -727,6 +744,7 @@ script:
       description: <uint32, {range:1 to 1677721}> The max number of entries to return
     description: Retrieves the language definition
   - name: nw-sdk-packets
+    deprecated: true
     arguments:
     - name: op
       required: true

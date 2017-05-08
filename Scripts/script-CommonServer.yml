@@ -136,11 +136,10 @@ script: |-
   var tblToMd = tableToMarkdown;
 
   /**
- * Get all properties of objects in array.
- * @param t - Array of elements to get properties
- * @returns {Array} - Array of objects properties
- * @constructor
- */
+   * Get all properties of objects in array.
+   * @param t - Array of elements to get properties
+   * @returns {Array} - Array of objects properties
+  */
   function GetAllObjectsProperties(t) {
       var properties = {};
       t.forEach(function (element) {
