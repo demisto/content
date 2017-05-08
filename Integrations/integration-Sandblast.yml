@@ -60,26 +60,6 @@ script:
         'sandblast-query': 'application/json',
     };
 
-    var mapObjFunction = function(mapFields) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-               res[f.to] = dq(obj, f.from);
-            });
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    res.push(transformSingleObj(obj[j]));
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        }
-    }
-
     var saveCookies = function(res, requestCookies) {
         if (requestCookies) {
             for (var i = 0; i < res.Cookies.length; i++) {
@@ -225,14 +205,14 @@ script:
             raw = {Type: entryTypes.note, ContentsFormat: formats.json, Contents: contents};
     }
 
-    if (command === 'sandblast-upload' || command === 'sandblast-query') {
+    if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
         var uniqueKeys = ['md5', 'sha1', 'sha256'];
         var ec = {};
         if (raw.Contents.response.av.malware_info.malware_type) {
             var maliciousData = {
                 Malicious: {
                     Vendor: 'Sandblast',
-                    Description: 'Sandblast found this file as malicious',
+                    Description: 'Sandblast found this file malicious',
                     Confidence: raw.Contents.response.av.malware_info.confidence,
                     MalwareFamily: raw.Contents.response.av.malware_info.malware_family,
                     MalwareType: raw.Contents.response.av.malware_info.malware_type,
@@ -277,7 +257,7 @@ script:
             raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
             ', md5 ' + raw.Contents.response.md5,
             raw.Contents.response.te);
-    } else if (command === 'sandblast-quota') {
+    } else if (command === 'sandblast-quota' || command === 'sb-quota') {
         raw.ReadableContentsFormat = formats.markdown;
         raw.HumanReadable = tableToMarkdown('Sandblast Quota Status', raw.Contents.response);
     }
@@ -386,7 +366,6 @@ script:
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: ""
     description: Use the Query API to have a client application look for either the
       analysis report of a specific file on the Check Point Threat Prevention service
       databases or the status of a file, uploaded for analysis
@@ -491,7 +470,6 @@ script:
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
-      related: ""
     description: Use the Upload API to have a client application request that Check
       Point Threat Prevention modules scan and analyze a file. When you upload a file
       to the service, the file is encrypted. It is un-encrypted during analysis, and
