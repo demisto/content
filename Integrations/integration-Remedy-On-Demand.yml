@@ -132,7 +132,6 @@ script:
 
     var logout = function(token) {
         var url = baseUrl + 'api/jwt/logout/';
-        log('loggin out');
         sendRequest(url, token, 'POST');
     }
 
