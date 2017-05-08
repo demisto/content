@@ -34,10 +34,8 @@ configuration:
   required: false
 script:
   script: |
-    // ensure '/' at the end of the url
-    if (params.url[params.url.length - 1] === '/') {
-        params.url = params.url.substring(0, params.url.length - 1);
-    }
+    // remove '/' at the end of the url (if exists)
+    params.url = params.url.replace(/[\/]+$/, '');
 
     var baseUrl = params.url + ':' + params.port + '/';
     var insecure = params.insecure;
