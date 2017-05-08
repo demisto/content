@@ -1,0 +1,466 @@
+commonfields:
+  id: Remedy On-Demand
+  version: -1
+name: Remedy On-Demand
+display: Remedy On-Demand
+category: IT Services
+image: data:image/png;base64,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
+detaileddescription: Use Remedy On-Demand to manage tickets
+configuration:
+- display: Server Url (e.g. 'https://myurl.com', 'http://41.79.151.82')
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "8008"
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    // remove '/' at the end of the url (if exists)
+    params.url = params.url.replace(/[\/]+$/, '');
+
+    var baseUrl = params.url + ':' + params.port + '/';
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+
+    // returns incId padded with '0's that is 15 length string. e.g. '82' -> '000000000000082'
+    var preperIncId = function (incId) {
+        var res = '000000000000000' + incId;
+        return res.substr(-15);
+    }
+
+    var createTableEntry = function (name, contents, context, headers) {
+        return {
+            // type
+            Type: entryTypes.note,
+             // contents
+            ContentsFormat: formats.json,
+            Contents: contents,
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, contents, headers),
+            // context
+            EntryContext: context
+        };
+    }
+
+    // mutetor that removes all falsly fields
+    var filterEmptyFields = function(obj) {
+        Object.keys(obj).forEach(function(key) {
+            if (obj[key] === undefined || obj[key] === null) {
+                delete obj[key];
+            }
+        });
+    }
+
+    var sendRequest = function(url, token, method, body) {
+
+        var res = http(
+            url,
+            {
+                Method: method || 'GET',
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    'Authorization': ['AR-JWT ' + token]
+                },
+                Body: body
+            },
+            insecure,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            logout(token);
+            throw 'Request Failed'
+                + '\nurl: ' + url
+                + '\nStatus code: ' + res.StatusCode
+                + '\nBody: ' + JSON.stringify(res);
+        }
+
+        return res;
+    };
+
+    var login = function() {
+        var url = baseUrl + 'api/jwt/login/';
+
+        var body = {
+            username: params.credentials.identifier,
+            password: params.credentials.password
+        };
+
+        var res = http(
+            url,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/x-www-form-urlencoded']
+                },
+                Body: encodeToURLQuery(body).replace(/^\?/, '')
+            }
+        );
+
+        if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed'
+                + '\nurl: ' + url
+                + '\nStatus code: ' + res.StatusCode
+                + '.\nBody: ' + JSON.stringify(res, null, 2);
+        }
+
+        // retrun the body which is tokenKey
+        return res.Body;
+    }
+
+    var logout = function(token) {
+        var url = baseUrl + 'api/jwt/logout/';
+        sendRequest(url, token, 'POST');
+    }
+
+    var convertIncidentToTicket = function(incident) {
+        return {
+            ID: incident['Request ID'],
+            Submitter: incident.Submitter,
+            Status: incident.Status,
+            Description: incident.Description,
+            Source: incident['Reported Source'],
+            Impact: incident.Impact,
+            Urgency: incident.Urgency,
+            Type: incident.Service_Type
+        };
+    }
+
+    var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency) {
+        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create';
+        var token = login();
+
+        var body = {
+           "values" : {
+               "z1D_Action" : "CREATE",
+               "First_Name" : firstName,
+               "Last_Name" : lastName,
+               "Description" : description,
+               "Status" : status,
+               "Reported Source": source,
+               "Service_Type" : serviceType,
+               "Impact" : impact,
+               "Urgency" : urgency
+         }
+        };
+        var res = sendRequest(url, token, "POST", JSON.stringify(body));
+        // get created incident
+        var incidentUrl = res && res.Headers && res.Headers.Location && res.Headers.Location[0];
+        res = sendRequest(incidentUrl, token);
+        logout(token);
+        var incident = JSON.parse(res.Body).values;
+        filterEmptyFields(incident);
+
+        var context = {
+            Ticket: convertIncidentToTicket(incident)
+        };
+
+        return createTableEntry("Incidet created:",incident, context);
+    }
+
+    var getIncident = function(id, title) {
+        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(id);
+        var token = login();
+        var res = sendRequest(url, token);
+        logout(token);
+        var incident = JSON.parse(res.Body).values;
+        filterEmptyFields(incident);
+
+        var context = {
+            'Ticket(val.ID && val.ID == obj.ID)': convertIncidentToTicket(incident)
+        }
+        return createTableEntry(title || "Incidet:",incident, context);
+    }
+
+    var fetchIncidents = function(query) {
+        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/';
+        if(query) {
+            url += '?q=' + encodeURIComponent(query);
+        }
+        var token = login();
+        var res = sendRequest(url, token);
+        logout(token);
+        var body = JSON.parse(res.Body);
+
+        var incidents = body.entries.map(function(b) { return b.values});
+        incidents.forEach(filterEmptyFields);
+        var context = {
+            'Ticket(val.ID && val.ID == obj.ID)': incidents.map(convertIncidentToTicket)
+        };
+        return createTableEntry("Incidets:",incidents, context);
+    }
+
+    var updateIncident = function(incID, updateObject) {
+        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(incID);
+        var token = login();
+
+        filterEmptyFields(updateObject);
+        var body = {
+           "values" : updateObject
+        };
+
+        sendRequest(url, token, "PUT", JSON.stringify(body));
+        return getIncident(incID, 'Updated incident:');
+    }
+
+    switch (command) {
+        case 'test-module':
+            fetchIncidents();
+            return 'ok';
+        case 'remedy-incident-create':
+            return createIncident(
+                args['first-name'],
+                args['last-name'],
+                args.description,
+                args.status,
+                args.source,
+                args['service-type'],
+                args.impact,
+                args.urgency
+            );
+        case 'remedy-get-incident':
+            return getIncident(args.ID);
+        case 'remedy-fetch-incidents':
+            return fetchIncidents(args.query);
+        case 'remedy-incident-update':
+            return updateIncident(
+                args.ID,
+                {
+                    Description: args.description,
+                    Status: args.status,
+                    'Reported Source': args.source,
+                    'Service_Type': args['service-type'],
+                    Impact: args.impact,
+                    Urgency: args.urgency
+                }
+            );
+    }
+  type: javascript
+  commands:
+  - name: remedy-incident-create
+    arguments:
+    - name: first-name
+      required: true
+      description: costumer's first name (make sure costumer already exists)
+    - name: last-name
+      required: true
+      description: costumer's first name (make sure costumer already exists)
+    - name: description
+      required: true
+      description: Incident description
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Assigned
+      - In Progress
+      - Pending
+      - Resolved
+      - Closed
+      - Cancelled
+      description: Incident status
+    - name: source
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Direct Input
+      - Email
+      - External Escalation
+      - Fax
+      - Self-Service
+      - Systems Management
+      - Phone
+      - Voice Mail
+      - Walk
+      - Web
+      - Other
+      description: Incident source
+    - name: service-type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - User Service Restoration
+      - User Service Request
+      - Infrastructure Event
+      - Infrastructure Restoration
+      description: Incident service-type
+    - name: impact
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 1-Extensive/Widespread
+      - 2-Signinficant/Large
+      - 3-Moderate/Limited
+      - 4-Minor/Localized
+      description: Incident impact
+    - name: urgency
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 1-Critical
+      - 2-High
+      - 3-Medium
+      - 4-Low
+      description: Incident urgency
+    outputs:
+    - contextPath: Ticket.ID
+      description: Ticket ID
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Description
+      description: Ticket description
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Impact
+      description: TicketiImpact
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: Ticket.Type
+      description: Ticket service type
+  - name: remedy-get-incident
+    arguments:
+    - name: ID
+      required: true
+      default: true
+      description: Incident ID (we will pad leading zeros if necessary)
+    outputs:
+    - contextPath: Ticket.ID
+      description: Ticket ID
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Description
+      description: Ticket description
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Impact
+      description: TicketiImpact
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: Ticket.Type
+      description: Ticket service type
+    description: Get one incident by ID
+  - name: remedy-fetch-incidents
+    arguments:
+    - name: query
+      description: Search query/qualification format of '<field> LIKE "<values>"'
+        (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+    outputs:
+    - contextPath: Ticket.ID
+      description: Ticket ID
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Description
+      description: Ticket description
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Impact
+      description: TicketiImpact
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: Ticket.Type
+      description: Ticket service type
+    description: Fetch all incidents
+  - name: remedy-incident-update
+    arguments:
+    - name: ID
+      required: true
+      default: true
+      description: Incident ID
+    - name: description
+      description: Updated description
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Assigned
+      - In Progress
+      - Pending
+      - Resolved
+      - Closed
+      - Cancelled
+      description: Updated status (unchanged if not specified)
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - 1-Critical
+      - 2-High
+      - 3-Medium
+      - 4-Low
+      description: Updated urgency (unchanged if not specified)
+    - name: impact
+      auto: PREDEFINED
+      predefined:
+      - 1-Extensive/Widespread
+      - 2-Signinficant/Large
+      - 3-Moderate/Limited
+      - 4-Minor/Localized
+      description: Updated impact (unchanged if not specified)
+    - name: source
+      auto: PREDEFINED
+      predefined:
+      - Direct Input
+      - Email
+      - External Escalation
+      - Fax
+      - Self-Service
+      - Systems Management
+      - Phone
+      - Voice Mail
+      - Walk
+      - Web
+      - Other
+      description: Updated reported source (unchanged if not specified)
+    - name: service-type
+      auto: PREDEFINED
+      predefined:
+      - User Service Restoration
+      - User Service Request
+      - Infrastructure Event
+      - Infrastructure Restoration
+      description: Updated service-type (unchanged if not specified)
+    outputs:
+    - contextPath: Ticket.ID
+      description: Ticket ID
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Description
+      description: Ticket description
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Impact
+      description: TicketiImpact
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: Ticket.Type
+      description: Ticket service type
+    description: Update exiting incident
+hidden: false
