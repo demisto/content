@@ -22,6 +22,16 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
     // ensure '/' at the end of the url
@@ -30,10 +40,8 @@ script:
     }
 
     var baseUrl = params.url + ':' + params.port + '/';
-
-    var stringify = function(obj) {
-        return JSON.stringify(obj, null, 2);
-    }
+    var insecure = params.insecure;
+    var proxy = params.proxy;
 
     // returns incId padded with '0's that is 15 length string. e.g. '82' -> '000000000000082'
     var preperIncId = function (incId) {
@@ -58,7 +66,11 @@ script:
 
     // mutetor that removes all falsly fields
     var filterEmptyFields = function(obj) {
-        Object.keys(obj).forEach(function(key) { !obj[key] && delete obj[key]; });
+        Object.keys(obj).forEach(function(key) {
+            if (obj[key] === undefined || obj[key] === null) {
+                delete obj[key];
+            }
+        });
     }
 
     var sendRequest = function(url, token, method, body) {
@@ -72,10 +84,13 @@ script:
                     'Authorization': ['AR-JWT ' + token]
                 },
                 Body: body
-            }
+            },
+            insecure,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            logout(token);
             throw 'Request Failed'
                 + '\nurl: ' + url
                 + '\nStatus code: ' + res.StatusCode
@@ -115,6 +130,12 @@ script:
         return res.Body;
     }
 
+    var logout = function(token) {
+        var url = baseUrl + 'api/jwt/logout/';
+        log('loggin out');
+        sendRequest(url, token, 'POST');
+    }
+
     var convertIncidentToTicket = function(incident) {
         return {
             ID: incident['Request ID'],
@@ -146,10 +167,10 @@ script:
          }
         };
         var res = sendRequest(url, token, "POST", JSON.stringify(body));
-
         // get created incident
         var incidentUrl = res && res.Headers && res.Headers.Location && res.Headers.Location[0];
         res = sendRequest(incidentUrl, token);
+        logout(token);
         var incident = JSON.parse(res.Body).values;
         filterEmptyFields(incident);
 
@@ -164,7 +185,7 @@ script:
         var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(id);
         var token = login();
         var res = sendRequest(url, token);
-
+        logout(token);
         var incident = JSON.parse(res.Body).values;
         filterEmptyFields(incident);
 
@@ -181,7 +202,7 @@ script:
         }
         var token = login();
         var res = sendRequest(url, token);
-
+        logout(token);
         var body = JSON.parse(res.Body);
 
         var incidents = body.entries.map(function(b) { return b.values});
