@@ -470,6 +470,9 @@ script:
       description: <string, optional> Flags to use for search.  This is a comma separated
         list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
     description: Search for pattern matches in many sessions or packets
+    outputs:
+    - contextPath: Netwitness.Events
+      description: all events of netwitness
   - name: netwitness-search
     arguments:
     - name: session
@@ -482,6 +485,9 @@ script:
       required: true
       description: <string> The search string to use
     description: Searches for matches in session/packet content
+    outputs:
+      - contextPath: Netwitness.Events
+        description: all events of netwitness
   - name: netwitness-query
     arguments:
     - name: id1
@@ -502,6 +508,9 @@ script:
         after the threshold is reached (useful with select aggregate functions).  Zero
         means no threshold (the default).
     description: Performs a query against the meta database
+    outputs:
+      - contextPath: Netwitness.Events
+        description: all events of netwitness
   - name: netwitness-packets
     arguments:
     - name: op
@@ -527,6 +536,9 @@ script:
       description: <uint32, optional> Additional flags as defined by the NwPackets
         SDK function
     description: Stream packets back based on the input parameters provided
+    outputs:
+      - contextPath: Netwitness.Events
+        description: all events of netwitness
   - name: nw-sdk-session
     arguments:
     - name: id1
