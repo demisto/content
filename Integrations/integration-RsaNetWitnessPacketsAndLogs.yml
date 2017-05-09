@@ -77,23 +77,22 @@ script:
         var retVal = {md:[], context: {Netwitness:{Events:[]}}};
         var typeToValue;
 
-        if((typeof data) ==='object' && Array.isArray(data)) {
-            data.forEach(function (element) {
-                var fields = dq(element, 'results.fields');
-                typeToValue = mapTypeToValue(fields)
-
-                if(!isObjectEmpty(typeToValue)) {
-                    retVal.md.push(typeToValue);
-                    retVal.context.Netwitness.Events.push(typeToValue);
-                }
-            })
-        }
-        else if ((typeof data) ==='object') {
+        var extractFromData = function(data) {
             var fields = dq(data, 'results.fields');
             typeToValue = mapTypeToValue(fields);
+
             if(!isObjectEmpty(typeToValue)) {
                 retVal.md.push(typeToValue);
                 retVal.context.Netwitness.Events.push(typeToValue);
+        };
+
+        if(Array.isArray(data)) {
+            data.forEach(function (element) {
+                extractFromData(data)
+            })
+        }
+        else if ((typeof data) ==='object') {
+            extractFromData(data);
             }
         }
         if(retVal.md.length > 0) {
