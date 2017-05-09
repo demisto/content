@@ -1,15 +1,15 @@
 id: cafc6f55-b05a-4349-8c21-dd05fb7db2b4
-version: 55
+version: 38
 name: ServiceNow Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+    taskid: 381f9fbd-5059-450f-8e01-50588a575aca
     type: start
     task:
-      id: b9912ecc-bae9-40c5-8a5f-7cf8db6329f0
+      id: 381f9fbd-5059-450f-8e01-50588a575aca
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 6f1a76a9-7773-4c5d-84de-a675a57f0bb9
+    taskid: 92ffe447-ad97-46b5-8b38-078abbd3b038
     type: regular
     task:
-      id: 6f1a76a9-7773-4c5d-84de-a675a57f0bb9
+      id: 92ffe447-ad97-46b5-8b38-078abbd3b038
       version: -1
       name: DeleteContext (all)
       description: Delete field from context
@@ -52,14 +52,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 0203e572-261e-471f-83ca-66d137ab8be4
+    taskid: 74c5ecc8-148c-4f53-8bf2-755ca32319c2
     type: regular
     task:
-      id: 0203e572-261e-471f-83ca-66d137ab8be4
+      id: 74c5ecc8-148c-4f53-8bf2-755ca32319c2
       version: -1
-      name: 'servicenow-incident-create (Assignee: Johnny Doe)'
+      name: 'servicenow-create, Assignee: Johnny Doe'
       description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
+      script: ServiceNow|||servicenow-create
       type: regular
       iscommand: true
       brand: ServiceNow
@@ -80,7 +80,7 @@ tasks:
       business_stc: ""
       calendar_duration: ""
       caller_id: ""
-      category: Telephony
+      category: ""
       caused_by: ""
       close_code: ""
       close_notes: ""
@@ -119,11 +119,12 @@ tasks:
       resolved_by: ""
       rfc: ""
       severity: ""
-      short_description: Ticket 1 description
+      short_description: Ticket 1 Summary
       sla_due: ""
       subcategory: ""
       sys_updated_by: ""
       sys_updated_on: ""
+      ticket_type: ""
       urgency: ""
       user_input: ""
       watch_list: ""
@@ -140,12 +141,12 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 00786b1c-4a8a-4d98-8291-0a4fd2850a28
+    taskid: b46f9d74-79df-4304-81cd-d02f145aa8b1
     type: regular
     task:
-      id: 00786b1c-4a8a-4d98-8291-0a4fd2850a28
+      id: b46f9d74-79df-4304-81cd-d02f145aa8b1
       version: -1
-      name: VerifyContextFields
+      name: 'VerifyContextFields: Ticket.Summary, Ticket.Assignee'
       scriptName: VerifyContextFields
       type: regular
       iscommand: false
@@ -154,13 +155,13 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      field1: Ticket.Summary
-      field2: Ticket.Assignee
+      field1: Ticket.Assignee
+      field2: Ticket.Summary
       field3: ""
       field4: ""
       field5: ""
-      value1: Ticket 1 description
-      value2: Johnny Doe
+      value1: Johnny Doe
+      value2: Ticket 1 Summary
       value3: ""
       value4: ""
       value5: ""
@@ -168,19 +169,19 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 689
+          "y": 690
         }
       }
   "7":
     id: "7"
-    taskid: 260124a3-4659-47af-8c42-0448f5cc5d9f
+    taskid: 55914223-6357-4f02-810f-bc8a0fc24af3
     type: regular
     task:
-      id: 260124a3-4659-47af-8c42-0448f5cc5d9f
+      id: 55914223-6357-4f02-810f-bc8a0fc24af3
       version: -1
-      name: 'servicenow-incident-create (Assignee: Lucy Liu)'
+      name: 'servicenow-create, Assignee: Lucy Liu'
       description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
+      script: ServiceNow|||servicenow-create
       type: regular
       iscommand: true
       brand: ServiceNow
@@ -201,7 +202,7 @@ tasks:
       business_stc: ""
       calendar_duration: ""
       caller_id: ""
-      category: Telephony
+      category: ""
       caused_by: ""
       close_code: ""
       close_notes: ""
@@ -240,11 +241,12 @@ tasks:
       resolved_by: ""
       rfc: ""
       severity: ""
-      short_description: Ticket 2 description
+      short_description: Ticket 2 Summary
       sla_due: ""
       subcategory: ""
       sys_updated_by: ""
       sys_updated_on: ""
+      ticket_type: ""
       urgency: ""
       user_input: ""
       watch_list: ""
@@ -261,12 +263,12 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 6429c973-9d13-415c-8502-be85f0d8c8e2
+    taskid: a3c5d4e7-8dbc-495b-8346-e4a6a3ee9b58
     type: regular
     task:
-      id: 6429c973-9d13-415c-8502-be85f0d8c8e2
+      id: a3c5d4e7-8dbc-495b-8346-e4a6a3ee9b58
       version: -1
-      name: VerifyContextFields
+      name: 'VerifyContextFields: Ticket[1].Summary, Ticket[1].Assignee'
       scriptName: VerifyContextFields
       type: regular
       iscommand: false
@@ -275,13 +277,13 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      field1: Ticket.[1].Summary
-      field2: Ticket.[1].Assignee
+      field1: Ticket.[1].Assignee
+      field2: Ticket.[1].Summary
       field3: ""
       field4: ""
       field5: ""
-      value1: Ticket 2 description
-      value2: Lucy Liu
+      value1: Lucy Liu
+      value2: Ticket 2 Summary
       value3: ""
       value4: ""
       value5: ""
@@ -292,364 +294,12 @@ tasks:
           "y": 1040
         }
       }
-  "10":
-    id: "10"
-    taskid: cf883242-923b-4dd1-8ff8-54fb1a364728
-    type: regular
-    task:
-      id: cf883242-923b-4dd1-8ff8-54fb1a364728
-      version: -1
-      name: servicenow-incident-create (Dani, Monitoring)
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: Moshe
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Monitoring
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: Ticket test description
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1360
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 4c97ecd8-5b56-421f-8f94-ffcdfb48f3b4
-    type: regular
-    task:
-      id: 4c97ecd8-5b56-421f-8f94-ffcdfb48f3b4
-      version: -1
-      name: servicenow-incident-create (Moshe, IT)
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: Moshe
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Monitoring
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: Ticket test description
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 912,
-          "y": 1360
-        }
-      }
-  "13":
-    id: "13"
-    taskid: 206bcc31-ab6a-42ef-87e3-56a78ee2108d
-    type: regular
-    task:
-      id: 206bcc31-ab6a-42ef-87e3-56a78ee2108d
-      version: -1
-      name: servicenow-incident-create (Moshe, IT)
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: Dani
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: IT
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: Ticket test description
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1360
-        }
-      }
-  "14":
-    id: "14"
-    taskid: 453eb4d8-456b-401b-8d60-210b4de3570f
-    type: regular
-    task:
-      id: 453eb4d8-456b-401b-8d60-210b4de3570f
-      version: -1
-      name: servicenow-incident-create (Dani, Monitoring)
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-incident-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: Dani
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: IT
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: Ticket test description
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1360
-        }
-      }
   "15":
     id: "15"
-    taskid: 2036fb9a-8ff9-4283-85f9-e63963550f0e
+    taskid: 39d917e4-fee6-453e-8def-e5e6baeb7391
     type: title
     task:
-      id: 2036fb9a-8ff9-4283-85f9-e63963550f0e
+      id: 39d917e4-fee6-453e-8def-e5e6baeb7391
       version: -1
       name: Create two tickets
       type: title
@@ -667,10 +317,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: d856a968-ec39-434c-8ae3-abd9ee12b11c
+    taskid: a36da384-0637-416c-8ea6-ec9e4657639a
     type: title
     task:
-      id: d856a968-ec39-434c-8ae3-abd9ee12b11c
+      id: a36da384-0637-416c-8ea6-ec9e4657639a
       version: -1
       name: Create 4 tickets with two different categories and assignees
       type: title
@@ -678,10 +328,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
-      - "12"
-      - "14"
-      - "13"
+      - "20"
+      - "21"
+      - "22"
+      - "23"
     view: |-
       {
         "position": {
@@ -691,10 +341,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: b19934a1-2b03-40bb-8642-67df50e6afbe
+    taskid: f21cb9f0-599f-46fb-8235-1e481a929ced
     type: regular
     task:
-      id: b19934a1-2b03-40bb-8642-67df50e6afbe
+      id: f21cb9f0-599f-46fb-8235-1e481a929ced
       version: -1
       name: VerifyContextFields (Total of 6 tickets)
       scriptName: VerifyContextFields
@@ -719,74 +369,664 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1588
+          "y": 1535
         }
       }
   "18":
     id: "18"
-    taskid: 775ed07f-64c0-4001-8290-2235526ae8b2
+    taskid: b7215c6e-fd51-44d8-8de7-ce89cf365fe0
     type: title
     task:
-      id: 775ed07f-64c0-4001-8290-2235526ae8b2
+      id: b7215c6e-fd51-44d8-8de7-ce89cf365fe0
       version: -1
-      name: Different queries
+      name: Query and update ticket
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "24"
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 1766
-        }
-      }
-  "19":
-    id: "19"
-    taskid: 6cd9d8b5-d60f-458e-8642-b8610514bfa5
-    type: regular
-    task:
-      id: 6cd9d8b5-d60f-458e-8642-b8610514bfa5
-      version: -1
-      name: servicenow-incidents-query
-      description: Retrieve info with query
-      script: ServiceNow|||servicenow-incidents-query
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    scriptarguments:
-      limit: "3"
-      sysparm_query: short_description=Ticket test description
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1921
+          "y": 1710
         }
       }
   "20":
     id: "20"
-    taskid: d7402ff4-c90c-4f97-89dc-04c83c660514
+    taskid: 6d768697-5b58-4027-85bb-236eac2bc65e
     type: regular
     task:
-      id: d7402ff4-c90c-4f97-89dc-04c83c660514
+      id: 6d768697-5b58-4027-85bb-236eac2bc65e
       version: -1
-      name: servicenow-incidents-query
-      description: Retrieve info with query
-      script: ServiceNow|||servicenow-incidents-query
+      name: 'servicenow-create, Assignee: GHI'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create
       type: regular
       iscommand: true
       brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "17"
     scriptarguments:
-      limit: "3"
-      sysparm_query: '"short_description=Ticket test description"'
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: GHI
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: Telephony
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Ticket 3-6 Summary
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1360
+        }
+      }
+  "21":
+    id: "21"
+    taskid: a9978ef7-2804-408e-86b0-512152bf1d9b
+    type: regular
+    task:
+      id: a9978ef7-2804-408e-86b0-512152bf1d9b
+      version: -1
+      name: 'servicenow-create, Assignee: DEF'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: DEF
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: Telephony
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Ticket 3-6 Summary
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 3e1999be-4c6f-455a-89d0-92dd3baeb875
+    type: regular
+    task:
+      id: 3e1999be-4c6f-455a-89d0-92dd3baeb875
+      version: -1
+      name: 'servicenow-create, Assignee: XYZ'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: XYZ
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: Telephony
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Ticket 3-6 Summary
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 4ea96c45-f21d-4c5a-8c59-516b753ab54f
+    type: regular
+    task:
+      id: 4ea96c45-f21d-4c5a-8c59-516b753ab54f
+      version: -1
+      name: 'servicenow-create, Assignee: ABC'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ABC
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: Telephony
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Ticket 3-6 Summary
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+  "24":
+    id: "24"
+    taskid: dfcd1d68-fc93-458f-8164-e8f8e67686a2
+    type: regular
+    task:
+      id: dfcd1d68-fc93-458f-8164-e8f8e67686a2
+      version: -1
+      name: 'servicenow-query Ticket #0'
+      script: ServiceNow|||servicenow-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      limit: ""
+      sysparm_query: sys_id=${Ticket.[0].ID}
+      ticket_type: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2104
+          "y": 1855
+        }
+      }
+  "25":
+    id: "25"
+    taskid: b6f6ff12-32fd-4021-8544-854c7a1f84b8
+    type: regular
+    task:
+      id: b6f6ff12-32fd-4021-8544-854c7a1f84b8
+      version: -1
+      name: 'servicenow-get Ticket #1'
+      script: ServiceNow|||servicenow-get
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      id: ${Ticket.[1].ID}
+      number: ""
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2030
+        }
+      }
+  "26":
+    id: "26"
+    taskid: ecf1d01c-fa1a-47f1-8daf-ec338ad9fdeb
+    type: regular
+    task:
+      id: ecf1d01c-fa1a-47f1-8daf-ec338ad9fdeb
+      version: -1
+      name: 'servicenow-update Ticket #0'
+      script: ServiceNow|||servicenow-update
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: New Assignee
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      id: ${Ticket.[0].ID}
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: New Description 1
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2205
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 650a81e1-1726-45ad-8201-d655ea651a21
+    type: regular
+    task:
+      id: 650a81e1-1726-45ad-8201-d655ea651a21
+      version: -1
+      name: 'servicenow-query Ticket #0'
+      script: ServiceNow|||servicenow-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit: ""
+      sysparm_query: sys_id=${Ticket.[0].ID}
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2380
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 14535319-99b7-4a0d-80ae-98b67c80c259
+    type: regular
+    task:
+      id: 14535319-99b7-4a0d-80ae-98b67c80c259
+      version: -1
+      name: 'VerifyContextFields (New entry created - #6)'
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      field1: Ticket.[6].Summary
+      field2: Ticket.[6].Assignee
+      field3: ""
+      field4: ""
+      field5: ""
+      value1: New Description 12
+      value2: New Assignee
+      value3: ""
+      value4: ""
+      value5: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2547
+        }
+      }
+  "30":
+    id: "30"
+    taskid: e0bc90c2-1906-4a6e-8efc-6fbc000c621b
+    type: regular
+    task:
+      id: e0bc90c2-1906-4a6e-8efc-6fbc000c621b
+      version: -1
+      name: 'servicenow-add-comment Ticket #0'
+      script: ServiceNow|||servicenow-add-comment
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      comment: This is a new comment
+      id: ${Ticket.[0].ID}
+      post-as-comment: ""
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2728
+        }
+      }
+  "31":
+    id: "31"
+    taskid: 7b04dc18-4d6b-4a1b-8efb-a87e6325b7f4
+    type: regular
+    task:
+      id: 7b04dc18-4d6b-4a1b-8efb-a87e6325b7f4
+      version: -1
+      name: 'servicenow-add-link Ticket #0'
+      script: ServiceNow|||servicenow-add-link
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      id: ${Ticket.[0].ID}
+      link: http://www.google.com
+      post-as-comment: ""
+      text: ""
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2908
+        }
+      }
+  "32":
+    id: "32"
+    taskid: a4ccc9e7-9ebe-4f77-8027-4872127769fb
+    type: regular
+    task:
+      id: a4ccc9e7-9ebe-4f77-8027-4872127769fb
+      version: -1
+      name: 'servicenow-add-link Ticket #0'
+      script: ServiceNow|||servicenow-add-link
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    scriptarguments:
+      id: ${Ticket.[0].ID}
+      link: http://www.google.com
+      post-as-comment: ""
+      text: ""
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3088
         }
       }
 view: |-
@@ -794,7 +1034,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2149,
+        "height": 3133,
         "width": 1670,
         "x": 50,
         "y": 50
