@@ -1,5 +1,5 @@
 id: cafc6f55-b05a-4349-8c21-dd05fb7db2b4
-version: 79
+version: 81
 name: ServiceNow Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -820,10 +820,10 @@ tasks:
       }
   "45":
     id: "45"
-    taskid: 04849dcf-44fd-4835-81c6-8217cedc9304
+    taskid: 79ce047f-2b14-42d9-8296-782f3f421f7f
     type: regular
     task:
-      id: 04849dcf-44fd-4835-81c6-8217cedc9304
+      id: 79ce047f-2b14-42d9-8296-782f3f421f7f
       version: -1
       name: 'servicenow-upload-file test_file.txt to Ticket #2'
       script: ServiceNow|||servicenow-upload-file
@@ -834,7 +834,7 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
-      file_id: File.[0].EntryID
+      file_id: ${File.[0].EntryID}
       file_name: ""
       id: ${Ticket.[2].ID}
       ticket_type: ""
