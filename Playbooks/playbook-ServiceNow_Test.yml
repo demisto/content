@@ -1,5 +1,5 @@
 id: cafc6f55-b05a-4349-8c21-dd05fb7db2b4
-version: 67
+version: 79
 name: ServiceNow Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 50
         }
       }
@@ -46,7 +46,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 195
         }
       }
@@ -136,7 +136,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 515
         }
       }
@@ -169,7 +169,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 690
         }
       }
@@ -259,7 +259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 865
         }
       }
@@ -277,7 +277,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       field1: Ticket.[1].Assignee
       field2: Ticket.[1].Summary
@@ -292,7 +292,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1040
         }
       }
@@ -313,75 +313,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 370
-        }
-      }
-  "16":
-    id: "16"
-    taskid: a36da384-0637-416c-8ea6-ec9e4657639a
-    type: title
-    task:
-      id: a36da384-0637-416c-8ea6-ec9e4657639a
-      version: -1
-      name: Create 4 tickets with two different categories and assignees
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-      - "21"
-      - "22"
-      - "23"
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1215
-        }
-      }
-  "17":
-    id: "17"
-    taskid: bff0231d-daf7-4e02-8c40-a519d524a48d
-    type: regular
-    task:
-      id: bff0231d-daf7-4e02-8c40-a519d524a48d
-      version: -1
-      name: VerifyContextFields (Total of 6 tickets)
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      field1: Ticket.[2].Summary
-      field2: Ticket.[3].Summary
-      field3: Ticket.[4].Summary
-      field4: Ticket.[5].Summary
-      field5: ""
-      value1: SampleSummary 3-6
-      value2: SampleSummary 3-6
-      value3: SampleSummary 3-6
-      value4: SampleSummary 3-6
-      value5: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1710
         }
       }
   "18":
     id: "18"
-    taskid: b7215c6e-fd51-44d8-8de7-ce89cf365fe0
+    taskid: 66e594c8-ded4-4cda-810c-1e05d231b633
     type: title
     task:
-      id: b7215c6e-fd51-44d8-8de7-ce89cf365fe0
+      id: 66e594c8-ded4-4cda-810c-1e05d231b633
       version: -1
-      name: Query and update ticket
+      name: Query and update tickets
       type: title
       iscommand: false
       brand: ""
@@ -391,364 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1885
-        }
-      }
-  "20":
-    id: "20"
-    taskid: 47ac6eb0-1768-4210-8ff4-03a2ff7b9424
-    type: regular
-    task:
-      id: 47ac6eb0-1768-4210-8ff4-03a2ff7b9424
-      version: -1
-      name: 'servicenow-create, Summary: SampleSummary 3-6'
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: GHI
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Telephony
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: SampleSummary 3-6
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      ticket_type: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1360
-        }
-      }
-  "21":
-    id: "21"
-    taskid: 5184adee-50be-4709-8f5e-b7daccca4b95
-    type: regular
-    task:
-      id: 5184adee-50be-4709-8f5e-b7daccca4b95
-      version: -1
-      name: 'servicenow-create, Summary: SampleSummary 3-6'
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: DEF
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Telephony
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: SampleSummary 3-6
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      ticket_type: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1360
-        }
-      }
-  "22":
-    id: "22"
-    taskid: 664c3db6-6546-4d5f-8ce3-1c6126ef71a4
-    type: regular
-    task:
-      id: 664c3db6-6546-4d5f-8ce3-1c6126ef71a4
-      version: -1
-      name: 'servicenow-create, Summary: SampleSummary 3-6'
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: XYZ
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Telephony
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: SampleSummary 3-6
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      ticket_type: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1360
-        }
-      }
-  "23":
-    id: "23"
-    taskid: cd0de961-8a80-4a40-82bd-802432946cfa
-    type: regular
-    task:
-      id: cd0de961-8a80-4a40-82bd-802432946cfa
-      version: -1
-      name: 'servicenow-create, Summary: SampleSummary 3-6'
-      description: Create new ServiceNow ticket
-      script: ServiceNow|||servicenow-create
-      type: regular
-      iscommand: true
-      brand: ServiceNow
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      active: ""
-      activity_due: ""
-      additional_assignee_list: ""
-      approval: ""
-      approval_history: ""
-      approval_set: ""
-      assigned_to: ABC
-      assignment_group: ""
-      business_duration: ""
-      business_service: ""
-      business_stc: ""
-      calendar_duration: ""
-      caller_id: ""
-      category: Telephony
-      caused_by: ""
-      close_code: ""
-      close_notes: ""
-      closed_at: ""
-      closed_by: ""
-      cmdb_ci: ""
-      comments: ""
-      comments_and_work_notes: ""
-      company: ""
-      contact_type: ""
-      correlation_display: ""
-      correlation_id: ""
-      delivery_plan: ""
-      description: ""
-      display: ""
-      due_date: ""
-      escalation: ""
-      expected_start: ""
-      follow_up: ""
-      group_list: ""
-      impact: ""
-      incident_state: ""
-      knowledge: ""
-      location: ""
-      made_sla: ""
-      notify: ""
-      number: ""
-      order: ""
-      parent: ""
-      parent_incident: ""
-      priority: ""
-      problem_id: ""
-      reassignment_count: ""
-      reopen_count: ""
-      resolved_at: ""
-      resolved_by: ""
-      rfc: ""
-      severity: ""
-      short_description: SampleSummary 3-6
-      sla_due: ""
-      subcategory: ""
-      sys_updated_by: ""
-      sys_updated_on: ""
-      ticket_type: ""
-      urgency: ""
-      user_input: ""
-      watch_list: ""
-      work_end: ""
-      work_notes: ""
-      work_notes_list: ""
-      work_start: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1360
+          "x": 265,
+          "y": 1215
         }
       }
   "24":
@@ -765,7 +352,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "25"
+      - "37"
     scriptarguments:
       limit: ""
       sysparm_query: sys_id=${Ticket.[0].ID}
@@ -773,16 +360,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2030
+          "x": 265,
+          "y": 1360
         }
       }
   "25":
     id: "25"
-    taskid: b6f6ff12-32fd-4021-8544-854c7a1f84b8
+    taskid: 853cd34d-5b1c-4302-87d6-8e4fe36a5e03
     type: regular
     task:
-      id: b6f6ff12-32fd-4021-8544-854c7a1f84b8
+      id: 853cd34d-5b1c-4302-87d6-8e4fe36a5e03
       version: -1
       name: 'servicenow-get Ticket #1'
       script: ServiceNow|||servicenow-get
@@ -791,7 +378,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "26"
+      - "41"
     scriptarguments:
       id: ${Ticket.[1].ID}
       number: ""
@@ -799,18 +386,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2205
+          "x": 265,
+          "y": 1710
         }
       }
   "26":
     id: "26"
-    taskid: ecf1d01c-fa1a-47f1-8daf-ec338ad9fdeb
+    taskid: c84f7c89-68f1-44e4-8fa2-474e76662296
     type: regular
     task:
-      id: ecf1d01c-fa1a-47f1-8daf-ec338ad9fdeb
+      id: c84f7c89-68f1-44e4-8fa2-474e76662296
       version: -1
-      name: 'servicenow-update Ticket #0'
+      name: 'servicenow-update Ticket #0, Summary: "Goodbye Please", Assignee: "New
+        Assignee"'
       script: ServiceNow|||servicenow-update
       type: regular
       iscommand: true
@@ -872,7 +460,7 @@ tasks:
       resolved_by: ""
       rfc: ""
       severity: ""
-      short_description: New Description 1
+      short_description: Goodbye Please
       sla_due: ""
       subcategory: ""
       sys_updated_by: ""
@@ -888,8 +476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2380
+          "x": 265,
+          "y": 2060
         }
       }
   "28":
@@ -906,6 +494,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
+      - "40"
       - "29"
     scriptarguments:
       limit: ""
@@ -914,18 +503,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2555
+          "x": 265,
+          "y": 2235
         }
       }
   "29":
     id: "29"
-    taskid: 988985ce-28f6-457f-81fd-8c75c97bf8b1
+    taskid: 8a20b448-27f1-4d57-894f-081706a391b2
     type: regular
     task:
-      id: 988985ce-28f6-457f-81fd-8c75c97bf8b1
+      id: 8a20b448-27f1-4d57-894f-081706a391b2
       version: -1
-      name: 'VerifyContextFields (New entry created - #6)'
+      name: 'VerifyContextFields (New entry created - #2, Ticket[2])'
       scriptName: VerifyContextFields
       type: regular
       iscommand: false
@@ -934,12 +523,12 @@ tasks:
       '#none#':
       - "30"
     scriptarguments:
-      field1: Ticket.[6].Summary
-      field2: Ticket.[6].Assignee
+      field1: Ticket.[2].Summary
+      field2: Ticket.[2].Assignee
       field3: ""
       field4: ""
       field5: ""
-      value1: New Description 1
+      value1: Goodbye Please
       value2: New Assignee
       value3: ""
       value4: ""
@@ -947,8 +536,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2730
+          "x": 50,
+          "y": 2410
         }
       }
   "30":
@@ -965,7 +554,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "31"
+      - "42"
     scriptarguments:
       comment: This is a new comment
       id: ${Ticket.[0].ID}
@@ -974,27 +563,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2905
+          "x": 265,
+          "y": 2585
         }
       }
   "31":
     id: "31"
-    taskid: 7b04dc18-4d6b-4a1b-8efb-a87e6325b7f4
+    taskid: e195f537-64fe-4ef0-8e97-ea3b9115c055
     type: regular
     task:
-      id: 7b04dc18-4d6b-4a1b-8efb-a87e6325b7f4
+      id: e195f537-64fe-4ef0-8e97-ea3b9115c055
       version: -1
-      name: 'servicenow-add-link Ticket #0'
+      name: 'servicenow-add-link Ticket #2'
       script: ServiceNow|||servicenow-add-link
       type: regular
       iscommand: true
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "33"
+      - "43"
     scriptarguments:
-      id: ${Ticket.[0].ID}
+      id: ${Ticket.[2].ID}
       link: http://www.google.com
       post-as-comment: ""
       text: ""
@@ -1002,8 +591,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3080
+          "x": 265,
+          "y": 2935
         }
       }
   "33":
@@ -1018,14 +607,17 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
     scriptarguments:
       data: file data
       filename: test_file.txt
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3255
+          "x": 265,
+          "y": 3285
         }
       }
   "35":
@@ -1067,7 +659,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       extend-context: ""
       humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
@@ -1075,34 +667,215 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 1040
         }
       }
   "37":
     id: "37"
-    taskid: cb4f7966-0e90-488b-8ec7-f573f0a67685
+    taskid: 9cd33e05-b37d-4ecf-86d1-01b84209a557
     type: regular
     task:
-      id: cb4f7966-0e90-488b-8ec7-f573f0a67685
+      id: 9cd33e05-b37d-4ecf-86d1-01b84209a557
       version: -1
-      name: 'Verify output contains: "SampleSummary 3-6"'
+      name: 'Verify output contains: "Hello World"'
       scriptName: VerifyHumanReadableContains
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "25"
     scriptarguments:
-      extend-context: ""
       humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
-      substring: SampleSummary 3-6
+      substring: Hello World
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 1535
+        }
+      }
+  "40":
+    id: "40"
+    taskid: 7340101e-6795-4a9a-86af-015af8a30fb4
+    type: regular
+    task:
+      id: 7340101e-6795-4a9a-86af-015af8a30fb4
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
+      substring: Goodbye Please
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+  "41":
+    id: "41"
+    taskid: 26683302-d9d1-408f-8bba-99cce51f4f42
+    type: regular
+    task:
+      id: 26683302-d9d1-408f-8bba-99cce51f4f42
+      version: -1
+      name: 'Verify output contains: "Lovely Day"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
+      substring: Lovely Day
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1885
+        }
+      }
+  "42":
+    id: "42"
+    taskid: 1dc913b4-1e04-4fbf-8a95-28247b9a6cac
+    type: regular
+    task:
+      id: 1dc913b4-1e04-4fbf-8a95-28247b9a6cac
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
+      substring: Goodbye Please
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2760
+        }
+      }
+  "43":
+    id: "43"
+    taskid: fef69a10-21d1-40d1-81bf-84f8b17b93a8
+    type: regular
+    task:
+      id: fef69a10-21d1-40d1-81bf-84f8b17b93a8
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
+      substring: Goodbye Please
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3110
+        }
+      }
+  "44":
+    id: "44"
+    taskid: f43e97c5-95f2-481d-8a04-e1240e3e290a
+    type: regular
+    task:
+      id: f43e97c5-95f2-481d-8a04-e1240e3e290a
+      version: -1
+      name: 'Verify output contains: "test_file.txt"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId: ${lastCompletedTaskEntries.[0]}
+      substring: test_file.txt
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3810
+        }
+      }
+  "45":
+    id: "45"
+    taskid: 04849dcf-44fd-4835-81c6-8217cedc9304
+    type: regular
+    task:
+      id: 04849dcf-44fd-4835-81c6-8217cedc9304
+      version: -1
+      name: 'servicenow-upload-file test_file.txt to Ticket #2'
+      script: ServiceNow|||servicenow-upload-file
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      file_id: File.[0].EntryID
+      file_name: ""
+      id: ${Ticket.[2].ID}
+      ticket_type: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3635
+        }
+      }
+  "46":
+    id: "46"
+    taskid: 894d67b2-be78-427e-86be-092a8728e19c
+    type: regular
+    task:
+      id: 894d67b2-be78-427e-86be-092a8728e19c
+      version: -1
+      name: VerifyContextFields - File Uploaded to War Room
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      field1: File.[0].Name
+      field2: ""
+      field3: ""
+      field4: ""
+      field5: ""
+      value1: test_file.txt
+      value2: ""
+      value3: ""
+      value4: ""
+      value5: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3460
         }
       }
 view: |-
@@ -1110,8 +883,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3300,
-        "width": 1670,
+        "height": 3855,
+        "width": 810,
         "x": 50,
         "y": 50
       }
