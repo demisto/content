@@ -1,0 +1,65 @@
+commonfields:
+  id: NessusGetHostScans
+  version: -1
+name: NessusGetHostScans
+script: |
+  hostnames = argToList(demisto.get(demisto.args(),"hostname"))
+
+  res = {}
+  errorRes = []
+
+  resp = demisto.executeCommand("scans-list", {})
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      scans = demisto.get(resp[0], "Contents.scans")
+
+      for scan in scans:
+          scanID = scan["id"]
+          scanResp = demisto.executeCommand("NessusScanDetails", {"scanId":str(scanID)})
+          if isError(scanResp[0]):
+              errorRes += scanResp
+          else:
+              scanData = demisto.get(scanResp[0],"Contents")[0]
+              summary = {}
+              summary["targets"] = scanData["targets"] if scanData.has_key("targets") else ""
+              summary["name"] = scanData["name"] if scanData.has_key("name") else ""
+              summary["scan_id"] = scanData["object_id"] if scanData.has_key("object_id") else ""
+              summary["policy"] = scanData["policy"] if scanData.has_key("policy") else ""
+              summary["scan_start"] = scanData["scan_start"] if scanData.has_key("scan_start") else ""
+              summary["scan_end"] = scanData["scan_end"] if scanData.has_key("scan_end") else ""
+              summary["scan_type"] = scanData["scan_type"] if scanData.has_key("scan_type") else ""
+              summary["scanner_name"] = scanData["scanner_name"] if scanData.has_key("scanner_name") else ""
+              summary["status"] = scanData["status"] if scanData.has_key("status") else ""
+              summary["timestamp"] = scanData["timestamp"] if scanData.has_key("timestamp") else ""
+              summary["user_permissions"] = scanData["user_permissions"] if scanData.has_key("user_permissions") else ""
+              summary["uuid"] = scanData["uuid"] if scanData.has_key("uuid") else ""
+
+              targets = argToList(demisto.get(summary,"targets"))
+              section = set(targets).intersection(hostnames)
+              if section:
+                  for host in section:
+                      res[host] = res[host].append(summary) if res.has_key(host) else [summary]
+
+      output = []
+      for key in res.keys():
+          mdResult = tblToMd('{0} scan list:\n'.format(key), res[key])
+          output.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': mdResult})
+
+      demisto.results(output)
+      demisto.results(errorRes)
+type: python
+tags:
+- nessus
+comment: Returns all the Nessus scans that are targeting the host
+system: true
+args:
+- name: hostname
+  required: true
+  default: true
+  description: hostname to run the query on (could be a list separated by commas)
+scripttarget: 0
+dependson:
+  must:
+  - scans-list
+timeout: 0s

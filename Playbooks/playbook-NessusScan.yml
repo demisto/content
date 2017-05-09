@@ -1,0 +1,93 @@
+id: NessusScan
+version: -1
+name: NessusScan
+description: Run a nessus scan on a host
+tasks:
+- id: "1"
+  taskid: c862d829-37e1-4bc6-85e2-aceaee260763
+  type: title
+  task:
+    id: c862d829-37e1-4bc6-85e2-aceaee260763
+    version: 1
+    name: Find and run scan
+    description: Get the relevant test for the hostname and start running it
+    type: section
+- id: "2"
+  taskid: 2bcdfbea-e73f-4d3a-87ec-8329f4b0248c
+  type: condition
+  task:
+    id: 2bcdfbea-e73f-4d3a-87ec-8329f4b0248c
+    version: 1
+    name: Do you know the scan ID you want to run?
+    description: |-
+      Answer 'yes' if you know the specif scan ID you want to run.
+      Else, answer 'no'
+    type: conditional
+  condition:
+    "no":
+    - id: "3"
+      taskid: 1235ed18-0309-4fa3-82ca-9a5e957f9ed3
+      type: regular
+      task:
+        id: 1235ed18-0309-4fa3-82ca-9a5e957f9ed3
+        version: 2
+        name: Check for existing scan for host
+        description: Get all the relevant scans for target host
+        scriptName: NessusGetHostScans
+        type: standard
+      scriptarguments:
+        hostname: ${Hostname}
+    "yes": []
+- id: "4"
+  taskid: eec23e24-e5ec-4620-826d-d18924c71b2d
+  type: title
+  task:
+    id: eec23e24-e5ec-4620-826d-d18924c71b2d
+    version: 1
+    name: Set Scan ID and run scan
+    type: section
+- id: "5"
+  taskid: c31f4510-f88a-45f6-87ad-80c04e019f50
+  type: regular
+  task:
+    id: c31f4510-f88a-45f6-87ad-80c04e019f50
+    version: 1
+    name: Set scan ID
+    description: Enter the scan ID you would like to run
+    scriptName: NessusSetScanID
+    type: standard
+  scriptarguments:
+    scanID: ""
+- id: "6"
+  taskid: 00fdf86b-cac9-464a-8f56-1c25d04cd658
+  type: condition
+  task:
+    id: 00fdf86b-cac9-464a-8f56-1c25d04cd658
+    version: 1
+    name: Run Scan
+    description: Run Scan and wait for it to finish
+    scriptName: NessusRunScan
+    type: conditional
+  condition:
+    completed:
+    - id: "7"
+      taskid: 5e0b77bf-6905-437e-8020-528a1755bd39
+      type: regular
+      task:
+        id: 5e0b77bf-6905-437e-8020-528a1755bd39
+        version: 2
+        name: Get scan report
+        scriptName: NessusGetReport
+        type: standard
+      scriptarguments:
+        chapters: ""
+        format: ""
+        historyId: ""
+        password: ""
+        scanId: ${ScanID}
+        timeout: ""
+    other: []
+  scriptarguments:
+    scanId: ${ScanID}
+    targets: ""
+    timeout: ""
