@@ -1,0 +1,215 @@
+id: d8628445-ff86-40f9-857d-50b3f1d295a6
+version: 7
+name: Sandblast malicious test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b138b8e5-9143-4e09-84d0-f1c1c932a529
+    type: start
+    task:
+      id: b138b8e5-9143-4e09-84d0-f1c1c932a529
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: f2df9c64-81c8-46d1-8701-34a404f312e7
+    type: regular
+    task:
+      id: f2df9c64-81c8-46d1-8701-34a404f312e7
+      version: -1
+      name: sandblast-upload
+      description: Use the Upload API to have a client application request that Check
+        Point Threat Prevention modules scan and analyze a file. When you upload a
+        file to the service, the file is encrypted. It is un-encrypted during analysis,
+        and then deleted
+      script: Check Point Sandblast 2|||sandblast-upload
+      type: regular
+      iscommand: true
+      brand: Check Point Sandblast 2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      benign_reports: ""
+      features: ""
+      file_id: ${File.EntryID}
+      file_name: ${File.Name}
+      file_type: ""
+      images: ""
+      md5: ""
+      reports: ""
+      sha1: ""
+      sha256: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: aa07fb77-8883-40ec-81df-f1416501c35f
+    type: regular
+    task:
+      id: aa07fb77-8883-40ec-81df-f1416501c35f
+      version: -1
+      name: sandblast-query
+      description: Use the Query API to have a client application look for either
+        the analysis report of a specific file on the Check Point Threat Prevention
+        service databases or the status of a file, uploaded for analysis
+      script: Check Point Sandblast 2|||sandblast-query
+      type: regular
+      iscommand: true
+      brand: Check Point Sandblast 2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      benign_reports: ""
+      features: ""
+      file_name: ""
+      file_type: ""
+      images: ""
+      md5: ${File.MD5}
+      quota: ""
+      reports: ""
+      sha1: ""
+      sha256: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f93c0a4a-0705-49d1-81f2-36e52c05271b
+    type: condition
+    task:
+      id: f93c0a4a-0705-49d1-81f2-36e52c05271b
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      value: File.Malicious
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 5e3f2f33-aec2-4daa-8f5a-ee40593f3b79
+    type: regular
+    task:
+      id: 5e3f2f33-aec2-4daa-8f5a-ee40593f3b79
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: ""
+      key: File.Malicious
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: e0275f46-63f6-4861-89e2-37e03d9d632d
+    type: condition
+    task:
+      id: e0275f46-63f6-4861-89e2-37e03d9d632d
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      value: File.Malicious
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    taskid: d9f13fb6-3519-4dfd-83f8-8fa4a019a43f
+    type: regular
+    task:
+      id: d9f13fb6-3519-4dfd-83f8-8fa4a019a43f
+      version: -1
+      name: echo
+      scriptName: echo
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      input: Done
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Malicious
+  value: "true"
+  description: ""
