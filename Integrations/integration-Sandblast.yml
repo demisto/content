@@ -208,7 +208,10 @@ script:
     if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
         var uniqueKeys = ['md5', 'sha1', 'sha256'];
         var ec = {};
-        if (raw.Contents.response.av.malware_info.malware_type) {
+        if (raw.Contents.response &&
+            raw.Contents.response.av &&
+            raw.Contents.response.av.malware_info &&
+            raw.Contents.response.av.malware_info.malware_type) {
             var maliciousData = {
                 Malicious: {
                     Vendor: 'Sandblast',
