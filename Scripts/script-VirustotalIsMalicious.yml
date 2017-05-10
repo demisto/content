@@ -1,6 +1,6 @@
 commonfields:
   id: dbbdc2e4-6105-4ee9-8e83-563a4b991a89
-  version: 12
+  version: 13
 name: VirustotalIsMalicious
 script: |-
   from time import sleep
@@ -37,13 +37,14 @@ script: |-
           else:
               res.append('no')
           del data['response_code']
-          scans = data.pop('scans')
+          scans = data['scans']
           scanTable = []
-          for s in scans:
-              d = scans[s].copy()
-              if d.pop('detected'):
-                  d['Source'] = s
-                  scanTable.append(d)
+          if scans is not None:
+              for s in scans:
+                  d = scans[s].copy()
+                  if d.pop('detected'):
+                      d['Source'] = s
+                      scanTable.append(d)
           res += [{ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : data } ]
           res += [{ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : scanTable }]
 
