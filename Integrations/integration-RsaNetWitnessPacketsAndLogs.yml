@@ -59,7 +59,7 @@ script:
         var VALUE = 'value';
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
-                if (element.hasOwnProperty(TYPE) && element[TYPE]) {
+                if (element[TYPE] !== undefined || element[TYPE] !== null) {
                     if(!Array.isArray(result[element[TYPE]])) {
                         result[element[TYPE]] = [];
                     }
