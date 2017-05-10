@@ -1,6 +1,6 @@
 commonfields:
   id: checkValue
-  version: 2
+  version: -1
 name: checkValue
 script: |-
   //check if value is provided, otherwise return false
