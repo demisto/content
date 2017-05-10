@@ -27,11 +27,14 @@ script: |-
    * @param {JSON or String} o - the object to create the string from
    * @returns {String} a string which represents the object
    */
-  function objToStr(o) {
+  function objToStr(o, delimiter) {
+      if(!delimiter || typeof(delimiter) !== 'string') {
+                delimiter = ',';
+            }
       if (Array.isArray(o)) {
           return o.map(function(v) {
               return objToStr(v);
-          }).join(',');
+          }).join(delimiter);
       } else if (typeof(o) === 'string') {
           return o;
       } else if (typeof(o) === 'number') {
@@ -92,14 +95,14 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers) {
+  function tableToMarkdown(name, t, headers, cellDelimiter) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
 
       //in case of headers was not provided (backward compatibility)
       if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
-          headers = Object.keys(t[0]);
+          headers = GetAllObjectsProperties(t);
       }
 
       if(!headers || !headers instanceof Array || headers.length === 0) {
@@ -120,7 +123,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h])) : ' ');
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter)) : ' ');
               });
               mdResults += vals.join('|') + '\n';
           });
@@ -131,6 +134,21 @@ script: |-
   }
 
   var tblToMd = tableToMarkdown;
+
+  /**
+   * Get all properties of objects in array.
+   * @param t - Array of elements to get properties
+   * @returns {Array} - Array of objects properties
+  */
+  function GetAllObjectsProperties(t) {
+      var properties = {};
+      t.forEach(function (element) {
+          for(var prop in element) {
+              properties[prop] ='';
+          }
+      });
+      return  Object.keys(properties);
+  }
 
   /**
    * Checks if the given string represents a valid IPv4 address
