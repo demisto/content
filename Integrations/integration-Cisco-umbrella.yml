@@ -84,7 +84,7 @@ script:
             hostname = url.split('/')[2];
         }
         else {
-            hostname = url.split('/')[0];
+            hostname = url ? url.split('/')[0] : '';
         }
 
         //find & remove port number
