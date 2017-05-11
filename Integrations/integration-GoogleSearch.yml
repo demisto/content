@@ -16,19 +16,24 @@ configuration:
 script:
   script: |
     from google import google
-    # The command demisto.command() holds the command sent from the user.
+
     if demisto.command() == "google-search":
+        results=[]
         results = google.search(demisto.args()["query"], int(demisto.params()["pages"]))
+        count = demisto.get(demisto.args(),"count")
         i = 1;
         contents = []
-        if (results):
+        if (results and len(results)>0):
             md = "### Google results for "+demisto.args()["query"]+"\n"
             for res in results:
-                md += "#### "+str(i) + " - " + res.name+"\n"
-                md += "["+res.link+"]("+res.link+")\n"
-                md += res.description + "\n\n\n"
-                contents.append({'name': res.name, 'link': res.link, 'description':res.description})
-                i += 1
+                if (count and (int(count) < i)):
+                    break
+                else:
+                    md += "#### "+str(i) + " - " + res.name+"\n"
+                    md += "["+res.link+"]("+res.link+")\n"
+                    md += res.description + "\n\n\n"
+                    contents.append({'name': res.name, 'link': res.link, 'description':res.description})
+                    i += 1
         else:
             md = "### No results for "+demisto.args()["query"]+"\n"
 
@@ -49,7 +54,9 @@ script:
       required: true
       default: true
       description: Query string to search Google
-    description: 'Search Google '
+    - name: count
+      description: Number of entries to retrieve
+    description: 'Search Google'
   dockerimage: demisto/googlesearch
 hidden: false
 system: true
