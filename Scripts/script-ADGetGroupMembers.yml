@@ -52,7 +52,6 @@ script: |+
           md = data
       else:
           data = data if isinstance(data, list) else [data]
-          demisto.log(str(data))
           md = tableToMarkdown("Active Directory Group Members", data)
 
           if memberType == 'computer':
