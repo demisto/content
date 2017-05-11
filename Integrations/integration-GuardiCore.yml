@@ -92,16 +92,17 @@ script:
             {from: 'concatenated_tags', to: 'Tags', parser: function(tags) {
                 var str = '';
                 for (var i = 0; i < tags.length; i++) {
-                    str += tags[i].display_name+ ', ';
+                    str += tags[i].display_name + ', ';
                 }
-                console.log(str)
+                console.log(str);
+
                 return str.replace(/, $/, '');
             }}
         ]
     };
 
     var contextsDictionary = {
-        'guardicore-get-incident': { // also for guardicore-get-incidents
+        'guardicore-get-incident': {
             keys: [
                 'source_ip',
                 'destination_ip',
@@ -121,7 +122,9 @@ script:
             path: 'GuardiCore.Incidents'
         },
         'guardicore-get-incident-iocs': {
-            keys: [],
+            keys: [
+                '_id'
+            ],
             path: 'GuardiCore.Incidents',
             missing: 'No IOCs for this incident'
         },
@@ -164,27 +167,56 @@ script:
         return pascalDict;
     }
 
-    var parseEntryResult = function(command, result) {
+    var parseEntryResult = function(command, result, shouldConvertToMd) {
         var entry = {
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json
         };
 
-        var resultExist = (
+        var doesResultExist = (
             result &&
             (!(result instanceof Array) || result.length) &&
             (!(result instanceof Object) || Object.keys(result).length)
         );
 
         if (outputsDictionary[command]) {
-            entry.HumanReadable = resultExist ? objToMd(mapObjFunction(outputsDictionary[command])(result)) : outputsDictionary[command].missing;
+            if (doesResultExist) {
+                var output = mapObjFunction(outputsDictionary[command])(result);
+                if (shouldConvertToMd) {
+                    entry.HumanReadable = objToMd(output);
+                } else {
+                    entry.HumanReadable = output;
+                }
+            } else {
+                entry.HumanReadable = outputsDictionary[command].missing;
+            }
         }
 
-        if (resultExist && contextsDictionary[command]) {
+        if (doesResultExist && contextsDictionary[command]) {
             entry.EntryContext = {};
-            entry.EntryContext[contextsDictionary[command].path] = filterData(result, contextsDictionary[command].keys);
+            entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(filterData(result, contextsDictionary[command].keys));
         }
+
+        return entry;
+    }
+
+    var formatIncidentDescription = function(unformattedDescription) {
+        var description = '';
+        for (var j in unformattedDescription) {
+            description += unformattedDescription[j].value;
+        }
+
+        return description;
+    }
+
+    var parseGetIncident = function(command, response) {
+        var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+        var output = mapObjFunction(outputsDictionary[command])(response);
+        output.Description = formatIncidentDescription(response.description);
+
+        entry.HumanReadable = objToMd(output);
+        entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(output);
 
         return entry;
     }
@@ -196,22 +228,17 @@ script:
         var contexts = [];
         for (var objects = jq(response, 'objects'), i = 0; i < objects.length; i++) {
             var context = filterData(objects[i], contextsDictionary[command].keys);
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+
+            // filter by incident type and by tag
             if (
-                (args.type && args.type != context.incident_type) ||
-                (args.tag && args.tag != context.concatenated_tags)
+                (args.type && (output.IncidentType != args.type)) ||
+                (args.tag && (output.Tags.indexOf(args.tag) == -1))
             ) {
                 continue;
             }
 
-            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
-
-            // build the description
-            var description = '';
-            for (var j in objects[i].description) {
-                description += objects[i].description[j].value;
-            }
-            log(JSON.stringify(description));
-            output.Description = description;
+            output.Description = formatIncidentDescription(objects[i].description);
 
             outputs.push(output);
             contexts.push(convertKeysToPascalCase(output));
@@ -227,6 +254,10 @@ script:
         switch (command) {
             case 'guardicore-get-incidents':
                 entry = parseGetIncidents(command, response);
+                break;
+
+            case 'guardicore-get-incident':
+                entry = parseGetIncident(command, response);
                 break;
 
             default:
@@ -256,7 +287,7 @@ script:
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
-              sendRequest(methodDictionary.logout, pathDictionary.logout, token);
+                sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             }
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
@@ -264,7 +295,7 @@ script:
         return JSON.parse(res.Body);
     }
 
-    var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password})['access_token'];
+    var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
     switch (command) {
         case 'test-module':
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
@@ -295,8 +326,8 @@ script:
       - low
       - medium
       description: Severity of the incidents
-    - name: tags
-      description: Comma separated list of tags to filter by
+    - name: tag
+      description: Tag to filter
     - name: limit
       description: Amount of incidents
     - name: type
