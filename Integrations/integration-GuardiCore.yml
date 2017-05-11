@@ -62,6 +62,71 @@ script:
         'guardicore-get-incident-iocs': 'GET'
     };
 
+    var outputsDictionary = {
+        'guardicore-get-incident': [
+            {from: 'source_ip', to: 'Source IP'},
+            {from: 'destination_ip', to: 'Destination IP'},
+            {from: 'source_port', to: 'Source Port'},
+            {from: 'destination_port', to: 'Source IP'},
+            {from: '_id', to: 'ID'},
+            {from: 'os', to: 'OS'},
+            {from: 'destination_port', to: 'Source IP'},
+            {from: 'source_port', to: 'Source Port'},
+            {from: 'incident_type', to: 'Incident Type'},
+            {from: 'honeypot_id', to: 'Honeypot ID'},
+            {from: 'start_time', to: 'Start Time', parser: convertTimestampToString},
+            {from: 'end_time', to: 'End Time', parser: convertTimestampToString},
+            {from: 'closed_time', to: 'Closed Time', parser: convertTimestampToString},
+            {from: 'severity', to: 'Severity', parser: function(sev) {
+                if (sev <= 30) {
+                    return 'Low';
+                }
+                if (sev >= 50) {
+                    return 'High';
+                }
+                return 'Medium';
+            }},
+            {from: 'incident_group', to: 'Incident Group', parser: function(ig) {
+                return ig[0].gname + ' ' + ig[0].gid;
+            }},
+            {from: 'concatenated_tags', to: 'Tags', parser: function(tags) {
+                var str = '';
+                for (var i = 0; i < tags.length; i++) {
+                    str += tags[i].display_name+ ', ';
+                }
+                console.log(str)
+                return str.replace(/, $/, '');
+            }}
+        ]
+    };
+
+    var contextsDictionary = {
+        'guardicore-get-incident': { // also for guardicore-get-incidents
+            keys: [
+                'source_ip',
+                'destination_ip',
+                'source_port',
+                'destination_port',
+                '_id',
+                'os',
+                'severity',
+                'incident_type',
+                'honeypot_id',
+                'start_time',
+                'end_time',
+                'closed_time',
+                'incident_group',
+                'concatenated_tags'
+            ],
+            path: 'GuardiCore.Incidents'
+        },
+        'guardicore-get-incident-iocs': {
+            keys: [],
+            path: 'GuardiCore.Incidents',
+            missing: 'No IOCs for this incident'
+        },
+    };
+
     /**
        * return a function that transform object from some structure to other
        * @param {Array} fields - array of {from: String, to: String} - to transform by
@@ -81,102 +146,6 @@ script:
         }
     }
 
-    var outputsDictionary = {
-        'guardicore-get-incident': [
-                {from: 'source_ip', to: 'Source IP'},
-                {from: 'destination_ip', to: 'Destination IP'},
-                {from: 'source_port', to: 'Source port'},
-                {from: 'destination_port', to: 'Source IP'},
-                {from: '_id', to: 'ID'},
-                {from: 'os', to: 'OS'},
-                {from: 'destination_port', to: 'Source IP'},
-                {from: 'source_port', to: 'Source port'},
-                {from: 'incident_type', to: 'Incident type'},
-                {from: 'honeypot_id', to: 'Honeypot ID'},
-                {from: 'start_time', to: 'Start time'},
-                {from: 'end_time', to: 'End time'},
-                {from: 'closed_time', to: 'Closed time'},
-                {from:'description_template', to: 'Description'},
-                {from: 'severity', to: 'Severity', parser: function(sev) {
-                    if (sev <= 30) {
-                        return 'Low';
-                    }
-                    if (sev >= 50) {
-                        return 'High';
-                    }
-                    return 'Medium';
-                }},
-                {from: 'incident_group', to: 'Incident group', parser: function(ig) {
-                    return ig[0].gname + ' ' + ig[0].gid;
-                }},
-                {from: 'concatenated_tags', to: 'Tags', parser: function(tags) {
-                    var str = '';
-                    for (var i = 0; i < tags.length; i++) {
-                        str += tags[i].display_name+ ', ';
-                    }
-                    console.log(str)
-                    return str.replace(/, $/, '');
-                }}
-            ]
-    };
-
-    var contextsDictionary = {
-        'guardicore-get-incidents': {
-            keys:[
-                'source_ip',
-                'destination_ip',
-                'source_port',
-                'destination_port',
-                '_id',
-                'os',
-                'severity',
-                'incident_type',
-                'honeypot_id',
-                'start_time',
-                'end_time',
-                'closed_time',
-                'incident_group',
-                'concatenated_tags',
-                'description_template'
-            ],
-            path: 'Guardicore.Incidents'
-        },
-        'guardicore-get-incident': {
-            keys:[
-                'source_ip',
-                'destination_ip',
-                'source_port',
-                'destination_port',
-                '_id',
-                'os',
-                'severity',
-                'incident_type',
-                'honeypot_id',
-                'start_time',
-                'end_time',
-                'closed_time',
-                'incident_group',
-                'concatenated_tags',
-                'description_template'
-            ],
-            path: 'Guardicore.Incidents'
-        },
-        'guardicore-get-incident-iocs': {
-            keys:[],
-            path: 'Guardicore.Incidents',
-            missing: 'No IOCs for this incident'
-        },
-    };
-
-    function objToMd(o) {
-      var keys = Object.keys(o);
-      var md = 'Key | Value\n- | -\n';
-      for (var i in keys) {
-          md += keys[i] + ' | ' + String(o[keys[i]]) + '\n';
-      }
-      return md;
-    }
-
     var filterData = function(obj, keys) {
         var retObj = {};
         for (var i = 0; i < keys.length; i++) {
@@ -185,34 +154,86 @@ script:
         return retObj;
     }
 
-    var entriesFromResponse = function(command, result) {
-        var results = [];
-        console.log(command)
+    var convertKeysToPascalCase = function(dict) {
+        var pascalDict = {};
+        for (var key in dict) {
+            var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+            pascalDict[pascalCaseKey] = dict[key];
+        }
+
+        return pascalDict;
+    }
+
+    var parseEntryResult = function(command, result) {
+        var entry = {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json
+        };
+
+        var resultExist = (
+            result &&
+            (!(result instanceof Array) || result.length) &&
+            (!(result instanceof Object) || Object.keys(result).length)
+        );
+
+        if (outputsDictionary[command]) {
+            entry.HumanReadable = resultExist ? objToMd(mapObjFunction(outputsDictionary[command])(result)) : outputsDictionary[command].missing;
+        }
+
+        if (resultExist && contextsDictionary[command]) {
+            entry.EntryContext = {};
+            entry.EntryContext[contextsDictionary[command].path] = filterData(result, contextsDictionary[command].keys);
+        }
+
+        return entry;
+    }
+
+    var parseGetIncidents = function(command, response) {
+        command = 'guardicore-get-incident';
+        var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+        var outputs = [];
+        var contexts = [];
+        for (var objects = jq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var context = filterData(objects[i], contextsDictionary[command].keys);
+            if (
+                (args.type && args.type != context.incident_type) ||
+                (args.tag && args.tag != context.concatenated_tags)
+            ) {
+                continue;
+            }
+
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+
+            // build the description
+            var description = '';
+            for (var j in objects[i].description) {
+                description += objects[i].description[j].value;
+            }
+            log(JSON.stringify(description));
+            output.Description = description;
+
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
+        entry.EntryContext[contextsDictionary[command].path] = contexts;
+
+        return entry;
+    }
+
+    var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
-                for (var objects = jq(result, 'objects'), i = 0; i < objects.length; i++) {
-                    results.push(entriesFromResponse('guardicore-get-incident', objects[i]));
-                }
+                entry = parseGetIncidents(command, response);
                 break;
+
             default:
-                var entry = {
-                        Type: entryTypes.note,
-                        Contents: result,
-                        ContentsFormat: formats.json
-                    };
-                var resultExist = result &&
-                    (!(result instanceof Array) || result.length) &&
-                    (!(result instanceof Object) || Object.keys(result).length);
-                if (outputsDictionary[command]) {
-                        entry.HumanReadable = resultExist ? objToMd(mapObjFunction(outputsDictionary[command])(result)) : outputsDictionary[command].missing;
-                    }
-                if (resultExist && contextsDictionary[command]) {
-                        entry.ContextEntry = {};
-                        entry.ContextEntry[contextsDictionary[command].path] = filterData(result, contextsDictionary[command].keys);
-                    }
-                results.push(entry);
+                entry = parseEntryResult(command, response);
         }
-        return results;
+
+        return entry;
     }
 
     var sendRequest = function(method, url, token, args) {
@@ -220,6 +241,7 @@ script:
         if (token) {
             headers.Authorization = ['Bearer ' + token];
         }
+
         var body = method !== 'GET' ? JSON.stringify(args) : '';
         var res = http(
                 server + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
@@ -231,12 +253,14 @@ script:
                 params.insecure,
                 params.proxy
             );
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
               sendRequest(methodDictionary.logout, pathDictionary.logout, token);
             }
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         return JSON.parse(res.Body);
     }
 
@@ -250,8 +274,10 @@ script:
                 methodDictionary[command],
                 replaceInTemplatesAndRemove(urlDictionary[command], args),
                 token,
-                args);
+                args
+            );
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+
             return entriesFromResponse(command, result);
     }
   type: javascript
@@ -273,6 +299,8 @@ script:
       description: Comma separated list of tags to filter by
     - name: limit
       description: Amount of incidents
+    - name: type
+      description: Type of incidents (deception, lateral movement etc.)
     description: Get guardicore incidents
   - name: guardicore-uncommon-domains
     arguments:
