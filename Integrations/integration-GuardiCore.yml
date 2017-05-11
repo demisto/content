@@ -98,6 +98,25 @@ script:
 
                 return str.replace(/, $/, '');
             }}
+        ],
+        'guardicore-unresolved-domains': [
+            {from: 'domain', to: 'Domain'},
+            {from: 'count', to: 'Count'},
+            {from: 'clients_count', to: 'Clients Count'},
+            {from: 'clients', to: 'Clients', parser: function(clients) {
+                var output = [];
+                for (var i = 0; i < clients.length; i++) {
+                    clientStr = '{0} - {1} - {2}'.format(
+                        clients[i].vm.display_name,
+                        clients[i].ip,
+                        clients[i].vm.id
+                    );
+                    output.push(clientStr);
+                    output.push(clientStr);
+                }
+
+                return output.join('<br>');
+            }}
         ]
     };
 
@@ -125,7 +144,7 @@ script:
             keys: [
                 '_id'
             ],
-            path: 'GuardiCore.Incidents',
+            path: 'GuardiCore.IOCs',
             missing: 'No IOCs for this incident'
         },
     };
@@ -167,39 +186,47 @@ script:
         return pascalDict;
     }
 
-    var parseEntryResult = function(command, result, shouldConvertToMd) {
-        var entry = {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsFormat: formats.json
-        };
-
-        var doesResultExist = (
+    var doesResultExist = function(result) {
+        return (
             result &&
             (!(result instanceof Array) || result.length) &&
             (!(result instanceof Object) || Object.keys(result).length)
         );
-
-        if (outputsDictionary[command]) {
-            if (doesResultExist) {
-                var output = mapObjFunction(outputsDictionary[command])(result);
-                if (shouldConvertToMd) {
-                    entry.HumanReadable = objToMd(output);
-                } else {
-                    entry.HumanReadable = output;
-                }
-            } else {
-                entry.HumanReadable = outputsDictionary[command].missing;
-            }
-        }
-
-        if (doesResultExist && contextsDictionary[command]) {
-            entry.EntryContext = {};
-            entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(filterData(result, contextsDictionary[command].keys));
-        }
-
-        return entry;
     }
+
+    // var parseEntryResult = function(command, result, shouldConvertToMd) {
+    //     var entry = {
+    //         Type: entryTypes.note,
+    //         Contents: result,
+    //         ContentsFormat: formats.json
+    //     };
+
+    //     var doesResultExist = (
+    //         result &&
+    //         (!(result instanceof Array) || result.length) &&
+    //         (!(result instanceof Object) || Object.keys(result).length)
+    //     );
+
+    //     if (outputsDictionary[command]) {
+    //         if (doesResultExist) {
+    //             var output = mapObjFunction(outputsDictionary[command])(result);
+    //             if (shouldConvertToMd) {
+    //                 entry.HumanReadable = objToMd(output);
+    //             } else {
+    //                 entry.HumanReadable = output;
+    //             }
+    //         } else {
+    //             entry.HumanReadable = outputsDictionary[command].missing;
+    //         }
+    //     }
+
+    //     if (doesResultExist && contextsDictionary[command]) {
+    //         entry.EntryContext = {};
+    //         entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(filterData(result, contextsDictionary[command].keys));
+    //     }
+
+    //     return entry;
+    // }
 
     var formatIncidentDescription = function(unformattedDescription) {
         var description = '';
@@ -226,7 +253,7 @@ script:
         var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
         var outputs = [];
         var contexts = [];
-        for (var objects = jq(response, 'objects'), i = 0; i < objects.length; i++) {
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             var context = filterData(objects[i], contextsDictionary[command].keys);
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
 
@@ -258,6 +285,30 @@ script:
 
             case 'guardicore-get-incident':
                 entry = parseGetIncident(command, response);
+                break;
+
+            case 'guardicore-unresolved-domains':
+                var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+                var outputs = [];
+                var contexts = [];
+                var domains = [];
+                var endpoints = [];
+                for (var i = 0; i < response.length; i++) {
+                    var output = mapObjFunction(outputsDictionary[command])(response[i]);
+                    outputs.push(output);
+                    domains.push(output['Domain']);
+
+                    for (var j = 0; j < (output['Clients'].split('<br>')).length; j++) {
+                        endpoints.push(output['Clients'][j]);
+                    }
+                }
+
+                entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
+                entry.EntryContext = {
+                    'GuardiCore.Domain.Unresolved': domains,
+                    'GuardiCore.Endpoint.Suspicious': endpoints
+                }
+
                 break;
 
             default:
