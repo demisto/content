@@ -77,18 +77,29 @@ script:
         div_ld2_2: 'ld2_2_count divided by the number of record'
     }
 
+    var extractDomainName = function(url) {
+        var hostname;
+        //find & remove protocol (http, ftp, etc.) and get the hostname
+        if (url.indexOf("://") > -1) {
+            hostname = url.split('/')[2];
+        }
+        else {
+            hostname = url ? url.split('/')[0] : '';
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+
+        return hostname;
+    }
+
     var insecure = params.insecure;
     var proxy = params.proxy;
     var apitoken = params.APIToken;
     var baseURL = params.baseURL;
 
     var domainArg = (args.domain) ? args.domain : '';
-    domainArg = domainArg.replace(/^https?:\/\//i, '');
-
-    // removes 'http://'/'https://'' prefix
-    var domainWithoutProtocol = function(domain) {
-        return domain && domain.replace(/^https?:\/\//i, '');
-    }
+    domainArg = extractDomainName(domainArg);
 
     // "one_two" to "One Two"
     var keyToTableKey = function(s) {
@@ -153,7 +164,6 @@ script:
     };
 
     var getDomainCategorization = function(domain) {
-        domain = domainWithoutProtocol(domain);
         var url = baseURL + '/domains/categorization/' + encodeURIComponent(domain) + '?showLabels';
 
         var res = sendRequest(url);
@@ -201,7 +211,7 @@ script:
         var matches = res && res.matches;
 
         if (!matches || !(matches instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         }
 
         // build table
@@ -237,13 +247,12 @@ script:
     }
 
     var getDomainCooccurrences = function(domain) {
-        domain = domainWithoutProtocol(domain);
         var url = baseURL + '/recommendations/name/' + encodeURIComponent(domain) + '.json';
         var res = sendRequest(url);
 
         var occurrences = res && res.pfs2;
         if (!occurrences || !(occurrences instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         }
 
         // table
@@ -266,13 +275,12 @@ script:
     }
 
     var getDomainRelated = function(domain) {
-        domain = domainWithoutProtocol(domain);
-        var url = baseURL + '/links/name/' + encodeURIComponent(domainArg) + '.json';
+        var url = baseURL + '/links/name/' + encodeURIComponent(domain) + '.json';
         var res = sendRequest(url);
 
         var related = res && res.tb1;
         if (!related || !(related instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         }
 
         // table
@@ -295,12 +303,11 @@ script:
     }
 
     var getDomainSecurity = function(domain) {
-        domain = domainWithoutProtocol(domain);
-        var url = baseURL + '/security/name/' + encodeURIComponent(domainArg) + '.json';
+        var url = baseURL + '/security/name/' + encodeURIComponent(domain) + '.json';
         var res = sendRequest(url);
 
         if (!res) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         }
 
         // each key in SecurityResultInfo corrispond to a key in 'res'
@@ -331,7 +338,6 @@ script:
     }
 
     var getDomainTags = function(domain) {
-        domain = domainWithoutProtocol(domain);
         var url = baseURL + '/domains/' + encodeURIComponent(domain) + '/latest_tags';
         var tags = sendRequest(url);
 
@@ -362,13 +368,12 @@ script:
     }
 
     var getDomainDNSHistory = function(domain) {
-        domain = domainWithoutProtocol(domain);
         var url = baseURL + '/dnsdb/name/a/' + encodeURIComponent(domain) + '.json';
         var res = sendRequest(url);
 
         var features = res && res.features;
         if (!features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         };
         var address = res.rrs_tf && res.rrs_tf[0] && res.rrs_tf[0].rrs && res.rrs_tf[0].rrs[0] && res.rrs_tf[0].rrs[0].rr;
         features.ip = address;
@@ -421,7 +426,7 @@ script:
         var rrs = res && res.rrs;
         var features = res && res.features;
         if (!rrs || !features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringigy(res);
+            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
         };
 
         var rrsTable = rrs.map(function(obj) {
@@ -486,19 +491,19 @@ script:
             getDomainSearch('www.demisto.com');
             return 'ok';
         case 'umbrella-domain-categorization':
-            return getDomainCategorization(args.domain);
+            return getDomainCategorization(domainArg);
         case 'umbrella-domain-search':
             return getDomainSearch(args.regex, args.start);
         case 'umbrella-domain-co-occurrences':
-            return getDomainCooccurrences(args.domain);
+            return getDomainCooccurrences(domainArg);
         case 'umbrella-domain-related':
-            return getDomainRelated(args.domain);
+            return getDomainRelated(domainArg);
         case 'umbrella-domain-security':
-            return getDomainSecurity(args.domain);
+            return getDomainSecurity(domainArg);
         case 'umbrella-domain-tags':
-            return getDomainTags(args.domain);
+            return getDomainTags(domainArg);
         case 'umbrella-domain-dns-history':
-            return getDomainDNSHistory(args.domain);
+            return getDomainDNSHistory(domainArg);
         case 'umbrella-ip-dns-history':
             return getIpDNSHistory(args.ip);
         case 'umbrella-ip-malicious-domains':
