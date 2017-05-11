@@ -99,10 +99,20 @@ script:
     };
 
     var isEmpty = function(object) {
+        if(Array.isArray(object)){
+            return object.length === 0;
+        }
         for(var i in object) {
-            return false;
+            if(object[i]){
+                return false;
+            }
         }
         return true;
+    };
+
+    var splitToID = function(str){
+        var temp = str.split('/');
+        return temp[temp.length -1];
     };
 
     var vectraDetections = function(result){
@@ -121,8 +131,7 @@ script:
         var temp;
         for(var i=0; i<res.length; i++){
             if(res[i].host){
-                temp = res[i].host.split('/');
-                res[i].host = temp[temp.length-1];
+                res[i].host = splitToID(res[i].host);
             }
         }
 
@@ -148,10 +157,14 @@ script:
 
         var temp;
         for(var i=0; i<res.length; i++){
-            if(res[i].detection_set){
-                res[i].detection_ids = dq(res[i].detection_set, '.= function(str){var temp = str.split(\'/\'); return temp[temp.length -1];}(val)');
+            res[i].detection_ids = res[i].detection_set;
+            if(res[i].detection_ids){
+                for(j=0; j<res[i].detection_ids.length; j++){
+                    res[i].detection_ids[j] = splitToID(res[i].detection_ids[j]);
+                }
             }
         }
+
 
         var md = tblToMd(
                 'Hosts table',
@@ -159,16 +172,21 @@ script:
                 ['id','name','state','t_score','c_score','last_source','last_detection_timestamp','detection_ids','tags','key_asset','new_host_pointer','sensor_luid','targets_key_asset']
             );
 
-        var context = {Endpoint: dq(res, '.={\
-                                Hostname: val.name,\
-                                VectraID: val.id,\
-                                State: val.state, \
-                                IP: val.last_source, \
-                                LastDetection: val.last_detection_timestamp, \
-                                DetectionID: val.detection_ids\
-                                TScore: val.t_score, \
-                                CScore: val.c_score \
-                                }')};
+        var val;
+        for(i=0; i<res.length; i++){
+            val = res[i];
+            res[i] = {
+                        Hostname: val.name,
+                        VectraID: val.id,
+                        State: val.state,
+                        IP: val.last_source,
+                        LastDetection: val.last_detection_timestamp,
+                        DetectionID: val.detection_ids,
+                        TScore: val.t_score,
+                        CScore: val.c_score
+                    };
+        }
+        var context = {Endpoint : res};
 
         return {
             Type: entryTypes.note,
@@ -199,54 +217,61 @@ script:
 
         for(var i=0; i<res.length; i++){
             if(res[i].host){
-                console.log(res[i].host);
-                res[i].host = dq(res[i].host, '.=function(obj){\
-                                                    var temp = obj.split(\'/\'); \
-                                                    return temp[temp.length-1]}(val)');
+                //console.log(res[i].host);
+                for(var j=0; j<res[i].host; j++){
+                    res[i].host[j] = splitToID(res[i].host[j]);
+                }
             }
-            context.VectraRule.push();
         }
         var keys = Object.keys(res[0]);
         keys.splice(keys.indexOf('url'), 1);
         var md = tblToMd('Rules table', res, keys);
-
-        res = dq(res, '.={      ID:             val.name,\
-                                SmartCategory:  val.smart_category,\
-                                Description:    val.description, \
-                                Type:           val.type_vname,\
-                                Category:       val.category,\
-                                Created :       val.created_timestamp,\
-                                LastUpdate:     val.last_timestamp,\
-                                Host:           (val.host.length === 0 ? undefined : val.host),\
-                                IP:             val.ip,\
-                                Priority:       val.priority,\
-                                Remote:         [{  IP: val.remote1_ip, \
-                                                    Protocol: val.remote1_proto, \
-                                                    Port: val.remote1_port,\
-                                                    DNS: val.remote1_dns,\
-                                                    Kerberos: {Account: val.remote1_kerb_account,\
-                                                                Service: val.remote1_kerb_service\
-                                                    }},\
-                                                 {  IP: val.remote2_ip, \
-                                                    Protocol: val.remote2_proto, \
-                                                    Port: val.remote2_port, \
-                                                    DNS: val.remote2_dns\
-                                                 }]\
-                                }');
+        var context = {};
+        var val;
 
         for(i=0; i<res.length; i++){
-            if(res[i]){
-                if(isEmpty(res[i].Remote[0].Kerberos)){
-                    delete res[i].Remote[0].Kerberos;
-                }
-                res[i].Remote = res[i].Remote.filter(function(item) {!isEmpty(item);});
-                if(isEmpty(res[i].Remote)){
-                    res[i].Remote = undefined;
-                }
-            }
+            val = res[i];
+            res[i] = {          ID:             val.name,
+                                SmartCategory:  val.smart_category,
+                                Description:    (val.description? val.description:undefined),
+                                Type:           val.type_vname,
+                                Category:       val.category,
+                                Created :       val.created_timestamp,
+                                LastUpdate:     val.last_timestamp,
+                                Host:           (val.host.length === 0 ? undefined : val.host),
+                                IP:             (val.ip? val.ip : undefined),
+                                Priority:       (val.priority? val.priority : undefined),
+                                Remote:         [{  IP: (val.remote1_ip? val.remote1_ip : undefined),
+                                                    Protocol: (val.remote1_proto? val.remote1_proto : undefined),
+                                                    Port:(val.remote1_port? val.remote1_port : undefined),
+                                                    DNS: (val.remote1_dns? val.remote1_dns : undefined),
+                                                    Kerberos: {Account: (val.remote1_kerb_account? val.remote1_kerb_account : undefined),
+                                                                Service:(val.remote1_kerb_service? val.remote1_kerb_service : undefined)
+                                                    }},
+                                                 {  IP: (val.remote2_ip? val.remote2_ip : undefined),
+                                                    Protocol: (val.remote2_proto? val.remote2_proto : undefined),
+                                                    Port: (val.remote2_port? val.remote2_port : undefined),
+                                                    DNS:(val.remote2_dns? val.remote2_dns : undefined)
+                                                 }]
+                                };
+
+        }
+        var notEmpty = function(obj){
+            return !isEmpty(obj);
         }
 
-        var context = {VectraRule : res};
+        for(i=0; i<res.length; i++){
+            temp = res[i].Remote;
+            if(isEmpty(temp[0].Kerberos)){
+                delete temp[0].Kerberos;
+            }
+            temp = temp.filter(notEmpty);
+            if(isEmpty(temp)){
+                temp = undefined;
+            }
+            res[i].Remote = temp;
+        }
+        context.VectraRule = res;
 
         return {
             Type: entryTypes.note,
@@ -270,19 +295,26 @@ script:
         }
 
         var md = tblToMd('Sensors table', res.results, keys);
-        var context = {VectraSensor : dq(res.results, '.={\
-                                        ID : val.id,\
-                                        Alias : val.alias,\
-                                        Location : val.location,\
-                                        SerialNumber : val.serial_number,\
-                                        LUID : val.luid,\
-                                        Status : val.status,\
-                                        CurrentVersion : val.current_version,\
-                                        OriginalVersion : val.original_version,\
-                                        IP : val.ip_address,\
-                                        URI : val.headend_uri,\
-                                        LastSeen : val.last_seen\
-                                    }')};
+        var val;
+        for(i=0; i<res.results.length; i++){
+            val = res.results[i];
+            res.results[i] = {
+                                ID : val.id,
+                                Alias : val.alias,
+                                Location : (val.location? val.location:undefined),
+                                SerialNumber : val.serial_number,
+                                LUID : val.luid,
+                                Status : val.status,
+                                CurrentVersion : val.current_version,
+                                OriginalVersion : val.original_version,
+                                IP : val.ip_address,
+                                URI : val.headend_uri,
+                                LastSeen : val.last_seen
+                            };
+        }
+
+        var context = {VectraSensor : res.results};
+
         return {
             Type: entryTypes.note,
             Contents: result.Body,
