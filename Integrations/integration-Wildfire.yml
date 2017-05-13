@@ -71,8 +71,12 @@ script:
             params.proxy
         );
         if (res.StatusCode !==200) {
+          if(res.StatusCode === 404){
+            return undefined;
+          }
+          else{
             throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
-
+          }
         }
         return res.Body;
     };
@@ -99,12 +103,6 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    /*MD table with title "Wildfire Report", starting at 'wildfire'
-    In content, File Entity object with the relevant field from the integration.
-    a. if file is malicious, context name is File/Malicious else File
-    */
-
-    //var contextFunc = function(body){}
     var resToMD = function(body, title) {
         return tblToMd(title, body, Object.keys(body));
     };
@@ -141,6 +139,9 @@ script:
 
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
+        if(!resXML){
+          return 'No results yet';
+        }
         var result = JSON.parse(x2j(resXML));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
@@ -171,7 +172,7 @@ script:
           var currentTime = new Date();
           var fileName = command + '_at_' + currentTime.getTime();
 
-          return {Type: entryTypes.note,
+          return {Type: 9,
                   FileID: saveFile(resPDF),
                   File: fileName,
                   Contents: fileName,
