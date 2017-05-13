@@ -19,7 +19,7 @@ script: |-
   var uniqueMatches = Object.keys(matches);
   var ec = {URL: []};
   var md = '### Extract URL\n';
-  for (var i=0; i < uniqueMatches; i++) {
+  for (var i=0; i < uniqueMatches.length; i++) {
       ec.URL.push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches + '\n';
   }

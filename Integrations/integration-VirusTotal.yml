@@ -57,11 +57,11 @@ script:
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
-        if (result.Body === '' && result.StatusCode == 204) {
-            throw 'No content recieved. Possible API rate limit reached.';
+        if (result.Body === '' && result.StatusCode === 204) {
+            return {statusCode: result.StatusCode};
         }
         if (result.Body === '') {
-            throw 'No content recieved. Maybe you tried a private API?.';
+            throw 'No content received. Maybe you tried a private API?.';
         }
         var obj;
         try {
@@ -75,11 +75,37 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
-    var doFile = function(hash, longFormat, threshold) {
+    var withRetries = function(waitForRateLimit, retries, reqCall) {
+        if (waitForRateLimit) {
+            waitForRateLimit = parseInt(waitForRateLimit);
+        }
+        if (!waitForRateLimit) {
+            waitForRateLimit = 60;
+        }
+        if (retries) {
+            retries = parseInt(retries);
+        }
+        if (!retries) {
+            retries = 0;
+        }
+        var res = reqCall();
+        var tries = 0;
+        while (res.statusCode === 204 && !res.body && tries < retries && waitForRateLimit > 0) {
+            wait(waitForRateLimit);
+            tries++;
+            res = reqCall();
+        }
+        if (res.statusCode === 204 && !res.body) {
+            throw 'No content received. Possible API rate limit reached.';
+        }
+        return res;
+    };
+
+    var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
             threshold = 10;
         }
-        var res = doReq('POST', 'file/report', {resource: hash});
+        var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
         if (res.obj.response_code === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
@@ -146,7 +172,7 @@ script:
         return badDownloads;
     };
 
-    var doIP = function(ip, longFormat, threshold, sampleSize) {
+    var doIP = function(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries) {
         if (!isValidIP(ip)) {
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
@@ -156,7 +182,7 @@ script:
         if (!sampleSize) {
             sampleSize = 10;
         }
-        var res = doReq('GET', 'ip-address/report', {ip: ip});
+        var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
         if (res.obj.response_code === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
@@ -207,7 +233,7 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var doURL = function(url, threshold, longFormat, sampleSize, submitWait) {
+    var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         if (!submitWait) {
             submitWait = 0;
         }
@@ -217,7 +243,7 @@ script:
         if (!threshold) {
             threshold = 10;
         }
-        var res = doReq('POST', 'url/report', {resource: url, scan:1});
+        var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
         if (res.obj.response_code === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
@@ -267,14 +293,14 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var doDomain = function(domain, threshold, longFormat, sampleSize) {
+    var doDomain = function(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries) {
         if (!sampleSize) {
             sampleSize = 10;
         }
         if (!threshold) {
             threshold = 10;
         }
-        var res = doReq('GET', 'domain/report', {domain: domain});
+        var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
         if (res.obj.response_code === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
@@ -343,9 +369,19 @@ script:
     };
 
     var scanFile = function(entry, uploadURL) {
-        var result = httpMultipart(uploadURL ? uploadURL : serverUrl + 'file/scan', entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.key}, params.insecure, params.proxy);
+        var url = uploadURL ? uploadURL : serverUrl + 'file/scan';
+        var fileName = dq(invContext, "File(val.EntryID == '" + entry + "').Name");
+        if (Array.isArray(fileName)) {
+            if (fileName.length > 0) {
+                fileName = fileName[0];
+            } else {
+                fileName = undefined;
+            }
+        }
+        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.APIKey},
+            params.insecure, params.proxy, undefined, 'file', fileName);
         if (result.StatusCode < 200 || result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+            throw 'Failed to perform request ' + url + ', request status code: ' + result.StatusCode;
         }
         if (result.Body === '' && result.StatusCode == 204) {
             throw 'No content recieved. Possible API rate limit reached.';
@@ -411,16 +447,16 @@ script:
 
     switch (command) {
         case 'test-module':
-            doIP('8.8.8.8'); // Check IP 8.8.8.8 - it will throw an error if not successful
+            doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
             return true;
         case 'file':
-            return doFile(args.file, args.long, args.threshold);
+            return doFile(args.file, args.long, args.threshold, args.wait, args.retries);
         case 'ip':
-            return doIP(args.ip, args.long, args.threshold, args.sampleSize);
+            return doIP(args.ip, args.long, args.threshold, args.sampleSize, args.wait, args.retries);
         case 'url':
-            return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait);
+            return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait, args.wait, args.retries);
         case 'domain':
-            return doDomain(args.domain, args.threshold, args.long, args.sampleSize);
+            return doDomain(args.domain, args.threshold, args.long, args.sampleSize, args.wait, args.retries);
         case 'file-scan':
             return scanFile(args.entryID, args.uploadURL);
         case 'file-rescan':
@@ -458,6 +494,12 @@ script:
       description: If number of positives is bigger than the threshold we will consider
         it malicious
       defaultValue: "10"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: File.MD5
       description: Bad hash found
@@ -503,6 +545,12 @@ script:
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
       defaultValue: "10"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
@@ -550,6 +598,12 @@ script:
       description: Seconds to wait if the URL does not exist and is submitted to be
         scanned
       defaultValue: "0"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -591,6 +645,12 @@ script:
       description: If number of positive detected domains is bigger than the threshold
         we will consider it malicious
       defaultValue: "10"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "60"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
