@@ -485,17 +485,22 @@ script: |-
 
       temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
 
-      demisto.setContext('Label/Email', extractAddress(msg.to))
-      demisto.setContext('Label/Email/cc', extractAddress(msg.cc))
-      demisto.setContext('Label/Email/from', extractAddress(msg.sender))
-      demisto.setContext('Label/Email/format', '')
-      demisto.setContext('Label/Email/html', msg.body)
-      demisto.setContext('Label/Email/text', msg.body)
-      demisto.setContext('Label/Email/subject', msg.subject)
-      demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-      demisto.setContext('Label/Email/headers', '\n'.join(headers))
+      labels = []
+      labels.append({"Email" : extractAddress(msg.to)})
+      labels.append({"Email/cc" : extractAddress(msg.cc)})
+      labels.append({"Email/from" : extractAddress(msg.sender)})
+      labels.append({"Email/format" : ''})
+      labels.append({"Email/html" : msg.body})
+      labels.append({"Email/text" : msg.body})
+      labels.append({"Email/subject" : msg.subject})
+      labels.append({"Email/attachments" : '' if not attachments else ','.join(attachments)})
+      labels.append({"Email/headers" : '\n'.join(headers)})
 
-      return r, temp_res
+      resp = demisto.executeCommand("setIncident", {'labels' : labels})
+      if isError(resp[0]):
+          return resp
+      else:
+          return r, temp_res
 
 
   def handleEml(filePath, b64 = False):
@@ -525,7 +530,7 @@ script: |-
                   html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
               elif part.get_content_type() == 'text/plain':
                   text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
-                  
+
 
           try:
               subjenc, encoding = decode_header(eml['Subject'])[0]
@@ -533,15 +538,17 @@ script: |-
           except:
               subj = eml['Subject']
           subj = unicode(subj).encode('utf-8')
-          demisto.setContext('Label/Email', extractAddress(eml['To']))
-          demisto.setContext('Label/Email/cc', extractAddress(eml['Cc']))
-          demisto.setContext('Label/Email/from', extractAddress(eml['From']))
-          demisto.setContext('Label/Email/format', eml.get_content_type())
-          demisto.setContext('Label/Email/html', html)
-          demisto.setContext('Label/Email/text', text)
-          demisto.setContext('Label/Email/subject', subj)
-          demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-          demisto.setContext('Label/Email/headers', headers)
+
+          labels = []
+          labels.append({"Email" : extractAddress(eml['To'])})
+          labels.append({"Email/cc" : extractAddress(eml['Cc'])})
+          labels.append({"Email/from" : extractAddress(eml['From'])})
+          labels.append({"Email/format" : ''})
+          labels.append({"Email/html" : html})
+          labels.append({"Email/text" : text})
+          labels.append({"Email/subject" : subj})
+          labels.append({"Email/attachments" : '' if not attachments else ','.join(attachments)})
+          labels.append({"Email/headers" : headers})
 
           md = "### Results:\n"
           md += "* {0}:\t{1}\n".format('Label/Email',extractAddress(eml['To']))
@@ -555,7 +562,11 @@ script: |-
 
           temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
 
-          return r, temp_res
+          resp = demisto.executeCommand("setIncident", {'labels' : labels})
+          if isError(resp[0]):
+              return resp
+          else:
+              return r, temp_res
 
 
   res = []
@@ -598,7 +609,6 @@ script: |-
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Unknown file format: " + fileType}]
 
   res += global_res
-
   demisto.results(res if res else 'Done.')
 type: python
 tags:
