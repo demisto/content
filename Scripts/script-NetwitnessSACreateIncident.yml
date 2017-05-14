@@ -1,7 +1,7 @@
 commonfields:
-  id: NetwitnessSACreateIncident
+  id: NetWitnessSACreateIncident
   version: -1
-name: NetwitnessSACreateIncident
+name: NetWitnessSACreateIncident
 script: |
   resp = demisto.executeCommand("nw-create-incident", demisto.args())
 
@@ -17,8 +17,8 @@ script: |
           demisto.results("No results.")
 type: python
 tags:
-- RSA Netwitness Security Analytics
-comment: Create an incident inside Netwitness SA from a set of Netwitness events.
+- RSA NetWitness Security Analytics
+comment: Create an incident inside NetWitness SA from a set of NetWitness events.
 system: true
 args:
 - name: alertSummary
@@ -54,7 +54,7 @@ args:
 - name: summary
   description: Summary of the incident
 - name: incidentManagementId
-  description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
     device/component id. It can be received by running nw-get-component command. If
     this argument is not filled/passed, the script will automatically get the first
     device of type INCIDENT_MANAGEMENT from the SA server.'
