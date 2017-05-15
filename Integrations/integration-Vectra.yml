@@ -218,7 +218,7 @@ script:
         for(var i=0; i<res.length; i++){
             if(res[i].host){
                 //console.log(res[i].host);
-                for(var j=0; j<res[i].host; j++){
+                for(var j=0; j<res[i].host.length; j++){
                     res[i].host[j] = splitToID(res[i].host[j]);
                 }
             }
