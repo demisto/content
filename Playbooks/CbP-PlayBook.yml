@@ -1,5 +1,5 @@
 id: 67b0f25f-b061-4468-8613-43ab13147173
-version: 134
+version: 135
 name: CbP-PlayBook
 starttaskid: "0"
 tasks:
@@ -38,7 +38,7 @@ tasks:
       brand: carbonblackprotection
     nexttasks:
       '#none#':
-      - "2"
+      - "13"
     scriptarguments:
       group: ""
       limit: ""
@@ -212,13 +212,13 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 3985c880-8e31-4720-8566-e77b165b8b9e
+    taskid: 467b294a-ee03-414b-8e15-6b9b41bd591a
     type: regular
     task:
-      id: 3985c880-8e31-4720-8566-e77b165b8b9e
+      id: 467b294a-ee03-414b-8e15-6b9b41bd591a
       version: -1
       name: VerifyContext
-      script: 659fc685-2ab2-497e-8e31-a89f1c82c4d1
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -226,6 +226,7 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      expectedValue: ""
       fields: ID,FileName,PathName,FileCatalogId,AnalysisResult,AnalysisStatus,ConnectorId,AnalysisTarget,ComputerId,DateModified,DateCreated,Priority
       isArray: "true"
       path: CbP.FileAnalysis
@@ -238,13 +239,13 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 12426e85-a7a3-4f13-83ad-ce46050bf520
+    taskid: bda3897f-fcc7-421d-8720-43ddef120428
     type: regular
     task:
-      id: 12426e85-a7a3-4f13-83ad-ce46050bf520
+      id: bda3897f-fcc7-421d-8720-43ddef120428
       version: -1
       name: VerifyContext
-      script: 659fc685-2ab2-497e-8e31-a89f1c82c4d1
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -290,13 +291,13 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: aac5e763-0ce8-48ef-8308-4089d21e5570
+    taskid: 41c51402-b33f-4099-80f0-8d63da3aefd3
     type: regular
     task:
-      id: aac5e763-0ce8-48ef-8308-4089d21e5570
+      id: 41c51402-b33f-4099-80f0-8d63da3aefd3
       version: -1
       name: VerifyContext
-      script: 659fc685-2ab2-497e-8e31-a89f1c82c4d1
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -309,6 +310,39 @@ tasks:
         "position": {
           "x": 430,
           "y": 1943
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 7c5e8b54-fabc-46da-83da-fb5e7a203067
+    type: regular
+    task:
+      id: 7c5e8b54-fabc-46da-83da-fb5e7a203067
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: ${CbP.Connector.ID}${CbP.Connector.Enabled}${CbP.Connector.ConnectorVersion}${CbP.Connector.CanAnalyze}${CbP.Connector.AnalysisTargets}${CbP.Connector.AnalysisName}${CbP.Connector.AnalysisEnabled}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 369
         }
       }
 view: |-
