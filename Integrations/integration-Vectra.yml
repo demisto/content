@@ -161,7 +161,11 @@ script:
         md = tblToMd('Detection table', res, keys);
 
         if (relayed_comm_set){
+            if (!(relayed_comm_set instanceof Array)){
+                relayed_comm_set = [relayed_comm_set];
+            }
             var relayed_keys = Object.keys(relayed_comm_set[0]);
+            relayed_keys.splice(relayed_keys.indexOf('url'), 1);
 
             md += '\n';
             md += tblToMd('Relayed Comm Set',relayed_comm_set,relayed_keys);
@@ -183,7 +187,7 @@ script:
             HumanReadable: md
         };
     };
-
+    
     var vectraHosts = function(result){
         var res;
 
