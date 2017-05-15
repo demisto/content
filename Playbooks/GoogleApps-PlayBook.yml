@@ -1,5 +1,5 @@
 id: 00aaa86b-cc9d-43b8-8448-1fd381689202
-version: 12
+version: 15
 name: GoogleApps-PlayBook
 starttaskid: "0"
 tasks:
@@ -15,12 +15,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -166
         }
       }
   "1":
@@ -299,15 +299,41 @@ tasks:
           "y": 1639
         }
       }
+  "11":
+    id: "11"
+    taskid: 08780ed2-a2f2-44e0-8aa9-fa011219c6b5
+    type: regular
+    task:
+      id: 08780ed2-a2f2-44e0-8aa9-fa011219c6b5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 37
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1684,
-        "width": 383,
-        "x": 449,
-        "y": 50
+        "height": 1900,
+        "width": 384,
+        "x": 448,
+        "y": -166
       }
     }
   }
