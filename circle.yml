@@ -1,6 +1,6 @@
+dependencies:
+  -  pip install git+https://github.com/demisto/demisto-py.git
 test:
-  pre:
-    -  pip install git+https://github.com/demisto/demisto-py.git
   override:
     - chmod +x yamlvalidator
     - ./yamlvalidator
