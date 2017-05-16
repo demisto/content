@@ -32,26 +32,9 @@ script:
         serverUrl += '/';
     }
 
-    var encodeParams = function(p) {
-        var q = '';
-        if (p) {
-            var keys = Object.keys(p);
-            if (keys.length > 0) {
-                q = '?';
-                for (var i = 0; i < keys.length; i++) {
-                    if (i !== 0) {
-                        q += '&';
-                    }
-                    q += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(p[keys[i]]);
-                }
-            }
-        }
-        return q;
-    };
-
     var doReq = function(method, path, parameters, body) {
         var result = http(
-            serverUrl + path + encodeParams(parameters),
+            serverUrl + path + encodeToURLQuery(parameters),
             {
                 Headers: {'Content-Type': ['application/json']},
                 Method: method,
@@ -61,7 +44,7 @@ script:
             }
         );
         if (result.StatusCode !== 200 && result.StatusCode !== 201) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', check that username/password are correct';
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', request body: ' + result.Body;
         }
         return result.Body;
     };
@@ -87,16 +70,258 @@ script:
         'pt-ssl-cert-search': 'v2/ssl-certificate/search'
     };
 
+    // This is the call made when pressing the integration test button.
+    if (command === 'test-module') {
+        var res = doReq('GET', 'v2/account');
+        if (JSON.parse(res).username)
+            return true;
+        throw 'Unable to retrieve username';
+    }
+    var res = doReq('GET', commandToPath[command], args);
+    var jsonRes = JSON.parse(res);
     // The command input arg holds the command sent from the user.
     switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            var res = doReq('GET', 'v2/account');
-            if (JSON.parse(res).username)
-                return true;
-            throw 'Unable to retrieve username';
+        case 'pt-get-subdomains':
+            var md = '## Subdomains for ' + args.query + '\n';
+            md += objToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {subdomains: jsonRes.subdomains}};
+        case 'pt-account':
+            var md = '## PassiveTotal Account\n';
+            md += objToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.username': jsonRes.username}};
+        case 'pt-monitors':
+            var md = '## PassiveTotal Monitors\n';
+            md += arrToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-passive-dns':
+            var md = '## PassiveTotal Passive DNS for ' + args.query + ' [' + jsonRes.queryType + '] - total: ' + jsonRes.totalRecords + '\n';
+            if (jsonRes.pager) {
+                md += 'Pager:\n';
+                md += objToMd(jsonRes.pager) + '\n';
+            }
+            var contextDomain = {Name: args.query, DNS: []};
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += 'Query Type | First Seen | Last Seen\n';
+                md += '---------- | ---------- | ---------\n';
+                md += jsonRes.queryType + ' | ' + jsonRes.firstSeen + ' | ' + jsonRes.lastSeen + '\n\n';
+                md += 'Source | Resolve | First Seen | Last Seen\n';
+                md += '------ | ------- | ---------- | ---------\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += jsonRes.results[i].source.join(',') + ' | ' + jsonRes.results[i].resolve + ' | ' + jsonRes.results[i].firstSeen + ' | ' + jsonRes.results[i].lastSeen + '\n';
+                    if (jsonRes.queryType === 'domain') {
+                        contextDomain.DNS.push({Address: jsonRes.results[i].resolve, FirstSeen: jsonRes.results[i].firstSeen, LastSeen: jsonRes.results[i].lastSeen});
+                    }
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
+        case 'pt-passive-unique':
+            var md = '## PassiveTotal Passive Unique DNS for ' + args.query + ' [' + jsonRes.queryType + '] - total: ' + jsonRes.total + '\n';
+            if (jsonRes.pager) {
+                md += 'Pager:\n';
+                md += objToMd(jsonRes.pager) + '\n';
+            }
+            var contextDomain = {Name: args.query, DNS: []};
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                var frequency = jsonRes.frequency.reduce(function(f, v) {f[v[0]] = v[1]; return f;}, {});
+                md += 'Result | Frequency\n';
+                md += '------ | ---------\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += jsonRes.results[i] + ' | ' + frequency[jsonRes.results[i]] + '\n';
+                    contextDomain.DNS.push({Address: jsonRes.results[i]});
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
+        case 'pt-dns-keyword':
+            var md = '## PassiveTotal Passive DNS Keyword Query: ' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += arrToMd(jsonRes.results);
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-enrichment':
+            var md = '## PassiveTotal Metadata Enrichment for: ' + args.query + '\n';
+            md += objToMd(jsonRes);
+            var context = {};
+            if (jsonRes.tags.indexOf('malware') >= 0) {
+                if (jsonRes.queryType === 'domain') {
+                    addMalicious(context, outputPaths.domain, {
+                        Name: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 3}
+                } else {
+                    addMalicious(context, outputPaths.ip, {
+                        Address: jsonRes.queryValue, Malicious: {Vendor: 'PassiveTotal', Description: 'Tagged as malware'}
+                    });
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 3}
+                }
+            } else {
+                if (jsonRes.queryType === 'domain') {
+                    context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: 1}
+                } else {
+                    context.DBotScore = {Indicator: args.query, Type: 'ip', Vendor: 'PassiveTotal', Score: 1}
+                }
+            }
+            var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+            if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
+                fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
+            }
+            return fullResult;
+        case 'pt-malware':
+            var md = '## PassiveTotal Malware Report for: ' + args.query + '\n';
+            var context = {};
+            if (!args.threshold) {
+                args.threshold = 10;
+            }
+            if (!args.samples) {
+                args.samples = 10;
+            }
+            var samples = [];
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                // Sort based on date to display the latest
+                jsonRes.results.sort(function(a, b) {
+                    if (a.collectionDate < b.collectionDate) {
+                        return 1;
+                    } else if (a.collectionDate > b.collectionDate) {
+                        return -1;
+                    }
+                    return 0;
+                });
+                md += 'Source | Sample | Date\n';
+                md += '------ | ------ | ----\n';
+                for (var i=0; i<jsonRes.results.length && i<args.samples; i++) {
+                    md += '[' + jsonRes.results[i].source + '](' + jsonRes.results[i].sourceUrl + ') | ' + jsonRes.results[i].sample + ' | ' + jsonRes.results[i].collectionDate + '\n';
+                    samples.push(jsonRes.results[i].sample);
+                }
+                context[outputPaths.file] = [];
+                for (var hash = 0; hash < samples.length; hash++) {
+                    var hashType = samples[hash].length === 32 ? 'MD5' : samples[hash].length === 40 ? 'SHA1' : 'SHA256';
+                    var hashObj = {Malicious: {Vendor: 'PassiveTotal', Description: 'Malware sample'}};
+                    hashObj[hashType] = samples[hash];
+                    var malFile = {};
+                    addMalicious(malFile, outputPaths.file, hashObj);
+                    context[outputPaths.file].push(malFile[outputPaths.file]);
+                }
+
+                var recentSampleCount = 0;
+                var now = Date.now();
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    var d = new Date(jsonRes.results[i].collectionDate.replace(' ', 'T'));
+                    if ((now - d.getTime()) / 1000 / 60 / 60 / 24 < 30) {
+                          recentSampleCount++;
+                    } else {
+                        break; // it is sorted
+                    }
+                }
+                var dbotScore = 0;
+                if (recentSampleCount >= args.threshold) {
+                    dbotScore = 3;
+                    if (isIp(args.query)) {
+                        addMalicious(context, outputPaths.ip, {
+                            Address: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
+                    } else {
+                        addMalicious(context, outputPaths.domain, {
+                            Name: args.query, Malicious: {Vendor: 'PassiveTotal', Description: 'Recent sample count: ' + recentSampleCount}
+                        });
+                    }
+                } else if (recentSampleCount >= args.threshold / 2) {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: dbotScore};
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+        case 'pt-osint':
+            var md = '## PassiveTotal OSINT Report for: ' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += 'Source | Report | Tags\n';
+                md += '------ | ------ | ----\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += '[' + jsonRes.results[i].source + '](' + jsonRes.results[i].sourceUrl + ') | ' + jsonRes.results[i].inReport.join(',') + ' | ' + jsonRes.results[i].tags.join(',') + '\n';
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-whois':
+            var md = '## PassiveTotal WHOIS Query for: ' + args.query + '\n';
+            md += objToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.whois.email': jsonRes.contactEmail}};
+        case 'pt-whois-keyword':
+            var md = '## PassiveTotal WHOIS Query by Keyword for: ' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += 'Focus Point | Match Type | Field\n';
+                md += '----------- | ---------- | -----\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += jsonRes.results[i].focusPoint + ' | ' + jsonRes.results[i].matchType + ' | ' + jsonRes.results[i].fieldMatch + '\n';
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-whois-search':
+            var md = '## PassiveTotal WHOIS Query by Field Matching for: ' + args.field + '=' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += "### Result from " + jsonRes.results[i].registrar + '\n';
+                    md += objToMd(jsonRes.results[i]) + '\n';
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-get-components':
+            var md = '## PassiveTotal Components for: ' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += 'Category | Label | First Seen | Last Seen | Hostname\n';
+                md += '-------- | ----- | ---------- | --------- | --------\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += jsonRes.results[i].category + ' | ' + jsonRes.results[i].label + ' | ' + jsonRes.results[i].firstSeen + ' | ' +
+                        jsonRes.results[i].lastSeen + ' | ' + jsonRes.results[i].hostname + '\n';
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-get-pairs':
+            var md = '## PassiveTotal Pairs for: ' + args.query + '\n';
+            if (jsonRes.results && jsonRes.results.length > 0) {
+                md += 'Parent | Child | Cause | First Seen | Last Seen\n';
+                md += '------ | ----- | ----- | ---------- | ---------\n';
+                for (var i=0; i<jsonRes.results.length; i++) {
+                    md += jsonRes.results[i].parent + ' | ' + jsonRes.results[i].child + ' | ' + jsonRes.results[i].cause + ' | ' +
+                        jsonRes.results[i].firstSeen + ' | ' + jsonRes.results[i].lastSeen + '\n';
+                }
+            } else {
+                md += 'No results found!';
+            }
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-ssl-cert':
+            var md = '## PassiveTotal SSL Certificate for: ' + args.query + '\n';
+            md += objToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-ssl-cert-history':
+            var md = '## PassiveTotal SSL Certificate History for: ' + args.query + '\n';
+            md += arrToMd(jsonRes);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-ssl-cert-keyword':
+            var md = '## PassiveTotal SSL Certificate by Keyword for: ' + args.query + '\n';
+            md += arrToMd(jsonRes.results);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+        case 'pt-ssl-cert-search':
+            var md = '## PassiveTotal SSL Certificate Search for: ' + args.field + '=' + args.query + '\n';
+            md += arrToMd(jsonRes.results);
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
         default:
-            return {Type: 1, Contents: doReq('GET', commandToPath[command], args), ContentsFormat: 'json'};
+            throw 'Unknown command'; // should never happen
     }
   type: javascript
   commands:
@@ -105,9 +330,15 @@ script:
     - name: query
       required: true
       description: The name of the domain to retrieve sub domains for
+    outputs:
+    - contextPath: subdomains
+      description: List of subdomains as strings
     description: Get subdomains using a wildcard query.
   - name: pt-account
     arguments: []
+    outputs:
+    - contextPath: passivetotal.username
+      description: Username / Key used for PassiveTotal
     description: Retrieve account details from PassiveTotal
   - name: pt-monitors
     arguments: []
@@ -130,6 +361,11 @@ script:
       description: 'Only show data up to date: YYYY-mm-dd'
     - name: timeout
       description: Timeout to use on all source requests
+    outputs:
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
     description: Get passive DNS data
   - name: pt-passive-unique
     arguments:
@@ -147,6 +383,11 @@ script:
       description: 'Only show data starting from date: YYYY-mm-dd'
     - name: from
       description: 'Only show data up to date: YYYY-mm-dd'
+    outputs:
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
     description: Get unique resolutions from passive DNS data
   - name: pt-dns-keyword
     arguments:
@@ -161,6 +402,32 @@ script:
       required: true
       default: true
       description: The data to enrich
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IPs found during enrichment
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Enrich the given query with metadata
   - name: pt-malware
     arguments:
@@ -168,6 +435,54 @@ script:
       required: true
       default: true
       description: The data to get malware for
+    - name: samples
+      required: false
+      default: false
+      description: The number of malware samples to return
+      defaultValue: "10"
+    - name: threshold
+      required: false
+      default: false
+      description: Above this number of samples we will consider this to be malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IPs found during enrichment
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Get malware data
   - name: pt-osint
     arguments:
@@ -185,6 +500,10 @@ script:
     - name: compact_record
       description: Compress the WHOIS record into a deduplicated format - true or
         false
+      defaultvalue: true
+    outputs:
+    - contextPath: passivetotal.whois.email
+      description: Contact email for the queried domain
     description: Get WHOIS data for a domain or IP address
   - name: pt-whois-keyword
     arguments:
@@ -217,6 +536,11 @@ script:
       required: true
       default: true
       description: Query value to use in your request
+    - name: direction
+      required: true
+      default: false
+      description: Relationship direction - parents, children.
+      defaultvalue: children
     description: Get host pairs based on dependent requests observed in web crawls
   - name: pt-ssl-cert
     arguments:

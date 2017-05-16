@@ -38,6 +38,7 @@ tags:
 - epo
 comment: Retrieve DAT version currently installed in the given ePO server
 system: true
+deprecated: true
 args:
 - name: repos
   required: true

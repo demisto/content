@@ -42,6 +42,7 @@ tags:
 - crowdstrike
 comment: Query CrowdStrike indicators based on given parameters.
 system: true
+deprecated: true
 args:
 - name: parameter
   required: true

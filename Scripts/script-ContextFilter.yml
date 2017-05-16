@@ -14,23 +14,24 @@ script: |
   if (['join', 'index'].indexOf(args.filterType) >= 0 && !Array.isArray(args.data)) {
       return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Data is not a array, cannot convert'};
   }
-
+  var ec = {};
+  var md = '';
   // Supported types are upper, lower, join, split, index, substr, trim, regex, replace, jq
   switch (args.filterType) {
       case 'upper':
-          setContext(args.out, args.data.toUpperCase());
-          return 'Converted data to upper case and stored in ' + args.out;
+          ec[args.out] = args.data.toUpperCase();
+          md = 'Converted data to upper case and stored in ' + args.out;
       case 'lower':
-          setContext(args.out, args.data.toLowerCase());
-          return 'Converted data to lower case and stored in ' + args.out;
+          ec[args.out] = args.data.toLowerCase();
+          md = 'Converted data to lower case and stored in ' + args.out;
       case 'join':
           var join = (args.filter) ? args.filter : ',';
-          setContext(args.out, args.data.join(join));
-          return 'Joined data to ' + args.out;
+          ec[args.out] = args.data.join(join);
+          md = 'Joined data to ' + args.out;
       case 'split':
           var split = (args.filter) ? args.filter : ',';
-          setContext(args.out, args.data.split(split));
-          return 'Split data to ' + args.out;
+          ec[args.out] = args.data.split(split);
+          md = 'Split data to ' + args.out;
       case 'index':
           var index = (args.filter) ? args.filter : '0';
           var i = parseInt(index);
@@ -40,8 +41,8 @@ script: |
           if i < 0 {
               i = args.data.length + (i % args.data.length);
           }
-          setContext(args.out, args.data[i]);
-          return 'Returned element ' + index + ' from data to ' + args.out;
+          ec[args.out] = args.data[i];
+          md = 'Returned element ' + index + ' from data to ' + args.out;
       case 'substr':
           var sub = (args.filter) ? args.filter : '0';
           var from = parseInt(sub);
@@ -55,11 +56,11 @@ script: |
                   return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'filter length is not a number'};
               }
           }
-          setContext(args.out, args.data.substr(from, len));
-          return 'Returned substr from data to ' + args.out;
+          ec[args.out] = args.data.substr(from, len);
+          md = 'Returned substr from data to ' + args.out;
       case 'trim':
-          setContext(args.out, args.data.substr(from, len));
-          return 'Trimmed data to ' + args.out;
+          ec[args.out] = args.data.substr(from, len);
+          md = 'Trimmed data to ' + args.out;
       case 'regex':
           if (!args.filter) {
               return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Regex not provided to filter'};
@@ -68,69 +69,28 @@ script: |
           var r = new RegExp(args.filter, flags);
           var res = r.exec(args.data);
           if (!res) {
-              setContext(args.out, '');
-              return 'Regex was not found. Placed empty string in ' + args.out;
+              ec[args.out] = '';
+              md = 'Regex was not found. Placed empty string in ' + args.out;
+          } else {
+              ec[args.out] = res[0];
+              md = 'Returned regex match from data to ' + args.out;
           }
-          setContext(args.out, res[0]);
-          return 'Returned regex match from data to ' + args.out;
       case 'replace':
           if (!args.filter) {
               return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Regex not provided to filter'};
           }
           var replace = (args.additional) ? args.additional : ''; // Default is to just remove the match
           var r = new RegExp(args.filter, 'i');
-          setContext(args.out, args.data.replace(r, replace));
-          return 'Replaced match from data to ' + args.out;
-      case 'jq':
-          if (!args.filter) {
-              return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Path not provided to filter'};
-          }
-          if (!Array.isArray(args.data) && typeof args.data !== 'object' && typeof args.data !== 'string') {
-              return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Data should be object, array or JSON string'};
-          }
-          var obj = args.data;
-          if (typeof args.data === 'string') {
-              try {
-                  obj = JSON.parse(obj);
-              } catch (ex) {
-                  return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Invalid JSON string:\n' + ex};
-              }
-          }
-          var parts = args.filter.split('.');
-          for (var i=0; i<parts.length; i++) {
-              // First, handle array option
-              var part = parts[i].match(/([a-zA-Z0-9]*)(\[([0-9]+)\])?/);
-              if (part[3]) {
-                  // If array of property and not top array
-                  if (part[1]) {
-                      if (obj.hasOwnProperty(part[1]) && Array.isArray(obj[part[1]])) {
-                          obj = obj[part[1]][parseInt(part[3])];
-                      } else {
-                          return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Object does not contain property ' + parts[i]};
-                      }
-                  } else {
-                      if (Array.isArray(obj)) {
-                          obj = obj[parseInt(part[3])];
-                      } else {
-                          return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Object is not an array'};
-                      }
-                  }
-              } else {
-                  if (obj.hasOwnProperty(part[1])) {
-                      obj = obj[part[1]];
-                  } else {
-                      return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Object does not contain property ' + part[1]};
-                  }
-              }
-          }
-          setContext(args.out, obj);
-          return 'Extracted ' + args.filter + ' from data to ' + args.out;
+          ec[args.out] = args.data.replace(r, replace);
+          md = 'Replaced match from data to ' + args.out;
   }
-
+  if (md !== '') {
+      return {Type: entryTypes.note, Contents: ec, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+  }
   return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Unknown filter type - ' + args.filterType};
 type: javascript
 tags:
-- util
+- Utility
 comment: Filter context keys by applying one of the various available manipulations
   and storing in a new context key. Please notice that the resulting context key will
   not be available automatically as an option but you can still specify it.
@@ -141,18 +101,17 @@ args:
   required: true
   default: true
   description: The data to apply the filter on
+  isArray: true
 - name: filterType
   required: true
   description: The type of filter to apply. Available filters are upper, lower, join,
-    split, index, substr, trim, regex, replace, jq (JSON query - both object and json)
+    split, index, substr, trim, regex, replace
 - name: filter
   description: The data for the filter. join - the join string between elements (optional,
     default is ','). split - the string on which to split (optional, default is ',').
     index - the index of the array to return (optional, default 0). substr - the from
     (inclusive) and length (optional, default is to end of string). regex - the regular
     expression to match. replace - a regular expression to replace and with what.
-    jq - the field you want to extract from object or json in dot notation format
-    (x.y.z)
 - name: out
   required: true
   description: The name of the context output parameter we should write to

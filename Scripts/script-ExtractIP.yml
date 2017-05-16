@@ -1,0 +1,43 @@
+commonfields:
+  id: ExtractIP
+  version: -1
+name: ExtractIP
+script: |-
+  var text = args.text;
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+  }
+  var matches = {}, found;
+  var reg = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+  while (found = reg.exec(text)) {
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches[found[0]] = true;
+      }
+  }
+  var ec = {IP: []};
+  var uniqueMatches = Object.keys(matches);
+  var md = '### Extract IP\n';
+  for (var i=0; i < uniqueMatches.length; i++) {
+      if (isValidIP(uniqueMatches[i])) {
+          ec.IP.push({Address: uniqueMatches[i]});
+          md += '- ' + uniqueMatches[i] + '\n';
+      }
+  }
+  return {Type: entryTypes.note, Contents: ec.IP, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+type: javascript
+tags:
+- Utility
+comment: Extract IPs from the given text and place them both as output and in the
+  context of a playbook.
+system: true
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract ip from. If object will convert to JSON.
+outputs:
+- contextPath: IP.Address
+  description: Extracted IPs
+scripttarget: 0

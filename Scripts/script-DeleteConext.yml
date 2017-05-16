@@ -1,0 +1,45 @@
+commonfields:
+  id: DeleteContext
+  version: 1
+name: DeleteContext
+script: |
+  var fieldsToDelete;
+  var shouldDeleteAll = (args.all === 'yes')
+  if(!shouldDeleteAll && !args.key) {
+      return 'You must specify key or all=true';
+  }
+  if(shouldDeleteAll) {
+      fieldsToDelete = Object.keys(invContext);
+
+      // delete each field in context
+      var errorsStr = ""
+      for (var i = 0; i < fieldsToDelete.length; i++) {
+          var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
+          if(!result || result.type === entryTypes.error) {
+              errorsStr = "errorsStr" + "\n" + result.Contents;
+          }
+      }
+      if(errorsStr) {
+          return "Context cleared with the folloing errors:" + errorsStr;
+      } else {
+          return "Context cleared";
+      }
+  } else {
+      return executeCommand('delContext', { key: args.key });
+  }
+type: javascript
+tags:
+- Utility
+comment: Delete field from context
+enabled: true
+args:
+- name: key
+  default: true
+  description: The key to delete from the context
+- name: all
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: if you choose yes - all context will be deleted
+scripttarget: 0

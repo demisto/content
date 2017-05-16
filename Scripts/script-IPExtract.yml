@@ -37,6 +37,7 @@ tags:
 comment: Extract IPs from the given text and place them both as output and in the
   context of a playbook
 system: true
+deprecated: true
 args:
 - name: text
   required: true

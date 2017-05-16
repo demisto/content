@@ -38,5 +38,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - scan-host-details
+  - Nessus|||scan-host-details
 timeout: 0s

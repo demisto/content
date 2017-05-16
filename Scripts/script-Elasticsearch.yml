@@ -47,5 +47,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - search
+  - elasticsearch|||search
 timeout: 0s

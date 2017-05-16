@@ -1,0 +1,41 @@
+commonfields:
+  id: ShowOnMap
+  version: -1
+name: ShowOnMap
+script: |
+  var lat = parseFloat(args.lat);
+  var lng = parseFloat(args.lng);
+
+  if(isNaN(lat) || isNaN(lng)) {
+      return {
+          ContentsFormat: formats.text,
+          Type: entryTypes.error,
+          Contents: 'Invalid coordinates'
+      };
+  }
+
+  var locationObj = {
+      lat: lat,
+      lng: lng
+  };
+
+  return {
+      // type
+      Type: entryTypes.map,
+       // contents
+      ContentsFormat: formats.json, Contents: locationObj
+  };
+type: javascript
+tags:
+- Utility
+comment: Returns a map entry with marker on the given coordinate (lat, lng).
+enabled: true
+args:
+- name: lat
+  required: true
+  default: true
+  description: Latitude (e.g. 32.064622)
+- name: lng
+  required: true
+  description: Longitude (e.g. 34.774131)
+scripttarget: 0

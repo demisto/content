@@ -10,53 +10,108 @@ description: Search CVE Information - powered by circl.lu
 configuration: []
 script:
   script: |
-    // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            res=sendRequest("http://cve.circl.lu/api/last");
-            return 'ok';
-        case 'cve-search':
-            var url="http://cve.circl.lu/api/cve/" + args.cveId.toUpperCase();
-            res=sendRequest(url);
-            return JSON.parse(res.Body);
-        case 'cve-latest':
-            url="http://cve.circl.lu/api/last";
-            res=sendRequest(url);
-            return JSON.parse(res.Body);
-        default:
-            // You can use args[argName] or args.argName to get a specific arg. args are strings.
-            // You can use params[paramName] or params.paramName to get a specific params.
-            // Params are of the type given in the integration page creation.
-    }
-
-    /*
-     * Sample function for http GET request with query string
-     */
-    function sendRequest(url) {
-
-        // handle '/' at the end of the url
-        if (url[url.length - 1] === '/') {
-            url = url.substring(0, url.length - 1);
-        }
-
-        var requestUrl = url;
+    var sendRequest = function(url) {
         var res = http(
-            requestUrl,
+            url,
             {
-                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Method: 'GET',
                 Headers: {
                     Accept: ['application/json']
                 }
             }
         );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
-        return res;
+        if (res.Body === '') {
+            throw 'No content recieved.';
+        }
+        var obj = JSON.parse(res.Body);
+        return {body: res.Body, obj: obj, statusCode: res.StatusCode};
     };
+
+    var cveToMd = function(o) {
+        if (o.id) {
+            var md = '## cicle.lu CVE: ' + o.id + '\n';
+            md += 'Summary: **' + o.summary + '**\n';
+            md += 'Published: **' + o.Published + '**\n';
+            md += 'Modified: **' + o.Modified + '**\n';
+            md += 'CVSS: **' + nvl(o.cvss) + '**\n';
+            md += 'CVSS Time: **' + nvl(o['cvss-time']) + '**\n';
+            if (o.references) {
+                md += '#### References\n';
+                for (var i=0; i<o.references.length; i++) {
+                    md += '- [' + o.references[i] + '](' + o.references[i] + ')\n';
+                }
+            }
+            md += objToList(o.access, 'Access');
+            md += objToList(o.impact, 'Impact');
+            md += objToList(o.map_cve_hp, 'HP');
+            md += objToList(o.map_cve_nessus, 'Nessus');
+            md += objToList(o.map_cve_ncip, 'NCIP');
+            if (o.ranking) {
+                md += '### Ranking' + '\n';
+                md += objToMd(o.ranking) + '\n';
+            }
+            if (o.vulnerable_configuration) {
+                md += '### Vulnerable Configurations' + '\n';
+                md += arrToMd(o.vulnerable_configuration) + '\n';
+            }
+            return md;
+        }
+        return 'No result found.';
+    };
+
+    var cveToContext = function(o) {
+        if (o.id) {
+            return {ID: o.id, CVSS: o.cvss, Published: o.Published, Modified: o.Modified, Description: o.summary};
+        }
+        return null;
+    };
+
+    var doCVE = function(cve) {
+        var res = sendRequest('http://cve.circl.lu/api/cve/' + args.cveId.toUpperCase());
+        var ec = {}
+        ec[outputPaths.cve] = cveToContext(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec[outputPaths.cve] ? ec : {}};
+    };
+
+    var doLatest = function() {
+        var res = sendRequest('http://cve.circl.lu/api/last');
+        var o = res.obj.results;
+        var md = '## cicle.lu Latest CVEs\n';
+        var context = {};
+        var ec = [];
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += cveToMd(o[i]) + '\n';
+                var ecl = cveToContext(o[i]);
+                if (ecl) {
+                    ec.push(ecl);
+                }
+            }
+            if (ec.length > 0) {
+                context[outputPaths.cve] = ec;
+            }
+        } else {
+            md += 'No result found.';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+    };
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            res = sendRequest('http://cve.circl.lu/api/last');
+            return 'ok';
+        case 'cve-search':
+            return doCVE(args.cveId.toUpperCase());
+        case 'cve-latest':
+            return doLatest();
+        default:
+            throw 'Unknown command - ' + command;
+    }
   type: javascript
   commands:
   - name: cve-search
@@ -65,7 +120,29 @@ script:
       required: true
       default: true
       description: CVE ID to search
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Search CVE by ID
   - name: cve-latest
     arguments: []
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
     description: Get latest updated CVEs

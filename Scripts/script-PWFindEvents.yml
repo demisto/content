@@ -90,5 +90,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - search
+  - ProtectWise|||search
 timeout: 0s
