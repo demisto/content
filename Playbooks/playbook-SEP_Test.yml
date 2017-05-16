@@ -1,5 +1,5 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 23
+version: 71
 name: SEP Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -16,20 +16,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "3"
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 50
+          "x": 480,
+          "y": 65
         }
       }
   "3":
     id: "3"
-    taskid: 902ca921-3e39-4e75-8c5a-c4e3acab59c0
+    taskid: f945ee38-fc19-45ff-8208-31abd5ba4f36
     type: regular
     task:
-      id: 902ca921-3e39-4e75-8c5a-c4e3acab59c0
+      id: f945ee38-fc19-45ff-8208-31abd5ba4f36
       version: 1
       name: sep-system-info
       description: Get the system information (version, AV definition).
@@ -43,8 +43,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 480,
+          "y": 225
         }
       }
   "7":
@@ -61,22 +61,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "8"
+      - "10"
+      - "11"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 480,
+          "y": 400
         }
       }
   "8":
     id: "8"
-    taskid: a72628c1-8c8d-4061-8675-bd244c841950
+    taskid: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
     type: regular
     task:
-      id: a72628c1-8c8d-4061-8675-bd244c841950
+      id: 0c36f3ef-9ae3-4e20-8e57-2a3caa9d7667
       version: 1
       name: sep-client-content
       description: Retrieves the client content.
@@ -90,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 910,
+          "y": 575
         }
       }
   "9":
@@ -106,24 +108,21 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 910,
+          "y": 750
         }
       }
   "10":
     id: "10"
-    taskid: e02eff34-c648-44d5-863f-3684775ac34a
+    taskid: 869c953c-ac51-4601-80de-055a4b99b72c
     type: regular
     task:
-      id: e02eff34-c648-44d5-863f-3684775ac34a
+      id: 869c953c-ac51-4601-80de-055a4b99b72c
       version: 1
       name: sep-groups-info
       description: Get information about groups.
@@ -137,16 +136,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 575
         }
       }
   "11":
     id: "11"
-    taskid: 2186a3f5-eb6f-4b0e-872a-383d35b2def7
+    taskid: af2c889d-b918-4f3b-8aca-cfd925b11610
     type: regular
     task:
-      id: 2186a3f5-eb6f-4b0e-872a-383d35b2def7
+      id: af2c889d-b918-4f3b-8aca-cfd925b11610
       version: 1
       name: sep-endpoints-info hostname=WIN-EE8OQ1NRFR0
       description: Get information about endpoints.
@@ -163,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 575
         }
       }
   "12":
@@ -179,331 +178,73 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
     scriptarguments:
       entryId: ${lastCompletedTaskEntries}
       extend-context: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 480,
+          "y": 750
         }
       }
   "13":
     id: "13"
-    taskid: a6ba6869-5bcb-45ac-8518-5d432da03963
+    taskid: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
     type: regular
     task:
-      id: a6ba6869-5bcb-45ac-8518-5d432da03963
+      id: cc6de9f0-1cd8-475c-8850-9d26e0fb7d78
       version: 1
       name: SEPVerifyEndpointsInfo
       scriptName: SEPVerifyEndpointsInfo
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 750
         }
       }
-  "16":
-    id: "16"
-    taskid: c63b6bb2-e021-42df-8fb0-776021ff3471
+  "14":
+    id: "14"
+    taskid: 970bbfa2-b107-41dc-8d38-8cc4eb74ee2a
     type: regular
     task:
-      id: c63b6bb2-e021-42df-8fb0-776021ff3471
+      id: 970bbfa2-b107-41dc-8d38-8cc4eb74ee2a
       version: 1
-      name: SEPScan (by hostname, don't wait)
-      scriptName: SEPScan
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      hostname: ${SEPM.Endpoint.Hostname}
-      interval: "1"
-      ip: ""
-      scanType: ScanNow_Quick
-      timeout: "1"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1945
-        }
-      }
-  "20":
-    id: "20"
-    taskid: 0e42a0b7-7a97-4fb9-8e8e-ab594152fe46
-    type: regular
-    task:
-      id: 0e42a0b7-7a97-4fb9-8e8e-ab594152fe46
-      version: 1
-      name: DoNothing
-      scriptName: DoNothing
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-      - "36"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-  "21":
-    id: "21"
-    taskid: 618c65ce-3ea7-4683-8456-766915b61e22
-    type: regular
-    task:
-      id: 618c65ce-3ea7-4683-8456-766915b61e22
-      version: 1
-      name: DeleteContextKey (SEPM)
-      description: Deletes a key from the context.
-      scriptName: DeleteContextKey
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-      - "8"
-    scriptarguments:
-      extend-context: ""
-      key: SEPM
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-  "22":
-    id: "22"
-    taskid: b6af1074-e1ce-4786-8890-516907c81862
-    type: regular
-    task:
-      id: b6af1074-e1ce-4786-8890-516907c81862
-      version: 1
-      name: DoNothing
-      scriptName: DoNothing
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-      - "10"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-  "23":
-    id: "23"
-    taskid: f9b01731-ca41-485d-8072-8cdb025462a1
-    type: regular
-    task:
-      id: f9b01731-ca41-485d-8072-8cdb025462a1
-      version: 1
-      name: SEPVerifyCommandStatus (stateId = 0, still running)
-      scriptName: SEPVerifyCommandStatus
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      commandId: ${SEPM.LastCommand.[2].CommandId}
-      entryId: ""
-      stateId: "0"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2295
-        }
-      }
-  "24":
-    id: "24"
-    taskid: 28d371e7-f4d8-4dc6-8c8c-5d6e39461960
-    type: regular
-    task:
-      id: 28d371e7-f4d8-4dc6-8c8c-5d6e39461960
-      version: 1
-      name: sep-command-status (Scan command ID)
-      description: Retrieves the status of a command.
-      script: SymantecEndpointProtection|||sep-command-status
-      type: regular
-      iscommand: true
-      brand: SymantecEndpointProtection
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      commandId: ${SEPM.LastCommand.[2].CommandId}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2120
-        }
-      }
-  "30":
-    id: "30"
-    taskid: 5aecec64-8df0-4c3c-8a1b-dfdb02dfbb45
-    type: regular
-    task:
-      id: 5aecec64-8df0-4c3c-8a1b-dfdb02dfbb45
-      version: 1
-      name: All Done!
-      scriptName: DoNothing
-      type: regular
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2470
-        }
-      }
-  "36":
-    id: "36"
-    taskid: bd63e308-de7c-4f4b-806f-e159d2415e10
-    type: regular
-    task:
-      id: bd63e308-de7c-4f4b-806f-e159d2415e10
-      version: 1
-      name: sep-update-content (by IP, wait until done)
+      name: sep-update-content (by hostname)
       description: Updates the content of the given client.
       script: SymantecEndpointProtection|||sep-update-content
       type: regular
       iscommand: true
       brand: SymantecEndpointProtection
-    nexttasks:
-      '#none#':
-      - "40"
     scriptarguments:
-      hostname: ""
+      hostname: ${SEPM.Endpoint.Hostname}
       interval: ""
-      ip: ${SEPM.Endpoint.IPAddresses.[0]}
+      ip: ${SEPM.Endpoint.IPAddresses}[0]
       timeout: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "37":
-    id: "37"
-    taskid: e536e6cd-e837-42d8-8a9d-4210d79eed72
-    type: regular
-    task:
-      id: e536e6cd-e837-42d8-8a9d-4210d79eed72
-      version: 1
-      name: 'SEPVerifyCommandStatus (command #1, done)'
-      scriptName: SEPVerifyCommandStatus
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      commandId: ${SEPM.LastCommand.[1].CommandId}
-      entryId: ""
-      stateId: "3"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-  "39":
-    id: "39"
-    taskid: 54dc6712-acb0-4c61-8d7d-dc58d3483097
-    type: regular
-    task:
-      id: 54dc6712-acb0-4c61-8d7d-dc58d3483097
-      version: 1
-      name: 'SEPVerifyCommandStatus (command #2, done)'
-      scriptName: SEPVerifyCommandStatus
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      commandId: ${SEPM.LastCommand.[0].CommandId}
-      entryId: ""
-      stateId: "3"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1770
-        }
-      }
-  "40":
-    id: "40"
-    taskid: aec99eeb-f4fa-4c1e-84c9-6beb2277e7d8
-    type: regular
-    task:
-      id: aec99eeb-f4fa-4c1e-84c9-6beb2277e7d8
-      version: 1
-      name: DoNothing
-      scriptName: DoNothing
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-      - "37"
-    view: |-
-      {
-        "position": {
           "x": 265,
-          "y": 1595
+          "y": 1100
         }
       }
-  "41":
-    id: "41"
-    taskid: e016b106-b523-4bab-8647-cc552f3d0bbb
+  "15":
+    id: "15"
+    taskid: 7cfcf628-c768-44d1-8e35-b62ff3a5e1c1
     type: regular
     task:
-      id: e016b106-b523-4bab-8647-cc552f3d0bbb
+      id: 7cfcf628-c768-44d1-8e35-b62ff3a5e1c1
       version: 1
-      name: sep-quarantine (by hostname, wait until done)
+      name: sep-quarantine (by hostname)
       description: Quarantines the endpoint according to its policy.
       script: SymantecEndpointProtection|||sep-quarantine
       type: regular
       iscommand: true
       brand: SymantecEndpointProtection
-    nexttasks:
-      '#none#':
-      - "40"
     scriptarguments:
       actionType: Quarantine
       hostname: ${SEPM.Endpoint.Hostname}
@@ -513,8 +254,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 695,
+          "y": 1100
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 16c8bc70-fda5-4d9b-8b2f-233da889ed92
+    type: regular
+    task:
+      id: 16c8bc70-fda5-4d9b-8b2f-233da889ed92
+      version: 1
+      name: SEPScan (by hostname)
+      scriptName: SEPScan
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      hostname: ${SEPM.Endpoint.Hostname}
+      interval: ""
+      ip: ""
+      scanType: ScanNow_Quick
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+    type: regular
+    task:
+      id: 73d9dfb8-f0d6-4793-88eb-6941de2e7f04
+      version: 1
+      name: DoNothing
+      scriptName: DoNothing
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": -75,
+          "y": 223
         }
       }
 view: |-
@@ -522,9 +307,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2515,
-        "width": 810,
-        "x": 50,
+        "height": 1145,
+        "width": 1365,
+        "x": -75,
         "y": 50
       }
     }
