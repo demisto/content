@@ -9,7 +9,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAyCAYAAAAweqkjAAAACXB
 description: Perform malware dynamic analysis
 detaileddescription: |-
   Don’t have a WildFire API key?
-  Go to your Wildfire account,
+  Go to your WildFire account,
   Login to: https://wildfire.paloaltonetworks.com/wildfire/account
   Select the “Account” tab
   Copy your API Key
@@ -71,8 +71,12 @@ script:
             params.proxy
         );
         if (res.StatusCode !==200) {
+          if(res.StatusCode === 404){
+            return undefined;
+          }
+          else{
             throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
-
+          }
         }
         return res.Body;
     };
@@ -99,12 +103,6 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    /*MD table with title "Wildfire Report", starting at 'wildfire'
-    In content, File Entity object with the relevant field from the integration.
-    a. if file is malicious, context name is File/Malicious else File
-    */
-
-    //var contextFunc = function(body){}
     var resToMD = function(body, title) {
         return tblToMd(title, body, Object.keys(body));
     };
@@ -141,26 +139,29 @@ script:
 
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
+        if(!resXML){
+          return 'No results yet';
+        }
         var result = JSON.parse(x2j(resXML));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
 
-        var context = { dbotScore: {indicator: hash, type: 'hash', vendor: 'Wildfire', score: 0 }};
+        var context = { DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }};
         
         if (file_info) {
             if (file_info.malware === 'yes') {
-                context.dbotScore.score = 3;
-                context['File/Malicious'] = {
-                                                Type : file_info.filetype,
-                                                MD5 : file_info.md5,
-                                                SHA1 : file_info.sha1,
-                                                SHA256 : file_info.sha256,
-                                                Size : file_info.size,
-                                                Name : file_info.filename
-
-                                            };
+                context.DBotScore.Score = 3;
+                addMalicious(context, outputPaths.file, {
+                    Type : file_info.filetype,
+                    MD5 : file_info.md5,
+                    SHA1 : file_info.sha1,
+                    SHA256 : file_info.sha256,
+                    Size : file_info.size,
+                    Name : file_info.filename,
+                    Malicious: {Vendor: 'WildFire'}
+                });
             } else {
-                context.dbotScore.score = 1;
+                context.DBotScore.Score = 1;
             }
         }
 
@@ -171,7 +172,7 @@ script:
           var currentTime = new Date();
           var fileName = command + '_at_' + currentTime.getTime();
 
-          return {Type: entryTypes.note,
+          return {Type: 9,
                   FileID: saveFile(resPDF),
                   File: fileName,
                   Contents: fileName,
@@ -179,7 +180,7 @@ script:
           };
         }
         else{ /* default format is xml*/
-          var md = resToMD(file_info,'Wildfire Report');
+          var md = resToMD(file_info,'WildFire Report');
           if (args.verbose) {
               for (var i=0; i<report.length; i++){
                   md += resToMD(report[i],'Report '+i);
@@ -223,37 +224,36 @@ script:
       - pdf
       description: Optional - request a structured report (formatted as XML/PDF)
     - name: verbose
-      description: Receive extended information from Wildfire
+      description: Receive extended information from WildFire
     outputs:
-    - contextPath: File/Malicious.Name
+    - contextPath: File.Name
       description: Filename
-    - contextPath: File/Malicious.Type
+    - contextPath: File.Type
       description: File type e.g. "PE"
-    - contextPath: File/Malicious.Size
+    - contextPath: File.Size
       description: File size
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: MD5 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: SHA1 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: SHA256 hash of the file
-      important: true
-      importantDescription: Bad hashes found querying Wildfire
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
-    description: Retrieve results for a file hash using Wildfire
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+    description: Retrieve results for a file hash using WildFire
   - name: file
-    description: Retrieve results for a file hash using Wildfire
+    description: Retrieve results for a file hash using WildFire
     deprecated: true
     arguments:
     - name: file
@@ -262,5 +262,5 @@ script:
     arguments:
     - name: upload
       description: ID of the entry containing the file to upload
-    description: Upload file to wildfire for analysis.
+    description: Upload file to WildFire for analysis.
 hidden: false
