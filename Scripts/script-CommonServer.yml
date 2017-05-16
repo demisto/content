@@ -44,13 +44,13 @@ script: |-
       }
   }
 
-  /**
-   * Escapes markdown characters in a stiring
-   * @param {String} arg - the string to fix
-   * @returns {String} a string with the markdown characters escaped
-   */
   MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
 
+  /**
+   * Escapes markdown characters in a string
+   * @param {String} st - the string to fix
+   * @returns {String} a string with the markdown characters escaped
+   */
   var stringEscapeMD = function(st) {
       if (typeof(st) != 'string') {
           return st;
@@ -65,6 +65,28 @@ script: |-
       }
 
       return escapedSt;
+  }
+
+  var HTML_ENTITY_MAP = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  /**
+   * Escapes html characters in a string
+   * @param {String} st - the string to fix
+   * @returns {String} a string with the html characters escaped
+   */
+  var stringEscapeHTML = function(st) {
+      return String(st).replace(/[&<>"'`=\/]/g, function (s) {
+          return HTML_ENTITY_MAP[s];
+      });
   }
 
   /**
@@ -133,6 +155,47 @@ script: |-
       return mdResults;
   }
 
+  /**
+   * Converts a demisto table in JSON form to a HTML table
+   * @param {String} name - the name of the table
+   * @param {Object} t - the JSON table - Array of objects with the same keys
+   * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
+   * @returns {Array} array from the original string-list
+   */
+  function tableToHTML(name, t, headers, cellDelimiter) {
+      if (t && !(t instanceof Array)){
+          t = [t];
+      }
+
+      //in case of headers was not provided (backward compatibility)
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
+          headers = GetAllObjectsProperties(t);
+      }
+
+      if(!headers || !headers instanceof Array || headers.length === 0) {
+          return 'No data returned<br/>';
+      }
+
+      var htmlResults = '';
+      if (name) {
+          htmlResults = '<h3>' + name + '</h3><br/>';
+      }
+      if (t && t.length) {
+          htmlResults += '<table><tr>' + headers.reduce(function(acc, v) {return acc + '<th>' + v + '</th>';}, '') + '</tr>';
+          t.forEach(function(entry){
+              var vals = [];
+              headers.forEach(function(h){
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeHTML(formatCell(entry[h], cellDelimiter)) : ' ');
+              });
+              htmlResults += '<tr>' + vals.reduce(function(acc, v) {return acc + '<td>' + v + '</td>';}, '') + '</tr>';
+          });
+          htmlResults += '</table>';
+      } else{
+          htmlResults += 'No data returned<br/>';
+      }
+      return htmlResults;
+  }
+
   var tblToMd = tableToMarkdown;
 
   /**
@@ -147,7 +210,7 @@ script: |-
               properties[prop] ='';
           }
       });
-      return  Object.keys(properties);
+      return Object.keys(properties).sort();
   }
 
   /**
