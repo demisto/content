@@ -62,6 +62,7 @@ script:
         'guardicore-get-incident-iocs': 'GET'
     };
 
+    // converts raw data to readable strings, for both the war room and the context
     var outputsDictionary = {
         'guardicore-get-incident': [
             {from: 'source_ip', to: 'Source IP'},
@@ -84,6 +85,7 @@ script:
                 if (sev >= 50) {
                     return 'High';
                 }
+
                 return 'Medium';
             }},
             {from: 'incident_group', to: 'Incident Group', parser: function(ig) {
@@ -106,12 +108,7 @@ script:
             {from: 'clients', to: 'Clients', parser: function(clients) {
                 var output = [];
                 for (var i = 0; i < clients.length; i++) {
-                    clientStr = '{0} - {1} - {2}'.format(
-                        clients[i].vm.display_name,
-                        clients[i].ip,
-                        clients[i].vm.id
-                    );
-                    output.push(clientStr);
+                    clientStr = buildClientStr(clients[i].vm.display_name, clients[i].ip, clients[i].vm.id)
                     output.push(clientStr);
                 }
 
@@ -120,26 +117,18 @@ script:
         ]
     };
 
+    // in case the context has to be set in a special way, the relevant information is taken from here
     var contextsDictionary = {
-        'guardicore-get-incident': {
-            keys: [
-                'source_ip',
-                'destination_ip',
-                'source_port',
-                'destination_port',
-                '_id',
-                'os',
-                'severity',
-                'incident_type',
-                'honeypot_id',
-                'start_time',
-                'end_time',
-                'closed_time',
-                'incident_group',
-                'concatenated_tags'
-            ],
-            path: 'GuardiCore.Incidents'
-        },
+        'guardicore-unresolved-domains': [
+            {from: 'clients', to: 'Clients', parser: function(clients) {
+                contextData = [];
+                for (var i = 0; i < clients.length; i++) {
+                    contextData.push({displayName: clients[i].vm.display_name, ip: clients[i].ip, id: clients[i].vm.id});
+                }
+
+                return contextData;
+            }}
+        ],
         'guardicore-get-incident-iocs': {
             keys: [
                 '_id'
@@ -164,6 +153,7 @@ script:
                     res[f.to] = dq(obj, f.from) || null;
                 }
             });
+
             return res;
         }
     }
@@ -193,40 +183,6 @@ script:
             (!(result instanceof Object) || Object.keys(result).length)
         );
     }
-
-    // var parseEntryResult = function(command, result, shouldConvertToMd) {
-    //     var entry = {
-    //         Type: entryTypes.note,
-    //         Contents: result,
-    //         ContentsFormat: formats.json
-    //     };
-
-    //     var doesResultExist = (
-    //         result &&
-    //         (!(result instanceof Array) || result.length) &&
-    //         (!(result instanceof Object) || Object.keys(result).length)
-    //     );
-
-    //     if (outputsDictionary[command]) {
-    //         if (doesResultExist) {
-    //             var output = mapObjFunction(outputsDictionary[command])(result);
-    //             if (shouldConvertToMd) {
-    //                 entry.HumanReadable = objToMd(output);
-    //             } else {
-    //                 entry.HumanReadable = output;
-    //             }
-    //         } else {
-    //             entry.HumanReadable = outputsDictionary[command].missing;
-    //         }
-    //     }
-
-    //     if (doesResultExist && contextsDictionary[command]) {
-    //         entry.EntryContext = {};
-    //         entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(filterData(result, contextsDictionary[command].keys));
-    //     }
-
-    //     return entry;
-    // }
 
     var formatIncidentDescription = function(unformattedDescription) {
         var description = '';
@@ -277,6 +233,10 @@ script:
         return entry;
     }
 
+    var buildClientStr = function(displayName, ip, id) {
+        return '{0} - {1} - {2}'.format(displayName, ip, id);
+    }
+
     var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
@@ -290,22 +250,27 @@ script:
             case 'guardicore-unresolved-domains':
                 var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
                 var outputs = [];
-                var contexts = [];
                 var domains = [];
                 var endpoints = [];
                 for (var i = 0; i < response.length; i++) {
                     var output = mapObjFunction(outputsDictionary[command])(response[i]);
+                    var contextData = mapObjFunction(contextsDictionary[command])(response[i]);
                     outputs.push(output);
-                    domains.push(output['Domain']);
+                    domains.push(output.Domain);
 
-                    for (var j = 0; j < (output['Clients'].split('<br>')).length; j++) {
-                        endpoints.push(output['Clients'][j]);
+                    for (var j = 0; j < contextData.Clients.length; j++) {
+                        var clientStr = buildClientStr(
+                            contextData.Clients[j].displayName,
+                            contextData.Clients[j].ip,
+                            contextData.Clients[j].id
+                        );
+                        endpoints.push(clientStr);
                     }
                 }
 
-                entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
+                entry.HumanReadable = tblToMd('GuardiCore Unresolved Domains', outputs);
                 entry.EntryContext = {
-                    'GuardiCore.Domain.Unresolved': domains,
+                    'GuardiCore.Domain.Unresolved': domains
                     'GuardiCore.Endpoint.Suspicious': endpoints
                 }
 
