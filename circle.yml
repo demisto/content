@@ -1,8 +1,6 @@
 test:
   pre:
-    - brew update
-    - brew install openssl
-    - brew install python --with-brewed-openssl
+    -  pip install git+https://github.com/demisto/demisto-py.git
   override:
     - chmod +x yamlvalidator
     - ./yamlvalidator
