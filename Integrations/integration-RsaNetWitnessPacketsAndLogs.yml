@@ -28,7 +28,6 @@ configuration:
   required: true
 - display: Password
   name: password
-  defaultvalue: netwitness
   type: 4
   required: true
 - display: Secure (over HTTPS)
@@ -49,6 +48,60 @@ script:
         return url;
     };
 
+    var isObjectEmpty = function (obj) {
+        return Object.keys(obj).length === 0;
+    }
+
+    var mapTypeToValue = function (fields) {
+        var result = {};
+        var TYPE = 'type';
+        var VALUE = 'value';
+        if(fields && Array.isArray(fields)) {
+            fields.forEach(function (element) {
+                if (element[TYPE] !== undefined || element[TYPE] !== null) {
+                    if(!Array.isArray(result[element[TYPE]])) {
+                        result[element[TYPE]] = [];
+                    }
+                    if(element.hasOwnProperty(VALUE) && element[VALUE]) {
+                        result[element[TYPE]].push(element[VALUE]);
+                    }
+                }
+            });
+        }
+        return result;
+    }
+
+    var buildHrAndContext = function (data) {
+        //Check if we have values
+        var retVal = {md:[], context: {NetWitness:{Events:[]}}};
+        var typeToValue;
+
+        var extractFromData = function(data) {
+            var fields = dq(data, 'results.fields');
+            typeToValue = mapTypeToValue(fields);
+
+            if(!isObjectEmpty(typeToValue)) {
+                retVal.md.push(typeToValue);
+                retVal.context.NetWitness.Events.push(typeToValue);
+        };
+
+        if(Array.isArray(data)) {
+            data.forEach(function (element) {
+                extractFromData(data)
+            })
+        }
+        else if ((typeof data) ==='object') {
+            extractFromData(data);
+            }
+        }
+        if(retVal.md.length > 0) {
+            var hr = tblToMd(command, retVal.md,'', '<br>');
+            return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
+        }else {
+            return JSON.stingify(data);
+        }
+    };
+
     var parseResponse = function(resp) {
         if (resp.StatusCode === 200) {
             try {
@@ -56,17 +109,53 @@ script:
                 if (Array.isArray(res)) {
                     return { results: res };
                 }
-                
+
                 return res;
             } catch (e) {
                 return resp.Body;
             }
         } else {
-          err = resp.Status;
-          if (resp.Body) {
-              err += '\n' + resp.Body;
-          }
-          throw err;
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
+        }
+    };
+
+    var parseDownloadResponse = function(resp) {
+        if (resp.StatusCode === 200) {
+            try {
+                var currentTime = new Date();
+                var fileName = command + '_at_' + currentTime.getTime();
+                return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
+            } catch (e) {
+                return e;
+            }
+        } else {
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
+        }
+    };
+
+    var buildMdAndContext = function(resp) {
+        var mdAndContext
+        if (resp.StatusCode === 200) {
+            try {
+                var res = JSON.parse(resp.Body);
+                return buildHrAndContext(res);
+            } catch (e) {
+                return resp.Body;
+            }
+        } else {
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
         }
     };
 
@@ -127,7 +216,7 @@ script:
         var res = http(
             fullUrl,
             {
-                Method: 'GET',
+                Method: method,
                 Username: params.username,
                 Password: params.password,
                 Accept: responseType,
@@ -187,12 +276,16 @@ script:
     }
 
     var commandToPath = {
+      'netwitness-msearch': '/sdk?msg=msearch',
+      'netwitness-search': '/sdk?msg=search',
+      'netwitness-query': '/sdk?msg=query',
+      'netwitness-packets': '/sdk/packets?',
       'nw-sdk-session': '/sdk?msg=session',
       'nw-sdk-cancel': '/sdk?msg=cancel',
       'nw-sdk-query': '/sdk?msg=query',
       'nw-sdk-validate': '/sdk?msg=validate',
       'nw-sdk-aliases': '/sdk?msg=aliases',
-      'nw-sdk-content': '/sdk?msg=content',
+      'nw-sdk-content': '/sdk/?msg=content',
       'nw-sdk-ls': '/sdk?msg=ls',
       'nw-sdk-count': '/sdk?msg=count',
       'nw-sdk-timeline': '/sdk?msg=timeline',
@@ -344,11 +437,107 @@ script:
         case 'nw-decoder-parsers-upload':
             var res = decoderImport('/decoder/parsers/upload');
             return res;
+        case  'netwitness-msearch':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case  'netwitness-search':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case  'netwitness-query':
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case 'netwitness-packets':
+            return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
   type: javascript
   commands:
+  - name: netwitness-msearch
+    arguments:
+    - name: sessions
+      description: <string, optional> The session ID ranges to search
+    - name: packets
+      description: <string, optional> The packet ID ranges to search
+    - name: search
+      required: true
+      description: <string> The search string to use
+    - name: where
+      description: <string, optional> The where clause used to identify sessions to
+        consider for the search
+    - name: limit
+      description: <uint64, optional> The maximum number of sessions to traverse for
+        this search
+    - name: flags
+      description: <string, optional> Flags to use for search.  This is a comma separated
+        list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+    description: Search for pattern matches in many sessions or packets
+    outputs:
+    - contextPath: NetWitness.Events
+      description: all events of netwitness
+  - name: netwitness-search
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to search
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: search
+      required: true
+      description: <string> The search string to use
+    description: Searches for matches in session/packet content
+    outputs:
+      - contextPath: NetWitness.Events
+        description: all events of netwitness
+  - name: netwitness-query
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting meta id (to run the query from
+        most recent to oldest meta, make id1 larger than id2)
+    - name: id2
+      description: <uint64, optional> The ending meta id
+    - name: size
+      description: <uint32, optional> The max number of entries to return, or just
+        stream back all results if zero
+    - name: query
+      description: <string, optional> The query string to use
+    - name: flags
+      description: <string, optional> The flags to use for query.  Can be a number
+        (bitwise mask) or comma separated values like query-log.
+    - name: threshold
+      description: <uint64, optional> Query optimization to stop processing results
+        after the threshold is reached (useful with select aggregate functions).  Zero
+        means no threshold (the default).
+    description: Performs a query against the meta database
+    outputs:
+      - contextPath: NetWitness.Events
+        description: all events of NetWitness
+  - name: netwitness-packets
+    arguments:
+    - name: op
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform
+        (start, cancel, processed)
+    - name: sessions
+      required: true
+      description: <string, optional> A comma separated list of session ids or session
+        id ranges (#-#) whose packets will be streamed back.
+    - name: packets
+      description: <string, optional> A comma separated list of packet ids or session/packet
+        ids (#&#) that will be streamed back.
+    - name: where
+      description: <string, optional> Where clause which will be evaluated to determine
+        which sessions to stream back
+    - name: time1
+      description: <date-time, optional> A starting time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 09:00:00")
+    - name: time2
+      description: <date-time, optional> An ending time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 10:00:00")
+    - name: flags
+      description: <uint32, optional> Additional flags as defined by the NwPackets
+        SDK function
+    description: Stream packets back based on the input parameters provided
+    outputs:
+      - contextPath: NetWitness.Events
+        description: all events of NetWitness
   - name: nw-sdk-session
     arguments:
     - name: id1
@@ -365,6 +554,7 @@ script:
       description: <uint32> The channel handle running the query
     description: Cancel a running query, regardless of the user
   - name: nw-sdk-query
+    deprecated: true
     arguments:
     - name: id1
       description: <uint64, optional> The starting meta id (to run the query from
@@ -490,6 +680,7 @@ script:
     arguments: []
     description: Removes the channel from the node as a monitor
   - name: nw-sdk-msearch
+    deprecated: true
     arguments:
     - name: sessions
       description: <string, optional> The session ID ranges to search
@@ -528,6 +719,7 @@ script:
     arguments: []
     description: Returns detailed information about the node
   - name: nw-sdk-search
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -562,6 +754,7 @@ script:
       description: <uint32, {range:1 to 1677721}> The max number of entries to return
     description: Retrieves the language definition
   - name: nw-sdk-packets
+    deprecated: true
     arguments:
     - name: op
       required: true
