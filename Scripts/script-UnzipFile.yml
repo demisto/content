@@ -1,5 +1,5 @@
 commonfields:
-  id: 57207398-e9c4-4eb5-8e8d-03bb1330d14b
+  id: UnzipFile
   version: -1
 name: UnzipFile
 script: |-
@@ -35,7 +35,6 @@ script: |-
           'Contents': 'You must set entryID or fileName or lastZipFileInWarroom=true when executing Unzip script'
       })
 
-  demisto.log(fileEntryID)
   res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
   filePath = res[0]['Contents']['path']
 
@@ -68,9 +67,7 @@ script: |-
 type: python
 tags:
 - Utility
-- util
 - file
-system: true
 args:
 - name: fileName
   default: true

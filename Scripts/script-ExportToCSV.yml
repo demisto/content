@@ -1,5 +1,5 @@
 commonfields:
-  id: da9e2f98-05c4-408b-84d1-21960f6dbad9
+  id: ExportToCSV
   version: -1
 name: ExportToCSV
 script: |-
@@ -56,14 +56,13 @@ script: |-
       Type: 9,
       FileID: createdFileID,
       File: args.fileName,
-      Contents: args.fileName
+      Contents: args.fileName,
+      HumanReadable: args.fileName
   };
 type: javascript
 tags:
 - Utility
-- util
 - csv
-system: true
 args:
 - name: fileName
   required: true
