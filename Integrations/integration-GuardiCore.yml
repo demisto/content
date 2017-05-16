@@ -63,6 +63,21 @@ script:
     };
 
     // converts raw data to readable strings, for both the war room and the context
+    OUTPUT_DOMAINS = [
+        {from: 'domain', to: 'Domain'},
+        {from: 'count', to: 'Count'},
+        {from: 'clients_count', to: 'Clients Count'},
+        {from: 'clients', to: 'Clients', parser: function(clients) {
+            var output = [];
+            for (var i = 0; i < clients.length; i++) {
+                clientStr = buildClientStr(clients[i].vm.display_name, clients[i].ip, clients[i].vm.id)
+                output.push(clientStr);
+            }
+
+            return output.join('<br>');
+        }}
+    ];
+
     var outputsDictionary = {
         'guardicore-get-incident': [
             {from: 'source_ip', to: 'Source IP'},
@@ -101,34 +116,31 @@ script:
                 return str.replace(/, $/, '');
             }}
         ],
-        'guardicore-unresolved-domains': [
-            {from: 'domain', to: 'Domain'},
-            {from: 'count', to: 'Count'},
-            {from: 'clients_count', to: 'Clients Count'},
-            {from: 'clients', to: 'Clients', parser: function(clients) {
-                var output = [];
-                for (var i = 0; i < clients.length; i++) {
-                    clientStr = buildClientStr(clients[i].vm.display_name, clients[i].ip, clients[i].vm.id)
-                    output.push(clientStr);
-                }
-
-                return output.join('<br>');
-            }}
-        ]
+        'guardicore-uncommon-domains': OUTPUT_DOMAINS,
+        'guardicore-unresolved-domains': OUTPUT_DOMAINS
     };
 
     // in case the context has to be set in a special way, the relevant information is taken from here
-    var contextsDictionary = {
-        'guardicore-unresolved-domains': [
-            {from: 'clients', to: 'Clients', parser: function(clients) {
-                contextData = [];
-                for (var i = 0; i < clients.length; i++) {
-                    contextData.push({displayName: clients[i].vm.display_name, ip: clients[i].ip, id: clients[i].vm.id});
-                }
+    var CONTEXT_DOMAINS = [{
+        from: 'clients', to: 'Clients', parser: function(clients) {
+            contextData = [];
+            for (var i = 0; i < clients.length; i++) {
+                contextData.push({
+                    displayName: clients[i].vm.display_name,
+                    name: clients[i].vm.name,
+                    ip: clients[i].ip,
+                    id: clients[i].vm.id,
+                    domain: clients[i].vm.domain
+                });
+            }
 
-                return contextData;
-            }}
-        ],
+            return contextData;
+        }
+    }];
+
+    var contextsDictionary = {
+        'guardicore-uncommon-domains': CONTEXT_DOMAINS,
+        'guardicore-unresolved-domains': CONTEXT_DOMAINS,
         'guardicore-get-incident-iocs': {
             keys: [
                 '_id'
@@ -144,6 +156,7 @@ script:
        * @returns {Function} array from the original string-list
     */
     var mapObjFunction = function(mapFields) {
+        console.log(JSON.stringify(mapFields));
         return function(obj) {
             var res = {};
             mapFields.forEach(function(f) {
@@ -193,8 +206,8 @@ script:
         return description;
     }
 
-    var parseGetIncident = function(command, response) {
-        var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+    var parseGetIncident = function(response) {
+        var entry = {Type: entryTypes.note, Contents: response, ContentsFormat: formats.json, EntryContext: {}};
         var output = mapObjFunction(outputsDictionary[command])(response);
         output.Description = formatIncidentDescription(response.description);
 
@@ -204,7 +217,7 @@ script:
         return entry;
     }
 
-    var parseGetIncidents = function(command, response) {
+    var parseGetIncidents = function(response) {
         command = 'guardicore-get-incident';
         var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
         var outputs = [];
@@ -237,47 +250,67 @@ script:
         return '{0} - {1} - {2}'.format(displayName, ip, id);
     }
 
+    var parseDomains = function(command, response) {
+        var entry = {Type: entryTypes.note, Contents: response, ContentsFormat: formats.json, EntryContext: {}};
+        var outputs = [];
+        var domains = [];
+        var endpoints = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+            var contextData = mapObjFunction(contextsDictionary[command])(response[i]);
+            outputs.push(output);
+
+            var contextClientsData = [];
+            for (var j = 0; j < contextData.Clients.length; j++) {
+                endpoints.push({
+                    Hostname: contextData.Clients[j].name,
+                    IP: contextData.Clients[j].ip,
+                    Domain: contextData.Clients[j].domain
+                });
+
+                contextClientsData.push({
+                    DisplayName: contextData.Clients[j].displayName,
+                    IP: contextData.Clients[j].ip,
+                    ID: contextData.Clients[j].id,
+                });
+            }
+
+            domains.push({
+                Name: output.Domain,
+                Count: output.Count,
+                ClientsCount: output['Clients Count'],
+                Clients: contextClientsData
+            });
+        }
+
+        var domainType = (command == 'guardicore-uncommon-domains') ? 'Uncommon' : 'Unresolved';
+        var tableTitle = 'GuardiCore {0} Domains'.format(domainType);
+        entry.HumanReadable = tblToMd(tableTitle, outputs);
+        var entryContextDomainType = 'GuardiCore.Domain.' + domainType;
+
+        entry.EntryContext = {'GuardiCore.Endpoint.Suspicious': endpoints};
+        entry.EntryContext[entryContextDomainType] = domains;
+
+        return entry;
+    }
+
     var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
-                entry = parseGetIncidents(command, response);
+                entry = parseGetIncidents(response);
                 break;
 
             case 'guardicore-get-incident':
-                entry = parseGetIncident(command, response);
+                entry = parseGetIncident(response);
                 break;
 
+            case 'guardicore-uncommon-domains':
             case 'guardicore-unresolved-domains':
-                var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
-                var outputs = [];
-                var domains = [];
-                var endpoints = [];
-                for (var i = 0; i < response.length; i++) {
-                    var output = mapObjFunction(outputsDictionary[command])(response[i]);
-                    var contextData = mapObjFunction(contextsDictionary[command])(response[i]);
-                    outputs.push(output);
-                    domains.push(output.Domain);
-
-                    for (var j = 0; j < contextData.Clients.length; j++) {
-                        var clientStr = buildClientStr(
-                            contextData.Clients[j].displayName,
-                            contextData.Clients[j].ip,
-                            contextData.Clients[j].id
-                        );
-                        endpoints.push(clientStr);
-                    }
-                }
-
-                entry.HumanReadable = tblToMd('GuardiCore Unresolved Domains', outputs);
-                entry.EntryContext = {
-                    'GuardiCore.Domain.Unresolved': domains
-                    'GuardiCore.Endpoint.Suspicious': endpoints
-                }
-
+                entry = parseDomains(command, response);
                 break;
 
-            default:
-                entry = parseEntryResult(command, response);
+            // default:
+                // entry = parseEntryResult(response);
         }
 
         return entry;
