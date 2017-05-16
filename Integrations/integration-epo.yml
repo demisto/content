@@ -1,9 +1,9 @@
 commonfields:
   id: epo
-  version: 1
+  version: -1
 name: epo
 display: McAfee ePO
-category: Analytics & SIEM
+category: End Point
 image: data:image/png;base64,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
 description: McAfee ePolicy Orchestrator
 detaileddescription: 'Integration with Intel Security''s ePolicy Orchestrator using
@@ -30,64 +30,282 @@ script:
     // You can use args[argName] or args.argName to get a specific arg. args are strings.
     // You can use params[paramName] or params.paramName to get a specific params.
     // Params are of the type given in the integration page creation.
-    var callEpo = function(qParams, qArgs) {
-        p = qArgs['params'] ? qArgs['params']+'&' : '';
-        url = qParams['address'] + '/remote/' + qArgs['command'] + '?' + p + ':output=json';
-        res = http(
-        url,
-        {
-            Method: 'GET',
-            Username: qParams['authentication']['identifier'],
-            Password: qParams['authentication']['password']
-        },
-        qParams['insecure']
-        );
-        return res;
+
+    var epoSystemAttributesMap = {
+        'EPOComputerProperties.ComputerName':'Name',
+        'EPOComputerProperties.DomainName':'Domain name',
+        'EPOComputerProperties.IPHostName':'Hostname',
+        'EPOComputerProperties.IPAddress':'IP Address',
+        'EPOComputerProperties.OSType':'Operating System'
     };
+
+    var callEpo = function(qParams, qArgs) {
+        var p = qArgs['params'] ? qArgs['params']+'&' : '';
+        var url = qParams['address'] + '/remote/' + qArgs['command'] + '?' + p + ':output=json';
+        var result = http(
+            url,
+            {
+                Method: 'GET',
+                Username: qParams['authentication']['identifier'],
+                Password: qParams['authentication']['password']
+            },
+            qParams['insecure']
+        );
+        if (isResponseOK(result)) {
+            trimmedRes = result.Body.substring(okStr.length);
+            trimmedRes = trimmedRes.replace('\n',' ');
+            parsedRes = JSON.parse(trimmedRes);
+            return parsedRes;
+        } else if (result.StatusCode == 200){
+            throw 'Error accessing ePO interface. Command: ' + url + ". Body: " + result.Body;
+        } else {
+            throw 'Error accessing ePO interface. Command: ' + url + ". Response: " + JSON.stringify(result);
+        }
+    };
+    var doRawHttp = function(method, url, parameters, body) {
+        if (!parameters) {
+            parameters = {};
+        }
+        var result = http(
+            url + encodeToURLQuery(parameters),
+            {
+                Headers: {'Content-Type': ['application/json']},
+                Method: method,
+                Body: ''
+            }
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;
+        }
+        return result;
+    }
     var isResponseOK = function(response) {
-        // EPO response if of format:
-        // OK:
-        // data
-        // Or in format
-        // Error:
-        // error string
-        if (res.StatusCode === 200) {
+        // EPO response if of format: OK -> data. Error: error string
+        if (response.StatusCode === 200) {
             okStr = 'OK:';
-            if (res.Body.indexOf(okStr) === 0) {
+            if (response.Body.indexOf(okStr) === 0) {
                 return true;
             }
         }
         return false;
     };
-    var test = function(params) {
-        tmp = {};
-        tmp['command']  = 'core.help';
-        res = callEpo(params, tmp);
-        if (isResponseOK(res)) {
-            return 'ok';
+    var systemsToMd = function(systems,verbose) {
+        var md='';
+        if (verbose=="true") {
+            for (var i=0;i<systems.length;i++) {
+                md += systemToMd(systems[i],verbose);
+            }
+        } else {
+            var tmpHead='|';
+            var tmpLine='|';
+            for (key in epoSystemAttributesMap) {
+                tmpHead += epoSystemAttributesMap[key] + '|';
+                tmpLine += '-|';
+            }
+            md += tmpHead + '\n'+tmpLine+'\n';
+            for (var i=0;i<systems.length;i++) {
+                md += systemToMd(systems[i],verbose);
+            }
         }
-        if (res.Status) {
-            return res.Status;
+        return md;
+    }
+    var systemToMd = function(system,verbose) {
+        var md='';
+        if (verbose=="true") {
+            md += '### '+ system["EPOComputerProperties.ComputerName"]+'\n';
+            md += "Attribute|Value\n-|-\n";
+            for (var key in system) {
+                md += key +"|"+system[key]+"\n";
+            }
+            md += "---\n";
+        } else {
+            md +='|';
+            for (var key in epoSystemAttributesMap) {
+                md += system[key] +"|";
+            }
+            md += '\n';
         }
-        return res;
+        return md;
+
+    }
+    var epoHelp = function () {
+        hParams={'command':'core.help'};
+        if (args.command) {
+            hParams.params = "command="+args.command;
+        }
+        var readyRes = callEpo(params,hParams);
+        var md = '### ePO Help\n';
+        var line;
+        var cmd;
+        var desc;
+        parsedRes = Array.isArray(parsedRes) ? parsedRes : [parsedRes];
+        for (var i in parsedRes) {
+            line = parsedRes[i].replace(/(\r\n|\n|\r)/gm," ");
+            if (!args.search || (args.search.toLowerCase() && line.toLowerCase().indexOf(args.search.toLowerCase())>=0)) {
+                desc = line.split('-')[1] ? line.split('-')[1].trim() : 'N/A';
+                cmd = line.split('-')[0] ? line.split('-')[0].trim() : 'N/A';
+                md += '**' + desc + "** - " + cmd + '\n';
+            }
+        }
+        return {Type: entryTypes.note, Contents: readyRes, ContentsFormat: formats.json, HumanReadable: md};
+    };
+    var epoGetDatUpdateTask = function() {
+        dArgs = {
+            "command": "clienttask.find",
+            "params": "searchText=VSEContentUpdateDemisto"
+        }
+        var result = callEpo(params, dArgs);
+        if (result && Array.isArray(result)) {
+            result = result[0];
+        }
+        return result.objectId;
+    }
+    var epoUpdateCLientDat = function() {
+        var clientTask = epoGetDatUpdateTask();
+
+        dArgsUpdate = {
+            "command": "clienttask.run",
+            "params": "names=" + args.systems + "&productId=EPOAGENTMETA&taskId=" + clientTask
+        }
+        var options = ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes', 'stopAfterMinutes', 'randomizationInterval'];
+        for (var i=0;i<options.length;i++) {
+            if (args[options[i]]) {
+                dArgsUpdate[options[i]] = + args[options[i]];
+            }
+        }
+        var result = callEpo(params, dArgsUpdate);
+        var md = "ePO client DAT update task started: " + result;
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoUpdateRepository = function() {
+        dArgs = {
+            "command": "repository.pull",
+            "params": "sourceRepository=McAfeeHttp&targetBranch=Current"
+        }
+        var result = callEpo(params, dArgs);
+
+        var md = "### ePO repository update started.\n";
+        md += result;
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoGetSystemTreeGroups = function () {
+        dArgs = {
+            "command": "system.findGroups",
+        }
+        if (args.search) {
+            dArgs.params = "searchText="+args.search;
+        }
+
+        var result = callEpo(params, dArgs);
+        var md = "### ePO System Tree grooups\n";
+        md += "Group ID | Group path\n-|-\n"
+        for (var i=0;i<result.length;i++) {
+            md += result[i].groupId + "|" + result[i].groupPath + "\n";
+        }
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+    }
+    var epoGetSystemGroupPath = function(groupId) {
+        var result = epoGetSystemTreeGroups();
+        result = result.Contents;
+        for (var i=0;i<result.length;i++) {
+            if (groupId == result[i].groupId) {
+                return result[i].groupPath;
+            }
+        }
+        return null;
+    }
+    var epoGetCurrentDat = function () {
+        var dArgs = {
+            "command": "repository.findPackages",
+            "params": "searchText=VSCANDAT1000"
+        };
+        var result = callEpo(params, dArgs);
+        if (result && result.length>0) {
+            result = result[0];
+            var md = "### McAfee ePO Current DAT file version in repository: **" + result.productDetectionProductVersion + '**\n';
+            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+        } else {
+            throw 'Error getting current DAT version. Response: ' + JSON.stringify(result);
+        }
+    }
+    var epoFindSystems = function() {
+        if ((args.groupId && args.search) || (!args.groupId && !args.search))  {
+            throw 'Find systems using either groupId or search';
+        }
+        if (args.groupId) {
+            var name = epoGetSystemGroupPath(args.groupId);
+
+            if (!name) {
+                throw 'System Tree group not found';
+            }
+            var dArgs = {
+                "command": "epogroup.findSystems",
+                "params": "groupId="+args.groupId
+            };
+            var result = callEpo(params, dArgs);
+            if (result) {
+                var md = '## Systems in '+name+'\n';
+                if (result.length>0) {
+                    md += systemsToMd(result,args.verbose);
+                    // for (var i=0;i<result.length;i++) {
+                    //     md += systemToMd(result[i]);
+                    // }
+                } else {
+                    md += '### No systems found\n';
+                }
+                return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+            } else {
+                throw 'No systems found. Response: ' + JSON.stringify(result);
+            }
+        }
+        return 'ok';
+    }
+    var epoGetLatestDat = function() {
+        var url = "http://update.nai.com/products/commonupdater/gdeltaavv.ini"
+        //Another option is to use avvdat.ini - provided here in case any additional data from that file is needed in the future
+        //var url = "http://update.nai.com/Products/CommonUpdater/avvdat.ini"
+        result = doRawHttp("GET",url);
+        var res = '';
+        var sections = result.Body.split('\r\n\r\n');
+        var lines = sections[0].split('\r\n');
+        for (var i=0;i<lines.length;i++) {
+            if (lines[i].indexOf("CurrentVersion")===0){
+                return lines[i].split('=')[1];
+            }
+        }
+        throw 'Cannot get McAfee latest DAT file version';
+    }
+    var epoCheckLatestDat = function() {
+        var datVersion = epoGetLatestDat();
+        var md='### McAfee Latest DAT file version is **' + datVersion + '**\n';
+        return {Type: entryTypes.note, Contents: {mcAfeeLatestDatVersion:datVersion}, ContentsFormat: formats.json, HumanReadable: md};
     }
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            return test(params);
+            epoHelp();
+            return 'ok';
+        case 'epo-help':
+            return epoHelp();
+        case 'epo-get-latest-dat':
+            return epoCheckLatestDat();
+        case 'epo-get-current-dat':
+            return epoGetCurrentDat();
+        case 'epo-update-client-dat':
+            return epoUpdateCLientDat();
+        case 'epo-update-repository':
+            return epoUpdateRepository();
+        case 'epo-get-system-tree-group':
+            return epoGetSystemTreeGroups();
+        case 'epo-find-systems':
+            return epoFindSystems();
         default:
-            res = callEpo(params, args);
-            if (isResponseOK(res)) {
-                trimmedRes = res.Body.substring(okStr.length);
-                parsedRes = JSON.parse(trimmedRes);
-                //We need the response to be a single object
-                readyRes = {response: parsedRes};
-                return readyRes;
-            } else if (res.StatusCode == 200){
-                throw res.Body;
-            } else {
-                throw JSON.stringify(res);
-            }
+            var result = callEpo(params, args);
+            var md = "### ePO cCommand sent\n";
+            md += objToMd(result);
+            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+
+
     }
   type: javascript
   commands:
@@ -102,4 +320,69 @@ script:
       description: Command parameters (e.g. param1=value&param2=value)
     description: Run a remote command on EPO
     execution: true
-system: true
+  - name: epo-help
+    arguments:
+    - name: search
+      default: true
+      description: String to search in help
+    - name: command
+      description: Command to get help on
+    description: print help on ePO commands
+  - name: epo-get-latest-dat
+    arguments: []
+    outputs:
+    - contentPath: mcAfeeLatestDatVersion
+      contextPath: mcafee.latestDAT
+      description: Latest McAfee DAT file version
+    description: Check the latest DAT file in McAfee repository
+  - name: epo-get-current-dat
+    arguments: []
+    outputs:
+    - contentPath: productDetectionProductVersion
+      contextPath: mcafee.epoDAT
+      description: Current McAfee DAT file in ePO repository
+    description: check the existing DAT file version in ePO
+  - name: epo-update-client-dat
+    arguments:
+    - name: systems
+      required: true
+      description: IP or system name. Can be comma separated list or system names
+        or IP addresses
+    - name: retryAttempts
+      description: Number of times the server will attempt to send the task to the
+        client. Defaults to 1.
+    - name: retryIntervalInSeconds
+      description: Retry interval in seconds. Defaults to 30.
+    - name: abortAfterMinutes
+      description: Maximum number of minutes before aborting all attempts. Defaults
+        to 5.
+    - name: stopAfterMinutes
+      description: Maximum duration in minutes the client task is allowed to run.
+        Defaults to 20.
+    - name: randomizationInterval
+      description: Duration in minutes over which to randomly spread task execution.
+        Defaults to 0 (execute on all clients immediately).
+    description: Run client task to update the DAT file
+  - name: epo-update-repository
+    arguments: []
+    description: Trigger a Server Task in specific ePO servers to pull latest signatures
+      from update server
+  - name: epo-get-system-tree-group
+    arguments:
+    - name: search
+      description: Search string for system tree group
+    description: Get System Tree groups
+  - name: epo-find-systems
+    arguments:
+    - name: groupId
+      description: System Tree Group ID
+    - name: search
+      description: Search string
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print all system data
+    description: Find systems in the System Tree - by group ID or by search
+hidden: false

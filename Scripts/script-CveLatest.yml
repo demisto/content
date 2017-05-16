@@ -28,6 +28,7 @@ tags:
 - cve
 comment: Displays the latest updated CVE entries
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must:

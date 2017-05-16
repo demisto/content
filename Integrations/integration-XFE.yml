@@ -1,0 +1,562 @@
+commonfields:
+  id: XFE
+  version: -1
+name: XFE
+display: XFE
+category: Data Enrichment
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAyCAYAAAAweqkjAAAACXBIWXMAAAsTAAALEwEAmpwYAAA4KGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wMi0xNlQyMDozNjo0MCswMjowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTAzLTA3VDE5OjM1OjAxKzAyOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wMy0wN1QxOTozNTowMSswMjowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDo5ODVhYjM1MC1hYWY1LTQ2MmMtODRlZi04ZjE0NWEyY2EwYWE8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6OTg1YWIzNTAtYWFmNS00NjJjLTg0ZWYtOGYxNDVhMmNhMGFhPC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6OTg1YWIzNTAtYWFmNS00NjJjLTg0ZWYtOGYxNDVhMmNhMGFhPC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjk4NWFiMzUwLWFhZjUtNDYyYy04NGVmLThmMTQ1YTJjYTBhYTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xNlQyMDozNjo0MCswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzIwMDAwLzEwMDAwPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WVJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+NjU1MzU8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjM4PC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz6eObxKAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAkYSURBVHja7Nl5cJTlHQfwbyKRtmqttVNlqAeBkIMkyCEq9UAcrSLFI4hTba20lpF61lItMggaMQpymHGg03awtXYqUit1HDppq7Vld5MQsu+7STbHHskeed/dfZ/32nffe9Wnf2ziIAo5SNA//OM7u7O7M+9n3ue3v+d48dtBFVvjCnYmFOxKqGhMKGiIyWiIyXgpoWBbXEFjUsGOuFK0M6GcVR+TZ62LStesDYurfxIiz67qEf5yUzDju6wjnfhmK+FmtEktCxn5jRs6lIa6LuW++3rUpQ/3ZssfD2XP/lWfVvxkSMPGsIZt/TlsiWp4JqJhU1hDfUTD+pCGJ0Iano3mgD9wWexMKGhMqtiZUL72fFy5aF1UWvxAWKy7P0wevrtP2FrXI7x5Q1e67arOFLcwwDu1LE+rGJ5WMBytYArvKxmeljQTCu8x8RF6ejNxz2kV0985LLZXt8sHrmTl7bd0KY/eFVTvXNOTveqxvmzp5oh2xlPhAvrFgRzwSETcUNcjvH5TMOO9pjMduzTAm3NZns4ZulghHK1iCp9VszytYXlae1SGf1/SXIB8ZryfnSIfoV9pJta3DovJGW1Sy1y/tH95p7IRCwMpqZzhaCXD0TnsZ194pIwKNlI+xgp0qpdIuKIjJVWPETIpsKMytflL2JewL2HHvaA7l+UzlQyvV7O8WXtUKhnOrGJ4uZbl88fCinzkw9N8RIGXmPAdEw8xinwkU+wj9rhgNSxPFwR4aVkwvWFlj3DRvEDqwjI/V1rL8qVVDF+6vDsz/faezL01BegnYCXNhF7boayraJemwyOUwkdK4RFKS3zk4qsCygUL/fKjX28RU+O+YzVsoetvGJC3e1UL94ZFzGjn8L2uNP4t6LirV/hnmZ/79FB6BHpJu8S+NWgUX87IwP8EzGNl/INY2NSfWz88VZ1UjdWwPJ3t5+hr6dxa1c5jb0rDAaIjmrPxx5R2ZwXD0RqWp9VHww4J9LmY/pBi5tFELDTEdShmHvvS5qoir0AnBDY8Yc8L8Pq/JOO7ip0HZ7pImg4Ey8XmuLyjzM/ROQxPpzQXUHVB9bVYzkFIcxDLOdCsPDySXXleq5gZCTXmf+VshqPXd6UHujT7/IThIqI7GDAcxHSn+J4+0jSjnaPwCHQ+I7f155wzON1Ff85FQncR1pyzav2SHx5hctrFTD9H10bEvw4ablHccBDVHcR0F62KVXpFR5r7Rgsx3hXtBaKZRyznol9zkDJcrO7L7sYhYXL72Ew/RxsSyjNps3DXorqDtOXiLUFf9gqn/4CYefTnCndLMvNoiOUeGgtq3LA5DE+rGf6DvxP9+4LlImY4SJouBk0XiZyLpO4iqjlI6S7eFqzLz2wm+mjqakI6fwXD0Ss7UqlmxawYNFzEDRcxfajYdReDugtWtaeVHZH6RltXEzYlzfJzdFWv0BrU7DNDuo0uzUZAsdGt2giq9mnXdSoHx4M6aVglw9NFgZTaJOqz/aqJNsVEl+qgL+ugRbLPu7BNTJ5yWDXL0/JC071HdvLgLRec5SJhuBg0XMhWHvvS5s0lPvLhWOtr3LAalqdlfo5uS6r1kp3HoOkiabpIWS7Shov4UPFnDBf1A7kHT1mNzfRz9Kdh8vag4RTFDQcJ0wWx83hfNi99RzCvHu5hiZwL0XRxd09276S3izI/R1d0Z9iQ7pzDmS7ihoOMlUd3zp62pDMdPa+VyF7JrhDNPOK6C95wkdTdqUs6lPcmrcFWMjy9PJBSmhXrEtHOI2G6hdoy3ZLVIXLw4naOwivQBYzsi2juWcPDmjFctCn2jOmHxeRo620Y9l41ywdqWb79eKlheX81wwffyOTuUJz8xw1VtPPYEJP3zDxmEl/Rpe7PGPkiznARGWq2+1LmkinNhIWP+OEj7SdIYGozeQ+XBlKoYHhUnSDlfh6LAimEdQcpqwBT7Dx2c9lHyvxc4Z96zLLnlxFtS9bKIzk0pJzhYsYRCfAQwHviTPURYEUwgyWdaSw9QZZ0prE8mMGrfBYHBR1Z5wMcIPryGpZ35zDHWfN7BfpSUl+t23k0pU28EtexiJExrVXEhYePnwsOiyhrk4CdMRlPR0TUR0fOEyGCV7ksjmSt2kWBlFrBnGAz4iX0dC+xDxLr6v1JAw91KNjYreKpEbKxW0V9Txb4dUS8YU2vULe2T7htpNzfJ9y6LiLesqI7017OcCPvkryEzjoiRe4LqqvuYJVbVgWU20bKyoBS9+NO9Uas7BH+O2voQGU0GT79GfX2zUsoPMc/7flUPITOapNYPDkgPzNcwF+IfaVHoLd1qb/H/oy2YH4g9WH1FwXmJXRXLHcT3kxlsbInc6Cc4T5/mIfQ+X655d20WYy/pTTsSijXzxnahn2+MIG+MJC7m5FsoF0x0ZW18HBU+tPMcdbahMAOCXRpQGnqkG20SzbQrztIGA6CmvXtG4PpvtnjGNKThnkJndYq8v8h1qyo5qBbdYC44SBuFDavTZKxdF6AN6qYUwjzElrsIx/t5Yw7ZKuwKonrLpAcWuglTReynce+TO72aob/YCy4k4J5BPpUVFuTtfJI6O7H+QSMt1z0aTbWR8R75wdS7mhx44J5CZ3iI3TxEenRtzkDGXMEGKNa+DOnYltCWTY/wOcqmEmAFVDug73ZH/2iU8G+pIH0iLCshb1JFW+kNLwQk+feHMwcqmR4WjVRMC+hpW1S4LHe7JWvxHWs7VDw+lhgr/FZ/G5QxUsJpeSBsPjzxR2pVOXQk5HacT4ZObtFlFd0Kut3RLWvNkZz2DOQGx9sd+H5EnbGFWyPK+f+sFfYMS/AuxVjnMSn+MhHi1l5b31Em749qmFHNIcXIxMAeyEmo3EIuHlAuuzW7kxT1dDDrROtx4aGzfNgb/a6xv4ctkc1PBvWsH0iYbsSCp6PyXg5oWJPUsXjUWnV1Z3pgXKG//SJopfQc1vF1MpO5Wdbwlrxi9EctkY1bI1q2BKZBNjwa2NCwW8K352zJkQ2Lwrw2TI/T0/zCXRqs2hew8o7NoW08xvCGp4OZ7Elop06WGNCwctJBXuSKuoH5PKbg5l3av3S+4/0ZudvjWhoiGjYFNKwOZTFc+OA/X8AgaoU7kba03QAAAAASUVORK5CYII=
+description: IBM X-Force Exchange lets you receive threat intelligence about applications,
+  IP addresses, URls and hashes
+detaileddescription: |-
+  Don’t have XFE credentials?
+  Create IBM ID: https://www.ibm.com/account/profile/us?page=reg
+  Login to XFE: https://exchange.xforce.ibmcloud.com/
+  Select the “Show User Menu” icon
+  Choose settings / API Access / Generate
+configuration:
+- display: Language
+  name: Language
+  defaultvalue: en-US
+  type: 0
+  required: true
+- display: API Key
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    var serverUrl = 'https://api.xforce.ibmcloud.com/';
+
+    var doReq = function(method, path, query, body) {
+        var result = http(
+            serverUrl + path + encodeToURLQuery(query),
+            {
+                Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json'], 'Accept-Language': [params.Language]},
+                Method: method,
+                Body: body ? JSON.stringify(body) : '',
+                Username: params.authentication.identifier,
+                Password: params.authentication.password
+            },
+            params.insecure,
+            params.useproxy
+        );
+
+        if (result.StatusCode < 200 || result.StatusCode > 299 && result.StatusCode != 404) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+        }
+        if (result.Body === '') {
+            throw 'No content recieved.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (obj.error) {
+            throw 'XFE error - ' + obj.error;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+    };
+
+    var doFile = function(hash, longFormat) {
+        var res = doReq('GET', 'malware/' + hash);
+        if (res.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + hash};
+        }
+        var o = res.obj.malware;
+        var ec = {};
+        var dbotScore = 0;
+        if (o && o.family) {
+            dbotScore = 3;
+        } else if (o && o.risk === 'high') {
+            dbotScore = 3;
+        } else if (o && o.risk === 'medium') {
+            dbotScore = 2;
+        } else if (o) {
+            dbotScore = 1;
+        }
+        ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE', Score: dbotScore};
+        if (dbotScore === 3) {
+            var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
+            malFile[o.type.toUpperCase()] = hash;
+            addMalicious(ec, outputPaths.file, malFile);
+        }
+        var md = '## X-Force Hash Reputation for: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
+        md += 'Type: **' + o.type + '**\n';
+        md += 'Risk: **' + o.risk + '**\n';
+        md += 'Created: **' + o.created + '**\n';
+        md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\n';
+        md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr) {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A') + '**\n';
+        if (longFormat === 'true' && o.origins) {
+            if (o.origins.CnCServers && o.origins.CnCServers.rows) {
+                md += '### CNC Servers\n';
+                md += arrToMd(o.origins.CnCServers.rows) + '\n';
+            }
+            if (o.origins.downloadServers && o.origins.downloadServers.rows) {
+                md += '### Download Servers\n';
+                md += arrToMd(o.origins.downloadServers.rows) + '\n';
+            }
+            if (o.origins.emails && o.origins.emails.rows) {
+                md += '### Emails\n';
+                md += arrToMd(o.origins.emails.rows) + '\n';
+            }
+            if (o.origins.subjects && o.origins.subjects.rows) {
+                md += '### Subjects\n';
+                md += arrToMd(o.origins.subjects.rows) + '\n';
+            }
+            if (o.origins.external) {
+                md += '### External\n';
+                md += objToMd(o.origins.external) + '\n';
+            }
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doIP = function(ip, longFormat, threshold) {
+        if (!threshold) {
+            threshold = 7;
+        }
+        // Need to make sure to be backwards compatible with the JSON
+        var res = {};
+        var ipRes = doReq('GET', 'ipr/' + ip);
+        if (ipRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + ip};
+        }
+        var malwareRes = doReq('GET', 'ipr/malware/' + ip);
+        res.reputation = ipRes.obj;
+        res.malware = malwareRes.obj;
+        var o = res.reputation;
+        var ec = {};
+        var dbotScore = 0;
+        if (o.score && o.score >= threshold) {
+            dbotScore = 3;
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.score}});
+        } else if (o.score && o.score >= threshold / 2) {
+            dbotScore = 2;
+        } else if (o.score) {
+            dbotScore = 1;
+        }
+        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
+        var md = '## X-Force IP Reputation for: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
+        md += 'Score: **' + o.score + '**\n';
+        md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
+        md += 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\n';
+        md += 'Reason: **' + o.reason + '**\n';
+        md += 'Reason description: **' + o.reasonDescription + '**\n';
+        if (o.subnets) {
+            md += '### Subnets\n';
+            md += arrToMd(o.subnets) + '\n';
+        }
+        if (longFormat === 'true') {
+            if (o.history) {
+                md += '### History\n';
+                md += arrToMd(o.history) + '\n';
+            }
+            if (res.malware.malware) {
+                md += '### Malware\n';
+                md += arrToMd(res.malware.malware) + '\n';
+            }
+        }
+        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doURL = function(url, longFormat, threshold) {
+        if (!threshold) {
+            threshold = 7;
+        }
+        // Need to make sure to be backwards compatible with the JSON
+        var res = {};
+        var resolutionRes = doReq('GET', 'resolve/' + url);
+        if (resolutionRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + url};
+        }
+        var urlRes = doReq('GET', 'url/' + url);
+        if (urlRes.statusCode === 404) {
+            return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
+                HumanReadable: 'XFE does not have details about ' + url};
+        }
+        var malwareRes = doReq('GET', 'url/malware/' + url);
+        res.resolution = resolutionRes.obj;
+        res.url = urlRes.obj;
+        res.malware = malwareRes.obj;
+        if (res.resolution && res.resolution.A) {
+            var countryRes = doReq('GET', 'ipr/' + res.resolution.A[0]);
+            if (countryRes.obj.geo) {
+                res.country = countryRes.obj.geo.country;
+            }
+        }
+        var o = res.url;
+        var ec = {};
+        var dbotScore = 0;
+        if (o.result && o.result.score && o.result.score >= threshold) {
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
+            dbotScore = 3;
+        } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
+            dbotScore = 2;
+        } else if (o.result && o.result.score) {
+            dbotScore = 1;
+        }
+        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
+        var md = '## X-Force URL Reputation for: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + url + ')\n';
+        if (o.result) {
+            md += 'Score: **' + o.result.score + '**\n';
+            md += 'Categories: **' + Object.keys(o.result.cats).join(', ') + '**\n';
+        } else {
+            md += 'No result found';
+        }
+        if (res.resolution) {
+            md += '### Resolution\n';
+            if (res.country) {
+                md += 'Country: **' + res.country + '**\n';
+            }
+            md += objToMd(res.resolution) + '\n';
+        }
+        if (longFormat === 'true') {
+            if (o.result && o.result.associated) {
+                md += '### Associated\n';
+                md += arrToMd(o.result.associated.map(function(curr) {
+                    return {URL: curr.url, Score: curr.score, Categories: Object.keys(curr.result.cats).join(', ')};
+                })) + '\n';
+            }
+            // Retrieve malware on the URL
+            if (res.malware.malware) {
+                md += '### Malware\n';
+                md += 'Count: **' + res.malware.count + '**\n';
+                md += arrToMd(res.malware.malware);
+            }
+        }
+        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var cveToMd = function(o) {
+        var cve = 'Unknown';
+        if (o.stdcode) {
+            for (var i=0; i<o.stdcode.length; i++) {
+                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
+                    cve = o.stdcode[i].toUpperCase();
+                    break;
+                }
+            }
+        }
+        var md = '### Standard code: ' + cve + '\n';
+        md += 'Title: **' + nvl(o.title) + '**\n';
+        md += 'Description: **' + nvl(o.description) + '**\n';
+        md += 'Risk: **' + nvl(o.risk_level) + '**\n';
+        md += 'Type: **' + nvl(o.type) + '**\n';
+        md += 'Variant: **' + nvl(o.variant) + '**\n';
+        md += 'Temporal score: **' + nvl(o.temporal_score) + '**\n';
+        md += 'Remedy: **' + nvl(o.remedy) + '**\n';
+        md += 'Reported: **' + nvl(o.reported) + '**\n';
+        md += 'Standard codes: **' + (o.stdcode ? o.stdcode.join(', ') : 'N/A') + '**\n';
+        md += 'Platforms: **' + (o.platforms_affected ? o.platforms_affected.join(', ') : 'N/A') + '**\n';
+        md += 'Exploitability: **' + nvl(o.exploitability) + '**\n';
+        md += 'Consequences: **' + nvl(o.consequences) + '**\n';
+        md += 'Confidence: **' + nvl(o.report_confidence) + '**\n';
+        md += objToList(o.cvss, 'CVSS');
+        if (o.references) {
+            md += '### References' + '\n'
+            md += arrToMd(o.references) + '\n';
+        }
+        return md;
+    };
+
+    var cveToContext = function(o) {
+        var cve = 'Unknown';
+        if (o.stdcode) {
+            for (var i=0; i<o.stdcode.length; i++) {
+                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
+                    cve = o.stdcode[i].toUpperCase();
+                    break;
+                }
+            }
+        }
+        return {ID: cve, CVSS: o.risk_level, Published: o.reported, Modified: o.reported};
+    };
+
+    var doCVE = function(cve) {
+        var res = doReq('GET', 'vulnerabilities/search/' + cve);
+        var o = res.obj;
+        var md = '## X-Force CVE Search for: ' + cve + '\n';
+        var context = {};
+        var ec = [];
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += cveToMd(o[i]) + '\n';
+                ec.push(cveToContext(o[i]));
+            }
+            if (ec.length > 0) {
+                context[outputPaths.cve] = ec;
+            }
+        } else {
+            md += 'No result found.'
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+    };
+
+    var doCVELatest = function(limit) {
+        if (!limit) {
+            limit = '30';
+        }
+        var res = doReq('GET', 'vulnerabilities', {limit: limit});
+        var o = res.obj;
+        var md = '## X-Force Latest CVEs\n';
+        var context = {};
+        var ec = [];
+        if (o && Array.isArray(o)) {
+            for (var i=0; i<o.length; i++) {
+                md += cveToMd(o[i]) + '\n';
+                ec.push(cveToContext(o[i]));
+            }
+            if (ec.length > 0) {
+                context[outputPaths.cve] = ec;
+            }
+        } else {
+            md += 'No result found.'
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+    };
+
+    switch (command) {
+        case 'test-module':
+            doReq('GET', 'user/profile'); // Get user will validate keys
+            return true;
+        case 'file':
+            return doFile(args.file, args.long);
+        case 'ip':
+            return doIP(args.ip, args.long, args.threshold);
+        case 'url':
+            return doURL(args.url, args.long, args.threshold);
+        case 'domain':
+            return doURL(args.domain, args.long, args.threshold);
+        case 'cve-search':
+            return doCVE(args.cveId);
+        case 'cve-latest':
+            return doCVELatest(args.limit);
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: url
+    deprecated: false
+    arguments:
+    - name: url
+      required: true
+      deprecated: false
+      default: true
+      description: URL to be checked
+    - name: long
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with detected malware on the URLs
+      defaultValue: "false"
+    - name: threshold
+      deprecated: false
+      description: If the score is above the given threshold, will be considered malicious
+      defaultValue: "7"
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+    description: Check the given URL reputation
+  - name: file
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      deprecated: false
+      default: true
+      description: The file hash md5/sha1/sha256 to check
+    - name: long
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+      related: File
+    description: Check file reputation
+  - name: ip
+    deprecated: false
+    arguments:
+    - name: ip
+      required: true
+      deprecated: false
+      default: true
+      description: IP to check
+    - name: long
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    - name: threshold
+      deprecated: false
+      description: If the score is above the given threshold, will be considered malicious
+      defaultValue: "7"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: IP.Malicious.Score
+      description: For malicious IPs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+      related: IP
+    description: Check IP reputation
+  - name: domain
+    deprecated: false
+    arguments:
+    - name: domain
+      required: true
+      deprecated: false
+      default: true
+      description: The domain to check
+    - name: long
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    - name: threshold
+      deprecated: false
+      description: If the score is above the given threshold, will be considered malicious
+      defaultValue: "7"
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: URL
+    description: Check domain reputation
+  - name: cve-search
+    deprecated: false
+    arguments:
+    - name: cveId
+      required: true
+      deprecated: false
+      default: true
+      description: The cve to search for
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
+    description: Search for details about the given CVE
+  - name: cve-latest
+    deprecated: false
+    arguments:
+    - name: limit
+      deprecated: false
+      default: true
+      description: The number of results to return
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
+    description: Return the latest vulnerabilities found
+hidden: false
+fromversion: 2.5.0

@@ -2,6 +2,7 @@
   "id": "last30DaysClosedIncidentsReport",
   "name": "Last 30 days closed incidents",
   "description": "All closed incidents in the last 30 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -15,6 +16,7 @@
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
+    "incident.severity.0.5": { "type": "string", "value": "Informational" },
     "incident.severity.1": { "type": "string", "value": "Low" },
     "incident.severity.2": { "type": "string", "value": "Medium" },
     "incident.severity.3": { "type": "string", "value": "High" },
@@ -173,6 +175,7 @@
           { "name": "High", "fill": "#D00a00" },
           { "name": "Medium", "fill": "#cb4a00" },
           { "name": "Low", "fill": "#267634" },
+          { "name": "Informational", "fill": "#4357b8" },
           { "name": "Unknown", "fill": "#999999" }
         ]
       }
@@ -384,7 +387,17 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "closed", "closeReason" ],
+        "tableColumns": ["Name", "Occurred", "Type", "Owner", "Severity", "Status", "Closed", "Close notes"],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "closed": "Closed",
+          "closeNotes": "Close notes"
+        },
         "classes": "striped stackable small very compact"
       }
     }

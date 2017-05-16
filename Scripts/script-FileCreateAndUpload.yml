@@ -1,0 +1,21 @@
+commonfields:
+  id: FileCreateAndUpload
+  version: -1
+name: FileCreateAndUpload
+script: |
+  demisto.results(fileResult(demisto.args()['filename'],demisto.args()['data']))
+type: python
+tags:
+- Utility
+comment: |
+  Will create a file(using the given data input) and upload it to current investigation war room.
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: input data to write to file
+- name: filename
+  required: true
+  description: The name of the file to be created
+scripttarget: 0

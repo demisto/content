@@ -14,8 +14,9 @@ script: |-
       demisto.setContext('found_iocs', '')
 type: python
 tags:
-- util
+- Utility
 system: true
+deprecated: true
 scripttarget: 0
 dependson: {}
 timeout: 0s

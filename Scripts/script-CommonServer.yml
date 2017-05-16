@@ -7,7 +7,7 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
-  
+
   /**
    * Formats a string in place
    * @returns {String} the formatted string
@@ -34,24 +34,11 @@ script: |-
           }).join(',');
       } else if (typeof(o) === 'string') {
           return o;
+      } else if (typeof(o) === 'number') {
+          return '' + o;
       } else {
           return JSON.stringify(o);
       }
-  }
-
-  /**
-   * Creates a markdown string from an object
-   * @param {JSON or String} o - the object to create the markdown from
-   * @returns {String} a markdown string which represents the object
-   */
-  function objToMd(o) {
-      var keys = Object.keys(o);
-      keys.sort();
-      var md = 'Key | Value\n- | -\n';
-      for (var i in keys) {
-          md += keys[i] + ' | ' + objToStr(o[keys[i]]) + '\n';
-      }
-      return md;
   }
 
   /**
@@ -77,47 +64,53 @@ script: |-
       return escapedSt;
   }
 
-
   /**
-   * Converts comma separated list to an array
-   * @param {String} arg - the string to convert
-   * @returns {Array} array from the original string-list
+   * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
+   * @param {Object} arg the argument to convert to list
+   * @returns {Array} of strings
    */
-  function argToList(arg){
-      if (!arg){
+  function argToList(arg) {
+      if (!arg) {
           return [];
-      } else if (arg instanceof Array) {
-          return arg;
-      } else if (typeof arg === "string") {
-          if (arg[0] === '[' && arg[-1] === ']'){
-              return JSON.parse(arg);
-          } else {
-              return arg.split(',');
-          }
       }
+      if (Array.isArray(arg)) {
+          return arg;
+      }
+      if (typeof(arg) === 'string') {
+          if (arg[0] === '[' && arg[arg.length - 1] === ']') {
+              return JSON.parse(arg);
+          }
+          return arg.split(',');
+      }
+      return arg;
   }
+
   /**
    * Converts a demisto table in JSON form to a Markdown table
    * @param {String} name - the name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
-   * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
+   * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers){
-      //in case of headers was not provided (backward compatibility)
-
-      if (!(t instanceof Array)){
+  function tableToMarkdown(name, t, headers) {
+      if (t && !(t instanceof Array)){
           t = [t];
       }
-      if (!(headers instanceof Array && headers.length > 0) || !headers){
+
+      //in case of headers was not provided (backward compatibility)
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
           headers = Object.keys(t[0]);
+      }
+
+      if(!headers || !headers instanceof Array || headers.length === 0) {
+          return 'No data returned\n';
       }
 
       var mdResults = '';
       if (name) {
           mdResults = '### ' + name + '\n';
       }
-      if (t) {
+      if (t && t.length) {
           mdResults += headers.join('|') + '\n';
           var sep = [];
           headers.forEach(function(h){
@@ -127,7 +120,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push(!!entry[h] ? stringEscapeMD(formatCell(entry[h])) : ' ');
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h])) : ' ');
               });
               mdResults += vals.join('|') + '\n';
           });
@@ -170,6 +163,7 @@ script: |-
 
   /**
    * Checks if the given string represents a valid IPv4 address
+   * @deprecated please use isValidIP which really checks IP for validity
    * @param {String} ip - the string to check
    * @returns {Boolean} true if valid IPv4 address
    */
@@ -184,10 +178,10 @@ script: |-
     }
     return ok;
   }
-  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8};
+
+  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, map: 15};
   var formats = {table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
-  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
-  var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
+
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
    * This should be used when sending files to d2 scripts as you can see in StaticAnalyze.
@@ -205,6 +199,7 @@ script: |-
     }
     return null;
   }
+
   /**
    * Closes the current investigation
    * @param {Object} args - arguments for the close (what happened, damange, etc.)
@@ -213,10 +208,400 @@ script: |-
   function closeInvestigation(args) {
     return executeCommand('closeInvestigation', args);
   }
+
+  /**
+   * Sets severity an incident. The incident must be related to current investigation.
+   * @param {Object} arg - has 2 keys, 'id' - the incident id, 'severity' - the new severity value (Critical, High, Medium etc.).
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setSeverity(arg) {
+    return executeCommand('setSeverity', arg);
+  }
+
+  /**
+   * Sets fields of the incident. The incident must be related to current investigation and be the only incident in it.
+   * @param {Object} args - has 5 optional keys: type, severity, details, name and systems of the incident.
+   *                        systems should follow this string template: '1.1.1.1,10.10.10.10'
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setIncident(args) {
+    return executeCommand('setIncident', args);
+  }
+
+  /**
+   * Create a new incident with the fields specified, only if an incident with the same name does not exist as an active incident.
+   * If an active incident with the same name exists, ignore the request.
+   * @param {Object} args - has 5 optional keys: type, severity, details, name and system of the incident.
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function createNewIncident(args) {
+    return executeCommand('createNewIncident', args);
+  }
+
+  /**
+   * Sets playbook according to type.
+   * @param {String} type - the incident type, which the playbook is set accordingly.
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setPlaybookAccordingToType(type) {
+    return executeCommand('setPlaybookAccordingToType', {type: type});
+  }
+
+  /**
+   * Sets Owner to an incident. The incident must be related to current investigation.
+   * @param {Object} name - the owner user name.
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setOwner(name) {
+    return executeCommand('setOwner', { owner: name });
+  }
+
+  /**
+   * Assigns a playbook task to a user.
+   * @param {Object} arg - has 2 keys, 'id' - the task id, 'assignee' - assignee user name.
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function taskAssign(arg) {
+    return executeCommand('taskAssign', arg);
+  }
+
+  /**
+   * Sets task due date.
+   * @param {Object} arg - has 2 keys, 'id' - the task id, 'dueDate' - time string in UTC format (To get current time use: 'new Date().toUTCString()').
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setTaskDueDate(arg) {
+    return executeCommand('setTaskDueDate', arg);
+  }
+
+  /**
+   * Sets investigation playbook
+   * @param {String} name - the playbook name.
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function setPlaybook(name) {
+    return executeCommand('setPlaybook', { name: name });
+  }
+
+  /**
+   * Adds task to Workplan
+   * @param {Object} arg - has 5 keys:
+   * 'name' - (mandatory) The new task's name.
+   * 'description' - (optional) The new task's description.
+   * 'script' - (optional) Name of script to be run by task.
+   * 'addBefore' - (optional, refers to task id) Insert new task before specified task (when using this argument do not use afterTask)
+   * 'addAfter' - (optional, refers to task id) Insert new task after specified task (when using this argument do not use beforeTask)
+   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   */
+  function addTask(arg) {
+    return executeCommand('addTask', arg);
+  }
+
+  /**
+   * Encode json object to URL. Supports multiple same arguments if value is array.
+   * @param {Object} args - the object to encode.
+   * @returns {String} in case of error will be empty. In Case of success will return the URL string.
+   */
+  function encodeToURLQuery(args) {
+        var query = '';
+        if (args) {
+            var keys = Object.keys(args);
+            if (keys.length > 0) {
+                query = '?';
+                for (var i = 0; i<keys.length; i++) {
+                    if (i !== 0) {
+                        query += '&';
+                    }
+                    if (Array.isArray(args[keys[i]])) {
+                        for (var j=0; j<args[keys[i]].length; j++) {
+                            if (j !== 0) {
+                                query += '&';
+                            }
+                            query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]][j]);
+                        }
+                    } else {
+                        query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
+                    }
+                }
+            }
+        }
+        return query;
+  }
+
+  /**
+   * Translate ThreatConnect rating to score
+   * @param {rating} TC rating as int
+   * @returns {score} int (between 0 and 3)
+   */
+  function threatConnectRatingToScore(rating) {
+      var tcScore = 0;
+      if (rating == 2 || rating == 1) {
+          tcScore = 2;
+      }
+      if (rating > 2) {
+          tcScore = 3;
+      }
+      return tcScore;
+  }
+
+  /**
+  * Check the list of available modules to see whether a command is currently available to be run.
+  * @param {Object} cmd - the command to check.
+  * @returns {bool} Whether the command is available or not.
+  */
+  function isCommandAvailable(cmd) {
+      var all = getAllSupportedCommands();
+      var modules = Object.keys(all);
+      for(var i = 0; i < modules.length ; i++) {
+          var modCmds = all[modules[i]];
+          if (modCmds) {
+              for(var j = 0; j < modCmds.length ; j++) {
+                  if (modCmds[j].name === cmd) {
+                      return true;
+                  }
+              }
+          }
+      }
+      return false;
+  }
+
+  /**
+   * Check if the given entry is an error entry
+   * @param {Object} entry - the entry to check
+   * @returns {Boolean} true if this is an error entry, false otherwise
+   */
+  function isError(entry) {
+    return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
+  }
+
+  /**
+   * Check if the given res is an array and is not an error
+   * @param {Array} res - the result from the execute to check
+   * @returns {Boolean} true if this is a valid result
+   */
+  function isValidRes(res) {
+    return res && Array.isArray(res) && res.length && !isError(res[0]);
+  }
+
+  /**
+   * If the given value exists, return it. Otherwise, return default and if not provided 'Unknown'
+   * @param {Object} v - value that can be anything
+   * @param {Object} def - default value. If not provided will be 'Unknown'
+   * @return {Object} value if exists or default otherwise
+   */
+  function nvl(v, def) {
+    return v ? v : def ? def : 'Unknown';
+  }
+
+  /**
+   * Flatten the fields into a map of dot notation key and value
+   * @param {Object} obj - the object to iterate on
+   * @param {String} path - the path so far in dot notation
+   * @param {Object} flat - the collected object result
+   * @returns {Object} an object with keys that are dot notation and values
+   */
+  function flattenFields(obj, path, flat) {
+    if (obj) {
+        if (typeof obj === 'object') {
+            var keys = Object.keys(obj);
+            for (var f=0; f<keys.length; f++) {
+                flattenFields(obj[keys[f]], path !== '' ? path + '.' + keys[f] : keys[f], flat);
+            }
+        } else if (Array.isArray(obj)) {
+            for (var i=0; i<obj.length; i++) {
+                flattenFields(obj[i], path !== '' ? path + '.' + i : '' + i, flat);
+            }
+        } else {
+            flat[path] = obj.toString();
+        }
+    }
+  }
+
+  var formatCell = objToStr;
+
+  /**
+   * Convert a given object to md while decending multiple levels
+   * @param {Object} o - the object to convert - can be an array as well
+   * @returns {String} - the converted md string
+   */
+  function objToMd(o) {
+      var flat = {};
+      flattenFields(o, '', flat);
+      var keys = Object.keys(flat);
+      keys.sort();
+      var md = 'Key | Value\n- | -\n';
+      for (var i=0; i<keys.length; i++) {
+          md += keys[i] + ' | ' + flat[keys[i]] + '\n';
+      }
+      return md;
+  }
+
+  /**
+   * Convert a given object to md list (-) while each value is converted to simple str
+   * @param {Object} o - the object to convert
+   * @param {String} t - the title of the list
+   * @returns {String} the returned md
+   */
+  function objToList(o, t) {
+    var md = '';
+    if (o) {
+        md += '### ' + t + '\n';
+        var keys = Object.keys(o);
+        for (var i=0; i<keys.length; i++) {
+            md += '- ' + keys[i] + ': ' + objToStr(o[keys[i]]) + '\n';
+        }
+    }
+    return md;
+  }
+
+  /**
+   * Convert a given array to md table
+   * @param {Array} arr - the array to convert
+   * @returns {String} - the converted md string
+   */
+  function arrToMd(arr) {
+      if (!arr || arr.length === 0) {
+          return '';
+      }
+      return tableToMarkdown('', arr);
+  }
+
+  /**
+   * Query the given object with the given path and retrive it
+   * @deprecated please use dq which has the full functionality
+   * @param {Object} obj - the object to query
+   * @param {String} path - the path to retrieve from the object
+   * @returns {Object} if path is found, then the value at the path, null otherwise
+   */
+  function jq(obj, path) {
+    if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
+      return null;
+    }
+    var parts = path.split('.');
+    for (var i=0; i<parts.length; i++) {
+      // First, handle array option
+      var part = parts[i].match(/([a-zA-Z0-9_]*)(\[([0-9]+)\])?/);
+      if (part[3]) {
+        // If array of property and not top array
+        if (part[1]) {
+          if (obj.hasOwnProperty(part[1]) && Array.isArray(obj[part[1]])) {
+            obj = obj[part[1]][parseInt(part[3])];
+          } else {
+            return null;
+          }
+        } else {
+          if (Array.isArray(obj)) {
+            obj = obj[parseInt(part[3])];
+          } else {
+            return null;
+          }
+        }
+      } else {
+        // Not an array
+        if (obj.hasOwnProperty(part[1])) {
+          obj = obj[part[1]];
+        } else {
+          return null;
+        }
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Replace the given args with the actual values in the input template
+   * @param {String} input - the template to replace values in
+   * @param {Object} args - the map of values to use
+   * @returns {String} the template with the values filled in
+   */
+  function replaceInTemplates(input, args) {
+    var res = input;
+    var keys = Object.keys(args);
+    for (var i = 0; i < keys.length; i++) {
+      res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+    }
+    return res;
+  }
+
+  /**
+   * Replace the given args with the actual values in the input template and remove from args
+   * @param {String} input - the template to replace values in
+   * @param {Object} args - the map of values to use
+   * @returns {String} the template with the values filled in
+   */
+  function replaceInTemplatesAndRemove(input, args) {
+      var res = input;
+      var keys = Object.keys(args);
+      for (var i = 0; i < keys.length; i++) {
+        if (res.indexOf('%' +  keys[i] + '%') !== -1) {
+          res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
+          delete(args[keys[i]]);
+        }
+      }
+      return res;
+  }
+
+  var xmlReservedChars = {
+    '&': '&amp;',
+    '\"': '&quot;',
+    '\'': '&apos;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+
+  /**
+   * Escape reserved XML chars in the input
+   * @param {String} input - the input to escape
+   * @returns {String} the escaped input
+   */
+  function escapeXMLChars(input) {
+      var res = input;
+      var keys = Object.keys(xmlReservedChars);
+      for (var i = 0; i < keys.length; i++) {
+          res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
+      }
+      return res;
+  }
+
+  /**
+   * Get list data which is comma-separated into an array
+   * @param {String} listName - the name of the list
+   * @returns {Array} the list as an array
+   */
+  function getCSVListAsArray(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          var data = res[0].Contents.split(',');
+          return data.filter(function(v) {return v;}).map(function(v) {return v.trim();});
+      }
+      return [];
+  }
+
+  /**
+   * Get list data which is JSON format into an object that can be an array as well
+   * @param {String} listName - the name of the list
+   * @returns {Object} the list as an object
+   */
+  function getJSONListAsObject(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          try {
+              return JSON.parse(res[0].Contents);
+          } catch (ex) {
+              throw 'Error parsing list - ' + res[0].Contents + ' - ' + ex;
+          }
+      }
+      return null;
+  }
+
+  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+  var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
+
   /**
    * Checks if the given entry from a URL reputation query is positive (known bad)
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Boolean} true if positive, false otherwise
    */
@@ -233,8 +618,10 @@ script: |-
     }
     return false;
   }
+
   /**
    * Checks if the given entry from a file reputation query is positive (known bad)
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Boolean} true if positive, false otherwise
    */
@@ -261,8 +648,10 @@ script: |-
     }
     return false;
   }
+
   /**
    * Checks if the given entry from an IP reputation query is positive (known bad)
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Boolean} true if positive, false otherwise
    */
@@ -285,8 +674,10 @@ script: |-
     }
     return false;
   }
+
   /**
    * Display CrowdStrike Intel results in Markdown
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Object} the markdown entry
    */
@@ -317,8 +708,10 @@ script: |-
     }
     return entry;
   }
+
   /**
    * Formats a URL reputation entry into a short table
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Object} the table entry
    */
@@ -348,8 +741,10 @@ script: |-
     }
     return entry;
   }
+
   /**
    * Formats a file reputation entry into a short table
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Object} the table entry
    */
@@ -396,8 +791,10 @@ script: |-
     }
     return entry;
   }
+
   /**
    * Formats an ip reputation entry into a short table
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Object} the table entry
    */
@@ -432,8 +829,10 @@ script: |-
     }
     return entry;
   }
+
   /**
    * Formats a domain reputation entry into a short table
+   * @deprecated
    * @param {Object} entry - reputation entry
    * @returns {Object} the table entry
    */
@@ -454,302 +853,71 @@ script: |-
     }
     return entry;
   }
-  /**
-   * Sets severity an incident. The incident must be related to current investigation.
-   * @param {Object} arg - has 2 keys, 'id' - the incident id, 'severity' - the new severity value (Critical, High, Medium etc.).
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setSeverity(arg) {
-    return executeCommand('setSeverity', arg);
-  }
-  /**
-   * Sets fields of the incident. The incident must be related to current investigation and be the only incident in it.
-   * @param {Object} args - has 5 optional keys: type, severity, details, incName and systems of the incident.
-   *                        systems should follow this string template: '1.1.1.1,10.10.10.10'
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setIncident(args) {
-    return executeCommand('setIncident', args);
-  }
-  /**
-   * Create a new incident with the fields specified, only if an incident with the same name does not exist as an active incident.
-   * If an active incident with the same name exists, ignore the request.
-   * @param {Object} args - has 5 optional keys: type, severity, details, incName and system of the incident.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function createNewIncident(args) {
-    return executeCommand('createNewIncident', args);
-  }
-  /**
-   * Sets playbook according to type.
-   * @param {String} type - the incident type, which the playbook is set accordingly.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setPlaybookAccordingToType(type) {
-    return executeCommand('setPlaybookAccordingToType', {type: type});
-  }
-  /**
-   * Sets Owner to an incident. The incident must be related to current investigation.
-   * @param {Object} name - the owner user name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setOwner(name) {
-    return executeCommand('setOwner', { owner: name });
-  }
-  /**
-   * Assigns a playbook task to a user.
-   * @param {Object} arg - has 2 keys, 'id' - the task id, 'assignee' - assignee user name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function taskAssign(arg) {
-    return executeCommand('taskAssign', arg);
-  }
-  /**
-   * Sets task due date.
-   * @param {Object} arg - has 2 keys, 'id' - the task id, 'dueDate' - time string in UTC format (To get current time use: 'new Date().toUTCString()').
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setTaskDueDate(arg) {
-    return executeCommand('setTaskDueDate', arg);
-  }
-  /**
-   * Sets investigation playbook
-   * @param {String} name - the playbook name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function setPlaybook(name) {
-    return executeCommand('setPlaybook', { name: name });
-  }
-  /**
-   * Adds task to Workplan
-   * @param {Object} arg - has 5 keys:
-   * 'name' - (mandatory) The new task's name.
-   * 'description' - (optional) The new task's description.
-   * 'script' - (optional) Name of script to be run by task.
-   * 'addBefore' - (optional, refers to task id) Insert new task before specified task (when using this argument do not use afterTask)
-   * 'addAfter' - (optional, refers to task id) Insert new task after specified task (when using this argument do not use beforeTask)
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
-   */
-  function addTask(arg) {
-    return executeCommand('addTask', arg);
-  }
 
   /**
-  * Encode json object to URL.
-  * @args {Object} arg - the object to encode.
-  * @returns {String} in case of error will be empty. In Case of success will return the URL string.
-  */
-  function encodeToURLQuery(args) {
-        var query = '';
-        if (args) {
-            var keys = Object.keys(args);
-            if (keys.length > 0) {
-                query = '?';
-                for (var i = 0; i<keys.length; i++) {
-                    if (i !== 0) {
-                        query += '&';
-                    }
-                    query += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(args[keys[i]]);
-                }
-            }
-        }
-        return query;
-  };
+     * Flat all Json tree object to key-value format
+     * @returns {Object} the formatted object (key-value format)
+     */
+  var treeToFlattenObject = function(object) {
+      var retVal = {};
 
-  function formatCell(data) {
-      if (typeof(data) === 'string' || typeof(data) === 'number')
-          return data;
-      else
-          return JSON.stringify(data);
-  }
-
-  /**
-   * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
-   * @param {Object} arg the argument to convert to list
-   * @returns {Array} of strings
-   */
-  function argToList(arg) {
-      if (!arg) {
-          return [];
-      }
-      if (Array.isArray(arg)) {
-          return arg;
-      }
-      if (typeof(arg) === 'string') {
-          if (arg[0] === '[' && arg[arg.length - 1] === ']') {
-              return JSON.parse(arg);
-          }
-          return arg.split(',');
-      }
-      return arg;
-  }
-
-  /**
-   * Translate ThreatConnect rating to score
-   * @param {rating} TC rating as int
-   * @returns {score} int (between 0 and 3)
-   */
-  function threatConnectRatingToScore(rating) {
-      var tcScore = 0;
-      if (rating == 2 || rating == 1) {
-          tcScore = 2;
-      }
-      if (rating > 2) {
-          tcScore = 3;
-      }
-      return tcScore;
-  }
-
-  /**
-  * Check the list of available modules to see whether a command is currently available to be run.
-  * @param {Object} cmd - the command to check.
-  * @returns {bool} Whether the command is available or not.
-  */
-  function isCommandAvailable(cmd) {
-      var all = getAllSupportedCommands();
-      var modules = Object.keys(all);
-      for(var i = 0; i < modules.length ; i++) {
-          var modCmds = all[modules[i]];
-          if (modCmds) {
-              for(var j = 0; j < modCmds.length ; j++) {
-                  if (modCmds[j].name === cmd) {
-                      return true;
-                  }
+      for (var i in object) {
+          if (!object.hasOwnProperty(i)) continue;
+          if ((typeof object[i]) == 'object' && (!Array.isArray(object[i]) || !(object[i].length == 0 || (typeof object[i][0] != 'object')))) {
+              var flatObject = treeToFlattenObject(object[i]);
+              for (var x in flatObject) {
+                  if (!flatObject.hasOwnProperty(x)) continue;
+                  retVal[i + '.' + x] = flatObject[x];
               }
-          }
-      }
-      return false;
-  }
-  /**
-   * Check if the given entry is an error entry
-   * @param {Object} entry - the entry to check
-   * @returns {Boolean} true if this is an error entry, false otherwise
-   */
-  function isError(entry) {
-    return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
-  }
-  /**
-   * Check if the given res is an array and is not an error
-   * @param {Array} res - the result from the execute to check
-   * @returns {Boolean} true if this is a valid result
-   */
-  function isValidRes(res) {
-    return res && Array.isArray(res) && res.length && !isError(res[0]);
-  }
-  /**
-   * Flatten the fields into a map of dot notation key and value
-   * @param {Object} obj - the object to iterate on
-   * @param {String} path - the path so far in dot notation
-   * @param {Object} flat - the collected object result
-   * @returns {Object} an object with keys that are dot notation and values
-   */
-  function flattenFields(obj, path, flat) {
-    if (obj) {
-        if (typeof obj === 'object') {
-            var keys = Object.keys(obj);
-            for (var f=0; f<keys.length; f++) {
-                flattenFields(obj[keys[f]], path !== '' ? path + '.' + keys[f] : keys[f], flat);
-            }
-        } else if (Array.isArray(obj)) {
-            for (var i=0; i<obj.length; i++) {
-                flattenFields(obj[i], path !== '' ? path + '.' + i : '' + i, flat);
-            }
-        } else {
-            flat[path] = obj.toString();
-        }
-    }
-  }
-  /**
-   * Query the given object with the given path and retrive it
-   * @param {Object} obj - the object to query
-   * @param {String} path - the path to retrieve from the object
-   * @returns {Object} if path is found, then the value at the path, null otherwise
-   */
-  function jq(obj, path) {
-    if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
-      return null;
-    }
-    var parts = path.split('.');
-    for (var i=0; i<parts.length; i++) {
-      // First, handle array option
-      var part = parts[i].match(/([a-zA-Z0-9]*)(\[([0-9]+)\])?/);
-      if (part[3]) {
-        // If array of property and not top array
-        if (part[1]) {
-          if (obj.hasOwnProperty(part[1]) && Array.isArray(obj[part[1]])) {
-            obj = obj[part[1]][parseInt(part[3])];
           } else {
-            return null;
+              retVal[i] = object[i];
           }
-        } else {
-          if (Array.isArray(obj)) {
-            obj = obj[parseInt(part[3])];
-          } else {
-            return null;
-          }
-        }
-      } else {
-        // Not an array
-        if (obj.hasOwnProperty(part[1])) {
-          obj = obj[part[1]];
-        } else {
-          return null;
-        }
       }
-    }
-    return obj;
-  }
-  /**
-   * Replace the given args with the actual values in the input template
-   * @param {String} input - the template to replace values in
-   * @param {Object} args - the map of values to use
-   * @returns {String} the template with the values filled in
-   */
-  function replaceInTemplates(input, args) {
-    var res = input;
-    var keys = Object.keys(args);
-    for (var i = 0; i < keys.length; i++) {
-      res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
-    }
-    return res;
-  };
-  /**
-   * Replace the given args with the actual values in the input template and remove from args
-   * @param {String} input - the template to replace values in
-   * @param {Object} args - the map of values to use
-   * @returns {String} the template with the values filled in
-   */
-  function replaceInTemplatesAndRemove(input, args) {
-      var res = input;
-      var keys = Object.keys(args);
-      for (var i = 0; i < keys.length; i++) {
-        if (res.indexOf('%' +  keys[i] + '%') !== -1) {
-          res = res.split('%' + keys[i] + '%').join(args[keys[i]]);
-          delete(args[keys[i]]);
-        }
-      }
-      return res;
+      return retVal;
   };
 
-  var xmlReservedChars = {
-    '&': '&amp;',
-    '\"': '&quot;',
-    '\'': '&apos;',
-    '<': '&lt;',
-    '>': '&gt;'
-  };
+
   /**
-   * Escape reserved XML chars in the input
-   * @param {String} input - the input to escape
-   * @returns {String} the escaped input
+   * Base64 encode utiliy
+   * @returns Base64 encoded string
    */
-  function escapeXMLChars(input) {
-      var res = input;
-      var keys = Object.keys(xmlReservedChars);
-      for (var i = 0; i < keys.length; i++) {
-          res = res.split(keys[i]).join(xmlReservedChars[keys[i]]);
-      }
-      return res;
+  var Base64 = {
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        encode: function(input) {
+          var output = "";
+          var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+          var i = 0;
+          while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+            if (isNaN(chr2)) {
+              enc3 = enc4 = 64;
+            } else if (isNaN(chr3)) {
+              enc4 = 64;
+            }
+            output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+          }
+
+          return output;
+        }
+  };
+  // Add the given obj to the path while making sure to append Malicious property
+  function addMalicious(context, path, obj) {
+      obj['properties_to_append'] = ['Malicious'];
+      context[path] = obj;
+  }
+  // Constants for common merge paths
+  var outputPaths = {
+      file: 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
+      ip: 'IP(val.Address && val.Address == obj.Address)',
+      url: 'URL(val.Data && val.Data == obj.Data)',
+      domain: 'Domain(val.Name && val.Name == obj.Name)',
+      cve: 'CVE(val.ID && val.ID == obj.ID)'
   };
 type: javascript
 tags:

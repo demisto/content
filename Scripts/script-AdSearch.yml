@@ -49,6 +49,7 @@ args:
 - name: timeLimit
   description: Max time of query response in seconds
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - ad-search

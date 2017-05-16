@@ -1,0 +1,32 @@
+commonfields:
+  id: IsMaliciousIndicatorFound
+  version: -1
+name: IsMaliciousIndicatorFound
+script: |-
+  var files = dq(invContext,'File(val.Malicious)');
+  var urls = dq(invContext,'URL(val.Malicious)');
+  var ips = dq(invContext,'IP(val.Malicious)');
+
+  if ((files) && (files.length > 0)){
+      return 'yes';
+  }
+  if ((urls) && (urls.length > 0)){
+      return 'yes';
+  }
+  if ((ips) && (ips.length > 0)){
+      return 'yes';
+  }
+  return 'no';
+type: javascript
+tags:
+- Utility
+- Condition
+comment: Checks if the investigation found any Malicious File/URL/IP, if so return
+  yes, otherwise no.
+enabled: true
+outputs:
+- contextPath: yes
+  description: if found any Malicious File/URL/IP in the investigation
+- contextPath: no
+  description: if did not found any Malicious File/URL/IP in the investigation
+scripttarget: 0

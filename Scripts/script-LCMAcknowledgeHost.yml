@@ -45,6 +45,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - LCMHosts
   - lcm-acknowledge-host
 timeout: 0s
