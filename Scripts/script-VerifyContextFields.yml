@@ -1,18 +1,20 @@
 commonfields:
-  id: 2f5bb82f-4d60-4259-8229-f10062cbe89f
-  version: 15
+  id: ed24d63f-4134-49c4-82c0-96885a7a1cc3
+  version: 9
 name: VerifyContextFields
 script: |
-  var verifyField = function(field, value) {
-      verifyContextField(field, value);
-  }
-
   var fields = [args.field1, args.field2, args.field3, args.field4];
   var values = [args.value1, args.value2, args.value3, args.value4];
 
   for (i = 0; i < fields.length; i++) {
       if (fields[i] !== undefined) {
-          verifyContextField(fields[i], values[i]);
+          if (values[i] !== undefined) {
+              verifyContextField(fields[i], values[i]);
+              log('Verified: ' + fields[i] + ' == ' + values[i]);
+          } else {
+              verifyContextField(fields[i]);
+              log('Verified field existence: ' + fields[i]);
+          }
       }
   }
 type: javascript

@@ -27,11 +27,14 @@ script: |-
    * @param {JSON or String} o - the object to create the string from
    * @returns {String} a string which represents the object
    */
-  function objToStr(o) {
+  function objToStr(o, delimiter) {
+      if(!delimiter || typeof(delimiter) !== 'string') {
+                delimiter = ',';
+            }
       if (Array.isArray(o)) {
           return o.map(function(v) {
               return objToStr(v);
-          }).join(',');
+          }).join(delimiter);
       } else if (typeof(o) === 'string') {
           return o;
       } else if (typeof(o) === 'number') {
@@ -41,13 +44,13 @@ script: |-
       }
   }
 
-  /**
-   * Escapes markdown characters in a stiring
-   * @param {String} arg - the string to fix
-   * @returns {String} a string with the markdown characters escaped
-   */
   MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
 
+  /**
+   * Escapes markdown characters in a string
+   * @param {String} st - the string to fix
+   * @returns {String} a string with the markdown characters escaped
+   */
   var stringEscapeMD = function(st) {
       if (typeof(st) != 'string') {
           return st;
@@ -62,6 +65,28 @@ script: |-
       }
 
       return escapedSt;
+  }
+
+  var HTML_ENTITY_MAP = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  /**
+   * Escapes html characters in a string
+   * @param {String} st - the string to fix
+   * @returns {String} a string with the html characters escaped
+   */
+  var stringEscapeHTML = function(st) {
+      return String(st).replace(/[&<>"'`=\/]/g, function (s) {
+          return HTML_ENTITY_MAP[s];
+      });
   }
 
   /**
@@ -92,14 +117,14 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers) {
+  function tableToMarkdown(name, t, headers, cellDelimiter) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
 
       //in case of headers was not provided (backward compatibility)
       if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
-          headers = Object.keys(t[0]);
+          headers = GetAllObjectsProperties(t);
       }
 
       if(!headers || !headers instanceof Array || headers.length === 0) {
@@ -120,7 +145,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h])) : ' ');
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter)) : ' ');
               });
               mdResults += vals.join('|') + '\n';
           });
@@ -130,7 +155,93 @@ script: |-
       return mdResults;
   }
 
+  /**
+   * Converts a demisto table in JSON form to a HTML table
+   * @param {String} name - the name of the table
+   * @param {Object} t - the JSON table - Array of objects with the same keys
+   * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
+   * @returns {Array} array from the original string-list
+   */
+  function tableToHTML(name, t, headers, cellDelimiter) {
+      if (t && !(t instanceof Array)){
+          t = [t];
+      }
+
+      //in case of headers was not provided (backward compatibility)
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
+          headers = GetAllObjectsProperties(t);
+      }
+
+      if(!headers || !headers instanceof Array || headers.length === 0) {
+          return 'No data returned<br/>';
+      }
+
+      var htmlResults = '';
+      if (name) {
+          htmlResults = '<h3>' + name + '</h3><br/>';
+      }
+      if (t && t.length) {
+          htmlResults += '<table><tr>' + headers.reduce(function(acc, v) {return acc + '<th>' + v + '</th>';}, '') + '</tr>';
+          t.forEach(function(entry){
+              var vals = [];
+              headers.forEach(function(h){
+                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeHTML(formatCell(entry[h], cellDelimiter)) : ' ');
+              });
+              htmlResults += '<tr>' + vals.reduce(function(acc, v) {return acc + '<td>' + v + '</td>';}, '') + '</tr>';
+          });
+          htmlResults += '</table>';
+      } else{
+          htmlResults += 'No data returned<br/>';
+      }
+      return htmlResults;
+  }
+
   var tblToMd = tableToMarkdown;
+
+  /**
+
+  * Verifies that the given fields exists in the content and verifies its value
+  * @param {String} fieldName - the name of the field (dq format)
+  * @param {Object} expectedValue - the value to verify
+  * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
+  * @returns {Array} array from the original string-list
+  */
+  function verifyContextField(fieldName, expectedValue, comparisonType) {
+      value = dq(invContext, fieldName);
+
+      if (value === undefined) {
+          throw 'Field does not exist: {0}.'.format(fieldName);
+      }
+
+      if (expectedValue !== undefined) {
+          if (comparisonType == 'stringContains') {
+              if (value.indexOf(expectedValue) == -1) {
+                  throw 'Field {0} does not contain the expected string. Value: {1}, expected: {2}.'.format(fieldName, value, expectedValue);
+              }
+          } else {
+              if (value != expectedValue) {
+                  throw 'Field {0} does not match. Value: {1}, expected: {2}.'.format(fieldName, value, expectedValue);
+              }
+          }
+      }
+
+      return value;
+  }
+  
+  /**
+   * Get all properties of objects in array.
+   * @param t - Array of elements to get properties
+   * @returns {Array} - Array of objects properties
+  */
+  function GetAllObjectsProperties(t) {
+      var properties = {};
+      t.forEach(function (element) {
+          for(var prop in element) {
+              properties[prop] ='';
+          }
+      });
+      return Object.keys(properties).sort();
+  }
 
   /**
    * Checks if the given string represents a valid IPv4 address
@@ -543,6 +654,37 @@ script: |-
       return res;
   }
 
+  /**
+   * Get list data which is comma-separated into an array
+   * @param {String} listName - the name of the list
+   * @returns {Array} the list as an array
+   */
+  function getCSVListAsArray(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          var data = res[0].Contents.split(',');
+          return data.filter(function(v) {return v;}).map(function(v) {return v.trim();});
+      }
+      return [];
+  }
+
+  /**
+   * Get list data which is JSON format into an object that can be an array as well
+   * @param {String} listName - the name of the list
+   * @returns {Object} the list as an object
+   */
+  function getJSONListAsObject(listName) {
+      var res = executeCommand('getList', {listName: listName});
+      if (isValidRes(res)) {
+          try {
+              return JSON.parse(res[0].Contents);
+          } catch (ex) {
+              throw 'Error parsing list - ' + res[0].Contents + ' - ' + ex;
+          }
+      }
+      return null;
+  }
+
   var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
@@ -827,9 +969,9 @@ script: |-
 
 
   /**
-     * Base64 encode utiliy
-     * @returns Base64 encoded string
-     */
+   * Base64 encode utiliy
+   * @returns Base64 encoded string
+   */
   var Base64 = {
         _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
         encode: function(input) {
@@ -854,6 +996,19 @@ script: |-
 
           return output;
         }
+  };
+  // Add the given obj to the path while making sure to append Malicious property
+  function addMalicious(context, path, obj) {
+      obj['properties_to_append'] = ['Malicious'];
+      context[path] = obj;
+  }
+  // Constants for common merge paths
+  var outputPaths = {
+      file: 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
+      ip: 'IP(val.Address && val.Address == obj.Address)',
+      url: 'URL(val.Data && val.Data == obj.Data)',
+      domain: 'Domain(val.Name && val.Name == obj.Name)',
+      cve: 'CVE(val.ID && val.ID == obj.ID)'
   };
 type: javascript
 tags:

@@ -246,7 +246,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec.dbotScore = {indicator: ind, type: type, vendor: 'CrowdStrike', score: dbotScore}; // ok to override, we expect only one
+                ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: dbotScore}; // ok to override, we expect only one
                 found = true;
             }
         }
@@ -258,27 +258,28 @@ script:
 
     var doFile = function(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
-            ec['File/Malicious'] = {};
+            var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
-            ec['File/Malicious'][hashType] = hash;
+            malFile[hashType] = hash;
+            addMalicious(ec, outputPaths.file, malFile);
         });
     };
 
     var doIP = function(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
-            ec['IP/Malicious'] = {Address: ip};
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
     var doURL = function(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
-            ec['URL/Malicious'] = url;
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
     var doDomain = function(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
-            ec['Domain/Malicious'] = {Name: domain};
+            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     };
 
@@ -365,26 +366,27 @@ script:
       default: true
       description: The file hash md5/sha1/sha256 to check
     outputs:
-    - contextPath: File/Malicious.MD5
+    - contextPath: File.MD5
       description: Bad hash MD5
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
-    - contextPath: File/Malicious.SHA1
+    - contextPath: File.SHA1
       description: Bad hash SHA1
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
-    - contextPath: File/Malicious.SHA256
+    - contextPath: File.SHA256
       description: Bad hash SHA256
-      important: true
-      importantDescription: Bad hashes found querying Falcon Intel
-    - contextPath: dbotScore.indicator
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
     description: Check file reputation
   - name: url
     deprecated: false
@@ -395,18 +397,23 @@ script:
       default: true
       description: URL to be checked
     outputs:
-    - contextPath: URL/Malicious
+    - contextPath: URL.Data
       description: Bad URL
-      important: true
-      importantDescription: Bad URLs found querying Falcon Intel
-    - contextPath: dbotScore.indicator
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
     description: Check the given URL reputation
   - name: domain
     deprecated: false
@@ -417,18 +424,23 @@ script:
       default: true
       description: Domain to be checked
     outputs:
-    - contextPath: Domain/Malicious.Name
+    - contextPath: Domain.Name
       description: Bad domain
-      important: true
-      importantDescription: Bad domains found querying Falcon Intel
-    - contextPath: dbotScore.indicator
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
     description: Check the given URL reputation
   - name: ip
     deprecated: false
@@ -439,18 +451,23 @@ script:
       default: true
       description: IP to check
     outputs:
-    - contextPath: IP/Malicious.Address
+    - contextPath: IP.Address
       description: Bad IP
-      important: true
-      importantDescription: Bad IPs found querying Falcon Intel
-    - contextPath: dbotScore.indicator
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
       description: The indicator we tested
-    - contextPath: dbotScore.type
+    - contextPath: DBotScore.Type
       description: The type of the indicator
-    - contextPath: dbotScore.vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: dbotScore.score
+    - contextPath: DBotScore.Score
       description: The actual score
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
     description: Check IP reputation
   - name: cs-actors
     deprecated: false

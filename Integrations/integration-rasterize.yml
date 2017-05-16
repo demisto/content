@@ -50,10 +50,10 @@ script:
       default: true
       description: The URL to rasterize. Must be full URL including http prefix.
     - name: width
-      description: The page width (empty is entire page)
+      description: The page width, e.g. 50px (empty is entire page)
     - name: height
-      description: The page height (empty is entire page)
+      description: The page height, e.g. 50px (empty is entire page)
     - name: type
       description: pdf or image. Default is png.
     description: Rasterize a URL into image or PDF
-  dockerimage: slavikm/rasterize
+  dockerimage: demisto/rasterize

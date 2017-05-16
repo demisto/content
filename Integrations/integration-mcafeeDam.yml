@@ -315,29 +315,30 @@ script:
     - contentPath: accessedObjects.object.name
       contextPath: alertAccessedObjects
       description: DAM Accessed Objects
-      important: true
-      importantDescription: DAM Accessed Objects
     - contentPath: execUser
       contextPath: dbUser
       description: DAM Database User
       important: true
       importantDescription: DAM Database User
     - contentPath: osUser
-      contextPath: account.username
+      contextPath: Account.Username
       description: DAM OS User
-      important: true
-      importantDescription: DAM OS User
     - contentPath: database
       contextPath: database
       description: DAM Database
-      important: true
-      importantDescription: DAM Database
     - contentPath: identifyingSensor
       contextPath: sensor
       description: DAM Sensor
     - contentPath: rules
       contextPath: rules
       description: DAM Rules
+    important:
+    - contextPath: alertAccessedObjects
+      description: DAM Accessed Objects
+    - contextPath: dbUser
+      description: DAM Database User
+    - contextPath: database
+      description: DAM Database
     description: Get a DAM alert from McAfee Database Activity Monitoring by alert
       ID
   - name: dam-get-latest-by-rule
@@ -359,29 +360,28 @@ script:
     - contentPath: accessedObjects.object.name
       contextPath: alertAccessedObjects
       description: DAM Accessed Objects
-      important: true
-      importantDescription: DAM Accessed Objects
     - contentPath: execUser
       contextPath: dbUser
       description: DAM Database User
-      important: true
-      importantDescription: DAM Database User
     - contentPath: osUser
-      contextPath: account.username
+      contextPath: Account.Username
       description: DAM OS User
-      important: true
-      importantDescription: DAM OS User
     - contentPath: database
       contextPath: database
       description: DAM Database
-      important: true
-      importantDescription: DAM Database
     - contentPath: identifyingSensor
       contextPath: sensor
       description: DAM Sensor
     - contentPath: rules
       contextPath: rules
       description: DAM Rules
+    important:
+    - contextPath: alertAccessedObjects
+      description: DAM Accessed Objects
+    - contextPath: dbUser
+      description: DAM Database User
+    - contextPath: database
+      description: DAM Database
     description: Get latest DAM alerts by rule name
   isfetch: true
 hidden: false
