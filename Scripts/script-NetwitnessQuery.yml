@@ -1,7 +1,7 @@
 commonfields:
   id: 34f0498c-d3da-4ac3-8cad-a28804bf1f21
   version: 2
-name: NetwitnessQuery
+name: NetWitnessQuery
 script: |2
 
   resp = demisto.executeCommand("nw-sdk-query", demisto.args())

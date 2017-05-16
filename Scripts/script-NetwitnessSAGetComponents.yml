@@ -1,7 +1,7 @@
 commonfields:
-  id: NetwitnessSAGetComponents
+  id: NetWitnessSAGetComponents
   version: -1
-name: NetwitnessSAGetComponents
+name: NetWitnessSAGetComponents
 script: |-
   resp = demisto.executeCommand("nw-get-components", demisto.args())
 
@@ -16,8 +16,8 @@ script: |-
         demisto.results("No results.")
 type: python
 tags:
-- RSA Netwitness Security Analytics
-comment: Get a list of components in the Netwitness architecture
+- RSA NetWitness Security Analytics
+comment: Get a list of components in the NetWitness architecture
 system: true
 args:
 - name: query

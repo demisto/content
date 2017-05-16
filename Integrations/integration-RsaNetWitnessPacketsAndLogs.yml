@@ -28,7 +28,6 @@ configuration:
   required: true
 - display: Password
   name: password
-  defaultvalue: netwitness
   type: 4
   required: true
 - display: Secure (over HTTPS)
@@ -74,7 +73,7 @@ script:
 
     var buildHrAndContext = function (data) {
         //Check if we have values
-        var retVal = {md:[], context: {Netwitness:{Events:[]}}};
+        var retVal = {md:[], context: {NetWitness:{Events:[]}}};
         var typeToValue;
 
         var extractFromData = function(data) {
@@ -83,7 +82,7 @@ script:
 
             if(!isObjectEmpty(typeToValue)) {
                 retVal.md.push(typeToValue);
-                retVal.context.Netwitness.Events.push(typeToValue);
+                retVal.context.NetWitness.Events.push(typeToValue);
         };
 
         if(Array.isArray(data)) {
@@ -471,7 +470,7 @@ script:
         list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
     description: Search for pattern matches in many sessions or packets
     outputs:
-    - contextPath: Netwitness.Events
+    - contextPath: NetWitness.Events
       description: all events of netwitness
   - name: netwitness-search
     arguments:
@@ -486,7 +485,7 @@ script:
       description: <string> The search string to use
     description: Searches for matches in session/packet content
     outputs:
-      - contextPath: Netwitness.Events
+      - contextPath: NetWitness.Events
         description: all events of netwitness
   - name: netwitness-query
     arguments:
@@ -509,8 +508,8 @@ script:
         means no threshold (the default).
     description: Performs a query against the meta database
     outputs:
-      - contextPath: Netwitness.Events
-        description: all events of netwitness
+      - contextPath: NetWitness.Events
+        description: all events of NetWitness
   - name: netwitness-packets
     arguments:
     - name: op
@@ -537,8 +536,8 @@ script:
         SDK function
     description: Stream packets back based on the input parameters provided
     outputs:
-      - contextPath: Netwitness.Events
-        description: all events of netwitness
+      - contextPath: NetWitness.Events
+        description: all events of NetWitness
   - name: nw-sdk-session
     arguments:
     - name: id1
