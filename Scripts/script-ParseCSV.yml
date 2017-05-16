@@ -1,5 +1,5 @@
 commonfields:
-  id: e406b066-2a94-4223-8da0-b206fe53ce79
+  id: ParseCSV
   version: -1
 name: ParseCSV
 script: |
@@ -131,11 +131,9 @@ type: python
 tags:
 - file
 - csv
-- util
 - Utility
 comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes
   into the context.
-system: true
 args:
 - name: file
   required: true
