@@ -1,10 +1,14 @@
 test:
+  pre:
+    - brew update
+    - brew install openssl
+    - brew install python --with-brewed-openssl
   override:
     - chmod +x yamlvalidator
     - ./yamlvalidator
     - chmod +x ensurefilenames.sh
     - ./ensurefilenames.sh
-    - python ./test.py
+    - /usr/local/Cellar/python/2.7.13/bin/python example ./test.py
   post:
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
