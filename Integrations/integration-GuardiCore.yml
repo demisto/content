@@ -96,12 +96,11 @@ script:
             {from: 'severity', to: 'Severity', parser: function(sev) {
                 if (sev <= 30) {
                     return 'Low';
-                }
-                if (sev >= 50) {
+                } else if (sev >= 50) {
                     return 'High';
+                } else {
+                    return 'Medium';
                 }
-
-                return 'Medium';
             }},
             {from: 'incident_group', to: 'Incident Group', parser: function(ig) {
                 return ig[0].gname + ' ' + ig[0].gid;
@@ -115,6 +114,11 @@ script:
 
                 return str.replace(/, $/, '');
             }}
+        ],
+        'guardicore-get-incident-iocs': [
+            {from: '_id', to: 'ID'},
+            {from: '_cls', to: 'Type'},
+            // {from: 'creation_time', to: 'Creation Time', parser: function},
         ],
         'guardicore-uncommon-domains': OUTPUT_DOMAINS,
         'guardicore-unresolved-domains': OUTPUT_DOMAINS
@@ -151,7 +155,7 @@ script:
     };
 
     /**
-       * return a function that transform object from some structure to other
+       * returns a function that transform object from some structure to other
        * @param {Array} fields - array of {from: String, to: String} - to transform by
        * @returns {Function} array from the original string-list
     */
@@ -169,14 +173,6 @@ script:
 
             return res;
         }
-    }
-
-    var filterData = function(obj, keys) {
-        var retObj = {};
-        for (var i = 0; i < keys.length; i++) {
-            retObj[keys[i]] = dq(obj, keys[i]);
-        }
-        return retObj;
     }
 
     var convertKeysToPascalCase = function(dict) {
@@ -206,24 +202,37 @@ script:
         return description;
     }
 
+    var buildEmptyEntry = function() {
+        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+    }
+
     var parseGetIncident = function(response) {
-        var entry = {Type: entryTypes.note, Contents: response, ContentsFormat: formats.json, EntryContext: {}};
         var output = mapObjFunction(outputsDictionary[command])(response);
         output.Description = formatIncidentDescription(response.description);
 
+        var entry = buildEmptyEntry();
         entry.HumanReadable = objToMd(output);
-        entry.EntryContext[contextsDictionary[command].path] = convertKeysToPascalCase(output);
+        entry.EntryContext['GuardiCore.Incidents'] = convertKeysToPascalCase(output);
+
+        return entry;
+    }
+
+    var parseGetIncidentsIOCs = function(response) {
+        var output = mapObjFunction(outputsDictionary[command])(response);
+        output.Description = formatIncidentDescription(response.description);
+
+        var entry = buildEmptyEntry();
+        entry.HumanReadable = objToMd(output);
+        entry.EntryContext['GuardiCore.IOCs'] = convertKeysToPascalCase(output);
 
         return entry;
     }
 
     var parseGetIncidents = function(response) {
-        command = 'guardicore-get-incident';
-        var entry = {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+        var command = 'guardicore-get-incident';
         var outputs = [];
         var contexts = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
-            var context = filterData(objects[i], contextsDictionary[command].keys);
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
 
             // filter by incident type and by tag
@@ -240,8 +249,9 @@ script:
             contexts.push(convertKeysToPascalCase(output));
         }
 
+        var entry = buildEmptyEntry();
         entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
-        entry.EntryContext[contextsDictionary[command].path] = contexts;
+        entry.EntryContext['GuardiCore.Incidents'] = contexts;
 
         return entry;
     }
@@ -251,7 +261,6 @@ script:
     }
 
     var parseDomains = function(command, response) {
-        var entry = {Type: entryTypes.note, Contents: response, ContentsFormat: formats.json, EntryContext: {}};
         var outputs = [];
         var domains = [];
         var endpoints = [];
@@ -285,9 +294,10 @@ script:
 
         var domainType = (command == 'guardicore-uncommon-domains') ? 'Uncommon' : 'Unresolved';
         var tableTitle = 'GuardiCore {0} Domains'.format(domainType);
-        entry.HumanReadable = tblToMd(tableTitle, outputs);
         var entryContextDomainType = 'GuardiCore.Domain.' + domainType;
 
+        var entry = buildEmptyEntry();
+        entry.HumanReadable = tblToMd(tableTitle, outputs);
         entry.EntryContext = {'GuardiCore.Endpoint.Suspicious': endpoints};
         entry.EntryContext[entryContextDomainType] = domains;
 
@@ -302,6 +312,11 @@ script:
 
             case 'guardicore-get-incident':
                 entry = parseGetIncident(response);
+                break;
+
+            case 'guardicore-get-incident-iocs':
+                // entry = parseGetIncidentIOCs(response);
+                entry = {};
                 break;
 
             case 'guardicore-uncommon-domains':
