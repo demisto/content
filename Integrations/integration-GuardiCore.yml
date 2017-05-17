@@ -154,8 +154,6 @@ script:
         'guardicore-unresolved-domains': DATA_DOMAINS,
         'guardicore-get-incident-iocs': {
             nonValueKeys: ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'],
-            // path: 'GuardiCore.IOCs',
-            // missing: 'No IOCs for this incident'
         }
     };
 
@@ -268,7 +266,6 @@ script:
             // add endpoint
             console.log(response[i]['_cls']);
             if (response[i]['_cls'] == 'IoC.NetworkIoc.NetworkVmIoc') {
-                console.log('yesss');
                 contextData.Endpoint = {
                     Hostname: response[i]['vm_name']
                     IPAddress: response[i]['ip']
@@ -282,6 +279,10 @@ script:
 
             outputs.push(output);
             contexts.push(contextData);
+        }
+
+        if (outputs.length == 0) {
+            return 'No IOCs for this incident.';
         }
 
         var entry = buildEmptyEntry();
@@ -386,8 +387,8 @@ script:
                 entry = parseDomains(command, response);
                 break;
 
-            // default:
-                // entry = parseEntryResult(response);
+            default:
+                throw 'GuardiCore: Unknown command.';
         }
 
         return entry;
@@ -401,20 +402,21 @@ script:
 
         var body = method !== 'GET' ? JSON.stringify(args) : '';
         var res = http(
-                server + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
-                {
-                    Method: method,
-                    Headers: headers,
-                    Body: body
-                },
-                params.insecure,
-                params.proxy
-            );
+            server + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
+            {
+                Method: method,
+                Headers: headers,
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+        );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
                 sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             }
+
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
 
@@ -427,12 +429,23 @@ script:
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
         default:
-            var result = sendRequest(
-                methodDictionary[command],
-                replaceInTemplatesAndRemove(urlDictionary[command], args),
-                token,
-                args
-            );
+            try {
+                var result = sendRequest(
+                    methodDictionary[command],
+                    replaceInTemplatesAndRemove(urlDictionary[command], args),
+                    token,
+                    args
+                );
+            }
+            catch (err) {
+                if (err.indexOf('Incident not found') != -1) {
+                    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+                    return 'No such incident.';
+                } else {
+                    throw err;
+                }
+            }
+
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
 
             return entriesFromResponse(command, result);
