@@ -110,7 +110,6 @@ script:
                 for (var i = 0; i < tags.length; i++) {
                     str += tags[i].display_name + ', ';
                 }
-                console.log(str);
 
                 return str.replace(/, $/, '');
             }}
@@ -118,14 +117,22 @@ script:
         'guardicore-get-incident-iocs': [
             {from: '_id', to: 'ID'},
             {from: '_cls', to: 'Type'},
-            // {from: 'creation_time', to: 'Creation Time', parser: function},
+            {from: 'creation_time', to: 'Creation Time', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'first_seen', to: 'First Seen', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'last_seen', to: 'Last Seen', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
         ],
         'guardicore-uncommon-domains': OUTPUT_DOMAINS,
         'guardicore-unresolved-domains': OUTPUT_DOMAINS
     };
 
-    // in case the context has to be set in a special way, the relevant information is taken from here
-    var CONTEXT_DOMAINS = [{
+    // in case the humanReadable or the context has to be set in a special way, the relevant information is taken from here
+    var DATA_DOMAINS = [{
         from: 'clients', to: 'Clients', parser: function(clients) {
             contextData = [];
             for (var i = 0; i < clients.length; i++) {
@@ -142,16 +149,14 @@ script:
         }
     }];
 
-    var contextsDictionary = {
-        'guardicore-uncommon-domains': CONTEXT_DOMAINS,
-        'guardicore-unresolved-domains': CONTEXT_DOMAINS,
+    var dataDictionary = {
+        'guardicore-uncommon-domains': DATA_DOMAINS,
+        'guardicore-unresolved-domains': DATA_DOMAINS,
         'guardicore-get-incident-iocs': {
-            keys: [
-                '_id'
-            ],
-            path: 'GuardiCore.IOCs',
-            missing: 'No IOCs for this incident'
-        },
+            nonValueKeys: ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'],
+            // path: 'GuardiCore.IOCs',
+            // missing: 'No IOCs for this incident'
+        }
     };
 
     /**
@@ -160,7 +165,6 @@ script:
        * @returns {Function} array from the original string-list
     */
     var mapObjFunction = function(mapFields) {
-        console.log(JSON.stringify(mapFields));
         return function(obj) {
             var res = {};
             mapFields.forEach(function(f) {
@@ -185,6 +189,10 @@ script:
         return pascalDict;
     }
 
+    var convertTimestampToString = function(timestamp) {
+        return (new Date(parseInt(timestamp))).toISOString();
+    }
+
     var doesResultExist = function(result) {
         return (
             result &&
@@ -206,7 +214,7 @@ script:
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
     }
 
-    var parseGetIncident = function(response) {
+    var parseGetIncident = function(command, response) {
         var output = mapObjFunction(outputsDictionary[command])(response);
         output.Description = formatIncidentDescription(response.description);
 
@@ -217,19 +225,74 @@ script:
         return entry;
     }
 
-    var parseGetIncidentsIOCs = function(response) {
-        var output = mapObjFunction(outputsDictionary[command])(response);
-        output.Description = formatIncidentDescription(response.description);
+    var parseGetIncidentIOCs = function(command, response) {
+        // // for debugging
+        // responseInstance = {
+        //     '_cls': 'IoC.NetworkIoc.NetworkVmIoc',
+        //     '_id': 'a793d5c4-1bb7-48ea-abc5-3f76eac0a184',
+        //     'creation_time': 1481624513501,
+        //     'doc_version': 1,
+        //     'first_seen': 1482233112776,
+        //     'last_seen': 1491469233058,
+        //     'password': 12345678,
+        //     'username': 'root',
+        //     'vm_name': 'SuperStrong Computer',
+        //     'ip': '10.0.0.5'
+        // };
+        // response = [responseInstance, responseInstance];
+
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+
+            // collect data for the Values field
+            var values = {};
+            for (var responseKey in response[i]) {
+                if (dataDictionary[command].nonValueKeys.indexOf(responseKey) == -1) {
+                    values[responseKey] = response[i][responseKey];
+                }
+            }
+
+            var valueList = [];
+            for (var valueKey in values) {
+                valueList.push(valueKey + ': ' + values[valueKey]);
+            }
+
+            if (valueList.length > 0) {
+                output.Values = valueList.join('<br>');
+            }
+
+            var contextData = convertKeysToPascalCase(output);
+
+            // add endpoint
+            console.log(response[i]['_cls']);
+            if (response[i]['_cls'] == 'IoC.NetworkIoc.NetworkVmIoc') {
+                console.log('yesss');
+                contextData.Endpoint = {
+                    Hostname: response[i]['vm_name']
+                    IPAddress: response[i]['ip']
+                };
+            }
+
+            if (valueList.length > 0) {
+                console.log(JSON.stringify(values));
+                contextData.Values = values;
+            }
+
+            outputs.push(output);
+            contexts.push(contextData);
+        }
 
         var entry = buildEmptyEntry();
-        entry.HumanReadable = objToMd(output);
-        entry.EntryContext['GuardiCore.IOCs'] = convertKeysToPascalCase(output);
+        entry.HumanReadable = tblToMd('GuardiCore IOCs', outputs);
+        entry.EntryContext['GuardiCore.IOCs'] = contexts;
 
         return entry;
     }
 
-    var parseGetIncidents = function(response) {
-        var command = 'guardicore-get-incident';
+    var parseGetIncidents = function(command, response) {
+        command = 'guardicore-get-incident';
         var outputs = [];
         var contexts = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
@@ -266,7 +329,7 @@ script:
         var endpoints = [];
         for (var i = 0; i < response.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(response[i]);
-            var contextData = mapObjFunction(contextsDictionary[command])(response[i]);
+            var contextData = mapObjFunction(dataDictionary[command])(response[i]);
             outputs.push(output);
 
             var contextClientsData = [];
@@ -307,16 +370,15 @@ script:
     var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
-                entry = parseGetIncidents(response);
+                entry = parseGetIncidents(command, response);
                 break;
 
             case 'guardicore-get-incident':
-                entry = parseGetIncident(response);
+                entry = parseGetIncident(command, response);
                 break;
 
             case 'guardicore-get-incident-iocs':
-                // entry = parseGetIncidentIOCs(response);
-                entry = {};
+                entry = parseGetIncidentIOCs(command, response);
                 break;
 
             case 'guardicore-uncommon-domains':
