@@ -128,7 +128,11 @@ script:
             }},
         ],
         'guardicore-uncommon-domains': OUTPUT_DOMAINS,
-        'guardicore-unresolved-domains': OUTPUT_DOMAINS
+        'guardicore-unresolved-domains': OUTPUT_DOMAINS,
+        'guardicore-misconfigurations': [
+            {from: 'port_count', to: 'Port Count'},
+            {from: 'flow_count', to: 'Flow Count'}
+        ]
     };
 
     // in case the humanReadable or the context has to be set in a special way, the relevant information is taken from here
@@ -154,7 +158,7 @@ script:
         'guardicore-unresolved-domains': DATA_DOMAINS,
         'guardicore-get-incident-iocs': {
             nonValueKeys: ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'],
-        }
+        },
     };
 
     /**
@@ -368,6 +372,50 @@ script:
         return entry;
     }
 
+    var parseMisconfigurations = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+            console.log(i);
+            console.log('response = ' + JSON.stringify(response));
+
+            if (response[i].destination && response[i].destination[0] && response[i].destination[0].vm) {
+                destination = response[i].destination[0].vm.display_name + ' - ' + response[i].destination[0].ip;
+            } else {
+                destination = 'undefined';
+            }
+
+            output.Destination = destination;
+            output.Port = response[i].port + ' - ' + response[i].port_name;
+
+            var sources = [];
+            for (var j = 0; j < response[i].source.length; j++) {
+                var currentSource = response[i].source[j];
+                console.log('currentsource = ' + JSON.stringify(currentSource));
+                if (currentSource && currentSource.vm) {
+                    var sourceStr = currentSource.vm.display_name + ' (' + currentSource.ip + ') - ' + currentSource.count.toString();
+                } else {
+                    var sourceStr = 'undefined';
+                }
+
+                sources.push(sourceStr);
+            }
+
+            output.Sources = sources.join('<br>');
+            var context = convertKeysToPascalCase(output);
+            context.Sources = sources;
+            outputs.push(output);
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntry();
+        entry.HumanReadable = tblToMd('GuardiCore Misconfigurations', outputs);
+        entry.EntryContext = {'GuardiCore.Misconfigurations': contexts};
+
+        return entry;
+    }
+
     var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
@@ -387,6 +435,15 @@ script:
                 entry = parseDomains(command, response);
                 break;
 
+            case 'guardicore-show-endpoint':
+                entry = {HumanReadable: response};
+                break;
+
+            case 'guardicore-misconfigurations':
+                entry = parseMisconfigurations(command, response);
+                // entry = {HumanReadable: response};
+                break;
+
             default:
                 throw 'GuardiCore: Unknown command.';
         }
@@ -400,6 +457,8 @@ script:
             headers.Authorization = ['Bearer ' + token];
         }
 
+        console.log('Send: ' + (server + url + (method === 'GET' ? encodeToURLQuery(args) : '')));
+
         var body = method !== 'GET' ? JSON.stringify(args) : '';
         var res = http(
             server + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
@@ -411,6 +470,8 @@ script:
             params.insecure,
             params.proxy
         );
+
+        console.log('Receive: ' + JSON.stringify(res));
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
@@ -511,9 +572,7 @@ script:
       - not_active
       description: Multiple filters are comma seperated
   - name: guardicore-misconfigurations
-    arguments:
-    - name: order_by
-    - name: time_frame
+    arguments: []
   - name: guardicore-get-incident
     arguments:
     - name: id
