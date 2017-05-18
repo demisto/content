@@ -78,6 +78,8 @@ script:
         }}
     ];
 
+    // Used for direct parsing/formatting.
+    // In case several inputs are needed for a single output, it will be done in the specific parsing function.
     var outputsDictionary = {
         'guardicore-get-incident': [
             {from: 'source_ip', to: 'Source IP'},
@@ -132,6 +134,13 @@ script:
         'guardicore-misconfigurations': [
             {from: 'port_count', to: 'Port Count'},
             {from: 'flow_count', to: 'Flow Count'}
+        ],
+        'guardicore-dns-requests': [
+            {from: 'client_ip', to: 'Client IP'},
+            {from: 'packet_arrival_time', to: 'Packet Arrival Time', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'requested_host_name', to: 'Requested Hostname'}
         ]
     };
 
@@ -212,15 +221,15 @@ script:
         return description;
     }
 
-    var buildEmptyEntry = function() {
-        return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, EntryContext: {}};
+    var buildEmptyEntryContext = function() {
+        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
 
     var parseGetIncident = function(command, response) {
         var output = mapObjFunction(outputsDictionary[command])(response);
         output.Description = formatIncidentDescription(response.description);
 
-        var entry = buildEmptyEntry();
+        var entry = buildEmptyEntryContext();
         entry.HumanReadable = objToMd(output);
         entry.EntryContext['GuardiCore.Incidents'] = convertKeysToPascalCase(output);
 
@@ -289,7 +298,7 @@ script:
             return 'No IOCs for this incident.';
         }
 
-        var entry = buildEmptyEntry();
+        var entry = buildEmptyEntryContext();
         entry.HumanReadable = tblToMd('GuardiCore IOCs', outputs);
         entry.EntryContext['GuardiCore.IOCs'] = contexts;
 
@@ -317,7 +326,7 @@ script:
             contexts.push(convertKeysToPascalCase(output));
         }
 
-        var entry = buildEmptyEntry();
+        var entry = buildEmptyEntryContext();
         entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
         entry.EntryContext['GuardiCore.Incidents'] = contexts;
 
@@ -364,7 +373,7 @@ script:
         var tableTitle = 'GuardiCore {0} Domains'.format(domainType);
         var entryContextDomainType = 'GuardiCore.Domain.' + domainType;
 
-        var entry = buildEmptyEntry();
+        var entry = buildEmptyEntryContext();
         entry.HumanReadable = tblToMd(tableTitle, outputs);
         entry.EntryContext = {'GuardiCore.Endpoint.Suspicious': endpoints};
         entry.EntryContext[entryContextDomainType] = domains;
@@ -377,9 +386,6 @@ script:
         var contexts = [];
         for (var i = 0; i < response.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(response[i]);
-            console.log(i);
-            console.log('response = ' + JSON.stringify(response));
-
             if (response[i].destination && response[i].destination[0] && response[i].destination[0].vm) {
                 destination = response[i].destination[0].vm.display_name + ' - ' + response[i].destination[0].ip;
             } else {
@@ -409,9 +415,50 @@ script:
             contexts.push(context);
         }
 
-        var entry = buildEmptyEntry();
+        var entry = buildEmptyEntryContext();
         entry.HumanReadable = tblToMd('GuardiCore Misconfigurations', outputs);
         entry.EntryContext = {'GuardiCore.Misconfigurations': contexts};
+
+        return entry;
+    }
+
+    var parseDnsRequests = function(command, response) {
+        var objects = response.objects;
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0; i < objects.length; i++) {
+            console.log(i);
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+            var context = convertKeysToPascalCase(output);
+
+            var answer = {};
+            var answerDocumentsStr = '';
+            if (objects[i].answer_infos[0]) {
+                answer.ResponderIp = objects[i].answer_infos[0].responder_ip;
+                var answerDocuments = [];
+                objects[i].answer_infos[0].answer_documents.forEach(function(ans) {
+                    if (ans.answer_type) {
+                        answerDocuments.push({'AnswerType': ans.answer_type, 'Hostname': ans.host_name});
+                        answerDocumentsStr += 'Type: ' + ans.answer_type + ', Hostname: ' + ans.host_name + '<br>';
+                    }
+                });
+
+                answer.AnswerDocuments = answerDocuments;
+            }
+
+            output.Answers = 'Responder IP: ' + answer.ResponderIp;
+            if (answerDocumentsStr.length > 0) {
+                output.Answers += '<br>Answers:<br>' + answerDocumentsStr;
+            }
+            outputs.push(output)
+
+            context.Answer = answer;
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore DNS Requests', outputs);
+        entry.EntryContext = {'GuardiCore.DNSRequests': contexts};
 
         return entry;
     }
@@ -435,17 +482,20 @@ script:
                 entry = parseDomains(command, response);
                 break;
 
-            case 'guardicore-show-endpoint':
-                entry = {HumanReadable: response};
+            case 'guardicore-dns-requests':
+                console.log('dns-requests case');
+                entry = parseDnsRequests(command, response);
                 break;
 
             case 'guardicore-misconfigurations':
                 entry = parseMisconfigurations(command, response);
-                // entry = {HumanReadable: response};
                 break;
 
             default:
-                throw 'GuardiCore: Unknown command.';
+                console.log('default case');
+                //throw 'GuardiCore: Unknown command.';
+                entry = buildEmptyEntryContext();
+                entry.Contents = response;
         }
 
         return entry;
@@ -471,7 +521,7 @@ script:
             params.proxy
         );
 
-        console.log('Receive: ' + JSON.stringify(res));
+        // console.log('Receive: ' + JSON.stringify(res));
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
@@ -483,6 +533,9 @@ script:
 
         return JSON.parse(res.Body);
     }
+
+    // workaround - this parameter should not be visible in the BYOI integration code
+    delete(args['raw-response']);
 
     var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
     switch (command) {
@@ -508,7 +561,6 @@ script:
             }
 
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-
             return entriesFromResponse(command, result);
     }
   type: javascript
