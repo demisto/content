@@ -232,10 +232,29 @@ script:
       return { columns: columns, entryList: entryList }
     }
 
+    function convertFromEntryListToCsvJSON(entryList) {
+        var columns = entryList.return.columns;
+        var entries = entryList.return.entryList;
+
+        var entriesArray = [];
+        for (var i = 0; i < entries.length; i++) {
+            var newEntry = {};
+            for (var columnIdx = 0; columnIdx < columns.length; columnIdx++) {
+                var column = columns[columnIdx];
+                // log(column)
+                var innerEntry = entries[i].entry[columnIdx];
+                newEntry[column] = innerEntry;
+            }
+
+            entriesArray.push(newEntry);
+        }
+
+        return entriesArray;
+    }
+
     var addEntriesTemplate = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/" xmlns:xsd="http://activelist.model.v1.service.resource.manager.product.arcsight.com/xsd"><soapenv:Header /><soapenv:Body><act:addEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId><act:entryList>%entryList%</act:entryList></act:addEntries></soapenv:Body></soapenv:Envelope>';
     function addEntries() {
         var entryList = convertCsvToEntryListObject(args.entries)
-
         var stringBuilder = [];
         entryList.columns.forEach(function(column) {
           stringBuilder.push(replaceInTemplates('<columns>%column%</columns>', { column: column }));
@@ -250,21 +269,45 @@ script:
 
         var entryListXml = stringBuilder.join('');
         var soapReq = replaceInTemplates(addEntriesTemplate, { authToken: args.authToken, resourceId: args.resourceId, entryList: entryListXml });
-        // var soapReq = replaceInTemplates(addEntriesTemplate, { authToken: args.authToken, resourceId: args.resourceId });
-        var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
-        return res;
+        sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+        return 'Success';
     }
 
     var clearEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/"><soapenv:Header/><soapenv:Body><act:clearEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId></act:clearEntries></soapenv:Body></soapenv:Envelope>';
     function clearEntries() {
         var soapReq = replaceInTemplates(clearEntriesTemplate, { authToken: args.authToken, resourceId: args.resourceId });
         var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+        return 'Success';
     }
 
     var getEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/"><soapenv:Header/><soapenv:Body><act:getEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId></act:getEntries></soapenv:Body></soapenv:Envelope>';
     function getEntries() {
         var soapReq = replaceInTemplates(getEntriesTemplate, { authToken: args.authToken, resourceId: args.resourceId });
         var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+
+        var entryArray = convertFromEntryListToCsvJSON(parseSOAPResponse(res.Body));
+        if (args.entryFilter) {
+            var filteredEntries = [];
+            var conditions = args.entryFilter.split(':');
+            var conditionKey = conditions[0]; // moo
+            var conditionValue = conditions[1]; // moo1
+
+            for (var i = 0; i < entryArray.length; i++) {
+                var entry = entryArray[i];
+
+                if (entry[conditionKey] === conditionValue) {
+                    filteredEntries.push(entry);
+                }
+            }
+            entryArray = filteredEntries;
+        }
+        return {
+          Type: entryTypes.note,
+          ContentsFormat: formats.json,
+          Contents: { result: entryArray },
+          ReadableContentsFormat: formats.markdown,
+          HumanReadable: tableToMarkdown('Active List ' + args.resourceId, entryArray)
+        };
     }
     function sendSOAPRequest(queryPath, param, body) {
         // prepare the request url (make sure to encode the query parameter value)
@@ -291,7 +334,7 @@ script:
     }
 
     function parseSOAPResponse(resBody) {
-      var matches = resBody.match('<ns:return>(.|[\r\n])*<\/ns:return>');
+      var matches = resBody.match('<ns.:return>(.|[\r\n])*<\/ns.:return>');
       if (!matches) {
         return null;
       }
@@ -352,8 +395,11 @@ script:
     arguments:
     - name: resourceId
       required: true
+    - name: entries
+      required: true
+      isArray: true
     execution: true
-  - name: as-clean-entries
+  - name: as-clear-entries
     arguments:
     - name: resourceId
       required: true
@@ -361,6 +407,12 @@ script:
   - name: as-get-entries
     arguments:
     - name: resourceId
+      required: true
+    - name: entryFilter
+      description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
+  - name: as-koko
+    arguments:
+    - name: moo
       required: true
   isfetch: true
 hidden: false
