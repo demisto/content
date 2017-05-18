@@ -38,8 +38,8 @@ script:
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
-        'guardicore-show-endpoint': 'assets/%host_id%',
-        'guardicore-show-endpoint-actions': 'assets/%host_id%/actions',
+        'guardicore-show-endpoint': 'assets/%hostId%',
+        'guardicore-show-endpoint-actions': 'assets/%hostId%/actions',
         'guardicore-dns-requests': 'labs/dns-requests',
         'guardicore-search-endpoint': 'assets',
         'guardicore-get-agents': 'agents',
@@ -131,6 +131,30 @@ script:
         ],
         'guardicore-uncommon-domains': OUTPUT_DOMAINS,
         'guardicore-unresolved-domains': OUTPUT_DOMAINS,
+        'guardicore-show-endpoint': [
+            {from: '_id', to: 'ID'},
+            {from: 'ip_addresses', to: 'IP Addresses', parser: function(ipAddresses) {
+                return ipAddresses.join('<br>');
+            }},
+            {from: 'mac_addresses', to: 'MAC Addresses', parser: function(macAddresses) {
+                return macAddresses.join('<br>');
+            }},
+            {from: 'recent_domains', to: 'Recent Domains', parser: function(recentDomains) {
+                return recentDomains.join('<br>');
+            }},
+            {from: 'comments', to: 'Comments'},
+            {from: 'first_seen', to: 'First Seen', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'last_seen', to: 'Last Seen', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'last_summary_update', to: 'Last Summary Update', parser: function(timestamp) {
+                return convertTimestampToString(timestamp);
+            }},
+            {from: 'risk_title', to: 'Risk Level'},
+            {from: 'status', to: 'Status'},
+        ],
         'guardicore-misconfigurations': [
             {from: 'port_count', to: 'Port Count'},
             {from: 'flow_count', to: 'Flow Count'}
@@ -463,6 +487,51 @@ script:
         return entry;
     }
 
+    RELEVANT_SUMMARY_KEYS = [
+        'blocked_connections_count',
+        'file_detected_incidents_count',
+        'file_detection_rules_count',
+        'file_quarantined_count',
+        'honeypot_incidents_count',
+        'network_rules_count',
+        'network_scan_incidents_count',
+        'total_incidents_count'
+    ]
+    var parseShowEndpoint = function(command, response) {
+        var output = mapObjFunction(outputsDictionary[command])(response);
+        var context = {
+            'Hostname': response.full_name,
+            'IP': (response.ip_addresses.length > 1) ? response.ip_addresses : response.ip_addresses[0]
+        };
+
+        var entries = [];
+
+        var endpointDetailsEntry = buildEmptyEntryContext();
+        endpointDetailsEntry.HumanReadable = tblToMd('GuardiCore Details for Endpoint ' + response.full_name, output);
+        endpointDetailsEntry.EntryContext = {'GuardiCore.Endpoint': context};
+        entries.push(endpointDetailsEntry)
+
+        if (response.unhandled_recommendations && (response.unhandled_recommendations.length > 0)) {
+            var recommendationsEntry = buildEmptyEntryContext();
+            recommendationsEntry.HumanReadable = tblToMd('GuardiCore Details for Endpoint ' + response.full_name, response.unhandled_recommendations);
+            entries.push(recommendationsEntry);
+        }
+
+        var summary = [];
+        for (var key in response.summary) {
+            if (RELEVANT_SUMMARY_KEYS.indexOf(key) != -1) {
+                summary.push({'Key': key, 'Value': response.summary[key]});
+            }
+        }
+        if (summary.length > 0) {
+            var summaryEntry = buildEmptyEntryContext();
+            summaryEntry.HumanReadable = tblToMd('GuardiCore Summary for Endpoint ' + response.full_name, summary);
+            entries.push(summaryEntry);
+        }
+
+        return entries;
+    }
+
     var entriesFromResponse = function(command, response) {
         switch (command) {
             case 'guardicore-get-incidents':
@@ -483,12 +552,15 @@ script:
                 break;
 
             case 'guardicore-dns-requests':
-                console.log('dns-requests case');
                 entry = parseDnsRequests(command, response);
                 break;
 
             case 'guardicore-misconfigurations':
                 entry = parseMisconfigurations(command, response);
+                break;
+
+            case 'guardicore-show-endpoint':
+                entry = parseShowEndpoint(command, response);
                 break;
 
             default:
@@ -520,8 +592,6 @@ script:
             params.insecure,
             params.proxy
         );
-
-        // console.log('Receive: ' + JSON.stringify(res));
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!token) {
@@ -567,9 +637,9 @@ script:
   commands:
   - name: guardicore-get-incidents
     arguments:
-    - name: to_time
+    - name: toTime
       description: Incidents to time (UNIX format)
-    - name: from_time
+    - name: fromTime
       description: Incidents from time (UNIX format)
     - name: severity
       auto: PREDEFINED
@@ -586,35 +656,27 @@ script:
       description: Type of incidents (deception, lateral movement etc.)
     description: Get guardicore incidents
   - name: guardicore-uncommon-domains
-    arguments:
-    - name: order_by
-    - name: time_frame
+    arguments: []
   - name: guardicore-unresolved-domains
-    arguments:
-    - name: order_by
-    - name: time_frame
+    arguments: []
   - name: guardicore-show-endpoint
     arguments:
-    - name: host_id
-      required: true
-      default: true
+    - name: hostId
+    - name: ipAddress
   - name: guardicore-dns-requests
-    arguments:
-    - name: client_ip
-    - name: sort
+    arguments: []
   - name: guardicore-show-endpoint-actions
     arguments:
     - name: limit
-    - name: host_id
+    - name: hostId
       required: true
       default: true
   - name: guardicore-search-endpoint
     arguments:
-    - name: ip_address
-    - name: sort
+    - name: ipAddress
   - name: guardicore-get-agents
     arguments:
-    - name: gc_filter
+    - name: gcFilter
     - name: sort
     - name: activity
       auto: PREDEFINED
