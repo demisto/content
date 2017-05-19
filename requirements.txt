@@ -1,3 +1,4 @@
 Google-Search-API
 pyping
 threatconnect
+psycopg2
