@@ -200,6 +200,30 @@ script:
         return md;
     };
 
+    var addIndicatorToContext = function(t, v, score, ec, path) {
+        var n = {properties_to_append: ['Malicious', 'Reports', 'Actors', 'MalwareFamilies', 'KillChains']};
+        n[t] = v.indicator;
+        if (v.reports && v.reports.length > 0) {
+            n.Reports = v.reports;
+        }
+        if (v.actors && v.actors.length > 0) {
+            n.Actors = v.actors;
+        }
+        if (v.malware_families && v.malware_families.length > 0) {
+            n.MalwareFamilies = v.malware_families;
+        }
+        if (v.kill_chains && v.kill_chains.length > 0) {
+            n.KillChains = v.kill_chains;
+        }
+        if (score === 3) {
+            n.Malicious = {Vendor: 'CrowdStrike', Description: 'High confidence'};
+        }
+        if (!ec[path]) {
+            ec[path] = [];
+        }
+        ec[path].push(n);
+    };
+
     // Not passing the arguments because there are a lot of them
     var doIndicators = function() {
         var a = {};
@@ -216,16 +240,51 @@ script:
         var res = doReq('GET', 'indicator/v1/search/' + args.parameter, a);
         var md = '## Falcon Intel Indicator Search for: ' + args.value + '\n';
         var found = false;
+        var ec = {};
         if (res.obj) {
             for (var i=0; i<res.obj.length; i++) {
                 md += indicatorToMd(res.obj[i]);
+                var dbotScore = 0;
+                if (res.obj[i].malicious_confidence === 'high') {
+                    dbotScore = 3;
+                } else if (res.obj[i].malicious_confidence === 'medium') {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                var dbotType = '';
+                if (res.obj[i].type === 'hash_md5') {
+                    addIndicatorToContext('MD5', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'hash_sha1') {
+                    addIndicatorToContext('SHA1', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'hash_sha256') {
+                    addIndicatorToContext('SHA256', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'ip_address') {
+                    addIndicatorToContext('Address', res.obj[i], dbotScore, ec, outputPaths.ip);
+                    dbotType = 'ip';
+                } else if (res.obj[i].type === 'url') {
+                    addIndicatorToContext('Data', res.obj[i], dbotScore, ec, outputPaths.url);
+                    dbotType = 'url';
+                } else if (res.obj[i].type === 'domain') {
+                    addIndicatorToContext('Name', res.obj[i], dbotScore, ec, outputPaths.domain);
+                    dbotType = 'domain';
+                }
+                if (dbotType) {
+                    if (!ec.DBotScore) {
+                        ec.DBotScore = [];
+                    }
+                    ec.DBotScore.push({Indicator: res.obj[i].indicator, Type: dbotType, Vendor: 'CrowdStrike', Score: dbotScore});
+                }
                 found = true;
             }
         }
         if (!found) {
             md += 'No result found';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
     var doIndicator = function(ind, type, title, appendContextFunc) {
