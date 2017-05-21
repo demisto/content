@@ -44,6 +44,7 @@ script:
         'guardicore-get-incident': 'incidents/%id%',
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-get-incident-events': 'incidents/%id%/events',
+        'guardicore-get-incident-pcap': 'honeypots/%honeypotId%/files/%fileId%',
 
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
@@ -72,7 +73,8 @@ script:
         'guardicore-search-endpoint': 'GET',
         'guardicore-get-agents': 'GET',
         'guardicore-misconfigurations': 'GET',
-        'guardicore-get-incident-iocs': 'GET'
+        'guardicore-get-incident-iocs': 'GET',
+        'guardicore-get-incident-pcaps': 'GET'
     };
 
     // converts raw data to readable strings, for both the war room and the context
@@ -564,15 +566,16 @@ script:
     }
 
     var parseHostIds = function(command, response) {
-        console.log('response = \n' + JSON.stringify())
-
         var hostIds = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             hostIds.push(objects[i]._id);
         }
 
-        console.log(JSON.stringify(hostIds));
         return hostIds;
+    }
+
+    var parseIncidentPcap = function(command, response) {
+        return {'honeypotId': response.honeypot_id, 'fileId': response.pcap.file_id};
     }
 
     var entriesFromResponse = function(command, response, token) {
@@ -585,12 +588,35 @@ script:
                 entry = parseGetIncident(command, response);
                 break;
 
+            case 'guardicore-get-incident-iocs':
+                entry = parseGetIncidentIOCs(command, response);
+                break;
+
             case 'guardicore-get-incident-events':
                 entry = parseGetIncidentEvents(command, response);
                 break;
 
-            case 'guardicore-get-incident-iocs':
-                entry = parseGetIncidentIOCs(command, response);
+            case 'guardicore-get-incident-pcap':
+                var incidentId = response._id;
+                if (!response.pcap) {
+                    return 'No PCAP was found for the given incident.';
+                }
+
+                pcapInfo = parseIncidentPcap(command, response);
+                args.honeypotId = pcapInfo.honeypotId;
+                args.fileId = pcapInfo.fileId;
+
+                var internalCommand = 'guardicore-get-incident-pcap';
+                var pcapFile = sendRequest(
+                    methodDictionary[internalCommand],
+                    replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                    token,
+                    args,
+                    true
+                );
+
+                var fileName = 'incident_' + incidentId + '.pcap';
+                entry = {Type: 3, FileID: saveFile(pcapFile), File: fileName, Contents: fileName};
                 break;
 
             case 'guardicore-uncommon-domains':
@@ -644,7 +670,7 @@ script:
         return entry;
     }
 
-    var sendRequest = function(method, url, token, args) {
+    var sendRequest = function(method, url, token, args, isRawOutput) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers.Authorization = ['Bearer ' + token];
@@ -672,7 +698,12 @@ script:
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
 
-        return JSON.parse(res.Body);
+        if (isRawOutput) {
+            console.log('Returning raw output');
+            return res.Body;
+        } else {
+            return JSON.parse(res.Body);
+        }
     }
 
     // workaround - this parameter should not be visible in the BYOI integration code
@@ -699,6 +730,10 @@ script:
             } else {
                 commandUrlKey = 'guardicore-get-incidents';
             }
+            break;
+
+        case 'guardicore-get-incident-pcap':
+            commandUrlKey = 'guardicore-get-incident';
             break;
 
         case 'guardicore-search-endpoint':
@@ -785,8 +820,6 @@ script:
     - name: hostname
       description: The hostname of the endpoint.
     description: Display information about the endpoint by its hostname or IP address.
-  - name: guardicore-get-agents
-    arguments: []
   - name: guardicore-misconfigurations
     arguments: []
     description: Display the misconfigurations.
@@ -810,4 +843,10 @@ script:
       required: true
       description: The ID of the incident.
     description: Display the events related to the given incidents.
+  - name: guardicore-get-incident-pcap
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieves the PCAP file attached to the given incident.
 hidden: false
