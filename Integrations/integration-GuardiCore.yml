@@ -27,7 +27,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |+
     var server = params.server.replace(/[\/]+$/, '') + '/api/v3.0/';
 
     var urlDictionary = {
@@ -42,8 +42,9 @@ script:
         'guardicore-get-incidents-filter-destination': 'incidents?destination=%destination%',
 
         'guardicore-get-incident': 'incidents/%id%',
-
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
+        'guardicore-get-incident-events': 'incidents/%id%/events',
+
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
 
@@ -345,24 +346,45 @@ script:
         var contexts = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
-
-            // // filter by incident type and by tag
-            // if (
-            //     (args.type && (output.IncidentType != args.type)) ||
-            //     (args.tag && (output.Tags.indexOf(args.tag) == -1))
-            // ) {
-            //     continue;
-            // }
-
             output.Description = formatIncidentDescription(objects[i].description);
-
             outputs.push(output);
             contexts.push(convertKeysToPascalCase(output));
+        }
+
+        if (outputs.length == 0) {
+            return 'No matching incidents were found.';
         }
 
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
         entry.EntryContext['GuardiCore.Incidents'] = contexts;
+
+        return entry;
+    }
+
+    var parseGetIncidentEvents = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var events = dq(response, 'events'), i = 0; i < events.length; i++) {
+            var output = {'Class': events[i]._cls, 'Data': ''};
+            var context = {'Class' : events[i]._cls, 'Data': events[i]};
+
+            var eventData = [];
+            for (var key in events[i]) {
+                eventData.push(key + ': ' + JSON.stringify(events[i][key]));
+            }
+
+            if (eventData.length > 0) {
+                output.Data = eventData.join('<br>');
+            }
+
+            outputs.push(output);
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Incident Events ', outputs);
+        entry.EntryContext['GuardiCore.IncidentEvents'] = contexts;
 
         return entry;
     }
@@ -563,6 +585,10 @@ script:
                 entry = parseGetIncident(command, response);
                 break;
 
+            case 'guardicore-get-incident-events':
+                entry = parseGetIncidentEvents(command, response);
+                break;
+
             case 'guardicore-get-incident-iocs':
                 entry = parseGetIncidentIOCs(command, response);
                 break;
@@ -650,7 +676,7 @@ script:
     }
 
     // workaround - this parameter should not be visible in the BYOI integration code
-    delete(args['raw-response']);
+    // delete(args['raw-response']);
 
     var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
     switch (command) {
@@ -714,7 +740,9 @@ script:
 
     var entries = entriesFromResponse(command, result, token);
     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+
     return entries;
+
   type: javascript
   commands:
   - name: guardicore-get-incidents
@@ -734,40 +762,52 @@ script:
       description: Filter by source (hostname or IP address)
     - name: destination
       description: Filter by destination (hostname or IP address)
-    description: Get guardicore incidents
+    description: Get incidents with filters.
   - name: guardicore-uncommon-domains
     arguments: []
+    description: Display the uncommon domains.
   - name: guardicore-unresolved-domains
     arguments: []
+    description: Display the unresolved domains.
   - name: guardicore-show-endpoint
     arguments:
     - name: hostId
       required: true
       description: The host ID (if known).
+    description: Display information about the endpoint given its ID.
   - name: guardicore-dns-requests
     arguments: []
-  - name: guardicore-show-endpoint-actions
-    arguments:
-    - name: limit
-    - name: hostId
-      required: true
-      default: true
+    description: Display the DNS requests.
   - name: guardicore-search-endpoint
     arguments:
     - name: ipAddress
+      description: The IP address of the endpoint.
     - name: hostname
+      description: The hostname of the endpoint.
+    description: Display information about the endpoint by its hostname or IP address.
   - name: guardicore-get-agents
     arguments: []
   - name: guardicore-misconfigurations
     arguments: []
+    description: Display the misconfigurations.
   - name: guardicore-get-incident
     arguments:
     - name: id
       required: true
       default: true
+      description: The ID of the incident.
+    description: Get information about the given incident.
   - name: guardicore-get-incident-iocs
     arguments:
     - name: id
       required: true
       default: true
+      description: The ID of the incident.
+    description: Get IOC (Indicator of Compromise) for the given incident.
+  - name: guardicore-get-incident-events
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Display the events related to the given incidents.
 hidden: false
