@@ -45,6 +45,7 @@ script:
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-get-incident-events': 'incidents/%id%/events',
         'guardicore-get-incident-pcap': 'honeypots/%honeypotId%/files/%fileId%',
+        'guardicore-get-incident-attachments': 'honeypots/%honeypotId%/files/%fileId%',
 
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
@@ -565,7 +566,7 @@ script:
         return entries;
     }
 
-    var parseHostIds = function(command, response) {
+    var parseHostIds = function(response) {
         var hostIds = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             hostIds.push(objects[i]._id);
@@ -574,11 +575,26 @@ script:
         return hostIds;
     }
 
-    var parseIncidentPcap = function(command, response) {
+    var parseIncidentPcap = function(response) {
         return {'honeypotId': response.honeypot_id, 'fileId': response.pcap.file_id};
     }
 
+    var parseIncidentAttachments = function(response) {
+        var attachmentsInfo = {'honeypotId': response.honeypot_id, 'filesData': []};
+        for (var events = dq(response, 'events'), i = 0; i < events.length; i++) {
+            if (events[i].file_id) {
+                var fileData = {'fileId': events[i].file_id, 'path': events[i].path};
+                console.log('File id at ' + i);
+                attachmentsInfo.filesData.push(fileData);
+            }
+        }
+
+        console.log(JSON.stringify(attachmentsInfo));
+        return attachmentsInfo;
+    }
+
     var entriesFromResponse = function(command, response, token) {
+        var entry;
         switch (command) {
             case 'guardicore-get-incidents':
                 entry = parseGetIncidents(command, response);
@@ -602,7 +618,7 @@ script:
                     return 'No PCAP was found for the given incident.';
                 }
 
-                pcapInfo = parseIncidentPcap(command, response);
+                var pcapInfo = parseIncidentPcap(response);
                 args.honeypotId = pcapInfo.honeypotId;
                 args.fileId = pcapInfo.fileId;
 
@@ -617,6 +633,31 @@ script:
 
                 var fileName = 'incident_' + incidentId + '.pcap';
                 entry = {Type: 3, FileID: saveFile(pcapFile), File: fileName, Contents: fileName};
+                break;
+
+            case 'guardicore-get-incident-attachments':
+                var incidentId = response._id;
+                var attachments = parseIncidentAttachments(response);
+                if (attachments.filesData.length == 0) {
+                    return 'No attachments were found for the given incident.';
+                }
+
+                entry = [];
+                for (var i = 0; i < attachments.filesData.length; i++) {
+                    args.honeypotId = attachments.filesData[i].honeypotId;
+                    args.fileId = attachments.filesData[i].fileId;
+                    var internalCommand = 'guardicore-get-incident-attachments';
+                    var attachment = sendRequest(
+                        methodDictionary[internalCommand],
+                        replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                        token,
+                        args,
+                        true
+                    );
+
+                    var fileName = 'attachment_' + incidentId + '_' + attachments.filesData[i].path;
+                    entry.push({Type: 3, FileID: saveFile(attachment), File: fileName, Contents: fileName});
+                }
                 break;
 
             case 'guardicore-uncommon-domains':
@@ -637,12 +678,12 @@ script:
                 break;
 
             case 'guardicore-search-endpoint':
-                hostIds = parseHostIds(command, response);
+                hostIds = parseHostIds(response);
                 if (!hostIds || (hostIds.length == 0)) {
                     return 'Host was not found.'
                 }
 
-                var entries = [];
+                entry = [];
                 var internalCommand = 'guardicore-show-endpoint';
                 for (var i = 0; i < hostIds.length; i++) {
                     args.hostId = hostIds[i];
@@ -653,18 +694,18 @@ script:
                         args
                     );
 
-                    var entry = entriesFromResponse(internalCommand, result, token);
-                    entries.push(entry);
+                    var currentEntry = entriesFromResponse(internalCommand, result, token);
+                    entry.push(currentEntry);
                 }
 
-                return entries;
+                return entry;
 
             default:
                 console.log('default case');
                 //throw 'GuardiCore: Unknown command.';
                 entry = buildEmptyEntryContext();
                 entry.Contents = response;
-                // entry.HumanReadable = response;
+                entry.HumanReadable = response;
         }
 
         return entry;
@@ -733,6 +774,7 @@ script:
             break;
 
         case 'guardicore-get-incident-pcap':
+        case 'guardicore-get-incident-attachments':
             commandUrlKey = 'guardicore-get-incident';
             break;
 
@@ -849,4 +891,10 @@ script:
       required: true
       description: The ID of the incident.
     description: Retrieves the PCAP file attached to the given incident.
+  - name: guardicore-get-incident-attachments
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieves the files attached to the given incidents.
 hidden: false
