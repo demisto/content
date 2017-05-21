@@ -4,7 +4,7 @@ test:
     - ./yamlvalidator
     - chmod +x ensurefilenames.sh
     - ./ensurefilenames.sh
-    - ./setContentDescriptor $CIRCLE_BUILD_NUM
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM
   post:
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
