@@ -35,12 +35,6 @@ script:
         logout: 'logout',
 
         'guardicore-get-incidents': 'incidents',
-        'guardicore-get-incidents-filter-tag': 'incidents?tag=%tag%',
-        'guardicore-get-incidents-filter-type': 'incidents?incident_type=%type%',
-        'guardicore-get-incidents-filter-severity': 'incidents?severity=%severity%',
-        'guardicore-get-incidents-filter-source': 'incidents?source=%source%',
-        'guardicore-get-incidents-filter-destination': 'incidents?destination=%destination%',
-
         'guardicore-get-incident': 'incidents/%id%',
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-get-incident-events': 'incidents/%id%/events',
@@ -58,7 +52,9 @@ script:
         'guardicore-dns-requests': 'labs/dns-requests',
         'guardicore-search-endpoint': 'assets',
         'guardicore-get-agents': 'agents',
-        'guardicore-misconfigurations': 'connections/stats/network-misconfigurations'
+        'guardicore-misconfigurations': 'connections/stats/network-misconfigurations',
+        'guardicore-search-network-log': 'network-events',
+        'guardicore-search-reputation-log': 'reputation-log',
     };
 
     var methodDictionary = {
@@ -75,8 +71,11 @@ script:
         'guardicore-get-agents': 'GET',
         'guardicore-misconfigurations': 'GET',
         'guardicore-get-incident-iocs': 'GET',
-        'guardicore-get-incident-pcaps': 'GET'
+        'guardicore-search-network-log': 'GET',
+        'guardicore-search-reputation-log': 'GET'
     };
+
+
 
     // converts raw data to readable strings, for both the war room and the context
     OUTPUT_DOMAINS = [
@@ -332,7 +331,7 @@ script:
             contexts.push(contextData);
         }
 
-        if (outputs.length == 0) {
+        if (outputs.length === 0) {
             return 'No IOCs for this incident.';
         }
 
@@ -354,7 +353,7 @@ script:
             contexts.push(convertKeysToPascalCase(output));
         }
 
-        if (outputs.length == 0) {
+        if (outputs.length === 0) {
             return 'No matching incidents were found.';
         }
 
@@ -638,7 +637,7 @@ script:
             case 'guardicore-get-incident-attachments':
                 var incidentId = response._id;
                 var attachments = parseIncidentAttachments(response);
-                if (attachments.filesData.length == 0) {
+                if (attachments.filesData.length === 0) {
                     return 'No attachments were found for the given incident.';
                 }
 
@@ -679,7 +678,7 @@ script:
 
             case 'guardicore-search-endpoint':
                 hostIds = parseHostIds(response);
-                if (!hostIds || (hostIds.length == 0)) {
+                if (!hostIds || (hostIds.length === 0)) {
                     return 'Host was not found.'
                 }
 
@@ -702,10 +701,11 @@ script:
 
             default:
                 console.log('default case');
+                console.log('response = ' + JSON.stringify(response));
                 //throw 'GuardiCore: Unknown command.';
                 entry = buildEmptyEntryContext();
                 entry.Contents = response;
-                entry.HumanReadable = response;
+                // entry.HumanReadable = response;
         }
 
         return entry;
@@ -751,27 +751,11 @@ script:
     // delete(args['raw-response']);
 
     var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
+    var commandUrlKey;
     switch (command) {
         case 'test-module':
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
-
-        case 'guardicore-get-incidents':
-            if (args.severity) {
-                commandUrlKey = 'guardicore-get-incidents-filter-severity';
-            } else if (args.tag) {
-                args.tag = args.tag.replace(' ', '+');
-                commandUrlKey = 'guardicore-get-incidents-filter-tag';
-            } else if (args.type) {
-                commandUrlKey = 'guardicore-get-incidents-filter-type';
-            } else if (args.source) {
-                commandUrlKey = 'guardicore-get-incidents-filter-source';
-            } else if (args.destination) {
-                commandUrlKey = 'guardicore-get-incidents-filter-destination';
-            } else {
-                commandUrlKey = 'guardicore-get-incidents';
-            }
-            break;
 
         case 'guardicore-get-incident-pcap':
         case 'guardicore-get-incident-attachments':
@@ -803,10 +787,7 @@ script:
             token,
             args
         );
-        console.log('sendRequest is OK.');
     } catch (err) {
-        console.log('Caught exception.');
-        console.log(JSON.stringify(err));
         if (err && err.indexOf('Incident not found') != -1) {
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'No such incident.';
@@ -833,7 +814,7 @@ script:
       description: Severity of the incidents
     - name: tag
       description: Tag to filter
-    - name: type
+    - name: incident_type
       description: Type of incidents (deception, lateral movement etc.)
     - name: source
       description: Filter by source (hostname or IP address)
@@ -897,4 +878,31 @@ script:
       required: true
       description: The ID of the incident.
     description: Retrieves the files attached to the given incidents.
+  - name: guardicore-search-network-log
+    arguments:
+    - name: source
+      description: Source hostname or IP address.
+    - name: destination
+      description: Destination hostname or IP address.
+    - name: port
+      description: Port filter.
+    - name: uuid
+      description: Event ID to filter by.
+    description: Searches within the network log.
+  - name: guardicore-search-reputation-log
+    arguments:
+    - name: source
+      description: Source hostname or IP address
+    - name: request_content
+      description: Filter by request content.
+    - name: response
+      description: Filter by verdict.
+    - name: origin
+      auto: PREDEFINED
+      predefined:
+      - ReputationServerCache
+      - LocalCache
+      - ReputationServer
+      description: Filter by response type.
+    description: Searches within the reputation log.
 hidden: false
