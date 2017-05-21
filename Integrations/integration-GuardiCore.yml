@@ -27,18 +27,23 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     var server = params.server.replace(/[\/]+$/, '') + '/api/v3.0/';
 
     var urlDictionary = {
         login: 'authenticate',
         logout: 'logout',
+
         'guardicore-get-incidents': 'incidents',
         'guardicore-get-incident': 'incidents/%id%',
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
+
         'guardicore-show-endpoint': 'assets/%hostId%',
+        'guardicore-search-endpoint-ip-address': 'assets?ip_address=%ipAddress%',
+        'guardicore-search-endpoint-hostname': 'assets?name=%hostname%',
+
         'guardicore-show-endpoint-actions': 'assets/%hostId%/actions',
         'guardicore-dns-requests': 'labs/dns-requests',
         'guardicore-search-endpoint': 'assets',
@@ -447,10 +452,9 @@ script:
     }
 
     var parseDnsRequests = function(command, response) {
-        var objects = response.objects;
         var outputs = [];
         var contexts = [];
-        for (var i = 0; i < objects.length; i++) {
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             console.log(i);
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
             var context = convertKeysToPascalCase(output);
@@ -532,7 +536,19 @@ script:
         return entries;
     }
 
-    var entriesFromResponse = function(command, response) {
+    var parseHostIds = function(command, response) {
+        console.log('response = \n' + JSON.stringify())
+
+        var hostIds = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            hostIds.push(objects[i]._id);
+        }
+
+        console.log(JSON.stringify(hostIds));
+        return hostIds;
+    }
+
+    var entriesFromResponse = function(command, response, token) {
         switch (command) {
             case 'guardicore-get-incidents':
                 entry = parseGetIncidents(command, response);
@@ -563,11 +579,35 @@ script:
                 entry = parseShowEndpoint(command, response);
                 break;
 
+            case 'guardicore-search-endpoint':
+                hostIds = parseHostIds(command, response);
+                if (!hostIds || (hostIds.length == 0)) {
+                    return 'Host was not found.'
+                }
+
+                var entries = [];
+                var internalCommand = 'guardicore-show-endpoint';
+                for (var i = 0; i < hostIds.length; i++) {
+                    args.hostId = hostIds[i];
+                    var result = sendRequest(
+                        methodDictionary[internalCommand],
+                        replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                        token,
+                        args
+                    );
+
+                    var entry = entriesFromResponse(internalCommand, result, token);
+                    entries.push(entry);
+                }
+
+                return entries;
+
             default:
                 console.log('default case');
                 //throw 'GuardiCore: Unknown command.';
                 entry = buildEmptyEntryContext();
                 entry.Contents = response;
+                // entry.HumanReadable = response;
         }
 
         return entry;
@@ -612,27 +652,46 @@ script:
         case 'test-module':
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
-        default:
-            try {
-                var result = sendRequest(
-                    methodDictionary[command],
-                    replaceInTemplatesAndRemove(urlDictionary[command], args),
-                    token,
-                    args
-                );
-            }
-            catch (err) {
-                if (err.indexOf('Incident not found') != -1) {
-                    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-                    return 'No such incident.';
-                } else {
-                    throw err;
-                }
-            }
 
-            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-            return entriesFromResponse(command, result);
+        case 'guardicore-search-endpoint':
+            if (args.ipAddress) {
+                commandUrlKey = 'guardicore-search-endpoint-ip-address';
+            } else if (args.hostname) {
+                commandUrlKey = 'guardicore-search-endpoint-hostname';
+            } else {
+                throw 'IP address or hostname must be provided.'
+            }
+            break;
+
+        default:
+            commandUrlKey = command;
+            break
     }
+
+    console.log('command = ' + command);
+    console.log('commandUrlKey = ' + commandUrlKey);
+
+    try {
+        var result = sendRequest(
+            methodDictionary[command],
+            replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
+            token,
+            args
+        );
+    }
+    catch (err) {
+        console.log(JSON.stringify(err));
+        if (err.message.indexOf('Incident not found') != -1) {
+            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            return 'No such incident.';
+        } else {
+            throw err;
+        }
+    }
+
+    var entries = entriesFromResponse(command, result, token);
+    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+    return entries;
   type: javascript
   commands:
   - name: guardicore-get-incidents
@@ -662,7 +721,8 @@ script:
   - name: guardicore-show-endpoint
     arguments:
     - name: hostId
-    - name: ipAddress
+      required: true
+      description: The host ID (if known).
   - name: guardicore-dns-requests
     arguments: []
   - name: guardicore-show-endpoint-actions
@@ -674,17 +734,9 @@ script:
   - name: guardicore-search-endpoint
     arguments:
     - name: ipAddress
+    - name: hostname
   - name: guardicore-get-agents
-    arguments:
-    - name: gcFilter
-    - name: sort
-    - name: activity
-      auto: PREDEFINED
-      predefined:
-      - last_24_hours
-      - last_12_hours
-      - not_active
-      description: Multiple filters are comma seperated
+    arguments: []
   - name: guardicore-misconfigurations
     arguments: []
   - name: guardicore-get-incident
