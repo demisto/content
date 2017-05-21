@@ -1,6 +1,6 @@
 commonfields:
   id: findIncidentsWithIndicator
-  version: 37
+  version: -1 
 name: findIncidentsWithIndicator
 script: |-
   var res = executeCommand("getIncidents", {"query": "indicator.value:"+args.indicator});
@@ -21,7 +21,8 @@ script: |-
   }
   return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
-tags: []
+tags:
+- Utility
 comment: Lookup incidents with specified indicator. Use currentIncidentId to omit
   the existing incident from output
 enabled: true
