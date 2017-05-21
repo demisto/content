@@ -54,25 +54,226 @@ script:
         return res.Body;
     }
 
+    var parseJSON = function(raw){
+        var output = null;
+        var innerParse = function(i){
+            var att = null;
+            if(typeof i === 'object' && 'value' in i){
+                if (typeof i.value === 'object'){
+                    i = JSON.parse(JSON.stringify(i.value));
+                }else {
+                    i = i.value;
+                }
+            }
+
+            if(typeof i === 'object'){
+                att = {};
+                for (var k in i){
+                    if (k == "urn"){
+                        if(typeof i[k] === 'object' && 'value' in i[k]){
+                            if (typeof i[k].value === 'object'){
+                                i[k] = JSON.parse(JSON.stringify(i[k].value));
+                            }else {
+                                i[k] = i[k].value;
+                            }
+                        }
+                        if(typeof i[k] === 'string'){
+                            var urn = i[k].split('/');
+                            if (urn.length > 0){
+                                att.id = urn[urn.length - 1];
+                            }
+                        }
+                    }
+                    if (typeof i[k] === 'object'){
+                        att[k] = parseJSON(i[k]);
+                    } else {
+                        att[k] = i[k];
+                    }
+                }
+            }
+            else{
+                att = i;
+            }
+            return att;
+        }
+
+        if(raw instanceof Array){
+            output = [];
+            raw.forEach(function(row){
+                output.push(innerParse(row))
+            })
+        } else {
+            output = innerParse(raw);
+        }
+
+        return output;
+    }
+    var getHunts = function(method, url, queryName, body, jsonPath, title) {
+        var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
+        if (jsonPath){raw = dq(raw,jsonPath);}
+        var output = parseJSON(raw);
+
+        if(!(output instanceof Array )){
+            output = [output];
+        }
+
+        var context = { Hunt : [] };
+        output.forEach(function(i){
+            var huntEntity = {
+                ID : i.id,
+                Created : i.created,
+                Creator : i.creator,
+                Description : i.description,
+                Expires : i.expires,
+                IsRobot : i.is_robot,
+                Name: i.name,
+                State: i.state
+            };
+
+            context.Hunt.push(huntEntity);
+        });
+
+        return {
+              Type: entryTypes.note,
+              Contents: raw,
+              ContentsFormat: formats.json,
+              HumanReadable: tblToMd(title,output,argToList(args.headers)),
+              EntryContext: context
+          };
+    };
+
+    var getHunt = function(method, url, queryName, body, jsonPath, title) {
+        var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
+        raw = dq(raw,jsonPath);
+        var output = parseJSON(raw);
+
+        if(!(output instanceof Array )){
+            output = [output];
+        }
+
+        var context = { Hunt : [] };
+        output.forEach(function(i){
+            var huntEntity = {
+                ID : i.id,
+                Created : i.created,
+                Creator : i.creator,
+                Description : i.description,
+                Expires : i.expires,
+                IsRobot : i.is_robot,
+                Name: i.name,
+                State: i.state
+            };
+
+            context.Hunt.push(huntEntity);
+        });
+
+        return {
+              Type: entryTypes.note,
+              Contents: raw,
+              ContentsFormat: formats.json,
+              HumanReadable: tblToMd(title,output,argToList(args.headers)),
+              EntryContext: context
+          };
+    };
+
+    var getFlows = function(method, url, queryName, body, jsonPath, title) {
+        var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
+        if (jsonPath){raw = dq(raw,jsonPath);}
+        var output = parseJSON(raw);
+        if(!(output instanceof Array )){
+            output = [output];
+        }
+
+        var context = { Flow : [] };
+
+        output.forEach(function(i){
+            var flowEntity = {
+                ID : i.id,
+                Created : i.created,
+                Creator : i.creator,
+                Description : i.description,
+                Expires : i.expires,
+                IsRobot : i.is_robot,
+                Name: i.name,
+                State: i.state,
+                Args : i.args,
+                LastActiveAt : i.last_active_at,
+                NestedFlow : (i.nested_flows && typeof i === 'object' ? i.nested_flows.map(function(a) {return a.id}) : i.nested_flows), //i.nested_flows.map(function(a) {return a.id}),
+                StartedAt : i.started_at
+            };
+
+            context.Flow.push(flowEntity);
+        });
+
+        return {
+              Type: entryTypes.note,
+              Contents: raw,
+              ContentsFormat: formats.json,
+              HumanReadable: tblToMd(title,output,argToList(args.headers)),
+              EntryContext: context
+          };
+    };
+
+    var getClients = function(method, url, queryName, body, jsonPath, title) {
+        var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
+        if (jsonPath){raw = dq(raw,jsonPath);}
+        var output = parseJSON(raw);
+        if(!(output instanceof Array )){
+            output = [output];
+        }
+
+        var context = { Client : [] };
+
+        output.forEach(function(i){
+            var clientEntity = {
+                FirstSeenAt : i.first_seen_at,
+                ID : i.id,
+                LastBootedAt : i.last_booted_at,
+                LatClock : i.last_clock,
+                LastCrashAt : i.last_crash_at,
+                LastSeenAt : i.last_seen_at,
+                AgentInfo : i.agent_info,
+                HardwareInfo : i.hardware_info,
+                Interfaces : i.interfaces,
+                Labels : i.labels,
+                OS : i.os_info,
+                User : i.users,
+                Valuem : i.volumes
+            };
+
+            context.Client.push(clientEntity);
+        });
+
+        return {
+              Type: entryTypes.note,
+              Contents: raw,
+              ContentsFormat: formats.json,
+              HumanReadable: tblToMd(title,output,argToList(args.headers)),
+              EntryContext: context
+          };
+    };
+
     var sendRequestAndParse = function(method, url, queryName, body) {
         return JSON.parse(sendRequest(method, url, queryName, body).slice(5));
-    }
+    };
 
     switch (command) {
         case 'test-module':
             return sendRequest('GET', server) ? 'ok' : 'No body in response';
-        case 'grr_set_flows':
-            return sendRequestAndParse('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
-        case 'grr_get_files':
+        case 'grr-set-flows': //DOne
+            return getFlows('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
+        case 'grr-get-files': //deprecated
             args.paths = JSON.parse(args.paths);
             return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
-        case 'grr_get_hunts':
-            return sendRequestAndParse('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
-        case 'grr_get_hunt':
-            return sendRequestAndParse('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
-        case 'grr_set_hunts':
-            return sendRequestAndParse('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args));
-        case 'grr_get_flows':
+        case 'grr-get-hunts':
+            return getHunts('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts',null,"items",'Hunts');
+        case 'grr-get-hunt':
+            return getHunt('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt',null,"","Hunt {0}".format(args.hunt_id));
+        case 'grr-set-hunts':
+            return getHunts('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args),null,null,"Set Hunt");
+        case 'grr-get-clients':
+            return getClients('GET',server + '/api/clients' + encodeToURLQuery(args), 'get client',null,"items","Clients");
+        case 'grr-get-flows':
             var urlArgs = {};
             if (args.count) {
                 urlArgs.count = args.count;
@@ -80,11 +281,11 @@ script:
             if (args.offset) {
                 urlArgs.offset = args.offset;
             }
-            return sendRequestAndParse('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow');
+            return getFlows('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
     }
   type: javascript
   commands:
-  - name: grr_set_flows
+  - name: grr-set-flows
     arguments:
     - name: client_id
       required: true
@@ -93,8 +294,30 @@ script:
     - name: flow
       required: true
       description: JSON string of the flow to set
+    - name: headers
+      description: The headers to show
     description: Starts a flow on a given client with given parameters
-  - name: grr_get_flows
+    outputs:
+    - contextPath: Flow
+      description: A GRR Flow
+    - contextPath: Flow.ID
+      description: The GRR Flow ID
+    - contextPath: Flow.Args
+      description: The GRR Flow Args
+    - contextPath: Flow.Creator
+      description: The GRR Flow Creator
+    - contextPath: Flow.LastActiveAt
+      description: When Was the flow last active
+    - contextPath: Flow.NestedFlow
+      description: The GRR Flow Nested Flows
+    - contextPath: Flow.StartedAt
+      description: When was the flow started at
+    - contextPath: Flow.State
+      description: The GRR Flow State
+    important:
+    - contextPath: Flow.ID
+      description: The Flow ID
+  - name: grr-get-flows
     arguments:
     - name: client_id
       required: true
@@ -104,8 +327,31 @@ script:
       description: Starting offset
     - name: count
       description: Max number of flows to fetch
+    - name: headers
+      description: headers to show in output
     description: Lists flows launched on a given client
-  - name: grr_get_files
+    outputs:
+    - contextPath: Flow
+      description: A GRR Flow
+    - contextPath: Flow.ID
+      description: The GRR Flow ID
+    - contextPath: Flow.Args
+      description: The GRR Flow Args
+    - contextPath: Flow.Creator
+      description: The GRR Flow Creator
+    - contextPath: Flow.LastActiveAt
+      description: When Was the flow last active
+    - contextPath: Flow.NestedFlow
+      description: The GRR Flow Nested Flows
+    - contextPath: Flow.StartedAt
+      description: When was the flow started at
+    - contextPath: Flow.State
+      description: The GRR Flow State
+    important:
+    - contextPath: Flow.ID
+      description: The Flow ID
+  - name: grr-get-files
+    deprecated: true
     arguments:
     - name: hostname
       description: Target host, Can be FQDN or client ID
@@ -118,7 +364,7 @@ script:
     - name: pathtype
       description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
     description: Downloads files from specified machine without requiring approval
-  - name: grr_get_hunts
+  - name: grr-get-hunts
     arguments:
     - name: offset
       description: Starting offset
@@ -136,19 +382,102 @@ script:
         used in conjunction with ''active_within'' filter (to prevent queries of death)'
     - name: active_within
       description: Only return hunts that were active within given time duration
+    - name: headers
+      description: headers to show in output
     description: Renders list of available hunts
-  - name: grr_get_hunt
+    outputs:
+    - contextPath: Hunt
+      description: A GRR Hunt
+    - contextPath: Hunt.ID
+      description: The GRR Hunt ID
+    - contextPath: Hunt.Creator
+      description: The GRR Hunt Creator
+    - contextPath: Hunt.Description
+      description: The GRR Hunt Description
+    - contextPath: Hunt.Created
+      description: The time the GRR Hunt was created
+    - contextPath: Hunt.Expires
+      description: The time the GRR Hunt expires
+    - contextPath: Hunt.IsRobot
+      description: Is the Hunt originated from a robot
+    - contextPath: Hunt.Name
+      description: The GRR Hunt Name
+    - contextPath: Hunt.State
+      description: The GRR Hunt State
+    important:
+    - contextPath: Hunt.ID
+      description: The Hunt ID
+  - name: grr-get-hunt
     arguments:
     - name: hunt_id
       required: true
       default: true
       description: Hunt id
+    - name: headers
+      description: headers to show in output
     description: Renders hunt's summary
-  - name: grr_set_hunts
+    outputs:
+    - contextPath: Hunt
+      description: A GRR Hunt
+    - contextPath: Hunt.ID
+      description: The GRR Hunt ID
+    - contextPath: Hunt.Creator
+      description: The GRR Hunt Creator
+    - contextPath: Hunt.Description
+      description: The GRR Hunt Description
+    - contextPath: Hunt.Created
+      description: The time the GRR Hunt was created
+    - contextPath: Hunt.Expires
+      description: The time the GRR Hunt expires
+    - contextPath: Hunt.IsRobot
+      description: Is the Hunt originated from a robot
+    - contextPath: Hunt.Name
+      description: The GRR Hunt Name
+    - contextPath: Hunt.State
+      description: The GRR Hunt State
+    important:
+    - contextPath: Hunt.ID
+      description: The Hunt ID
+  - name: grr-set-hunts
     arguments:
     - name: hunt_runner_args
       description: Hunt runner arguments
     - name: hunt_args
       description: Hunt arguments
+    - name: headers
+      description: The headers to show
     description: Handles hunt creation request
+  - name: grr-get-clients
+    arguments:
+    - name: query
+      description: 'Search query string. See here for syntax: https://github.com/google/grr-doc/blob/master/user_manual.adoc#searching-for-a-client '
+    - name: offset
+      description: 'Found clients starting offset. '
+    - name: count
+      description: 'Number of found client to fetch. '
+    - name: headers
+      description: headers to show in output
+    description: 'Renders results of a client search. '
+    outputs:
+    - contextPath: Hunt
+      description: A GRR Hunt
+    - contextPath: Hunt.ID
+      description: The GRR Hunt ID
+    - contextPath: Hunt.Creator
+      description: The GRR Hunt Creator
+    - contextPath: Hunt.Description
+      description: The GRR Hunt Description
+    - contextPath: Hunt.Created
+      description: The time the GRR Hunt was created
+    - contextPath: Hunt.Expires
+      description: The time the GRR Hunt expires
+    - contextPath: Hunt.IsRobot
+      description: Is the Hunt originated from a robot
+    - contextPath: Hunt.Name
+      description: The GRR Hunt Name
+    - contextPath: Hunt.State
+      description: The GRR Hunt State
+    important:
+    - contextPath: Hunt.ID
+      description: The Hunt ID
 system: true
