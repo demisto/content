@@ -35,7 +35,14 @@ script:
         logout: 'logout',
 
         'guardicore-get-incidents': 'incidents',
+        'guardicore-get-incidents-filter-tag': 'incidents?tag=%tag%',
+        'guardicore-get-incidents-filter-type': 'incidents?incident_type=%type%',
+        'guardicore-get-incidents-filter-severity': 'incidents?severity=%severity%',
+        'guardicore-get-incidents-filter-source': 'incidents?source=%source%',
+        'guardicore-get-incidents-filter-destination': 'incidents?destination=%destination%',
+
         'guardicore-get-incident': 'incidents/%id%',
+
         'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
@@ -88,13 +95,11 @@ script:
     var outputsDictionary = {
         'guardicore-get-incident': [
             {from: 'source_ip', to: 'Source IP'},
-            {from: 'destination_ip', to: 'Destination IP'},
             {from: 'source_port', to: 'Source Port'},
-            {from: 'destination_port', to: 'Source IP'},
+            {from: 'destination_ip', to: 'Destination IP'},
+            {from: 'destination_port', to: 'Destination Port'},
             {from: '_id', to: 'ID'},
             {from: 'os', to: 'OS'},
-            {from: 'destination_port', to: 'Source IP'},
-            {from: 'source_port', to: 'Source Port'},
             {from: 'incident_type', to: 'Incident Type'},
             {from: 'honeypot_id', to: 'Honeypot ID'},
             {from: 'start_time', to: 'Start Time', parser: convertTimestampToString},
@@ -341,13 +346,13 @@ script:
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
 
-            // filter by incident type and by tag
-            if (
-                (args.type && (output.IncidentType != args.type)) ||
-                (args.tag && (output.Tags.indexOf(args.tag) == -1))
-            ) {
-                continue;
-            }
+            // // filter by incident type and by tag
+            // if (
+            //     (args.type && (output.IncidentType != args.type)) ||
+            //     (args.tag && (output.Tags.indexOf(args.tag) == -1))
+            // ) {
+            //     continue;
+            // }
 
             output.Description = formatIncidentDescription(objects[i].description);
 
@@ -653,6 +658,23 @@ script:
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
 
+        case 'guardicore-get-incidents':
+            if (args.severity) {
+                commandUrlKey = 'guardicore-get-incidents-filter-severity';
+            } else if (args.tag) {
+                args.tag = args.tag.replace(' ', '+');
+                commandUrlKey = 'guardicore-get-incidents-filter-tag';
+            } else if (args.type) {
+                commandUrlKey = 'guardicore-get-incidents-filter-type';
+            } else if (args.source) {
+                commandUrlKey = 'guardicore-get-incidents-filter-source';
+            } else if (args.destination) {
+                commandUrlKey = 'guardicore-get-incidents-filter-destination';
+            } else {
+                commandUrlKey = 'guardicore-get-incidents';
+            }
+            break;
+
         case 'guardicore-search-endpoint':
             if (args.ipAddress) {
                 commandUrlKey = 'guardicore-search-endpoint-ip-address';
@@ -678,10 +700,11 @@ script:
             token,
             args
         );
-    }
-    catch (err) {
+        console.log('sendRequest is OK.');
+    } catch (err) {
+        console.log('Caught exception.');
         console.log(JSON.stringify(err));
-        if (err.message.indexOf('Incident not found') != -1) {
+        if (err && err.indexOf('Incident not found') != -1) {
             sendRequest(methodDictionary.logout, urlDictionary.logout, token);
             return 'No such incident.';
         } else {
@@ -696,23 +719,21 @@ script:
   commands:
   - name: guardicore-get-incidents
     arguments:
-    - name: toTime
-      description: Incidents to time (UNIX format)
-    - name: fromTime
-      description: Incidents from time (UNIX format)
     - name: severity
       auto: PREDEFINED
       predefined:
-      - high
-      - low
-      - medium
+      - High
+      - Low
+      - Medium
       description: Severity of the incidents
     - name: tag
       description: Tag to filter
-    - name: limit
-      description: Amount of incidents
     - name: type
       description: Type of incidents (deception, lateral movement etc.)
+    - name: source
+      description: Filter by source (hostname or IP address)
+    - name: destination
+      description: Filter by destination (hostname or IP address)
     description: Get guardicore incidents
   - name: guardicore-uncommon-domains
     arguments: []
