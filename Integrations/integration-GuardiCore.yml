@@ -129,15 +129,9 @@ script:
         'guardicore-get-incident-iocs': [
             {from: '_id', to: 'ID'},
             {from: '_cls', to: 'Type'},
-            {from: 'creation_time', to: 'Creation Time', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
-            {from: 'first_seen', to: 'First Seen', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
-            {from: 'last_seen', to: 'Last Seen', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
+            {from: 'creation_time', to: 'Creation Time', parser: convertTimestampToString},
+            {from: 'first_seen', to: 'First Seen', parser: convertTimestampToString},
+            {from: 'last_seen', to: 'Last Seen', parser: convertTimestampToString},
         ],
         'guardicore-uncommon-domains': OUTPUT_DOMAINS,
         'guardicore-unresolved-domains': OUTPUT_DOMAINS,
@@ -153,15 +147,9 @@ script:
                 return recentDomains.join('<br>');
             }},
             {from: 'comments', to: 'Comments'},
-            {from: 'first_seen', to: 'First Seen', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
-            {from: 'last_seen', to: 'Last Seen', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
-            {from: 'last_summary_update', to: 'Last Summary Update', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
+            {from: 'first_seen', to: 'First Seen', parser: convertTimestampToString},
+            {from: 'last_seen', to: 'Last Seen', parser: convertTimestampToString},
+            {from: 'last_summary_update', to: 'Last Summary Update', parser: convertTimestampToString},
             {from: 'risk_title', to: 'Risk Level'},
             {from: 'status', to: 'Status'},
         ],
@@ -171,9 +159,7 @@ script:
         ],
         'guardicore-dns-requests': [
             {from: 'client_ip', to: 'Client IP'},
-            {from: 'packet_arrival_time', to: 'Packet Arrival Time', parser: function(timestamp) {
-                return convertTimestampToString(timestamp);
-            }},
+            {from: 'packet_arrival_time', to: 'Packet Arrival Time', parser: convertTimestampToString},
             {from: 'requested_host_name', to: 'Requested Hostname'}
         ],
         'guardicore-search-network-log': [
@@ -215,10 +201,6 @@ script:
         }
 
         return pascalDict;
-    }
-
-    var convertTimestampToString = function(timestamp) {
-        return (new Date(parseInt(timestamp))).toISOString();
     }
 
     var doesResultExist = function(result) {

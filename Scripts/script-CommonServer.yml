@@ -542,7 +542,7 @@ script: |-
   * @returns {String} e.g. 'Thu, 11 May 2017 11:18:56 UTC'
   */
   function convertTimestampToString(timestamp) {
-      return Date(parseInt(timestamp) * 1000);
+    return (new Date(parseInt(timestamp))).toISOString();
   }
 
   /**
