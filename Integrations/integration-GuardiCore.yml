@@ -307,11 +307,11 @@ script:
     }
 
     var parseGetIncidents = function(command, response) {
-        command = 'guardicore-get-incident';
+        var internalCommand = 'guardicore-get-incident';
         var outputs = [];
         var contexts = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
-            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+            var output = mapObjFunction(outputsDictionary[internalCommand])(objects[i]);
             output.Description = formatIncidentDescription(objects[i].description);
             outputs.push(output);
             contexts.push(convertKeysToPascalCase(output));
@@ -381,7 +381,6 @@ script:
         for (var i = 0; i < response.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(response[i]);
             var contextData = {'Clients': parseDomainClients(response[i].clients)};
-
             outputs.push(output);
 
             var contextClientsData = [];
@@ -516,7 +515,6 @@ script:
         };
 
         var entries = [];
-
         var endpointDetailsEntry = buildEmptyEntryContext();
         endpointDetailsEntry.HumanReadable = tblToMd('GuardiCore Details for Endpoint ' + response.full_name, output);
         endpointDetailsEntry.EntryContext = {'GuardiCore.Endpoint': context};
