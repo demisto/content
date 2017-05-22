@@ -90,10 +90,6 @@ script:
         }}
     ];
 
-    var parseNetworkLogTarget = function(target) {
-        return '';
-    }
-
     // Used for direct parsing/formatting.
     // In case several inputs are needed for a single output, it will be done in the specific parsing function.
     var outputsDictionary = {
