@@ -1,0 +1,23 @@
+commonfields:
+  id: IsIPInSubnet
+  version: -1
+name: IsIPInSubnet
+script: 'return isIPInSubnet(args.ip, args.subnet) ? ''yes'' : ''no'''
+type: javascript
+tags:
+- Condition
+enabled: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: Ip to check
+- name: subnet
+  required: true
+  description: ip or subnet to check against (127.0.0.1 or 127.0.0.1/8)
+outputs:
+- contextPath: yes
+  description: if ip is in subnet
+- contextPath: no
+  description: if  ip is not in subnet
+scripttarget: 0
