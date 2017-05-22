@@ -229,7 +229,7 @@ script:
                 FirstSeenAt : i.first_seen_at,
                 ID : i.id,
                 LastBootedAt : i.last_booted_at,
-                LatClock : i.last_clock,
+                LastClock : i.last_clock,
                 LastCrashAt : i.last_crash_at,
                 LastSeenAt : i.last_seen_at,
                 AgentInfo : i.agent_info,
@@ -238,7 +238,7 @@ script:
                 Labels : i.labels,
                 OS : i.os_info,
                 User : i.users,
-                Valuem : i.volumes
+                Volumes : i.volumes
             };
 
             context.Client.push(clientEntity);
@@ -282,6 +282,26 @@ script:
                 urlArgs.offset = args.offset;
             }
             return getFlows('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
+        case 'grr_set_flows'://deprecated
+            return sendRequestAndParse('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
+        case 'grr_get_files'://deprecated
+            args.paths = JSON.parse(args.paths);
+            return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
+        case 'grr_get_hunts'://deprecated
+            return sendRequestAndParse('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
+        case 'grr_get_hunt'://deprecated
+            return sendRequestAndParse('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
+        case 'grr_set_hunts'://deprecated
+            return sendRequestAndParse('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args));
+        case 'grr_get_flows'://deprecated
+            var urlArgs = {};
+            if (args.count) {
+                urlArgs.count = args.count;
+            }
+            if (args.offset) {
+                urlArgs.offset = args.offset;
+            }
+            return sendRequestAndParse('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow');
     }
   type: javascript
   commands:
@@ -459,25 +479,106 @@ script:
       description: headers to show in output
     description: 'Renders results of a client search. '
     outputs:
-    - contextPath: Hunt
-      description: A GRR Hunt
-    - contextPath: Hunt.ID
-      description: The GRR Hunt ID
-    - contextPath: Hunt.Creator
-      description: The GRR Hunt Creator
-    - contextPath: Hunt.Description
-      description: The GRR Hunt Description
-    - contextPath: Hunt.Created
-      description: The time the GRR Hunt was created
-    - contextPath: Hunt.Expires
-      description: The time the GRR Hunt expires
-    - contextPath: Hunt.IsRobot
-      description: Is the Hunt originated from a robot
-    - contextPath: Hunt.Name
-      description: The GRR Hunt Name
-    - contextPath: Hunt.State
-      description: The GRR Hunt State
+    - contextPath: Client
+      description: A GRR Client
+    - contextPath: Client.ID
+      description: The GRR Client ID
+    - contextPath: Client.LastBootedAt
+      description: The GRR Client LastBootedAt time
+    - contextPath: Client.FirstSeenAt
+      description: The GRR Client FirstSeenAt time
+    - contextPath: Client.LatClock
+      description: The GRR Client LastClock
+    - contextPath: Client.LastCrashAt
+      description: The GRR Client LastCrashAt time
+    - contextPath: Client.AgentInfo
+      description: The GRR Client AgentInfo
+    - contextPath: Client.HardwareInfo
+      description: The GRR Client HardwareInfo
+    - contextPath: Client.Interfaces
+      description: The GRR Client Interfaces
+    - contextPath: Client.Labels
+      description: The GRR Client Labels
+    - contextPath: Client.OS
+      description: The GRR Client OS details
+    - contextPath: Client.User
+      description: The GRR Client User
+    - contextPath: Client.Volumes
+      description: The GRR Client Volumes
     important:
-    - contextPath: Hunt.ID
-      description: The Hunt ID
+    - contextPath: Client.ID
+      description: The Client ID
+  - name: grr_set_flows
+    deprecated: true
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: flow
+      required: true
+      description: JSON string of the flow to set
+    description: Starts a flow on a given client with given parameters
+  - name: grr_get_flows
+    deprecated: true
+    arguments:
+    - name: client_id
+      required: true
+      default: true
+      description: The ID of the client
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of flows to fetch
+    description: Lists flows launched on a given client
+  - name: grr_get_files
+    required: true
+    arguments:
+    - name: hostname
+      description: Target host, Can be FQDN or client ID
+    - name: paths
+      description: Fetch this number of elements, an array of path strings
+    - name: max_file_size
+      description: Maximum size of file we will download
+    - name: action
+      description: Action to apply to found files - STAT, HASH or DOWNLOAD
+    - name: pathtype
+      description: Path type to glob in - UNSET, OS, TSK, REGISTRY, MEMORY, TMPFILE
+    description: Downloads files from specified machine without requiring approval
+  - name: grr_get_hunts
+    required: true
+    arguments:
+    - name: offset
+      description: Starting offset
+    - name: count
+      description: Max number of items to fetch
+    - name: created_by
+      description: 'Only return hunts created by a given user. If approved_by or/and
+        description_contains are also supplied, then logical AND is applied to all
+        the criterias. NOTE: this filter can only be used in conjunction with ''active_within''
+        filter (to prevent queries of death)'
+    - name: description_contains
+      description: 'Only return hunts where description contains given substring (matching
+        is case-insensitive).If created_by or/and approved_by are also supplied, then
+        logical AND is applied to all the criterias. NOTE: this filter can only be
+        used in conjunction with ''active_within'' filter (to prevent queries of death)'
+    - name: active_within
+      description: Only return hunts that were active within given time duration
+    description: Renders list of available hunts
+  - name: grr_get_hunt
+    required: true
+    arguments:
+    - name: hunt_id
+      required: true
+      default: true
+      description: Hunt id
+    description: Renders hunt's summary
+  - name: grr_set_hunts
+    required: true
+    arguments:
+    - name: hunt_runner_args
+      description: Hunt runner arguments
+    - name: hunt_args
+      description: Hunt arguments
+    description: Handles hunt creation request
 system: true
