@@ -260,39 +260,25 @@ script:
     switch (command) {
         case 'test-module':
             return sendRequest('GET', server) ? 'ok' : 'No body in response';
-        case 'grr-set-flows': //DOne
+        case 'grr-set-flows':
+        case 'grr_set_flows'://deprecated
             return getFlows('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
-        case 'grr-get-files': //deprecated
+        case 'grr-get-files': 
+        case 'grr_get_files'://deprecated
             args.paths = JSON.parse(args.paths);
             return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
         case 'grr-get-hunts':
+        case 'grr_get_hunts'://deprecated
             return getHunts('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts',null,"items",'Hunts');
         case 'grr-get-hunt':
+        case 'grr_get_hunt'://deprecated
             return getHunt('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt',null,"","Hunt {0}".format(args.hunt_id));
         case 'grr-set-hunts':
+        case 'grr_set_hunts'://deprecated
             return getHunts('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args),null,null,"Set Hunt");
         case 'grr-get-clients':
             return getClients('GET',server + '/api/clients' + encodeToURLQuery(args), 'get client',null,"items","Clients");
         case 'grr-get-flows':
-            var urlArgs = {};
-            if (args.count) {
-                urlArgs.count = args.count;
-            }
-            if (args.offset) {
-                urlArgs.offset = args.offset;
-            }
-            return getFlows('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
-        case 'grr_set_flows'://deprecated
-            return sendRequestAndParse('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}');
-        case 'grr_get_files'://deprecated
-            args.paths = JSON.parse(args.paths);
-            return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
-        case 'grr_get_hunts'://deprecated
-            return sendRequestAndParse('GET', server + '/api/hunts' + encodeToURLQuery(args), 'get hunts');
-        case 'grr_get_hunt'://deprecated
-            return sendRequestAndParse('GET', server + '/api/hunts/' + args.hunt_id, 'get hunt');
-        case 'grr_set_hunts'://deprecated
-            return sendRequestAndParse('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args));
         case 'grr_get_flows'://deprecated
             var urlArgs = {};
             if (args.count) {
@@ -301,7 +287,7 @@ script:
             if (args.offset) {
                 urlArgs.offset = args.offset;
             }
-            return sendRequestAndParse('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow');
+            return getFlows('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
     }
   type: javascript
   commands:
