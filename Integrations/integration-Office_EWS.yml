@@ -13,27 +13,27 @@ detaileddescription: |-
   The default value can be bypassed in individual exchange commands by adding "version=Exhcange{yyyy}" where yyyy is the exchange version.
 configuration:
 - display: Server URL
-  name: ServerURL
+  name: server
   defaultvalue: ""
   type: 0
   required: true
 - display: ""
-  name: Credentials
+  name: credentials
   defaultvalue: ""
   type: 9
   required: true
 - display: Domain
-  name: UserDomain
+  name: domain
   defaultvalue: ""
   type: 0
   required: true
 - display: Default Version
-  name: DefaultServerVersion
+  name: defaultServerVersion
   defaultvalue: Exchange2010
   type: 0
   required: false
 - display: Authentication Type (NTLM or Basic)
-  name: AuthenticationType
+  name: authType
   defaultvalue: NTLM
   type: 0
   required: true
@@ -42,55 +42,119 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
-    var tmplGetFolders = `<?xml version="1.0" encoding="utf-8"?>
-    <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
-    <soap:Header>
-    <t:RequestServerVersion Version="{{.Version}}" />
-    <t:ExchangeImpersonation>
-    <t:ConnectingSID>
-    <t:PrimarySmtpAddress>{{.UserEmailAddress}}</t:PrimarySmtpAddress>
-    </t:ConnectingSID>
-    </t:ExchangeImpersonation>
-    </soap:Header>
-    <soap:Body>
-    <GetFolder xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
-    xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
-    <FolderShape>
-    <t:BaseShape>{{.BaseShape}}</t:BaseShape>
-    </FolderShape>
-    <FolderIds>{{range .Items}}
-    <t:DistinguishedFolderId Id="{{.ID}}"/>{{end}}
-    </FolderIds>
-    </GetFolder>
-    </soap:Body>
-    </soap:Envelope>`;
+    var server = params.server.replace(/[\/]+$/, '') + '/';
 
-    function execute(command) {
-        switch (command) {
-            case 'ews-get-folder':
-                break;
-            case 'ews-delete-items':
-                break;
-            case 'ews-get-items':
-                break;
-            case 'ews-delete-attachments':
-                break;
-            case 'ews-search-mailbox':
-                break;
-            case 'ews-get-contacts':
-                break;
+    var commandsDictionary = {
+        'ews-get-folder': {
+            arrayArgName: 'folders-ids',
+            template:
+               '<?xml version="1.0" encoding="utf-8"?>' +
+               '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types\">' +
+                '<soap:Header>' +
+                '<t:RequestServerVersion Version="%version%" />' +
+                '<t:ExchangeImpersonation>' +
+                '<t:ConnectingSID>' +
+                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>' +
+                '</t:ConnectingSID>' +
+                '</t:ExchangeImpersonation>' +
+                '</soap:Header>' +
+                '<soap:Body>' +
+                '<GetFolder xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' +
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+                '<FolderShape>' +
+                '<t:BaseShape>Default</t:BaseShape>' +
+                '</FolderShape>' +
+                '<FolderIds>' +
+                '%folders-ids%' +
+                '</FolderIds>' +
+                '</GetFolder>' +
+                '</soap:Body>' +
+                '</soap:Envelope>'
+            },
+        'ews-delete-items': {
+            arrayArgName: 'item-ids',
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<soap:Header>'+
+                '<t:RequestServerVersion Version="%version%" />'+
+                '<t:ExchangeImpersonation>'+
+                '<t:ConnectingSID>'+
+                '<t:PrimarySmtpAddress>>%target-mailbox%</t:PrimarySmtpAddress>'+
+                '</t:ConnectingSID>'+
+                '</t:ExchangeImpersonation>'+
+                '</soap:Header>'+
+                '<soap:Body>'+
+                '<DeleteItem DeleteType="HardDelete" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">'+
+                '<ItemIds>'+
+                '<t:ItemId Id="%item-ids%"/>{{end}}'+
+                '</ItemIds>'+
+                '</DeleteItem>'+
+                '</soap:Body>'+
+                '</soap:Envelope>'
+            },
+        'folders-ids': {
+            template:
+                '<t:DistinguishedFolderId Id="%id%"/>'
+        },
+        'item-ids': {
+            template:
+                '<t:ItemId Id="%id%"/>'
         }
+    };
+
+    var send = function(body) {
+        var httpParams = {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['text/xml; charset=utf-8']
+                },
+                Username: params.credentials.identifier,
+                Password: params.credentials.password,
+                Domain: params.domain,
+                AuthProtocol: [params.authType],
+                Body: body,
+            };
+        var res = http(server, httpParams, params.insecure, params.proxy);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body;
+        }
+        return JSON.parse(x2j(res.Body));
     }
 
+    function buildBody(command, args) {
+        var currentCommand = commandsDictionary[command];
+        if (currentCommand.arrayArgName) {
+            var items = args[currentCommand.arrayArgName].split(',');
+            var itemsStr = '';
+            for (var i in items) {
+                itemsStr += replaceInTemplates(commandsDictionary[currentCommand.arrayArgName].template, {id: items[i]});
+            }
+            args[currentCommand.arrayArgName] = itemsStr;
+        }
+        return replaceInTemplates(currentCommand.template, args);
+    }
+
+    if (!args.version) {
+        args.version = params.defaultServerVersion;
+    }
     switch (command) {
         case 'test-module':
-            execute('ews-get-folder');
+            args['folders-ids'] = 'inbox';
+            args['target-mailbox'] = params.credentials.identifier + '@' + params.domain;
+            send(buildBody('ews-get-folder', args));
             return 'ok'; // need to implement the test
         default:
-            execute(command);
+            return send(buildBody(command, args));
     }
   type: javascript
   commands:
@@ -102,6 +166,9 @@ script:
     - name: target-mailbox
       required: true
       description: The user email address
+    - name: version
+      description: Exchange version (by default 2010, change to 2013 if using 2013).
+        This can also be set in the settings/integrations page
     outputs:
     - contextPath: ews.folders
       description: Array of folders
