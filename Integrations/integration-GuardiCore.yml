@@ -41,7 +41,7 @@ script:
         'guardicore-get-incident-pcap': 'honeypots/%honeypotId%/files/%fileId%',
         'guardicore-get-incident-attachments': 'honeypots/%honeypotId%/files/%fileId%',
 
-        'guardicore-show-endpoint': 'assets/%hostId%',
+        'guardicore-show-endpoint': 'assets/%host_id%',
         'guardicore-search-endpoint': 'assets',
 
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
@@ -50,7 +50,6 @@ script:
         'guardicore-misconfigurations': 'connections/stats/network-misconfigurations',
 
         'guardicore-search-network-log': 'network-events',
-        'guardicore-search-reputation-log': 'reputation-log',
     };
 
     var methodDictionary = {
@@ -71,8 +70,7 @@ script:
         'guardicore-dns-requests': 'GET',
         'guardicore-misconfigurations': 'GET',
 
-        'guardicore-search-network-log': 'GET',
-        'guardicore-search-reputation-log': 'GET'
+        'guardicore-search-network-log': 'GET'
     };
 
 
@@ -91,6 +89,10 @@ script:
             return output.join('<br>');
         }}
     ];
+
+    var parseNetworkLogTarget = function(target) {
+        return '';
+    }
 
     // Used for direct parsing/formatting.
     // In case several inputs are needed for a single output, it will be done in the specific parsing function.
@@ -177,37 +179,23 @@ script:
                 return convertTimestampToString(timestamp);
             }},
             {from: 'requested_host_name', to: 'Requested Hostname'}
+        ],
+        'guardicore-search-network-log': [
+            {from: '_cls', to: 'Class'},
+            {from: '_id', to: 'ID'},
+            {from: 'action', to: 'Action'},
+            {from: 'description', to: 'Description'},
+            {from: 'destination_ip', to: 'Destination IP'},
+            {from: 'destination_mac', to: 'Destination MAC'},
+            {from: 'destination_port', to: 'Destination Port'},
+            {from: 'processed_time', to: 'Processed Time'},
+            {from: 'received_time', to: 'Received Time'},
+            {from: 'source_ip', to: 'Source IP'},
+            {from: 'source_mac', to: 'Source MAC'},
+            {from: 'source_port', to: 'Source Port'}
         ]
     };
 
-    // in case the humanReadable or the context has to be set in a special way, the relevant information is taken from here
-    var DATA_DOMAINS = [{
-        from: 'clients', to: 'Clients', parser: function(clients) {
-            contextData = [];
-            for (var i = 0; i < clients.length; i++) {
-                contextData.push({
-                    displayName: clients[i].vm.display_name,
-                    name: clients[i].vm.name,
-                    ip: clients[i].ip,
-                    id: clients[i].vm.id,
-                    domain: clients[i].vm.domain
-                });
-            }
-
-            return contextData;
-        }
-    }];
-
-    var dataDictionary = {
-        'guardicore-uncommon-domains': DATA_DOMAINS,
-        'guardicore-unresolved-domains': DATA_DOMAINS,
-    };
-
-    /**
-       * returns a function that transform object from some structure to other
-       * @param {Array} fields - array of {from: String, to: String} - to transform by
-       * @returns {Function} array from the original string-list
-    */
     var mapObjFunction = function(mapFields) {
         return function(obj) {
             var res = {};
@@ -271,21 +259,6 @@ script:
 
     IOCS_NON_VALUE_KEYS = ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'];
     var parseGetIncidentIOCs = function(command, response) {
-        // // for debugging
-        // responseInstance = {
-        //     '_cls': 'IoC.NetworkIoc.NetworkVmIoc',
-        //     '_id': 'a793d5c4-1bb7-48ea-abc5-3f76eac0a184',
-        //     'creation_time': 1481624513501,
-        //     'doc_version': 1,
-        //     'first_seen': 1482233112776,
-        //     'last_seen': 1491469233058,
-        //     'password': 12345678,
-        //     'username': 'root',
-        //     'vm_name': 'SuperStrong Computer',
-        //     'ip': '10.0.0.5'
-        // };
-        // response = [responseInstance, responseInstance];
-
         var outputs = [];
         var contexts = [];
         for (var i = 0; i < response.length; i++) {
@@ -311,7 +284,6 @@ script:
             var contextData = convertKeysToPascalCase(output);
 
             // add endpoint
-            console.log(response[i]['_cls']);
             if (response[i]['_cls'] == 'IoC.NetworkIoc.NetworkVmIoc') {
                 contextData.Endpoint = {
                     Hostname: response[i]['vm_name']
@@ -320,7 +292,6 @@ script:
             }
 
             if (valueList.length > 0) {
-                console.log(JSON.stringify(values));
                 contextData.Values = values;
             }
 
@@ -382,7 +353,7 @@ script:
         }
 
         var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tblToMd('GuardiCore Incident Events ', outputs);
+        entry.HumanReadable = tblToMd('GuardiCore Incident Events', outputs);
         entry.EntryContext['GuardiCore.IncidentEvents'] = contexts;
 
         return entry;
@@ -392,9 +363,7 @@ script:
         return '{0} - {1} - {2}'.format(displayName, ip, id);
     }
 
-
     var parseDomainClients = function(clients) {
-        // from: 'clients', to: 'Clients', parser: function(clients) {
         var contextData = [];
         for (var i = 0; i < clients.length; i++) {
             contextData.push({
@@ -415,8 +384,7 @@ script:
         var endpoints = [];
         for (var i = 0; i < response.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(response[i]);
-            // var contextData = mapObjFunction(dataDictionary[command])(response[i]);
-            var contextData = {'Clients': parseDomainClients(response.clients)};
+            var contextData = {'Clients': parseDomainClients(response[i].clients)};
 
             outputs.push(output);
 
@@ -472,7 +440,6 @@ script:
             var sources = [];
             for (var j = 0; j < response[i].source.length; j++) {
                 var currentSource = response[i].source[j];
-                console.log('currentsource = ' + JSON.stringify(currentSource));
                 if (currentSource && currentSource.vm) {
                     var sourceStr = currentSource.vm.display_name + ' (' + currentSource.ip + ') - ' + currentSource.count.toString();
                 } else {
@@ -500,7 +467,6 @@ script:
         var outputs = [];
         var contexts = [];
         for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
-            console.log(i);
             var output = mapObjFunction(outputsDictionary[command])(objects[i]);
             var context = convertKeysToPascalCase(output);
 
@@ -599,13 +565,27 @@ script:
         for (var events = dq(response, 'events'), i = 0; i < events.length; i++) {
             if (events[i].file_id) {
                 var fileData = {'fileId': events[i].file_id, 'path': events[i].path};
-                console.log('File id at ' + i);
                 attachmentsInfo.filesData.push(fileData);
             }
         }
 
-        console.log(JSON.stringify(attachmentsInfo));
         return attachmentsInfo;
+    }
+
+    var parseSearchNetworkLog = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Network Log Results', outputs);
+        entry.EntryContext = {'GuardiCore.NetworkLog': contexts};
+
+        return entry;
     }
 
     var entriesFromResponse = function(command, response, token) {
@@ -705,43 +685,51 @@ script:
                 entry = [];
                 var internalCommand = 'guardicore-show-endpoint';
                 for (var i = 0; i < hostIds.length; i++) {
-                    args.hostId = hostIds[i];
+                    args.host_id = hostIds[i];
                     var result = sendRequest(
                         methodDictionary[internalCommand],
                         replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
                         token,
-                        args
+                        args,
+                        false,
+                        true
                     );
+                    var currentEntry;
+                    try {
+                        currentEntry = entriesFromResponse(internalCommand, result, token);
+                    } catch (err) {
+                        currentEntry = 'Failed parsing host ID: ' + hostIds[i];
+                    }
 
-                    var currentEntry = entriesFromResponse(internalCommand, result, token);
                     entry.push(currentEntry);
                 }
 
                 return entry;
 
+            case 'guardicore-search-network-log':
+                entry = parseSearchNetworkLog(command, response);
+                break;
+
             default:
-                console.log('default case');
-                console.log('response = ' + JSON.stringify(response));
-                //throw 'GuardiCore: Unknown command.';
-                entry = buildEmptyEntryContext();
-                entry.Contents = response;
-                // entry.HumanReadable = response;
+                throw 'Unknown command';
         }
 
         return entry;
     }
 
-    var sendRequest = function(method, url, token, args, isRawOutput) {
+    var sendRequest = function(method, url, token, args, isRawOutput, shouldIgnoreUrlArgs) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers.Authorization = ['Bearer ' + token];
         }
 
-        console.log('Send: ' + (server + url + (method === 'GET' ? encodeToURLQuery(args) : '')));
-
         var body = method !== 'GET' ? JSON.stringify(args) : '';
+        var shouldIgnoreArgs = (shouldIgnoreUrlArgs !== undefined) && shouldIgnoreUrlArgs;
+        var urlExtra = ((method === 'GET') && !shouldIgnoreArgs) ? encodeToURLQuery(args) : '';
+
+        console.log('Sending request: ' + server + url + urlExtra);
         var res = http(
-            server + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
+            server + url + urlExtra,
             {
                 Method: method,
                 Headers: headers,
@@ -760,7 +748,6 @@ script:
         }
 
         if (isRawOutput) {
-            console.log('Returning raw output');
             return res.Body;
         } else {
             return JSON.parse(res.Body);
@@ -787,24 +774,12 @@ script:
             break
     }
 
-    console.log('command = ' + command);
-    console.log('commandUrlKey = ' + commandUrlKey);
-
-    // try {
-        var result = sendRequest(
-            methodDictionary[command],
-            replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
-            token,
-            args
-        );
-    // } catch (err) {
-        // if (err && err.indexOf('Incident not found') != -1) {
-        //     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-        //     return 'No such incident.';
-        // } else {
-    //         throw err;
-    //     }
-    // }
+    var result = sendRequest(
+        methodDictionary[command],
+        replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
+        token,
+        args
+    );
 
     var entries = entriesFromResponse(command, result, token);
     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
@@ -821,16 +796,16 @@ script:
       - High
       - Low
       - Medium
-      description: Severity of the incidents
+      description: Filter by severity.
     - name: tag
-      description: Tag to filter
+      description: Filter by tag.
     - name: incident_type
-      description: Type of incidents (deception, lateral movement etc.)
+      description: Filter by type of incidents, e.g. Deception, Lateral Movement.
     - name: source
-      description: Filter by source (hostname or IP address)
+      description: Filter by source (hostname or IP address).
     - name: destination
-      description: Filter by destination (hostname or IP address)
-    description: Get incidents with filters.
+      description: Filter by destination (hostname or IP address).
+    description: Display information about incidents (with filters).
   - name: guardicore-uncommon-domains
     arguments: []
     description: Display the uncommon domains.
@@ -839,9 +814,9 @@ script:
     description: Display the unresolved domains.
   - name: guardicore-show-endpoint
     arguments:
-    - name: hostId
+    - name: host_id
       required: true
-      description: The host ID (if known).
+      description: The host ID.
     description: Display information about the endpoint given its ID.
   - name: guardicore-dns-requests
     arguments: []
@@ -862,14 +837,14 @@ script:
       required: true
       default: true
       description: The ID of the incident.
-    description: Get information about the given incident.
+    description: Display information about the given incident.
   - name: guardicore-get-incident-iocs
     arguments:
     - name: id
       required: true
       default: true
       description: The ID of the incident.
-    description: Get IOC (Indicator of Compromise) for the given incident.
+    description: Display the IOCs (Indicators of Compromise) of the given incident.
   - name: guardicore-get-incident-events
     arguments:
     - name: id
@@ -881,38 +856,22 @@ script:
     - name: id
       required: true
       description: The ID of the incident.
-    description: Retrieves the PCAP file attached to the given incident.
+    description: Retrieve the PCAP file attached to the given incident.
   - name: guardicore-get-incident-attachments
     arguments:
     - name: id
       required: true
       description: The ID of the incident.
-    description: Retrieves the files attached to the given incidents.
+    description: Retrieve the files attached to the given incidents.
   - name: guardicore-search-network-log
     arguments:
     - name: source
-      description: Source hostname or IP address.
+      description: Filter by source (hostname or IP address).
     - name: destination
-      description: Destination hostname or IP address.
+      description: Filter by destination (hostname or IP address).
     - name: port
-      description: Port filter.
+      description: Filter by port number.
     - name: uuid
-      description: Event ID to filter by.
-    description: Searches within the network log.
-  - name: guardicore-search-reputation-log
-    arguments:
-    - name: source
-      description: Source hostname or IP address
-    - name: request_content
-      description: Filter by request content.
-    - name: response
-      description: Filter by verdict.
-    - name: origin
-      auto: PREDEFINED
-      predefined:
-      - ReputationServerCache
-      - LocalCache
-      - ReputationServer
-      description: Filter by response type.
-    description: Searches within the reputation log.
+      description: Filter by Event ID.
+    description: Searches within the network log (with filters).
 hidden: false
