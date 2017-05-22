@@ -11,8 +11,12 @@ script: |-
   var reg = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
-      if (whitelist.indexOf(found[0]) < 0) {
-          matches[found[0]] = true;
+      matches[found[0]] = true;
+      for (var i = 0 ; i < whitelist.length; i++) {
+          if (isIPInSubnet(found[0],whitelist[i])) {
+              delete matches[found[0]];
+              break;
+          }
       }
   }
   var ec = {IP: []};
