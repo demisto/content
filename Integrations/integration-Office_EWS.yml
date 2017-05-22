@@ -71,15 +71,24 @@ script:
     function execute(command) {
         switch (command) {
             case 'ews-get-folder':
-
+                break;
+            case 'ews-delete-items':
+                break;
+            case 'ews-get-items':
+                break;
+            case 'ews-delete-attachments':
+                break;
+            case 'ews-search-mailbox':
+                break;
+            case 'ews-get-contacts':
+                break;
         }
     }
 
     switch (command) {
-        // This is the call made when pressing the integration test button.
         case 'test-module':
             execute('ews-get-folder');
-            return 'ok';
+            return 'ok'; // need to implement the test
         default:
             execute(command);
     }
