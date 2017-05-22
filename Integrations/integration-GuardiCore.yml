@@ -41,18 +41,14 @@ script:
         'guardicore-get-incident-pcap': 'honeypots/%honeypotId%/files/%fileId%',
         'guardicore-get-incident-attachments': 'honeypots/%honeypotId%/files/%fileId%',
 
+        'guardicore-show-endpoint': 'assets/%hostId%',
+        'guardicore-search-endpoint': 'assets',
+
         'guardicore-uncommon-domains': 'connections/stats/dns-stats',
         'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
-
-        'guardicore-show-endpoint': 'assets/%hostId%',
-        'guardicore-search-endpoint-ip-address': 'assets?ip_address=%ipAddress%',
-        'guardicore-search-endpoint-hostname': 'assets?name=%hostname%',
-
-        'guardicore-show-endpoint-actions': 'assets/%hostId%/actions',
         'guardicore-dns-requests': 'labs/dns-requests',
-        'guardicore-search-endpoint': 'assets',
-        'guardicore-get-agents': 'agents',
         'guardicore-misconfigurations': 'connections/stats/network-misconfigurations',
+
         'guardicore-search-network-log': 'network-events',
         'guardicore-search-reputation-log': 'reputation-log',
     };
@@ -62,19 +58,22 @@ script:
         logout: 'POST',
         'guardicore-get-incidents': 'GET',
         'guardicore-get-incident': 'GET',
+        'guardicore-get-incident-iocs': 'GET',
+        'guardicore-get-incident-events': 'GET',
+        'guardicore-get-incident-pcap': 'GET',
+        'guardicore-get-incident-attachments': 'GET',
+
+        'guardicore-show-endpoint': 'GET',
+        'guardicore-search-endpoint': 'GET',
+
         'guardicore-uncommon-domains' : 'GET',
         'guardicore-unresolved-domains': 'GET',
-        'guardicore-show-endpoint': 'GET',
         'guardicore-dns-requests': 'GET',
-        'guardicore-show-endpoint-actions': 'GET',
-        'guardicore-search-endpoint': 'GET',
-        'guardicore-get-agents': 'GET',
         'guardicore-misconfigurations': 'GET',
-        'guardicore-get-incident-iocs': 'GET',
+
         'guardicore-search-network-log': 'GET',
         'guardicore-search-reputation-log': 'GET'
     };
-
 
 
     // converts raw data to readable strings, for both the war room and the context
@@ -202,9 +201,6 @@ script:
     var dataDictionary = {
         'guardicore-uncommon-domains': DATA_DOMAINS,
         'guardicore-unresolved-domains': DATA_DOMAINS,
-        'guardicore-get-incident-iocs': {
-            nonValueKeys: ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'],
-        },
     };
 
     /**
@@ -273,6 +269,7 @@ script:
         return entry;
     }
 
+    IOCS_NON_VALUE_KEYS = ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'];
     var parseGetIncidentIOCs = function(command, response) {
         // // for debugging
         // responseInstance = {
@@ -297,7 +294,7 @@ script:
             // collect data for the Values field
             var values = {};
             for (var responseKey in response[i]) {
-                if (dataDictionary[command].nonValueKeys.indexOf(responseKey) == -1) {
+                if (IOCS_NON_VALUE_KEYS.indexOf(responseKey) == -1) {
                     values[responseKey] = response[i][responseKey];
                 }
             }
@@ -395,13 +392,32 @@ script:
         return '{0} - {1} - {2}'.format(displayName, ip, id);
     }
 
+
+    var parseDomainClients = function(clients) {
+        // from: 'clients', to: 'Clients', parser: function(clients) {
+        var contextData = [];
+        for (var i = 0; i < clients.length; i++) {
+            contextData.push({
+                displayName: clients[i].vm.display_name,
+                name: clients[i].vm.name,
+                ip: clients[i].ip,
+                id: clients[i].vm.id,
+                domain: clients[i].vm.domain
+            });
+        }
+
+        return contextData;
+    }
+
     var parseDomains = function(command, response) {
         var outputs = [];
         var domains = [];
         var endpoints = [];
         for (var i = 0; i < response.length; i++) {
             var output = mapObjFunction(outputsDictionary[command])(response[i]);
-            var contextData = mapObjFunction(dataDictionary[command])(response[i]);
+            // var contextData = mapObjFunction(dataDictionary[command])(response[i]);
+            var contextData = {'Clients': parseDomainClients(response.clients)};
+
             outputs.push(output);
 
             var contextClientsData = [];
@@ -677,6 +693,10 @@ script:
                 break;
 
             case 'guardicore-search-endpoint':
+                if (!args.ip_address && !args.name) {
+                    throw 'IP address or hostname must be provided.'
+                }
+
                 hostIds = parseHostIds(response);
                 if (!hostIds || (hostIds.length === 0)) {
                     return 'Host was not found.'
@@ -748,7 +768,7 @@ script:
     }
 
     // workaround - this parameter should not be visible in the BYOI integration code
-    // delete(args['raw-response']);
+    delete(args['raw-response']);
 
     var token =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
     var commandUrlKey;
@@ -762,16 +782,6 @@ script:
             commandUrlKey = 'guardicore-get-incident';
             break;
 
-        case 'guardicore-search-endpoint':
-            if (args.ipAddress) {
-                commandUrlKey = 'guardicore-search-endpoint-ip-address';
-            } else if (args.hostname) {
-                commandUrlKey = 'guardicore-search-endpoint-hostname';
-            } else {
-                throw 'IP address or hostname must be provided.'
-            }
-            break;
-
         default:
             commandUrlKey = command;
             break
@@ -780,21 +790,21 @@ script:
     console.log('command = ' + command);
     console.log('commandUrlKey = ' + commandUrlKey);
 
-    try {
+    // try {
         var result = sendRequest(
             methodDictionary[command],
             replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
             token,
             args
         );
-    } catch (err) {
-        if (err && err.indexOf('Incident not found') != -1) {
-            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-            return 'No such incident.';
-        } else {
-            throw err;
-        }
-    }
+    // } catch (err) {
+        // if (err && err.indexOf('Incident not found') != -1) {
+        //     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+        //     return 'No such incident.';
+        // } else {
+    //         throw err;
+    //     }
+    // }
 
     var entries = entriesFromResponse(command, result, token);
     sendRequest(methodDictionary.logout, urlDictionary.logout, token);
@@ -838,9 +848,9 @@ script:
     description: Display the DNS requests.
   - name: guardicore-search-endpoint
     arguments:
-    - name: ipAddress
+    - name: ip_address
       description: The IP address of the endpoint.
-    - name: hostname
+    - name: name
       description: The hostname of the endpoint.
     description: Display information about the endpoint by its hostname or IP address.
   - name: guardicore-misconfigurations
