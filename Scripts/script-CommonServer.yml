@@ -1024,7 +1024,7 @@ script: |-
           return (IPnumber(ip) & IPmask(parts[1])) == IPnumber(parts[0]);
       }
       return false;
-  };
+  }
 type: javascript
 tags:
 - infra
