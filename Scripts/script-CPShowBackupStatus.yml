@@ -1,6 +1,6 @@
 commonfields:
-  id: 55f24028-c703-47be-809b-b0774d927b64
-  version: 17
+  id: CPShowBackupStatus
+  version: -1
 name: CPShowBackupStatus
 script: |
   from re import escape
