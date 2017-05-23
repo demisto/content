@@ -2,7 +2,6 @@ commonfields:
   id: CPBlockIP
   version: -1
 name: CPBlockIP
-deprecated: true
 script: |-
   from time import sleep
   def runCheck(cmd, args):
@@ -79,6 +78,7 @@ tags:
 - response
 comment: Block one or more IP addresses using Checkpoint Firewall.
 system: true
+deprecated: true
 args:
 - name: ip
   required: true
