@@ -355,22 +355,22 @@ script:
         case 'test-module':
             logout();
             return 'ok';
-        case 'CheckpointFWBlockIP':
+        case 'checkpoint-block-ip':
             answer = block_ip();
             break;
-        case 'CheckpointFWShowHosts':
+        case 'checkpoint-show-hosts':
             answer = show_hosts();
             break;
-        case 'CheckpointFWTaskStatus':
+        case 'checkpoint-task-status':
             answer = task_status();
             break;
-        case 'CheckpointFWShowAccessRulebase':
+        case 'checkpoint-show-access-rule-base':
             answer = show_access_rule_base();
             break;
-        case 'CheckpointFWSetRule':
+        case 'checkpoint-set-rule':
             answer = set_rule();
             break;
-        case 'CheckpointFWDeleteRule':
+        case 'checkpoint-delete-rule':
             answer = delete_rule();
             break;
         // case 'CheckpointFWBackupStatus':     - script
@@ -383,7 +383,7 @@ script:
     return answer;
   type: javascript
   commands:
-  - name: CheckpointFWShowAccessRulebase
+  - name: checkpoint-show-access-rule-base
     arguments:
     - name: name
       required: true
@@ -450,7 +450,7 @@ script:
     - contextPath: CheckpointFWRule.Hits.Value
       description: Value of hits.
     description: Show items in an access rulebase configured in Checkpoint FW.
-  - name: CheckpointFWSetRule
+  - name: checkpoint-set-rule
     arguments:
     - name: uid
       description: Object unique identifier.
@@ -524,7 +524,7 @@ script:
       description: Value of hits.
     description: Set attributes of an access rule object configured in Checkpoint
       FW.
-  - name: CheckpointFWTaskStatus
+  - name: checkpoint-task-status
     arguments:
     - name: task_id
       required: true
@@ -584,7 +584,7 @@ script:
     - contextPath: CheckpointFWTask.TaskName
       description: Task name
     description: Shows status of a checkpoint task by task uuid.
-  - name: CheckpointFWShowHosts
+  - name: checkpoint-show-hosts
     arguments:
     - name: limit
       description: No more than that many results will be returned.
@@ -612,7 +612,7 @@ script:
     - contextPath: Endpoint.Domain.Type
       description: Type of the object.
     description: Show host objects configured in Checkpoint FW.
-  - name: CheckpointFWBlockIP
+  - name: checkpoint-block-ip
     arguments:
     - name: ip
       required: true
@@ -695,7 +695,7 @@ script:
     arguments: []
     description: Use Check Point's Management API (requires management server R80
       or later). Specifying 'command'=<API command> is mandatory
-  - name: CheckpointFWDeleteRule
+  - name: checkpoint-delete-rule
     arguments:
     - name: uid
       description: uid of the rule
