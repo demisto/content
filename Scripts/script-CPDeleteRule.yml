@@ -2,7 +2,6 @@ commonfields:
   id: CPDeleteRule
   version: -1
 name: CPDeleteRule
-deprecated: true
 script: |-
   dArgs = demisto.args()
   dArgs['command'] = 'delete-access-rule'
