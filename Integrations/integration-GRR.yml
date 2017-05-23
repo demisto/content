@@ -110,8 +110,7 @@ script:
     }
     var getHunts = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
-        if (jsonPath){raw = dq(raw,jsonPath);}
-        var output = parseJSON(raw);
+        var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
 
         if(!(output instanceof Array )){
             output = [output];
@@ -144,8 +143,7 @@ script:
 
     var getHunt = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
-        raw = dq(raw,jsonPath);
-        var output = parseJSON(raw);
+        var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
 
         if(!(output instanceof Array )){
             output = [output];
@@ -178,8 +176,7 @@ script:
 
     var getFlows = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
-        if (jsonPath){raw = dq(raw,jsonPath);}
-        var output = parseJSON(raw);
+        var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
         if(!(output instanceof Array )){
             output = [output];
         }
@@ -216,8 +213,7 @@ script:
 
     var getClients = function(method, url, queryName, body, jsonPath, title) {
         var raw = JSON.parse(sendRequest(method, url, queryName, body).slice(5));
-        if (jsonPath){raw = dq(raw,jsonPath);}
-        var output = parseJSON(raw);
+        var output = parseJSON(jsonPath ? dq(raw,jsonPath) : raw);
         if(!(output instanceof Array )){
             output = [output];
         }
