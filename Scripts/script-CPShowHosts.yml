@@ -18,6 +18,7 @@ tags:
 - checkpoint
 comment: Show host objects configured in Checkpoint FW.
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must:
