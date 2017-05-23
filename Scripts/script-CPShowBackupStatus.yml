@@ -2,6 +2,7 @@ commonfields:
   id: CPShowBackupStatus
   version: -1
 name: CPShowBackupStatus
+deprecated : true
 script: |
   from re import escape
   CLI_SHOW = 'show backup status'
