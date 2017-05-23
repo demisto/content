@@ -69,3 +69,7 @@ args:
   description: List of RemoteAccess instances of the checkpoint firewall appliances
     to back up
 scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s
