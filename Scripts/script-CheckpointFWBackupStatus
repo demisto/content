@@ -67,3 +67,7 @@ args:
 - name: waittimeout
   description: In seconds. If not provided, does not wait.
 scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s
