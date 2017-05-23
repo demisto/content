@@ -1,0 +1,854 @@
+commonfields:
+  id: GuardiCore
+  version: -1
+name: GuardiCore
+display: GuardiCore
+category: Authentication
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAB/CAYAAADM6CYtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpjMTg2MTBjNy03YjdmLTQ5Y2EtYmM4Ny0xYjQzODA0Yjc1MGMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NUNDMEU5QTNBMDZGMTFFNTg3ODA4QzRDNjgwMTQ2RjkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NUNDMEU5QTJBMDZGMTFFNTg3ODA4QzRDNjgwMTQ2RjkiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpmOGY4ZjE5OS1hNzU5LTQ2NTUtYWY0Zi1iYmQzMWM4MjFmNDUiIHN0UmVmOmRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDo3ZjBjZjQzMi1lMTAzLTExNzgtYWMz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
+description: Data center breach detection
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    var server = params.server.replace(/[\/]+$/, '') + '/api/v3.0/';
+
+    var urlDictionary = {
+        login: 'authenticate',
+        logout: 'logout',
+
+        'guardicore-get-incidents': 'incidents',
+        'guardicore-get-incident': 'incidents/%id%',
+        'guardicore-get-incident-iocs': 'incidents/%id%/iocs',
+        'guardicore-get-incident-events': 'incidents/%id%/events',
+        'guardicore-get-incident-pcap': 'honeypots/%honeypotId%/files/%fileId%',
+        'guardicore-get-incident-attachments': 'honeypots/%honeypotId%/files/%fileId%',
+
+        'guardicore-show-endpoint': 'assets/%host_id%',
+        'guardicore-search-endpoint': 'assets',
+
+        'guardicore-uncommon-domains': 'connections/stats/dns-stats',
+        'guardicore-unresolved-domains': 'connections/stats/missing-hosts',
+        'guardicore-dns-requests': 'labs/dns-requests',
+        'guardicore-misconfigurations': 'connections/stats/network-misconfigurations',
+
+        'guardicore-search-network-log': 'network-events',
+    };
+
+    var methodDictionary = {
+        login: 'POST',
+        logout: 'POST',
+        'guardicore-get-incidents': 'GET',
+        'guardicore-get-incident': 'GET',
+        'guardicore-get-incident-iocs': 'GET',
+        'guardicore-get-incident-events': 'GET',
+        'guardicore-get-incident-pcap': 'GET',
+        'guardicore-get-incident-attachments': 'GET',
+
+        'guardicore-show-endpoint': 'GET',
+        'guardicore-search-endpoint': 'GET',
+
+        'guardicore-uncommon-domains' : 'GET',
+        'guardicore-unresolved-domains': 'GET',
+        'guardicore-dns-requests': 'GET',
+        'guardicore-misconfigurations': 'GET',
+
+        'guardicore-search-network-log': 'GET'
+    };
+
+
+    // converts raw data to readable strings, for both the war room and the context
+    OUTPUT_DOMAINS = [
+        {from: 'domain', to: 'Domain'},
+        {from: 'count', to: 'Count'},
+        {from: 'clients_count', to: 'Clients Count'},
+        {from: 'clients', to: 'Clients', parser: function(clients) {
+            var output = [];
+            for (var i = 0; i < clients.length; i++) {
+                clientStr = buildClientStr(clients[i].vm.display_name, clients[i].ip, clients[i].vm.id)
+                output.push(clientStr);
+            }
+
+            return output.join('<br>');
+        }}
+    ];
+
+    // Used for direct parsing/formatting.
+    // In case several inputs are needed for a single output, it will be done in the specific parsing function.
+    var outputsDictionary = {
+        'guardicore-get-incident': [
+            {from: 'source_ip', to: 'Source IP'},
+            {from: 'source_port', to: 'Source Port'},
+            {from: 'destination_ip', to: 'Destination IP'},
+            {from: 'destination_port', to: 'Destination Port'},
+            {from: '_id', to: 'ID'},
+            {from: 'os', to: 'OS'},
+            {from: 'incident_type', to: 'Incident Type'},
+            {from: 'honeypot_id', to: 'Honeypot ID'},
+            {from: 'start_time', to: 'Start Time', parser: convertTimestampToString},
+            {from: 'end_time', to: 'End Time', parser: convertTimestampToString},
+            {from: 'closed_time', to: 'Closed Time', parser: convertTimestampToString},
+            {from: 'severity', to: 'Severity', parser: function(sev) {
+                if (sev <= 30) {
+                    return 'Low';
+                } else if (sev >= 50) {
+                    return 'High';
+                } else {
+                    return 'Medium';
+                }
+            }},
+            {from: 'incident_group', to: 'Incident Group', parser: function(ig) {
+                return ig[0].gname + ' ' + ig[0].gid;
+            }},
+            {from: 'concatenated_tags', to: 'Tags', parser: function(tags) {
+                var str = '';
+                for (var i = 0; i < tags.length; i++) {
+                    str += tags[i].display_name + ', ';
+                }
+
+                return str.replace(/, $/, '');
+            }}
+        ],
+        'guardicore-get-incident-iocs': [
+            {from: '_id', to: 'ID'},
+            {from: '_cls', to: 'Type'},
+            {from: 'creation_time', to: 'Creation Time', parser: convertTimestampToString},
+            {from: 'first_seen', to: 'First Seen', parser: convertTimestampToString},
+            {from: 'last_seen', to: 'Last Seen', parser: convertTimestampToString},
+        ],
+        'guardicore-uncommon-domains': OUTPUT_DOMAINS,
+        'guardicore-unresolved-domains': OUTPUT_DOMAINS,
+        'guardicore-show-endpoint': [
+            {from: '_id', to: 'ID'},
+            {from: 'ip_addresses', to: 'IP Addresses', parser: function(ipAddresses) {
+                return ipAddresses.join('<br>');
+            }},
+            {from: 'mac_addresses', to: 'MAC Addresses', parser: function(macAddresses) {
+                return macAddresses.join('<br>');
+            }},
+            {from: 'recent_domains', to: 'Recent Domains', parser: function(recentDomains) {
+                return recentDomains.join('<br>');
+            }},
+            {from: 'comments', to: 'Comments'},
+            {from: 'first_seen', to: 'First Seen', parser: convertTimestampToString},
+            {from: 'last_seen', to: 'Last Seen', parser: convertTimestampToString},
+            {from: 'last_summary_update', to: 'Last Summary Update', parser: convertTimestampToString},
+            {from: 'risk_title', to: 'Risk Level'},
+            {from: 'status', to: 'Status'},
+        ],
+        'guardicore-misconfigurations': [
+            {from: 'port_count', to: 'Port Count'},
+            {from: 'flow_count', to: 'Flow Count'}
+        ],
+        'guardicore-dns-requests': [
+            {from: 'client_ip', to: 'Client IP'},
+            {from: 'packet_arrival_time', to: 'Packet Arrival Time', parser: convertTimestampToString},
+            {from: 'requested_host_name', to: 'Requested Hostname'}
+        ],
+        'guardicore-search-network-log': [
+            {from: '_cls', to: 'Class'},
+            {from: '_id', to: 'ID'},
+            {from: 'action', to: 'Action'},
+            {from: 'description', to: 'Description'},
+            {from: 'destination_ip', to: 'Destination IP'},
+            {from: 'destination_mac', to: 'Destination MAC'},
+            {from: 'destination_port', to: 'Destination Port'},
+            {from: 'processed_time', to: 'Processed Time'},
+            {from: 'received_time', to: 'Received Time'},
+            {from: 'source_ip', to: 'Source IP'},
+            {from: 'source_mac', to: 'Source MAC'},
+            {from: 'source_port', to: 'Source Port'}
+        ]
+    };
+
+    var mapObjFunction = function(mapFields) {
+        return function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+                if (f.parser) {
+                    res[f.to] = f.parser(dq(obj, f.from)) || null;
+                } else {
+                    res[f.to] = dq(obj, f.from) || null;
+                }
+            });
+
+            return res;
+        }
+    }
+
+    var convertKeysToPascalCase = function(dict) {
+        var pascalDict = {};
+        for (var key in dict) {
+            var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+            pascalDict[pascalCaseKey] = dict[key];
+        }
+
+        return pascalDict;
+    }
+
+    var doesResultExist = function(result) {
+        return (
+            result &&
+            (!(result instanceof Array) || result.length) &&
+            (!(result instanceof Object) || Object.keys(result).length)
+        );
+    }
+
+    var formatIncidentDescription = function(unformattedDescription) {
+        var description = '';
+        for (var j in unformattedDescription) {
+            description += unformattedDescription[j].value;
+        }
+
+        return description;
+    }
+
+    var buildEmptyEntryContext = function() {
+        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
+    }
+
+    var parseGetIncident = function(command, response) {
+        var output = mapObjFunction(outputsDictionary[command])(response);
+        output.Description = formatIncidentDescription(response.description);
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = objToMd(output);
+        entry.EntryContext['GuardiCore.Incidents'] = convertKeysToPascalCase(output);
+
+        return entry;
+    }
+
+    IOCS_NON_VALUE_KEYS = ['_id', '_cls', 'creation_time', 'first_seen', 'last_seen', 'doc_version'];
+    var parseGetIncidentIOCs = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+
+            // collect data for the Values field
+            var values = {};
+            for (var responseKey in response[i]) {
+                if (IOCS_NON_VALUE_KEYS.indexOf(responseKey) == -1) {
+                    values[responseKey] = response[i][responseKey];
+                }
+            }
+
+            var valueList = [];
+            for (var valueKey in values) {
+                valueList.push(valueKey + ': ' + values[valueKey]);
+            }
+
+            if (valueList.length > 0) {
+                output.Values = valueList.join('<br>');
+            }
+
+            var contextData = convertKeysToPascalCase(output);
+
+            // add endpoint
+            if (response[i]['_cls'] == 'IoC.NetworkIoc.NetworkVmIoc') {
+                contextData.Endpoint = {
+                    Hostname: response[i]['vm_name']
+                    IPAddress: response[i]['ip']
+                };
+            }
+
+            if (valueList.length > 0) {
+                contextData.Values = values;
+            }
+
+            outputs.push(output);
+            contexts.push(contextData);
+        }
+
+        if (outputs.length === 0) {
+            return 'No IOCs for this incident.';
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore IOCs', outputs);
+        entry.EntryContext['GuardiCore.IOCs'] = contexts;
+
+        return entry;
+    }
+
+    var parseGetIncidents = function(command, response) {
+        var internalCommand = 'guardicore-get-incident';
+        var outputs = [];
+        var contexts = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var output = mapObjFunction(outputsDictionary[internalCommand])(objects[i]);
+            output.Description = formatIncidentDescription(objects[i].description);
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        if (outputs.length === 0) {
+            return 'No matching incidents were found.';
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
+        entry.EntryContext['GuardiCore.Incidents'] = contexts;
+
+        return entry;
+    }
+
+    var parseGetIncidentEvents = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var events = dq(response, 'events'), i = 0; i < events.length; i++) {
+            var output = {'Class': events[i]._cls, 'Data': ''};
+            var context = {'Class' : events[i]._cls, 'Data': events[i]};
+
+            var eventData = [];
+            for (var key in events[i]) {
+                eventData.push(key + ': ' + JSON.stringify(events[i][key]));
+            }
+
+            if (eventData.length > 0) {
+                output.Data = eventData.join('<br>');
+            }
+
+            outputs.push(output);
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Incident Events', outputs);
+        entry.EntryContext['GuardiCore.IncidentEvents'] = contexts;
+
+        return entry;
+    }
+
+    var buildClientStr = function(displayName, ip, id) {
+        return '{0} - {1} - {2}'.format(displayName, ip, id);
+    }
+
+    var parseDomainClients = function(clients) {
+        var contextData = [];
+        for (var i = 0; i < clients.length; i++) {
+            contextData.push({
+                displayName: clients[i].vm.display_name,
+                name: clients[i].vm.name,
+                ip: clients[i].ip,
+                id: clients[i].vm.id,
+                domain: clients[i].vm.domain
+            });
+        }
+
+        return contextData;
+    }
+
+    var parseDomains = function(command, response) {
+        var outputs = [];
+        var domains = [];
+        var endpoints = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+            var contextData = {'Clients': parseDomainClients(response[i].clients)};
+            outputs.push(output);
+
+            var contextClientsData = [];
+            for (var j = 0; j < contextData.Clients.length; j++) {
+                endpoints.push({
+                    Hostname: contextData.Clients[j].name,
+                    IP: contextData.Clients[j].ip,
+                    Domain: contextData.Clients[j].domain
+                });
+
+                contextClientsData.push({
+                    DisplayName: contextData.Clients[j].displayName,
+                    IP: contextData.Clients[j].ip,
+                    ID: contextData.Clients[j].id,
+                });
+            }
+
+            domains.push({
+                Name: output.Domain,
+                Count: output.Count,
+                ClientsCount: output['Clients Count'],
+                Clients: contextClientsData
+            });
+        }
+
+        var domainType = (command == 'guardicore-uncommon-domains') ? 'Uncommon' : 'Unresolved';
+        var tableTitle = 'GuardiCore {0} Domains'.format(domainType);
+        var entryContextDomainType = 'GuardiCore.Domain.' + domainType;
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd(tableTitle, outputs);
+        entry.EntryContext = {'GuardiCore.Endpoint.Suspicious': endpoints};
+        entry.EntryContext[entryContextDomainType] = domains;
+
+        return entry;
+    }
+
+    var parseMisconfigurations = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0; i < response.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(response[i]);
+            if (response[i].destination && response[i].destination[0] && response[i].destination[0].vm) {
+                destination = response[i].destination[0].vm.display_name + ' - ' + response[i].destination[0].ip;
+            } else {
+                destination = 'undefined';
+            }
+
+            output.Destination = destination;
+            output.Port = response[i].port + ' - ' + response[i].port_name;
+
+            var sources = [];
+            for (var j = 0; j < response[i].source.length; j++) {
+                var currentSource = response[i].source[j];
+                if (currentSource && currentSource.vm) {
+                    var sourceStr = currentSource.vm.display_name + ' (' + currentSource.ip + ') - ' + currentSource.count.toString();
+                } else {
+                    var sourceStr = 'undefined';
+                }
+
+                sources.push(sourceStr);
+            }
+
+            output.Sources = sources.join('<br>');
+            var context = convertKeysToPascalCase(output);
+            context.Sources = sources;
+            outputs.push(output);
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Misconfigurations', outputs);
+        entry.EntryContext = {'GuardiCore.Misconfigurations': contexts};
+
+        return entry;
+    }
+
+    var parseDnsRequests = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+            var context = convertKeysToPascalCase(output);
+
+            var answer = {};
+            var answerDocumentsStr = '';
+            if (objects[i].answer_infos[0]) {
+                answer.ResponderIp = objects[i].answer_infos[0].responder_ip;
+                var answerDocuments = [];
+                objects[i].answer_infos[0].answer_documents.forEach(function(ans) {
+                    if (ans.answer_type) {
+                        answerDocuments.push({'AnswerType': ans.answer_type, 'Hostname': ans.host_name});
+                        answerDocumentsStr += 'Type: ' + ans.answer_type + ', Hostname: ' + ans.host_name + '<br>';
+                    }
+                });
+
+                answer.AnswerDocuments = answerDocuments;
+            }
+
+            output.Answers = 'Responder IP: ' + answer.ResponderIp;
+            if (answerDocumentsStr.length > 0) {
+                output.Answers += '<br>Answers:<br>' + answerDocumentsStr;
+            }
+            outputs.push(output)
+
+            context.Answer = answer;
+            contexts.push(context);
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore DNS Requests', outputs);
+        entry.EntryContext = {'GuardiCore.DNSRequests': contexts};
+
+        return entry;
+    }
+
+    RELEVANT_SUMMARY_KEYS = [
+        'blocked_connections_count',
+        'file_detected_incidents_count',
+        'file_detection_rules_count',
+        'file_quarantined_count',
+        'honeypot_incidents_count',
+        'network_rules_count',
+        'network_scan_incidents_count',
+        'total_incidents_count'
+    ]
+    var parseShowEndpoint = function(command, response) {
+        var output = mapObjFunction(outputsDictionary[command])(response);
+        var context = {
+            'Hostname': response.full_name,
+            'IP': (response.ip_addresses.length > 1) ? response.ip_addresses : response.ip_addresses[0]
+        };
+
+        var entries = [];
+        var endpointDetailsEntry = buildEmptyEntryContext();
+        endpointDetailsEntry.HumanReadable = tblToMd('GuardiCore Details for Endpoint ' + response.full_name, output);
+        endpointDetailsEntry.EntryContext = {'GuardiCore.Endpoint': context};
+        entries.push(endpointDetailsEntry)
+
+        if (response.unhandled_recommendations && (response.unhandled_recommendations.length > 0)) {
+            var recommendationsEntry = buildEmptyEntryContext();
+            recommendationsEntry.HumanReadable = tblToMd('GuardiCore Details for Endpoint ' + response.full_name, response.unhandled_recommendations);
+            entries.push(recommendationsEntry);
+        }
+
+        var summary = [];
+        for (var key in response.summary) {
+            if (RELEVANT_SUMMARY_KEYS.indexOf(key) != -1) {
+                summary.push({'Key': key, 'Value': response.summary[key]});
+            }
+        }
+        if (summary.length > 0) {
+            var summaryEntry = buildEmptyEntryContext();
+            summaryEntry.HumanReadable = tblToMd('GuardiCore Summary for Endpoint ' + response.full_name, summary);
+            entries.push(summaryEntry);
+        }
+
+        return entries;
+    }
+
+    var parseHostIds = function(response) {
+        var hostIds = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            hostIds.push(objects[i]._id);
+        }
+
+        return hostIds;
+    }
+
+    var parseIncidentPcap = function(response) {
+        return {'honeypotId': response.honeypot_id, 'fileId': response.pcap.file_id};
+    }
+
+    var parseIncidentAttachments = function(response) {
+        var attachmentsInfo = {'honeypotId': response.honeypot_id, 'filesData': []};
+        for (var events = dq(response, 'events'), i = 0; i < events.length; i++) {
+            if (events[i].file_id) {
+                var fileData = {'fileId': events[i].file_id, 'path': events[i].path};
+                attachmentsInfo.filesData.push(fileData);
+            }
+        }
+
+        return attachmentsInfo;
+    }
+
+    var parseSearchNetworkLog = function(command, response) {
+        var outputs = [];
+        var contexts = [];
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var output = mapObjFunction(outputsDictionary[command])(objects[i]);
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('GuardiCore Network Log Results', outputs);
+        entry.EntryContext = {'GuardiCore.NetworkLog': contexts};
+
+        return entry;
+    }
+
+    var entriesFromResponse = function(command, response, token) {
+        var entry;
+        switch (command) {
+            case 'guardicore-get-incidents':
+                entry = parseGetIncidents(command, response);
+                break;
+
+            case 'guardicore-get-incident':
+                entry = parseGetIncident(command, response);
+                break;
+
+            case 'guardicore-get-incident-iocs':
+                entry = parseGetIncidentIOCs(command, response);
+                break;
+
+            case 'guardicore-get-incident-events':
+                entry = parseGetIncidentEvents(command, response);
+                break;
+
+            case 'guardicore-get-incident-pcap':
+                var incidentId = response._id;
+                if (!response.pcap) {
+                    return 'No PCAP was found for the given incident.';
+                }
+
+                var pcapInfo = parseIncidentPcap(response);
+                args.honeypotId = pcapInfo.honeypotId;
+                args.fileId = pcapInfo.fileId;
+
+                var internalCommand = 'guardicore-get-incident-pcap';
+                var pcapFile = sendRequest(
+                    methodDictionary[internalCommand],
+                    replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                    token,
+                    args,
+                    true
+                );
+
+                var fileName = 'incident_' + incidentId + '.pcap';
+                entry = {Type: 3, FileID: saveFile(pcapFile), File: fileName, Contents: fileName};
+                break;
+
+            case 'guardicore-get-incident-attachments':
+                var incidentId = response._id;
+                var attachments = parseIncidentAttachments(response);
+                if (attachments.filesData.length === 0) {
+                    return 'No attachments were found for the given incident.';
+                }
+
+                entry = [];
+                for (var i = 0; i < attachments.filesData.length; i++) {
+                    args.honeypotId = attachments.filesData[i].honeypotId;
+                    args.fileId = attachments.filesData[i].fileId;
+                    var internalCommand = 'guardicore-get-incident-attachments';
+                    var attachment = sendRequest(
+                        methodDictionary[internalCommand],
+                        replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                        token,
+                        args,
+                        true
+                    );
+
+                    var fileName = 'attachment_' + incidentId + '_' + attachments.filesData[i].path;
+                    entry.push({Type: 3, FileID: saveFile(attachment), File: fileName, Contents: fileName});
+                }
+                break;
+
+            case 'guardicore-uncommon-domains':
+            case 'guardicore-unresolved-domains':
+                entry = parseDomains(command, response);
+                break;
+
+            case 'guardicore-dns-requests':
+                entry = parseDnsRequests(command, response);
+                break;
+
+            case 'guardicore-misconfigurations':
+                entry = parseMisconfigurations(command, response);
+                break;
+
+            case 'guardicore-show-endpoint':
+                entry = parseShowEndpoint(command, response);
+                break;
+
+            case 'guardicore-search-endpoint':
+                if (!args.ip_address && !args.name) {
+                    throw 'IP address or hostname must be provided.'
+                }
+
+                hostIds = parseHostIds(response);
+                if (!hostIds || (hostIds.length === 0)) {
+                    return 'Host was not found.'
+                }
+
+                entry = [];
+                var internalCommand = 'guardicore-show-endpoint';
+                for (var i = 0; i < hostIds.length; i++) {
+                    args.host_id = hostIds[i];
+                    var result = sendRequest(
+                        methodDictionary[internalCommand],
+                        replaceInTemplatesAndRemove(urlDictionary[internalCommand], args),
+                        token,
+                        args,
+                        false,
+                        true
+                    );
+                    var currentEntry;
+                    try {
+                        currentEntry = entriesFromResponse(internalCommand, result, token);
+                    } catch (err) {
+                        currentEntry = 'Failed parsing host ID: ' + hostIds[i];
+                    }
+
+                    entry.push(currentEntry);
+                }
+
+                return entry;
+
+            case 'guardicore-search-network-log':
+                entry = parseSearchNetworkLog(command, response);
+                break;
+
+            default:
+                throw 'Unknown command';
+        }
+
+        return entry;
+    }
+
+    var sendRequest = function(method, url, token, args, isRawOutput, shouldIgnoreUrlArgs) {
+        var headers = {'Content-Type': ['application/json']};
+        if (token) {
+            headers.Authorization = ['Bearer ' + token];
+        }
+
+        var body = method !== 'GET' ? JSON.stringify(args) : '';
+        var shouldIgnoreArgs = (shouldIgnoreUrlArgs !== undefined) && shouldIgnoreUrlArgs;
+        var urlExtra = ((method === 'GET') && !shouldIgnoreArgs) ? encodeToURLQuery(args) : '';
+
+        console.log('Sending request: ' + server + url + urlExtra);
+        var res = http(
+            server + url + urlExtra,
+            {
+                Method: method,
+                Headers: headers,
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (token) {
+                sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            }
+
+            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        if (isRawOutput) {
+            return res.Body;
+        } else {
+            return JSON.parse(res.Body);
+        }
+    }
+
+    // workaround - this parameter should not be visible in the BYOI integration code
+    delete(args['raw-response']);
+
+    var token = sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
+    var commandUrlKey;
+    switch (command) {
+        case 'test-module':
+            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            return 'ok';
+
+        case 'guardicore-get-incident-pcap':
+        case 'guardicore-get-incident-attachments':
+            commandUrlKey = 'guardicore-get-incident';
+            break;
+
+        default:
+            commandUrlKey = command;
+            break
+    }
+
+    var result = sendRequest(
+        methodDictionary[command],
+        replaceInTemplatesAndRemove(urlDictionary[commandUrlKey], args),
+        token,
+        args
+    );
+
+    var entries = entriesFromResponse(command, result, token);
+    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+
+    return entries;
+
+  type: javascript
+  commands:
+  - name: guardicore-get-incidents
+    arguments:
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Low
+      - Medium
+      description: Filter by severity.
+    - name: tag
+      description: Filter by tag.
+    - name: incident_type
+      description: Filter by type of incidents, e.g. Deception, Lateral Movement.
+    - name: source
+      description: Filter by source (hostname or IP address).
+    - name: destination
+      description: Filter by destination (hostname or IP address).
+    description: Display information about incidents (with filters).
+  - name: guardicore-uncommon-domains
+    arguments: []
+    description: Display the uncommon domains.
+  - name: guardicore-unresolved-domains
+    arguments: []
+    description: Display the unresolved domains.
+  - name: guardicore-show-endpoint
+    arguments:
+    - name: host_id
+      required: true
+      description: The host ID.
+    description: Display information about the endpoint given its ID.
+  - name: guardicore-dns-requests
+    arguments: []
+    description: Display the DNS requests.
+  - name: guardicore-search-endpoint
+    arguments:
+    - name: ip_address
+      description: The IP address of the endpoint.
+    - name: name
+      description: The hostname of the endpoint.
+    description: Display information about the endpoint by its hostname or IP address.
+  - name: guardicore-misconfigurations
+    arguments: []
+    description: Display the misconfigurations.
+  - name: guardicore-get-incident
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the incident.
+    description: Display information about the given incident.
+  - name: guardicore-get-incident-iocs
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the incident.
+    description: Display the IOCs (Indicators of Compromise) of the given incident.
+  - name: guardicore-get-incident-events
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Display the events related to the given incidents.
+  - name: guardicore-get-incident-pcap
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieve the PCAP file attached to the given incident.
+  - name: guardicore-get-incident-attachments
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the incident.
+    description: Retrieve the files attached to the given incidents.
+  - name: guardicore-search-network-log
+    arguments:
+    - name: source
+      description: Filter by source (hostname or IP address).
+    - name: destination
+      description: Filter by destination (hostname or IP address).
+    - name: port
+      description: Filter by port number.
+    - name: uuid
+      description: Filter by Event ID.
+    description: Searches within the network log (with filters).
+hidden: false
