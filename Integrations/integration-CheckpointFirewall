@@ -1,0 +1,703 @@
+commonfields:
+  id: Check Point
+  version: -1
+name: Check Point FW
+display: Check Point
+category: Authentication
+image: data:image/png;base64,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
+description: Manage Check Point firewall via API
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    var url = params.server.replace(/[\/]+$/, '') +/* ':' + params.port +*/ '/web_api/';
+    var sid;
+
+    var entityDict = {
+        CheckpointFWRule: {
+            'name' :                'Name',
+            'uid' :                 'UID',
+            'type' :                'Type',
+            'action' :              'Action',
+            'action-settings' :     'ActionSetting',
+            'custom-fields' :       'CustomFields',
+            'data.name' :           'Data.Name',
+            'data.uid' :            'Data.UID',
+            'data.type' :           'Data.Type',
+            'data.domain' :         'Data.Domain',
+            'data-direction' :      'DataDirection',
+            'data-negate' :         'DataNegate',
+            'destination' :         'Destination',
+            'destination-negate' :  'DestinationNegate',
+            'tasks.domain.name' :   'Domain.Name',
+            'tasks.domain.uid' :    'Domain.UID',
+            'tasks.domain.domain-type' : 'Domain.Type',
+            'enabled' :             'Enabled',
+            'hits.first-date' :     'Hits.FirstDate',
+            'hits.last-date' :      'Hits.LastDate',
+            'hits.level' :          'Hits.Level',
+            'hits.percentage' :     'Hits.Percentage',
+            'hits.value' :          'Hits.Value'
+            },
+        Endpoint: {
+            'name' :            'Hostname',
+            'uid' :             'UID',
+            'type' :            'Type',
+            'domain.name' :     'Domain.Name',
+            'domain.uid' :      'Domain.UID',
+            'domain.domain-type' : 'Domain.Type'
+        },
+        CheckpointFWTask: {
+            'name' :          'Name',
+            'uid' :           'UID',
+            'type' :          'Type',
+            'domain.name' :   'Domian.Name',
+            'domain.uid' :    'Domain.UID',
+            'domain.domain-type':         'Domain.Type',
+            'last-update-time.iso-8601' : 'LastUpdateTime',
+            'meta-info.creation-time' :   'MetaInfo.CreationTime',
+            'meta-info.creator' :         'MetaInfo.Creator',
+            'meta-info.last-modifier' :   'MetaInfo.LastModifier',
+            'meta-info.last-modify-time' :'MetaInfo.LastModifyTime',
+            'meta-info.lock' :            'MetaInfo.LockStatus',
+            'meta-info.validation-state' :'MetaInfo.ValidationStatus',
+            'progress-percentage' :       'ProgressPercentage',
+            'read-only' :     'ReadOnly',
+            'start-time' :    'StartTime',
+            'status' :        'Status',
+            'suppressed' :    'Suppressed',
+            'tags' :          'Tags',
+            'task-details' :  'Details',
+            'task-id' :       'ID',
+            'task-name':      'TaskName'
+        }
+    };
+
+    function extend(obj, src) {
+        Object.keys(src).forEach(function(key) { obj[key] = src[key]; });
+        return obj;
+    }
+
+    //returns single object withing entity (i.e. File[0])
+    var jsonToEntityObject = function(origObj, newKeys){
+        var ret = {};
+        var path;
+        var newField;
+        for(var key in newKeys){
+            if(newKeys[key]){
+                path = newKeys[key].split('.');
+                if(path.length == 1){
+                    ret[newKeys[key]] = dq(origObj, '.'+key);
+                }
+                else{
+                    newField = dq(origObj, '.'+key+'={'+path[1]+' : val}' );
+                    if(!ret[path[0]] && newField){
+                        ret[path[0]] = {};
+                    }
+                    if(newField){
+                        if(!Array.isArray(newField)){
+                            newField = [newField];
+                        }
+                        ret[path[0]] = extend(ret[path[0]] ,newField[0]);
+                    }
+                }
+            }
+        }
+        return ret;
+    };
+
+    //returns entire entity array (i.e. File)
+    var jsonToEntity = function(origObj, newKeys){
+        var j;
+        var ret;
+        if(!Array.isArray(origObj)){
+            ret = [jsonToEntityObject(origObj, newKeys)];
+            return ret;
+        }
+        else if(origObj.length > 0){ //makes sure no empty arrays are pushed
+            ret = [];
+            for(j=0; j<origObj.length; j++){
+                ret.push(jsonToEntityObject(origObj[j], newKeys));
+            }
+            return ret;
+        }
+    };
+
+    var sendRequest = function(cmdURL, body, cmdHeaders) {
+        var headers = cmdHeaders? cmdHeaders : {'content-type': ['application/json'], 'X-chkp-sid' : [sid]};
+        var res = http(
+            url+cmdURL,
+            {
+                Method: 'POST',
+                Headers: headers,
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res;
+    };
+
+    var login = function(){
+        var res = sendRequest('login', JSON.stringify({'user':params.credentials.identifier,'password':params.credentials.password}), {'content-type': ['application/json']});
+        sid = JSON.parse(res.Body).sid;
+        return sid;
+    };
+
+    var logout = function(){
+        if(sid){
+            var res = sendRequest('logout', '{}');
+            sid = undefined;
+            return JSON.parse(res.Body).message;
+        }
+        return 'Already logged out';
+    };
+
+    var add_host = function(){
+        sendRequest('add-host', JSON.stringify({name:args.ip, 'ip-address':args.ip}));
+        sendRequest('publish', '{}');
+    };
+
+    var block_ip = function(){
+        var md = '';
+        var temp = [];
+        var result;
+        var res;
+        sendRequest('add-host', JSON.stringify({name:args.ip, 'ip-address':args.ip}));
+        sendRequest('publish', '{}');
+        if(!args.direction){
+            args.direction = 'both';
+        }
+
+        var requestBody = {
+            position : '1',
+            layer: 'Network',
+            service: 'any',
+            action: 'Drop'
+        };
+
+        if(args.direction === 'both' || args.direction === 'from'){
+            requestBody.name = args.rulename + '-from-' + args.ip;
+            requestBody.source = args.ip;
+            requestBody.destination = 'ANY';
+            result = sendRequest('add-access-rule', JSON.stringify(requestBody));
+            sendRequest('publish', '{}');
+            res = JSON.parse(result.Body);
+            md += tblToMd('Blocked Source IP Table',res);
+            temp.push(res);
+        }
+
+        if(args.direction === 'both' || args.direction === 'to'){
+            requestBody.name = args.rulename + '-to-' + args.ip;
+            requestBody.destination = args.ip;
+            requestBody.source = 'ANY';
+            result = sendRequest('add-access-rule', JSON.stringify(requestBody));
+            sendRequest('publish', '{}');
+            res = JSON.parse(result.Body);
+            md += tblToMd('Blocked Destination IP Table', res);
+            temp.push(res);
+        }
+
+        context = {CheckpointFWRule : jsonToEntity(temp,entityDict.CheckpointFWRule)};
+
+        return {Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    };
+
+    var show_hosts = function(){
+        var context = {};
+        var body = {limit: args.limit, offset: args.offset, order: args.order};
+        var result = sendRequest('show-hosts', JSON.stringify(body));
+        var res = JSON.parse(result.Body);
+        var md = tblToMd('Hosts table', res.objects);
+        context.Endpoint = jsonToEntity(res.objects, entityDict.Endpoint);
+
+        return {Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+
+    };
+
+    var task_status = function(){
+        var result = sendRequest('show-task', JSON.stringify({'task-id':args.task_id}));
+        var res =  JSON.parse(result.Body);
+
+        var md = tblToMd('Task Status Table',res.tasks);
+        var context = {CheckpointFWTask : jsonToEntity(res.tasks, entityDict.CheckpointFWTask)};
+
+        return {Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    };
+
+    var set_rule = function(){
+        var result;
+        if(args.uid || args.name || args.rule_number){
+            var body = {
+                uid : args.uid,
+                name: args.name,
+                'rule-number': args.rule_number,
+                layer: args.layer,
+                enabled: args.enabled
+            };
+            result = sendRequest('set-access-rule', JSON.stringify(body));
+            sendRequest('publish', '{}');
+        }
+        else{
+            logout();
+            throw 'Set rule requires at least one of the following arguments - uid, name, rule_number';
+        }
+
+        var res =  JSON.parse(result.Body);
+        var md = tblToMd('Set Rule', res);
+        var context = {CheckpointFWRule : jsonToEntity(res, entityDict.CheckpointFWRule)};
+
+        return {Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+
+    };
+
+    var delete_rule = function(){
+        if(args.uid || args.name || args.rule_number){
+            var body = {
+                uid : args.uid,
+                name: args.name,
+                'rule-number': args.rule_number,
+                layer: args.layer
+            };
+            res = sendRequest('delete-access-rule', JSON.stringify(body));
+            sendRequest('publish', '{}');
+        }
+        else{
+            logout();
+            throw 'Delete rule requires at least one of the following arguments - uid, name, rule_number';
+        }
+        return JSON.parse(res.Body);
+    };
+
+    var show_access_rule_base = function(){
+        var result = sendRequest('show-access-rulebase', JSON.stringify({name:args.name}));
+        var res = JSON.parse(result.Body);
+        var md = tblToMd('Access rulebase table',res.rulebase, Object.keys(res.rulebase[0]));
+        var context = {CheckpointFWRule : jsonToEntity(res.rulebase, entityDict.CheckpointFWRule)};
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    };
+
+
+    var checkpoint = function(){
+        var res;
+        var cmd = args.command;
+        if(!cmd){
+            throw 'Missing API command name';
+        }
+        delete args.command;
+        res = sendRequest(cmd, JSON.stringify(args));
+        sendRequest('publish', '{}');
+        return JSON.parse(res.Body);
+    };
+
+    var answer;
+    login();
+    switch (command) {
+        case 'test-module':
+            logout();
+            return 'ok';
+        case 'CheckpointFWBlockIP':
+            answer = block_ip();
+            break;
+        case 'CheckpointFWShowHosts':
+            answer = show_hosts();
+            break;
+        case 'CheckpointFWTaskStatus':
+            answer = task_status();
+            break;
+        case 'CheckpointFWShowAccessRulebase':
+            answer = show_access_rule_base();
+            break;
+        case 'CheckpointFWSetRule':
+            answer = set_rule();
+            break;
+        case 'CheckpointFWDeleteRule':
+            answer = delete_rule();
+            break;
+        // case 'CheckpointFWBackupStatus':     - script
+        // case 'CheckpointFWCreateBackup':     - script
+        case 'checkpoint':
+           answer = checkpoint();
+            break;
+    }
+    logout();
+    return answer;
+  type: javascript
+  commands:
+  - name: CheckpointFWShowAccessRulebase
+    arguments:
+    - name: name
+      required: true
+      description: Object name. Should be unique in domain.
+    - name: uid
+      description: Object unique identifier.
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings.
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields.
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set to standard.
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied.
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data.
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination.
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type.
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule.
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object.
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits.
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits.
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits.
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits.
+    description: Show items in an access rulebase configured in Checkpoint FW.
+  - name: CheckpointFWSetRule
+    arguments:
+    - name: uid
+      description: Object unique identifier.
+    - name: name
+      description: Object name.
+    - name: rule_number
+      description: Rule number.
+    - name: layer
+      required: true
+      description: Layer that the rule belongs to identified by the name or UID.
+    - name: enabled
+      description: true to enable the rule, false to disable it.
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings.
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields.
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set to standard.
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied.
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data.
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination.
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type.
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule.
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object.
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits.
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits.
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits.
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits.
+    description: Set attributes of an access rule object configured in Checkpoint
+      FW.
+  - name: CheckpointFWTaskStatus
+    arguments:
+    - name: task_id
+      required: true
+      description: Unique identifier of one or more tasks.
+    outputs:
+    - contextPath: CheckpointFWTask.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWTask.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWTask.Type
+      description: Type of the object
+    - contextPath: CheckpointFWTask.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWTask.Domain.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWTask.Domain.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWTask.Domain.Type
+      description: Domain type.
+    - contextPath: CheckpointFWTask.LastUpdateTime
+      description: Last update date and time represented in international ISO 8601
+        format.
+    - contextPath: CheckpointFWTask.MetaInfo.CreationTime
+      description: Object creation time
+    - contextPath: CheckpointFWTask.MetaInfo.Creator
+      description: Object creator
+    - contextPath: CheckpointFWTask.MetaInfo.LastModifier
+      description: Last modifier of object
+    - contextPath: CheckpointFWTask.MetaInfo.LastModifyTime
+      description: Object last modification time
+    - contextPath: CheckpointFWTask.MetaInfo.LockStatus
+      description: Object lock state. It's not allowed to edit objects locked by other
+        session.
+    - contextPath: CheckpointFWTask.MetaInfo.ValidationStatus
+      description: Object validation state - ok, info, warning, error
+    - contextPath: CheckpointFWTask.ProgressPercentage
+      description: Object progress percentage
+    - contextPath: CheckpointFWTask.ReadOnly
+      description: Read only
+    - contextPath: CheckpointFWTask.StartTime
+      description: Start time date and time represented in international ISO 8601
+        format.
+    - contextPath: CheckpointFWTask.Status
+      description: Task status
+    - contextPath: CheckpointFWTask.Suppressed
+      description: Is suppressed
+    - contextPath: CheckpointFWTask.Tags
+      description: Collection of tag objects identified by the name or UID. How much
+        details are returned depends on the details-level field of the request. This
+        table shows the level of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWTask.Details
+      description: Task details. How much details are returned depends on the details-level
+        field of the request. This table shows the level of detail shown when details-level
+        is set to standard.
+    - contextPath: CheckpointFWTask.ID
+      description: Asynchronous task unique identifier.
+    - contextPath: CheckpointFWTask.TaskName
+      description: Task name
+    description: Shows status of a checkpoint task by task uuid.
+  - name: CheckpointFWShowHosts
+    arguments:
+    - name: limit
+      description: No more than that many results will be returned.
+    - name: offset
+      description: Skip that many results before beginning to return them.
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: Sorts results by the given field. The default is the random order.
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Object name. Should be unique in domain.
+    - contextPath: Endpoint.UID
+      description: Object unique identifier.
+    - contextPath: Endpoint.Type
+      description: Type of the object.
+    - contextPath: Endpoint.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: Endpoint.Domain.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: Endpoint.Domain.UID
+      description: Object unique identifier.
+    - contextPath: Endpoint.Domain.Type
+      description: Type of the object.
+    description: Show host objects configured in Checkpoint FW.
+  - name: CheckpointFWBlockIP
+    arguments:
+    - name: ip
+      required: true
+      description: IP addresse to be blocked
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - to
+      - from
+      - both
+      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
+        "both".
+    - name: rulename
+      required: true
+      description: Base name for added rules inside checkpoint db
+    - name: ipname
+      required: true
+      description: Base name for added ip/hosts inside checkpoint db
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings.
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields.
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set to standard.
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object.
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied.
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data.
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard.
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination.
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to.
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain.
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier.
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type.
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule.
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object.
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits.
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits.
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits.
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits.
+    description: Block one or more IP addresses using Checkpoint Firewall.
+  - name: checkpoint
+    arguments: []
+    description: Use Check Point's Management API (requires management server R80
+      or later). Specifying 'command'=<API command> is mandatory
+  - name: CheckpointFWDeleteRule
+    arguments:
+    - name: uid
+      description: uid of the rule
+    - name: name
+      default: true
+      description: name of the rule
+    - name: layer
+      required: true
+      description: e.g. Network
+hidden: false
