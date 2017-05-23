@@ -2,6 +2,7 @@ commonfields:
   id: CPSetRule
   version: -1
 name: CPSetRule
+deprecated: true
 script: |-
   dArgs = demisto.args()
   dArgs['command'] = 'set-access-rule'
