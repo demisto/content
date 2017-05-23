@@ -89,26 +89,151 @@ script:
                 '<t:RequestServerVersion Version="%version%" />'+
                 '<t:ExchangeImpersonation>'+
                 '<t:ConnectingSID>'+
-                '<t:PrimarySmtpAddress>>%target-mailbox%</t:PrimarySmtpAddress>'+
+                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
                 '</t:ConnectingSID>'+
                 '</t:ExchangeImpersonation>'+
                 '</soap:Header>'+
                 '<soap:Body>'+
                 '<DeleteItem DeleteType="HardDelete" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">'+
                 '<ItemIds>'+
-                '<t:ItemId Id="%item-ids%"/>{{end}}'+
+                '%item-ids%'+
                 '</ItemIds>'+
                 '</DeleteItem>'+
                 '</soap:Body>'+
                 '</soap:Envelope>'
             },
+        'ews-get-items': {
+            arrayArgName: 'item-ids',
+            defaultArgs: {
+                'include-mime-content': false
+            },
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
+                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
+                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<soap:Header>'+
+                '<t:RequestServerVersion Version="%version%" />'+
+                '<t:ExchangeImpersonation>'+
+                '<t:ConnectingSID>'+
+                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
+                '</t:ConnectingSID>'+
+                '</t:ExchangeImpersonation>'+
+                '</soap:Header>'+
+                '<soap:Body>'+
+                '<GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<ItemShape>' +
+                '<t:BaseShape>Default</t:BaseShape>' +
+                '<t:IncludeMimeContent>%include-mime-content%</t:IncludeMimeContent>'+
+                '</ItemShape>' +
+                '<ItemIds>'+
+                '%item-ids%'+
+                '</ItemIds>'+
+                '</GetItem>'+
+                '</soap:Body>'+
+                '</soap:Envelope>'
+            },
+        'ews-search-mailbox': {
+            arrayArgName: 'folders-ids',
+            defaultArgs: {
+                'max-entries-returned': 10
+            },
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
+                    ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"'+
+                    ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'+
+                    ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">'+
+                    '<soap:Header>'+
+                        '<t:RequestServerVersion Version="%version%" />'+
+                        '<t:ExchangeImpersonation>'+
+                            '<t:ConnectingSID>'+
+                            '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
+                            '</t:ConnectingSID>'+
+                        '</t:ExchangeImpersonation>'+
+                    '</soap:Header>'+
+                    '<soap:Body>'+
+                        '<m:FindItem Traversal="Shallow">'+
+                        '<m:ItemShape>' +
+                            '<t:BaseShape>Default</t:BaseShape>' +
+                        '</m:ItemShape>' +
+                        '<m:IndexedPageItemView MaxEntriesReturned="%max-entries-returned%" Offset="0" BasePoint="Beginning" />'+
+                        '<m:ParentFolderIds>'+
+                            '%folders-ids%'+
+                        '</m:ParentFolderIds>'+
+                        '<m:QueryString>%query%</m:QueryString>'+
+                        '</m:FindItem>'+
+                    '</soap:Body>'+
+                '</soap:Envelope>'
+            },
+        'ews-get-contacts': {
+            arrayArgName: 'item-ids',
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
+                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
+                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<soap:Header>'+
+                '<t:RequestServerVersion Version="%version%" />'+
+                '<t:ExchangeImpersonation>'+
+                '<t:ConnectingSID>'+
+                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
+                '</t:ConnectingSID>'+
+                '</t:ExchangeImpersonation>'+
+                '</soap:Header>'+
+                '<soap:Body>'+
+                '<GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">'+
+                '<ItemShape>'+
+                '<t:BaseShape>Default</t:BaseShape>'+
+                '</ItemShape>'+
+                '<ItemIds>'+
+                '%item-ids%'+
+                '</ItemIds>'+
+                '</GetItem>'+
+                '</soap:Body>'+
+                '</soap:Envelope>'
+            },
+        'ews-delete-attachments': {
+            arrayArgName: 'item-ids',
+            fillerName: 'attachments-ids',
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
+                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
+                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<soap:Header>'+
+                '<t:RequestServerVersion Version="%version%" />'+
+                '<t:ExchangeImpersonation>'+
+                '<t:ConnectingSID>'+
+                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
+                '</t:ConnectingSID>'+
+                '</t:ExchangeImpersonation>'+
+                '</soap:Header>'+
+                '<soap:Body>'+
+                '<DeleteAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"'+
+                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
+                '<AttachmentIds>'+
+                '%item-ids%'+
+                '</AttachmentIds>'+
+                '</DeleteAttachment>'+
+                '</soap:Body>'+
+                '</soap:Envelope>'
+            },
         'folders-ids': {
             template:
-                '<t:DistinguishedFolderId Id="%id%"/>'
+                '<t:DistinguishedFolderId Id="%id%" />'
         },
         'item-ids': {
             template:
-                '<t:ItemId Id="%id%"/>'
+                '<t:ItemId Id="%id%" />'
+        },
+        'attachments-ids': {
+            template:
+                '<t:AttachmentId Id="%id%" />'
         }
     };
 
@@ -133,11 +258,19 @@ script:
 
     function buildBody(command, args) {
         var currentCommand = commandsDictionary[command];
+        if (currentCommand.defaultArgs) {
+            for (var j in currentCommand.defaultArgs) {
+                if (!args[j]) {
+                    args[j] = currentCommand.defaultArgs[j];
+                }
+            }
+        }
+        console.log(JSON.stringify(args))
         if (currentCommand.arrayArgName) {
             var items = args[currentCommand.arrayArgName].split(',');
             var itemsStr = '';
             for (var i in items) {
-                itemsStr += replaceInTemplates(commandsDictionary[currentCommand.arrayArgName].template, {id: items[i]});
+                itemsStr += replaceInTemplates(commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template, {id: items[i]});
             }
             args[currentCommand.arrayArgName] = itemsStr;
         }
