@@ -49,11 +49,6 @@ script: |-
       res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": tbl})
   demisto.results(res)
 
-
-  # DeviceName <> DeviceName
-  # System <> System
-  # Status <> "Done" if Output.find("local backup succeeded.") else "Pending"
-  # Path <> PATH if Output.find("Backup file location"), Example Output = "Backup file location: /var/log/CPbackup/backups/backup_gw-44fdb4_23_May_2017_15_54.tgz"
 type: python
 tags:
 - checkpoint
