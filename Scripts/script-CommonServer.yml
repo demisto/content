@@ -537,6 +537,15 @@ script: |-
   }
 
   /**
+  * Converts the given timestamp to a string
+  * @param {int} timestamp - the timestamp in UNIX format
+  * @returns {String} e.g. 'Thu, 11 May 2017 11:18:56 UTC'
+  */
+  function convertTimestampToString(timestamp) {
+    return (new Date(parseInt(timestamp))).toISOString();
+  }
+
+  /**
    * Convert a given array to md table
    * @param {Array} arr - the array to convert
    * @returns {String} - the converted md string
