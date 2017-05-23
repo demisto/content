@@ -2,7 +2,6 @@ commonfields:
   id: CPSetRule
   version: -1
 name: CPSetRule
-deprecated: true
 script: |-
   dArgs = demisto.args()
   dArgs['command'] = 'set-access-rule'
@@ -18,6 +17,7 @@ tags:
 - checkpoint
 comment: Set attributes of an access rule object configured in Checkpoint FW.
 system: true
+deprecated: true
 args:
 - name: uid
   default: true
