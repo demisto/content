@@ -36,32 +36,87 @@ script:
         login: 'security/login',
         logout: 'logout',
 
-        'archer-create-ticket': '',
-        'archer-udpate-ticket': '',
-        'archer-get-ticket': '',
-        'archer-list-tickets': '',
+        'archer-create-record': '/content',
+        'archer-udpate-record': '/content',
+        'archer-get-record': 'content/%id%',
+        'archer-list-records': 'system/application',
     };
 
     var methodDictionary = {
         login: 'POST',
         logout: 'POST',
 
-        'archer-create-ticket': 'POST',
-        'archer-udpate-ticket': 'POST',
-        'archer-get-ticket': 'GET',
-        'archer-list-tickets': 'GET',
+        'archer-create-record': 'POST',
+        'archer-udpate-record': 'POST',
+        'archer-get-record': 'GET',
+        'archer-list-records': 'GET',
     };
+
+    // For archer-create-record, archer-update-record
+    var buildBody = function(command, args) {
+        var content = {
+            LevelId: 191,
+            FieldContents: {
+                '13867': {
+                    Type: 1,
+                    Value: args.name,
+                    FieldId: 13867
+                },
+                '13868': {
+                    Type: 1,
+                    Value: args.description,
+                    FieldId: 13868
+                }
+            }
+        }
+
+        if (command == 'archer-update-record') {
+            content.Id = args.id;
+        }
+
+        return {'Content': content};
+    }
+
+    var entriesFromResponse = function(command, response) {
+        var entry;
+        switch (command) {
+            case 'archer-create-record':
+                entry = response.RequestedObject.Id;
+                break;
+
+            case 'archer-update-record':
+                if ((response.IsSuccessful !== true) || (response.ValidationMessages.length !== 0)) {
+                    throw 'Update record failed, validation messages = ' + JSON.stringify(response.ValidationMessages);
+                }
+                entry = 'Update is successful.';
+                break;
+
+            case 'archer-get-record':
+                entry = response.RequestedObject.FieldContents;
+                break;
+
+            case 'archer-list-records':
+                entry = response.RequestedObject;
+                break;
+
+            default:
+                throw 'Unsupported command.';
+        }
+
+        return entry;
+    }
 
     var sendRequest = function(method, url, token, args) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
-            headers.Authorization = ['Bearer ' + token];
+            headers['Authorization'] = ['Archer session-id=' + token];
+            headers['X-Http-Method-Override'] = ['GET'];
         }
 
-        var body = method !== 'GET' ? JSON.stringify(args) : '';
-        console.log('Sending request: ' + server + url + (method === 'GET') ? encodeToURLQuery(args) : '');
+        var body = buildBody(command);
+        console.log('Sending request: ' + server + url + ' with body: ' + JSON.stringify(body));
         var res = http(
-            server + url + (method === 'GET') ? encodeToURLQuery(args) : '',
+            server + url,
             {
                 Method: method,
                 Headers: headers,
@@ -93,7 +148,7 @@ script:
             Password: params.credentials.password,
         }
     );
-    var token = result.token;
+    var token = result.RequestedObject.SessionToken;
 
     switch (command) {
         case 'test-module':
@@ -105,24 +160,39 @@ script:
     }
 
     result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, args);
-    return result;
-
-    // var entries = entriesFromResponse(command, result, token);
-    // sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-    // return entries;
+    var entries = entriesFromResponse(command, result);
+    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+    return entries;
 
   type: javascript
   commands:
-  - name: archer-create-ticket
+  - name: archer-create-record
+    arguments:
+    - name: name
+      required: true
+      description: The name of the Content Record.
+    - name: description
+      required: true
+      description: The description of the Content Record (html).
+    description: Creates a new Content Record.
+  - name: archer-update-record
+    arguments:
+    - name: id
+      required: true
+      description: The Content Record ID to update.
+    - name: name
+      required: true
+      description: The name of the Content Record, after updating.
+    - name: description
+      required: true
+      description: The description of the Content Record (html), after updating.
+    description: Updates the value of a field of a Content Record.
+  - name: archer-get-record
+    arguments:
+    - name: id
+      required: true
+    description: Gets information about a Content Record.
+  - name: archer-list-records
     arguments: []
-    description: Creates a new ticket.
-  - name: archer-update-ticket
-    arguments: []
-    description: Updates the value of a field of a record.
-  - name: archer-get-ticket
-    arguments: []
-    description: Gets ticket information.
-  - name: archer-list-tickets
-    arguments: []
-    description: Gets a list of tickets in an application.
+    description: Gets a list of Content Records in an application.
 hidden: false
