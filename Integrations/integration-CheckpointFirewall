@@ -323,7 +323,7 @@ script:
     var show_access_rule_base = function(){
         var result = sendRequest('show-access-rulebase', JSON.stringify({name:args.name}));
         var res = JSON.parse(result.Body);
-        var md = tblToMd('Access rulebase table',res.rulebase, Object.keys(res.rulebase[0]));
+        var md = tblToMd('Access rulebase table',res.rulebase);
         var context = {CheckpointFWRule : jsonToEntity(res.rulebase, entityDict.CheckpointFWRule)};
         return {
             Type: entryTypes.note,
@@ -372,8 +372,6 @@ script:
         case 'checkpoint-delete-rule':
             answer = delete_rule();
             break;
-        // case 'CheckpointFWBackupStatus':     - script
-        // case 'CheckpointFWCreateBackup':     - script
         case 'checkpoint':
            answer = checkpoint();
             break;
