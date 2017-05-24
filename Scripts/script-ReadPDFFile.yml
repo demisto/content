@@ -65,7 +65,7 @@ script: |-
                           "ContentsFormat" : formats["markdown"],
                           "Contents" : md,
                           "HumanReadable": md,
-                          "EntryContext": {"File(val.EntryID = obj.EntryID)" : [pdfFile], "URL" : URLs}
+                          "EntryContext": {"File(val.EntryID = obj.EntryID)" : pdfFile, "URL" : URLs}
                           })
 
       else:
@@ -89,7 +89,7 @@ outputs:
 scripttarget: 0
 dockerimage: orius123/pdfx
 outputs:
-- contextPath: URL
+- contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
 - contextPath: File.Text
   description: The PDF File extracted text
