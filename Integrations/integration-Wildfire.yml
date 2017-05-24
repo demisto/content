@@ -199,7 +199,7 @@ script:
           url += urlDict.upload;
           var result = sendMultipartRequest(url, headers, args.upload, params.token);
           var uploadData = dq(result, 'wildfire.upload-file-info');
-          var md = resToMD(uploadData,'Wildfire Report');
+          var md = resToMD(uploadData,'WildFire Report');
 
           return {Type: entryTypes.note,
                       Contents: result,
