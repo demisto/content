@@ -12,7 +12,7 @@ script: |-
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8}
   formats = {'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
   brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'wildfire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
-  providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'Wildfire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
+  providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   # Checks if the given entry from a URL reputation query is positive (known bad)
   def positiveUrl(entry):

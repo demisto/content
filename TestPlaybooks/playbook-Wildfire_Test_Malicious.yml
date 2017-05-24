@@ -31,7 +31,7 @@ tasks:
       id: d36a7660-72c3-43ed-8db2-a23f0edecbf6
       version: -1
       name: wildfire-report
-      description: Retrieve results for a file hash using Wildfire
+      description: Retrieve results for a file hash using WildFire
       script: WildFire|||wildfire-report
       type: regular
       iscommand: true
