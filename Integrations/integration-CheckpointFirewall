@@ -351,6 +351,7 @@ script:
     login();
     switch (command) {
         case 'test-module':
+            show_hosts();
             logout();
             return 'ok';
         case 'checkpoint-block-ip':
