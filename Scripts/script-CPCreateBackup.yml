@@ -16,7 +16,7 @@ script: |-
   else:
       devices = ','.join(devices) if isinstance(devices, list) else devices
       sshArgs = {"using": devices,
-               "cmd": CLI_ADD
+               "cmd": BASH_ADD
                }
       resSSH = demisto.executeCommand("ssh", sshArgs)
       try:
