@@ -14,7 +14,7 @@ configuration:
   required: true
 - display: Port
   name: port
-  defaultvalue: ""
+  defaultvalue: "443"
   type: 0
   required: true
 - display: Username
@@ -53,9 +53,9 @@ script:
             'data-negate' :         'DataNegate',
             'destination' :         'Destination',
             'destination-negate' :  'DestinationNegate',
-            'tasks.domain.name' :   'Domain.Name',
-            'tasks.domain.uid' :    'Domain.UID',
-            'tasks.domain.domain-type' : 'Domain.Type',
+            'domain.name' :         'Domain.Name',
+            'domain.uid' :          'Domain.UID',
+            'domain.domain-type':   'Domain.Type',
             'enabled' :             'Enabled',
             'hits.first-date' :     'Hits.FirstDate',
             'hits.last-date' :      'Hits.LastDate',
@@ -72,28 +72,28 @@ script:
             'domain.domain-type' : 'Domain.Type'
         },
         CheckpointFWTask: {
-            'name' :          'Name',
-            'uid' :           'UID',
-            'type' :          'Type',
-            'domain.name' :   'Domian.Name',
-            'domain.uid' :    'Domain.UID',
-            'domain.domain-type':         'Domain.Type',
-            'last-update-time.iso-8601' : 'LastUpdateTime',
-            'meta-info.creation-time' :   'MetaInfo.CreationTime',
-            'meta-info.creator' :         'MetaInfo.Creator',
-            'meta-info.last-modifier' :   'MetaInfo.LastModifier',
-            'meta-info.last-modify-time' :'MetaInfo.LastModifyTime',
-            'meta-info.lock' :            'MetaInfo.LockStatus',
-            'meta-info.validation-state' :'MetaInfo.ValidationStatus',
-            'progress-percentage' :       'ProgressPercentage',
-            'read-only' :     'ReadOnly',
-            'start-time' :    'StartTime',
-            'status' :        'Status',
-            'suppressed' :    'Suppressed',
-            'tags' :          'Tags',
-            'task-details' :  'Details',
-            'task-id' :       'ID',
-            'task-name':      'TaskName'
+            'name' :                        'Name',
+            'uid' :                         'UID',
+            'type' :                        'Type',
+            'domain.name' :                 'Domian.Name',
+            'domain.uid' :                  'Domain.UID',
+            'domain.domain-type':           'Domain.Type',
+            'last-update-time.iso-8601' :   'LastUpdateTime',
+            'meta-info.creation-time' :     'MetaInfo.CreationTime',
+            'meta-info.creator' :           'MetaInfo.Creator',
+            'meta-info.last-modifier' :     'MetaInfo.LastModifier',
+            'meta-info.last-modify-time' :  'MetaInfo.LastModifyTime',
+            'meta-info.lock' :              'MetaInfo.LockStatus',
+            'meta-info.validation-state' :  'MetaInfo.ValidationStatus',
+            'progress-percentage' :         'ProgressPercentage',
+            'read-only' :                   'ReadOnly',
+            'start-time' :                  'StartTime',
+            'status' :                      'Status',
+            'suppressed' :                  'Suppressed',
+            'tags' :                        'Tags',
+            'task-details' :                'Details',
+            'task-id' :                     'ID',
+            'task-name':                    'TaskName'
         }
     };
 
@@ -104,25 +104,25 @@ script:
 
     //returns single object withing entity (i.e. File[0])
     var jsonToEntityObject = function(origObj, newKeys){
+        //log("func started");
         var ret = {};
         var path;
         var newField;
+        //var temp;
         for(var key in newKeys){
             if(newKeys[key]){
                 path = newKeys[key].split('.');
+                origPath = key.split('.');
                 if(path.length == 1){
                     ret[newKeys[key]] = dq(origObj, '.'+key);
                 }
                 else{
-                    newField = dq(origObj, '.'+key+'={'+path[1]+' : val}' );
+                    newField = dq(origObj, '.'+key);
                     if(!ret[path[0]] && newField){
                         ret[path[0]] = {};
                     }
                     if(newField){
-                        if(!Array.isArray(newField)){
-                            newField = [newField];
-                        }
-                        ret[path[0]] = extend(ret[path[0]] ,newField[0]);
+                        ret[path[0]][path[1]] = newField;
                     }
                 }
             }
@@ -300,7 +300,6 @@ script:
             HumanReadable: md,
             EntryContext: context
         };
-
     };
 
     var delete_rule = function(){
@@ -326,12 +325,11 @@ script:
         var res = JSON.parse(result.Body);
         var md = tblToMd('Access rulebase table',res.rulebase, Object.keys(res.rulebase[0]));
         var context = {CheckpointFWRule : jsonToEntity(res.rulebase, entityDict.CheckpointFWRule)};
-
         return {
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
-            HumanReadable: md,
+            HumanReadable: res,//md,
             EntryContext: context
         };
     };
