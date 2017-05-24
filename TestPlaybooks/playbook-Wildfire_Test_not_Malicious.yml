@@ -56,7 +56,7 @@ tasks:
       id: 620b0f62-bb31-4918-8ef7-cc55b1ab532e
       version: -1
       name: wildfire-upload
-      description: Upload file to wildfire for analysis.
+      description: Upload file to WildFire for analysis.
       script: WildFire|||wildfire-upload
       type: regular
       iscommand: true
@@ -123,7 +123,7 @@ tasks:
     scriptarguments:
       cmdArguments: ${File='md5=' + val.MD5}
       cmdToRun: wildfire-report
-      keyToWatch: File/Malicious
+      keyToWatch: File.Malicious
     view: |-
       {
         "position": {

@@ -16,7 +16,7 @@ script: |-
   sandblastDone = False
   cuckooDone = False
   wildfireDone = False
-  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'wildFire'})[0]['Contents'] != 'yes':
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'WildFire'})[0]['Contents'] != 'yes':
       wildfireDone = True
       #demisto.log('WildFire not available.')
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'cuckoo'})[0]['Contents'] != 'yes':
@@ -50,7 +50,7 @@ script: |-
       resCheckWildfire = demisto.executeCommand("wildfire-report", {"md5": fileMd5})
       if isError(resCheckWildfire[0]):
           if "The report was not found" in resCheckWildfire[0]['Contents']:
-              pass # No report in wildfire, need to upload the file
+              pass # No report in WildFire, need to upload the file
           else: # Any other error should be reported back to war room
               res += resCheckWildfire
               wildfireDone = True

@@ -94,7 +94,7 @@ tasks:
     scriptarguments:
       cmdArguments: ${File='md5=' + val.MD5}
       cmdToRun: wildfire-report
-      keyToWatch: File/Malicious
+      keyToWatch: File.Malicious
       maxIterations: "60"
       sleepTime: ""
     view: |-

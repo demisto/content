@@ -41,8 +41,8 @@ tags:
 - server
 - threat-intel
 - wildfire
-comment: Get reputation for attachments using wildfire and if the file is not known
-  upload it to wildfire, wait 15 min and get reputation again
+comment: Get reputation for attachments using WildFire and if the file is not known
+  upload it to WildFire, wait 15 min and get reputation again
 system: true
 args:
 - name: fileNames

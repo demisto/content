@@ -28,7 +28,7 @@ tags:
 - wildfire
 - sandbox
 comment: |-
-  Upload file to wildfire for analysis.
+  Upload file to WildFire for analysis.
   Example usage: !WildfireUpload upload=2@3
 system: true
 args:
