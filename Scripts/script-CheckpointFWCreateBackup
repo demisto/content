@@ -63,6 +63,15 @@ args:
   default: true
   description: List of RemoteAccess instances of the checkpoint firewall appliances
     to back up
+outputs:
+- contextPath: CheckpointBackup.DeviceName
+  description: Name of backed-up device
+- contextPath: CheckpointBackup.System
+  description: Backed up system
+- contextPath: CheckpointBackup.Status
+  description: Status of the backup process
+- contextPath: CheckpointBackup.Path
+  description: Path of backup file
 scripttarget: 0
 dependson:
   must:
