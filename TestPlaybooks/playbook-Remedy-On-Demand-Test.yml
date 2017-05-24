@@ -31,10 +31,10 @@ tasks:
       id: 4f675811-a7f9-4d04-83fb-3e5eecce340e
       version: -1
       name: remedy-incident-create
-      script: _Remedy|||remedy-incident-create
+      script: Remedy On-Demand|||remedy-incident-create
       type: regular
       iscommand: true
-      brand: _Remedy
+      brand: Remedy On-Demand
     nexttasks:
       '#none#':
       - "6"
@@ -63,10 +63,10 @@ tasks:
       version: -1
       name: remedy-get-incident
       description: Get one incident by ID
-      script: _Remedy|||remedy-get-incident
+      script: Remedy On-Demand|||remedy-get-incident
       type: regular
       iscommand: true
-      brand: _Remedy
+      brand: Remedy On-Demand
     nexttasks:
       '#none#':
       - "7"
@@ -88,10 +88,10 @@ tasks:
       version: -1
       name: remedy-fetch-incidents
       description: Fetch all incidents
-      script: _Remedy|||remedy-fetch-incidents
+      script: Remedy On-Demand|||remedy-fetch-incidents
       type: regular
       iscommand: true
-      brand: _Remedy
+      brand: Remedy On-Demand
     nexttasks:
       '#none#':
       - "9"
@@ -113,10 +113,10 @@ tasks:
       version: -1
       name: remedy-incident-update
       description: Update exiting incident
-      script: _Remedy|||remedy-incident-update
+      script: Remedy On-Demand|||remedy-incident-update
       type: regular
       iscommand: true
-      brand: _Remedy
+      brand: Remedy On-Demand
     nexttasks:
       '#none#':
       - "8"
