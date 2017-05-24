@@ -310,7 +310,7 @@ script:
                 'rule-number': args.rule_number,
                 layer: args.layer
             };
-            res = sendRequest('delete-access-rule', JSON.stringify(body));
+            var res = sendRequest('delete-access-rule', JSON.stringify(body));
             sendRequest('publish', '{}');
         }
         else{
