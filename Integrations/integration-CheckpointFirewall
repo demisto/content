@@ -34,7 +34,7 @@ configuration:
   required: false
 script:
   script: |
-    var url = params.server.replace(/[\/]+$/, '') +/* ':' + params.port +*/ '/web_api/';
+    var url = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/web_api/';
     var sid;
 
     var entityDict = {
