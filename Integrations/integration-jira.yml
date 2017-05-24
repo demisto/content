@@ -79,10 +79,9 @@ script:
   script: |-
     // handle '/' at the end of the url
     if (params.url[params.url.length - 1] != '/') {
-        params.url = params.url +  '/';
+        params.url = params.url + '/';
     }
 
-    console.log("Private Key : " + params.privateKey);
     var isOAuth;
     if(!params.consumerKey || !params.accessToken || !params.privateKey) {
         isOAuth = false;
