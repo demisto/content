@@ -697,9 +697,9 @@ script:
     - name: uid
       description: uid of the rule
     - name: name
-      default: true
       description: name of the rule
     - name: layer
       required: true
+      default: true 
       description: e.g. Network
 hidden: false
