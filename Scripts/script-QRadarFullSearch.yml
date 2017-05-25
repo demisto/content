@@ -26,7 +26,7 @@ script: |-
   //submit query, retrive  search_id
   var query_res = executeCommand("qradar-searches", args);
   if (isError(query_res[0])){
-      return query_Res;
+      return query_res;
   }
   else {
       search_id = dq(query_res[0], "Contents.search_id");
