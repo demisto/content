@@ -17,6 +17,7 @@ tags:
 - checkpoint
 comment: Set attributes of an access rule object configured in Checkpoint FW.
 system: true
+deprecated: true
 args:
 - name: uid
   default: true
