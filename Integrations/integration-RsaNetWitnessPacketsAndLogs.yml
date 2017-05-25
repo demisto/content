@@ -35,6 +35,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var fixUrl = function(base) {
@@ -170,7 +175,8 @@ script:
                 Username: params.username,
                 Password: params.password
             },
-            !params.secure
+            !params.secure,
+            params.proxy
         );
 
         return parseResponse(res);
@@ -222,7 +228,8 @@ script:
                 Accept: responseType,
                 Body: body || ''
             },
-            !params.secure
+            !params.secure,
+            params.proxy
         );
 
         if (res.StatusCode !== 200 && res.StatusCode !== 201) {
@@ -246,7 +253,8 @@ script:
                 Password: params.password
             },
             null,
-            !params.secure
+            !params.secure,
+            params.proxy
         );
 
         return parseResponse(res);
@@ -269,7 +277,8 @@ script:
                 Password: params.password,
                 Body: JSON.stringify(args)
             },
-            !params.secure
+            !params.secure,
+            params.proxy
         );
 
         return parseResponse(res);
