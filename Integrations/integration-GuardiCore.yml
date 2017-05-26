@@ -265,7 +265,7 @@ script:
             // add endpoint
             if (response[i]['_cls'] == 'IoC.NetworkIoc.NetworkVmIoc') {
                 contextData.Endpoint = {
-                    Hostname: response[i]['vm_name']
+                    Hostname: response[i]['vm_name'],
                     IPAddress: response[i]['ip']
                 };
             }
