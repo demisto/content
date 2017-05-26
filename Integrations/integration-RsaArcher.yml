@@ -41,8 +41,8 @@ script:
         login: 'security/login',
         logout: 'security/logout',
 
-        'archer-create-record': '/content',
-        'archer-udpate-record': '/content',
+        'archer-create-record': 'content',
+        'archer-udpate-record': 'content',
         'archer-get-record': 'content/%id%',
         'archer-list-records': 'system/application',
     };
@@ -56,16 +56,6 @@ script:
         'archer-get-record': 'GET',
         'archer-list-records': 'GET',
     };
-
-    // var outputsDictionary = {
-    //     'archer-list-records': [
-    //         {from: 'Name', to: 'Name'},
-    //         {from: 'Description', to: 'Description'},
-    //         {from: 'Guid', to: 'GUID'},
-    //         {from: 'Directory', to: 'Directory'},
-    //         {from: 'ASOName', to: 'Description'},
-    //     ],
-    // };
 
     // For archer-create-record, archer-update-record
     var buildCommandBody = function(command, args) {
@@ -96,7 +86,10 @@ script:
         var entry = {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
         switch (command) {
             case 'archer-create-record':
-                entry = response.RequestedObject.Id;
+                if ((response.IsSuccessful !== true) || (response.ValidationMessages.length !== 0)) {
+                    throw 'Create record failed, validation messages = ' + JSON.stringify(response.ValidationMessages);
+                }
+                entry = 'Record ID: ' + response.RequestedObject.Id;
                 break;
 
             case 'archer-update-record':
@@ -127,8 +120,6 @@ script:
     }
 
     var sendRequest = function(method, url, token, args) {
-        console.log('sendRequest, url = ' + url + ', args = ' + JSON.stringify(args));
-
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers['Authorization'] = ['Archer session-id=' + token];
@@ -137,10 +128,6 @@ script:
             }
         }
 
-        console.log('headers = ' + JSON.stringify(headers));
-        console.log('headers = ' + command);
-
-        // var body = method !== 'GET' ? JSON.stringify(args) : buildCommandBody(command);
         var body = JSON.stringify(args);
         console.log('Sending request: ' + server + url + ' with header: ' + JSON.stringify(headers) + ' and body: ' + JSON.stringify(body));
         var res = http(
@@ -176,21 +163,16 @@ script:
             Password: params.credentials.password
         }
     );
-    console.log('result = ' + JSON.stringify(result));
 
     if (result.IsSuccessful !== true) {
         throw 'Login failed. Result = ' + JSON.stringify(result);
     }
 
     var token = result.RequestedObject.SessionToken;
-
-    console.log('token = ' + token);
-
     var commandArgs = {};
     switch (command) {
         case 'test-module':
             result = sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
-            console.log('result = ' + JSON.stringify(result));
             return 'ok';
 
         case 'archer-create-record':
@@ -203,15 +185,7 @@ script:
     }
 
     console.log('command = ' + command + ', commandArgs = ' + JSON.stringify(commandArgs));
-
-    try {
-        result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, commandArgs);
-    } catch (err) {
-    }
-
-
-    // console.log('result = ' + JSON.stringify(result));
-
+    result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, commandArgs);
     var entries = entriesFromResponse(command, result);
     sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
     return entries;
