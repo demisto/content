@@ -2,3 +2,4 @@ Google-Search-API
 pyping
 threatconnect
 psycopg2
+splunk-sdk
