@@ -13,7 +13,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Credentials
+- display: Instance name
+  name: instanceName
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -21,20 +26,20 @@ configuration:
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 script:
-  script: |+
-    var server = params.server.replace(/[\/]+$/, '') + 'api/core';
+  script: |
+    var server = params.server.replace(/[\/]+$/, '') + '/api/core/';
 
     var urlDictionary = {
         login: 'security/login',
-        logout: 'logout',
+        logout: 'security/logout',
 
         'archer-create-record': '/content',
         'archer-udpate-record': '/content',
@@ -53,7 +58,7 @@ script:
     };
 
     // For archer-create-record, archer-update-record
-    var buildBody = function(command, args) {
+    var buildCommandBody = function(command, args) {
         var content = {
             LevelId: 191,
             FieldContents: {
@@ -110,11 +115,13 @@ script:
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers['Authorization'] = ['Archer session-id=' + token];
-            headers['X-Http-Method-Override'] = ['GET'];
+            if (method == 'GET') {
+                headers['X-Http-Method-Override'] = 'GET';
+            }
         }
 
-        var body = buildBody(command);
-        console.log('Sending request: ' + server + url + ' with body: ' + JSON.stringify(body));
+        var body = method !== 'GET' ? JSON.stringify(args) : buildCommandBody(command);
+        console.log('Sending request: ' + server + url + ' with header: ' + JSON.stringify(headers) + ' and body: ' + JSON.stringify(body));
         var res = http(
             server + url,
             {
@@ -126,13 +133,9 @@ script:
             params.proxy
         );
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            if (token) {
-                sendRequest(methodDictionary.logout, urlDictionary.logout, token);
-            }
-
-            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
+        // if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        //     throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        // }
 
         return JSON.parse(res.Body);
     }
@@ -142,17 +145,25 @@ script:
         urlDictionary.login,
         undefined,
         {
-            // InstanceName: ...?
+            InstanceName: params.instanceName,
             Username: params.credentials.identifier,
-            // UserDomain: ...?
-            Password: params.credentials.password,
+            Password: params.credentials.password
         }
     );
+    console.log('result = ' + JSON.stringify(result));
+
+    if (result.IsSuccessful !== true) {
+        throw 'Login failed. Result = ' + JSON.stringify(result);
+    }
+
     var token = result.RequestedObject.SessionToken;
+
+    console.log('token = ' + token);
 
     switch (command) {
         case 'test-module':
-            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            result = sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
+            console.log('result = ' + JSON.stringify(result));
             return 'ok';
 
         default:
@@ -161,9 +172,10 @@ script:
 
     result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, args);
     var entries = entriesFromResponse(command, result);
-    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+    sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
     return entries;
 
+    return 'ok';
   type: javascript
   commands:
   - name: archer-create-record
