@@ -57,6 +57,16 @@ script:
         'archer-list-records': 'GET',
     };
 
+    // var outputsDictionary = {
+    //     'archer-list-records': [
+    //         {from: 'Name', to: 'Name'},
+    //         {from: 'Description', to: 'Description'},
+    //         {from: 'Guid', to: 'GUID'},
+    //         {from: 'Directory', to: 'Directory'},
+    //         {from: 'ASOName', to: 'Description'},
+    //     ],
+    // };
+
     // For archer-create-record, archer-update-record
     var buildCommandBody = function(command, args) {
         var content = {
@@ -83,7 +93,7 @@ script:
     }
 
     var entriesFromResponse = function(command, response) {
-        var entry;
+        var entry = {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
         switch (command) {
             case 'archer-create-record':
                 entry = response.RequestedObject.Id;
@@ -101,7 +111,12 @@ script:
                 break;
 
             case 'archer-list-records':
-                entry = response.RequestedObject;
+                outputs = [];
+                for (var i = 0; i < response.length; i++) {
+                    outputs.push(response[i].RequestedObject);
+                }
+                entry.HumanReadable = tblToMd('RSA Archer Records', outputs);
+                entry.EntryContext['RSA_Archer.Records'] = response;
                 break;
 
             default:
@@ -112,15 +127,21 @@ script:
     }
 
     var sendRequest = function(method, url, token, args) {
+        console.log('sendRequest, url = ' + url + ', args = ' + JSON.stringify(args));
+
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers['Authorization'] = ['Archer session-id=' + token];
             if (method == 'GET') {
-                headers['X-Http-Method-Override'] = 'GET';
+                headers['X-Http-Method-Override'] = ['GET'];
             }
         }
 
-        var body = method !== 'GET' ? JSON.stringify(args) : buildCommandBody(command);
+        console.log('headers = ' + JSON.stringify(headers));
+        console.log('headers = ' + command);
+
+        // var body = method !== 'GET' ? JSON.stringify(args) : buildCommandBody(command);
+        var body = JSON.stringify(args);
         console.log('Sending request: ' + server + url + ' with header: ' + JSON.stringify(headers) + ' and body: ' + JSON.stringify(body));
         var res = http(
             server + url,
@@ -133,9 +154,14 @@ script:
             params.proxy
         );
 
-        // if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        //     throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        // }
+        console.log('res = ' + JSON.stringify(res));
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (token && (url.indexOf('logout') == -1)) {
+                sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
+            }
+            throw 'Request to RSA Archer ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
 
         return JSON.parse(res.Body);
     }
@@ -160,22 +186,35 @@ script:
 
     console.log('token = ' + token);
 
+    var commandArgs = {};
     switch (command) {
         case 'test-module':
             result = sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
             console.log('result = ' + JSON.stringify(result));
             return 'ok';
 
+        case 'archer-create-record':
+        case 'archer-update-record':
+            commandArgs = buildCommandBody(command, args);
+            break;
+
         default:
             break;
     }
 
-    result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, args);
+    console.log('command = ' + command + ', commandArgs = ' + JSON.stringify(commandArgs));
+
+    try {
+        result = sendRequest(methodDictionary[command], replaceInTemplatesAndRemove(urlDictionary[command], args), token, commandArgs);
+    } catch (err) {
+    }
+
+
+    // console.log('result = ' + JSON.stringify(result));
+
     var entries = entriesFromResponse(command, result);
     sendRequest(methodDictionary.logout, urlDictionary.logout, token, {Value: token});
     return entries;
-
-    return 'ok';
   type: javascript
   commands:
   - name: archer-create-record
