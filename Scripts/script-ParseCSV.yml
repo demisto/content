@@ -39,7 +39,7 @@ script: |
   parseAll = demisto.args()['parseAll'] if 'parseAll' in dArgs else None
 
   if not parseip and not parsedomain and not parsehash and not parseAll:
-      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please select a field to extract.' } )
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Select a field to extract.' } )
       exit()
 
   entries = demisto.executeCommand('getEntries', {})

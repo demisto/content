@@ -53,11 +53,10 @@ script: |-
   var createdFileID = saveFile(csvString);
 
   return {
-      Type: 9,
+      Type: 3,
       FileID: createdFileID,
       File: args.fileName,
-      Contents: args.fileName,
-      HumanReadable: args.fileName
+      Contents: args.fileName
   };
 type: javascript
 tags:
