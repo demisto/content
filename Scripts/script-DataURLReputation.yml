@@ -5,8 +5,6 @@ name: DataURLReputation
 script: |-
   var score = -1;
   var rep = executeCommand('url', {url: args.input});
-  var pt = executeCommand('pt-malware', {query: args.input});
-  rep = rep.concat(pt);
   var scores = dq(rep, 'EntryContext.DBotScore.Score');
   for (var i = 0; scores && i < scores.length; i++) {
     if (scores[i] && score < scores[i]) {
