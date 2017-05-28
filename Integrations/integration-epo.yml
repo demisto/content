@@ -25,11 +25,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
-    // The command input arg holds the command sent from the user.
-    // You can use args[argName] or args.argName to get a specific arg. args are strings.
-    // You can use params[paramName] or params.paramName to get a specific params.
-    // Params are of the type given in the integration page creation.
+  script: |2-
 
     var epoSystemAttributesMap = {
         'EPOComputerProperties.ComputerName':'Name',
@@ -39,9 +35,22 @@ script:
         'EPOComputerProperties.OSType':'Operating System'
     };
 
-    var callEpo = function(qParams, qArgs) {
-        var p = qArgs['params'] ? qArgs['params']+'&' : '';
-        var url = qParams['address'] + '/remote/' + qArgs['command'] + '?' + p + ':output=json';
+    var callEpo = function(qParams, qArgs, raw) {
+        var url = qParams['address'] + '/remote/' + qArgs['command'];
+        if (raw) {
+            var parameters = {};
+            for (var key in qArgs) {
+                if (key != 'command') {
+                    parameters[key] = qArgs[key];
+                }
+            }
+            url += encodeToURLQuery(parameters);
+            url += (parameters.length > 0) ? '&' : '?';
+            url += ':output=json';
+        }  else {
+            var p = qArgs['params'] ? qArgs['params']+'&' : '';
+            url += '?' + p + ':output=json';
+        }
         var result = http(
             url,
             {
@@ -134,19 +143,28 @@ script:
             hParams.params = "command="+args.command;
         }
         var readyRes = callEpo(params,hParams);
-        var md = '#### ePO Help\n';
+        var md;
         var line;
         var cmd;
         var desc;
-        parsedRes = Array.isArray(parsedRes) ? parsedRes : [parsedRes];
-        for (var i in parsedRes) {
-            line = parsedRes[i].replace(/(\r\n|\n|\r)/gm," ");
-            if (!args.search || (args.search.toLowerCase() && line.toLowerCase().indexOf(args.search.toLowerCase())>=0)) {
-                desc = line.split('-')[1] ? line.split('-')[1].trim() : 'N/A';
-                cmd = line.split('-')[0] ? line.split('-')[0].trim() : 'N/A';
-                md += '**' + desc + "** - " + cmd + '\n';
+
+        if (args.command) {
+            md = '#### ePO Help - ' + args.command + '\n';
+            md += readyRes;
+        } else {
+            parsedRes = Array.isArray(parsedRes) ? parsedRes : [parsedRes];
+            md = '#### ePO Help\n';
+            for (var i=0;i<parsedRes.length;i++) {
+                line = parsedRes[i];
+                line = line.replace(/(\r\n|\n|\r)/gm," ");
+                if (!args.search || (args.search.toLowerCase() && line.toLowerCase().indexOf(args.search.toLowerCase())>=0)) {
+                    desc = line.split('-')[1] ? line.split('-')[1].trim() : 'N/A';
+                    cmd = line.split('-')[0] ? line.split('-')[0].trim() : 'N/A';
+                    md += '- **' + cmd + "** - " + desc + '\n';
+                }
             }
         }
+
         return {Type: entryTypes.note, Contents: readyRes, ContentsFormat: formats.json, HumanReadable: md};
     };
     var epoGetDatUpdateTask = function() {
@@ -302,6 +320,12 @@ script:
             return epoGetSystemTreeGroups();
         case 'epo-find-systems':
             return epoFindSystems();
+        case 'epo-command-raw':
+            var result = callEpo(params, args, true);
+            var md = "#### ePO command *"+args.command+"* results:\n";
+            md += objToMd(result);
+            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+
         default:
             var result = callEpo(params, args);
             var md = "#### ePO command *"+args.command+"* results:\n";
@@ -387,4 +411,7 @@ script:
       - "false"
       description: Print all system data
     description: Find systems in the System Tree - by group ID or by search
+  - name: epo-command-raw
+    arguments: []
+    description: Execute ePO command
 hidden: false
