@@ -20,13 +20,18 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API Secret 
+- display: API Secret
   name: APIKey
   defaultvalue: ""
   type: 4
   required: true
 script:
   script: |-
+    if (command == 'url') {
+        args.query = args.url;
+        command = 'pt-malware';
+    }
+
     var serverUrl = params.ServerURL;
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
@@ -484,6 +489,38 @@ script:
     - contextPath: Domain(val.Malicious)
       description: Malicious Domains
     description: Get malware data
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to get malware for
+    - name: samples
+      description: The number of malware samples to return
+      defaultValue: "10"
+    - name: threshold
+      description: Above this number of samples we will consider this to be malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+      related: ""
+    description: Get malware data
   - name: pt-osint
     arguments:
     - name: query
@@ -580,3 +617,4 @@ script:
         subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName,
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
+hidden: false
