@@ -1,0 +1,35 @@
+commonfields:
+  id: 22c04dd1-0334-4aaa-897a-851d85479533
+  version: 65
+name: SalesforceFindObjects
+script: |2
+
+
+
+  var res = executeCommand('salesforce-get-object', {path: args.object + "/describe"})[0];
+  var fields = res.Contents.fields;
+  var fieldNames = [];
+
+  for (var key in fields) {
+    fieldNames.push(fields[key].name)
+  }
+
+  if (args.field && args.fieldValue){
+      return executeCommand('salesforce-query', {query: "SELECT+"+ fieldNames.join(',')+"+from+"+args.object+"+where+"+args.field+"='"+args.fieldValue+"'" });
+  }
+  return executeCommand('salesforce-query', {query: "SELECT+"+ fieldNames.join(',')+"+from+"+args.object});
+type: javascript
+tags: []
+enabled: true
+args:
+- name: object
+  required: true
+  default: true
+  description: Object Name
+- name: field
+  description: Field Name
+- name: fieldValue
+  description: Field Value
+scripttarget: 0
+dependson: {}
+timeout: 0s
