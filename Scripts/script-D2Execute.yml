@@ -1,0 +1,41 @@
+commonfields:
+  id: ef9edd54-0580-4945-8f06-f43dfb69fb20
+  version: 20
+name: D2Execute
+script: |-
+  demisto.results(demisto.executeCommand("addSystem", {"name":demisto.args()["name"], "host":demisto.args()["host"],
+  "username":demisto.args()["username"], "password":demisto.args()["password"], "os":demisto.args()["os"]}))
+  demisto.results("Installing Agent...")
+  demisto.results(demisto.executeCommand("d2_install", {"system":demisto.args()["name"]}))
+  demisto.results("Running script...")
+  demisto.results(demisto.executeCommand(demisto.args()["scriptName"], {"id":demisto.args()["name"], "using":demisto.args()["name"]}))
+type: python
+tags: []
+enabled: true
+args:
+- name: name
+  required: true
+  default: true
+  description: System name
+- name: host
+  required: true
+  description: Computer name
+- name: os
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - linux
+  - osx
+  - windows
+  description: OS
+- name: username
+  required: true
+  description: username
+- name: password
+  required: true
+  secret: true
+  description: password
+- name: scriptName
+  required: true
+  description: Script Name
+scripttarget: 0
