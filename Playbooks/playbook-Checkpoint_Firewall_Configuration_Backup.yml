@@ -1,10 +1,10 @@
 id: playbook14
 version: -1
 name: Checkpoint Firewall Configuration Backup Playbook
+system: true    
+fromversion: 2.5.0
 description: Triggers a backup task on each firewall appliance and pulls the resulting
   file into the war room via SCP.
-system: true
-fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -15,12 +15,13 @@ tasks:
       id: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
       version: -1
       name: start_task
+      issystemtask: true
       type: start
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     view: |-
       {
         "position": {
@@ -28,37 +29,12 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 230eed7b-c702-4c0f-87f0-700bd9d630b1
-    type: regular
-    task:
-      id: 230eed7b-c702-4c0f-87f0-700bd9d630b1
-      version: -1
-      name: Determine list of devices to be backed up
-      issystemtask: true
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      key: chkpdevicestobackup
-      value: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
   "2":
     id: "2"
-    taskid: 6eb6a468-79cc-460b-8e2c-cada1799b034
+    taskid: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
     type: regular
     task:
-      id: 6eb6a468-79cc-460b-8e2c-cada1799b034
+      id: 5bfe8170-24c1-4ea8-82f7-c5a2a4b58b1d
       version: -1
       name: Trigger backup on each device
       scriptName: CPCreateBackup
@@ -70,7 +46,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      devices: ${chkpdevicestobackup}
+      devices: ${incident.labels.CheckpointDevice}
     results:
     - chkpbackupstarted
     - devicesbackuperrorstarting
@@ -78,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 195
         }
       }
   "3":
@@ -108,7 +84,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
   "4":
@@ -135,44 +111,105 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+    taskid: ae91f6de-f608-43a4-8b5b-7e0bf48a89d6
     type: regular
     task:
-      id: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+      id: ae91f6de-f608-43a4-8b5b-7e0bf48a89d6
       version: -1
       name: Open ticket on ServiceNow with list of problematic devices
-      scriptName: SNOpenTicket
+      script: ServiceNow|||servicenow-incident-create
       issystemtask: true
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
       assignmentgroup: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
       category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
       comments: ${devicesbackuperror}
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: Checkpoint configuration backups - Failed
       shortdescription: Checkpoint configuration backups - Failed
+      sla_due: ""
       subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
     view: |-
       {
         "position": {
-          "x": 293,
-          "y": 903
+          "x": 500,
+          "y": 719
         }
       }
   "6":
     id: "6"
-    taskid: 36723772-43f0-4619-872f-f54d53770054
+    taskid: d406f402-c523-4126-889b-a5dcab1f836d
     type: regular
     task:
-      id: 36723772-43f0-4619-872f-f54d53770054
+      id: d406f402-c523-4126-889b-a5dcab1f836d
       version: -1
       name: Retrieve the backup files from the devices
       scriptName: SCPPullFiles
@@ -184,20 +221,20 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      systems2files: ${devicesbackupfiles}
+      systems2files: ${incident.labels.CheckpointFilePath}
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1097
+          "x": 50,
+          "y": 932
         }
       }
   "7":
     id: "7"
-    taskid: d187c4cc-630c-4edd-8048-40678669101b
+    taskid: 362bae09-4ea1-4a37-8b15-d74374cac4e0
     type: regular
     task:
-      id: d187c4cc-630c-4edd-8048-40678669101b
+      id: 362bae09-4ea1-4a37-8b15-d74374cac4e0
       version: -1
       name: Email a report of backup results
       scriptName: SendEmail
@@ -214,21 +251,22 @@ tasks:
       body: ${backupsreporttext}
       cc: ""
       htmlBody: ""
+      noteEntryID: ""
       subject: Demisto - Checkpoint Backup Report
-      to: ""
+      to: ${incident.labels.CheckpointOwner}
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1291
+          "x": 53,
+          "y": 1134
         }
       }
   "8":
     id: "8"
-    taskid: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+    taskid: e27863cf-0239-418a-8b9e-7e0967464941
     type: regular
     task:
-      id: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+      id: e27863cf-0239-418a-8b9e-7e0967464941
       version: -1
       name: CloseInvestigation
       scriptName: CloseInvestigation
@@ -242,8 +280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1485
+          "x": 50,
+          "y": 1331
         }
       }
 view: |-
@@ -251,8 +289,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1530,
-        "width": 623,
+        "height": 1376,
+        "width": 830,
         "x": 50,
         "y": 50
       }
