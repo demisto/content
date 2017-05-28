@@ -7,9 +7,15 @@ script: |-
   var rep = executeCommand('ip', {ip: args.input});
   var scores = dq(rep, 'EntryContext.DBotScore.Score');
   for (var i = 0; scores && i < scores.length; i++) {
-    if (scores[i] && score < scores[i]) {
-      score = scores[i];
-    }
+      if (scores[i].length) {
+          for (var j = 0 ; j <  scores[i].length; j++) {
+             if (scores[i][j] && score < scores[i][j]) {
+                  score = scores[i][j];
+             }
+          }
+      } else if (scores[i] && score < scores[i]) {
+          score = scores[i];
+      }
   }
   return score < 0 ? 0 : score;
 type: javascript
