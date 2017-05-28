@@ -1,5 +1,5 @@
 commonfields:
-  id: e406b066-2a94-4223-8da0-b206fe53ce79
+  id: ParseCSV
   version: -1
 name: ParseCSV
 script: |
@@ -36,8 +36,9 @@ script: |
   parseip = int(dArgs['ips']) if 'ips' in dArgs else None
   parsedomain = int(dArgs['domains']) if 'domains' in dArgs else None
   parsehash = int(dArgs['hashes']) if 'hashes' in dArgs else None
+  parseAll = demisto.args()['parseAll'] if 'parseAll' in dArgs else None
 
-  if not parseip and not parsedomain and not parsehash:
+  if not parseip and not parsedomain and not parsehash and not parseAll:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please select a field to extract.' } )
       exit()
 
@@ -55,7 +56,23 @@ script: |
 
   if csvEntry:
       res = demisto.executeCommand('getFilePath', {'id': entry['ID']})
-      with open(res[0]['Contents']['path'], 'rU') as f:
+      filePath = res[0]['Contents']['path']
+      if parseAll:
+          allCsv = []
+          with open(filePath, mode='r') as f:
+              records = csv.DictReader(f)
+              for row in records:
+                  allCsv.append(row)
+
+              demisto.results({
+                  "Type" : entryTypes["note"],
+                  "ContentsFormat" : formats["json"],
+                  "ReadableContentsFormat" : formats["markdown"],
+                  "Contents" : allCsv,
+                  "HumanReadable": tableToMarkdown(file, allCsv)
+              })
+
+      with open(filePath, 'rU') as f:
           has_header = csv.Sniffer().has_header(f.read(1024))
           f.seek(0)
 
@@ -106,16 +123,17 @@ script: |
           hashcount = len(hashlist)
           appendContext('hashes', hashlist)
 
-      demisto.results('Parsed CSV: %s, %d IPs, %d Domains, %d Hashes added to the current context' % ( file, ipcount, domaincount, hashcount ))
+      if iplist or domainlist or hashlist:
+          demisto.results('Parsed CSV: %s, %d IPs, %d Domains, %d Hashes added to the current context' % ( file, ipcount, domaincount, hashcount ))
   else:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No csv file found in the war room. Ensure the file was uploaded and the filename ends in ".csv".' } )
 type: python
 tags:
 - file
 - csv
+- Utility
 comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes
   into the context.
-system: true
 args:
 - name: file
   required: true
@@ -129,6 +147,8 @@ args:
 - name: hashes
   description: The column number that contains file hashes. (First column is column
     0)
+- name: parseAll
+  description: parses and converts all the rows in csv into json and puts into context.
 scripttarget: 0
 dependson: {}
 timeout: 120ns
