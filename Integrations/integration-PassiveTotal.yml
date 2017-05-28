@@ -27,6 +27,11 @@ configuration:
   required: true
 script:
   script: |-
+    if (command == 'url') {
+        args.query = args.url;
+        command = 'pt-malware';
+    }
+
     var serverUrl = params.ServerURL;
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
@@ -48,11 +53,6 @@ script:
         }
         return result.Body;
     };
-
-    if (command == 'url') {
-        args.query = args.url;
-        command = 'pt-malware';
-    }
 
     var commandToPath = {
         'pt-get-subdomains': 'v2/enrichment/subdomains',
@@ -502,28 +502,12 @@ script:
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
     outputs:
-    - contextPath: IP.Address
-      description: Bad IPs found during enrichment
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
-    - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: Domain.Name
       description: Bad domains found during enrichment
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    - contextPath: File.MD5
-      description: Bad hash MD5
-    - contextPath: File.SHA1
-      description: Bad hash SHA1
-    - contextPath: File.SHA256
-      description: Bad hash SHA256
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
     - contextPath: DBotScore.Type
@@ -533,12 +517,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: ""
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
     - contextPath: Domain(val.Malicious)
       description: Malicious Domains
       related: ""
