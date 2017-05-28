@@ -87,7 +87,7 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
 scripttarget: 0
-dockerimage: orius123/pdfx
+dockerimage: demisto/pdfx
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
