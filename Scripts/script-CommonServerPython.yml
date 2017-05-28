@@ -228,11 +228,20 @@ script: |-
         mdResult = '### ' + name + '\n'
 
     if t:
-        mdResult += '|'.join(headers) + '\n'
-        mdResult += '|'.join(['-'] * len(headers)) + '\n'
+        if len(headers) == 1:
+          mdResult += headers[0]+'|' + '\n'
+        else:
+          mdResult += '|'.join(headers) + '\n'
+        sep = '-'
+        if len(headers) == 1:
+          sep = '-|'
+        mdResult += '|'.join([sep] * len(headers)) + '\n'
         for entry in t:
             vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
-            mdResult += '|'.join(vals) + '\n'
+            if len(vals) == 1:
+              mdResult += vals[0]+'|' + '\n'
+            else:
+              mdResult += '|'.join(vals) + '\n'
     else:
         mdResult += '**No entries.**\n'
     return mdResult
