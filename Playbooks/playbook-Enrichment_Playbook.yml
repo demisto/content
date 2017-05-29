@@ -398,7 +398,7 @@ tasks:
       "yes":
       - "18"
     scriptarguments:
-      value: ${ConfiguredModules.brand(val=='wildfire')}
+      value: ${ConfiguredModules.brand(val=='WildFire')}
     view: |-
       {
         "position": {
