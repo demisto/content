@@ -695,7 +695,7 @@ script: |-
       return null;
   }
 
-  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+  var brands = {xfe: 'xfe', vt: 'VirusTotal', cy: 'cylance', wf: 'WildFire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
