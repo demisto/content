@@ -1,5 +1,5 @@
 id: c08c6784-6818-4bfd-8155-3ea6b2cf8b42
-version: 33
+version: 51
 name: CheckpointFW-test
 starttaskid: "0"
 tasks:
@@ -20,7 +20,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -120
+          "y": -174
         }
       }
   "1":
@@ -51,10 +51,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: b8334ab6-b392-4423-8c65-6ef0b72c88ee
+    taskid: 2bc9a245-9d4f-461c-8c29-03e42f0fc0cc
     type: regular
     task:
-      id: b8334ab6-b392-4423-8c65-6ef0b72c88ee
+      id: 2bc9a245-9d4f-461c-8c29-03e42f0fc0cc
       version: -1
       name: checkpoint-set-rule
       description: Set attributes of an access rule object configured in Checkpoint
@@ -72,11 +72,12 @@ tasks:
       name: ${CheckpointFWRule.Name}
       rule_number: ""
       uid: ""
+    continueonerror: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 508
+          "y": 521
         }
       }
   "4":
@@ -104,15 +105,15 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 18
+          "y": -47
         }
       }
   "5":
     id: "5"
-    taskid: 2e9da888-45b7-42ce-817b-6c19238c8b09
+    taskid: c454e598-5425-4c5d-8ca2-339577cc6128
     type: regular
     task:
-      id: 2e9da888-45b7-42ce-817b-6c19238c8b09
+      id: c454e598-5425-4c5d-8ca2-339577cc6128
       version: -1
       name: checkpoint-block-ip
       description: Block one or more IP addresses using Checkpoint Firewall.
@@ -122,18 +123,18 @@ tasks:
       brand: Check Point
     nexttasks:
       '#none#':
-      - "2"
       - "15"
+      - "19"
     scriptarguments:
       direction: to
-      ip: 1.1.1.13
+      ip: 1.1.1.22
       ipname: CP-PB-test
       rulename: TestRule
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 321
+          "y": 130
         }
       }
   "7":
@@ -161,38 +162,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 678
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 370b0043-e560-4d54-83a8-b23cb9704b7a
-    type: regular
-    task:
-      id: 370b0043-e560-4d54-83a8-b23cb9704b7a
-      version: -1
-      name: WhileLoop
-      description: |
-        While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
-        Please make sure timeout of the script also sufficient for the loop.
-      scriptName: WhileLoop
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      cmdArguments: devices=checkpoint
-      cmdToRun: CheckpointFWBackupStatus
-      keyToWatch: CheckpointBackup.Status
-      maxIterations: "10"
-      sleepTime: "10"
-      value: Done
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1025
         }
       }
   "12":
@@ -248,7 +217,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 180
+          "y": 130
         }
       }
   "14":
@@ -302,7 +271,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 508
+          "y": 328
         }
       }
   "16":
@@ -321,6 +290,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
     scriptarguments:
       devices: checkpoint
       waittimeout: ""
@@ -330,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1196
+          "y": 1025
         }
       }
   "17":
@@ -352,7 +324,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "16"
     scriptarguments:
       devices: checkpoint
     results:
@@ -364,15 +336,68 @@ tasks:
           "y": 859
         }
       }
+  "18":
+    id: "18"
+    taskid: ec798a1f-625f-49ce-860c-2498527ed152
+    type: regular
+    task:
+      id: ec798a1f-625f-49ce-860c-2498527ed152
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: CheckpointBackup
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: ""
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1196
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 2f186c25-a93e-40b6-8d5b-7b6f693f21db
+    type: regular
+    task:
+      id: 2f186c25-a93e-40b6-8d5b-7b6f693f21db
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 328
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1411,
+        "height": 1465,
         "width": 850,
         "x": -20,
-        "y": -120
+        "y": -174
       }
     }
   }
