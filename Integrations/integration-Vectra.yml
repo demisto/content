@@ -572,7 +572,7 @@ script:
     - name: t_score_gte
       description: filter by threat score >= the score provided
     - name: c_score
-      description: The current certainty score integer correlated to this host
+      description: filter by certainty score
     - name: c_score_gte
       description: filter by certainty score >= the score provided
     - name: last_detection_timestamp
@@ -628,7 +628,7 @@ script:
     - name: t_score_gte
       description: filter by threat score >= the score provided
     - name: c_score
-      description: The current certainty score integer correlated to this host
+      description: filter by certainty score
     - name: c_score_gte
       description: filter by certainty score >= the score provided
     - name: last_detection_timestamp
