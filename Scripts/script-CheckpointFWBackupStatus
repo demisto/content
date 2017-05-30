@@ -1,6 +1,6 @@
 commonfields:
-  id: f3e33e2c-a250-4f45-838c-d71eeb51d57f
-  version: 15
+  id: CheckpointFWBackupStatus
+  version: -1
 name: CheckpointFWBackupStatus
 script: |+
   from re import escape
