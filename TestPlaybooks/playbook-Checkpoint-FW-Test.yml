@@ -276,10 +276,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 71b1c07f-d75d-41d1-8f0b-ce5fdd7097c7
+    taskid: CheckpointFWBackupStatus
     type: regular
     task:
-      id: 71b1c07f-d75d-41d1-8f0b-ce5fdd7097c7
+      id: CheckpointFWBackupStatus
       version: -1
       name: CheckpointFWBackupStatus
       description: Connect to a checkpoint firewall appliance using SSH and retrieve
