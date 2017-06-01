@@ -9,14 +9,10 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAvCAYAAAAo7w6dAAAgAEl
 description: Issue tracking product, developed by Atlassian
 detaileddescription: |
   For fetching incidents, please update the query param according to [JQL documentation](https://confluence.atlassian.com/jirasoftwarecloud/advanced-searching-764478330.html)
-  Update there the project you want to fetch from like:  "project = soc AND  status=open".
-  This will fetch for first time all tickets in your system (include past) that are in open status and in project soc, after first run, it will create incident only for new tickets,
-  If you wish to start in first time from a specific position, use "Issue index to start fetching incidents from" param.
-  
-  you can also fetch incidents by time (using the issues created field) by turning on the  "Use created field to fetch incidents" field, instead of using id's.
-  Added new Authentication method: OAuth1.0.
-  To use OAuth1.0 you should folow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) till you get Access Token.
-  To Authorization we need Access Token, Private Key and Consumer Key
+  Update the project you want to fetch from, using:  "project = soc AND status=open". This will fetch all tickets in your system (including past tickets) that are in Open status and in project soc. After the first run, it will create incidents only for new tickets.
+  If you wish the first run to start from a specific time, use "Issue index to start fetching incidents from" param.
+  Fetching incidents by creation time (using the Created field), instead of using IDs, is done by checking the "Use created field to fetch incidents" checkbox.
+  To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key and Consumer Key.
 configuration:
 - display: Jira URL, in the format https://demisto.atlassian.net/
   name: url
