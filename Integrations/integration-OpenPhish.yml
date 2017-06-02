@@ -1,0 +1,159 @@
+commonfields:
+  id: OpenPhish
+  version: -1
+name: OpenPhish
+display: OpenPhish
+category: Threat Intelligence
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAj4AAACmCAMAAADtRnWZAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA/hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ1dWlkOjVEMjA4OTI0OTNCRkRCMTE5MTRBODU5MEQzMTUwOEM4IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjQ5MUUxRkZBRjlGRDExRTNCRDY3QjMyMzk0OTQ1QzlBIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQ5MUUxRkY5RjlGRDExRTNCRDY3QjMyMzk0OTQ1QzlBIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIElsbHVzdHJhdG9yIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InV1aWQ6NTIwMzI3NmEtYzU0MC01NjQ3LTk3YTUtODBhM2ZhNTEwNzFiIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjA1YjBi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
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Database refresh interval (hours)
+  name: fetchIntervalHours
+  defaultvalue: "1"
+  type: 0
+  required: false
+script:
+  script: |
+    var listSource = 'https://openphish.com/feed.txt';
+    var listUpdateIntervalHours = 1;
+
+    var isNumber = function(obj) {
+        return (obj == parseFloat(obj));
+    }
+
+    if (isNumber(params.fetchIntervalHours)) {
+        listUpdateIntervalHours = params.fetchIntervalHours;
+    }
+
+    var getList = function() {
+        var res = http(listSource,{Method: 'GET'},false,params.proxy);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var list = res.Body.split("\n");
+        var obj={};
+        for (var i=0;i<list.length;i++) {
+            var item = removeBackslash(list[i]);
+            obj[item]=true;
+        }
+        return obj;
+    };
+
+    var reload = function() {
+        var list = getList();
+
+        var data={'list':list,'timestamp':new Date().getTime()};
+        setIntegrationContext(data);
+        return data;
+    };
+
+    var reloadNeeded = function(data) {
+        if (!data || !data.timestamp || !data.list) {
+            return true;
+        }
+        now = new Date().getTime();
+        if (data.timestamp < now-(3600*listUpdateIntervalHours)) {
+            return true;
+        }
+        return false;
+    }
+
+    var removeBackslash=function(pUrl) {
+        var url=pUrl;
+        if (url[url.length - 1] == '/') {
+            url = url.substr(0,url.length - 1);
+        }
+        return url;
+    }
+    var doURL = function(pUrl) {
+        var data = getIntegrationContext();
+        if (reloadNeeded(data)) {
+            data = {timestamp:new Date().getTime(), list: getList()};
+            setIntegrationContext(data);
+        }
+        var url = removeBackslash(pUrl);
+        var ec = {};
+        var md = "### OpenPhish Database - URL Query\n";
+
+        if (data.list[url]) {
+            var dbotScore=3;
+            addMalicious(ec, outputPaths.url, {
+                Data: args.url,
+                Malicious: {Vendor: 'OpenPhish', Description: 'Match found in OpenPhish database'}
+            });
+            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'OpenPhish', Score: dbotScore};
+
+            md += "#### Found matches for URL " + args.url + "\n";
+        } else {
+            md += "#### No matches for URL " + args.url + "\n";
+        }
+        var res = {'url':args.url, 'match': true};
+        return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    }
+    switch (command) {
+        case 'test-module':
+            if (!isNumber(params.fetchIntervalHours)) {
+                throw 'OpenPhish error: Please provide a numeric value for Database refresh interval (hours)';
+            }
+            doURL('http://google.com');
+            data=reload();
+            if (Object.keys(data.list).length === 0) {
+                throw 'Error - no list fetched';
+            }
+            return 'ok';
+        case 'url':
+            return doURL(args.url);
+        case 'openphish-reload':
+            data=reload();
+            var md = "OpenPhish Database reloaded\n";
+            md += "Total **" + Object.keys(data.list).length + "** URLs loaded.\n";
+            return({Type: entryTypes.note, Contents: {}, ContentsFormat: formats.json, HumanReadable: md});
+        case 'openphish-status':
+            data=getIntegrationContext();
+            var md = "OpenPhish Database Status\n";
+            md += "Total **" + Object.keys(data.list).length + "** URLs loaded.\n";
+            md += "Last load time **" + new Date(data.timestamp).toString() + "**\n";
+            return({Type: entryTypes.note, Contents: {}, ContentsFormat: formats.json, HumanReadable: md});
+
+        default:
+            throw 'OpenPhis error: unknown command';
+    }
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: ""
+    description: Check URL Reputation
+  - name: openphish-reload
+    arguments: []
+    description: Reload OpenPhish database
+  - name: openphish-status
+    arguments: []
+    description: Show OpenPhish database status
+hidden: false
