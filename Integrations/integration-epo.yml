@@ -36,21 +36,19 @@ script:
     };
 
     var callEpo = function(qParams, qArgs, raw) {
-        var url = qParams['address'] + '/remote/' + qArgs['command'];
-        if (raw) {
-            var parameters = {};
-            for (var key in qArgs) {
-                if (key != 'command') {
-                    parameters[key] = qArgs[key];
-                }
-            }
-            url += encodeToURLQuery(parameters);
-            url += (parameters.length > 0) ? '&' : '?';
-            url += ':output=json';
-        }  else {
-            var p = qArgs['params'] ? qArgs['params']+'&' : '';
-            url += '?' + p + ':output=json';
+        if (!qArgs['command']) {
+            throw 'ePO error: command argument is missing';
         }
+        var url = qParams['address'] + '/remote/' + qArgs['command'];
+        var parameters = {};
+        for (var key in qArgs) {
+            if (key != 'command') {
+                parameters[key] = qArgs[key];
+            }
+        }
+        url += encodeToURLQuery(parameters);
+        url += (Object.keys(parameters).length > 0) ? '&' : '?';
+        url += ':output=json';
         var result = http(
             url,
             {
@@ -320,33 +318,16 @@ script:
             return epoGetSystemTreeGroups();
         case 'epo-find-systems':
             return epoFindSystems();
-        case 'epo-command-raw':
+        case 'epo-command':
             var result = callEpo(params, args, true);
             var md = "#### ePO command *"+args.command+"* results:\n";
             md += objToMd(result);
             return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
-
         default:
-            var result = callEpo(params, args);
-            var md = "#### ePO command *"+args.command+"* results:\n";
-            md += objToMd(result);
-            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
-
-
+            throw 'ePO Error: unknown command';
     }
   type: javascript
   commands:
-  - name: epo-command
-    arguments:
-    - name: command
-      required: true
-      default: true
-      description: The command to run. (Run "core.help" to get a list of available
-        commands in your environment)
-    - name: params
-      description: Command parameters (e.g. param1=value&param2=value)
-    description: Run a remote command on EPO
-    execution: true
   - name: epo-help
     arguments:
     - name: search
@@ -411,7 +392,7 @@ script:
       - "false"
       description: Print all system data
     description: Find systems in the System Tree - by group ID or by search
-  - name: epo-command-raw
+  - name: epo-command
     arguments: []
     description: Execute ePO command
 hidden: false
