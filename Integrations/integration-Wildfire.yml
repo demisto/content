@@ -254,10 +254,35 @@ script:
     description: Retrieve results for a file hash using WildFire
   - name: file
     description: Retrieve results for a file hash using WildFire
-    deprecated: true
     arguments:
     - name: file
       description: file hash to check
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+    - contextPath: File.Size
+      description: File size
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
   - name: wildfire-upload
     arguments:
     - name: upload
