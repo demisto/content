@@ -24,8 +24,17 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
-  script: |2-
+  script: |-
+    var serverUrl = params.address;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
 
     var epoSystemAttributesMap = {
         'EPOComputerProperties.ComputerName':'Name',
@@ -35,28 +44,20 @@ script:
         'EPOComputerProperties.OSType':'Operating System'
     };
 
-    var callEpo = function(qParams, qArgs, raw) {
-        if (!qArgs['command']) {
-            throw 'ePO error: command argument is missing';
-        }
-        var url = qParams['address'] + '/remote/' + qArgs['command'];
-        var parameters = {};
-        for (var key in qArgs) {
-            if (key != 'command') {
-                parameters[key] = qArgs[key];
-            }
-        }
-        url += encodeToURLQuery(parameters);
-        url += (Object.keys(parameters).length > 0) ? '&' : '?';
+    var callEpo = function(pCommand, pArgs) {
+        var url = serverUrl + 'remote/' + pCommand;
+        url += encodeToURLQuery(pArgs);
+        url += (Object.keys(pArgs).length > 0) ? '&' : '?';
         url += ':output=json';
         var result = http(
             url,
             {
                 Method: 'GET',
-                Username: qParams['authentication']['identifier'],
-                Password: qParams['authentication']['password']
+                Username: params.authentication.identifier,
+                Password: params.authentication.password
             },
-            qParams['insecure']
+            params.insecure,
+            params.proxy
         );
         if (isResponseOK(result)) {
             trimmedRes = result.Body.substring(okStr.length);
@@ -69,6 +70,7 @@ script:
             throw 'Error accessing ePO interface. Command: ' + url + ". Response: " + JSON.stringify(result);
         }
     };
+
     var doRawHttp = function(method, url, parameters, body) {
         if (!parameters) {
             parameters = {};
@@ -85,7 +87,8 @@ script:
             throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;
         }
         return result;
-    }
+    };
+
     var isResponseOK = function(response) {
         // EPO response if of format: OK -> data. Error: error string
         if (response.StatusCode === 200) {
@@ -96,51 +99,55 @@ script:
         }
         return false;
     };
+
     var systemsToMd = function(systems,verbose) {
+        var i;
         var md='';
         if (verbose=="true") {
-            for (var i=0;i<systems.length;i++) {
+            for (i=0;i<systems.length;i++) {
                 md += systemToMd(systems[i],verbose);
             }
         } else {
             var tmpHead='|';
             var tmpLine='|';
-            for (key in epoSystemAttributesMap) {
+            for (var key in epoSystemAttributesMap) {
                 tmpHead += epoSystemAttributesMap[key] + '|';
                 tmpLine += '-|';
             }
             md += tmpHead + '\n'+tmpLine+'\n';
-            for (var i=0;i<systems.length;i++) {
+            for (i=0;i<systems.length;i++) {
                 md += systemToMd(systems[i],verbose);
             }
         }
         return md;
-    }
+    };
+
     var systemToMd = function(system,verbose) {
         var md='';
+        var key;
         if (verbose=="true") {
             md += '#### '+ system["EPOComputerProperties.ComputerName"]+'\n';
             md += "Attribute|Value\n-|-\n";
-            for (var key in system) {
+            for (key in system) {
                 md += key +"|"+system[key]+"\n";
             }
             md += "---\n";
         } else {
             md +='|';
-            for (var key in epoSystemAttributesMap) {
+            for (key in epoSystemAttributesMap) {
                 md += system[key] +"|";
             }
             md += '\n';
         }
         return md;
+    };
 
-    }
     var epoHelp = function () {
-        hParams={'command':'core.help'};
+        var pArgs = {};
         if (args.command) {
-            hParams.params = "command="+args.command;
+            pArgs.command = args.command;
         }
-        var readyRes = callEpo(params,hParams);
+        var readyRes = callEpo('core.help',pArgs);
         var md;
         var line;
         var cmd;
@@ -166,53 +173,43 @@ script:
         return {Type: entryTypes.note, Contents: readyRes, ContentsFormat: formats.json, HumanReadable: md};
     };
     var epoGetDatUpdateTask = function() {
-        dArgs = {
-            "command": "clienttask.find",
-            "params": "searchText=VSEContentUpdateDemisto"
-        }
-        var result = callEpo(params, dArgs);
+        var pArgs = {'searchText':'VSEContentUpdateDemisto'};
+        var result = callEpo('clienttask.find', pArgs);
         if (result && Array.isArray(result)) {
             result = result[0];
         }
         return result.objectId;
-    }
+    };
+
     var epoUpdateCLientDat = function() {
         var clientTask = epoGetDatUpdateTask();
 
-        dArgsUpdate = {
-            "command": "clienttask.run",
-            "params": "names=" + args.systems + "&productId=EPOAGENTMETA&taskId=" + clientTask
-        }
+        var pArgs = {'names':args.systems, 'productId':'EPOAGENTMETA', 'taskId':clientTask};
+
         var options = ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes', 'stopAfterMinutes', 'randomizationInterval'];
         for (var i=0;i<options.length;i++) {
             if (args[options[i]]) {
-                dArgsUpdate[options[i]] = + args[options[i]];
+                pArgs[options[i]] = args[options[i]];
             }
         }
-        var result = callEpo(params, dArgsUpdate);
+        var result = callEpo('clienttask.run', pArgs);
         var md = "ePO client DAT update task started: " + result;
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
     }
     var epoUpdateRepository = function() {
-        dArgs = {
-            "command": "repository.pull",
-            "params": "sourceRepository=McAfeeHttp&targetBranch=Current"
-        }
-        var result = callEpo(params, dArgs);
+        var pArgs = {'sourceRepository':'McAfeeHttp','targetBranch':'Current'};
+        var result = callEpo('repository.pull', pArgs);
 
         var md = "ePO repository update started.\n";
         md += result;
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
     }
     var epoGetSystemTreeGroups = function () {
-        dArgs = {
-            "command": "system.findGroups",
-        }
+        var pArgs = {};
         if (args.search) {
-            dArgs.params = "searchText="+args.search;
+            pArgs.searchText=args.search;
         }
-
-        var result = callEpo(params, dArgs);
+        var result = callEpo('system.findGroups', pArgs);
         var md = "#### ePO System Tree groups\n";
         md += "Group ID | Group path\n-|-\n"
         for (var i=0;i<result.length;i++) {
@@ -231,11 +228,8 @@ script:
         return null;
     }
     var epoGetCurrentDat = function () {
-        var dArgs = {
-            "command": "repository.findPackages",
-            "params": "searchText=VSCANDAT1000"
-        };
-        var result = callEpo(params, dArgs);
+        var pArgs = {"searchText":"VSCANDAT1000"};
+        var result = callEpo('repository.findPackages', pArgs);
         if (result && result.length>0) {
             result = result[0];
             var epoDAT = result.productDetectionProductVersion.split('.')[0];
@@ -248,36 +242,24 @@ script:
         }
     }
     var epoFindSystems = function() {
-        if ((args.groupId && args.search) || (!args.groupId && !args.search))  {
-            throw 'Find systems using either groupId or search';
-        }
-        if (args.groupId) {
-            var name = epoGetSystemGroupPath(args.groupId);
+        var name = epoGetSystemGroupPath(args.groupId);
 
-            if (!name) {
-                throw 'System Tree group not found';
-            }
-            var dArgs = {
-                "command": "epogroup.findSystems",
-                "params": "groupId="+args.groupId
-            };
-            var result = callEpo(params, dArgs);
-            if (result) {
-                var md = '#### Systems in '+name+'\n';
-                if (result.length>0) {
-                    md += systemsToMd(result,args.verbose);
-                    // for (var i=0;i<result.length;i++) {
-                    //     md += systemToMd(result[i]);
-                    // }
-                } else {
-                    md += 'No systems found\n';
-                }
-                return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
-            } else {
-                throw 'No systems found. Response: ' + JSON.stringify(result);
-            }
+        if (!name) {
+            throw 'System Tree group not found';
         }
-        return 'ok';
+        var pArgs = {'groupId':args.groupId};
+        var result = callEpo('epogroup.findSystems', pArgs);
+        if (result) {
+            var md = '#### Systems in '+name+'\n';
+            if (result.length>0) {
+                md += systemsToMd(result,args.verbose);
+            } else {
+                md += 'No systems found\n';
+            }
+            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+        } else {
+            throw 'No systems found. Response: ' + JSON.stringify(result);
+        }
     }
     var epoGetLatestDat = function() {
         var url = "http://update.nai.com/products/commonupdater/gdeltaavv.ini"
@@ -319,7 +301,16 @@ script:
         case 'epo-find-systems':
             return epoFindSystems();
         case 'epo-command':
-            var result = callEpo(params, args, true);
+            if (!args.command) {
+                throw 'ePO error: command argument is missing';
+            }
+            var pArgs = {};
+            for (var key in args) {
+                if (key != 'command') {
+                    pArgs[key] = args[key];
+                }
+            }
+            var result = callEpo(args.command,pArgs);
             var md = "#### ePO command *"+args.command+"* results:\n";
             md += objToMd(result);
             return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
@@ -382,9 +373,9 @@ script:
   - name: epo-find-systems
     arguments:
     - name: groupId
+      required: true
+      default: true
       description: System Tree Group ID
-    - name: search
-      description: Search string
     - name: verbose
       auto: PREDEFINED
       predefined:
