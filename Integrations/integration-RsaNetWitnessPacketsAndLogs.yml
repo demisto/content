@@ -40,6 +40,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Expiration time
+  name: expiry
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     var fixUrl = function(base) {
@@ -218,6 +223,10 @@ script:
         var parametersUrl = encodeParams(args);
         var responseType = resType ? ResponseTypes[resType] : 'application/json';
         var fullUrl = url + path + parametersUrl + '&force-content-type=' + responseType;
+
+        if (params.expiry) {
+            fullUrl += '&expiry=' + params.expiry;
+        }
 
         var res = http(
             fullUrl,
