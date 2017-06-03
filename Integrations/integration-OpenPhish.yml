@@ -118,8 +118,12 @@ script:
         case 'openphish-status':
             data=getIntegrationContext();
             var md = "OpenPhish Database Status\n";
-            md += "Total **" + Object.keys(data.list).length + "** URLs loaded.\n";
-            md += "Last load time **" + new Date(data.timestamp).toString() + "**\n";
+            if (!data || !data.list) {
+                md += "Database not loaded.\n"
+            } else {
+                md += "Total **" + Object.keys(data.list).length + "** URLs loaded.\n";
+                md += "Last load time **" + new Date(data.timestamp).toString() + "**\n";
+            }
             return({Type: entryTypes.note, Contents: {}, ContentsFormat: formats.json, HumanReadable: md});
 
         default:
