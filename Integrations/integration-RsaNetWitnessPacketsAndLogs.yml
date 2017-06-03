@@ -101,7 +101,6 @@ script:
 
         if(retVal.md.length > 0) {
             var hr = tblToMd(command, retVal.md,'', '<br>');
-            log(hr);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
             return JSON.stingify(data);
