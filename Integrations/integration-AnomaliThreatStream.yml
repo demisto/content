@@ -1,0 +1,294 @@
+commonfields:
+  id: Anomali ThreatStream
+  version: -1
+name: Anomali ThreatStream
+display: Anomali ThreatStream
+category: Forensics & Malware Analysis
+image: data:image/png;base64,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
+description: Use Anomali ThreatStream to query and submit threats
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.threatstream.com
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var base = params.server.replace(/[\/]+$/, '') + '/api/';
+    args.username = params.username;
+    args.api_key = params.apikey;
+
+    var commandDict = {
+        'test-module': {
+            method: 'GET',
+            url: 'intelligence/',
+            version: 'v1',
+        },
+        'anomali-intelligence': {
+            method: 'GET',
+            url: 'intelligence/',
+            version: 'v1',
+        },
+        'anomali-import-with-approval': {
+            method: 'POST',
+            url: 'intelligence/import/',
+            version: 'v1',
+            multipart: true,
+        },
+        'anomali-import-without-approval': {
+            method: 'PATCH',
+            url: 'intelligence/',
+            version: 'v1',
+            headers: {
+                'Content-Type': ['application/json'],
+            },
+            multipart: true,
+        },
+        'anomali-check-import-status': {
+            method: 'GET',
+            url: 'importsession/%session_id%/',
+            version: 'v1',
+        },
+    }
+
+    var sendRequest = function(method, url, version, args, headers, multipart) {
+        url = base + version + '/' + url;
+        if (method === 'GET') {
+            url += encodeToURLQuery(args);
+        } else {
+            var cred = {
+                username: args.username,
+                api_key: args.api_key,
+            };
+            delete(args.username);
+            delete(args.api_key);
+            url += encodeToURLQuery(cred);
+        }
+        var file_id = args.file_id;
+        delete(args.file_id);
+        var res = !multipart ?
+            http(
+                url,
+                {
+                    Method: method,
+                    Headers: headers,
+                    Body: method !== 'GET' ? JSON.stringify(args) : '',
+                },
+                params.insecure,
+                params.proxy
+            ) :
+            httpMultipart(
+                url,
+                file_id,
+                {
+                    Method: method,
+                    Headers: headers,
+                },
+                args,
+                insecure,
+                proxy
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (res.StatusCode === 404) {
+                return undefined;
+            }
+            if (res.StatusCode === -1) {
+                throw res.Status;
+            }
+            throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    var commandData = commandDict[command];
+    var res = sendRequest(
+        commandData.method,
+        replaceInTemplatesAndRemove(commandData.url, args),
+        commandData.version,
+        args,
+        commandData.headers,
+        commandData.multipart);
+    if (command === 'test-module') {
+        return 'ok';
+    }
+    return res;
+  type: javascript
+  commands:
+  - name: anomali-intelligence
+    arguments:
+    - name: limit
+      description: limit the amount of records in response
+      defaultValue: "20"
+    - name: asn
+      description: Autonomous System (AS) number associated with the indicator
+    - name: confidence
+      description: Confidence value assigned to the indicator
+    - name: country
+      description: Country associated with the indicator
+    - name: created_ts
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - name: expiration_ts
+      description: Time stamp of when intelligence will expire on ThreatStream, in
+        UTC time
+    - name: feed_id
+      description: Numeric ID of the threat feed that generated the indicator
+    - name: id
+      description: Unique ID for the indicator
+    - name: import_session_ id
+      description: ID of import session in which the indicator was imported
+    - name: ip
+      description: The IP address associated with the indicator if the imported indicator
+        is a domain or a URL
+    - name: is_public
+      description: Classification of the indicator—public or private
+    - name: itype
+      description: Indicator type
+    - name: latitude
+      description: Latitude associated with the Geo location of the IP
+    - name: longitude
+      description: Longitude associated with the Geo location of the IP
+    - name: meta.detail
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators
+    - name: meta.detail2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive
+    - name: meta.maltype
+      description: Tag that specifies the malware associated with an indicator
+    - name: meta.severity
+      description: Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys
+    - name: modified_ts
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - name: org
+      description: Registered owner (organization) of the IP address associated with
+        the indicator
+    - name: owner_ organization_id
+      description: ID of the (ThreatStream)organization that brought in the indicator,
+        either through a threat feed or through the import process
+    - name: rdns
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator
+    - name: source_reported_ confidence
+      description: A risk score from 0 to 100, provided by the source of the indicator
+    - name: status
+      description: Status assigned to the indicator
+    - name: tags.name
+      description: Tag assigned to the indicator
+    - name: threat_type
+      description: Summarized threat type of the indicator. For example, malware,
+        compromised, apt, c2, and so on
+    - name: trusted_circle_ids
+      description: IDs of the trusted circles with which the indicator is shared
+    - name: type
+      description: Type of indicator—domain, email, ip, md5, string, url
+    - name: update_id
+      description: An incrementing numeric identifier associated with each update
+        to intelligence on ThreatStream
+    - name: value
+      description: Value of the indicator
+    description: To retrieve threat intelligence from the ThreatStream cloud
+  - name: anomali-import-with-approval
+    arguments:
+    - name: confidence
+      description: Confidence value assigned to the indicator
+    - name: source_ confidence_ weight
+      description: Specifies the ratio between the amount of the source confidence
+        of each indicator and the ThreatStream confidence
+    - name: severity
+      description: Severity you want to assign to the indicator when it is imported
+    - name: classification
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Classification of the indicator
+    - name: expiration_ts
+      description: Time stamp of when intelligence will expire on ThreatStream, in
+        UTC format. For example, 2017-01-26T00:00:00
+    - name: notes
+      description: Additional details for the indicator. This information is displayed
+        in the Tags column of the ThreatStream UI
+    - name: ip_mapping
+      description: Indicator type to assign if a specific type is not associated with
+        an indicator
+    - name: domain_ mapping
+      description: Indicator type to assign if a specific type is not associated with
+        an indicator
+    - name: 'url_mapping '
+      description: Indicator type to assign if a specific type is not associated with
+        an indicator
+    - name: email_ mapping
+      description: Indicator type to assign if a specific type is not associated with
+        an indicator
+    - name: md5_mapping
+      description: Indicator type to assign if a specific type is not associated with
+        an indicator
+    - name: trusted_ circles
+      description: ID of the trusted circle to which this threat data should be imported.
+        If you want to import the threat data to multiple trusted circles, enter the
+        list of comma-separated IDs
+    - name: file_id
+      description: File id to upload
+    description: To import threat data (indicators) into ThreatStream and require
+      approval of the imported data through the ThreatStream UI
+  - name: anomali-check-import-status
+    arguments:
+    - name: session_id
+      description: Import session ID
+    description: Use this API call to periodically poll the status of an import job
+  - name: anomali-import-without-approval
+    arguments:
+    - name: classification
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Classification of the indicator
+    description: To import structured threat data (indicators) into ThreatStream,
+      without requiring approval of the imported data through the ThreatStream UI
+  - name: confidence
+    arguments: []
+    description: Confidence value assigned to the indicator
+  - name: source_ confidence_ weight
+    arguments: []
+    description: To use your source's confidence entirely, set source_confidence_
+      weight to 100
+  - name: expiration_ts
+    arguments: []
+    description: Time stamp of when intelligence will expire on ThreatStream, in UTC
+      format. For example, 2017-01-26T00:00:00
+  - name: severity
+    arguments: []
+    description: Severity you want to assign to the indicator when it is imported
+  - name: tags
+    arguments:
+    - name: trusted_ circles
+      description: ID of the trusted circle to which this threat data should be imported.
+        If you want to import the threat data to multiple trusted circles, enter the
+        list of comma-separated IDs
+    description: Tag to assign to the indicator
+  - name: trusted_ circles
+    arguments: []
+hidden: false
