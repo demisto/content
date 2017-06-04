@@ -100,8 +100,8 @@ script:
             if (!isNumber(params.fetchIntervalHours)) {
                 throw 'OpenPhish error: Please provide a numeric value (and bigger than 0) for Database refresh interval (hours)';
             }
-            data=reload();
-            if (Object.keys(data.list).length === 0) {
+            var list=getList();
+            if (Object.keys(list).length === 0) {
                 throw 'Error - could not fetch OpenPhish database';
             }
             return 'ok';
