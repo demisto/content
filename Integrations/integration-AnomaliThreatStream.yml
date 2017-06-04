@@ -44,18 +44,18 @@ script:
             url: 'intelligence/',
             version: 'v1',
         },
-        'anomali-intelligence': {
+        'threatstream-intelligence': {
             method: 'GET',
             url: 'intelligence/',
             version: 'v1',
         },
-        'anomali-import-with-approval': {
+        'threatstream-import-with-approval': {
             method: 'POST',
             url: 'intelligence/import/',
             version: 'v1',
             multipart: true,
         },
-        'anomali-import-without-approval': {
+        'threatstream-import-without-approval': {
             method: 'PATCH',
             url: 'intelligence/',
             version: 'v1',
@@ -64,7 +64,7 @@ script:
             },
             multipart: true,
         },
-        'anomali-check-import-status': {
+        'threatstream-check-import-status': {
             method: 'GET',
             url: 'importsession/%session_id%/',
             version: 'v1',
@@ -84,6 +84,9 @@ script:
             delete(args.api_key);
             url += encodeToURLQuery(cred);
         }
+
+        console.log(url);
+
         var file_id = args.file_id;
         delete(args.file_id);
         var res = !multipart ?
@@ -108,6 +111,7 @@ script:
                 insecure,
                 proxy
             );
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (res.StatusCode === 404) {
                 return undefined;
@@ -117,7 +121,38 @@ script:
             }
             throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         return JSON.parse(res.Body);
+    }
+
+    switch (command) {
+        case 'threatstream-ip-reputation':
+            command = 'threatstream-intelligence';
+            args.type = 'ip';
+            args.value = args.ip;
+            delete args.ip;
+            break;
+
+        case 'threatstream-email-reputation':
+            command = 'threatstream-intelligence';
+            args.type = 'email';
+            args.value = args.email;
+            delete args.email;
+            break;
+
+        case 'threatstream-file-reputation':
+            command = 'threatstream-intelligence';
+            args.type = 'md5';
+            args.value = args.file_md5;
+            delete args.md5;
+            break;
+
+        case 'threatstream-checksum-reputation':
+            command = 'threatstream-intelligence';
+            args.type = 'md5';
+            args.value = args.checksum;
+            delete args.checksum;
+            break;
     }
 
     var commandData = commandDict[command];
@@ -127,14 +162,17 @@ script:
         commandData.version,
         args,
         commandData.headers,
-        commandData.multipart);
+        commandData.multipart
+    );
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     return res;
   type: javascript
   commands:
-  - name: anomali-intelligence
+  - name: threatstream-intelligence
     arguments:
     - name: limit
       description: limit the amount of records in response
@@ -209,7 +247,7 @@ script:
     - name: value
       description: Value of the indicator
     description: To retrieve threat intelligence from the ThreatStream cloud
-  - name: anomali-import-with-approval
+  - name: threatstream-import-with-approval
     arguments:
     - name: confidence
       description: Confidence value assigned to the indicator
@@ -253,12 +291,12 @@ script:
       description: File id to upload
     description: To import threat data (indicators) into ThreatStream and require
       approval of the imported data through the ThreatStream UI
-  - name: anomali-check-import-status
+  - name: threatstream-check-import-status
     arguments:
     - name: session_id
       description: Import session ID
     description: Use this API call to periodically poll the status of an import job
-  - name: anomali-import-without-approval
+  - name: threatstream-import-without-approval
     arguments:
     - name: classification
       auto: PREDEFINED
@@ -268,27 +306,28 @@ script:
       description: Classification of the indicator
     description: To import structured threat data (indicators) into ThreatStream,
       without requiring approval of the imported data through the ThreatStream UI
-  - name: confidence
-    arguments: []
-    description: Confidence value assigned to the indicator
-  - name: source_ confidence_ weight
-    arguments: []
-    description: To use your source's confidence entirely, set source_confidence_
-      weight to 100
-  - name: expiration_ts
-    arguments: []
-    description: Time stamp of when intelligence will expire on ThreatStream, in UTC
-      format. For example, 2017-01-26T00:00:00
-  - name: severity
-    arguments: []
-    description: Severity you want to assign to the indicator when it is imported
-  - name: tags
+  - name: threatstream-ip-reputation
     arguments:
-    - name: trusted_ circles
-      description: ID of the trusted circle to which this threat data should be imported.
-        If you want to import the threat data to multiple trusted circles, enter the
-        list of comma-separated IDs
-    description: Tag to assign to the indicator
-  - name: trusted_ circles
-    arguments: []
+    - name: ip
+      required: true
+      description: IP or domain name
+    description: Checks the reputation of the given IP or domain name
+  - name: threatstream-file-reputation
+    arguments:
+    - name: file_md5
+      required: true
+      description: The MD5 of the file to check
+    description: Checks the reputation of the given file (MD5)
+  - name: threatstream-checksum-reputation
+    arguments:
+    - name: checksum
+      required: true
+      description: The checksum to check
+    description: Checks the reputation of the given checksum
+  - name: threatstream-email-reputation
+    arguments:
+    - name: email
+      required: true
+      description: The email address to check
+    description: Checks the reputation of the given email
 hidden: false
