@@ -192,7 +192,11 @@ script:
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
 
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
-        entry.EntryContext['ThreatStream.' + commandTitle + 'Reputation.' + args.value] = contexts;
+
+        var contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
+        var reputationObjectKey = args.value;
+        entry.EntryContext[contextKey] = {};
+        entry.EntryContext[contextKey][reputationObjectKey] = contexts;
 
         return entry;
     }
@@ -269,7 +273,6 @@ script:
         return 'ok';
     }
 
-    // return result;
     return parseResult(command, result);
   type: javascript
   commands:
