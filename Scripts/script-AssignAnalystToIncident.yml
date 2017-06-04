@@ -3,53 +3,60 @@ commonfields:
   version: -1
 name: AssignAnalystToIncident
 system: true
-script: |-
-  from random import choice
+script: |
+  var userToAssign = null;
+  assignBy = args.assignBy || 'random';
 
-  rolesList = []
-  if demisto.get(demisto.args(), 'roles'):
-      rolesList = argToList(demisto.args()['roles']);
+  switch(assignBy) {
+      case 'random':
+          var usersRes = executeCommand('getUsers', { roles: args.roles });
+          var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+          userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+          break;
+      default:
+          res = executeCommand("getOwnerSuggestion", {})[0].Contents;
+          switch (assignBy) {
+              case 'machine-learning':
+                  userToAssign = res.ownerByMl;
+                  break;
+              case 'top-user':
+                  userToAssign = res.topOwner;
+                  break;
+              case 'less-busy-user':
+                  userToAssign = res.userLeastLoad;
+                  break;
+          }
+  }
 
-  isRandom = True
-  if demisto.get(demisto.args(), 'isRandom'):
-      if demisto.args()['isRandom'].lower() == 'no':
-          isRandom = False
-
-  res = demisto.executeCommand('getUsers', { 'roles': ','.join(rolesList) });
-  usersList = list(map((lambda u: u['username']), res[0]['Contents']))
-
-  userToAssign = None
-  if isRandom:
-      userToAssign = choice(usersList)
-  else:
-      usersMap = dict.fromkeys(usersList, 0)
-      assignedIncidents = demisto.executeCommand("getIncidents", { 'status': '1' })[0]['Contents']['data']
-
-      for inc in assignedIncidents:
-          if inc['owner']:
-              usersMap[inc['owner']] += 1
-
-      minVal = min(usersMap.itervalues())
-      userToAssign = choice([k for k, v in usersMap.iteritems() if v == minVal])
-
-  if userToAssign is not None:
-      demisto.executeCommand("setOwner", {"owner":userToAssign})
-      demisto.results('User \'' + userToAssign + '\' assigned to be the incident owner.')
-  else:
-      demisto.results('No user found.')
-type: python
+  if (userToAssign) {
+      executeCommand("setOwner", { owner: userToAssign });
+      return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
+  } else {
+      return 'No user found.';
+  }
+type: javascript
 tags:
 - Utility
 comment: |-
   Assign analyst to incident.
-  If isRandom is 'yes' (default) the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-  If isRandom is 'no' the less busy analyst will be picked to be the incident owner.
+  By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+  Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+  machine-learning: DBot will calculated and decide who is the best analyst for the job.
+  top-user: The user that is most commonly owns this type of incident
+  less-busy-user: The less busy analyst will be picked to be the incident owner.
 enabled: true
 args:
 - name: roles
   default: true
   description: The optional list of roles we want to assign users from. Can accept
     arrays or comma separated list. Leave empty to fetch all users.
-- name: isRandom
-  description: Will pick random user if set to true, otherwise, pick the less busy analyst
+- name: assignBy
+  auto: PREDEFINED
+  predefined:
+  - random
+  - machine-learning
+  - top-user
+  - less-busy-user
+  description: (default: random) You can pick how to assign the owner - by random,
+    machine learning, top owner or the less busy user.
 scripttarget: 0
