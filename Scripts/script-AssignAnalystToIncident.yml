@@ -57,6 +57,6 @@ args:
   - machine-learning
   - top-user
   - less-busy-user
-  description: (default: random) You can pick how to assign the owner - by random,
-    machine learning, top owner or the less busy user.
+  description: '(default: random) You can pick how to assign the owner - by random,
+    machine learning, top owner or the less busy user.'
 scripttarget: 0
