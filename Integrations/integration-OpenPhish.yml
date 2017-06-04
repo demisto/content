@@ -48,13 +48,12 @@ script:
 
     var reload = function() {
         var list = getList();
-
         var data={'list':list,'timestamp':new Date().getTime()};
         setIntegrationContext(data);
         return data;
     };
 
-    var reloadNeeded = function(data) {
+    var isReloadNeeded = function(data) {
         if (!data || !data.timestamp || !data.list) {
             return true;
         }
@@ -74,9 +73,8 @@ script:
     }
     var doURL = function(pUrl) {
         var data = getIntegrationContext();
-        if (reloadNeeded(data)) {
-            data = {timestamp:new Date().getTime(), list: getList()};
-            setIntegrationContext(data);
+        if (isReloadNeeded(data)) {
+            data = reload();
         }
         var url = removeBackslash(pUrl);
         var ec = {};
@@ -102,10 +100,9 @@ script:
             if (!isNumber(params.fetchIntervalHours)) {
                 throw 'OpenPhish error: Please provide a numeric value (and bigger than 0) for Database refresh interval (hours)';
             }
-            doURL('http://google.com');
             data=reload();
             if (Object.keys(data.list).length === 0) {
-                throw 'Error - no list fetched';
+                throw 'Error - could not fetch OpenPhish database';
             }
             return 'ok';
         case 'url':
@@ -125,7 +122,6 @@ script:
                 md += "Last load time **" + new Date(data.timestamp).toString() + "**\n";
             }
             return({Type: entryTypes.note, Contents: {}, ContentsFormat: formats.json, HumanReadable: md});
-
         default:
             throw 'OpenPhis error: unknown command';
     }
