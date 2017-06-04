@@ -107,7 +107,7 @@ script:
         if(queryResults.length > 0) {
             retVal.md = queryResults;
             retVal.context.NetWitness.Events = queryResults;
-            var hr = tblToMd(command, retVal.md);
+            var hr = tableToMarkdown(command, retVal.md);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
             return JSON.stingify(data);
