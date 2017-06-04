@@ -63,7 +63,7 @@ script:
         return Object.keys(obj).length === 0;
     }
 
-    var fillgroupObject = function (fields, groupObject) {
+    var fillQueryResults = function (fields, queryResults) {
         var TYPE  = 'type';
         var VALUE = 'value';
         var GROUP = 'group';
@@ -71,11 +71,11 @@ script:
             fields.forEach(function (element) {
                 if (element[TYPE] && element[VALUE] && element[GROUP]) {
                     var index = parseInt(element[GROUP]);
-                    if(groupObject[index]) {
-                        groupObject[index][element[TYPE]] = element[VALUE];
+                    if(queryResults[index]) {
+                        queryResults[index][element[TYPE]] = element[VALUE];
                     } else {
-                        groupObject[index] = {};
-                        groupObject[index][element[TYPE]] = element[VALUE];
+                        queryResults[index] = {};
+                        queryResults[index][element[TYPE]] = element[VALUE];
                     }
                 }
             });
@@ -85,11 +85,11 @@ script:
     var buildHrAndContext = function (data) {
         //Check if we have values
         var retVal = {md:[], context: {NetWitness:{Events:[]}}};
-        var groupObject = [];
+        var queryResults = [];
 
         var extractFromData = function(data) {
             var fields = dq(data, 'results.fields');
-            fillgroupObject(fields, groupObject);
+            fillQueryResults(fields, queryResults);
         };
 
         if (Array.isArray(data)) {
@@ -100,13 +100,13 @@ script:
             extractFromData(data);
         }
         //May be empty elements which should be filtred
-        groupObject = groupObject.filter(function (element) {
+        queryResults = queryResults.filter(function (element) {
             return element != undefined || element != null;
         });
 
-        if(groupObject.length > 0) {
-            retVal.md = groupObject;
-            retVal.context.NetWitness.Events = groupObject;
+        if(queryResults.length > 0) {
+            retVal.md = queryResults;
+            retVal.context.NetWitness.Events = queryResults;
             var hr = tblToMd(command, retVal.md);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
