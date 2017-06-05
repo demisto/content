@@ -9,11 +9,16 @@ script: |-
       fileNames = demisto.args()['fileNames'].split(',')
   res = []
   uploaded = []
+  viewed = {}
   entries = demisto.executeCommand('getEntries', {})
   for entry in entries:
       if entry['File'] and demisto.get(entry, 'FileMetadata.md5') and (len(fileNames) == 0 or entry['File'] in fileNames):
+          md5 = demisto.get(entry, 'FileMetadata.md5')
+          if viewed.get(md5):
+            continue
           demisto.log('[*] Checking - ' + demisto.get(entry, 'FileMetadata.md5'))
-          rep = demisto.executeCommand('wildfire-report', {'md5': demisto.get(entry, 'FileMetadata.md5')})
+          viewed[md5] = True
+          rep = demisto.executeCommand('wildfire-report', {'md5': md5})
           for r in rep:
               if positiveFile(r):
                   res.append(shortFile(r))
