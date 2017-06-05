@@ -1,7 +1,7 @@
 commonfields:
-  id: NetWitnessSAGetComponents
+  id: NetwitnessSAGetComponents
   version: -1
-name: NetWitnessSAGetComponents
+name: NetwitnessSAGetComponents
 script: |-
   resp = demisto.executeCommand("nw-get-components", demisto.args())
 

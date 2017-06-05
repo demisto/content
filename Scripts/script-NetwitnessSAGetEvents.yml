@@ -1,7 +1,7 @@
 commonfields:
-  id: NetWitnessSAGetEvents
+  id: NetwitnessSAGetEvents
   version: -1
-name: NetWitnessSAGetEvents
+name: NetwitnessSAGetEvents
 script: |
   resp = demisto.executeCommand("nw-get-events", demisto.args())
 
