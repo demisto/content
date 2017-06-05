@@ -33,7 +33,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |+
     var base = params.server.replace(/[\/]+$/, '') + '/api/';
     args.username = params.username;
     args.api_key = params.apikey;
@@ -47,7 +47,7 @@ script:
         'threatstream-intelligence': {
             method: 'GET',
             url: 'intelligence/',
-            version: 'v1',
+            version: 'v2',
         },
         'threatstream-import-with-approval': {
             method: 'POST',
@@ -129,6 +129,10 @@ script:
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
 
+    var isStandardCommand = function(command) {
+        return (command == 'ip' || command == 'file' || command == 'domain');
+    }
+
     var convertKeysToPascalCase = function(dict) {
         var pascalDict = {};
         for (var key in dict) {
@@ -144,68 +148,71 @@ script:
         var contexts = [];
         for (var objects = dq(result, 'objects'), i = 0; i < objects.length; i++) {
             var output = {};
-
-            console.log(JSON.stringify(objects[i]));
-
-            output['Classification'] = objects[i].classification;
             output['Confidence'] = objects[i].confidence;
-            output['Severity'] = objects[i].severity;
-            output['Details'] = objects[i].detail + '<br><br>' + objects[i].detail2;
-            output['First Seen'] = objects[i].date_first;
-            output['Last Seen'] = objects[i].date_last;
+            output['Severity'] = objects[i].meta.severity;
+            output['Created'] = objects[i].created_ts;
+            output['Modified'] = objects[i].modified_ts;
             output['itype'] = objects[i].itype;
             output['Source'] = objects[i].source;
-            output['State'] = objects[i].state;
-            output['Source Feed ID'] = objects[i].source_feed_id;
+            output['Status'] = objects[i].status;
+            output['Threat Score'] = objects[i].threatscore;
 
-            console.log('ParseReputation: command = ' + command);
-
-            switch (command) {
-                case 'ip':
-                case 'domain':
+            if (command == 'ip' || command == 'domain') {
+                output['Country'] = objects[i].country;
+                output['Latitude'] = objects[i].latitude;
+                output['Longitude'] = objects[i].longitude;
+                output['Organization'] = objects[i].org;
+                output['IP Address'] = objects[i].ip;
+                if (command == 'ip') {
                     output['ASN'] = objects[i].asn;
-                    output['Country'] = objects[i].country;
-                    output['Domain'] = objects[i].domain;
-                    output['Latitude'] = objects[i].lat;
-                    output['Longitude'] = objects[i].lon;
-                    output['Organization'] = objects[i].org;
-                    output['Source IP'] = objects[i].srcip;
-                    break;
-
-                case 'file':
-                case 'threatstream-file-reputation':
-                    output['MD5'] = objects[i].md5;
-                    break;
-
-                case 'threatstream-email-reputation':
-                    output['Email'] = objects[i].email;
-                    break;
+                }
             }
 
-            outputs.push(output);
-
             var context = convertKeysToPascalCase(output);
-            context.Details1 = objects[i].detail;
-            context.Details2 = objects[i].detail2;
+
+            output['Details'] = '';
+            if (objects[i].meta.detail !== undefined) {
+                output['Details'] += objects[i].meta.detail;
+                if (objects[i].meta.detail2 !== undefined) {
+                    output['Details'] += '<br>' + objects[i].meta.detail;
+                }
+            } else {
+                if (objects[i].meta.detail2 !== undefined) {
+                    output['Details'] += objects[i].meta.detail2;
+                }
+            }
+
+            context.Details1 = objects[i].meta.detail;
+            context.Details2 = objects[i].meta.detail2;
             context.Id = objects[i].id;
             context['Malware Type'] = objects[i].maltype;
+
+            outputs.push(output);
             contexts.push(context);
         }
 
         var entry = buildEmptyEntryContext();
 
-        var commandTitle = (command == 'ip' || command == 'file' || command == 'domain') ?
-            command :
-            command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1));
-
+        var commandTitle = isStandardCommand(command) ? command : (command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1)));
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
-
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
 
-        var contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
-        var reputationObjectKey = args.value;
-        entry.EntryContext[contextKey] = {};
-        entry.EntryContext[contextKey][reputationObjectKey] = contexts;
+        var contextKey;
+        if (isStandardCommand(command)) {
+            if (command == 'ip') {
+                contextKey = 'IP';
+            } else if (command == 'domain') {
+                contextKey = 'Domain';
+            } else if (command == 'file') {
+                contextKey = 'File';
+            }
+            entry.EntryContext[contextKey] = contexts;
+        } else {
+            contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
+            entry.EntryContext[contextKey] = {};
+            var reputationObjectKey = args.value;
+            entry.EntryContext[contextKey][reputationObjectKey] = contexts;
+        }
 
         return entry;
     }
@@ -283,6 +290,8 @@ script:
     }
 
     return parseResult(command, result);
+    // return result;
+
   type: javascript
   commands:
   - name: threatstream-intelligence
