@@ -52,9 +52,9 @@ script:
         var LAST_HOURS = 'lastHours';
         var QUERY = 'query';
         var fixUrl = function(base) {
-            var url = base;
+            var url = base.trim();
             if (base.indexOf('http://') !== 0 && base.indexOf('https://') !== 0) {
-                url = "http://" + base;
+                url = "http://" + url;
             }
 
             url = url.replace(/\/$/, '');
@@ -65,7 +65,7 @@ script:
 
         var isObjectEmpty = function (obj) {
             return Object.keys(obj).length === 0;
-        }
+        };
 
         var mapQueryResults = function (fields, queryResults) {
             var TYPE  = 'type';
