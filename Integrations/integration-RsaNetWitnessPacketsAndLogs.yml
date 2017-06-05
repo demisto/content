@@ -99,7 +99,6 @@ script:
         } else if ((typeof data) ==='object') {
             extractFromData(data);
         }
-        //May be empty elements which should be filtred
         queryResults = queryResults.filter(function (element) {
             return element != undefined || element != null;
         });
