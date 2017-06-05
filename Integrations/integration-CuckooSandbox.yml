@@ -132,7 +132,7 @@ script:
 
     };
 
-    var cuckooGet = function(qArgs, qParams, suffix, entityType) {
+    var cuckooGet = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
@@ -255,7 +255,7 @@ script:
     };
 
     var getTaskReport = function(args, params){
-        var result = cuckooGet(args, params, 'tasks/report/' + args['id'], 'info');
+        var result = cuckooGet(args, params, 'tasks/report/' + args['id']);
         var md;
         var context = {};
 
@@ -277,7 +277,7 @@ script:
     };
 
     var viewTask = function(args, params){
-        result = cuckooGet(args, params, 'tasks/view/' + args['id'], 'task');
+        result = cuckooGet(args, params, 'tasks/view/' + args['id']);
 
         return {
             Type: entryTypes.note,
@@ -294,7 +294,7 @@ script:
     };
 
     var listTasks = function(args, params){
-        var result = cuckooGet(args, params, 'tasks/list', 'tasks');
+        var result = cuckooGet(args, params, 'tasks/list');
 
         return {
             Type: entryTypes.note,
@@ -306,7 +306,7 @@ script:
     };
 
     var listMachines = function(args, params){
-        var result = cuckooGet(args, params, 'machines/list', 'machines');
+        var result = cuckooGet(args, params, 'machines/list');
 
         return {
             Type: entryTypes.note,
@@ -318,7 +318,7 @@ script:
     };
 
     var viewMachine = function(args, params){
-        result = cuckooGet(args, params, 'machines/view/' + args['name'], 'machine');
+        result = cuckooGet(args, params, 'machines/view/' + args['name']);
 
         return {
             Type: entryTypes.note,
