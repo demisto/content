@@ -63,32 +63,33 @@ script:
         return Object.keys(obj).length === 0;
     }
 
-    var mapTypeToValue = function (fields) {
-        var result = {};
-        var TYPE = 'type';
+    var fillQueryResults = function (fields, queryResults) {
+        var TYPE  = 'type';
         var VALUE = 'value';
+        var GROUP = 'group';
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
-                if (element[TYPE] && element[VALUE]) {
-                    result[element[TYPE]] = element[VALUE];
+                if (element[TYPE] && element[VALUE] && element[GROUP]) {
+                    var index = parseInt(element[GROUP]);
+                    if(queryResults[index]) {
+                        queryResults[index][element[TYPE]] = element[VALUE];
+                    } else {
+                        queryResults[index] = {};
+                        queryResults[index][element[TYPE]] = element[VALUE];
+                    }
                 }
             });
         }
-        return result;
     }
 
     var buildHrAndContext = function (data) {
         //Check if we have values
         var retVal = {md:[], context: {NetWitness:{Events:[]}}};
-        var typeToValue;
+        var queryResults = [];
 
         var extractFromData = function(data) {
             var fields = dq(data, 'results.fields');
-            typeToValue = mapTypeToValue(fields);
-            if(!isObjectEmpty(typeToValue)) {
-                retVal.md.push(typeToValue);
-                retVal.context.NetWitness.Events.push(typeToValue);
-            }
+            fillQueryResults(fields, queryResults);
         };
 
         if (Array.isArray(data)) {
@@ -98,9 +99,15 @@ script:
         } else if ((typeof data) ==='object') {
             extractFromData(data);
         }
+        //May be empty elements which should be filtred
+        queryResults = queryResults.filter(function (element) {
+            return element != undefined || element != null;
+        });
 
-        if(retVal.md.length > 0) {
-            var hr = tblToMd(command, retVal.md,'', '<br>');
+        if(queryResults.length > 0) {
+            retVal.md = queryResults;
+            retVal.context.NetWitness.Events = queryResults;
+            var hr = tableToMarkdown(command, retVal.md);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
             return JSON.stingify(data);
