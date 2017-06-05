@@ -117,7 +117,7 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers, cellDelimiter, headerTranform) {
+  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
@@ -137,7 +137,7 @@ script: |-
       }
       if (t && t.length) {
           var newHeaders = [];
-          if(headerTranform){
+          if(headerTransform){
               for(var i=0; i<headers.length; i++){
                   newHeaders.push(headerTransform(headers[i]));
               }
