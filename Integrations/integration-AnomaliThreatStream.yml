@@ -160,9 +160,11 @@ script:
             output['Source'] = objects[i].source;
             output['Source Feed ID'] = objects[i].source_feed_id;
 
+            console.log('ParseReputation: command = ' + command);
+
             switch (command) {
-                case 'threatstream-domain-reputation':
-                case 'threatstream-ip-reputation':
+                case 'ip':
+                case 'domain':
                     output['ASN'] = objects[i].asn;
                     output['Country'] = objects[i].country;
                     output['Domain'] = objects[i].domain;
@@ -172,13 +174,13 @@ script:
                     output['Source IP'] = objects[i].srcip;
                     break;
 
-                case 'threatstream-email-reputation':
-                    output['Email'] = objects[i].email;
+                case 'file':
+                case 'threatstream-file-reputation':
+                    output['MD5'] = objects[i].md5;
                     break;
 
-                case 'threatstream-file-reputation':
-                case 'threatstream-checksum-reputation':
-                    output['MD5'] = objects[i].md5;
+                case 'threatstream-email-reputation':
+                    output['Email'] = objects[i].email;
                     break;
             }
 
@@ -188,7 +190,10 @@ script:
 
         var entry = buildEmptyEntryContext();
 
-        var commandTitle = command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1));
+        var commandTitle = (command == 'ip' || command == 'file' || command == 'domain') ?
+            command :
+            command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1));
+
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
 
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
@@ -206,10 +211,10 @@ script:
 
         var entry;
         switch (command) {
-            case 'threatstream-domain-reputation':
-            case 'threatstream-ip-reputation':
+            case 'ip':
+            case 'file':
+            case 'domain':
             case 'threatstream-email-reputation':
-            case 'threatstream-file-reputation':
             case 'threatstream-checksum-reputation':
                 entry = parseReputationResult(command, result);
                 break;
@@ -223,18 +228,25 @@ script:
 
     var apiCommand = command;
     switch (command) {
-        case 'threatstream-domain-reputation':
-            apiCommand = 'threatstream-intelligence';
-            args.type = 'domain';
-            args.value = args.domain;
-            delete args.domain;
-            break;
-
-        case 'threatstream-ip-reputation':
+        case 'ip':
             apiCommand = 'threatstream-intelligence';
             args.type = 'ip';
             args.value = args.ip;
             delete args.ip;
+            break;
+
+        case 'file':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'md5';
+            args.value = args.file;
+            delete args.checksum;
+            break;
+
+        case 'domain':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'domain';
+            args.value = args.domain;
+            delete args.domain;
             break;
 
         case 'threatstream-email-reputation':
@@ -249,13 +261,6 @@ script:
             args.type = 'md5';
             args.value = args.file_md5;
             delete args.md5;
-            break;
-
-        case 'threatstream-checksum-reputation':
-            apiCommand = 'threatstream-intelligence';
-            args.type = 'md5';
-            args.value = args.checksum;
-            delete args.checksum;
             break;
     }
 
@@ -410,7 +415,7 @@ script:
       description: Classification of the indicator
     description: To import structured threat data (indicators) into ThreatStream,
       without requiring approval of the imported data through the ThreatStream UI
-  - name: threatstream-domain-reputation
+  - name: domain
     arguments:
     - name: domain
       required: true
@@ -422,9 +427,9 @@ script:
       required: true
       description: The MD5 of the file to check
     description: Checks the reputation of the given file (MD5)
-  - name: threatstream-checksum-reputation
+  - name: file
     arguments:
-    - name: checksum
+    - name: file
       required: true
       description: The checksum to check
     description: Checks the reputation of the given checksum
@@ -434,7 +439,7 @@ script:
       required: true
       description: The email address to check
     description: Checks the reputation of the given email
-  - name: threatstream-ip-reputation
+  - name: ip
     arguments:
     - name: ip
       required: true
