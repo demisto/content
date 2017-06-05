@@ -260,12 +260,12 @@ script:
         var context = {};
 
         context['Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
-        md = tblToMD2('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
-        md += tblToMD2('Task Info', result.info, undefined, undefined, undrscrToCamelCase);
-        md += tblToMD2('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
-        md += tblToMD2('Task Network Data', result.network);
+        md = tblToMd('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
+        md += tblToMd('Task Info', result.info, undefined, undefined, undrscrToCamelCase);
+        md += tblToMd('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
+        md += tblToMd('Task Network Data', result.network);
         if(result.signatures.length > 0){
-            md += tblToMD2('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
+            md += tblToMd('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
         }
         return {
             Type: entryTypes.note,
@@ -283,7 +283,7 @@ script:
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMD2('Task Table', result.task, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMd('Task Table', result.task, undefined, undefined, undrscrToCamelCase),
             EntryContext: {Task : jsonToEntity(result.task, entityMap.Task)}
         };
     };
@@ -300,7 +300,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMD2('Task Table', result.tasks, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMd('Task Table', result.tasks, undefined, undefined, undrscrToCamelCase),
             EntryContext: {Task : jsonToEntity(result.tasks, entityMap.Task)}
         };
     };
@@ -312,7 +312,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMD2('Machines Table', result.machines, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMd('Machines Table', result.machines, undefined, undefined, undrscrToCamelCase),
             EntryContext: {Machine : jsonToEntity(result.machines, entityMap.Machine)}
         };
     };
@@ -324,7 +324,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMD2('Machines Table', result.machine, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMd('Machines Table', result.machine, undefined, undefined, undrscrToCamelCase),
             EntryContext: {Machine : jsonToEntity(result.machine, entityMap.Machine)}
         };
     };
