@@ -69,7 +69,7 @@ script:
         'vec-triage':'/api/rules',              //deprecated
         'vec-sensors':'/api/sensors',           //deprecated
         'vec-health':'/api/health/',            //deprecated
-        'vec-get-host-by-id':'/api/hosts/',     //deprecated
+        'vec-get-host-by-id':'/api/hosts/',     //deprecate
     };
 
     var createIncidentFromDetection = function(incident) {
@@ -158,7 +158,7 @@ script:
             }
         }
 
-        md = tblToMd('Detection table', res, keys);
+        md = tblToMd('Detection table', res, ['id','type_vname','category','src_ip','t_score','c_score','first_timestamp','tags']);
 
         if (relayed_comm_set){
             if (!(relayed_comm_set instanceof Array)){
