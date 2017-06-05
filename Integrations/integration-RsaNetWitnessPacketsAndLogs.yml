@@ -104,13 +104,13 @@ script:
         });
 
         if(queryResults.length > 0) {
-        	if(isEvent) {
+            if(isEvent) {
                     retVal.context.NetWitness.Events = queryResults;
                 } else {
                     retVal.context.NetWitness.SearchResults = queryResults;
                 }
             retVal.md = queryResults;
-	        var hr = tableToMarkdown(command, retVal.md);
+            var hr = tableToMarkdown(command, retVal.md);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
             return JSON.stingify(data);
