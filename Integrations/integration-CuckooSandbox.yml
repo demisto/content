@@ -232,7 +232,6 @@ script:
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         delete qArgs.entryID;
-        console.log("dfsdf");
         res = httpMultipart(
             url,
             fileParam,
