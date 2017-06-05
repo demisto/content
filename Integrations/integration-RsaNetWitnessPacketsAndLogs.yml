@@ -198,13 +198,10 @@ script:
                 var dt = new Date();
                 dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
                 dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
-                console.log("Date Time = " + dt);
-
                 var buildDateFormat = function () {
                     return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
                 };
                 //if query is empry string
-                console.log(args)
                 if(!args || !args[QUERY]) {
                     args[QUERY] = 'select * where time = "' + buildDateFormat();
                 }
@@ -227,7 +224,6 @@ script:
                   using: true
                 };
                 handleTimeFilter(p);
-                console.log(p[QUERY])
                 var keys = Object.keys(p);
                 if (keys.length > 0) {
                     q = '&';
