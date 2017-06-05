@@ -148,6 +148,8 @@ script:
         var contexts = [];
         for (var objects = dq(result, 'objects'), i = 0; i < objects.length; i++) {
             var output = {};
+            var context = {};
+
             output['Confidence'] = objects[i].confidence;
             output['Severity'] = objects[i].meta.severity;
             output['Created'] = objects[i].created_ts;
@@ -206,13 +208,13 @@ script:
             } else if (command == 'file') {
                 contextKey = 'File';
             }
-            entry.EntryContext[contextKey] = contexts;
         } else {
             contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
-            entry.EntryContext[contextKey] = {};
-            var reputationObjectKey = args.value;
-            entry.EntryContext[contextKey][reputationObjectKey] = contexts;
         }
+
+        var reputationObjectKey = args.value;
+        entry.EntryContext[contextKey] = {};
+        entry.EntryContext[contextKey][reputationObjectKey] = contexts;
 
         return entry;
     }
