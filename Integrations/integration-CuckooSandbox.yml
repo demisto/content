@@ -28,7 +28,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     var entityMap = {
         Machine:{
             status :            'Status',
@@ -66,8 +66,15 @@ script:
             tags :              'Tags',
             id :                'ID',
             added_on :          'AddedOn',
-            completed_on :      'CompletedOn'
+            completed_on :      'CompletedOn',
+            score :             'Score',
+            monitor :           'Monitor'
         }
+    };
+
+    var undrscrToCamelCase = function(string){
+        string = '_'+string;
+        return string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
     };
 
     //returns single object withing entity (i.e. File[0])
@@ -126,52 +133,21 @@ script:
     };
 
     var cuckooGet = function(qArgs, qParams, suffix, entityType) {
-            url = fixUrl(qParams['server']) + suffix;
-            username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-            password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-            res = http(
-                url,
-                {
-                    Method: 'GET',
-                    Username: username,
-                    Password: password
-                },
-                qParams['insecure'],
-                qParams['proxy']
-            );
-            var result =  parseResponse(res);
-            var md;
-            var context = {};
-            switch(entityType){
-                case 'machine':
-                case 'machines':
-                    md = tblToMd('Machines Table', result[entityType], undefined, undefined, undrscrToCamelCase);
-                    context = {Machine : jsonToEntity(result[entityType], entityMap.Machine)};
-                    break;
-                case 'task':
-                case 'tasks':
-                    md = tblToMd('Task Table', result[entityType], undefined, undefined, undrscrToCamelCase);
-                    context = {Task : jsonToEntity(result[entityType], entityMap.Task)};
-                    break;
-                case 'info':
-                    context['Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result[entityType], entityMap.Task)};
-                    md = tblToMd('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
-                    md += tblToMd('Task Info', result[entityType], undefined, undefined, undrscrToCamelCase);
-                    md += tblToMd('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
-                    md += tblToMd('Task Network Data', result.network, undefined, undefined, undrscrToCamelCase);
-                    md += tblToMd('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
-                    break;
-                default:
-                    throw("Supported entity types are task and machine");
-            }
-            return {
-                    Type: entryTypes.note,
-                    Contents: res,
-                    ContentsFormat: formats.json,
-                    HumanReadable: md,
-                    EntryContext: context
-                };
-        };
+        url = fixUrl(qParams['server']) + suffix;
+        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        res = http(
+            url,
+            {
+                Method: 'GET',
+                Username: username,
+                Password: password
+            },
+            qParams['insecure'],
+            qParams['proxy']
+        );
+        return result =  parseResponse(res);
+    };
 
     var cuckooGetRaw = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
@@ -189,7 +165,6 @@ script:
         );
         return res;
     };
-
 
     var cuckooGetFile = function(qArgs, qParams, suffix, filename) {
         url = fixUrl(qParams['server']) + suffix;
@@ -212,7 +187,6 @@ script:
                     Contents: filename
                 };
     };
-
 
     var cuckooPost = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams.server) + suffix;
@@ -241,6 +215,7 @@ script:
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         delete qArgs.entryID;
+        console.log("dfsdf");
         res = httpMultipart(
             url,
             fileParam,
@@ -256,6 +231,115 @@ script:
         );
         return parseResponse(res);
     };
+
+    var createTaskFromFile = function(args, params){
+        var res =  fetchFiles(args, params);
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
+            EntryContext: {Task : {ID: res.task_id}}
+        };
+    };
+
+    var createTaskFromURL = function(args, params){
+        var res = cuckooPost(args, params, 'tasks/create/url');
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
+            EntryContext: {Task : {ID: res.task_id}}
+        };
+    };
+
+    var getTaskReport = function(args, params){
+        var result = cuckooGet(args, params, 'tasks/report/' + args['id'], 'info');
+        var md;
+        var context = {};
+
+        context['Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
+        md = tblToMD2('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
+        md += tblToMD2('Task Info', result.info, undefined, undefined, undrscrToCamelCase);
+        md += tblToMD2('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
+        md += tblToMD2('Task Network Data', result.network);
+        if(result.signatures.length > 0){
+            md += tblToMD2('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    };
+
+    var viewTask = function(args, params){
+        result = cuckooGet(args, params, 'tasks/view/' + args['id'], 'task');
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: tblToMD2('Task Table', result.task, undefined, undefined, undrscrToCamelCase),
+            EntryContext: {Task : jsonToEntity(result.task, entityMap.Task)}
+        };
+    };
+
+    var deleteTask = function(args, params){
+        var res = cuckooGetRaw(args, params, 'tasks/delete/' + args['id']);
+        return JSON.parse(res.Body);
+    };
+
+    var listTasks = function(args, params){
+        var result = cuckooGet(args, params, 'tasks/list', 'tasks');
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: tblToMD2('Task Table', result.tasks, undefined, undefined, undrscrToCamelCase),
+            EntryContext: {Task : jsonToEntity(result.tasks, entityMap.Task)}
+        };
+    };
+
+    var listMachines = function(args, params){
+        var result = cuckooGet(args, params, 'machines/list', 'machines');
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: tblToMD2('Machines Table', result.machines, undefined, undefined, undrscrToCamelCase),
+            EntryContext: {Machine : jsonToEntity(result.machines, entityMap.Machine)}
+        };
+    };
+
+    var viewMachine = function(args, params){
+        result = cuckooGet(args, params, 'machines/view/' + args['name'], 'machine');
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: tblToMD2('Machines Table', result.machine, undefined, undefined, undrscrToCamelCase),
+            EntryContext: {Machine : jsonToEntity(result.machine, entityMap.Machine)}
+        };
+    };
+
+    var taskScreenshot = function(args ,params){
+        var uri = 'tasks/screenshots/' + args['id'];
+        var filename = 'CuckooScreenshots.zip'
+        if (args['screenshot']) {
+            filename = args['screenshot'];
+            uri += '/'+ args['screenshot'];
+        }
+        return cuckooGetFile(args, params, uri, filename);
+    };
+
+
 
     // The command input arg holds the command sent from the user.
     switch (command) {
@@ -273,60 +357,39 @@ script:
 
         case 'ck-file'://deprecated
         case 'cuckoo-create-task-from-file':
-            var res =  fetchFiles(args, params);
-            return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-                EntryContext: {Task : {ID: res.task_id}}
-            };
+            return createTaskFromFile(args, params);
 
         case 'ck-url'://deprecated
-        case 'cuckoo-create-task-from-url':     //todo
-            var res = cuckooPost(args, params, 'tasks/create/url');
-            return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-                EntryContext: {Task : {ID: res.task_id}}
-            };
+        case 'cuckoo-create-task-from-url':
+            return createTaskFromURL(args, params);
 
         case 'ck-report'://deprecated
         case 'cuckoo-get-task-report':
-            return cuckooGet(args, params, 'tasks/report/' + args['id'], 'task');   //might not work
+            return getTaskReport(args, params);
 
         case 'ck-view'://deprecated
         case 'cuckoo-view-task':
-            return cuckooGet(args, params, 'tasks/view/' + args['id'], 'task');
+            return viewTask(args, params);
 
         case 'ck-del'://deprecated
         case 'cuckoo-delete-task':
-            var res = cuckooGetRaw(args, params, 'tasks/delete/' + args['id']);
-            return JSON.parse(res.Body);
+            return deleteTask(args, params);
 
         case 'ck-list'://deprecated
         case 'cuckoo-list-tasks':
-            return cuckooGet(args, params, 'tasks/list', 'tasks');
+            return listTasks(args, params);
 
         case 'ck-machines-list': //deprecated
         case 'cuckoo-machines-list':
-            return cuckooGet(args, params, 'machines/list', 'machines');
+            return listMachines(args, params);
 
         case 'ck-machine-view'://deprecated
         case 'cuckoo-machine-view':
-            return cuckooGet(args, params, 'machines/view/' + args['name'], 'machine');
+            return viewMachine(args, params);
 
         case 'ck-scrshot'://deprecated
         case 'cuckoo-task-screenshot':   //unchanged
-            var uri = 'tasks/screenshots/' + args['id'];
-            var filename = 'CuckooScreenshots.zip'
-            if (args['screenshot']) {
-                filename = args['screenshot'];
-                uri += '/'+ args['screenshot'];
-            }
-            return cuckooGetFile(args, params, uri, filename );
+            return taskScreenshot(args, params);
     }
   type: javascript
   commands:
@@ -489,6 +552,10 @@ script:
       description: Date on which the task was added
     - contextPath: Task.CompletedOn
       description: Date on which the task was completed
+    - contextPath: Task.Score
+      description: Reported score of the the task
+    - contextPath: Task.Monitor
+      description: Monitor of the reported task
     description: commands.server.ckReport.description
   - name: ck-list
     deprecated: true
