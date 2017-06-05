@@ -69,7 +69,7 @@ script:
         'vec-triage':'/api/rules',              //deprecated
         'vec-sensors':'/api/sensors',           //deprecated
         'vec-health':'/api/health/',            //deprecated
-        'vec-get-host-by-id':'/api/hosts/',     //deprecated
+        'vec-get-host-by-id':'/api/hosts/',     //deprecate
     };
 
     var createIncidentFromDetection = function(incident) {
