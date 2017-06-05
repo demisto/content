@@ -150,14 +150,12 @@ script:
             output['Classification'] = objects[i].classification;
             output['Confidence'] = objects[i].confidence;
             output['Severity'] = objects[i].severity;
-            output['Detail1'] = objects[i].detail;
-            output['Detail2'] = objects[i].detail2;
+            output['Details'] = objects[i].detail + '<br><br>' + objects[i].detail2;
             output['First Seen'] = objects[i].date_first;
             output['Last Seen'] = objects[i].date_last;
-            output['ID'] = objects[i].id;
             output['itype'] = objects[i].itype;
-            output['Malware Type'] = objects[i].maltype;
             output['Source'] = objects[i].source;
+            output['State'] = objects[i].state;
             output['Source Feed ID'] = objects[i].source_feed_id;
 
             console.log('ParseReputation: command = ' + command);
@@ -185,7 +183,13 @@ script:
             }
 
             outputs.push(output);
-            contexts.push(convertKeysToPascalCase(output));
+
+            var context = convertKeysToPascalCase(output);
+            context.Details1 = objects[i].detail;
+            context.Details2 = objects[i].detail2;
+            context.Id = objects[i].id;
+            context['Malware Type'] = objects[i].maltype;
+            contexts.push(context);
         }
 
         var entry = buildEmptyEntryContext();
