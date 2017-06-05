@@ -82,9 +82,9 @@ script:
         }
     }
 
-    var buildHrAndContext = function (data) {
+    var buildHrAndContext = function (data, isEvent) {
         //Check if we have values
-        var retVal = {md:[], context: {NetWitness:{Events:[]}}};
+        var retVal = {md: [], context: {NetWitness:{}}};
         var queryResults = [];
 
         var extractFromData = function(data) {
@@ -105,9 +105,13 @@ script:
         });
 
         if(queryResults.length > 0) {
-            retVal.md = queryResults;
-            retVal.context.NetWitness.Events = queryResults;
-            var hr = tableToMarkdown(command, retVal.md);
+        	if(isEvent) {
+                    retVal.context.NetWitness.Events = queryResults;
+                } else {
+                    retVal.context.NetWitness.SearchResults = queryResults;
+                }
+        	retVal.md = queryResults;
+	    var hr = tableToMarkdown(command, retVal.md);
             return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
         } else {
             return JSON.stingify(data);
@@ -153,12 +157,12 @@ script:
         }
     };
 
-    var buildMdAndContext = function(resp) {
+    var buildMdAndContext = function(resp, isEvent) {
         var mdAndContext;
         if (resp.StatusCode === 200) {
             try {
                 var res = JSON.parse(resp.Body);
-                return buildHrAndContext(res);
+                return buildHrAndContext(res, isEvent);
             } catch (e) {
                 return resp.Body;
             }
@@ -462,7 +466,7 @@ script:
         case  'netwitness-search':
             return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
         case  'netwitness-query':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType), true)
         case 'netwitness-packets':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
         default:
