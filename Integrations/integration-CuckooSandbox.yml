@@ -126,43 +126,52 @@ script:
     };
 
     var cuckooGet = function(qArgs, qParams, suffix, entityType) {
-        url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Username: username,
-                Password: password
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
-        var result =  parseResponse(res);
-        var md, context;
-        switch(entityType){
-            case 'machine':
-            case 'machines':
-                md = tblToMd('Machines Table', result[entityType]);
-                context = {Machine : jsonToEntity(result[entityType], entityMap.Machine)};
-                break;
-            case 'task':
-            case 'tasks':
-                md = tblToMd('Tasks Table', result[entityType]);
-                context = {Task : jsonToEntity(result[entityType], entityMap.Task)};
-                break;
-            default:
-                throw("Supported entity types are task and machine");
-        }
-        return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                HumanReadable: md,
-                EntryContext: context
-            };
-    };
+            url = fixUrl(qParams['server']) + suffix;
+            username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+            password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+            res = http(
+                url,
+                {
+                    Method: 'GET',
+                    Username: username,
+                    Password: password
+                },
+                qParams['insecure'],
+                qParams['proxy']
+            );
+            var result =  parseResponse(res);
+            var md;
+            var context = {};
+            switch(entityType){
+                case 'machine':
+                case 'machines':
+                    md = tblToMd('Machines Table', result[entityType], undefined, undefined, undrscrToCamelCase);
+                    context = {Machine : jsonToEntity(result[entityType], entityMap.Machine)};
+                    break;
+                case 'task':
+                case 'tasks':
+                    md = tblToMd('Task Table', result[entityType], undefined, undefined, undrscrToCamelCase);
+                    context = {Task : jsonToEntity(result[entityType], entityMap.Task)};
+                    break;
+                case 'info':
+                    context['Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result[entityType], entityMap.Task)};
+                    md = tblToMd('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
+                    md += tblToMd('Task Info', result[entityType], undefined, undefined, undrscrToCamelCase);
+                    md += tblToMd('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
+                    md += tblToMd('Task Network Data', result.network, undefined, undefined, undrscrToCamelCase);
+                    md += tblToMd('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
+                    break;
+                default:
+                    throw("Supported entity types are task and machine");
+            }
+            return {
+                    Type: entryTypes.note,
+                    Contents: res,
+                    ContentsFormat: formats.json,
+                    HumanReadable: md,
+                    EntryContext: context
+                };
+        };
 
     var cuckooGetRaw = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
