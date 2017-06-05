@@ -42,32 +42,12 @@ script:
         'test-module': {
             method: 'GET',
             url: 'intelligence/',
-            version: 'v1',
+            version: 'v2',
         },
         'threatstream-intelligence': {
             method: 'GET',
             url: 'intelligence/',
             version: 'v2',
-        },
-        'threatstream-import-with-approval': {
-            method: 'POST',
-            url: 'intelligence/import/',
-            version: 'v1',
-            multipart: true,
-        },
-        'threatstream-import-without-approval': {
-            method: 'PATCH',
-            url: 'intelligence/',
-            version: 'v1',
-            headers: {
-                'Content-Type': ['application/json'],
-            },
-            multipart: true,
-        },
-        'threatstream-check-import-status': {
-            method: 'GET',
-            url: 'importsession/%session_id%/',
-            version: 'v1',
         },
     }
 
@@ -425,77 +405,12 @@ script:
     - name: value
       description: Value of the indicator
     description: To retrieve threat intelligence from the ThreatStream cloud
-  - name: threatstream-import-with-approval
-    arguments:
-    - name: confidence
-      description: Confidence value assigned to the indicator
-    - name: source_ confidence_ weight
-      description: Specifies the ratio between the amount of the source confidence
-        of each indicator and the ThreatStream confidence
-    - name: severity
-      description: Severity you want to assign to the indicator when it is imported
-    - name: classification
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
-      description: Classification of the indicator
-    - name: expiration_ts
-      description: Time stamp of when intelligence will expire on ThreatStream, in
-        UTC format. For example, 2017-01-26T00:00:00
-    - name: notes
-      description: Additional details for the indicator. This information is displayed
-        in the Tags column of the ThreatStream UI
-    - name: ip_mapping
-      description: Indicator type to assign if a specific type is not associated with
-        an indicator
-    - name: domain_ mapping
-      description: Indicator type to assign if a specific type is not associated with
-        an indicator
-    - name: 'url_mapping '
-      description: Indicator type to assign if a specific type is not associated with
-        an indicator
-    - name: email_ mapping
-      description: Indicator type to assign if a specific type is not associated with
-        an indicator
-    - name: md5_mapping
-      description: Indicator type to assign if a specific type is not associated with
-        an indicator
-    - name: trusted_ circles
-      description: ID of the trusted circle to which this threat data should be imported.
-        If you want to import the threat data to multiple trusted circles, enter the
-        list of comma-separated IDs
-    - name: file_id
-      description: File id to upload
-    description: To import threat data (indicators) into ThreatStream and require
-      approval of the imported data through the ThreatStream UI
-  - name: threatstream-check-import-status
-    arguments:
-    - name: session_id
-      description: Import session ID
-    description: Use this API call to periodically poll the status of an import job
-  - name: threatstream-import-without-approval
-    arguments:
-    - name: classification
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
-      description: Classification of the indicator
-    description: To import structured threat data (indicators) into ThreatStream,
-      without requiring approval of the imported data through the ThreatStream UI
   - name: domain
     arguments:
     - name: domain
       required: true
       description: The domain name to check
     description: Checks the reputation of the given IP or domain name
-  - name: threatstream-file-reputation
-    arguments:
-    - name: file_md5
-      required: true
-      description: The MD5 of the file to check
-    description: Checks the reputation of the given file (MD5)
   - name: file
     arguments:
     - name: file
