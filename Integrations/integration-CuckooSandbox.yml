@@ -237,7 +237,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {Cuckoo.Task : {ID: res.task_id}}
+            EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}
         };
     };
 
@@ -248,7 +248,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {Cuckoo.Task : {ID: res.task_id}}
+            EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}
         };
     };
 
@@ -286,13 +286,13 @@ script:
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: tblToMdWithTransform('Task Table', result.task, undrscrToCamelCase),
-            EntryContext: {Cuckoo.Task : jsonToEntity(result.task, entityMap.Task)}
+            EntryContext: {'Cuckoo.Task' : jsonToEntity(result.task, entityMap.Task)}
         };
     };
 
     var deleteTask = function(args, params){
-        var res = cuckooGetRaw(args, params, 'tasks/delete/' + args['id']);
-        return JSON.parse(res.Body).status;
+        var res = JSON.parse(cuckooGetRaw(args, params, 'tasks/delete/' + args['id']).Body);
+        return (res.status? res.status : res.message);
     };
 
     var listTasks = function(args, params){
@@ -303,7 +303,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMdWithTransform('Task Table', result.tasks, undrscrToCamelCase),
-            EntryContext: {Cuckoo.Task : jsonToEntity(result.tasks, entityMap.Task)}
+            EntryContext: {'Cuckoo.Task' : jsonToEntity(result.tasks, entityMap.Task)}
         };
     };
 
@@ -315,7 +315,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMdWithTransform('Machines Table', result.machines, undrscrToCamelCase),
-            EntryContext: {Cuckoo.Machine : jsonToEntity(result.machines, entityMap.Machine)}
+            EntryContext: {'Cuckoo.Machine' : jsonToEntity(result.machines, entityMap.Machine)}
         };
     };
 
@@ -327,7 +327,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMdWithTransform('Machines Table', result.machine, undrscrToCamelCase),
-            EntryContext: {Cuckoo.Machine : jsonToEntity(result.machine, entityMap.Machine)}
+            EntryContext: {'Cuckoo.Machine' : jsonToEntity(result.machine, entityMap.Machine)}
         };
     };
 
