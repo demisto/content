@@ -46,6 +46,6 @@ args:
   default: true
   description: The text to extract Emails from. If object will convert to JSON.
 outputs:
-- contextPath: URL.Data
+- contextPath: Email.Data
   description: Extracted URLs
 scripttarget: 0
