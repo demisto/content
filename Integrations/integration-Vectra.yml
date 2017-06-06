@@ -87,7 +87,8 @@ script:
     var fetchIncidents = function(){
         var lastRun = getLastRun();
         var id = lastRun && lastRun.id ? lastRun.id : 0;
-        var res = sendRequest('GET', server + urlDict['vectra-detections'] + encodeToURLQuery({min_id: id, 'page':'last'}), 'vectra-detections').results;
+        var result = sendRequest('GET', server + urlDict['vectra-detections'] + encodeToURLQuery({min_id: id, 'page':'last'}), 'vectra-detections');
+        var res = JSON.parse(result.Body).results;
         var incidents = [];
         for (var i = 0; i < res.length; i++) {
             var detection = res[i];
@@ -149,12 +150,10 @@ script:
             if (res[0].summary)
             {
                 summary = res[0].summary;
-                keys.splice(keys.indexOf('summary'), 1);
             }
             if (res[0].relayed_comm_set)
             {
                 relayed_comm_set = res[0].relayed_comm_set;
-                keys.splice(keys.indexOf('relayed_comm_set'), 1);
             }
         }
 
