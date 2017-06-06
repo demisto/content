@@ -215,7 +215,6 @@ script:
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         delete qArgs.entryID;
-        console.log("dfsdf");
         res = httpMultipart(
             url,
             fileParam,
@@ -227,7 +226,6 @@ script:
             qArgs,
             qParams['insecure'],
             qParams['proxy']
-
         );
         return parseResponse(res);
     };
@@ -239,7 +237,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {Task : {ID: res.task_id}}
+            EntryContext: {Cuckoo.Task : {ID: res.task_id}}
         };
     };
 
@@ -250,7 +248,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {Task : {ID: res.task_id}}
+            EntryContext: {Cuckoo.Task : {ID: res.task_id}}
         };
     };
 
@@ -259,7 +257,7 @@ script:
         var md;
         var context = {};
 
-        context['Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
+        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
         md = tblToMd('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
         md += tblToMd('Task Info', result.info, undefined, undefined, undrscrToCamelCase);
         md += tblToMd('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
@@ -284,13 +282,13 @@ script:
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: tblToMd('Task Table', result.task, undefined, undefined, undrscrToCamelCase),
-            EntryContext: {Task : jsonToEntity(result.task, entityMap.Task)}
+            EntryContext: {Cuckoo.Task : jsonToEntity(result.task, entityMap.Task)}
         };
     };
 
     var deleteTask = function(args, params){
         var res = cuckooGetRaw(args, params, 'tasks/delete/' + args['id']);
-        return JSON.parse(res.Body);
+        return JSON.parse(res.Body).status;
     };
 
     var listTasks = function(args, params){
@@ -301,7 +299,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMd('Task Table', result.tasks, undefined, undefined, undrscrToCamelCase),
-            EntryContext: {Task : jsonToEntity(result.tasks, entityMap.Task)}
+            EntryContext: {Cuckoo.Task : jsonToEntity(result.tasks, entityMap.Task)}
         };
     };
 
@@ -313,7 +311,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMd('Machines Table', result.machines, undefined, undefined, undrscrToCamelCase),
-            EntryContext: {Machine : jsonToEntity(result.machines, entityMap.Machine)}
+            EntryContext: {Cuckoo.Machine : jsonToEntity(result.machines, entityMap.Machine)}
         };
     };
 
@@ -325,7 +323,7 @@ script:
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: tblToMd('Machines Table', result.machine, undefined, undefined, undrscrToCamelCase),
-            EntryContext: {Machine : jsonToEntity(result.machine, entityMap.Machine)}
+            EntryContext: {Cuckoo.Machine : jsonToEntity(result.machine, entityMap.Machine)}
         };
     };
 
