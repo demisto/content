@@ -137,13 +137,11 @@ script: |-
       }
       if (t && t.length) {
           var newHeaders = [];
-          if(headerTransform){
-              for(var i=0; i<headers.length; i++){
-                  newHeaders.push(headerTransform(headers[i]));
-              }
+          if(!headerTransform){
+            headerTransform = function(string){return string;};
           }
-          else{
-              newHeaders = headers;
+          for(var i=0; i<headers.length; i++){
+              newHeaders.push(headerTransform(headers[i]));
           }
           if (newHeaders.length > 1) {
               mdResults += newHeaders.join('|') + '\n';
