@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumDeployAction
-  version: 1
+  version: 8
 name: TaniumDeployAction
 script: |-
   // An example script for deploying Tanium action with filter
@@ -45,12 +45,30 @@ script: |-
       return res;
   }
 
+  var contents = dq(res[0],'Contents.packageSpec');
+  var cleanContents = {};
+  var keys = Object.keys(contents);
+  for (var i = 0; i < keys.length; i++) {
+      if (contents[keys[i]] || contents[keys[i]] === false) {
+          cleanContents[keys[i]] = contents[keys[i]];
+      }
+  }
+
   var entry = {
       Type: 1,
       ContentsFormat: 'json',
-      Contents: dq(res[0],'Contents'),
+      Contents: contents,
       ReadableContentsFormat: formats.markdown,
-      HumanReadable: tableToMarkdown("Tanium deploy action", dq(res[0],'Contents'), null)
+      HumanReadable: tableToMarkdown("Tanium deploy action", cleanContents, null),
+      EntryContext: {
+          'Tanium.Action(val.ID == obj.ID)': {
+              State: "Deployed",
+              ID: cleanContents.id,
+              Command: cleanContents.command,
+              Comment: args.comment,
+              PackageName: args.packageName
+          }
+      }
   };
 
   return entry;
@@ -59,7 +77,7 @@ tags:
 - tanium
 comment: Execute an action, optionally with parameters, and filtering - based on an
   existing package. See https://kb.tanium.com/SOAP for more information
-system: true
+enabled: true
 args:
 - name: packageName
   description: Specify the package name. e.g. !TaniumDeployAction packageName="Clean
@@ -71,24 +89,15 @@ args:
     more details
 - name: comment
   description: Comment to be added to the action history in the Tanium server
-scripttarget: 0
 outputs:
 - contextPath: Tanium.Action.ID
-  contentPath: id
   description: Action ID in tanium
 - contextPath: Tanium.Action.Command
-  contentPath: command
   description: Action command
 - contextPath: Tanium.Action.State
-  contentPath: "Deployed"
   description: Action state
 - contextPath: Tanium.Action.Comment
-  contentPath: args.comment
   description: Tanium comment
 - contextPath: Tanium.Action.PackageName
-  contentPath: args.packageName
   description: Tanium package name
-dependson:
-  must:
-  - tn-deploy-package
-timeout: 0s
+scripttarget: 0
