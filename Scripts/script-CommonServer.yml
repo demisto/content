@@ -23,6 +23,31 @@ script: |-
   }
 
   /**
+   * Clean an object from empty fields
+   * @returns {Object} the clean object
+   */
+  var cleanObject = function(obj) {
+        var cleanSingle = function(contents) {
+            var cleanContents = {};
+            var keys = Object.keys(contents);
+            for (var i = 0; i < keys.length; i++) {
+                if (contents[keys[i]] || contents[keys[i]] === false) {
+                    cleanContents[keys[i]] = contents[keys[i]];
+                }
+            }
+            return cleanContents;
+        }
+        if (obj instanceof Array) {
+            var res = [];
+            for (var j in obj) {
+                res.push(cleanSingle(obj[j]));
+            }
+            return res;
+        }
+        cleanSingle(obj);
+    }
+
+  /**
    * Creates a string from an object
    * @param {JSON or String} o - the object to create the string from
    * @returns {String} a string which represents the object

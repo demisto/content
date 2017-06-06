@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumShowPendingActions
-  version: 6
+  version: 10
 name: TaniumShowPendingActions
 script: |
   // An example script for asking Tanium a question
@@ -101,7 +101,8 @@ script: |
           for (var i=0; i < savedActions.length; i++)
               entry.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
 
-          entry.HumanReadable = tableToMarkdown("Tanium pending actions", entry.Contents, null);
+          entry.HumanReadable = tableToMarkdown("Tanium pending actions", cleanObject(entry.Contents), null);
+          savedActions = cleanObject(savedActions);
           var actionsForContext = [];
           for (var s in savedActions) {
             actionsForContext.push({
