@@ -20,10 +20,10 @@ script: |
   }
 
   var uniqueMatches = Object.keys(matches);
-  var emailContext = { Email: [] };
+  var emailContext = { Account: { Email: [] } };
   var md = '### Extract Email\n';
   for (var i = 0; i < uniqueMatches.length; i++) {
-      emailContext.Email.push({ Data: uniqueMatches[i] });
+      emailContext.Account.Email.push({ Data: uniqueMatches[i] });
       md += '- ' + uniqueMatches[i] + '\n';
   }
 
@@ -46,6 +46,6 @@ args:
   default: true
   description: The text to extract Emails from. If object will convert to JSON.
 outputs:
-- contextPath: Email.Data
+- contextPath: Account.Email
   description: Extracted URLs
 scripttarget: 0
