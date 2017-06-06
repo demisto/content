@@ -252,18 +252,22 @@ script:
         };
     };
 
+    var tblToMdWithTransform = function(title, t, transform){
+        return tblToMd(title, t, undefined, undefined, transform);
+    }
+
     var getTaskReport = function(args, params){
         var result = cuckooGet(args, params, 'tasks/report/' + args['id']);
         var md;
         var context = {};
 
         context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
-        md = tblToMd('Task Target', result.target, undefined, undefined, undrscrToCamelCase);
-        md += tblToMd('Task Info', result.info, undefined, undefined, undrscrToCamelCase);
-        md += tblToMd('Task Metadata', result.metadata, undefined, undefined, undrscrToCamelCase);
-        md += tblToMd('Task Network Data', result.network);
+        md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
+        md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
+        md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
+        md += tblToMdWithTransform('Task Network Data', result.network);
         if(result.signatures.length > 0){
-            md += tblToMd('Task Signatures', result.signatures, undefined, undefined, undrscrToCamelCase);
+            md += tblToMdWithTransform('Task Signatures', result.signatures, undrscrToCamelCase);
         }
         return {
             Type: entryTypes.note,
@@ -281,7 +285,7 @@ script:
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMd('Task Table', result.task, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMdWithTransform('Task Table', result.task, undrscrToCamelCase),
             EntryContext: {Cuckoo.Task : jsonToEntity(result.task, entityMap.Task)}
         };
     };
@@ -298,7 +302,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMd('Task Table', result.tasks, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMdWithTransform('Task Table', result.tasks, undrscrToCamelCase),
             EntryContext: {Cuckoo.Task : jsonToEntity(result.tasks, entityMap.Task)}
         };
     };
@@ -310,7 +314,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMd('Machines Table', result.machines, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMdWithTransform('Machines Table', result.machines, undrscrToCamelCase),
             EntryContext: {Cuckoo.Machine : jsonToEntity(result.machines, entityMap.Machine)}
         };
     };
@@ -322,7 +326,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: tblToMd('Machines Table', result.machine, undefined, undefined, undrscrToCamelCase),
+            HumanReadable: tblToMdWithTransform('Machines Table', result.machine, undrscrToCamelCase),
             EntryContext: {Cuckoo.Machine : jsonToEntity(result.machine, entityMap.Machine)}
         };
     };
