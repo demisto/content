@@ -117,6 +117,25 @@ args:
   default: true
   description: If true - returns full json for each task instead of a table summary.
 scripttarget: 0
+outputs:
+- contextPath: Tanium.Action.Name
+  contentPath: name
+  description: Action name
+- contextPath: Tanium.Action.State
+  contentPath: "Pending"
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  contentPath: comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  contentPath: package_spec.name
+  description: Tanium package name
+- contextPath: Tanium.Action.PackageID
+  contentPath: package_spec.id
+  description: Tanium package id
+- contextPath: Tanium.Action.AvailableTime
+  contentPath: available_time
+  description: Tanium available time
 dependson:
   must:
   - tn-get-object

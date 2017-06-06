@@ -125,6 +125,22 @@ args:
   required: true
   default: true
 scripttarget: 0
+outputs:
+- contextPath: Tanium.Action.Name
+  contentPath: name
+  description: Action name
+- contextPath: Tanium.Action.State
+  contentPath: "Approved"
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  contentPath: comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  contentPath: package_spec.name
+  description: Tanium package name
+- contextPath: Tanium.Action.PackageID
+  contentPath: package_spec.id
+  description: Tanium package id
 dependson:
   must:
   - tn-add-object
