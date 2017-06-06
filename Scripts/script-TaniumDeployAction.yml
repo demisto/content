@@ -72,6 +72,22 @@ args:
 - name: comment
   description: Comment to be added to the action history in the Tanium server
 scripttarget: 0
+outputs:
+- contextPath: Tanium.Action.ID
+  contentPath: id
+  description: Action ID in tanium
+- contextPath: Tanium.Action.Command
+  contentPath: command
+  description: Action command
+- contextPath: Tanium.Action.State
+  contentPath: "Deployed"
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  contentPath: args.comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  contentPath: args.packageName
+  description: Tanium package name
 dependson:
   must:
   - tn-deploy-package
