@@ -48,426 +48,456 @@ configuration:
   required: false
 script:
   script: |-
-    var fixUrl = function(base) {
-        var url = base;
-        if (base.indexOf('http://') !== 0 && base.indexOf('https://') !== 0) {
-            url = "http://" + base;
-        }
 
-        url = url.replace(/\/$/, '');
+        var LAST_HOURS = 'lastHours';
+        var QUERY = 'query';
+        var fixUrl = function(base) {
+            var url = base.trim();
+            if (base.indexOf('http://') !== 0 && base.indexOf('https://') !== 0) {
+                url = "http://" + url;
+            }
 
-        return url;
-    };
+            url = url.replace(/\/$/, '');
 
-    var isObjectEmpty = function (obj) {
-        return Object.keys(obj).length === 0;
-    }
-
-    var fillQueryResults = function (fields, queryResults) {
-        var TYPE  = 'type';
-        var VALUE = 'value';
-        var GROUP = 'group';
-        if(fields && Array.isArray(fields)) {
-            fields.forEach(function (element) {
-                if (element[TYPE] && element[VALUE] && element[GROUP]) {
-                    var index = parseInt(element[GROUP]);
-                    if(queryResults[index]) {
-                        queryResults[index][element[TYPE]] = element[VALUE];
-                    } else {
-                        queryResults[index] = {};
-                        queryResults[index][element[TYPE]] = element[VALUE];
-                    }
-                }
-            });
-        }
-    }
-
-    var buildHrAndContext = function (data) {
-        //Check if we have values
-        var retVal = {md:[], context: {NetWitness:{Events:[]}}};
-        var queryResults = [];
-
-        var extractFromData = function(data) {
-            var fields = dq(data, 'results.fields');
-            fillQueryResults(fields, queryResults);
+            return url;
         };
 
-        if (Array.isArray(data)) {
-            data.forEach(function (element) {
-                extractFromData(element);
-            });
-        } else if ((typeof data) ==='object') {
-            extractFromData(data);
+
+        var isObjectEmpty = function (obj) {
+            return Object.keys(obj).length === 0;
+        };
+
+        var mapQueryResults = function (fields, queryResults) {
+            var TYPE  = 'type';
+            var VALUE = 'value';
+            var GROUP = 'group';
+            if(fields && Array.isArray(fields)) {
+                fields.forEach(function (element) {
+                    if (element[TYPE] && element[VALUE] && element[GROUP]) {
+                        var index = element[GROUP];
+                        if(queryResults[index]) {
+                            queryResults[index][element[TYPE]] = element[VALUE];
+                        } else {
+                            queryResults[index] = {};
+                            queryResults[index][element[TYPE]] = element[VALUE];
+                        }
+                    }
+                });
+            }
         }
-        //May be empty elements which should be filtred
-        queryResults = queryResults.filter(function (element) {
-            return element != undefined || element != null;
-        });
 
-        if(queryResults.length > 0) {
-            retVal.md = queryResults;
-            retVal.context.NetWitness.Events = queryResults;
-            var hr = tableToMarkdown(command, retVal.md);
-            return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: retVal.context};
-        } else {
-            return JSON.stingify(data);
-        }
-    };
+        var buildHrAndContext = function (data, isEvent) {
+            //Check if we have values
+            var retVal = {md: [], context: {NetWitness:{}}};
+            var queryResults = {};
 
-    var parseResponse = function(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                var res = JSON.parse(resp.Body);
-                if (Array.isArray(res)) {
-                    return { results: res };
-                }
-
-                return res;
-            } catch (e) {
-                return resp.Body;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    };
-
-    var parseDownloadResponse = function(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                var currentTime = new Date();
-                var fileName = command + '_at_' + currentTime.getTime();
-                return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
-            } catch (e) {
-                return e;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    };
-
-    var buildMdAndContext = function(resp) {
-        var mdAndContext;
-        if (resp.StatusCode === 200) {
-            try {
-                var res = JSON.parse(resp.Body);
-                return buildHrAndContext(res);
-            } catch (e) {
-                return resp.Body;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    };
-
-    var url = fixUrl(params.url) + ':' + params.port;
-
-    var getHelp = function(node) {
-        var fullUrl = url + node + '?msg=help&op=messages' + '&force-content-type=application/json';
-        res = http(
-            fullUrl,
-            {
-                Method: 'GET',
-                Username: params.username,
-                Password: params.password
-            },
-            !params.secure,
-            params.proxy
-        );
-
-        return parseResponse(res);
-    };
-
-    var encodeParams = function(p) {
-        var q = '';
-        if (p) {
-            var argsToIgnore = {
-              responseType: true,
-              using: true
+            var extractFromData = function(data) {
+                var fields = dq(data, 'results.fields');
+                mapQueryResults(fields, queryResults);
             };
 
-            var keys = Object.keys(p);
-            if (keys.length > 0) {
-                q = '&';
-                for (var i = 0; i < keys.length; i++) {
-                    if (argsToIgnore[keys[i]]) {
-                      continue;
-                    } else if (i !== 0) {
-                        q += '&';
+            if (Array.isArray(data)) {
+                data.forEach(function (element) {
+                    extractFromData(element);
+                });
+            } else if ((typeof data) ==='object') {
+                extractFromData(data);
+            }
+            var flatQueryResult = []
+            for(key in queryResults) {
+                flatQueryResult.push(queryResults[key])
+            }
+            if(!isObjectEmpty(queryResults)) {
+                retVal.md = flatQueryResult;
+                var hr = tableToMarkdown(command, retVal.md);
+                return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown};
+            } else {
+                return "No results found \n" + JSON.stringify(data);
+            }
+        };
+
+        var parseResponse = function(resp) {
+            if (resp.StatusCode === 200) {
+                try {
+                    var res = JSON.parse(resp.Body);
+                    if (Array.isArray(res)) {
+                        return { results: res };
                     }
-                    q += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(p[keys[i]]);
+
+                    return res;
+                } catch (e) {
+                    return resp.Body;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var parseDownloadResponse = function(resp) {
+            if (resp.StatusCode === 200) {
+                try {
+                    var currentTime = new Date();
+                    var fileName = command + '_at_' + currentTime.getTime();
+                    return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
+                } catch (e) {
+                    return e;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var buildMdAndContext = function(resp, isEvent) {
+            var mdAndContext;
+            if (resp.StatusCode === 200) {
+                try {
+                    var res = JSON.parse(resp.Body);
+                    return buildHrAndContext(res, isEvent);
+                } catch (e) {
+                    return resp.Body;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var url = fixUrl(params.url) + ':' + params.port;
+
+        var getHelp = function(node) {
+            var fullUrl = url + node + '?msg=help&op=messages' + '&force-content-type=application/json';
+            res = http(
+                fullUrl,
+                {
+                    Method: 'GET',
+                    Username: params.username,
+                    Password: params.password
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        };
+
+        var handleTimeFilter = function (args) {
+            if(LAST_HOURS in args) {
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                var dt = new Date();
+                dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+                dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
+                var buildDateFormat = function () {
+                    return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
+                };
+                //if query is empry string
+                if(!args || !args[QUERY]) {
+                    args[QUERY] = 'select * where time = "' + buildDateFormat();
+                }
+                //if query has select and where statements
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
+                    args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
+                }
+                //id query contains just select
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
+                    args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
                 }
             }
         }
-        return q;
-    };
 
-    var ResponseTypes = {
-      'json': 'application/json',
-      'html': 'text/html',
-      'text': 'text/plain',
-      'xml': 'text/xml',
-      'octet-stream': 'application/octet-stream'
-    };
-
-    var doReq = function(method, path, args, resType, body) {
-        var parametersUrl = encodeParams(args);
-        var responseType = resType ? ResponseTypes[resType] : 'application/json';
-        var fullUrl = url + path + parametersUrl + '&force-content-type=' + responseType;
-
-        if (params.expiry) {
-            fullUrl += '&expiry=' + params.expiry;
-        }
-
-        var res = http(
-            fullUrl,
-            {
-                Method: method,
-                Username: params.username,
-                Password: params.password,
-                Accept: responseType,
-                Body: body || ''
-            },
-            !params.secure,
-            params.proxy
-        );
-
-        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-            throw 'Failed to perform request to: ' + fullUrl + '. StatusCode: ' + res.StatusCode + '. Error: ' + res.Body;
-        }
-
-        return res;
-    };
-
-    var decoderImport = function(path) {
-        var fileParam = args.entryID ? args.entryID : args.fileID;
-        var fullUrl = url + path;
-        var res = httpMultipart(
-            fullUrl,
-            fileParam,
-            { // HTTP Request Headers
-                Method: 'POST',
-                ContentType: 'appliaction/json',
-                Accept: 'application/json',
-                Username: params.username,
-                Password: params.password
-            },
-            null,
-            !params.secure,
-            params.proxy
-        );
-
-        return parseResponse(res);
-    };
-
-    var concentratorAgg = function() {
-        var fullUrl = url + '/concentrator/agg';
-        var body = {
-          op: args.op,
-          crc: args.crc,
-          nice: args.nice
+        var encodeParams = function(p) {
+            var q = '';
+            if (p) {
+                var argsToIgnore = {
+                  responseType: true,
+                  using: true
+                };
+                handleTimeFilter(p);
+                var keys = Object.keys(p);
+                if (keys.length > 0) {
+                    q = '&';
+                    for (var i = 0; i < keys.length; i++) {
+                        if (argsToIgnore[keys[i]]) {
+                          continue;
+                        } else if (i !== 0) {
+                            q += '&';
+                        }
+                        q += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(p[keys[i]]);
+                    }
+                }
+            }
+            return q;
         };
-        var res = http(
-            fullUrl,
-            { // HTTP Request Headers
-                Method: 'POST',
-                ContentType: 'appliaction/json',
-                Accept: 'application/json',
-                Username: params.username,
-                Password: params.password,
-                Body: JSON.stringify(args)
-            },
-            !params.secure,
-            params.proxy
-        );
-
-        return parseResponse(res);
-    }
-
-    var commandToPath = {
-      'netwitness-msearch': '/sdk?msg=msearch',
-      'netwitness-search': '/sdk?msg=search',
-      'netwitness-query': '/sdk?msg=query',
-      'netwitness-packets': '/sdk/packets?',
-      'nw-sdk-session': '/sdk?msg=session',
-      'nw-sdk-cancel': '/sdk?msg=cancel',
-      'nw-sdk-query': '/sdk?msg=query',
-      'nw-sdk-validate': '/sdk?msg=validate',
-      'nw-sdk-aliases': '/sdk?msg=aliases',
-      'nw-sdk-content': '/sdk/?msg=content',
-      'nw-sdk-ls': '/sdk?msg=ls',
-      'nw-sdk-count': '/sdk?msg=count',
-      'nw-sdk-timeline': '/sdk?msg=timeline',
-      'nw-sdk-mon': '/sdk?msg=mon',
-      'nw-sdk-stopMon': '/sdk?msg=stopMon',
-      'nw-sdk-msearch': '/sdk?msg=msearch',
-      'nw-sdk-precache': '/sdk?msg=precache',
-      'nw-sdk-delCache': '/sdk?msg=delCache',
-      'nw-sdk-info': '/sdk?msg=info',
-      'nw-sdk-search': '/sdk?msg=search',
-      'nw-sdk-language': '/sdk?msg=language',
-      'nw-sdk-packets': '/sdk?msg=packets',
-      'nw-sdk-summary': '/sdk?msg=summary',
-      'nw-sdk-reconfig': '/sdk?msg=reconfig',
-      'nw-sdk-values': '/sdk?msg=values',
-      'nw-sdk-xforms': '/sdk?msg=xforms',
-      'nw-database-info': '/database?msg=info',
-      'nw-database-count': '/database?msg=count',
-      'nw-database-dbState': '/database?msg=dbState',
-      'nw-database-dump': '/database?msg=dump',
-      'nw-database-hashnw-loInfo': '/database?msg=hashInfo',
-      'nw-database-resetMax': '/database?msg=resetMax',
-      'nw-database-optimize': '/database?msg=optimize',
-      'nw-database-reconfig': '/database?msg=reconfig',
-      'nw-database-ls': '/database?msg=ls',
-      'nw-database-timeRoll': '/database?msg=timeRoll',
-      'nw-database-stopMon': '/database?msg=stopMon',
-      'nw-database-manifest': '/database?msg=manifest',
-      'nw-database-wipe': '/database?msg=wipe',
-      'nw-database-sizeRoll': '/database?msg=sizeRoll',
-      'nw-database-mon': '/database?msg=mon',
-      'nw-decoder-reset': '/decoder?msg=reset',
-      'nw-decoder-info': '/decoder?msg=info',
-      'nw-decoder-reconfig': '/decoder?msg=reconfig',
-      'nw-decoder-agg': '/decoder?msg=agg',
-      'nw-decoder-stop': '/decoder?msg=stop',
-      'nw-decoder-count': '/decoder?msg=count',
-      'nw-decoder-start': '/decoder?msg=start',
-      'nw-decoder-meta': '/decoder?msg=meta',
-      'nw-decoder-ls': '/decoder?msg=ls',
-      'nw-decoder-stopMon': '/decoder?msg=stopMon',
-      'nw-decoder-resetMax': '/decoder?msg=resetMax',
-      'nw-decoder-whoAgg': '/decoder?msg=whoAgg',
-      'nw-decoder-logStats': '/decoder?msg=logStats',
-      'nw-decoder-select': '/decoder?msg=select',
-      'nw-decoder-mon': '/decoder?msg=mon',
-      'nw-index-ls': '/index?msg=ls',
-      'nw-index-mon': '/index?msg=mon',
-      'nw-index-save': '/index?msg=save',
-      'nw-index-info': '/index?msg=info',
-      'nw-index-drop': '/index?msg=drop',
-      'nw-index-count': '/index?msg=count',
-      'nw-index-values': '/index?msg=values',
-      'nw-index-profile': '/index?msg=profile',
-      'nw-index-stopMon': '/index?msg=stopMon',
-      'nw-index-inspect': '/index?msg=inspect',
-      'nw-index-language': '/index?msg=language',
-      'nw-index-reconfig': '/index?msg=reconfig',
-      'nw-index-sizeRoll': '/index?msg=sizeRoll',
-      'nw-decoderParsers-ls': '/decoder/parsers?msg=ls',
-      'nw-decoderParsers-mon': '/decoder/parsers?msg=mon',
-      'nw-decoderParsers-feed': '/decoder/parsers?msg=feed',
-      'nw-decoderParsers-info': '/decoder/parsers?msg=info',
-      'nw-decoderParsers-count': '/decoder/parsers?msg=count',
-      'nw-decoderParsers-schema': '/decoder/parsers?msg=schema',
-      'nw-decoderParsers-reload': '/decoder/parsers?msg=reload',
-      'nw-decoderParsers-upload': '/decoder/parsers?msg=upload',
-      'nw-decoderParsers-delete': '/decoder/parsers?msg=delete',
-      'nw-decoderParsers-stopMon': '/decoder/parsers?msg=stopMon',
-      'nw-decoderParsers-devices': '/decoder/parsers?msg=devices',
-      'nw-decoderParsers-content': '/decoder/parsers?msg=content',
-      'nw-decoderParsers-ipdevice': '/decoder/parsers?msg=ipdevice',
-      'nw-decoderParsers-iptmzone': '/decoder/parsers?msg=iptmzone',
-      'nw-logs-ls': '/logs?msg=ls',
-      'nw-logs-mon': '/logs?msg=mon',
-      'nw-logs-pull': '/logs?msg=pull',
-      'nw-logs-info': '/logs?msg=info',
-      'nw-logs-count': '/logs?msg=count',
-      'nw-logs-stopMon': '/logs?msg=stopMon',
-      'nw-logs-download': '/logs?msg=download',
-      'nw-logs-timeRoll': '/logs?msg=timeRoll',
-      'nw-sys-ls': '/sys?msg=ls',
-      'nw-sys-mon': '/sys?msg=mon',
-      'nw-sys-save': '/sys?msg=save',
-      'nw-sys-info': '/sys?msg=info',
-      'nw-sys-count': '/sys?msg=count',
-      'nw-sys-caCert': '/sys?msg=caCert',
-      'nw-sys-stopMon': '/sys?msg=stopMon',
-      'nw-sys-shutdown': '/sys?msg=shutdown',
-      'nw-sys-fileEdit': '/sys?msg=fileEdit',
-      'nw-sys-peerCert': '/sys?msg=peerCert',
-      'nw-sys-servCert': '/sys?msg=servCert',
-      'nw-sys-statHist': '/sys?msg=statHist',
-      'nw-users-ls': '/users?msg=ls',
-      'nw-users-mon': '/users?msg=mon',
-      'nw-users-info': '/users?msg=info',
-      'nw-users-auths': '/users?msg=auths',
-      'nw-users-count': '/users?msg=count',
-      'nw-users-delete': '/users?msg=delete',
-      'nw-users-unlock': '/users?msg=unlock',
-      'nw-users-stopMon': '/users?msg=stopMon',
-      'nw-users-addOrMod': '/users?msg=addOrMod',
-      'nw-concentrator-ls': '/concentrator?msg=ls',
-      'nw-concentrator-add': '/concentrator?msg=add',
-      'nw-concentrator-mon': '/concentrator?msg=mon',
-      'nw-concentrator-meta': '/concentrator?msg=meta',
-      'nw-concentrator-info': '/concentrator?msg=info',
-      'nw-concentrator-help': '/concentrator?msg=help',
-      'nw-concentrator-stop': '/concentrator?msg=stop',
-      'nw-concentrator-edit': '/concentrator?msg=edit',
-      'nw-concentrator-reset': '/concentrator?msg=reset',
-      'nw-concentrator-count': '/concentrator?msg=count',
-      'nw-concentrator-start': '/concentrator?msg=start',
-      'nw-concentrator-delete': '/concentrator?msg=delete',
-      'nw-concentrator-whoAgg': '/concentrator?msg=whoAgg',
-      'nw-concentrator-status': '/concentrator?msg=status',
-      'nw-concentrator-stopMon': '/concentrator?msg=stopMon',
-      'nw-concentrator-reconfig': '/concentrator?msg=reconfig',
-      'nw-concentrator-resetMax': '/concentrator?msg=resetMax',
-      'nw-broker-ls': '/broker?msg=ls',
-      'nw-broker-add': '/broker?msg=add',
-      'nw-broker-mon': '/broker?msg=mon',
-      'nw-broker-meta': '/broker?msg=meta',
-      'nw-broker-info': '/broker?msg=info',
-      'nw-broker-help': '/broker?msg=help',
-      'nw-broker-stop': '/broker?msg=stop',
-      'nw-broker-edit': '/broker?msg=edit',
-      'nw-broker-reset': '/broker?msg=reset',
-      'nw-broker-count': '/broker?msg=count',
-      'nw-broker-start': '/broker?msg=start',
-      'nw-broker-delete': '/broker?msg=delete',
-      'nw-broker-whoAgg': '/broker?msg=whoAgg',
-      'nw-broker-status': '/broker?msg=status',
-      'nw-broker-stopMon': '/broker?msg=stopMon',
-      'nw-broker-reconfig': '/broker?msg=reconfig',
-      'nw-broker-resetMax': '/broker?msg=resetMax'
-    };
 
 
-    // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            doReq('GET', '/sdk?msg=help&op=messages');
-            return true;
-        case 'nw-decoder-import':
-            var res = decoderImport('/decoder/import');
+
+
+        var ResponseTypes = {
+          'json': 'application/json',
+          'html': 'text/html',
+          'text': 'text/plain',
+          'xml': 'text/xml',
+          'octet-stream': 'application/octet-stream'
+        };
+
+        var doReq = function(method, path, args, resType, body) {
+            var parametersUrl = encodeParams(args);
+            var responseType = resType ? ResponseTypes[resType] : 'application/json';
+            var fullUrl = url + path + parametersUrl + '&force-content-type=' + responseType;
+
+            if (params.expiry) {
+                fullUrl += '&expiry=' + params.expiry;
+            }
+
+            var res = http(
+                fullUrl,
+                {
+                    Method: method,
+                    Username: params.username,
+                    Password: params.password,
+                    Accept: responseType,
+                    Body: body || ''
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            if (res.StatusCode !== 200 && res.StatusCode !== 201) {
+                throw 'Failed to perform request to: ' + fullUrl + '. StatusCode: ' + res.StatusCode + '. Error: ' + res.Body;
+            }
+
             return res;
-        case 'nw-decoder-parsers-upload':
-            var res = decoderImport('/decoder/parsers/upload');
-            return res;
-        case  'netwitness-msearch':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case  'netwitness-search':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case  'netwitness-query':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case 'netwitness-packets':
-            return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
-        default:
-            return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
-    }
+        };
+
+        var decoderImport = function(path) {
+            var fileParam = args.entryID ? args.entryID : args.fileID;
+            var fullUrl = url + path;
+            var res = httpMultipart(
+                fullUrl,
+                fileParam,
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    ContentType: 'appliaction/json',
+                    Accept: 'application/json',
+                    Username: params.username,
+                    Password: params.password
+                },
+                null,
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        };
+
+        var concentratorAgg = function() {
+            var fullUrl = url + '/concentrator/agg';
+            var body = {
+              op: args.op,
+              crc: args.crc,
+              nice: args.nice
+            };
+            var res = http(
+                fullUrl,
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    ContentType: 'appliaction/json',
+                    Accept: 'application/json',
+                    Username: params.username,
+                    Password: params.password,
+                    Body: JSON.stringify(args)
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        }
+
+        var commandToPath = {
+          'netwitness-msearch': '/sdk?msg=msearch',
+          'netwitness-search': '/sdk?msg=search',
+          'netwitness-query': '/sdk?msg=query',
+          'netwitness-packets': '/sdk/packets?',
+          'nw-sdk-session': '/sdk?msg=session',
+          'nw-sdk-cancel': '/sdk?msg=cancel',
+          'nw-sdk-query': '/sdk?msg=query',
+          'nw-sdk-validate': '/sdk?msg=validate',
+          'nw-sdk-aliases': '/sdk?msg=aliases',
+          'nw-sdk-content': '/sdk/?msg=content',
+          'nw-sdk-ls': '/sdk?msg=ls',
+          'nw-sdk-count': '/sdk?msg=count',
+          'nw-sdk-timeline': '/sdk?msg=timeline',
+          'nw-sdk-mon': '/sdk?msg=mon',
+          'nw-sdk-stopMon': '/sdk?msg=stopMon',
+          'nw-sdk-msearch': '/sdk?msg=msearch',
+          'nw-sdk-precache': '/sdk?msg=precache',
+          'nw-sdk-delCache': '/sdk?msg=delCache',
+          'nw-sdk-info': '/sdk?msg=info',
+          'nw-sdk-search': '/sdk?msg=search',
+          'nw-sdk-language': '/sdk?msg=language',
+          'nw-sdk-packets': '/sdk?msg=packets',
+          'nw-sdk-summary': '/sdk?msg=summary',
+          'nw-sdk-reconfig': '/sdk?msg=reconfig',
+          'nw-sdk-values': '/sdk?msg=values',
+          'nw-sdk-xforms': '/sdk?msg=xforms',
+          'nw-database-info': '/database?msg=info',
+          'nw-database-count': '/database?msg=count',
+          'nw-database-dbState': '/database?msg=dbState',
+          'nw-database-dump': '/database?msg=dump',
+          'nw-database-hashnw-loInfo': '/database?msg=hashInfo',
+          'nw-database-resetMax': '/database?msg=resetMax',
+          'nw-database-optimize': '/database?msg=optimize',
+          'nw-database-reconfig': '/database?msg=reconfig',
+          'nw-database-ls': '/database?msg=ls',
+          'nw-database-timeRoll': '/database?msg=timeRoll',
+          'nw-database-stopMon': '/database?msg=stopMon',
+          'nw-database-manifest': '/database?msg=manifest',
+          'nw-database-wipe': '/database?msg=wipe',
+          'nw-database-sizeRoll': '/database?msg=sizeRoll',
+          'nw-database-mon': '/database?msg=mon',
+          'nw-decoder-reset': '/decoder?msg=reset',
+          'nw-decoder-info': '/decoder?msg=info',
+          'nw-decoder-reconfig': '/decoder?msg=reconfig',
+          'nw-decoder-agg': '/decoder?msg=agg',
+          'nw-decoder-stop': '/decoder?msg=stop',
+          'nw-decoder-count': '/decoder?msg=count',
+          'nw-decoder-start': '/decoder?msg=start',
+          'nw-decoder-meta': '/decoder?msg=meta',
+          'nw-decoder-ls': '/decoder?msg=ls',
+          'nw-decoder-stopMon': '/decoder?msg=stopMon',
+          'nw-decoder-resetMax': '/decoder?msg=resetMax',
+          'nw-decoder-whoAgg': '/decoder?msg=whoAgg',
+          'nw-decoder-logStats': '/decoder?msg=logStats',
+          'nw-decoder-select': '/decoder?msg=select',
+          'nw-decoder-mon': '/decoder?msg=mon',
+          'nw-index-ls': '/index?msg=ls',
+          'nw-index-mon': '/index?msg=mon',
+          'nw-index-save': '/index?msg=save',
+          'nw-index-info': '/index?msg=info',
+          'nw-index-drop': '/index?msg=drop',
+          'nw-index-count': '/index?msg=count',
+          'nw-index-values': '/index?msg=values',
+          'nw-index-profile': '/index?msg=profile',
+          'nw-index-stopMon': '/index?msg=stopMon',
+          'nw-index-inspect': '/index?msg=inspect',
+          'nw-index-language': '/index?msg=language',
+          'nw-index-reconfig': '/index?msg=reconfig',
+          'nw-index-sizeRoll': '/index?msg=sizeRoll',
+          'nw-decoderParsers-ls': '/decoder/parsers?msg=ls',
+          'nw-decoderParsers-mon': '/decoder/parsers?msg=mon',
+          'nw-decoderParsers-feed': '/decoder/parsers?msg=feed',
+          'nw-decoderParsers-info': '/decoder/parsers?msg=info',
+          'nw-decoderParsers-count': '/decoder/parsers?msg=count',
+          'nw-decoderParsers-schema': '/decoder/parsers?msg=schema',
+          'nw-decoderParsers-reload': '/decoder/parsers?msg=reload',
+          'nw-decoderParsers-upload': '/decoder/parsers?msg=upload',
+          'nw-decoderParsers-delete': '/decoder/parsers?msg=delete',
+          'nw-decoderParsers-stopMon': '/decoder/parsers?msg=stopMon',
+          'nw-decoderParsers-devices': '/decoder/parsers?msg=devices',
+          'nw-decoderParsers-content': '/decoder/parsers?msg=content',
+          'nw-decoderParsers-ipdevice': '/decoder/parsers?msg=ipdevice',
+          'nw-decoderParsers-iptmzone': '/decoder/parsers?msg=iptmzone',
+          'nw-logs-ls': '/logs?msg=ls',
+          'nw-logs-mon': '/logs?msg=mon',
+          'nw-logs-pull': '/logs?msg=pull',
+          'nw-logs-info': '/logs?msg=info',
+          'nw-logs-count': '/logs?msg=count',
+          'nw-logs-stopMon': '/logs?msg=stopMon',
+          'nw-logs-download': '/logs?msg=download',
+          'nw-logs-timeRoll': '/logs?msg=timeRoll',
+          'nw-sys-ls': '/sys?msg=ls',
+          'nw-sys-mon': '/sys?msg=mon',
+          'nw-sys-save': '/sys?msg=save',
+          'nw-sys-info': '/sys?msg=info',
+          'nw-sys-count': '/sys?msg=count',
+          'nw-sys-caCert': '/sys?msg=caCert',
+          'nw-sys-stopMon': '/sys?msg=stopMon',
+          'nw-sys-shutdown': '/sys?msg=shutdown',
+          'nw-sys-fileEdit': '/sys?msg=fileEdit',
+          'nw-sys-peerCert': '/sys?msg=peerCert',
+          'nw-sys-servCert': '/sys?msg=servCert',
+          'nw-sys-statHist': '/sys?msg=statHist',
+          'nw-users-ls': '/users?msg=ls',
+          'nw-users-mon': '/users?msg=mon',
+          'nw-users-info': '/users?msg=info',
+          'nw-users-auths': '/users?msg=auths',
+          'nw-users-count': '/users?msg=count',
+          'nw-users-delete': '/users?msg=delete',
+          'nw-users-unlock': '/users?msg=unlock',
+          'nw-users-stopMon': '/users?msg=stopMon',
+          'nw-users-addOrMod': '/users?msg=addOrMod',
+          'nw-concentrator-ls': '/concentrator?msg=ls',
+          'nw-concentrator-add': '/concentrator?msg=add',
+          'nw-concentrator-mon': '/concentrator?msg=mon',
+          'nw-concentrator-meta': '/concentrator?msg=meta',
+          'nw-concentrator-info': '/concentrator?msg=info',
+          'nw-concentrator-help': '/concentrator?msg=help',
+          'nw-concentrator-stop': '/concentrator?msg=stop',
+          'nw-concentrator-edit': '/concentrator?msg=edit',
+          'nw-concentrator-reset': '/concentrator?msg=reset',
+          'nw-concentrator-count': '/concentrator?msg=count',
+          'nw-concentrator-start': '/concentrator?msg=start',
+          'nw-concentrator-delete': '/concentrator?msg=delete',
+          'nw-concentrator-whoAgg': '/concentrator?msg=whoAgg',
+          'nw-concentrator-status': '/concentrator?msg=status',
+          'nw-concentrator-stopMon': '/concentrator?msg=stopMon',
+          'nw-concentrator-reconfig': '/concentrator?msg=reconfig',
+          'nw-concentrator-resetMax': '/concentrator?msg=resetMax',
+          'nw-broker-ls': '/broker?msg=ls',
+          'nw-broker-add': '/broker?msg=add',
+          'nw-broker-mon': '/broker?msg=mon',
+          'nw-broker-meta': '/broker?msg=meta',
+          'nw-broker-info': '/broker?msg=info',
+          'nw-broker-help': '/broker?msg=help',
+          'nw-broker-stop': '/broker?msg=stop',
+          'nw-broker-edit': '/broker?msg=edit',
+          'nw-broker-reset': '/broker?msg=reset',
+          'nw-broker-count': '/broker?msg=count',
+          'nw-broker-start': '/broker?msg=start',
+          'nw-broker-delete': '/broker?msg=delete',
+          'nw-broker-whoAgg': '/broker?msg=whoAgg',
+          'nw-broker-status': '/broker?msg=status',
+          'nw-broker-stopMon': '/broker?msg=stopMon',
+          'nw-broker-reconfig': '/broker?msg=reconfig',
+          'nw-broker-resetMax': '/broker?msg=resetMax'
+        };
+
+
+        // The command input arg holds the command sent from the user.
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+            case 'test-module':
+                doReq('GET', '/sdk?msg=help&op=messages');
+                return true;
+            case 'nw-decoder-import':
+                var res = decoderImport('/decoder/import');
+                return res;
+            case 'nw-decoder-parsers-upload':
+                var res = decoderImport('/decoder/parsers/upload');
+                return res;
+            case  'netwitness-msearch':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            case  'netwitness-search':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            case  'netwitness-query':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType), true)
+            case 'netwitness-packets':
+                return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
+            default:
+                return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
+        }
   type: javascript
   commands:
   - name: netwitness-msearch
@@ -530,6 +560,8 @@ For regular expressions, change “keyword” to “regex”
       description: <uint64, optional> Query optimization to stop processing results
         after the threshold is reached (useful with select aggregate functions).  Zero
         means no threshold (the default).
+    - name: lastHours
+      description: <uint64, optional> Filter for date and time
     outputs:
     - contextPath: NetWitness.Events
       description: all events of NetWitness
