@@ -23,13 +23,13 @@ script: |
   var emailContext = { Account: { Email: [] } };
   var md = '### Extract Email\n';
   for (var i = 0; i < uniqueMatches.length; i++) {
-      emailContext.Account.Email.push({ Data: uniqueMatches[i] });
+      emailContext.Account.Email.push(uniqueMatches[i]);
       md += '- ' + uniqueMatches[i] + '\n';
   }
 
   return {
       Type: entryTypes.note,
-      Contents: emailContext.Email,
+      Contents: emailContext.Account.Email,
       ContentsFormat: formats.json,
       HumanReadable: md,
       EntryContext: emailContext
