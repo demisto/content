@@ -350,7 +350,7 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            throw 'Request Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + res.StatusCode + '.\nResult: ' + JSON.stringify(res);
         }
 
         if (res.StatusCode === 204) {
@@ -506,6 +506,37 @@ script:
         return createTableEntry("Report - " + reportID, res, table, context);
     }
 
+    var submitFile = function(entryID, description, type) {
+        var query = '/submit/data';
+        var requestUrl = baseUrl + query;
+        var headers = getHeaders(query);
+        var res = httpMultipart(
+                requestUrl, // URL
+                entryID, // Optional - FilePath / EntryID
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    Headers: headers
+                },
+                { // Multipart Contents
+                    type: type,
+                    description: description
+                },
+                insecure,
+                proxy
+            );
+
+        var statusCode = res && res.StatusCode;
+
+        switch (statusCode) {
+            case 200:
+                return "The file was submitted sucessfully";
+            case 403:
+                throw "\nGot 403 error\nQuery valid but the response was refused because the user has exceeded their daily quota of submission requests";
+            default:
+                throw '\nSubmit File Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + statusCode + '.\nResult: ' + JSON.stringify(res, null, 2);
+        }
+    }
+
     switch (command) {
         case 'test-module':
             basicSearch('ip', '66.34.253.56');
@@ -524,6 +555,8 @@ script:
             }
         case 'isight-get-report':
             return getReport(args.reportID);
+        case 'isight-submit-file':
+            return submitFile(args.entryID, args.description, args.type);
     }
   type: javascript
   commands:
@@ -640,4 +673,20 @@ script:
     - contextPath: Report.tagSection
       description: Report tag section
     description: Get specific report
+  - name: isight-submit-file
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: entry-id of the file to submit (e.g. 41@18)
+    - name: description
+      required: true
+      description: file description
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - malware
+      - other
+    description: Submission of malware and other files for community sharing
 hidden: false
