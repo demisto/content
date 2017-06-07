@@ -2,6 +2,7 @@ commonfields:
   id: NetwitnessSAUpdateIncident
   version: -1
 name: NetwitnessSAUpdateIncident
+deprecated: true
 script: |
   resp = demisto.executeCommand("nw-update-incident", demisto.args())
 
