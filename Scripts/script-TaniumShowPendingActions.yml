@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumShowPendingActions
-  version: 10
+  version: -1
 name: TaniumShowPendingActions
 script: |
   // An example script for asking Tanium a question
@@ -126,7 +126,6 @@ tags:
 comment: Send a request for a formatted result of a saved question. To receive the
   most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
   for more information
-enabled: true
 args:
 - name: fulljson
   default: true
@@ -145,3 +144,7 @@ outputs:
 - contextPath: Tanium.Action.AvailableTime
   description: Tanium available time
 scripttarget: 0
+dependson:
+  must:
+  - tn-get-object
+timeout: 0s

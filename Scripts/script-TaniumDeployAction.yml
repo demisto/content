@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumDeployAction
-  version: 8
+  version: -1
 name: TaniumDeployAction
 script: |-
   // An example script for deploying Tanium action with filter
@@ -77,7 +77,6 @@ tags:
 - tanium
 comment: Execute an action, optionally with parameters, and filtering - based on an
   existing package. See https://kb.tanium.com/SOAP for more information
-enabled: true
 args:
 - name: packageName
   description: Specify the package name. e.g. !TaniumDeployAction packageName="Clean
@@ -101,3 +100,7 @@ outputs:
 - contextPath: Tanium.Action.PackageName
   description: Tanium package name
 scripttarget: 0
+dependson:
+  must:
+  - tn-deploy-package
+timeout: 0s
