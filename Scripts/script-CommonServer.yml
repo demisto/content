@@ -44,7 +44,7 @@ script: |-
       }
   }
 
-  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!|"
 
   /**
    * Escapes markdown characters in a string

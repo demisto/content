@@ -58,19 +58,13 @@ script: |-
           o[currLabel] = rows[i].substring(start);
       }
       // Convert labels of custom fields to actual attributes (cs1Label, cn1Label, cs1, cn1)
-      var num = 1;
-      while (o.hasOwnProperty('cs' + num) && o.hasOwnProperty('cs' + num + 'Label')) {
-          o[o['cs' + num + 'Label']] = o['cs' + num];
-          delete o['cs' + num + 'Label'];
-          delete o['cs' + num];
-          num++;
-      }
-      num = 1;
-      while (o.hasOwnProperty('cn' + num) && o.hasOwnProperty('cn' + num + 'Label')) {
-          o[o['cn' + num + 'Label']] = parseLong(['cn' + num]);
-          delete o['cs' + num + 'Label'];
-          delete o['cs' + num];
-          num++;
+      var keys = Object.keys(o);
+      for (var k=0; k<keys.length; k++) {
+          if (keys[k].match(/c[ns]\d+Label/i) && keys.indexOf(keys[k].substring(0, keys[k].length-5)) >= 0) {
+              o[o[keys[k]]] = o[keys[k].substring(0, keys[k].length-5)];
+              delete o[keys[k]];
+              delete o[keys[k].substring(0, keys[k].length-5)];
+          }
       }
       data.push(o);
   }
