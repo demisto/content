@@ -314,7 +314,9 @@ script:
     var ec = {};
     var returnObject = objectDictionary[command] &&
       mapObjFunction(objectDictionary[command])(dq(rawResponse, contextData.ContentPath));
-    ec[contextData.ContextPath] = returnObject;
+    if (contextData) {
+        ec[contextData.ContextPath] = returnObject;
+    }
     if (returnObject && !returnObject.ID) {
         returnObject.ID = id;
     }
@@ -332,7 +334,7 @@ script:
         Contents: rawResponse,
         ReadableContentsFormat: formats.markdown,
         HumanReadable: createHR(command, returnObject),
-        EntryContext: returnObject && ec
+        EntryContext: (contextData && returnObject && ec) ? ec : undefined
     };
   type: javascript
   commands:
