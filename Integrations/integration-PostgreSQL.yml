@@ -62,7 +62,7 @@ script:
         conn = pgsqlConnect()
         try:
             cur = conn.cursor()
-            cur.execute(demisto.args()['query'])
+            cur.execute(demisto.args()['query'])Å
             rows = cur.fetchall()
             colnames = [desc[0] for desc in cur.description]
         except:
