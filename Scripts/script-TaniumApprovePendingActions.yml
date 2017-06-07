@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumApprovePendingActions
-  version: 4
+  version: -1
 name: TaniumApprovePendingActions
 script: |
   //var approvedPackageNames = ["Disable Java Auto Update"];
@@ -137,7 +137,6 @@ tags:
 comment: Send a request for a formatted result of a saved question. To receive the
   most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
   for more information
-enabled: true
 args:
 - name: approvedpackages
   required: true
@@ -154,3 +153,8 @@ outputs:
 - contextPath: Tanium.Action.PackageID
   description: Tanium package id
 scripttarget: 0
+dependson:
+  must:
+  - tn-add-object
+  - tn-get-object
+timeout: 0s
