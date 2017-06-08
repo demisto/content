@@ -211,7 +211,7 @@ script: |-
    * @returns {String} - converted string - i.e. HelloWorld
   */
   var underscoreToCamelCase = function(string){
-      ret_string = '_'+string;
+      var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
 
