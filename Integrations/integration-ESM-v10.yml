@@ -43,13 +43,14 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |
     import base64
     import json
     import re
     import sys
     import requests
     import time
+    import datetime
 
     verify =  demisto.params()['insecure'] == False
 
@@ -76,6 +77,14 @@ script:
             md = md + ' | '.join(row['values']) + '\n'
 
         return md
+
+    def severity_to_level(severity):
+        if severity > 65:
+            return 3
+        elif severity > 32:
+            return 2
+        else:
+            return 1
 
     class NitroESM(object):
 
@@ -206,20 +215,6 @@ script:
             #fetch result
             res = self.fetch_results(resultID)
 
-            '''
-            # result mock
-            res = {
-                "columns": [
-                    {"name": "Alert.ID"},
-                    {"name": "Alert.LastTime"}
-                ],
-                "rows": [
-                    {"values": [ "32886", "03\/01\/2016 13:01:54"]},
-                    {"values": [ "32906","03\/01\/2016 13:01:54"]}
-                ]
-            }
-            '''
-
             table = search_result_to_md(res)
             return {
                 'ContentsFormat': formats['json'],
@@ -272,49 +267,35 @@ script:
 
             res = self.cmdquery(cmd, query)
 
-            '''
-            # mock of the result
-            res = [
-                {
-                    "id": {"value": 1},
-                    "summary": "summary 1",
-                    "assignee": "assignee 1",
-                    "severity": 1,
-                    "triggeredDate": "triggeredDate as string 1",
-                    "acknowledgedDate": "acknowledgedDate as string 1",
-                    "acknowledgedUsername": "Username 1",
-                    "alarmName": "alarm Name 1",
-                    "conditionType": 1
-                },
-                {
-                    "id": {"value": 2},
-                    "summary": "summary 2",
-                    "assignee": "assignee 2",
-                    "severity": 2,
-                    "triggeredDate": "triggeredDate as string 2",
-                    "acknowledgedDate": "acknowledgedDate as string 2",
-                    "acknowledgedUsername": "Username 2",
-                    "alarmName": "alarm Name 2",
-                    "conditionType": 2
-                }
-            ]'''
+            for alarm in res:
+                alarm['ID'] = alarm['id']["value"]
+                del alarm["id"]
 
-            if not res:
+            return res
+
+    def alarms_to_entry(alarms):
+        if not alarms:
                 return "No alarms were found"
 
-            for x in res:
-                x['ID'] = x['id']["value"]
-                del x["id"]
+        context = { 'Alarm(val.ID && val.ID == obj.ID)': alarms }
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': alarms,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Result:' ,alarms),
+            'EntryContext': context
+        }
 
-            context = { 'Alarm(val.ID && val.ID == obj.ID)': res }
-            return {
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tblToMd('Result:' ,res),
-                'EntryContext': context
-            }
+    def alarms_to_incidents(alarms):
+        incidents = []
+        for alarm in alarms:
+            incidents.append({
+                'name': alarm['summary'],
+                'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'], alarm['ID'], alarm['conditionType']),
+                'severity': severity_to_level(alarm['severity'])
+            })
+        return incidents
 
     esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['username'], demisto.params()['password'])
 
@@ -344,11 +325,33 @@ script:
             demisto.get(args, 'timeRange'),
             demisto.get(args, 'customStart'),
             demisto.get(args, 'customEnd'),
-            demisto.get(args, 'assignedUser'),
-            )
-        demisto.results(res)
-        sys.exit(0)
+            demisto.get(args, 'assignedUser')
+        )
 
+        entry = alarms_to_entry(res)
+
+        demisto.results(entry)
+        sys.exit(0)
+    if demisto.command() == 'fetch-incidents':
+
+        last_run = demisto.getLastRun()
+        start = last_run and last_run['value']
+
+        if (not start):
+            start = (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat()
+
+        end = datetime.datetime.now().isoformat()
+        demisto.setLastRun({ 'value': end })
+        res = esm.fetch_alarms(
+            'CUSTOM',
+            start,
+            end,
+            ''
+        )
+
+        incidents = alarms_to_incidents(res)
+        demisto.incidents(incidents)
+        sys.exit(0)
   type: python
   commands:
   - name: esm-fetch-fields
