@@ -218,9 +218,10 @@ script:
                 ipContext.Geo.Organization = output['Organization'];
                 ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
                 ipContext.Hostname = output['Hostname'];
-                ipContext.Malicous = {};
-                ipContext.Malicous.Vendor = output['Source'];
+                ipContext.Malicious = {};
+                ipContext.Malicious.Vendor = output['Source'];
                 ipContext.Address = output['IP Address'];
+                ipContext.Score = output['Threat Score'];
                 if (command == 'domain') {
                     context.Name = args.value;
                     context.DNS = output['IP Address'];
@@ -231,8 +232,8 @@ script:
 
             } else if (command == 'file') {
                 context.MD5 = args.value;
-                context.Malicous = {};
-                context.Malicous.Vendor = output['Source'];
+                context.Malicious = {};
+                context.Malicious.Vendor = output['Source'];
                 entry.EntryContext['File'] = context;
             }
 
