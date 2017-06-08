@@ -218,6 +218,18 @@ script: |-
       return mdResults;
   }
 
+  var tblToMd = tableToMarkdown;
+
+  /**
+   * Converts underscore case strings to camel case
+   * @param {String} string - string to be converted - i.e. hello_world
+   * @returns {String} - converted string - i.e. HelloWorld
+  */
+  var underscoreToCamelCase = function(string){
+      var ret_string = '_'+string;
+      return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  };
+
   /**
    * Converts a demisto table in JSON form to a HTML table
    * @param {String} name - the name of the table
@@ -258,8 +270,6 @@ script: |-
       }
       return htmlResults;
   }
-
-  var tblToMd = tableToMarkdown;
 
   /**
 
