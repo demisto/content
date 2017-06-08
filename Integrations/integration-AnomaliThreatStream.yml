@@ -33,7 +33,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |
     var base = params.server.replace(/[\/]+$/, '') + '/api/';
     args.username = params.username;
     args.api_key = params.apikey;
@@ -65,10 +65,6 @@ script:
             url += encodeToURLQuery(cred);
         }
 
-        console.log(url);
-
-        var file_id = args.file_id;
-        delete(args.file_id);
         var res = !multipart ?
             http(
                 url,
@@ -82,7 +78,7 @@ script:
             ) :
             httpMultipart(
                 url,
-                file_id,
+                args.file_id,
                 {
                     Method: method,
                     Headers: headers,
@@ -111,16 +107,6 @@ script:
 
     var isStandardCommand = function(command) {
         return (command == 'ip' || command == 'file' || command == 'domain');
-    }
-
-    var convertKeysToPascalCase = function(dict) {
-        var pascalDict = {};
-        for (var key in dict) {
-            var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
-            pascalDict[pascalCaseKey] = dict[key];
-        }
-
-        return pascalDict;
     }
 
     var fillReputationOutput = function(command, object) {
@@ -225,6 +211,7 @@ script:
                 if (command == 'domain') {
                     context.Name = args.value;
                     context.DNS = output['IP Address'];
+                    context.Score = output['Threat Score']
                     entry.EntryContext['Domain'] = context;
                 }
 
@@ -234,6 +221,7 @@ script:
                 context.MD5 = args.value;
                 context.Malicious = {};
                 context.Malicious.Vendor = output['Source'];
+                context.Score = output['Threat Score']
                 entry.EntryContext['File'] = context;
             }
 
@@ -328,7 +316,6 @@ script:
     }
 
     return parseResult(command, result);
-
   type: javascript
   commands:
   - name: threatstream-intelligence
