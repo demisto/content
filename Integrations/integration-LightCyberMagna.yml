@@ -35,11 +35,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 script:
   script: |-
     var fixUrl = function(base) {
@@ -53,7 +48,6 @@ script:
     var buildArgs = function(args) {
         sArgs = Object.keys(args).map(function(key) {
             return [key, args[key]].map(encodeURIComponent).join("=");
-        log(JSON.stringify(sArgs));
         }).join("&");
         if (sArgs) {
             return '?' + sArgs;
