@@ -37,6 +37,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |+
     import base64
@@ -45,6 +50,8 @@ script:
     import sys
     import requests
     import time
+
+    verify =  demisto.params()['insecure'] == False
 
     def throw_error(error_str):
         demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
@@ -109,7 +116,7 @@ script:
                 self.login_response = requests.post(self.login_url,
                                                      self.params_json,
                                                      headers=self.v10_login_headers,
-                                                     verify=False)
+                                                     verify=verify)
                 self.cookie = self.login_response.headers.get('Set-Cookie')
                 try:
                     self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)', self.cookie).group(1)
@@ -130,14 +137,20 @@ script:
             self.url = 'https://{}/rs/esm/'.format(self.esmhost)
             self.result = requests.post(self.url + self.cmd,
                                         headers=self.session_headers,
-                                        data=self.query, verify=False)
+                                        data=self.query, verify=verify)
             try:
                 return self.result.json()
             except:
                 throw_error("Error - ESM replied with:\n - status code: {} \n - body: {}".format(self.result.status_code, self.result.text))
 
-        def execute_query(self, time_range, filters, query_type):
+        def execute_query(self, time_range, custom_start, custom_end, filters, query_type):
+            if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
+                throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+
             cmd = 'qryExecuteDetail?reverse=false&type=' + query_type
+            if (time_range == 'CUSTOM'):
+               cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
+
             query = json.dumps({
                 'config': {
                     'timeRange': time_range,
@@ -182,10 +195,10 @@ script:
             res = self.cmdquery(cmd, query)
             return res
 
-        def search(self, time_range, filters, query_type, max_wait):
+        def search(self, time_range, custom_start, custom_end, filters, query_type, max_wait):
             self.login()
             # execute command
-            resultID = self.execute_query(time_range, filters, query_type)
+            resultID = self.execute_query(time_range, custom_start, custom_end, filters, query_type)
 
             # wait for result to be ready
             self.wait_for_results(resultID, max_wait)
@@ -240,13 +253,22 @@ script:
             matches = [user for user in res if user['username'] == self.user]
             return matches[0]
 
-        def fetch_alarms(self, time_range):
+        def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
+            if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
+                throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
+
             self.login()
 
             cmd = 'alarmGetTriggeredAlarmsPaged?pageSize=500&pageNumber=1&triggeredTimeRange=' + time_range
-            user = self.get_user()
+            if (time_range == 'CUSTOM'):
+               cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
 
-            query = json.dumps({ 'assignedUser' : user})
+            query = ''
+            if (assigned_user == 'ME'):
+                user = self.get_user()
+                query = json.dumps({ 'assignedUser' : user})
+            elif assigned_user:
+                query = json.dumps({ 'assignedUser' : json.loads(assigned_user)})
 
             res = self.cmdquery(cmd, query)
 
@@ -257,7 +279,7 @@ script:
                     "id": {"value": 1},
                     "summary": "summary 1",
                     "assignee": "assignee 1",
-                    "sevirity": 1,
+                    "severity": 1,
                     "triggeredDate": "triggeredDate as string 1",
                     "acknowledgedDate": "acknowledgedDate as string 1",
                     "acknowledgedUsername": "Username 1",
@@ -268,7 +290,7 @@ script:
                     "id": {"value": 2},
                     "summary": "summary 2",
                     "assignee": "assignee 2",
-                    "sevirity": 2,
+                    "severity": 2,
                     "triggeredDate": "triggeredDate as string 2",
                     "acknowledgedDate": "acknowledgedDate as string 2",
                     "acknowledgedUsername": "Username 2",
@@ -308,6 +330,8 @@ script:
         args = demisto.args()
         res = esm.search(
             demisto.get(args, 'timeRange'),
+            demisto.get(args, 'customStart'),
+            demisto.get(args, 'customEnd'),
             json.loads(demisto.get(args, 'filters')),
             demisto.get(args, 'queryType') or 'EVENT',
             demisto.get(args, 'maxWait') or 30
@@ -315,7 +339,13 @@ script:
         demisto.results(res)
         sys.exit(0)
     if demisto.command() == 'esm-fetch-alarms':
-        res = esm.fetch_alarms(demisto.get(demisto.args(), 'timeRange'))
+        args= demisto.args()
+        res = esm.fetch_alarms(
+            demisto.get(args, 'timeRange'),
+            demisto.get(args, 'customStart'),
+            demisto.get(args, 'customEnd'),
+            demisto.get(args, 'assignedUser'),
+            )
         demisto.results(res)
         sys.exit(0)
 
@@ -331,10 +361,24 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
+      - LAST_3_DAYS
+      - LAST_2_DAYS
+      - LAST_24_HOURS
+      - PREVIOUS_DAY
+      - CURRENT_DAY
+      - LAST_HOUR
+      - LAST_30_MINUTES
+      - LAST_10_MINUTES
+      - LAST_MINUTE
+      - CUSTOM
       - PREVIOUS_YEAR
       - CURRENT_YEAR
+      - PREVIOUS_QUARTER
+      - CURRENT_QUARTER
       - PREVIOUS_MONTH
       - CURRENT_MONTH
+      - PREVIOUS_WEEK
+      - CURRENT_WEEK
     - name: filters
       required: true
       description: Filter on the query results, should be a json string, of the format
@@ -349,6 +393,10 @@ script:
         are : FLOW/ASSET)'
     - name: maxWait
       description: Maximum time to wait (in minutes), default is 30
+    - name: customStart
+      description: if timeRange is CUSTOM, start time for the time range (e.g. 2017-06-01T12:48:16.734Z)
+    - name: customEnd
+      description: if timeRange is CUSTOM, end time for the time range (e.g. 2017-06-01T12:48:16.734Z)
     description: Perform a query against Mcafee ESM SIEM
   - name: esm-fetch-alarms
     arguments:
@@ -356,10 +404,35 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
+      - LAST_3_DAYS
+      - LAST_2_DAYS
+      - LAST_24_HOURS
+      - PREVIOUS_DAY
+      - CURRENT_DAY
+      - LAST_HOUR
+      - LAST_30_MINUTES
+      - LAST_10_MINUTES
+      - LAST_MINUTE
+      - CUSTOM
       - PREVIOUS_YEAR
       - CURRENT_YEAR
+      - PREVIOUS_QUARTER
+      - CURRENT_QUARTER
       - PREVIOUS_MONTH
       - CURRENT_MONTH
+      - PREVIOUS_WEEK
+      - CURRENT_WEEK
+    - name: customStart
+      description: if timeRange is CUSTOM, start time for the time range (e.g. 2017-06-01T12:48:16.734Z)
+    - name: customEnd
+      description: if timeRange is CUSTOM, end time for the time range (e.g. 2017-06-01T12:48:16.734Z)
+    - name: assignedUser
+      auto: PREDEFINED
+      predefined:
+      - ME
+      - ""
+      description: 'user assigned to handle this triggered alarm (use ''ME'' option
+        to use instance user, or use format EsmUser (read more on that here - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser) '
     outputs:
     - contextPath: Alarm.ID
       description: Alarm ID
@@ -367,8 +440,8 @@ script:
       description: Alarm summary
     - contextPath: Alarm.assignee
       description: Alarm assignee
-    - contextPath: Alarm.sevirity
-      description: Alarm sevirity
+    - contextPath: Alarm.severity
+      description: Alarm severity
     - contextPath: Alarm.triggeredDate
       description: Alarm triggered date
     - contextPath: Alarm.acknowledgedDate
