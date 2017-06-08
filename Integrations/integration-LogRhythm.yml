@@ -1,0 +1,586 @@
+commonfields:
+  id: LogRhythm
+  version: -1
+name: LogRhythm
+display: LogRhythm
+category: Analytics & SIEM
+image: data:image/png;base64,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pVoPR6poA0W7WmRRp0+AFa0BzI+4K5r8/0GzwPxTiAKgd705ev+rH02/cd++ycPb+1OXxvIWfrRn4l+fPzT11sMH4oe2HktdN56xYXAKjREoQnF8aBxTiQx8bhOmoTscKIMQlG17kc/tusxruiLFsh0tlq3oob4T9dFITbqtofY4pMRoPLHBkbJxND6D0XjCd6Rv9FoohZDbHD/nrNbYornRdFtDuBsK2Nc9sGnngZ4bxuIJ38vvHDTjiUwtGP303aCiJqlAlFL4xsro3fDqMyAEd7838Q89M8XWOTUu8Fms+R/JjVSKHOmygCUkrlsUuhcaVVBKhyNJQ9A4tCBkvltyJIqOQm29B20NHkBjEkLB59M9X7ugkV02L4CvLW/4f9Dcn6ayxd/oS11USbIc/psD8QtKQm3fOZC+CABgCfL4wfjajCWes0UF3rk0Do0RrD1vEQihMAwtv+uDnt3btu1uyRHiv/epV19hulZUgJJSMiioK1afc84Xr1336//W3b9qZHii7Ts/f+p9t8c8vn334bnZdLYFtsDmq9Y+duXacwumoeOvb77mf93633+5Jh1P+H/60AtbNK87AympbdleGPrH5KDOaApAsiTQUmMM/peO2nv/fffYt1WmHPnZnon/8dONbbcEXLzi6mb/V5VK4uynygcJJRWUUkgVHRRsia4mz7urWgMvv9ufugoANrT4nyNEOZM5G+vb/LhsfgAujeK7b4z07zg6szqbtzufOZZ8p9mr7795WeR2eDSJgn3KjZ/G78l1q+n96d/k7D+zPSd5r7J62jsASKXIqcooQP/ivPp/hwKMkDn0rXXNT3/urCA+vyzyABhRCOjjd17U9MTN50TwpWWV9tn2ABY2RbDsrLnoaG9Bx8IW/PPtm+/oXL74d5rblQZjELbjkY7wQsEklOiJdM5zycolD1139bp/NHyeZKFQjE5PTF2UzeRaqGlkr7523Y++c9v134vWBuB26dh85QVbbv+Lqz/X3Na00/C6pykhGqM04/a447NCEVJVYqbGAE4dcAoXoxatYuGCLfGV8+p+Wlfv6YPO8Exv4gsHxnOr5ocMMEIEOAU4tTkjklexLadEgVMLGoPOqdA4hQRQsCuYqivqeataZhSXza95NujSUGtyLAi6cH6zF12NXvzjxXN+6A6bfbAliccLqw7E8jcOJcten15Zr7quA87AGKmUIhmR1e8WOFWMEGiMOGAUbkYtTghY1aPQ6hycEcEZgVkZN7sfGIxKnREY1Ua29ibIjoF0a9jk6b+5IJo0OMWekSye60m2mJzmv7GyYcars5MBnhBAWBaUqsQURilS2Tyef2M/+kdjtf2j8bqtO/bqra1RedmqDns6nS3f9dUbRgFY+7sH0D0wHv6of6TdpWteIWWhpT7cd/GKJbGr1p2Ldz88jt+8+DZcho7WaASZfBEzqayrLuR36RpPvX2g59c7fr/vq8xrptcsW3hWY2vL5BXXXQNGaYuQyufWaHnNHO8AZ0QWHQnOCLrjxaaxtBWQCrQtaEzNC+qx/mQ5eCJtNTJCRHutMeTWaAkgcKTiR6dK88qO1Jr8erw5oE/N5iUuRvCXrwxt29+fvLwt6t1z9yUtq0WlZIlat4YLW32g1ZN23/4p397xbEfJUR4XJ/EVjb6P6txcMELaFOAGkHWkOjG3xsB5UQ96povh7qliA6fEUcDgmhavNZyyGoeS5aDXoKUFYWMw7NIkp4TtHM7OKzpSj/q06Ua/FuudKqFoKz8haAagQiYb1jkpzKYC3BJKRdx8iDOCkiPBKYElFMImPyGVQklImKCnMjh18lEhAtiOgOUIeEzXdI3PPQ2l4NI5IiE/yraDmoAXxWIJpbINt6nP1IX8e8IBH/LFErxuF4SSODY8gQdfeAupbB6WLZr6hic7akP+MUPjyd0fHit0LGjZcPDo0DWgFD5dz169fkXe1DmivAxfMHRCCAGdEZg6BSNAWVYuAuo82pjJ6JiCgt/FwClBo1dPapQmKQEipgadExBCIBScthp5zJEKIbcGj0YxnrGgoNA3XV68fzy3HiDYuKDmpc56D3LWKThTdhRMTlEWEhoj2Va/sVtIhZJU0BnBHL8OU6ODsio+CYWwW4PGgYiHz8wXxgyrIgWfwdDg08Y5xbjBKMIuDR6dglEi5gb147ZQCLg4Qi6G1hoDtlAZAN0A4NHpGXkGByoJ3sczfFGNT38cVZG9lBBVzCGlguNISCkhhTh5gyOlgpAStiPgCAmpgFLZxmu7D6MhXIOFLVHsO3z8yq2v7r4PbhNUY0IpJd7Y9aGuhARsB9deuvJ3V6/rypZKZZQYQ94WgFInkdrpNmgLhbKo8lTts6SEJRQoARylwBRAqnHLEgq2rLSpgg2pFHwGx5tDU3+GvG3Axex5IdcLfYkirGqgm73qW1pnAqISIuzq6RZSVddUoEKd5E2g0q+qlxeWUGDVQpeUgCMUyk4V1isFqQCqAFsAZVGdWynYQp3kAwD0Ki9nKPg/kyglSOeLUEohEvTD0DiCNb6xpvlz3swXy+F8qVzjOMLFTMP2mq74+uWLn/in/7rpJ7VBH4QQSJQkjqclyB9tjH8ET4QgVxYQSsGlUdhC4kTGWqSFXUMXRb27VjT5Ds8qDqgYDkhFUX/o2u4/i/4PAEfUBcSI1KkAAAAASUVORK5CYII=
+description: LogRhythm security intelligence
+detaileddescription: SIEM, log management, network and endpoint monitoring and forensics,
+  and security analytics.
+configuration:
+- display: Hostname or IP address
+  name: Host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: ""
+  name: Credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: Insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Default page size for alarm queries
+  name: pageSize
+  defaultvalue: "2000"
+  type: 0
+  required: false
+- display: Timezone offset in minutes of the LogRhythm server machine
+  name: timeZone
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |-
+    var tmplAddAlarmComment = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '        <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:AddAlarmComments>' +
+    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
+    '        <tns:comments>{{.Comments}}</tns:comments>' +
+    '    </tns:AddAlarmComments>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplGetAlarmByID = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '       <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:GetAlarmByID>' +
+    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
+    '    </tns:GetAlarmByID>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplGetAlarmEventsByID = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '       <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:GetAlarmEventsByID>' +
+    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
+    '        <tns:includeRawLog>{{.IncludeRawLog}}</tns:includeRawLog>' +
+    '    </tns:GetAlarmEventsByID>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplGetAlarmHistoryByID = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '        <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:GetAlarmHistoryByID>' +
+    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
+    '        <tns:includeNotifications>{{.IncludeNotifications}}</tns:includeNotifications>' +
+    '        <tns:includeComments>{{.IncludeComments}}</tns:includeComments>' +
+    '    </tns:GetAlarmHistoryByID>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplUpdateAlarmStatus = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '        <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:UpdateAlarmStatus>' +
+    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
+    '        <tns:status>{{.Status}}</tns:status>' +
+    '        {{.Comments}}' +
+    '    </tns:UpdateAlarmStatus>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplGetFirstPageAlarmsByAlarmStatus = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '        <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:GetFirstPageAlarmsByAlarmStatus>' +
+    '      <tns:startDate>{{.StartDate}}</tns:startDate>' +
+    '      <tns:endDate>{{.EndDate}}</tns:endDate>' +
+    '      <tns:status>{{.Status}}</tns:status>' +
+    '      <tns:allUsers>{{.AllUsers}}</tns:allUsers>' +
+    '      <tns:maximumResultsPerPage>{{.MaxResultsPerPage}}</tns:maximumResultsPerPage>' +
+    '    </tns:GetFirstPageAlarmsByAlarmStatus>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var tmplGetNextPageAlarms = '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
+    '  <env:Header>' +
+    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
+    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
+    '        <wsse:Username>{{.Username}}</wsse:Username>' +
+    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
+    '      </wsse:UsernameToken>' +
+    '    </wsse:Security>' +
+    '  </env:Header>' +
+    '  <env:Body>' +
+    '    <tns:GetNextPageAlarms>' +
+    '      <tns:nextPageID>{{.NextPageID}}</tns:nextPageID>' +
+    '    </tns:GetNextPageAlarms>' +
+    '  </env:Body>' +
+    '</env:Envelope>';
+
+    var soapActionURIAddAlarmComments                = 'http://www.logrhythm.com/webservices/AlarmService/AddAlarmComments';
+    var soapActionURIUpdateAlarmStatus               = 'http://www.logrhythm.com/webservices/AlarmService/UpdateAlarmStatus';
+    var soapActionURIGetAlarmByID                    = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmByID';
+    var soapActionURIGetNextPageAlarms               = 'http://www.logrhythm.com/webservices/AlarmService/GetNextPageAlarms';
+    var soapActionURIGetFirstPageAlarmsByAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/GetFirstPageAlarmsByAlarmStatus';
+    var soapActionURIGetAlarmsEventsByID             = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmEventsByID';
+    var soapActionURIGetAlarmsHistoryByID            = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmHistoryByID';
+
+    var defaultAlarmsPageSize = 2000;
+    var defaultCount = 1000;
+
+    var fixUrl = function(base) {
+        res = base;
+        if (base && base[base.length - 1] != '/') {
+            res = res + '/';
+        }
+        return res;
+    };
+
+    var url = 'https://'+fixUrl(params.Host) + 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
+    var myTimezone = new Date().getTimezoneOffset();
+    var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
+    if (params.timeZone === '0') {
+        tz = 0;
+    }
+    if (!tz) {
+        tz = myTimezone;
+    }
+
+    var dataObj = {
+        Username: params.Credentials.identifier,
+        Password: params.Credentials.password
+    };
+
+    var getRaw = function(url) {
+         res = http(
+            url,
+            {
+                Method: 'GET',
+            },
+            params.Insecure,
+            params.useproxy
+        );
+        return res;
+    };
+
+    var fixTemplate = function(template, data) {
+        var keys = Object.keys(data);
+        for (var i = 0 ; i < keys.length; i++) {
+            var key = keys[i];
+            template = template.replace('{{.'+key+'}}',data[key]);
+        }
+        return template;
+    };
+
+    var sendRequest = function(envelope, soapAction) {
+         res = http(
+            url,
+            {
+                Method: 'POST',
+                Body: envelope,
+                Headers: {
+                    'Content-Type': ['text/xml; charset=utf-8'],
+                    Soapaction: [soapAction]
+                }
+            },
+            params.Insecure,
+            params.useproxy
+         );
+         if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request to LogRhythm ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return res.Body;
+    };
+
+    var parseResponse = function(body) {
+        return JSON.parse(x2j(body));
+    };
+
+    var doBatch = function(envelope, action, count, pageSize) {
+        var alarmPath = 'Envelope.Body.GetFirstPageAlarmsByAlarmStatusResponse.GetFirstPageAlarmsByAlarmStatusResult.Alarms.AlarmSummaryDataModel';
+        var hasMorePath = 'Envelope.Body.GetFirstPageAlarmsByAlarmStatusResponse.GetFirstPageAlarmsByAlarmStatusResult.HasMoreResults';
+        var nextPagePath = 'Envelope.Body.GetFirstPageAlarmsByAlarmStatusResponse.GetFirstPageAlarmsByAlarmStatusResult.NextPageID';
+        var alarms = [];
+        var res = parseResponse(sendRequest(envelope, action));
+        while (true) {
+            var alarmObj = dq(res,alarmPath);
+            if (!alarmObj) {
+                break;
+            }
+            if (alarmObj.length) {
+                alarms = alarms.concat(alarmObj);
+            } else {
+                alarms.push(alarmObj);
+            }
+            var hasMore = dq(res,hasMorePath);
+            var nextPage  = dq(res,nextPagePath);
+            if (!hasMore || count <= pageSize || count <= alarms.length || !nextPage) {
+                break;
+            }
+
+            var obj = {
+                Username: params.Credentials.identifier,
+                Password: params.Credentials.password,
+                NextPageID: nextPage
+            };
+            var nextEnvelope = fixTemplate(tmplGetNextPageAlarms, obj);
+            res = parseResponse(sendRequest(nextEnvelope, soapActionURIGetNextPageAlarms));
+            alarmPath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.Alarms.AlarmSummaryDataModel';
+            hasMorePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.HasMoreResults';
+            nextPagePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.NextPageID';
+        }
+        return alarms.length > count ? alarms.slice(0,count) : alarms;
+    };
+
+    var getAlarms = function(allUsers, count, pageSize, startDate, endDate, status) {
+        dataObj.StartDate = startDate;
+        dataObj.EndDate = endDate;
+        dataObj.Status = status;
+        dataObj.AllUsers = allUsers;
+        dataObj.MaxResultsPerPage = pageSize;
+        var envelope = fixTemplate(tmplGetFirstPageAlarmsByAlarmStatus, dataObj);
+        return doBatch(envelope, soapActionURIGetFirstPageAlarmsByAlarmStatus, count, pageSize);
+    };
+
+    var prepareDetailsString = function(al) {
+        return JSON.stringify(
+            {
+                AlarmRuleID: al.AlarmRuleID,
+                AlarmStatus: al.AlarmStatus,
+                EntityID: al.EntityID,
+                LastUpdatedID: al.LastUpdatedID,
+                EventCount: al.EventCount,
+                EventDateFirst: al.EventDateFirst,
+                EventDateLast: al.EventDateLast,
+                RBPAvg: al.RBPAvg,
+                RBPMax: al.RBPMax,
+                DateInserted: al.DateInserted,
+                DateUpdated: al.DateUpdated,
+                AlarmRuleName: al.AlarmRuleName,
+                EntityName: al.EntityName,
+                LastUpdatedName: al.LastUpdatedName
+            }
+        );
+    };
+
+    var getOccuredTime = function(al) {
+        var occured = new Date();
+        if (al.AlarmDate) {
+            var hour = tz / 60;
+            var minute = tz % 60;
+            var tzPrefix = tz < 0 ? '-' : '+';
+            var hourstr = hour +'';
+            if (hourstr.length < 2) {
+                hourstr = '0' + hourstr;
+            }
+            var minutestr = minute +'';
+            if (minutestr.length < 2) {
+                minutestr = '0' + minutestr;
+            }
+            occured = new Date(Date.parse(al.AlarmDate + tzPrefix + hourstr + minutestr));
+        }
+        return occured;
+    };
+
+    var alarmsToIncident = function(alarmList, lastRun) {
+        var incs = [];
+        var orgLastId = lastRun.lastId;
+        for (var i = 0; i < alarmList.length; i++) {
+            inc = {
+                name: 'LogRhythm alarm ' + alarmList[i].AlarmID,
+                occurred: getOccuredTime(alarmList[i]),
+                created: new Date(),
+                details: prepareDetailsString(alarmList[i])
+            };
+            // Check that it is in the time range and in the id range
+            var alarmIdInt = parseInt(alarmList[i].AlarmID);
+            if (alarmIdInt && alarmIdInt < orgLastId) {
+                continue;
+            }
+            if (alarmIdInt > lastRun.lastId) {
+                lastRun.lastId = alarmIdInt;
+            }
+            if (inc.occurred.getTime() > lastRun.lastTime.getTime()) {
+                lastRun.lastTime = inc.occured;
+            }
+            incs.push(inc);
+        }
+        setLastRun(lastRun);
+        return JSON.stringify(incs);
+    };
+
+    var getDateAsString = function(d) {
+        return d.toISOString();
+    }
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var resp = getRaw(url + '?singleWsdl');
+            if (resp.StatusCode === 200) {
+                return 'ok';
+            } else if (resp.Status) {
+                return resp.Status;
+            } else {
+                return resp;
+            }
+            break;
+        case 'lr-add-alarm-comments':
+            dataObj.AlarmID = args['alarm-id'];
+            dataObj.Comments = args.comments;
+            var envelope = fixTemplate(tmplAddAlarmComment, dataObj);
+            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIAddAlarmComments));
+            var mdRaw = dq(jsResponse, 'Envelope.Body.AddAlarmCommentsResponse.AddAlarmCommentsResult')
+            var md = tableToMarkdown('LogRyhthem added alarm comment ' + args.comment + ' for ID: ' + args['alarm-id'],  mdRaw);
+            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        case 'lr-get-alarm-by-id':
+            dataObj.AlarmID = args['alarm-id'];
+            var envelope = fixTemplate(tmplGetAlarmByID, dataObj);
+            var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmByID));
+            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmByIDResponse.GetAlarmByIDResult')
+            var md = tableToMarkdown('LogRyhthem alarm for ID: ' + args['alarm-id'],  mdRaw);
+            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        case 'lr-get-alarm-events-by-id':
+            dataObj.AlarmID = args['alarm-id'];
+            dataObj.IncludeRawLog = args['include-raw-log'] === 'true';
+            var envelope = fixTemplate(tmplGetAlarmEventsByID, dataObj);
+            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIGetAlarmsEventsByID));
+            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmEventsByIDResult.Events')
+            var md = tableToMarkdown('LogRyhthem alarm events for ID: ' + args['alarm-id'],  mdRaw);
+            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        case 'lr-get-alarm-history-by-id':
+            dataObj.AlarmID = args['alarm-id'];
+            dataObj.IncludeComments = args['include-comments'] === 'true';
+            dataObj.IncludeNotifications = args['include-notifications'] === 'true';
+            //Verify that at least one of the 2 are marked as true, else throw an error
+            if (!dataObj.IncludeNotifications && !dataObj.IncludeComments) {
+                throw 'At least one of "include-comments", "include-notifications" should be true';
+            }
+            var envelope = fixTemplate(tmplGetAlarmHistoryByID, dataObj);
+            var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmsHistoryByID));
+            var md = "", mdRaw;
+            if (dataObj.IncludeNotifications) {
+                mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Notifications.AlarmNotificationDataModel')
+                md = tableToMarkdown('LogRyhthem alarm notifications history for ID: ' + args['alarm-id'],  mdRaw);
+            }
+            if (dataObj.IncludeComments) {
+                if (md.length > 0) {
+                    md += '\n\n';
+                }
+                var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Comments.AlarmCommentDataModel')
+                md += tableToMarkdown('LogRyhthem alarm comments history for ID: ' + args['alarm-id'],  mdRaw);
+            }
+            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        case 'lr-update-alarm-status':
+            dataObj.AlarmID = args['alarm-id'];
+            dataObj.Status = args.status;
+            dataObj.Comments = (args.comments ? ('<tns:comments>' + args.comments + '</tns:comments>') : '');
+            var envelope = fixTemplate(tmplUpdateAlarmStatus, dataObj);
+            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIUpdateAlarmStatus));
+            var mdRaw = dq(jsResponse, 'Envelope.Body.UpdateAlarmStatusResponse.UpdateAlarmStatusResult')
+            var md = tableToMarkdown('LogRyhthem alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*',  mdRaw);
+            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        case 'lr-get-alarms':
+            var allUsers = args['all-users'] === 'true';
+            var count = args.count ? parseInt(args.count) : defaultCount;
+            count = count || defaultCount;
+
+            var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
+            pageSize = pageSize || defaultAlarmsPageSize;
+            if (count < pageSize) {
+                pageSize = count;
+            }
+            var alarms = getAlarms(allUsers, count, pageSize, args['start-date'], args['end-date'], args.status);
+            if (alarms.length) {
+                var md = tableToMarkdown('',  alarms);
+                return {Type: entryTypes.note, Contents: alarms, ContentsFormat: formats.json, HumanReadable: md};
+            } else {
+                return {Type: entryTypes.note, Contents: "No results", ContentsFormat: formats.text};
+            }
+        case 'fetch-incidents':
+            var lastRun = getLastRun();
+            if (!lastRun || !lastRun.lastTime) {
+                lastRun = {
+                    lastId: 0,
+                    lastTime: new Date(new Date().getTime() - (10 * 60 * 1000))
+                }
+            }
+            var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
+            pageSize = pageSize || defaultAlarmsPageSize;
+            var alarms = getAlarms(true, pageSize, pageSize, getDateAsString(lastRun.lastTime), getDateAsString(new Date()), 'New');
+            if (alarms.length) {
+                return alarmsToIncident(alarms, lastRun);
+            }
+    }
+  type: javascript
+  commands:
+  - name: lr-add-alarm-comments
+    arguments:
+    - name: alarm-id
+      required: true
+      default: true
+      description: The unique ID of the alarm
+    - name: comments
+      required: true
+      description: The alarm comments
+    description: Update alarm with comments
+    execution: true
+  - name: lr-get-alarm-by-id
+    arguments:
+    - name: alarm-id
+      required: true
+      default: true
+      description: The unique ID of the alarm
+    description: Retrieve a single alarm by the unique alarm identifier
+  - name: lr-get-alarm-events-by-id
+    arguments:
+    - name: alarm-id
+      required: true
+      default: true
+      description: The unique ID of the alarm
+    - name: include-raw-log
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include raw log
+    description: Retrieve a list of events associated to this alarm
+  - name: lr-get-alarm-history-by-id
+    arguments:
+    - name: alarm-id
+      required: true
+      default: true
+      description: The unique ID of the alarm
+    - name: include-notifications
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include notification history
+    - name: include-comments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include comments history
+    description: Retrieve a list of alarm status and comment updates
+  - name: lr-update-alarm-status
+    arguments:
+    - name: alarm-id
+      required: true
+      default: true
+      description: The unique ID of the alarm
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
+      description: The enumeration status of the alarm
+    - name: comments
+      description: The alarm comments
+    description: Update alarm status
+  - name: lr-get-alarms
+    arguments:
+    - name: start-date
+      required: true
+      description: Start date for the data query
+    - name: end-date
+      required: true
+      description: End date for the data query
+    - name: all-users
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Alarms for all users
+    - name: count
+      description: Number of alerts to retrieve. If empty, will be set to default
+        of 1000.
+      defaultValue: "1000"
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
+      description: The enumeration status of the alarm
+    description: Retrieve alarms in a given time period, optionally filtered by the
+      alarm status or entity
+  isfetch: true
+hidden: false
