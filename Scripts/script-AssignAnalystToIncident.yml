@@ -31,8 +31,12 @@ script: |
   }
 
   if (userToAssign) {
-      executeCommand("setOwner", { owner: userToAssign });
-      return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
+      var res = executeCommand("setOwner", { owner: userToAssign });
+      if (!isError(res[0])) {
+          return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
+      } else {
+          return 'User \'' + userToAssign + '\' was not found.'
+      }
   } else {
       return 'No user found.';
   }
