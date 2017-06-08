@@ -1,0 +1,114 @@
+id: 7fd6be97-7a40-42fa-86ac-b5b3f84a1e66
+version: 4
+name: Anomali ThreatStream Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7fde126d-1d48-4e42-8c85-317fbabe3b5c
+    type: start
+    task:
+      id: 7fde126d-1d48-4e42-8c85-317fbabe3b5c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 759,
+          "y": -76
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 9bac64dc-1517-4c76-868a-03eec36c24ee
+    type: regular
+    task:
+      id: 9bac64dc-1517-4c76-868a-03eec36c24ee
+      version: -1
+      name: threatstream-intelligence (type=ip, value=218.227.212.90)
+      description: To retrieve threat intelligence from the ThreatStream cloud
+      script: Anomali ThreatStream|||threatstream-intelligence
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      asn: ""
+      confidence: ""
+      country: ""
+      created_ts: ""
+      expiration_ts: ""
+      feed_id: ""
+      id: ""
+      import_session_ id: ""
+      ip: ""
+      is_public: ""
+      itype: ""
+      latitude: ""
+      limit: ""
+      longitude: ""
+      meta.detail: ""
+      meta.detail2: ""
+      meta.maltype: ""
+      meta.severity: ""
+      modified_ts: ""
+      org: ""
+      owner_ organization_id: ""
+      rdns: ""
+      source_reported_ confidence: ""
+      status: ""
+      tags.name: ""
+      threat_type: ""
+      trusted_circle_ids: ""
+      type: ip
+      update_id: ""
+      value: 218.227.212.90
+    view: |-
+      {
+        "position": {
+          "x": 759,
+          "y": 104
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e18d6e7a-438e-427c-8ab9-bab202bef09c
+    type: regular
+    task:
+      id: e18d6e7a-438e-427c-8ab9-bab202bef09c
+      version: -1
+      name: ip (218.227.212.90)
+      description: Checks the reputation of the given IP
+      script: Anomali ThreatStream|||ip
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream
+    scriptarguments:
+      ip: 218.227.212.90
+    view: |-
+      {
+        "position": {
+          "x": 759,
+          "y": 284
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 759,
+        "y": -76
+      }
+    }
+  }
+inputs: []
