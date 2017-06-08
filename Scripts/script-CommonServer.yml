@@ -210,9 +210,9 @@ script: |-
    * @param {String} string - string to be converted - i.e. hello_world
    * @returns {String} - converted string - i.e. HelloWorld
   */
-  var undrscrToCamelCase = function(string){
-      string = '_'+string;
-      return string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  var underscoreToCamelCase = function(string){
+      ret_string = '_'+string;
+      return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
 
   /**
