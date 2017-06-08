@@ -1,6 +1,6 @@
 commonfields:
   id: d98506ea-fd06-49d6-8f1e-bb29ab06766e
-  version: 15
+  version: 16
 name: VerifyContext
 script: |-
   var path = args.path;
@@ -43,13 +43,12 @@ type: javascript
 tags:
 - context
 - Utilities
-comment: |+
-  Verify path in context
-  - Verify path existence
-  - If matching object is array - verify fields exists in each object in array
-  - If matching object is not array - verify fields exists in matching object
-  - if 'expectedValue' supplied - ensure that given value equal to context path
-
+comment: |-
+  Verifies path in context:
+  - Verifies path existence
+  - If matching object is an array: verify fields exists in each of the objects in the array
+  - If matching object is not an array: verify fields exists in matching object
+  - if 'expectedValue' is given: ensure that the given value is equal to the context path
 enabled: true
 args:
 - name: path
