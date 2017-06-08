@@ -4,28 +4,30 @@ commonfields:
 name: AssignAnalystToIncident
 system: true
 script: |
-  var userToAssign = null;
+  var userToAssign = args.username;
   assignBy = args.assignBy || 'random';
 
-  switch(assignBy) {
-      case 'random':
-          var usersRes = executeCommand('getUsers', { roles: args.roles });
-          var usersList = usersRes[0].Contents.map(function (u) { return u.username });
-          userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
-          break;
-      default:
-          res = executeCommand("getOwnerSuggestion", {})[0].Contents;
-          switch (assignBy) {
-              case 'machine-learning':
-                  userToAssign = res.ownerByMl;
-                  break;
-              case 'top-user':
-                  userToAssign = res.topOwner;
-                  break;
-              case 'less-busy-user':
-                  userToAssign = res.userLeastLoad;
-                  break;
-          }
+  if (!userToAssign) {
+    switch(assignBy) {
+        case 'random':
+            var usersRes = executeCommand('getUsers', { roles: args.roles });
+            var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+            userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+            break;
+        default:
+            res = executeCommand("getOwnerSuggestion", {})[0].Contents;
+            switch (assignBy) {
+                case 'machine-learning':
+                    userToAssign = res.ownerByMl;
+                    break;
+                case 'top-user':
+                    userToAssign = res.topOwner;
+                    break;
+                case 'less-busy-user':
+                    userToAssign = res.userLeastLoad;
+                    break;
+            }
+    }
   }
 
   if (userToAssign) {
@@ -58,5 +60,7 @@ args:
   - top-user
   - less-busy-user
   description: '(default: random) You can pick how to assign the owner - by random,
-    machine learning, top owner or the less busy user.'
+    machine-learning, top-user or less-busy-user.'
+- name: username
+  description: If specify, the provided user will be set as an owner (optional).
 scripttarget: 0
