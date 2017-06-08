@@ -1083,44 +1083,43 @@ script:
             break;
         case 'nw-list-incidents':
             var incidents = listIncidents(sessionId, args, incidentManagementId);
-            results = {Type: entryTypes.note, Contents: { incidents: incidents }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, incidents), ReadableContentsFormat: formats.markdown};
+            results = { incidents: incidents };
             break;
         case 'nw-get-incident-details':
             var incident = getIncidentById(sessionId, args, incidentManagementId);
-            results = {Type: entryTypes.note, Contents: { incident: incident }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, incident), ReadableContentsFormat: formats.markdown};
+            results = { incident: incident };
             break;
         case 'nw-get-components':
             var components = getComponents(sessionId, args);
-            results = {Type: entryTypes.note, Contents: { components: components }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, components), ReadableContentsFormat: formats.markdown};
+            results = { components: components };
             break;
         case 'nw-get-events':
             var events = getEvents(sessionId, args);
-            results = {Type: entryTypes.note, Contents: { events: events }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, events), ReadableContentsFormat: formats.markdown};
+            results = { events: events };
             break;
         case 'nw-get-event-details':
-            var eventDetails = getEventDetails(sessionId, args);
-            results = {Type: entryTypes.note, Contents: eventDetails, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, eventDetails), ReadableContentsFormat: formats.markdown};
+            results = getEventDetails(sessionId, args);
             break;
         case 'nw-get-alerts':
             var alerts = filterAlerts(sessionId, args);
-            results = {Type: entryTypes.note, Contents: { alerts: alerts }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, alerts), ReadableContentsFormat: formats.markdown};
+            results = { alerts: alerts };
             break;
         case 'nw-get-alert-details':
             var alert = getAlertById(sessionId, args);
-            results = {Type: entryTypes.note, Contents: { alert: alert }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, alert), ReadableContentsFormat: formats.markdown};
+            results = { alert: alert };
             break;
         case 'nw-get-alert-original':
             var alert = getOriginalAlertById(sessionId, args);
-            results = {Type: entryTypes.note, Contents: { alert: alert }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, alert), ReadableContentsFormat: formats.markdown};
+            results = { alert: alert };
             break;
         case 'nw-get-available-assignees':
             var availableAssignees = getAvailableAssignees(sessionId);
-            results = {Type: entryTypes.note, Contents: { availableAssignees: availableAssignees }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, availableAssignees), ReadableContentsFormat: formats.markdown};
+            results = { availableAssignees: availableAssignees };
             break;
         case 'nw-create-incident':
             var availableAssignees = getAvailableAssignees(sessionId);
             var newIncident = createIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = {Type: entryTypes.note, Contents: { incident: newIncident }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, newIncident), ReadableContentsFormat: formats.markdown};
+            results = { incident: newIncident };
             break;
         case 'nw-add-events-to-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
@@ -1130,14 +1129,13 @@ script:
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var updatedIncident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = {Type: entryTypes.note, Contents: updatedIncident, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, updatedIncident), ReadableContentsFormat: formats.markdown};
+            results = updatedIncident;
             break;
         default:
-        // You can use args[argName] or args.argName to get a specific arg. args are strings.
-        // You can use params[paramName] or params.paramName to get a specific params.
-        // Params are of the type given in the integration page creation.
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
     }
-
 
     logout(url, sessionId);
     return results;
