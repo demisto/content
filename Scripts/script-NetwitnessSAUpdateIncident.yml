@@ -1,14 +1,15 @@
 commonfields:
-  id: NetWitnessSAUpdateIncident
+  id: NetwitnessSAUpdateIncident
   version: -1
-name: NetWitnessSAUpdateIncident
+name: NetwitnessSAUpdateIncident
+deprecated: true
 script: |
   resp = demisto.executeCommand("nw-update-incident", demisto.args())
 
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      if demisto.get(resp[0], "Contents.success") and demisto.get(resp[0], "Contents.data") == 1:
+      if demisto.get(resp[0], "Contents.success") and demisto.get(resp[0], "Contents.data") >= 1:
           demisto.results({"ContentsFormat": formats["text"], "Type": entryTypes["note"], "Contents": "Incident updated successfully."} )
       else:
           mdText = "Received an error from NetWitness. Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", [demisto.get(resp[0], "Contents")])
