@@ -121,6 +121,21 @@ script: |-
   }
 
   /**
+   * converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
+   * @param {Dictionary} dict - only the keys matter
+   * @return {Dictionary} the same dictionary which the keys converted
+   */
+  var convertKeysToPascalCase = function(dict) {
+      var pascalDict = {};
+      for (var key in dict) {
+          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+          pascalDict[pascalCaseKey] = dict[key];
+      }
+
+      return pascalDict;
+  }
+
+  /**
    * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
    * @param {Object} arg the argument to convert to list
    * @returns {Array} of strings
