@@ -22,6 +22,32 @@ script: |-
      return content;
   }
 
+  cleanSingleObject = function(contents) {
+      var cleanContents = {};
+      var keys = Object.keys(contents);
+      for (var i = 0; i < keys.length; i++) {
+          if (contents[keys[i]] || contents[keys[i]] === false) {
+              cleanContents[keys[i]] = contents[keys[i]];
+          }
+      }
+      return cleanContents;
+  }
+
+  /**
+   * Clean an object from empty fields
+   * @returns {Object} the clean object
+   */
+  var cleanObject = function(obj) {
+      if (obj instanceof Array) {
+          var res = [];
+          for (var j in obj) {
+              res.push(cleanObject(obj[j]));
+          }
+          return res;
+      }
+      cleanSingleObject(obj);
+  }
+
   /**
    * Creates a string from an object
    * @param {JSON or String} o - the object to create the string from
@@ -44,16 +70,21 @@ script: |-
       }
   }
 
-  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!|"
 
   /**
    * Escapes markdown characters in a string
    * @param {String} st - the string to fix
    * @returns {String} a string with the markdown characters escaped
    */
-  var stringEscapeMD = function(st) {
+  var stringEscapeMD = function(st, replaceNewlines) {
       if (typeof(st) != 'string') {
           return st;
+      }
+
+      if (replaceNewlines) {
+        st = st.replace(/\r\n/g, '<br>')
+        st = st.replace(/\n/g, '<br>')
       }
 
       escapedSt = '';
@@ -90,6 +121,21 @@ script: |-
   }
 
   /**
+   * converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
+   * @param {Dictionary} dict - only the keys matter
+   * @return {Dictionary} the same dictionary which the keys converted
+   */
+  var convertKeysToPascalCase = function(dict) {
+      var pascalDict = {};
+      for (var key in dict) {
+          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+          pascalDict[pascalCaseKey] = dict[key];
+      }
+
+      return pascalDict;
+  }
+
+  /**
    * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
    * @param {Object} arg the argument to convert to list
    * @returns {Array} of strings
@@ -117,7 +163,7 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers, cellDelimiter) {
+  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
@@ -136,10 +182,17 @@ script: |-
           mdResults = '### ' + name + '\n';
       }
       if (t && t.length) {
-          if (headers.length > 1) {
-              mdResults += headers.join('|') + '\n';
+          var newHeaders = [];
+          if(!headerTransform){
+            headerTransform = function(string){return string;};
+          }
+          for(var i=0; i<headers.length; i++){
+              newHeaders.push(headerTransform(headers[i]));
+          }
+          if (newHeaders.length > 1) {
+              mdResults += newHeaders.join('|') + '\n';
           } else {
-              mdResults += headers[0] + '|' + '\n';
+              mdResults += newHeaders[0] + '|' + '\n';
           }
           var sep = [];
           headers.forEach(function(h){
@@ -152,7 +205,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter)) : ' ');
+                  vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
               });
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
@@ -164,6 +217,18 @@ script: |-
       }
       return mdResults;
   }
+
+  var tblToMd = tableToMarkdown;
+
+  /**
+   * Converts underscore case strings to camel case
+   * @param {String} string - string to be converted - i.e. hello_world
+   * @returns {String} - converted string - i.e. HelloWorld
+  */
+  var underscoreToCamelCase = function(string){
+      var ret_string = '_'+string;
+      return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  };
 
   /**
    * Converts a demisto table in JSON form to a HTML table
@@ -205,8 +270,6 @@ script: |-
       }
       return htmlResults;
   }
-
-  var tblToMd = tableToMarkdown;
 
   /**
 
