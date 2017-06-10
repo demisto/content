@@ -13,10 +13,31 @@ configuration:
   defaultvalue: "3"
   type: 0
   required: true
+- display: HTTPS Proxy url
+  name: httpsproxy
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: HTTP Proxy url
+  name: httpproxy
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |
     from google import google
 
+    import os
+
+    httpsproxy = demisto.params()['httpsproxy']
+    if httpsproxy and len(httpsproxy) > 0:
+        os.environ["HTTPS_PROXY"] = httpsproxy
+
+    httproxy = demisto.params()['httpproxy']
+    if httproxy and len(httproxy) > 0:
+        os.environ["HTTP_PROXY"] = httproxy
+
+    # The command demisto.command() holds the command sent from the user.
     if demisto.command() == "google-search":
         results=[]
         results = google.search(demisto.args()["query"], int(demisto.params()["pages"]))
