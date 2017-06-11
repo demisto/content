@@ -1,7 +1,7 @@
 commonfields:
-  id: NetWitnessSAAddEventsToIncident
+  id: NetwitnessSAAddEventsToIncident
   version: -1
-name: NetWitnessSAAddEventsToIncident
+name: NetwitnessSAAddEventsToIncident
 script: |
   resp = demisto.executeCommand("nw-add-events-to-incident", demisto.args())
 

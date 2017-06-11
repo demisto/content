@@ -202,7 +202,7 @@ script:
     var clientContent = function(token) {
         clientContentJson = doGet(token, false, 'sepm/api/v1/stats/client/content');
 
-        var lastUpdatedDate = Date(parseInt(clientContentJson.lastUpdated) * 1000);
+        var lastUpdatedDate = (new Date(parseInt(clientContentJson.lastUpdated))).toString();
         var md = '## Client Content, last updated on {0}\n'.format(lastUpdatedDate);
         md += tblToMd('Client Content Versions', clientContentJson.clientDefStatusList);
 

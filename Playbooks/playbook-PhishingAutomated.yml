@@ -198,7 +198,7 @@ tasks:
       version: -1
       name: Detonate the file in a sandbox
       description: This task will use all the available sandboxes. It supports Cuckoo,
-        Wildfire and FireEye.
+        WildFire and FireEye.
       scriptName: SandboxDetonateFile
       issystemtask: true
       type: regular

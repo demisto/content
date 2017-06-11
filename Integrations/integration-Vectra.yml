@@ -69,7 +69,7 @@ script:
         'vec-triage':'/api/rules',              //deprecated
         'vec-sensors':'/api/sensors',           //deprecated
         'vec-health':'/api/health/',            //deprecated
-        'vec-get-host-by-id':'/api/hosts/',     //deprecated
+        'vec-get-host-by-id':'/api/hosts/',     //deprecate
     };
 
     var createIncidentFromDetection = function(incident) {
@@ -87,7 +87,8 @@ script:
     var fetchIncidents = function(){
         var lastRun = getLastRun();
         var id = lastRun && lastRun.id ? lastRun.id : 0;
-        var res = sendRequest('GET', server + urlDict['vectra-detections'] + encodeToURLQuery({min_id: id, 'page':'last'}), 'vectra-detections').results;
+        var result = sendRequest('GET', server + urlDict['vectra-detections'] + encodeToURLQuery({min_id: id, 'page':'last'}), 'vectra-detections');
+        var res = JSON.parse(result.Body).results;
         var incidents = [];
         for (var i = 0; i < res.length; i++) {
             var detection = res[i];
@@ -149,16 +150,14 @@ script:
             if (res[0].summary)
             {
                 summary = res[0].summary;
-                keys.splice(keys.indexOf('summary'), 1);
             }
             if (res[0].relayed_comm_set)
             {
                 relayed_comm_set = res[0].relayed_comm_set;
-                keys.splice(keys.indexOf('relayed_comm_set'), 1);
             }
         }
 
-        md = tblToMd('Detection table', res, keys);
+        md = tblToMd('Detection table', res, ['id','type_vname','category','src_ip','t_score','c_score','first_timestamp','tags']);
 
         if (relayed_comm_set){
             if (!(relayed_comm_set instanceof Array)){
@@ -573,8 +572,6 @@ script:
       description: filter by threat score >= the score provided
     - name: c_score
       description: filter by certainty score
-    - name: c_score
-      description: The current certainty score integer correlated to this host
     - name: c_score_gte
       description: filter by certainty score >= the score provided
     - name: last_detection_timestamp
@@ -631,8 +628,6 @@ script:
       description: filter by threat score >= the score provided
     - name: c_score
       description: filter by certainty score
-    - name: c_score
-      description: The current certainty score integer correlated to this host
     - name: c_score_gte
       description: filter by certainty score >= the score provided
     - name: last_detection_timestamp
