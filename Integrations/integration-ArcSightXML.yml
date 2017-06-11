@@ -89,13 +89,14 @@ script:
         return case_data
 
 
-    def create_incidents(all_labels, all_details):
+    def create_incidents(names, all_labels, all_details):
         incidents = []
-        for labels, details in zip(all_labels, all_details):
+        # for labels, details in zip(all_labels, all_details):
+        for i in xrange(len(names)):
             incident = {
-                'Name': 'ArcSight File Event',
-                'Labels': labels,
-                'Details': details
+                'Name': names[i],
+                'Labels': all_labels[i],
+                'Details': all_details[i]
             }
 
             incidents.append(incident)
@@ -111,9 +112,11 @@ script:
         root = tree.getroot()
 
         security_events = root.findall('SecurityEvent')
+        case_names = []
         all_cases = []
         all_events = []
         for case in root.findall('Case'):
+            case_names.append(case.get('name'))
             case_data  = build_case_data(case)
             event_ids = [event_ref.get('id') for event_ref in case.find('caseEvents')[0]]
             events_xml = []
@@ -129,7 +132,7 @@ script:
 
         os.remove(filepath)
 
-        return create_incidents(all_cases, all_events)
+        return create_incidents(case_names, all_cases, all_events)
 
 
     def get_incidents_from_xmls():
