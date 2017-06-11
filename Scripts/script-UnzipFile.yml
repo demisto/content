@@ -1,0 +1,83 @@
+commonfields:
+  id: UnzipFile
+  version: -1
+name: UnzipFile
+script: |-
+  import zipfile
+  import os
+  import subprocess
+
+  filePath = None
+  fileEntryID = ''
+  if demisto.args().has_key('fileName') or demisto.args().has_key('lastZipFileInWarroom'):
+      entries = demisto.executeCommand('getEntries', {})
+      for entry in entries:
+          fn = demisto.get(entry, 'File')
+
+          is_text = type(fn) in [unicode, str]
+          is_correct_file = demisto.args().get('fileName', '').lower() == fn.lower()
+          is_zip = fn.lower().endswith('.zip')
+
+          if is_text and is_zip:
+              if demisto.args().has_key('fileName') and is_correct_file:
+                  fileEntryID = entry['ID']
+                  break
+              if demisto.args().has_key('lastZipFileInWarroom'):
+                  fileEntryID = entry['ID']
+
+  if demisto.args().has_key('entryID'):
+      fileEntryID = demisto.args().has_key('entryID')
+
+  if not fileEntryID:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentFormat': formats['json'],
+          'Contents': 'You must set entryID or fileName or lastZipFileInWarroom=true when executing Unzip script'
+      })
+
+  res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+  filePath = res[0]['Contents']['path']
+
+  password = demisto.args().get('password', None)
+
+  filenames = []
+  with zipfile.ZipFile(filePath,"r") as zip_ref:
+      zip_ref.extractall(pwd=password)
+      for name in zip_ref.namelist():
+          if name == os.path.basename(name):
+              filenames.append(name)
+
+  results = []
+  for filename in filenames:
+      uniqueName = demisto.uniqueFile()
+      subprocess.call(['mv', filename, demisto.investigation()['id'] + '_' + uniqueName])
+      results.append({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': filename, 'FileID': uniqueName, 'Contents': ''})
+
+  results.append(
+      {
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['json'],
+          'Contents': { 'extractedFiles': filenames },
+          'EntryContext': { 'ExtractedFiles': filenames },
+          'ReadableContentsFormat' : formats['markdown'],
+          'HumanReadable': tableToMarkdown('Extracted Files', filenames)
+      })
+
+  demisto.results(results)
+type: python
+tags:
+- Utility
+- file
+args:
+- name: fileName
+  default: true
+- name: password
+  secret: true
+  description: optional password which zip file protected by
+- name: enrtyID
+  description: entry id of the attached zip file in the warroom
+- name: lastZipFileInWarroom
+outputs:
+- contextPath: ExtractedFiles
+  description: list of file names which extracted from zip
+scripttarget: 0
