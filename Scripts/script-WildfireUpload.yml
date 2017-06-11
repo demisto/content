@@ -7,7 +7,7 @@ script: |-
   var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
   if (!raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
       if (raw[0].Contents.indexOf('Failed to upload, error 418') > -1) {
-          return {Contents: 'Wildfire does not support this file type.',
+          return {Contents: 'WildFire does not support this file type.',
                   ContentsFormat: formats.text,
                   Type: entryTypes.error};
       } else {
@@ -28,7 +28,7 @@ tags:
 - wildfire
 - sandbox
 comment: |-
-  Upload file to wildfire for analysis.
+  Upload file to WildFire for analysis.
   Example usage: !WildfireUpload upload=2@3
 system: true
 args:

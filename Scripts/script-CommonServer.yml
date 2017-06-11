@@ -22,6 +22,32 @@ script: |-
      return content;
   }
 
+  cleanSingleObject = function(contents) {
+      var cleanContents = {};
+      var keys = Object.keys(contents);
+      for (var i = 0; i < keys.length; i++) {
+          if (contents[keys[i]] || contents[keys[i]] === false) {
+              cleanContents[keys[i]] = contents[keys[i]];
+          }
+      }
+      return cleanContents;
+  }
+
+  /**
+   * Clean an object from empty fields
+   * @returns {Object} the clean object
+   */
+  var cleanObject = function(obj) {
+      if (obj instanceof Array) {
+          var res = [];
+          for (var j in obj) {
+              res.push(cleanObject(obj[j]));
+          }
+          return res;
+      }
+      cleanSingleObject(obj);
+  }
+
   /**
    * Creates a string from an object
    * @param {JSON or String} o - the object to create the string from
@@ -44,16 +70,21 @@ script: |-
       }
   }
 
-  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!|"
 
   /**
    * Escapes markdown characters in a string
    * @param {String} st - the string to fix
    * @returns {String} a string with the markdown characters escaped
    */
-  var stringEscapeMD = function(st) {
+  var stringEscapeMD = function(st, replaceNewlines) {
       if (typeof(st) != 'string') {
           return st;
+      }
+
+      if (replaceNewlines) {
+        st = st.replace(/\r\n/g, '<br>')
+        st = st.replace(/\n/g, '<br>')
       }
 
       escapedSt = '';
@@ -90,6 +121,21 @@ script: |-
   }
 
   /**
+   * converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
+   * @param {Dictionary} dict - only the keys matter
+   * @return {Dictionary} the same dictionary which the keys converted
+   */
+  var convertKeysToPascalCase = function(dict) {
+      var pascalDict = {};
+      for (var key in dict) {
+          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+          pascalDict[pascalCaseKey] = dict[key];
+      }
+
+      return pascalDict;
+  }
+
+  /**
    * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
    * @param {Object} arg the argument to convert to list
    * @returns {Array} of strings
@@ -117,7 +163,7 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers, cellDelimiter) {
+  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
@@ -136,17 +182,34 @@ script: |-
           mdResults = '### ' + name + '\n';
       }
       if (t && t.length) {
-          mdResults += headers.join('|') + '\n';
+          var newHeaders = [];
+          if(!headerTransform){
+            headerTransform = function(string){return string;};
+          }
+          for(var i=0; i<headers.length; i++){
+              newHeaders.push(headerTransform(headers[i]));
+          }
+          if (newHeaders.length > 1) {
+              mdResults += newHeaders.join('|') + '\n';
+          } else {
+              mdResults += newHeaders[0] + '|' + '\n';
+          }
           var sep = [];
           headers.forEach(function(h){
               sep.push('-');
           });
+          if (sep.length === 1) {
+              sep[0] = sep[0]+'|';
+          }
           mdResults += sep.join('|') + '\n';
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter)) : ' ');
+                  vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
               });
+              if (vals.length === 1) {
+                  vals[0] = vals[0]+'|';
+              }
               mdResults += vals.join('|') + '\n';
           });
       } else{
@@ -537,6 +600,15 @@ script: |-
   }
 
   /**
+  * Converts the given timestamp to a string
+  * @param {int} timestamp - the timestamp in UNIX format
+  * @returns {String} e.g. 'Thu, 11 May 2017 11:18:56 UTC'
+  */
+  function convertTimestampToString(timestamp) {
+    return (new Date(parseInt(timestamp))).toISOString();
+  }
+
+  /**
    * Convert a given array to md table
    * @param {Array} arr - the array to convert
    * @returns {String} - the converted md string
@@ -676,7 +748,7 @@ script: |-
       return null;
   }
 
-  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+  var brands = {xfe: 'xfe', vt: 'VirusTotal', cy: 'cylance', wf: 'WildFire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
@@ -1001,6 +1073,30 @@ script: |-
       domain: 'Domain(val.Name && val.Name == obj.Name)',
       cve: 'CVE(val.ID && val.ID == obj.ID)'
   };
+
+  //Check if ip is in subnet
+  function isIPInSubnet(ip, subnet) {
+      function IPnumber(IPaddress) {
+          var parsedIp = IPaddress.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+          if(parsedIp) {
+              return (+parsedIp[1]<<24) + (+parsedIp[2]<<16) + (+parsedIp[3]<<8) + (+parsedIp[4]);
+          }
+          return null;
+      }
+
+      function IPmask(maskSize) {
+          return -1<<(32-maskSize);
+      }
+
+      var parts = subnet.split('/');
+      if (parts.length == 1) {
+          return ip == parts[0];
+      }
+      if (IPnumber(parts[0]) && parts[1].match(/^(\d+)/)) {
+          return (IPnumber(ip) & IPmask(parts[1])) == IPnumber(parts[0]);
+      }
+      return false;
+  }
 type: javascript
 tags:
 - infra
