@@ -122,12 +122,14 @@ script:
         output['Threat Score'] = object.threatscore;
 
         if (command == 'ip' || command == 'domain') {
+            if (object.asn) {
+                output['ASN'] = object.asn;
+            }
             output['Country'] = object.country;
             output['Latitude'] = object.latitude;
             output['Longitude'] = object.longitude;
             output['Organization'] = object.org;
             output['IP Address'] = object.ip;
-            output['ASN'] = object.asn;
             if (command == 'ip') {
                 output['Hostname'] = object.rdns;
             }
@@ -198,7 +200,9 @@ script:
             var context = {};
             if (command == 'ip' || command == 'domain') {
                 var ipContext = {};
-                ipContext.ASN = output['ASN'];
+                if (output['ASN']) {
+                    ipContext.ASN = output['ASN'];
+                }
                 ipContext.Geo = {};
                 ipContext.Geo.Country = output['Country'];
                 ipContext.Geo.Organization = output['Organization'];
@@ -316,6 +320,7 @@ script:
     }
 
     return parseResult(command, result);
+    // return result;
   type: javascript
   commands:
   - name: threatstream-intelligence
