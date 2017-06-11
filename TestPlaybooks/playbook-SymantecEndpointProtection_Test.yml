@@ -1,5 +1,5 @@
 id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 54
+version: 56
 name: SymantecEndpointProtection Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
@@ -450,6 +450,7 @@ tasks:
     nexttasks:
       '#none#':
       - "36"
+      - "42"
     scriptarguments:
       hostname: ""
       interval: ""
@@ -490,7 +491,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 1680
         }
       }
@@ -510,6 +511,7 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
+      - "43"
     scriptarguments:
       actionType: Quarantine
       hostname: ${SEPM.Endpoint.Hostname}
@@ -551,7 +553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 2030
         }
       }
@@ -613,10 +615,10 @@ tasks:
       }
   "41":
     id: "41"
-    taskid: 656517e1-7255-420f-8d0c-fd5fe0a2d012
+    taskid: 37522f28-ff01-4711-84f4-f11101d93686
     type: regular
     task:
-      id: 656517e1-7255-420f-8d0c-fd5fe0a2d012
+      id: 37522f28-ff01-4711-84f4-f11101d93686
       version: -1
       name: VerifyContext (SEPM.LastCommand.[2].CommandDetails.stateId == 0)
       description: |-
@@ -630,7 +632,7 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: "0"
+      expectedValue: '"0"'
       fields: ""
       path: SEPM.LastCommand.[2].CommandDetails.stateId
     view: |-
@@ -638,6 +640,70 @@ tasks:
         "position": {
           "x": 480,
           "y": 2730
+        }
+      }
+  "42":
+    id: "42"
+    taskid: 28ccf0ab-5ddc-4f86-8a95-ffa72954bab8
+    type: regular
+    task:
+      id: 28ccf0ab-5ddc-4f86-8a95-ffa72954bab8
+      version: -1
+      name: VerifyContext (SEPM.LastCommand.CommandDetails.stateId == "3")
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      expectedValue: '"3"'
+      fields: ""
+      path: SEPM.LastCommand.CommandDetails.stateId
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1680
+        }
+      }
+  "43":
+    id: "43"
+    taskid: 81192ae1-efce-4103-86de-b3fe90a82a3d
+    type: regular
+    task:
+      id: 81192ae1-efce-4103-86de-b3fe90a82a3d
+      version: -1
+      name: VerifyContext (SEPM.LastCommand.[1].CommandDetails.stateId == "3")
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue: '"3"'
+      fields: ""
+      path: SEPM.LastCommand.[1].CommandDetails.stateId
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2030
         }
       }
 view: |-
