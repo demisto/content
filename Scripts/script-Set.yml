@@ -5,7 +5,20 @@ name: Set
 script: |-
   var ec = {};
   ec[args.key] = args.value;
-  return {Type: entryTypes.note, Contents: ec, ContentsFormat: formats.json, HumanReadable: 'Key ' + args.key + ' set', EntryContext: ec};
+  var result = {
+      Type: entryTypes.note,
+      Contents: ec,
+      ContentsFormat: formats.json,
+      HumanReadable: 'Key ' + args.key + ' set'
+  };
+
+  if (args.append) {
+      result.EntryContext = ec;
+  } else if (!args.append || args.append === 'false') {
+      setContext(args.key, args.value);
+  }
+
+  return result;
 type: javascript
 tags:
 - Utility
@@ -20,4 +33,10 @@ args:
   required: true
   isArray: true
   description: The value to set to the key. Can be an array. Usually, a dq expression.
+- name: append
+  description: If false then then the context key will be overwritten. If set to true then the script will append to existing context key
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
 scripttarget: 0
