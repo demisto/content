@@ -21,7 +21,6 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --key-name ci-key \
     --instance-initiated-shutdown-behavior terminate \
     --block-device-mappings DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true} \
-    --user-data file://scripts/aws/shutdown_instance.sh \
     --query 'Instances[0].InstanceId' | tr -d '"')
 
 if [ -z ${INSTANCE_ID} ]
