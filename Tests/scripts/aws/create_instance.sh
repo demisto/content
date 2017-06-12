@@ -3,8 +3,6 @@ set -e
 
 echo "Start create_instance script"
 
-if ! ./scripts/is_remote.sh ; then exit 0 ; fi
-
 #configure aws
 aws configure set region us-west-2
 
