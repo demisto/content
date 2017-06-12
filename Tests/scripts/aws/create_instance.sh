@@ -31,4 +31,4 @@ then
 fi
 
 echo "Instance ID is: $INSTANCE_ID"
-#echo ${INSTANCE_ID} > instance_ids
+echo ${INSTANCE_ID} > instance_ids
