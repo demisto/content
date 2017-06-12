@@ -42,7 +42,7 @@ script:
     var insecure = params.insecure;
     var proxy = params.proxy;
 
-    var VENDOR_NAME = 'FireEye';
+    var VENDOR_NAME = 'FireEye iSIGHT';
 
     // we use this to map record-type to dbot-score
     var intelligenceTypeToScore = {
@@ -60,18 +60,18 @@ script:
     }
 
     var createTableEntry = function (name, contents, table, context) {
-            return {
-                // type
-                Type: entryTypes.note,
-                 // contents
-                ContentsFormat: formats.json,
-                Contents: contents,
-                // human-readable
-                ReadableContentsFormat: formats.markdown,
-                HumanReadable: tableToMarkdown(name, table),
-                // context
-                EntryContext: context
-            };
+        return {
+            // type
+            Type: entryTypes.note,
+             // contents
+            ContentsFormat: formats.json,
+            Contents: contents,
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, table),
+            // context
+            EntryContext: context
+        };
     }
 
     var getHeaders = function(query) {
@@ -113,7 +113,7 @@ script:
 
         var body = JSON.parse(res.Body);
         if (!body || !body.success) {
-            throw 'Request Failed.\nResonse body: ' + body;q
+            throw 'Request Failed.\nResonse body: ' + body;
         }
         return body;
     };
@@ -126,10 +126,10 @@ script:
 
     var createContextReportsAndScore = function(records) {
         var dbotScore = 0;
-        var hightsRecordType = 'None';
+        var highetsRecordType = 'None';
         var reports = [];
 
-        // 1. set dbotScore to to the highst record-type among all records
+        // 1. set dbotScore to to the highest record-type among all records
         // 2. create report context-object for each record
         records && records.forEach(function(record) {
            var recordType = record['intelligenceType'];
@@ -137,8 +137,8 @@ script:
            if (dbotScore < recordScore) {
                dbotScore = recordScore;
            }
-           if(intelligenceTypeOrder.indexOf(hightsRecordType) < intelligenceTypeOrder.indexOf(recordType)) {
-               hightsRecordType = recordType;
+           if(intelligenceTypeOrder.indexOf(highetsRecordType) < intelligenceTypeOrder.indexOf(recordType)) {
+               highetsRecordType = recordType;
            }
            var reportUrl = record['reportLink'];
            reports.push({
@@ -152,7 +152,7 @@ script:
         return {
             dbotScore: dbotScore,
             reports: reports,
-            hightsRecordType: hightsRecordType
+            highetsRecordType: highetsRecordType
         }
     }
 
@@ -165,14 +165,14 @@ script:
 
         var res = createContextReportsAndScore(records);
         var context = {
-            DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore}
+            DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
             'Report(val.ID && val.ID == obj.ID)': res.reports
         };
 
         if (res.dbotScore > 2) {
             addMalicious(context, outputPaths.ip,{
                 Address: ip,
-                Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.hightsRecordType}
+                Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
             });
         }
 
@@ -188,14 +188,14 @@ script:
 
         var res = createContextReportsAndScore(records);
         var context = {
-            DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore}
+            DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
             'Report(val.ID && val.ID == obj.ID)': res.reports
         };
 
         if (res.dbotScore > 2) {
             addMalicious(context, outputPaths.domain,{
                 Name: domain,
-                Malicious: {Vendor: VENDOR_NAME, Description: 'domain was identified as ' + res.hightsRecordType}
+                Malicious: {Vendor: VENDOR_NAME, Description: 'domain was identified as ' + res.highetsRecordType}
             });
         }
 
@@ -211,12 +211,17 @@ script:
 
         var res = createContextReportsAndScore(records);
         var context = {
-            DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore}
+            DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore},
             'Report(val.ID && val.ID == obj.ID)': res.reports
         };
 
         if (res.dbotScore > 2) {
-            var malicuousObj = { Malicious: {Vendor: VENDOR_NAME, Description: 'file was identified as ' + res.hightsRecordType } }
+            var malicuousObj = {
+                Malicious: {
+                    Vendor: VENDOR_NAME,
+                    Description: 'file was identified as ' + res.highetsRecordType
+                }
+            };
             malicuousObj[key.toUpperCase()] = value;
             addMalicious(context, outputPaths.file, malicuousObj);
         }
@@ -300,12 +305,14 @@ script:
         case 'domain':
             return basicSearchDomain(args.domain);
         case 'file':
-            if(args.md5 && !args.sha1) {
-                return basicSearchfile('md5', args.md5);
-            } else if(!args.md5 && args.sha1) {
-                return basicSearchfile('sha1', args.sha1);
+            var hash = args.file;
+            var hashLength = hash && hash.length
+            if(hashLength === 32) {
+                return basicSearchfile('md5', hash);
+            } else if(hashLength === 40) {
+                return basicSearchfile('sha1', hash);
             } else {
-                throw 'You must specify one of md5/sha1 arguments, but not both';
+                throw 'file argument must be md5(32 charecters) or sha1(40 charecters) ';
             }
         case 'isight-get-report':
             return getReport(args.reportID);
@@ -372,10 +379,8 @@ script:
     description: basic search reports by domain
   - name: file
     arguments:
-    - name: md5
-      description: md5 to search by
-    - name: sha1
-      description: sha1 to search by
+    - name: file
+      description: md5 or sha1 to search by
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
