@@ -258,7 +258,7 @@ script:
             publishDate: report.publishDate,
             ThreatScape: report.ThreatScape.product.join(),
             operatingSystems: report.operatingSystems,
-            riskRating: report.riskRating
+            riskRating: report.riskRating,
             version: report.version
         }];
 
