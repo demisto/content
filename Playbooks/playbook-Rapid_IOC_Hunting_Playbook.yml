@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 50
         }
       }
@@ -35,7 +35,6 @@ tasks:
       id: a815b6ec-64bf-4a15-8314-5055c5d6d89d
       version: -1
       name: Set up the investigation and acquire IOCs
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
@@ -48,7 +47,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 195
         }
       }
@@ -74,7 +73,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461.5,
+          "x": 152.5,
           "y": 340
         }
       }
@@ -98,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 194,
-          "y": 695
+          "x": 50,
+          "y": 690
         }
       }
   "5":
@@ -122,8 +121,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -242,
-          "y": 695
+          "x": 480,
+          "y": 690
         }
       }
   "6":
@@ -134,45 +133,17 @@ tasks:
       id: c105e3b1-8e9a-40cd-8249-5337e8417b06
       version: -1
       name: Hunt
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "49"
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 960
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 4f99d705-6351-4cce-8c81-6000d67aa164
-    type: condition
-    task:
-      id: 4f99d705-6351-4cce-8c81-6000d67aa164
-      version: -1
-      name: Is Carbon Black Protection (Bit9) Available?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "48"
-      "yes":
-      - "43"
-    scriptarguments:
-      brandname: ${ConfiguredModules.brand(val=='carbonblackprotection')}
-      value: ${ConfiguredModules.brand(val=='carbonblackprotection')}
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1291
+          "x": 695,
+          "y": 865
         }
       }
   "38":
@@ -198,7 +169,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 340
+          "y": 690
         }
       }
   "39":
@@ -223,31 +194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1355,
-          "y": 340
-        }
-      }
-  "40":
-    id: "40"
-    taskid: c62b76f9-7972-47a7-82b5-e6d2e47e3725
-    type: regular
-    task:
-      id: c62b76f9-7972-47a7-82b5-e6d2e47e3725
-      version: -1
-      name: Retrieve configured integrations
-      scriptName: ExposeModules
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-      - "42"
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 1099
+          "x": 1340,
+          "y": 690
         }
       }
   "41":
@@ -271,73 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -12,
-          "y": 525
-        }
-      }
-  "42":
-    id: "42"
-    taskid: 14eab902-dff5-455f-81c0-5bc267802a9e
-    type: condition
-    task:
-      id: 14eab902-dff5-455f-81c0-5bc267802a9e
-      version: -1
-      name: Is CrowdStrike Available?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "48"
-      "yes":
-      - "44"
-    scriptarguments:
-      brandname: ${ConfiguredModules.brand(val=='crowdstrike')}
-      value: ${ConfiguredModules.brand(val=='FalconHost')}
-    view: |-
-      {
-        "position": {
-          "x": 1495,
-          "y": 1291
-        }
-      }
-  "43":
-    id: "43"
-    taskid: 6c1cc553-9b69-434a-8b5a-b4adb74e8bb6
-    type: playbook
-    task:
-      id: 6c1cc553-9b69-434a-8b5a-b4adb74e8bb6
-      version: -1
-      name: ""
-      playbookName: Carbon black Protection Rapid IOC Hunting
-      type: playbook
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 1187,
-          "y": 1464
-        }
-      }
-  "44":
-    id: "44"
-    taskid: 6dff94fc-8ecb-416a-80b4-6154008d1b6c
-    type: playbook
-    task:
-      id: 6dff94fc-8ecb-416a-80b4-6154008d1b6c
-      version: -1
-      name: ""
-      playbookName: CrowdStrike Rapid IOC Hunting
-      type: playbook
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 1722,
-          "y": 1464
+          "x": 265,
+          "y": 515
         }
       }
   "47":
@@ -362,8 +245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1799,
-          "y": 340
+          "x": 1770,
+          "y": 690
         }
       }
   "48":
@@ -383,24 +266,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1482,
-          "y": 1683
+          "x": 695,
+          "y": 1185
+        }
+      }
+  "49":
+    id: "49"
+    taskid: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+    type: playbook
+    task:
+      id: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+      version: -1
+      name: ""
+      playbookName: Hunt for bad IOCs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
       "3_41_yes": 0.55,
-      "3_6_#default#": 0.31,
-      "42_48_#default#": 0.57,
-      "7_48_#default#": 0.17
+      "3_6_#default#": 0.31
     },
     "paper": {
       "dimensions": {
-        "height": 1728,
-        "width": 2421,
-        "x": -242,
+        "height": 1230,
+        "width": 2100,
+        "x": 50,
         "y": 50
       }
     }
   }
+inputs: []
