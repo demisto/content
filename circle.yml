@@ -11,6 +11,7 @@ test:
     #- chmod +x ./Tests/ensurefilenames.sh
     #- ./Tests/ensurefilenames.sh
     #- python ./Tests/test.py
+    - chmod +x ./Tests/scripts/aws/run_installer_on_instance.sh
     - ./Tests/scripts/aws/run_installer_on_instance.sh
   post:
     - mkdir bundle
