@@ -3,14 +3,15 @@ test:
     #- pip install git+https://github.com/demisto/demisto-py.git@test-content
     # run server (master or last release) OR use last content
     # upload branch-content to server
+    - chmod +x ./Tests/scripts/aws/create_instance.sh
+    - ./Tests/scripts/aws/create_instance.sh
   override:
     #- chmod +x ./Tests/yamlvalidator
     #- ./Tests/yamlvalidator
     #- chmod +x ./Tests/ensurefilenames.sh
     #- ./Tests/ensurefilenames.sh
     #- python ./Tests/test.py
-    - chmod +x ./Tests/scripts/aws/create_instance.sh
-    - ./Tests/scripts/aws/create_instance.sh
+    - ./Tests/scripts/aws/run_installer_on_instance.sh
   post:
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
