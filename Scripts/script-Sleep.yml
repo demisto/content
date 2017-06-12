@@ -1,6 +1,6 @@
 commonfields:
   id: Sleep
-  version: 7
+  version: -1
 name: Sleep
 script: wait(parseInt(args.seconds));
 type: javascript
