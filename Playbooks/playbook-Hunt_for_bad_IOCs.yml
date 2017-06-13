@@ -20,8 +20,8 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "3"
       - "2"
+      - "3"
     view: |-
       {
         "position": {
@@ -69,13 +69,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 0754cfee-e0cc-4352-84dd-d1cface03237
+    taskid: 69cac33b-55de-4223-84f4-dea5ccca44e9
     type: playbook
     task:
-      id: 0754cfee-e0cc-4352-84dd-d1cface03237
+      id: 69cac33b-55de-4223-84f4-dea5ccca44e9
       version: -1
       name: ""
-      playbookName: CrowdStrike Enrichment Playbook
+      playbookName: CrowdStrike Rapid IOC Hunting
       type: playbook
       iscommand: false
       brand: ""
