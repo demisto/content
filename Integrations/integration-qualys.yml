@@ -6,24 +6,29 @@ display: Qualys
 category: Network Security
 image: data:image/png;base64,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
 configuration:
-- display: User Name
-  name: user
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: Qualys API server URL
-  name: url
+  name: server
   defaultvalue: ""
   type: 0
   required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
-    var baseUrl = params.url;
+    var baseUrl = params.server;
 
     var commandToMethod = {
             'qualys-report-list': 'reportList',
@@ -39,6 +44,7 @@ script:
             'qualys-pc-scan-list': 'pcScanList',
             'qualys-pc-scan-launch': 'pcScanLaunch',
             'qualys-pc-scan-manage': 'pcScanManage',
+            'qualys-pc-scan-fetch': 'pcScanFetch',
             'qualys-schedule-scan-list': 'scheduleScanList',
             'qualys-ip-restricted-list': 'ipRestrictedList',
             'qualys-ip-list': 'ipList',
@@ -70,6 +76,7 @@ script:
        'scorecardLaunch': [['action', 'launch']],
        'pcScanList': [['action','list']],
        'pcScanLaunch': [['action', 'launch']],
+       'pcScanFetch': [['action','fetch']],
        'reportFetch': [['action', 'fetch']],
        'vmScanList': [['action', 'list']],
        'vmScanLaunch': [['action', 'launch']],
@@ -112,6 +119,7 @@ script:
         'scapScanList': '/api/2.0/fo/scan/scap/',
         'pcScanManage': '/api/2.0/fo/scan/compliance/',
         'pcScanLaunch': '/api/2.0/fo/scan/compliance/',
+        'pcScanFetch': '/api/2.0/fo/scan/compliance/',
         'scheduleScanList': '/api/2.0/fo/schedule/scan/',
         'ipRestrictedList': '/api/2.0/fo/setup/restricted_ips/',
         'ipList': '/api/2.0/fo/asset/ip/',
@@ -165,6 +173,7 @@ script:
                         'launched_before_datetime', 'show_ags', 'show_op',
                         'show_status', 'show_last'],
         'pcScanManage': ['action','scan_ref'],
+        'pcScanFetch': ['scan_ref'],
         'scheduleScanList': ['id','active'],
         'ipRestrictedList': [],
         'ipList': ['ips','network_id','tracking_method','compliance_enabled'],
@@ -238,6 +247,7 @@ script:
         'vmScanFetch': 'GET',
         'scapScanList': 'GET',
         'pcScanManage': 'POST',
+        'pcScanFetch': 'GET',
         'scheduleScanList': 'GET',
         'ipRestrictedList': 'GET',
         'ipList': 'GET',
@@ -278,6 +288,7 @@ script:
         'scapScanList': 'Qualys SCAP Scan List',
         'pcScanManage': '',
         'pcScanLaunch': '',
+        'pcScanFetch': '',
         'scheduleScanList': '',
         'ipRestrictedList': '',
         'ipList': 'Qualys IP List',
@@ -374,17 +385,16 @@ script:
                     {to: 'UnitID', from: 'UNIT_ID'},
                     {to: 'IP.Address', from: 'IP_SET.IP'},
                     {to: 'IP.Range', from: 'IP_SET.IP_RANGE'},
-                    {to: 'NetworkID', from: 'NETWORK_ID'}
+                    {to: 'NetworkID', from: 'NETWORK_ID'},
+                    {to: 'ApplianceIDS', from: 'APPLIANCE_IDS'},
+                    {to: 'DefaultApplianceID', from: 'DEFAULT_APPLIANCE_ID'}
                     ],
             'IP': [
                     {to: 'Address', from: 'IP'},
                     {to: 'Range', from: 'IP_RANGE'},
                     ]
     };
-    /*
-    scan = { ID: 1, Schedule: true};
-    Qualys.Scan(val.ID == obj.ID && val.Name.toLowerCase() == 'moshe')
-    */
+
     var contextDict = {
 
         'reportList': { ContextPath: 'Qualys.Report(val.ID == obj.ID)',
@@ -422,6 +432,10 @@ script:
         'pcScanManage': { ContextPath: undefined,
                         ContentPath: ['SIMPLE_RETURN.RESPONSE','.ITEM_LIST.ITEM'],
                         entityType: 'scan'
+        },
+        'pcScanFetch': { ContextPath: undefined,
+                        ContentPath: ['COMPLIANCE_SCAN_RESULT_OUTPUT.RESPONSE','.COMPLIANCE_SCAN'],
+                        entityType: ''
         },
         'pcScanLaunch': { ContextPath: 'Qualys.Scan(val.ID == obj.ID)',
                         ContentPath: ['SIMPLE_RETURN.RESPONSE','.ITEM_LIST.ITEM'],
@@ -504,10 +518,6 @@ script:
                         entityType: 'reportTemplate'}
         };
 
-
-
-
-
     var  outputFunctionsDict = {
         'reportList': handleXMLWithTable,
         'reportCancel': handleSimpleReturnWithText,
@@ -521,6 +531,7 @@ script:
         'vmScanFetch': handleFetchScan,
         'scapScanList': handleXMLWithTable,
         'pcScanManage': handleSimpleReturnWithText,
+        'pcScanFetch':handleFetchPCScan,
         'pcScanLaunch': handleSimpleReturnWithText,
         'scheduleScanList': handleXMLWithTable,
         'ipRestrictedList': '',
@@ -654,7 +665,7 @@ script:
 
 
     function parseAndCheckErrors (httpRes) {
-        rawResponse = JSON.parse(x2j(httpRes.Body));
+        var rawResponse = JSON.parse(x2j(httpRes.Body));
         var simpleReturn = rawResponse ? dq(rawResponse, 'SIMPLE_RETURN.RESPONSE') : undefined;
         if(simpleReturn && simpleReturn.CODE) {
             throw "\n" + simpleReturn.TEXT + "\nCode: " + simpleReturn.CODE + "\nHTTP Status Code: " + httpRes.StatusCode;
@@ -667,7 +678,7 @@ script:
 
 
     function createStandartEntry(contextPath, returnObject, humanReadable, rawResponse) {
-        var ec = {}
+        var ec = {};
         if (contextPath) {
             ec[contextPath] = returnObject;
         }
@@ -683,7 +694,7 @@ script:
 
 
     function parseXMLAndCheckErrors (httpRes) {
-        rawResponse = JSON.parse(x2j(httpRes.Body));
+        var rawResponse = JSON.parse(x2j(httpRes.Body));
         var simpleReturn = rawResponse ? dq(rawResponse, 'SIMPLE_RETURN.RESPONSE') : undefined;
         if(simpleReturn && simpleReturn.CODE) {
             throw "\n" + simpleReturn.TEXT + "\nCode: " + simpleReturn.CODE + "\nHTTP Status Code: " + httpRes.StatusCode;
@@ -702,7 +713,7 @@ script:
                 var simpleReturn = rawResponse ? dq(rawResponse, 'SIMPLE_RETURN.RESPONSE') : undefined;
             }
             catch(err) {
-                throw 'Request Failed.\nStatus code: ' + httpRes.StatusCode + '.\nBody: ' + JSON.stringify(httpRes) + '.'
+                throw 'Request Failed.\nStatus code: ' + httpRes.StatusCode + '.\nBody: ' + JSON.stringify(httpRes) + '.';
             }
             if(simpleReturn && simpleReturn.CODE) {
             throw "\n" + simpleReturn.TEXT + "\nCode: " + simpleReturn.CODE + "\nHTTP Status Code: " + httpRes.StatusCode;
@@ -732,7 +743,7 @@ script:
         if (!contextData.entityType) {
             return dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1]);
         }
-        var entity = entityDict[contextData.entityType]
+        var entity = entityDict[contextData.entityType];
         return mapObjFunction(entity)(dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1]));
     }
 
@@ -740,7 +751,7 @@ script:
         if (!contextData.entityType) {
             return '';
         }
-        var entity = entityDict[contextData.entityType]
+        var entity = entityDict[contextData.entityType];
         return mapObjFunction(entity)(
             itemListToMap(dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1])));
     }
@@ -749,12 +760,12 @@ script:
         if (!contextData.entityType) {
             return dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1]);
         }
-        var entity = entityDict[contextData.entityType]
+        var entity = entityDict[contextData.entityType];
         return mapObjFunction(entity)(createIPArrayFromIPSet(dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1])));
     }
 
     function getTextMsg(contextData, rawResponse){
-        var res = dq(rawResponse, contextData.ContentPath[0])
+        var res = dq(rawResponse, contextData.ContentPath[0]);
         if(res.TEXT) {
             return res.TEXT;
         }
@@ -763,62 +774,62 @@ script:
 
 
     function createTableWithTitleOrText(rawResponse, returnObject, contextData, Title) {
-        text = getTextMsg(contextData, rawResponse);
-        title = (text) ? text : Title;
+        var text = getTextMsg(contextData, rawResponse);
+        var title = (text) ? text : Title;
         return (returnObject) ? tableToMarkdown(title, returnObject) : title;
     }
 
     function handleXMLWithTable(httpRes, method) {
-        rawResponse = parseXMLAndCheckErrors(httpRes);
-        var contextData = contextDict[method]
-        isEmpty = isEmptyXMLRes(contextData, rawResponse)
+        var rawResponse = parseXMLAndCheckErrors(httpRes);
+        var contextData = contextDict[method];
+        isEmpty = isEmptyXMLRes(contextData, rawResponse);
         if(isEmpty) {
-            return createStandartEntry('', '', isEmpty, rawResponse)
+            return createStandartEntry('', '', isEmpty, rawResponse);
         }
-        returnObject = createStandartReturnObject(rawResponse, contextData);
-        humanReadable = createTableWithTitleOrText(rawResponse, returnObject ,contextData, titleDict[method])
-        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse)
+        var returnObject = createStandartReturnObject(rawResponse, contextData);
+        var humanReadable = createTableWithTitleOrText(rawResponse, returnObject ,contextData, titleDict[method]);
+        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse);
     }
 
     function handleSimpleReturnWithText(httpRes, method) {
-        rawResponse = parseXMLAndCheckErrors(httpRes);
+        var rawResponse = parseXMLAndCheckErrors(httpRes);
 
-        var contextData = contextDict[method]
-        isEmpty = isEmptyXMLRes(contextData, rawResponse)
+        var contextData = contextDict[method];
+        var isEmpty = isEmptyXMLRes(contextData, rawResponse);
         if(isEmpty) {
-            return createStandartEntry('', '', isEmpty, rawResponse)
+            return createStandartEntry('', '', isEmpty, rawResponse);
         }
-        returnObject = createReturnObjectFromItemList(rawResponse, contextData);
+        var returnObject = createReturnObjectFromItemList(rawResponse, contextData);
 
-        humanReadable = createTableWithTitleOrText(rawResponse, returnObject,contextData, titleDict[method])
-        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse)
+        var humanReadable = createTableWithTitleOrText(rawResponse, returnObject,contextData, titleDict[method]);
+        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse);
     }
 
     function handleIPlist(httpRes, method) {
-        rawResponse = parseXMLAndCheckErrors(httpRes);
-        var contextData = contextDict[method]
-        isEmpty = isEmptyXMLRes(contextData, rawResponse)
+        var rawResponse = parseXMLAndCheckErrors(httpRes);
+        var contextData = contextDict[method];
+        var isEmpty = isEmptyXMLRes(contextData, rawResponse);
         if(isEmpty) {
-            return createStandartEntry('', '', isEmpty, rawResponse)
+            return createStandartEntry('', '', isEmpty, rawResponse);
         }
 
-        returnObject = createIPListReturnObject(rawResponse, contextData);
-        humanReadable = createTableWithTitleOrText(rawResponse, returnObject ,contextData, titleDict[method])
-        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse)
+        var returnObject = createIPListReturnObject(rawResponse, contextData);
+        var humanReadable = createTableWithTitleOrText(rawResponse, returnObject ,contextData, titleDict[method]);
+        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse);
     }
 
 
     function handleReportDelete(httpRes, method) {
-        rawResponse = parseXMLAndCheckErrors(httpRes);
-        var contextData = contextDict[method]
-        isEmpty = isEmptyXMLRes(contextData, rawResponse)
+        var rawResponse = parseXMLAndCheckErrors(httpRes);
+        var contextData = contextDict[method];
+        var isEmpty = isEmptyXMLRes(contextData, rawResponse);
         if(isEmpty) {
-            return createStandartEntry('', '', isEmpty, rawResponse)
+            return createStandartEntry('', '', isEmpty, rawResponse);
         }
-        returnObject = createReturnObjectFromItemList(rawResponse, contextData);
+        var returnObject = createReturnObjectFromItemList(rawResponse, contextData);
         returnObject['Deleted'] = true;
-        humanReadable = createTableWithTitleOrText(rawResponse, returnObject,contextData, titleDict[method])
-        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse)
+        var humanReadable = createTableWithTitleOrText(rawResponse, returnObject,contextData, titleDict[method]);
+        return createStandartEntry(contextData.ContextPath, returnObject, humanReadable, rawResponse);
     }
 
     function handleFetchReport(httpRes, method) {
@@ -835,17 +846,33 @@ script:
 
     function handleFetchScan(httpRes, method) {
         nonXMLCheckErrors(httpRes);
-        rawResponse = JSON.parse(httpRes.Body)
+        rawResponse = JSON.parse(httpRes.Body);
 
-        return createStandartEntry('', rawResponse, titleDict[method], rawResponse)
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: rawResponse,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(titleDict[method], rawResponse),
+        };
+
+    }
+
+    function handleFetchPCScan(httpRes, method) {
+        var rawResponse = parseXMLAndCheckErrors(httpRes);
+        var contextData = contextDict[method];
+        isEmpty = isEmptyXMLRes(contextData, rawResponse);
+        if(isEmpty) {
+            return createStandartEntry('', '', isEmpty, rawResponse);
+        }
+        return dq(rawResponse, contextData.ContentPath[0] + contextData.ContentPath[1]);
     }
 
 
 
     function handleRawRespose(httpRes, method) {
         rawResponse = parseXMLAndCheckErrors(httpRes);
-
-        return rawResponse
+        return rawResponse;
     }
 
 
@@ -872,11 +899,13 @@ script:
         var res = http(
             requestUrl,
             {
-                Username: params.user,
-                Password: params.password,
+                Username: params.credentials.identifier,
+                Password: params.credentials.password,
                 Method: methodHttpMethod[method],
                 Headers: {'X-Requested-With': ['Demisto']},
-            }
+            },
+            params.insecure,
+            params.proxy
         );
         return outputFunctionsDict[method](res, method);
 
@@ -1344,7 +1373,6 @@ script:
       - pause
       - resume
       - delete
-      - fetch
       description: One action required for the request
     - name: scan_ref
       required: true
@@ -2535,4 +2563,11 @@ script:
         when SSL was used for the detection, “no” is returned when SSL was not used),
         and FQDN if applicable.'
     description: fetch vm scan deatails
+  - name: qualys-pc-scan-fetch
+    arguments:
+    - name: scan_ref
+      required: true
+      description: 'The scan reference for a compliance scan. This will have the format:
+        compliance/nnnnnnnnnn.nnnnn'
+    description: fetch scan results for a scan
 hidden: false
