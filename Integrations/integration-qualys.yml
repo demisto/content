@@ -1204,7 +1204,6 @@ script:
   - name: qualys-scap-scan-list
     arguments:
     - name: scan_id
-      required: true
       description: compliance scan ID
     - name: state
       description: Show only one or more scan states.
@@ -1584,7 +1583,6 @@ script:
         from the excluded hosts list (i.e. supply distribution group names as defined
         in the Qualys UI).
     - name: comment
-      required: true
       description: User-defined notes (up to 1024 characters).
     - name: network_id
       description: Assign a network ID to the IPs being added to the excluded IPs
