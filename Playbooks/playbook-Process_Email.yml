@@ -70,7 +70,7 @@ tasks:
       brand: ""
     scriptarguments:
       key: Email
-      value: '${incidents.labels={To: val[''Email''], CC: val[''Email/cc''], From:
+      value: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From:
         val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''],
         HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     view: |-
