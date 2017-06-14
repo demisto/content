@@ -113,19 +113,27 @@ script: |
           old_iplist = list(demisto.get( demisto.context(), 'ips')) if demisto.get( demisto.context(), 'ips' ) else []
           iplist = list(set(iplist) - set(old_iplist))
           if len(iplist) > 0:
-              context["IP"] = iplist
+              context["IP"] = []
+              for ip in iplist:
+                  context["IP"].append({"Address" : ip})
 
       if domainlist:
           old_domainlist = list(demisto.get( demisto.context(), 'domains')) if demisto.get( demisto.context(), 'domains' ) else []
           domainlist = list(set(domainlist) - set(old_domainlist))
           if len(domainlist) > 0:
-              context["Domain"] = domainlist
+              context["Domain"] = []
+              for domain in domainlist:
+                  context["Domain"].append({"Name": domain})
 
       if hashlist:
           old_hashlist = list(demisto.get( demisto.context(), 'hashes')) if demisto.get( demisto.context(), 'hashes' ) else []
           hashlist = list(set(hashlist) - set(old_hashlist))
           if len(hashlist) > 0:
-              context["Hash"] = hashlist
+              context["File"] = []
+              for hash in hashlist:
+                  if len(hash)==32: context["File"].append({"MD5" : hash})
+                  if len(hash)==64: context["File"].append({"SHA256" : hash})
+                  if len(hash)==40: context["File"].append({"SHA1" : hash})
 
       demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : content ,"HumanReadable" : md, "EntryContext": context })
   else:
@@ -154,11 +162,15 @@ args:
 - name: parseAll
   description: parses and converts all the rows in csv into json and puts into context.
 outputs:
-- contextPath: IP
+- contextPath: IP.Address
   description: IP address found in parsed file
-- contextPath: Domain
+- contextPath: Domain.Name
   description: Domain found in parsed file
-- contextPath: Hash
-  description: Hash found in parsed file
+- contextPath: File.MD5
+  description: MD5 found in parsed file
+- contextPath: File.SHA1
+  description: SHA1 found in parsed file
+- contextPath: File.SHA256
+  description: SHA256 found in parsed file
 scripttarget: 0
 timeout: 120ns
