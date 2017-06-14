@@ -1,19 +1,9 @@
 test:
   pre:
+    ## install python client
     #- pip install git+https://github.com/demisto/demisto-py.git@test-content
-    # run server (master or last release) OR use last content
-    # upload branch-content to server
-    - chmod +x ./Tests/scripts/aws/create_instance.sh
-    - ./Tests/scripts/aws/create_instance.sh
-  override:
-    #- chmod +x ./Tests/yamlvalidator
-    #- ./Tests/yamlvalidator
-    #- chmod +x ./Tests/ensurefilenames.sh
-    #- ./Tests/ensurefilenames.sh
-    #- python ./Tests/test.py
-    - chmod +x ./Tests/scripts/aws/run_installer_on_instance.sh
-    - ./Tests/scripts/aws/run_installer_on_instance.sh
-  post:
+
+    ## create content artifact
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
     - cp Integrations/* bundle/
@@ -21,5 +11,25 @@ test:
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
     - cp $(find Scripts -type f -print) bundle/
-    - cd bundle/ && zip ../content.zip * 
+    - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
+  override:
+
+    ## validate yaml
+    #- chmod +x ./Tests/yamlvalidator
+    #- ./Tests/yamlvalidator
+    #- chmod +x ./Tests/ensurefilenames.sh
+    #- ./Tests/ensurefilenames.sh
+    #- python ./Tests/test.py
+
+    ## run server with latest master
+
+    - chmod +x ./Tests/scripts/aws/create_instance.sh
+        - ./Tests/scripts/aws/create_instance.sh
+
+    - chmod +x ./Tests/scripts/aws/run_installer_on_instance.sh
+    - ./Tests/scripts/aws/run_installer_on_instance.sh
+
+    # upload branch-content to server
+
+  post:
