@@ -18,14 +18,9 @@ configuration:
   type: 0
   required: true
 - display: Username
-  name: username
+  name: credentials
   defaultvalue: ""
-  type: 0
-  required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
 - display: Fetch incidents
   name: isFetch
@@ -268,7 +263,7 @@ script:
             res = self.cmdquery(cmd, query)
 
             for alarm in res:
-                alarm['ID'] = alarm['id']["value"]
+                alarm['ID'] = alarm['id']
                 del alarm["id"]
 
             return res
@@ -297,7 +292,7 @@ script:
             })
         return incidents
 
-    esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['username'], demisto.params()['password'])
+    esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
 
     if demisto.command() == 'test-module':
         esm.login()
