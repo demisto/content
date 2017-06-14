@@ -1,6 +1,6 @@
 commonfields:
   id: IsGreaterThan
-  version: 14
+  version: -1
 name: IsGreaterThan
 script: |-
   first = parseFloat(args.first);
