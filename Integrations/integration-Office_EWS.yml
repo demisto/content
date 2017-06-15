@@ -51,7 +51,7 @@ configuration:
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/';
-
+    var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
     var commandsDictionary = {
         'ews-get-folder': {
             arrayArgName: 'folders-ids',
@@ -395,7 +395,7 @@ script:
                 Headers: {
                     'Content-Type': ['text/xml; charset=utf-8']
                 },
-                Username: params.credentials.identifier,
+                Username: params.credentials.identifier  + (server === office365address ? ('@' + params.domain) : ''),
                 Password: params.credentials.password,
                 Domain: params.domain,
                 AuthProtocol: [params.authType],
