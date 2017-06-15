@@ -1,26 +1,24 @@
-id: playbook17
+id: Carbon Black Rapid IOC Hunting
 fromversion: 2.5.0
 system: true
 version: -1
-name: Carbon black Protection Rapid IOC Hunting
-description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
-  black Protection (Bit9).
+name: Carbon Black Rapid IOC Hunting
+description: Hunt for malicious indicators using Carbon Black
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
+    taskid: 729a5739-da09-4d2f-8a3c-abc427e3efd2
     type: start
     task:
-      id: a68f66e4-9f00-4be5-82d5-66a604a8e127
+      id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
       version: -1
-      name: start_task
-      type: start
+      name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "2"
     view: |-
       {
         "position": {
@@ -28,62 +26,41 @@ tasks:
           "y": 50
         }
       }
-  "8":
-    id: "8"
-    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+  "1":
+    id: "1"
+    taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
     type: regular
     task:
-      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+      id: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
       version: -1
-      name: Search observed hashes in the Bit9 file catalog
-      scriptName: CBPCatalogFindHash
+      name: CBFindHash
+      description: Search Carbon Black for connection to specified md5 hash(es).
+      scriptName: CBFindHash
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "3"
     scriptarguments:
       md5: ${File.MD5}
+    results:
+    - found_file_locations
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 572
+          "y": 545
         }
       }
-  "9":
-    id: "9"
-    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
-    type: regular
-    task:
-      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
-      version: -1
-      name: Check if the hashes are included in any Bit9 rules
-      scriptName: CBPFindRule
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      hash: ${File.MD5}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 734
-        }
-      }
-  "10":
-    id: "10"
-    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
+  "2":
+    id: "2"
+    taskid: c687c04f-ba90-4572-800a-923193bacc32
     type: condition
     task:
-      id: ec572e1b-78cf-4daf-8185-688d7b04041b
+      id: c687c04f-ba90-4572-800a-923193bacc32
       version: -1
-      name: Is CarbonBlack Protection enabled?
+      name: Is Carbon Black enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -92,11 +69,11 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "3"
       "yes":
-      - "12"
+      - "4"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblackprotection' && val.state == 'enabled')}
+      value: ${modules(val.brand == 'carbonblack' && val.state == 'enabled')}
     view: |-
       {
         "position": {
@@ -104,12 +81,12 @@ tasks:
           "y": 195
         }
       }
-  "11":
-    id: "11"
-    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
+  "3":
+    id: "3"
+    taskid: 189b725f-2b0a-42cc-8148-95395f810983
     type: title
     task:
-      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
+      id: 189b725f-2b0a-42cc-8148-95395f810983
       version: -1
       name: Done
       type: title
@@ -119,15 +96,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 902
+          "y": 720
         }
       }
-  "12":
-    id: "12"
-    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+  "4":
+    id: "4"
+    taskid: a4a842fc-727c-4a64-883d-873968708ded
     type: condition
     task:
-      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+      id: a4a842fc-727c-4a64-883d-873968708ded
       version: -1
       name: Do we have files to hunt?
       description: Check if a given value exists in the context. Will return 'no'
@@ -138,28 +115,27 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "3"
       "yes":
-      - "8"
+      - "1"
     scriptarguments:
       value: ${File.MD5}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 382
+          "x": 162.5,
+          "y": 370
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "10_11_#default#": 0.36,
-      "12_11_#default#": 0.16
+      "2_3_#default#": 0.27
     },
     "paper": {
       "dimensions": {
-        "height": 917,
-        "width": 380,
+        "height": 735,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
