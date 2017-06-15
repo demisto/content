@@ -37,7 +37,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
@@ -90,7 +90,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 690
         }
       }
@@ -114,7 +114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 690
         }
       }
@@ -138,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 865
         }
       }
@@ -163,7 +163,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 480,
           "y": 1710
         }
       }
@@ -184,7 +184,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
+          "x": 367.5,
           "y": 1885
         }
       }
@@ -208,13 +208,13 @@ tasks:
     scriptarguments:
       distance: ""
       domain: ${inputs.CompanyDomains}
-      sender: ${Acount.Email}
+      sender: ${Account.Email}
     results:
     - LevenshteinDistance
     view: |-
       {
         "position": {
-          "x": 255,
+          "x": 367.5,
           "y": 2030
         }
       }
@@ -237,7 +237,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 255,
           "y": 2380
         }
       }
@@ -260,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 255,
           "y": 2555
         }
       }
@@ -283,7 +283,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 255,
           "y": 2730
         }
       }
@@ -304,7 +304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 255,
           "y": 2905
         }
       }
@@ -331,7 +331,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 142.5,
+          "x": 255,
           "y": 3050
         }
       }
@@ -355,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 612.5,
           "y": 3240
         }
       }
@@ -391,7 +391,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 132.5,
+          "x": 50,
           "y": 3225
         }
       }
@@ -414,7 +414,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 132.5,
+          "x": 50,
           "y": 3400
         }
       }
@@ -432,7 +432,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "102"
     scriptarguments:
       attachIDs: ""
       bcc: ""
@@ -450,228 +450,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 612.5,
           "y": 3400
-        }
-      }
-  "47":
-    id: "47"
-    taskid: 08c684e8-65b9-4461-8eea-64991f25efef
-    type: condition
-    task:
-      id: 08c684e8-65b9-4461-8eea-64991f25efef
-      version: -1
-      name: 'Is Mimecast integration available '
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "48"
-      "yes":
-      - "49"
-    scriptarguments:
-      brandname: mimecast
-    results:
-    - brandInstances
-    view: |-
-      {
-        "position": {
-          "x": 685,
-          "y": 3575
-        }
-      }
-  "48":
-    id: "48"
-    taskid: b97c18b9-ee11-4e6b-82cd-a730863ea41b
-    type: regular
-    task:
-      id: b97c18b9-ee11-4e6b-82cd-a730863ea41b
-      version: -1
-      name: Get full list of all mailboxes from Exchange server
-      scriptName: ADGetEmailForAllUsers
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "50"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3750
-        }
-      }
-  "49":
-    id: "49"
-    taskid: 1bf51a66-fe54-4473-8909-db3137b1dfa5
-    type: regular
-    task:
-      id: 1bf51a66-fe54-4473-8909-db3137b1dfa5
-      version: -1
-      name: Find all mailboxes containing the malicious email using Mimecast
-      scriptName: MimecastFindEmail
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "50"
-    scriptarguments:
-      active: ""
-      attachmentText: ""
-      attachmentType: ${incident.labels.Email/attachments}
-      body: ""
-      date: ""
-      dateFrom: ""
-      dateTo: ""
-      dryRun: ""
-      pageSize: ""
-      queryXml: ""
-      sentFrom: ${incident.labels.Email/from}
-      sentTo: ""
-      startRow: ""
-      subject: ${incident.labels.Email/subject}
-      text: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3750
-        }
-      }
-  "50":
-    id: "50"
-    taskid: 007b26a1-f6e0-43e4-8ec0-1b86d3016662
-    type: regular
-    task:
-      id: 007b26a1-f6e0-43e4-8ec0-1b86d3016662
-      version: -1
-      name: Search all mailboxes to find instances of the email
-      scriptName: ExchangeSearch
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      attachmentName: ${incident.labels.Email/attachments}
-      body: ""
-      mailbox: ${Mailboxes}
-      sender: ${Label/Email/from}
-      subject: ${Label/Email/subject}
-    results:
-    - ExchangeItemIDs
-    view: |-
-      {
-        "position": {
-          "x": 685,
-          "y": 3925
-        }
-      }
-  "51":
-    id: "51"
-    taskid: 977c3554-a203-4b75-8341-3cfe787c2189
-    type: condition
-    task:
-      id: 977c3554-a203-4b75-8341-3cfe787c2189
-      version: -1
-      name: Were any emails found on server?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "55"
-      "yes":
-      - "52"
-    scriptarguments:
-      key: ${ExchangeItemIDs}
-      value: ${ExchangeItemIDs}
-    view: |-
-      {
-        "position": {
-          "x": 685,
-          "y": 4100
-        }
-      }
-  "52":
-    id: "52"
-    taskid: 952c4981-c88c-475e-8ec3-5f4445256bb1
-    type: condition
-    task:
-      id: 952c4981-c88c-475e-8ec3-5f4445256bb1
-      version: -1
-      name: Review found emails and decide whether to go ahead with automatic delete
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "53"
-      "yes":
-      - "54"
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 4275
-        }
-      }
-  "53":
-    id: "53"
-    taskid: 370383b4-f933-48fe-8a51-ed24db1b81fe
-    type: regular
-    task:
-      id: 370383b4-f933-48fe-8a51-ed24db1b81fe
-      version: -1
-      name: Delete the emails from mailboxes manually
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 4450
-        }
-      }
-  "54":
-    id: "54"
-    taskid: e58b34a6-42f7-48ae-8560-55c9ef407079
-    type: regular
-    task:
-      id: e58b34a6-42f7-48ae-8560-55c9ef407079
-      version: -1
-      name: Delete the instances of the email from Exchange server
-      description: "Deleting the infected mails' IDs, useing EWS\nMail IDs are saved
-        in context in \"ExchangeItemIDs\" "
-      scriptName: ExchangeDeleteIDsFromContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      attachmentName: ""
-      mailbox: ${Users}
-      sender: ""
-      subject: ${Label/Email/subject}
-    results:
-    - ExchangeItemIDs
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 4450
         }
       }
   "55":
@@ -700,8 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4625
+          "x": 612.5,
+          "y": 3750
         }
       }
   "63":
@@ -722,8 +502,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 4975
+          "x": 480,
+          "y": 4100
         }
       }
   "71":
@@ -743,7 +523,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 530
         }
       }
@@ -764,7 +544,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 1040
         }
       }
@@ -788,7 +568,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 1360
         }
       }
@@ -814,7 +594,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
+          "x": 367.5,
           "y": 2205
         }
       }
@@ -832,8 +612,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5150
+          "x": 612.5,
+          "y": 4275
         }
       }
   "94":
@@ -857,7 +637,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 340
         }
       }
@@ -879,7 +659,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 1185
         }
       }
@@ -901,7 +681,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 515
         }
       }
@@ -923,7 +703,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 340
         }
       }
@@ -945,7 +725,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 480,
           "y": 1535
         }
       }
@@ -967,8 +747,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 4800
+          "x": 480,
+          "y": 3925
+        }
+      }
+  "102":
+    id: "102"
+    taskid: c932dac2-0738-4b68-8c30-1b27aa0dcda8
+    type: regular
+    task:
+      id: c932dac2-0738-4b68-8c30-1b27aa0dcda8
+      version: -1
+      name: Search for the malicious email in other mailboxes
+      description: |-
+        - Find all mailboxes containing the malicious email
+        - Delete the emails from mailboxes
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3575
         }
       }
 view: |-
@@ -976,13 +780,12 @@ view: |-
     "linkLabelsPosition": {
       "23_28_#default#": 0.81,
       "23_42_yes": 0.1,
-      "36_42_yes": 0.11,
-      "51_52_yes": 0.73
+      "36_42_yes": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 5195,
-        "width": 1352.5,
+        "height": 4320,
+        "width": 942.5,
         "x": 50,
         "y": 50
       }
