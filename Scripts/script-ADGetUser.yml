@@ -137,7 +137,7 @@ script: |2-
       else:
           data = data if isinstance(data, list) else [data]
           md = tableToMarkdown("Active Directory User", data, headers)
-          context['Account'] = createAccountEntities(data,attrs)
+          context['Account(val.Email && val.Email === obj.Email || val.ID && val.ID === obj.ID || val.Username && val.Username === obj.Username)'] = createAccountEntities(data,attrs)
 
       demisto.results({'Type' : entryTypes['note'],
                       'Contents': data,
