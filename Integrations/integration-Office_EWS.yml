@@ -16,7 +16,7 @@ detaileddescription: |-
 configuration:
 - display: Server URL
   name: server
-  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
+  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx
   type: 0
   required: true
 - display: ""
