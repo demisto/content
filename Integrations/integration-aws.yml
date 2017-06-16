@@ -404,7 +404,7 @@ script:
     - name: headers
       description: Headers to display in Human readable format
     - name: customFilters
-      description: Additional terms for filtering instances (key=value;key=value...)
+      description: Additional terms for filtering instances (key=value,key=value...)
     description: Describe Instances - Describes one of your instances.
   - name: aws-get-sg-info
     arguments:
