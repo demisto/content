@@ -215,13 +215,12 @@ script:
         }
         if ((customFilters) && (customFilters.length > 0)) {
             var filters = customFilters.split(',');
-            for (var i=0;i<filters.length;i++) {
+            customFilters.split(',').forEach(function (customFilter) {
                 filter = 'Filter.'+filterid.toString();
-                urlArgs[filter+'.Name'] = filters[i].split("=")[0];
-                urlArgs[filter+'.Value'] = filters[i].split("=")[1];
+                urlArgs[filter+'.Name'] = customFilter.split("=")[0];
+                urlArgs[filter+'.Value'] = customFilter.split("=")[1];
                 filterid = filterid + 1;
-
-            }
+            });
         }
 
         var contentMapper =         {
