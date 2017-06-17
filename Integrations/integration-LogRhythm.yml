@@ -471,6 +471,7 @@ script:
             if (alarms.length) {
                 return alarmsToIncident(alarms, lastRun);
             }
+            return '[]';
     }
   type: javascript
   commands:
