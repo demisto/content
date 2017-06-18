@@ -21,7 +21,7 @@ test:
     # upload branch-content to server
 
     # download conf
-    - cat $testname
+    - echo $testname
     - curl --header 'Authorization: $GITHUB_TOKEN' --header 'Accept: application/vnd.github.v3.raw' --remote-name --location https://api.github.com/repos/demisto/content-test-conf/contents/conf.json
     - rm ./conf.json
   post:
