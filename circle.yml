@@ -1,4 +1,15 @@
 test:
+  pre:
+    # create content artifact
+    - mkdir bundle
+    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    - cp Integrations/* bundle/
+    - cp Misc/* bundle/
+    - cp Playbooks/* bundle/
+    - cp Reports/* bundle/
+    - cp $(find Scripts -type f -print) bundle/
+    - cd bundle/ && zip ../content.zip *
+    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
@@ -6,14 +17,3 @@ test:
     - chmod +x ./Tests/ensurefilenames.sh
     - ./Tests/ensurefilenames.sh
     - python ./Tests/test.py
-  post:
-      # create content artifact
-      - mkdir bundle
-      - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-      - cp Integrations/* bundle/
-      - cp Misc/* bundle/
-      - cp Playbooks/* bundle/
-      - cp Reports/* bundle/
-      - cp $(find Scripts -type f -print) bundle/
-      - cd bundle/ && zip ../content.zip *
-      - cp content.zip $CIRCLE_ARTIFACTS/content.zip
