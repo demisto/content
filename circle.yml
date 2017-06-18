@@ -19,6 +19,6 @@ test:
     - ./Tests/yamlvalidator
     - chmod +x ./Tests/ensurefilenames.sh
     - ./Tests/ensurefilenames.sh
-
+    - echo $testname
     # run tests
     - python ./Tests/test.py
