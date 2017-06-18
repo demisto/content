@@ -3,6 +3,8 @@ test:
     ## install python client
     #- pip install git+https://github.com/demisto/demisto-py.git@test-content
 
+
+  override:
     ## create content artifact
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
@@ -13,14 +15,13 @@ test:
     - cp $(find Scripts -type f -print) bundle/
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-  override:
 
     ## validate yaml
-    #- chmod +x ./Tests/yamlvalidator
-    #- ./Tests/yamlvalidator
-    #- chmod +x ./Tests/ensurefilenames.sh
-    #- ./Tests/ensurefilenames.sh
-    #- python ./Tests/test.py
+    - chmod +x ./Tests/yamlvalidator
+    - ./Tests/yamlvalidator
+    - chmod +x ./Tests/ensurefilenames.sh
+    - ./Tests/ensurefilenames.sh
+    - python ./Tests/test.py
 
     ## run server with latest master
 
