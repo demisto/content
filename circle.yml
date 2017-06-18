@@ -2,20 +2,7 @@ test:
   pre:
     ## install python client
     #- pip install git+https://github.com/demisto/demisto-py.git@test-content
-
-
   override:
-    ## create content artifact
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp $(find Scripts -type f -print) bundle/
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-
     ## validate yaml
     - chmod +x ./Tests/yamlvalidator
     - ./Tests/yamlvalidator
@@ -37,5 +24,14 @@ test:
     - cat $testname
     - curl --header 'Authorization: $GITHUB_TOKEN' --header 'Accept: application/vnd.github.v3.raw' --remote-name --location https://api.github.com/repos/demisto/content-test-conf/contents/conf.json
     - rm ./conf.json
-
   post:
+      ## create content artifact
+      - mkdir bundle
+      - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+      - cp Integrations/* bundle/
+      - cp Misc/* bundle/
+      - cp Playbooks/* bundle/
+      - cp Reports/* bundle/
+      - cp $(find Scripts -type f -print) bundle/
+      - cd bundle/ && zip ../content.zip *
+      - cp content.zip $CIRCLE_ARTIFACTS/content.zip
