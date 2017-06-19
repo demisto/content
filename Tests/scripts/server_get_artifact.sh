@@ -8,7 +8,7 @@ echo WEB_CLIENT_ARTIFACT_VERSION=${WEB_CLIENT_ARTIFACT_VERSION}
 
 if [ -z ${SERVER_CI_TOKEN} ]
 then
-    echo "Web client CI token must be provided"
+    echo "Server CI token must be provided"
     exit -1
 fi
 
@@ -18,15 +18,13 @@ SERVER_LAST_BUILD_NUM=$(curl --retry-max-time 0 --retry 5 --max-time 180 -H "$AC
 
 echo SERVER_LAST_BUILD_NUM=${SERVER_LAST_BUILD_NUM}
 WEB_CLIENT_ARTIFACT_VERSION=${SERVER_LAST_BUILD_NUM}
-echo "Using last Web-Client Master build number"
-
-exit 0
 
 # Fetch web client Git SHA
 WEB_CLIENT_GIT_SHA=$(curl -H "$ACCEPT_TYPE" "$SERVER_API_URI/$WEB_CLIENT_ARTIFACT_VERSION?$TOKEN_ATTR" | jq '.vcs_revision' -r )
 
 echo WEB_CLIENT_GIT_SHA=${WEB_CLIENT_GIT_SHA}
 
+exit 0
 #This will replace the app version with correct Git revision
 sed -i -- "s/REPLACE_THIS_WITH_WEB_CLIENT_GIT_COMMIT_VERSION/$WEB_CLIENT_GIT_SHA/g" *version/version.go*
 
