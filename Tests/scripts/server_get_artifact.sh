@@ -10,12 +10,13 @@ echo "Getting latest build num"
 
 ARTIFACT_BUILD_NUM=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=1&filter=successful&$TOKEN_ATTR" | jq '.[0].build_num')
 
-echo ARTIFACT_BUILD_NUM=${ARTIFACT_BUILD_NUM}
-
-SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep server.tar.gz | grep /0/)
 echo "###### before"
 ls
+
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
+
+SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep server.tar.gz | grep /0/)
+
 curl ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
 
 echo "###### after"
