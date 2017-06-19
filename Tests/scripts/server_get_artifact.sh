@@ -8,9 +8,20 @@ echo "Getting latest build num"
 
 ARTIFACT_BUILD_NUM=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=1&filter=successful&$TOKEN_ATTR" | jq '.[0].build_num')
 
-SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep demistoserver | grep /0/)
+SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR})
 
-echo "SERVER_DOWNLOAD_LINK: ${SERVER_DOWNLOAD_LINK}"
+echo "SERVER_DOWNLOAD_LINK1: ${SERVER_DOWNLOAD_LINK}"
+SERVER_DOWNLOAD_LINK=$($SERVER_DOWNLOAD_LINK | jq '.[].url' -r)
+
+
+echo "SERVER_DOWNLOAD_LINK2: ${SERVER_DOWNLOAD_LINK}"
+SERVER_DOWNLOAD_LINK=$($SERVER_DOWNLOAD_LINK | grep demistoserver)
+
+echo "SERVER_DOWNLOAD_LINK3: ${SERVER_DOWNLOAD_LINK}"
+
+SERVER_DOWNLOAD_LINK=$($SERVER_DOWNLOAD_LINK | grep /0/)
+
+echo "SERVER_DOWNLOAD_LINK4: ${SERVER_DOWNLOAD_LINK}"
 
 exit 0
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
