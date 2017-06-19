@@ -27,6 +27,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: ProxyIP
+  name: proxyIp
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ProxyPort
+  name: proxyPort
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     from threatconnect import ThreatConnect
@@ -39,8 +49,12 @@ script:
         secert = demisto.params()['secretKey']
         url = demisto.params()['baseUrl']
         default_org = demisto.params()['defaultOrg']
-        # tc.set_proxies('10.10.10.10', 8443, 'proxy_user', 'password123')
-        return ThreatConnect(access, secert, default_org, url)
+        proxy_ip = demisto.params()['proxyIp']
+        proxy_port = demisto.params()['proxyPort']
+        tc = ThreatConnect(access, secert, default_org, url)
+        if len(proxy_ip) > 0 and len(proxy_ip) > 0:
+            tc.set_proxies(proxyIP, proxy_port)
+        return tc    
 
     def getIndicator(indicatorType, value, owners, limit):
         tc = getClient()
@@ -276,4 +290,3 @@ script:
       description: confidence in indicator, in scale of 1-100
     description: Add a new indicator to ThreatConnect
   dockerimage: demisto/threatconnect-sdk
-system: true
