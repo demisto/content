@@ -3,9 +3,13 @@ commonfields:
   version: -1
 name: ExtractURL
 script: |-
-  function checkRegex(reg,str){
-      reg = reg.substring(1);
-      return str.match(reg);
+  var checkRegex = function(reg,str){
+      if(whitelist[i].indexOf('~') === 0){
+          reg = reg.substring(1);
+          return str.match(reg);
+      }
+
+      return false;
   }
 
   var text = args.text;
@@ -13,7 +17,7 @@ script: |-
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
   var matches = {}, found;
-  var reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
+  var reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/@#=@#|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
   var filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40'];
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
@@ -23,7 +27,7 @@ script: |-
               delete matches[found[0]];
               break;
           }else{
-              if(whitelist[i].match("^~") && checkRegex(whitelist[i],found[0])){
+              if(checkRegex(whitelist[i],found[0])){
                   delete matches[found[0]];
                   break;
               }
