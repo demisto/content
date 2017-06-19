@@ -1,10 +1,10 @@
 commonfields:
-  id: ExtractURL
-  version: -1
-name: ExtractURL
+  id: 2f27ca3b-dd07-424d-8b7c-b9a35d4bbefb
+  version: 23
+name: ExtractURL_New
 script: |-
   var checkRegex = function(reg,str){
-      if(whitelist[i].indexOf('~') === 0){
+      if(reg[i].indexOf('~') === 0){
           reg = reg.substring(1);
           return str.match(reg);
       }
