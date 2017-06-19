@@ -20,7 +20,7 @@ test:
     - chmod +x ./Tests/ensurefilenames.sh
     - ./Tests/ensurefilenames.sh
     # download conf file
-    - curl --header "Authorization: token $GITHUB_TOKEN" --header 'Accept: application/vnd.github.v3.raw' --remote-name --location https://api.github.com/repos/demisto/content-test-conf/contents/conf.json
+    #- curl --header "Authorization: token $GITHUB_TOKEN" --header 'Accept: application/vnd.github.v3.raw' --remote-name --location https://api.github.com/repos/demisto/content-test-conf/contents/conf.json
     - cat ./conf.json
 
     # run tests
