@@ -22,7 +22,7 @@ test:
 
     # download conf file
     - cat --header "Authorization: token $GITHUB_TOKEN" --header "Accept: application/vnd.github.v3.raw" \
-                  --remote-name --location https://api.github.com/repos/demisto/content-test-conf/contents/conf.json
+                  --remote-name --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json"
     - cat ./conf.json
 
     # run tests
