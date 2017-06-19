@@ -17,7 +17,7 @@ script: |-
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
   var matches = {}, found;
-  var reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/@#=@#|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
+  var reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
   var filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40'];
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
@@ -26,8 +26,7 @@ script: |-
           if (whitelist[i] === found[0]) {
               delete matches[found[0]];
               break;
-          }else{
-              if(checkRegex(whitelist[i],found[0])){
+          }else if(checkRegex(whitelist[i],found[0])){
                   delete matches[found[0]];
                   break;
               }
