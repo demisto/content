@@ -1,10 +1,10 @@
 commonfields:
-  id: 2f27ca3b-dd07-424d-8b7c-b9a35d4bbefb
-  version: 23
-name: ExtractURL_New
+  id: ExtractURL
+  version: -1
+name: ExtractURL
 script: |-
   var checkRegex = function(reg,str){
-      if(reg[i].indexOf('~') === 0){
+      if(reg.indexOf('~') === 0){
           reg = reg.substring(1);
           return str.match(reg);
       }
