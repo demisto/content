@@ -14,17 +14,28 @@ test:
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
+    # get installer from server TODO - move after validate
+    - chmod +x ./Test/scripts/server_get_artifact.sh
+    - ./Test/scripts/server_get_artifact.sh
+
     # validate yaml
-    - chmod +x ./Tests/yamlvalidator
-    - ./Tests/yamlvalidator
-    - chmod +x ./Tests/ensurefilenames.sh
-    - ./Tests/ensurefilenames.sh
+    #- chmod +x ./Tests/yamlvalidator
+    #- ./Tests/yamlvalidator
+    #- chmod +x ./Tests/ensurefilenames.sh
+    #- ./Tests/ensurefilenames.sh
+
+    # run demisto instance
+    #- chmod +x ./Tests/scripts/aws/create_instance.sh
+    #- ./Tests/scripts/aws/create_instance.sh
+
+    # run installer
+    #- chmod +x ./Tests/scripts/aws/run_installer_on_instance.sh
+    #- ./Tests/scripts/aws/run_installer_on_instance.sh
 
     # download conf file
-    - |
-      curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-            --remote-name --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json"
-    - cat ./conf.json
+    #- |
+    #  curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+    #        --remote-name --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json"
 
     # run tests
-    - python ./Tests/test.py
+    #- python ./Tests/test.py
