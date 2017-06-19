@@ -29,7 +29,6 @@ script: |-
           }else if(checkRegex(whitelist[i],found[0])){
                   delete matches[found[0]];
                   break;
-              }
           }
       }
   }
