@@ -16,7 +16,7 @@ detaileddescription: |-
 configuration:
 - display: Server URL
   name: server
-  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx
+  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
 - display: ""
@@ -299,6 +299,35 @@ script:
                 '</soap:Body>'+
                 '</soap:Envelope>'
             },
+        'ews-get-searchable-mailboxes': {
+            fillerName: 'attachments-ids',
+            tableTitle: 'EWS get searchable mail boxes',
+            innerPath: 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox',
+            translator: [
+                {to: 'MailAddress', from: 'PrimarySmtpAddress'},
+                {to: 'IsExternal', from: 'IsExternalMailbox'},
+                {to: 'Display', from: 'DisplayName'},
+            ],
+            defaultArgs: {
+                'filter': ' '
+            },
+            contextKey: 'EWS.Mailboxes',
+            template:
+                '<?xml version="1.0" encoding="UTF-8"?>'+
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
+                              ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'+
+                              ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'+
+                   '<soap:Header>'+
+                      '<t:RequestServerVersion Version="Exchange2013" />'+
+                   '</soap:Header>'+
+                   '<soap:Body >'+
+                      '<m:GetSearchableMailboxes>'+
+                         '<m:SearchFilter>%filter%</m:SearchFilter>'+
+                         '<m:ExpandGroupMembership>false</m:ExpandGroupMembership>'+
+                      '</m:GetSearchableMailboxes>'+
+                   '</soap:Body>'+
+                '</soap:Envelope>'
+            },
         'folders-ids': {
             template:
                 '<t:DistinguishedFolderId Id="%id%" />'
@@ -387,6 +416,14 @@ script:
         if (currentCommand.tableTitle) {
             hrTitle = replaceInTemplates(currentCommand.tableTitle,args);
         }
+        if (currentCommand.defaultArgs) {
+            var keys = Object.keys(currentCommand.defaultArgs);
+            for (var j in keys) {
+                if (!args[keys[j]]) {
+                    args[keys[j]] = currentCommand.defaultArgs[keys[j]];
+                }
+            }
+        }
         var ids = [];
         if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName]) {
             ids = args[currentCommand.arrayArgName].split(',');
@@ -396,7 +433,7 @@ script:
                 Headers: {
                     'Content-Type': ['text/xml; charset=utf-8']
                 },
-                Username: params.credentials.identifier  + (server === office365address ? ('@' + params.domain) : ''),
+                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
                 Password: params.credentials.password,
                 Domain: params.domain,
                 AuthProtocol: [params.authType],
@@ -404,7 +441,7 @@ script:
             };
         var res = http(server, httpParams, params.insecure, params.proxy);
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body;
+            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
         var raw = JSON.parse(x2j(res.Body));
         var entry = {
@@ -634,4 +671,15 @@ script:
       description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
     description: Retrieve contact items from the Contacts folder
+  - name: ews-get-searchable-mailboxes
+    arguments:
+    - name: filter
+      description: Search filter, default is empty
+    outputs:
+    - contextPath: EWS.Mailboxes.MailAddress
+      description: Searchable mail address
+    - contextPath: EWS.Mailboxes.IsExternal
+      description: Searchable mail ecternal
+    - contextPath: EWS.Mailboxes.Display
+      description: Searchable mail display name
 hidden: false
