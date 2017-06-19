@@ -4,19 +4,19 @@ test:
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
     # create content artifact
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp $(find Scripts -type f -print) bundle/
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    #- mkdir bundle
+    #- cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    #- cp Integrations/* bundle/
+    #- cp Misc/* bundle/
+    #- cp Playbooks/* bundle/
+    #- cp Reports/* bundle/
+    #- cp $(find Scripts -type f -print) bundle/
+    #- cd bundle/ && zip ../content.zip *
+    #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     # get installer from server TODO - move after validate
-    - chmod +x ./Test/scripts/server_get_artifact.sh
-    - ./Test/scripts/server_get_artifact.sh
+    - chmod +x ./Tests/scripts/server_get_artifact.sh
+    - ./Tests/scripts/server_get_artifact.sh
 
     # validate yaml
     #- chmod +x ./Tests/yamlvalidator
