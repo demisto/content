@@ -423,7 +423,7 @@ script:
                 }
                 issue.fields.reporter.name = args.reporter;
             }
-            var result = sendRequest('POST', url);
+            var result = sendRequest('POST', url, JSON.stringify(issue));
             var jRes = JSON.parse(result.Body);
             var mdAndContext = generateMdContextCreateIssue(jRes);
             var md = tblToMd(command, mdAndContext['md'], "");
