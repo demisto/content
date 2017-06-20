@@ -496,6 +496,31 @@ script:
       description: filter by the resp_code in the dns_set
     - name: resp
       description: filter by the resp in the dns_set
+    outputs:
+    - contextPath: Vectra.Detections.DetectionId
+      description: The learned hostname
+    - contextPath: Vectra.Detections.TypeVName
+      description: Vectra detection id
+    - contextPath: Vectra.Detections.Category
+      description: The detection category
+    - contextPath: Vectra.Detections.SrcIP
+      description: The detection source IP
+    - contextPath: Vectra.Detections.State
+      description: The detection state
+    - contextPath: Vectra.Detections.TScore
+      description: The detection tscore
+    - contextPath: Vectra.Detections.CScore
+      description: The detection cscore
+    - contextPath: Vectra.Detections.TargetsKeyAsset
+      description: Is detection targets key asset
+    - contextPath: Vectra.Detections.Tags
+      description: The detection tags
+    - contextPath: Vectra.Detections.FirstTimestamp
+      description: The detection first time stamp
+    - contextPath: Vectra.Detections.LastTimestamp
+      description: The detection last time stamp
+    - contextPath: Vectra.Detections.HostID
+      description: The detection host id
     description: Detection objects contain all the information related to security
       events detected on the network
   - name: vectra-detections
@@ -851,13 +876,13 @@ script:
       description: The state of this record
     - contextPath: Endpoint.IP
       description: Last source IP associated with this host
-    - contextPath: Endpoint.LastDetection
+    - contextPath: Endpoint.Vectra.LastDetection
       description: Last detection activity from this host
-    - contextPath: Endpoint.Detection.ID
+    - contextPath: Endpoint.Vectra.DetectionID
       description: List of Detections for Host
-    - contextPath: Endpoint.TScore
+    - contextPath: Endpoint.Vectra.TScore
       description: The current threat score correlated to this host
-    - contextPath: Endpoint.CScore
+    - contextPath: Endpoint.Vectra.CScore
       description: The current certainty score correlated to this host
     description: Get host by id
   - name: vec-get-detetctions-by-id
