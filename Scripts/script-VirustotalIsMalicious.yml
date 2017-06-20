@@ -1,6 +1,6 @@
 commonfields:
   id: dbbdc2e4-6105-4ee9-8e83-563a4b991a89
-  version: 13
+  version: -1
 name: VirustotalIsMalicious
 script: |-
   from time import sleep
