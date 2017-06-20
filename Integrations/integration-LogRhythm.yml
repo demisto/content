@@ -1,7 +1,7 @@
 commonfields:
-  id: LogRhythm_test
+  id: LogRhythm
   version: -1
-name: LogRhythm_test
+name: LogRhythm
 fromversion: 2.6.0
 display: LogRhythm
 category: Analytics & SIEM
