@@ -100,7 +100,6 @@ script:
             output['Destination Bytes'] = objects[i].by2;
             output['Destination Databytes'] = objects[i].db2;
 
-
             outputs.push(output);
             contexts.push(convertKeysToPascalCase(output));
         }
@@ -109,7 +108,7 @@ script:
             Type: entryTypes.note,
             Contents: null,
             ContentsFormat: formats.json,
-            EntryContext: {'Moloch': contexts},
+            EntryContext: {'Moloch.Sessions': contexts},
             HumanReadable: tableToMarkdown('Moloch Sessions Search', outputs)
         };
 
