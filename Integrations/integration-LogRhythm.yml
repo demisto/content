@@ -1,7 +1,7 @@
 commonfields:
-  id: LogRhythm
+  id: LogRhythm_test
   version: -1
-name: LogRhythm
+name: LogRhythm_test
 fromversion: 2.6.0
 display: LogRhythm
 category: Analytics & SIEM
@@ -322,8 +322,8 @@ script:
         );
     };
 
-    var getOccuredTime = function(al) {
-        var occured = new Date();
+    var getOccurredTime = function(al) {
+        var occurred = new Date();
         if (al.AlarmDate) {
             var hour = tz / 60;
             var minute = tz % 60;
@@ -336,35 +336,40 @@ script:
             if (minutestr.length < 2) {
                 minutestr = '0' + minutestr;
             }
-            occured = new Date(Date.parse(al.AlarmDate + tzPrefix + hourstr + minutestr));
+            occurred = new Date(Date.parse(al.AlarmDate + tzPrefix + hourstr + minutestr));
         }
-        return occured;
+        return occurred;
     };
 
     var alarmsToIncident = function(alarmList, lastRun) {
         var incs = [];
         var orgLastId = lastRun.lastId;
         for (var i = 0; i < alarmList.length; i++) {
+            logDebug("Got alarm from LR",JSON.stringify(alarmList[i]));
             inc = {
                 name: 'LogRhythm alarm ' + alarmList[i].AlarmID,
-                occurred: getOccuredTime(alarmList[i]),
+                occurred: getOccurredTime(alarmList[i]),
                 created: new Date(),
                 details: prepareDetailsString(alarmList[i])
             };
             // Check that it is in the time range and in the id range
             var alarmIdInt = parseInt(alarmList[i].AlarmID);
-            if (alarmIdInt && alarmIdInt < orgLastId) {
+            if (alarmIdInt && alarmIdInt <= orgLastId) {
                 continue;
             }
             if (alarmIdInt > lastRun.lastId) {
                 lastRun.lastId = alarmIdInt;
             }
-            if (inc.occurred.getTime() > lastRun.lastTime.getTime()) {
-                lastRun.lastTime = inc.occured;
+            if (inc.occurred.getTime() > lastRun.lastTime) {
+                lastRun.lastTime = inc.occurred.getTime();
             }
             incs.push(inc);
         }
         setLastRun(lastRun);
+
+        logDebug("lastRun is",JSON.stringify(lastRun));
+        logDebug("Returning incs",JSON.stringify(incs));
+
         return JSON.stringify(incs);
     };
 
@@ -462,15 +467,16 @@ script:
             if (!lastRun || !lastRun.lastTime) {
                 lastRun = {
                     lastId: 0,
-                    lastTime: new Date(new Date().getTime() - (10 * 60 * 1000))
+                    lastTime: new Date().getTime() - (10 * 60 * 1000)
                 }
             }
             var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
             pageSize = pageSize || defaultAlarmsPageSize;
-            var alarms = getAlarms(true, pageSize, pageSize, getDateAsString(lastRun.lastTime), getDateAsString(new Date()), 'New');
+            var alarms = getAlarms(true, pageSize, pageSize, getDateAsString(new Date(lastRun.lastTime)), getDateAsString(new Date()), 'New');
             if (alarms.length) {
                 return alarmsToIncident(alarms, lastRun);
             }
+            return '[]';
     }
   type: javascript
   commands:
