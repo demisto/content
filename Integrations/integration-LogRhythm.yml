@@ -366,10 +366,8 @@ script:
             incs.push(inc);
         }
         setLastRun(lastRun);
-
-        logDebug("lastRun is",JSON.stringify(lastRun));
-        logDebug("Returning incs",JSON.stringify(incs));
-
+        logDebug("LogRythm: lastRun is",JSON.stringify(lastRun));
+        logDebug("LogRythm: returning incs",JSON.stringify(incs));
         return JSON.stringify(incs);
     };
 
