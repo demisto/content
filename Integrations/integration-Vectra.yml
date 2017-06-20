@@ -157,7 +157,7 @@ script:
             }
         }
 
-        md = tblToMd('Detection table', res, ['id','type_vname','category','src_ip','t_score','c_score','first_timestamp','tags']);
+        md = tblToMd('Detection table', res, ['id','type_vname','category','src_ip','t_score','c_score','first_timestamp','tags', 'targets_key_asset']);
 
         if (relayed_comm_set){
             if (!(relayed_comm_set instanceof Array)){
@@ -179,14 +179,35 @@ script:
             md += tblToMd('Summary',summary,summary_keys);
         }
 
+        var context = [];
+        for(i=0; i<res.length; i++){
+            var val = res[i];
+            res[i] = {
+                        DetectionId: val.id,
+                        TypeVName: val.type_vname,
+                        Category: val.category,
+                        SrcIP: val.src_ip,
+                        State: val.state,
+                        TScore: val.t_score,
+                        CScore: val.c_score,
+                        TargetsKeyAsset: val.targets_key_asset,
+                        FirstTimestamp: val.first_timestamp,
+                        LastTimestamp: val.last_timestamp,
+                        Tags: val.tags,
+                        HostID: splitToID(val.host)
+                    };
+            context.push(res[i]);
+        }
+
         return {
             Type: entryTypes.note,
             Contents: result.Body,
             ContentsFormat: formats.json,
-            HumanReadable: md
+            HumanReadable: md,
+            EntryContext: {'Vectra.Detections(val.DetectionId==obj.DetectionId)': context }
         };
     };
-    
+
     var vectraHosts = function(result){
         var res;
 
@@ -218,13 +239,17 @@ script:
             val = res[i];
             res[i] = {
                         Hostname: val.name,
-                        VectraID: val.id,
+                        Vectra: {
+                            ID: val.id,
+                            LastDetection: val.last_detection_timestamp,
+                            DetectionID: val.detection_ids,
+                            TScore: val.t_score,
+                            CScore: val.c_score,
+                            KeyAsset: val.key_asset,
+                            TargetsKeyAsset: val.targets_key_asset,
+                        },
                         State: val.state,
                         IP: val.last_source,
-                        LastDetection: val.last_detection_timestamp,
-                        DetectionID: val.detection_ids,
-                        TScore: val.t_score,
-                        CScore: val.c_score
                     };
         }
         var context = {Endpoint : res};
@@ -310,7 +335,7 @@ script:
             }
             res[i].Remote = temp;
         }
-        context.VectraRule = res;
+        context.Vectra = {Rule: res};
 
         return {
             Type: entryTypes.note,
@@ -344,7 +369,7 @@ script:
                             };
         }
 
-        var context = {VectraSensor : res.results};
+        var context = {Vectra: { Sensor: res.results } };
 
         return {
             Type: entryTypes.note,
@@ -684,74 +709,74 @@ script:
     deprecated: true
     arguments: []
     outputs:
-    - contextPath: VectraRule.ID
+    - contextPath: Vectra.Rule.ID
       description: The record id
-    - contextPath: VectraRule.SmartCategory
+    - contextPath: Vectra.Rule.SmartCategory
       description: Custom Triage label used to recategorize specified detections
-    - contextPath: VectraRule.Description
+    - contextPath: Vectra.Rule.Description
       description: Name of Triage filter
-    - contextPath: VectraRule.Type
+    - contextPath: Vectra.Rule.Type
       description: Original detection type
-    - contextPath: VectraRule.Category
+    - contextPath: Vectra.Rule.Category
       description: Original detection category
-    - contextPath: VectraRule.Created
+    - contextPath: Vectra.Rule.Created
       description: The timestamp when this Triage filter was created
-    - contextPath: VectraRule.LastUpdate
+    - contextPath: Vectra.Rule.LastUpdate
       description: The timestamp when this Triage filter was triggered
-    - contextPath: VectraRule.Host.ID
+    - contextPath: Vectra.Rule.Host.ID
       description: Host(s) that this Triage filter applies to
-    - contextPath: VectraRule.IP
+    - contextPath: Vectra.Rule.IP
       description: Host IP
-    - contextPath: VectraRule.Priority
+    - contextPath: Vectra.Rule.Priority
       description: Used in ordering execution of Triage filters
-    - contextPath: VectraRule.Remote.IP
+    - contextPath: Vectra.Rule.Remote.IP
       description: Destination IP where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.Protocol
+    - contextPath: Vectra.Rule.Remote.Protocol
       description: Destination protocol where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.Port
+    - contextPath: Vectra.Rule.Remote.Port
       description: Destination port where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.DNS
+    - contextPath: Vectra.Rule.Remote.DNS
       description: Destination FQDN where this Triage filter will apply to
-    - contextPath: VectraRule.Remote.Kerberos.Account
+    - contextPath: Vectra.Rule.Remote.Kerberos.Account
       description: Kerberos Account
-    - contextPath: VectraRule.Remote.Kerberos.Service
+    - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
     description: The rules branch can be used to retrieve a listing of configured
       Triage rules
   - name: vectra-triage
     arguments: []
     outputs:
-    - contextPath: VectraRule.ID
+    - contextPath: Vectra.Rule.ID
       description: The record id
-    - contextPath: VectraRule.SmartCategory
+    - contextPath: Vectra.Rule.SmartCategory
       description: Custom Triage label used to recategorize specified detections
-    - contextPath: VectraRule.Description
+    - contextPath: Vectra.Rule.Description
       description: Name of Triage filter
-    - contextPath: VectraRule.Type
+    - contextPath: Vectra.Rule.Type
       description: Original detection type
-    - contextPath: VectraRule.Category
+    - contextPath: Vectra.Rule.Category
       description: Original detection category
-    - contextPath: VectraRule.Created
+    - contextPath: Vectra.Rule.Created
       description: The timestamp when this Triage filter was created
-    - contextPath: VectraRule.LastUpdate
+    - contextPath: Vectra.Rule.LastUpdate
       description: The timestamp when this Triage filter was triggered
-    - contextPath: VectraRule.Host.ID
+    - contextPath: Vectra.Rule.Host.ID
       description: Host(s) that this Triage filter applies to
-    - contextPath: VectraRule.IP
+    - contextPath: Vectra.Rule.IP
       description: Host IP
-    - contextPath: VectraRule.Priority
+    - contextPath: Vectra.Rule.Priority
       description: Used in ordering execution of Triage filters
-    - contextPath: VectraRule.Remote.IP
+    - contextPath: Vectra.Rule.Remote.IP
       description: Destination IP where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.Protocol
+    - contextPath: Vectra.Rule.Remote.Protocol
       description: Destination protocol where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.Port
+    - contextPath: Vectra.Rule.Remote.Port
       description: Destination port where this Triage filter will be applied to
-    - contextPath: VectraRule.Remote.DNS
+    - contextPath: Vectra.Rule.Remote.DNS
       description: Destination FQDN where this Triage filter will apply to
-    - contextPath: VectraRule.Remote.Kerberos.Account
+    - contextPath: Vectra.Rule.Remote.Kerberos.Account
       description: Kerberos Account
-    - contextPath: VectraRule.Remote.Kerberos.Service
+    - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
     description: The rules branch can be used to retrieve a listing of configured
       Triage rules
@@ -759,52 +784,52 @@ script:
     deprecated: true
     arguments: []
     outputs:
-    - contextPath: VectraSensor.ID
+    - contextPath: Vectra.Sensor.ID
       description: Object ID
-    - contextPath: VectraSensor.Alias
+    - contextPath: Vectra.Sensor.Alias
       description: User configured alias assigned tothe sensor
-    - contextPath: VectraSensor.Location
+    - contextPath: Vectra.Sensor.Location
       description: User configured location assigned to the sensor
-    - contextPath: VectraSensor.SerialNumber
+    - contextPath: Vectra.Sensor.SerialNumber
       description: Serial number of the sensor
-    - contextPath: VectraSensor.LUID
+    - contextPath: Vectra.Sensor.LUID
       description: Local Unique Identifier assigned to the sensor
-    - contextPath: VectraSensor.Status
+    - contextPath: Vectra.Sensor.Status
       description: Pairing status of the sensor
-    - contextPath: VectraSensor.CurrentVersion
+    - contextPath: Vectra.Sensor.CurrentVersion
       description: OS version currently running on the sensor
-    - contextPath: VectraSensor.OriginalVersion
+    - contextPath: Vectra.Sensor.OriginalVersion
       description: OS version originally installed on the sensor
-    - contextPath: VectraSensor.IP
+    - contextPath: Vectra.Sensor.IP
       description: IP address of the sensor
-    - contextPath: VectraSensor.URI
+    - contextPath: Vectra.Sensor.URI
       description: The URI of the brain the sensor is paired
-    - contextPath: VectraSensor.LastSeen
+    - contextPath: Vectra.Sensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
     description: The sensors branch can retrieve a listing of sensors that collect
       and feed data to the X-series
   - name: vectra-sensors
     arguments: []
     outputs:
-    - contextPath: VectraSensor.ID
+    - contextPath: Vectra.Sensor.ID
       description: Object ID
-    - contextPath: VectraSensor.Alias
+    - contextPath: Vectra.Sensor.Alias
       description: User configured alias assigned tothe sensor
-    - contextPath: VectraSensor.Location
+    - contextPath: Vectra.Sensor.Location
       description: User configured location assigned to the sensor
-    - contextPath: VectraSensor.SerialNumber
+    - contextPath: Vectra.Sensor.SerialNumber
       description: Serial number of the sensor
-    - contextPath: VectraSensor.LUID
+    - contextPath: Vectra.Sensor.LUID
       description: Local Unique Identifier assigned to the sensor
-    - contextPath: VectraSensor.Status
+    - contextPath: Vectra.Sensor.Status
       description: Pairing status of the sensor
-    - contextPath: VectraSensor.CurrentVersion
+    - contextPath: Vectra.Sensor.CurrentVersion
       description: OS version currently running on the sensor
-    - contextPath: VectraSensor.OriginalVersion
+    - contextPath: Vectra.Sensor.OriginalVersion
       description: OS version originally installed on the sensor
-    - contextPath: VectraSensor.IP
+    - contextPath: Vectra.Sensor.IP
       description: IP address of the sensor
-    - contextPath: VectraSensor.URI
+    - contextPath: Vectra.Sensor.URI
       description: The URI of the brain the sensor is paired
     - contextPath: VectraSensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
