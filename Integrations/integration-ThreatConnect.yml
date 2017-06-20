@@ -52,9 +52,9 @@ script:
         proxy_ip = demisto.params()['proxyIp']
         proxy_port = demisto.params()['proxyPort']
         tc = ThreatConnect(access, secert, default_org, url)
-        if len(proxy_ip) > 0 and len(proxy_ip) > 0:
-            tc.set_proxies(proxyIP, proxy_port)
-        return tc    
+        if len(proxy_ip) > 0 and len(proxy_port) > 0:
+            tc.set_proxies(proxyIP, int(proxy_port))
+        return tc
 
     def getIndicator(indicatorType, value, owners, limit):
         tc = getClient()
@@ -172,6 +172,12 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
+        owners_arr = []
+        owners = tc.owners()
+        owners.retrieve()
+        for owner in owners:
+            owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
         indicators.retrieve()
 
         for indicator in indicators:
@@ -270,7 +276,7 @@ script:
     - name: indicator
       required: true
       default: true
-      description: Indicator value to search by, can be an IP, url, file Hash
+      description: Indicator value to search by, can be an IP, url, file Hash. will retrieve from all owners
     description: Get indicator
   - name: tc-get-indicators-by-tag
     arguments:
