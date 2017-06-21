@@ -26,7 +26,7 @@ script: |-
                   fileEntryID = entry['ID']
 
   if demisto.args().has_key('entryID'):
-      fileEntryID = demisto.args().has_key('entryID')
+      fileEntryID = demisto.args().get('entryID')
 
   if not fileEntryID:
       demisto.results({
@@ -60,7 +60,7 @@ script: |-
           'Contents': { 'extractedFiles': filenames },
           'EntryContext': { 'ExtractedFiles': filenames },
           'ReadableContentsFormat' : formats['markdown'],
-          'HumanReadable': tableToMarkdown('Extracted Files', filenames)
+          'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
       })
 
   demisto.results(results)
@@ -74,10 +74,11 @@ args:
 - name: password
   secret: true
   description: optional password which zip file protected by
-- name: enrtyID
+- name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
+
