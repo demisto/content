@@ -619,6 +619,22 @@ script: |-
   }
 
   /**
+  * Converts the given number (uint32) to an IP address string
+  * @param {int} num: the number to convert
+  * @returns {String} e.g. '192.168.2.1'
+  */
+  var numToIp = function(num) {
+    var ip = num % 256;
+
+    for (var i = 3; i > 0; i--) {
+        num = Math.floor(num / 256);
+        ip = num % 256 + '.' + ip;
+    }
+
+    return ip;
+  }
+
+  /**
    * Convert a given array to md table
    * @param {Array} arr - the array to convert
    * @returns {String} - the converted md string
