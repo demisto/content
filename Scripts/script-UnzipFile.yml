@@ -25,17 +25,43 @@ script: |-
               if demisto.args().has_key('lastZipFileInWarroom'):
                   fileEntryID = entry['ID']
 
+          if fileEntryID == '':
+              errorMessage = ''
+              if demisto.args().has_key('fileName'):
+                  demisto.results({
+                      'Type': entryTypes['error'],
+                      'ContentsFormat': formats['text'],
+                      'Contents': demisto.args().has_key('fileName') + ' not such file in war room'
+                  })
+              if demisto.args().has_key('lastZipFileInWarroom'):
+                  demisto.results({
+                      'Type': entryTypes['error'],
+                      'ContentsFormat': formats['text'],
+                      'Contents': 'Not found zip file in war room'
+                  })
+
+              sys.exit(0)
+
   if demisto.args().has_key('entryID'):
       fileEntryID = demisto.args().get('entryID')
 
   if not fileEntryID:
       demisto.results({
           'Type': entryTypes['error'],
-          'ContentFormat': formats['json'],
+          'ContentsFormat': formats['text'],
           'Contents': 'You must set entryID or fileName or lastZipFileInWarroom=true when executing Unzip script'
       })
+      sys.exit(0)
 
   res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+  if res[0]['Type'] == entryTypes['error']:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'Failed to get the file path for entry: ' + fileEntryID
+      })
+      sys.exit(0)
+
   filePath = res[0]['Contents']['path']
 
   password = demisto.args().get('password', None)
