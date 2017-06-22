@@ -275,5 +275,5 @@ script:
     - name: confidence
       description: confidence in indicator, in scale of 1-100
     description: Add a new indicator to ThreatConnect
-  dockerimage: meirwah/threatconnect-sdk
+  dockerimage: demisto/threatconnect-sdk
 system: true

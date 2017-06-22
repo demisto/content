@@ -21,7 +21,7 @@ script: |-
   var md = '### Extract URL\n';
   for (var i=0; i < uniqueMatches.length; i++) {
       ec.URL.push({Data: uniqueMatches[i]});
-      md += '- ' + uniqueMatches + '\n';
+      md += '- ' + uniqueMatches[i] + '\n';
   }
   return {Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript

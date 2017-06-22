@@ -1,12 +1,10 @@
 commonfields:
-  id: ParseEmailFile
+  id: ParseEmailFiles
   version: -1
-name: ParseEmailFile
+name: ParseEmailFiles
 script: |-
   from email import message_from_string
   from email.header import decode_header
-  global_res = []
-  temp_res = []
   from base64 import b64decode
   from re import match
   import pip
@@ -445,6 +443,16 @@ script: |-
       else:
           return s
 
+  def dataToMD(emailData):
+      md = "### Results:\n"
+      md += "* {0}:\t{1}\n".format('From', emailData['From'])
+      md += "* {0}:\t{1}\n".format('To',emailData['To'])
+      md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
+      md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
+      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
+      md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
+      return md
 
   def handleMsg(filePath):
       r = []
@@ -470,33 +478,20 @@ script: |-
           if fname and a.data:
               fname = fname.encode('utf-8')
               attachments.append(fname)
-              demisto.setContext('AttachmentName', fname)
               r.append(fileResult(fname, a.data))
 
-      md = "### Results:\n"
-      md += "* {0}:\t{1}\n".format('Label/Email',extractAddress(msg.to))
-      md += "* {0}:\t{1}\n".format('Label/Email/cc', extractAddress(msg.cc))
-      md += "* {0}:\t{1}\n".format('Label/Email/from', extractAddress(msg.sender))
-      md += u"* {0}:\t{1}\n".format('Label/Email/html', msg.body)
-      md += u"* {0}:\t{1}\n".format('Label/Email/text', msg.body)
-      md += "* {0}:\t{1}\n".format('Label/Email/subject', msg.subject)
-      md += "* {0}:\t{1}\n".format('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-      md += "* {0}:\t{1}\n".format('Label/Email/headers', '\n'.join(headers))
-
-      temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
-
-      demisto.setContext('Label/Email', extractAddress(msg.to))
-      demisto.setContext('Label/Email/cc', extractAddress(msg.cc))
-      demisto.setContext('Label/Email/from', extractAddress(msg.sender))
-      demisto.setContext('Label/Email/format', '')
-      demisto.setContext('Label/Email/html', msg.body)
-      demisto.setContext('Label/Email/text', msg.body)
-      demisto.setContext('Label/Email/subject', msg.subject)
-      demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-      demisto.setContext('Label/Email/headers', '\n'.join(headers))
-
-      return r, temp_res
-
+      emailData = {
+          'To': extractAddress(msg.to),
+          'CC': extractAddress(msg.cc),
+          'From': extractAddress(msg.sender),
+          'Subject': msg.subject,
+          'HTML': msg.body,
+          'Text': msg.body,
+          'Headers': '\n'.join(headers),
+          'Attachments': '' if not attachments else ','.join(attachments)
+      }
+      return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
+          'EntryContext': {'Email': emailData}}]
 
   def handleEml(filePath, b64 = False):
       r = []
@@ -533,30 +528,20 @@ script: |-
           except:
               subj = eml['Subject']
           subj = unicode(subj).encode('utf-8')
-          demisto.setContext('Label/Email', extractAddress(eml['To']))
-          demisto.setContext('Label/Email/cc', extractAddress(eml['Cc']))
-          demisto.setContext('Label/Email/from', extractAddress(eml['From']))
-          demisto.setContext('Label/Email/format', eml.get_content_type())
-          demisto.setContext('Label/Email/html', html)
-          demisto.setContext('Label/Email/text', text)
-          demisto.setContext('Label/Email/subject', subj)
-          demisto.setContext('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-          demisto.setContext('Label/Email/headers', headers)
 
-          md = "### Results:\n"
-          md += "* {0}:\t{1}\n".format('Label/Email',extractAddress(eml['To']))
-          md += "* {0}:\t{1}\n".format('Label/Email/cc', extractAddress(eml['Cc']))
-          md += "* {0}:\t{1}\n".format('Label/Email/from', extractAddress(eml['From']))
-          md += "* {0}:\t{1}\n".format('Label/Email/html', html)
-          md += "* {0}:\t{1}\n".format('Label/Email/text', text)
-          md += "* {0}:\t{1}\n".format('Label/Email/subject', subj)
-          md += "* {0}:\t{1}\n".format('Label/Email/attachments', '' if not attachments else ','.join(attachments))
-          md += "* {0}:\t{1}\n".format('Label/Email/headers', headers)
-
-          temp_res = [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md}]
-
-          return r, temp_res
-
+          emailData = {
+              'To': extractAddress(eml['To']),
+              'CC': extractAddress(eml['Cc']),
+              'From': extractAddress(eml['From']),
+              'Subject': subj,
+              'HTML': html,
+              'Text': text,
+              'Headers': headers,
+              'Attachments': '' if not attachments else ','.join(attachments),
+              'Format': eml.get_content_type()
+          }
+          return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
+              'EntryContext': {'Email': emailData}}]
 
   res = []
   fileType = ''
@@ -597,8 +582,6 @@ script: |-
   else:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Unknown file format: " + fileType}]
 
-  res += global_res
-
   demisto.results(res if res else 'Done.')
 type: python
 tags:
@@ -613,12 +596,30 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package.
 system: true
-deprecated: true
 args:
 - name: entryid
   required: true
   default: true
   description: Entry ID with the Email as a file in msg or eml format
+outputs:
+- contextPath: Email.To
+  description: Email 'to' addresses
+- contextPath: Email.CC
+  description: Email 'cc' addresses
+- contextPath: Email.From
+  description: Email 'from' sender
+- contextPath: Email.Subject
+  description: Email subject
+- contextPath: Email.HTML
+  description: Email 'html' body if exists
+- contextPath: Email.Text
+  description: Email 'text' body if exists
+- contextPath: Email.Headers
+  description: The full email headers as a single string
+- contextPath: Email.Attachments
+  description: The list of attachment names in the email
+- contextPath: Email.Format
+  description: The format of the email if available
 scripttarget: 0
 dependson: {}
 timeout: 0s

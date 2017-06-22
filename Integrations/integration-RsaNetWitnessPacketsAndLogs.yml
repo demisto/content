@@ -194,9 +194,7 @@ script:
         var handleTimeFilter = function (args) {
             if(LAST_HOURS in args) {
                 var now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                 var dt = new Date();
-                dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
                 dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
                 var buildDateFormat = function () {
                     return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
