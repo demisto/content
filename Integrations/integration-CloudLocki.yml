@@ -290,3 +290,4 @@ script:
       description: Activity vendor name
     - contextPath: CloudLock.Activities.Vendor.Service
       description: Activity vendor service
+hidden: false
