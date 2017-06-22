@@ -23,55 +23,103 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     var username = params.credentials.identifier;
     var password = params.credentials.password;
     var server = params.server;
+    var proxy = params.proxy;
     var insecure = params.insecure;
 
-    var sendRequest = function(url, queryName) {
-        var res = http(
-                server + '/' + url,
-                {
-                    Method: 'GET',
-                    Username: username,
-                    Password: password,
-                    UseAuthDigest: true,
-                },
-                insecure
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        return res.Body;
-    }
-
     var urlDict = {
+        'login': 'login.html'
     }
 
+    var headersDict = {
+        'login': ['application/x-www-form-urlencoded']
+    };
+
+    var saveCookies = function(cookies) {
+        for (var i = 0; i < cookies.length; i++) {
+            setIntegrationContext({cookies: [cookies[i]]});
+        }
+    }
+
+    var checkCookies = function() {
+        var contextData = getIntegrationContext();
+        var cookies = contextData.cookies;
+        var shouldRequestCookies = !cookies;
+        for (var i = 0; !shouldRequestCookies && i < cookies.length; i++) {
+            var currentTime = new Date();
+            var cookiesTime = new Date(cookies[i].Expires);
+            var timeDifferenceInDays = Math.abs((currentTime.getTime() - cookiesTime.getTime()) / (1000 * 60 * 60 * 24));
+            if (timeDifferenceInDays > 100) {
+                shouldRequestCookies = true;
+            }
+        }
+
+        return {'shouldRequestCookies': shouldRequestCookies, 'cookies': cookies};
+    }
+
+    var sendRequest = function(url, body, contentType, queryName, cookies, shouldSaveCookies) {
+        if (contentType) {
+            headers = {'ContentType': contentType};
+        }
+
+        console.log('headers: ' + JSON.stringify(headers));
+        console.log('body: ' + JSON.stringify(body));
+        console.log('queryName: ' + queryName);
+        console.log('shouldRequestCookies: ' + shouldRequestCookies);
+
+        var completeUrl = server + '/' + url + encodeToURLQuery(args);
+
+        console.log('URL = ' + completeUrl);
+
+        var res = http(
+            completeUrl,
+            {
+                Method: 'POST',
+                Body: body,
+                Headers: headers,
+                Cookies: cookies
+            },
+            insecure,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        if (shouldRequestCookies) {
+            saveCookies(res.Cookies);
+        }
+
+        return res;
+    }
+
+    var cookiesInfo = checkCookies();
+    var shouldRequestCookies = cookiesInfo.shouldRequestCookies;
+    var cookies = cookiesInfo.cookies;
+    console.log('Before: shouldRequestCookies = ' + shouldRequestCookies);
+    console.log('cookies = ' + JSON.stringify(cookies));
+
+    var raw;
     switch (command) {
         case 'test-module':
-            if (sendRequest(urlDict[''], 'Test')) {
-                return 'ok';
-            }
-
-            return 'not cool';
+            // verify successful login (status code of 200) - updates the cookie
+            var query = 'login';
+            var body = 'username=' + username + '&password=' + password;
+            sendRequest(urlDict[query], body, headersDict[query], query, null, true);
+            return 'ok';
 
         default:
-            var currentTime = new Date();
-
-            if (!args.date) {
-                args.date = -1;
-            }
-
-            var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
-            if (!res) {
-                return 'empty';
-            }
-
-            // return JSON.parse(res);
-
-            return res;
+            var query = 'login';
+            var body = 'username=' + username + '&password=' + password;
+            raw = sendRequest(urlDict[query], body, headersDict[query], query, null, true);
+            return raw;
     }
   type: javascript
+  commands:
+  - name: cybereason-test
+    arguments: []
 hidden: false
