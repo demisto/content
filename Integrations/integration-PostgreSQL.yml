@@ -44,16 +44,16 @@ script:
         connectionString +="password='" + demisto.params()['password'] +"'";
         try:
             conn = psycopg2.connect(connectionString)
-        except:
-            demisto.results("Unable to connect to the database")
+        except Exception as e:
+            demisto.results(e.message)
             return null
         return conn
 
     if demisto.command() == 'test-module':
         try:
             pgsqlConnect()
-        except:
-            demisto.results("Unable to connect to the database")
+        except Exception as e:
+            demisto.results(e.message)
             sys.exit(0)
         demisto.results('ok')
         sys.exit(0)
@@ -65,8 +65,8 @@ script:
             cur.execute(demisto.args()['query'])
             rows = cur.fetchall()
             colnames = [desc[0] for desc in cur.description]
-        except:
-            demisto.results("Unable to execute statement")
+        except Exception as e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : e.message })
             sys.exit(0)
 
         contents = []
