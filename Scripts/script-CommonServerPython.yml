@@ -65,6 +65,24 @@ script: |-
       if t:
           return time.ctime(t)
       return ''
+  def compareDates(date1, date2, dateFormat):
+    # should return delta between two dates
+    # if instead of date passed string 'now' then will be compared to current time
+    # date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
+    first = None
+    if date1 == 'now':
+        first = datetime.now(tzlocal())
+    elif isinstance(date1, basestring):
+        first = parse(date1)
+
+    second = None
+    if date2 == 'now':
+        second = datetime.now(tzlocal())
+    elif isinstance(date2, basestring):
+        second = parse(date2)
+    delta = first - second
+
+    return delta
   def shortCrowdStrike(entry):
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['cs'] and demisto.get(entry, 'Contents'):
