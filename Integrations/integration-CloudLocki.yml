@@ -233,6 +233,23 @@ script:
       description: Filters assets updated before the specified timestamp
     - name: updated_after
       description: Filters assets updated after the specified timestamp
+    outputs:
+    - contextPath: CloudLock.Users.ID
+      description: CloudLock user ID
+    - contextPath: CloudLock.Users.Name
+      description: CloudLock user name
+    - contextPath: CloudLock.Users.Suspended
+      description: CloudLock user suspended
+    - contextPath: CloudLock.Users.OU
+      description: CloudLock user OU
+    - contextPath: CloudLock.Users.Incidents.Total
+      description: CloudLock user total incidents
+    - contextPath: CloudLock.Users.Incidents.Active
+      description: CloudLock user active incidents
+    - contextPath: CloudLock.Users.Entities.Total
+      description: CloudLock user total entities
+    - contextPath: CloudLock.Users.Entities.Exposed
+      description: CloudLock user exposed entities
     description: This endpoint will return data about the users in the cloud lock
       system
   - name: cloudlock-get-user-apps
@@ -241,6 +258,19 @@ script:
       required: true
       default: true
       description: 'User email '
+    outputs:
+    - contextPath: CloudLock.Users,Applications.Category
+      description: CloudLock user application category
+    - contextPath: CloudLock.Users,Applications.AccessRisk
+      description: CloudLock user application access risk
+    - contextPath: CloudLock.Users,Applications.RiskLevel
+      description: CloudLock user application risk level
+    - contextPath: CloudLock.Users,Applications.ID
+      description: CloudLock user application id
+    - contextPath: CloudLock.Users,Applications.Name
+      description: CloudLock user application name
+    - contextPath: CloudLock.Users,Applications.Vendor
+      description: CloudLock user application vendor
     description: This endpoint returns all of the applications installed by a user
       (based on the users email address)
   - name: cloudlock-get-activities
