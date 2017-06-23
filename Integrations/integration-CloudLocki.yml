@@ -187,7 +187,9 @@ script:
         ContentsFormat: formats.json,
     };
     if (commandData.extended) {
-        var translated = mapObjFunction(commandData.translator)(dq(result, commandData.innerPath));
+        var translated = mapObjFunction(commandData.translator)(
+          commandData.innerPath ? dq(result, commandData.innerPath) : result
+        );
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown(commandData.title,translated);
         entry.EntryContext = {};
