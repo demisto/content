@@ -12,32 +12,69 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: ""
-  name: username
+- display: Username
+  name: authentication
   defaultvalue: ""
-  type: 0
-  required: true
-- display: ""
-  name: password
-  defaultvalue: ""
-  type: 0
+  type: 9
   required: true
 - display: ""
   name: port
   defaultvalue: "8089"
   type: 0
   required: true
+- display: Fetch ES query
+  name: fetchQuery
+  defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name)
+    | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
+    | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
+    | eval security_domain=if(isnull(security_domain),source,security_domain)
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     import splunklib.client as client
     import splunklib.results as results
     import json
+    from time import gmtime, strftime
+
+    def severity_to_level(severity):
+        if severity == 'informational':
+            return 0.5
+        elif severity == 'critical':
+            return 4
+        elif severity == 'high':
+            return 3
+        elif severity == 'medium':
+            return 2
+        else:
+            return 1
+
+    def notable_to_incident(event):
+        incident = {}
+        incident["name"] = event['rule_title'] + ' : ' + event['rule_name']
+        incident["severity"]= severity_to_level(event['urgency'])
+        incident["details"] = event["rule_description"]
+        incident["created"] = event["_time"]
+        labels = []
+        labels.append({'type':'security_domain','value':event["security_domain"]})
+        incident['labels'] = labels
+        return incident
 
     service = client.connect(
             host=demisto.params()['host'],
             port=demisto.params()['port'],
-            username=demisto.params()['username'],
-            password=demisto.params()['password'])
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'])
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -65,6 +102,28 @@ script:
         if found:
             demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
         sys.exit(0)
+    if demisto.command() == 'fetch-incidents':
+        lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
+
+        incidents = []
+        now = strftime("%Y-%m-%dT%H:%M:%S", gmtime())
+        if len(lastRun) == 0:
+            lastRun = now
+            demisto.incidents(incidents)
+            demisto.setLastRun({'time': now})
+            sys.exit(0)
+        kwargs_oneshot = {"earliest_time": lastRun,
+                      "latest_time": now}
+        searchquery_oneshot = demisto.params()['fetchQuery']
+
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            inc = notable_to_incident(item)
+            incidents.append(inc)
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
+        sys.exit(0)
   type: python
   commands:
   - name: splunk-results
@@ -75,3 +134,4 @@ script:
       description: search id
     description: 'fetch splunk search results '
   dockerimage: demisto/splunksdk
+  isfetch: true
