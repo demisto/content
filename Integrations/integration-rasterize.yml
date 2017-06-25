@@ -11,14 +11,14 @@ configuration: []
 script:
   script: |-
     import os, subprocess,sys
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         demisto.results('ok')
         sys.exit(0)
     if demisto.command() == 'rasterize-email':
-        reload(sys)
-        sys.setdefaultencoding("utf-8")
         file = demisto.args()['htmlBody']
 
         return_code = 0
