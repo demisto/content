@@ -26,8 +26,7 @@ script:
                 }
             },
             false,
-            params.useproxy
-
+            params.proxy
         );
 
         if (res.StatusCode == 404) {
@@ -46,9 +45,7 @@ script:
     };
 
     var fixDesc = function(desc) {
-        console.log(desc);
         var newDesc = desc.replace(/<a href="(.+?)"(.+?)\>(.+?)<\/a>/g,'[$3]($1)');
-        console.log(newDesc);
         return newDesc;
     }
 
@@ -67,19 +64,35 @@ script:
         }
         return md;
     }
+    function addCompromised(context, path, obj) {
+      obj['properties_to_append'] = ['Compromised'];
+      context[path] = obj;
+    }
+    var personsOutputPath= 'Persons(val.Emails && val.Emails == obj.Emails)';
 
-    var dataToEc = function(type,arg,obj) {
-        var ecDict = {'Email':'Address','Domain':'Name'};
-        var ec = {};
-        if (obj && obj.length>0) {
-            ec[type] = {};
-            ec[type][ecDict[type]] = arg;
-            ec[type].Pwned = [];
-            for (var i=0;i<obj.length;i++) {
-                ec[type].Pwned.push(obj[i].Domain);
-            }
-        }
-        return ec;
+    var emailToEc = function(email,obj) {
+        var compSites = [];
+        obj.forEach(function (item) {
+            compSites.push(item.Domain);
+        });
+        var compEmail = {};
+        addCompromised(compEmail, personsOutputPath, {
+            'Emails': email,
+            'Compromised': {Vendor:'Pwned',Email:email,Sites:compSites}
+        });
+        return compEmail;
+    }
+    var domainToEc = function(domain,obj) {
+        var compSites = [];
+        obj.forEach(function (item) {
+            compSites.push(item.Domain);
+        });
+        var compDomain = {};
+        addCompromised(compDomain, outputPaths.domain, {
+            'Name': domain,
+            'Compromised': {Vendor:'Pwned',Name:domain}
+        });
+        return compDomain;
     }
 
     switch (command) {
@@ -91,13 +104,13 @@ script:
             var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/' + args.email;
             var res = sendRequest(url);
             var md = dataToMd("Email",args.email,res);
-            var ec = dataToEc("Email",args.email,res)
+            var ec = emailToEc(args.email,res);
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
         case 'domain':
             var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=' + args.domain;
             var res = sendRequest(url);
             var md = dataToMd("Domain",args.domain,res);
-            var ec = dataToEc("Domain",args.domain,res)
+            var ec = domainToEc(args.domain,res);
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
         default:
             throw 'Unknown command - ' + command;
@@ -111,10 +124,13 @@ script:
       default: true
       description: Email to check
     outputs:
-    - contextPath: Email.Address
+    - contextPath: Persons.Compromised.Email
       description: Compromised email address
-    - contextPath: Email.Pwned
-      description: Domain names that were compromised and included the email address
+    - contextPath: Persons.Compromised.Sites
+      description: Sites that were compromised and included the email address
+    important:
+    - description: Persons.Compromised.Email
+      related: Compromised email address
     description: Check if an email has been compromised as part of past breaches
   - name: domain
     arguments:
@@ -123,9 +139,10 @@ script:
       default: true
       description: Domain to check
     outputs:
-    - contextPath: Domain.Name
+    - contextPath: Domain.Compromised.Name
       description: Compromised domain
-    - contextPath: Domain.Pwned
-      description: Domain name that was compromised
+    important:
+    - description: Domain.Compromised.Name
+      related: Compromised domain
     description: Check if domain has been compromised
 hidden: false
