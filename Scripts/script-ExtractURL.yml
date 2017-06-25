@@ -3,6 +3,15 @@ commonfields:
   version: -1
 name: ExtractURL
 script: |-
+  var checkRegex = function(reg,str){
+      if(reg.indexOf('~') === 0){
+          reg = reg.substring(1);
+          return str.match(reg);
+      }
+
+      return false;
+  }
+
   var text = args.text;
   if (typeof text !== 'string') {
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
@@ -12,8 +21,15 @@ script: |-
   var filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40'];
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
-      if (filtered.indexOf(found[0]) < 0 && whitelist.indexOf(found[0]) < 0) {
-          matches[found[0]] = true;
+      matches[found[0]] = true;
+      for (var i = 0 ; i < whitelist.length; i++) {
+          if (whitelist[i] === found[0]) {
+              delete matches[found[0]];
+              break;
+          }else if(checkRegex(whitelist[i],found[0])){
+                  delete matches[found[0]];
+                  break;
+          }
       }
   }
   var uniqueMatches = Object.keys(matches);
