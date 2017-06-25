@@ -22,7 +22,7 @@ configuration:
   defaultvalue: "8089"
   type: 0
   required: true
-- display: Fetch ES query
+- display: Fetch notable events ES query
   name: fetchQuery
   defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name)
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
