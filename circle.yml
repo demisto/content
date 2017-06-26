@@ -29,16 +29,16 @@ test:
     - ./Tests/scripts/configure_installer_commands.sh
 
     # get installer from server
-    - chmod +x ./Tests/scripts/server_get_artifact.sh
-    - ./Tests/scripts/server_get_artifact.sh
+    #- chmod +x ./Tests/scripts/server_get_artifact.sh
+    #- ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
-    - chmod +x ./Tests/scripts/create_instance.sh
-    - ./Tests/scripts/create_instance.sh
+    #- chmod +x ./Tests/scripts/create_instance.sh
+    #- ./Tests/scripts/create_instance.sh
 
     # run installer
-    - chmod +x ./Tests/scripts/run_installer_on_instance.sh
-    - ./Tests/scripts/run_installer_on_instance.sh
+    #- chmod +x ./Tests/scripts/run_installer_on_instance.sh
+    #- ./Tests/scripts/run_installer_on_instance.sh
 
     # run tests
     #- python ./Tests/test.py
