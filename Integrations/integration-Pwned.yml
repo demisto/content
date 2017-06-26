@@ -80,7 +80,7 @@ script:
         if (compSites.length > 0) {
             addCompromised(compEmail, personsOutputPath, {
                 'Emails': email,
-                'Compromised': {Vendor:'Pwned', Description: compSites.join(', ')}
+                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
             });
         }
         return compEmail;
@@ -95,7 +95,7 @@ script:
         if (compSites.length > 0) {
             addCompromised(compDomain, outputPaths.domain, {
                 'Name': domain,
-                'Compromised': {Vendor:'Pwned', Description: compSites.join(', ')}
+                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
             });
         }
         return compDomain;
