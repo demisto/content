@@ -19,16 +19,17 @@ script: |-
           }
       }
   }
-  var ec = {IP: []};
+  var ec = {};
+  ec[outputPaths.ip] = []
   var uniqueMatches = Object.keys(matches);
   var md = '### Extract IP\n';
   for (var i=0; i < uniqueMatches.length; i++) {
       if (isValidIP(uniqueMatches[i])) {
-          ec.IP.push({Address: uniqueMatches[i]});
+          ec[outputPaths.ip]push({Address: uniqueMatches[i]});
           md += '- ' + uniqueMatches[i] + '\n';
       }
   }
-  return {Type: entryTypes.note, Contents: ec.IP, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+  return {Type: entryTypes.note, Contents: ec[outputPaths.ip], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
 tags:
 - Utility
