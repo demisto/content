@@ -3,7 +3,7 @@ set -e
 
 echo ./conf.json
 
-goldi=$(cat ./conf.json)
+goldi=$(cat ./conf.json | jq '.admin')
 echo "goldy = ${goldi}"
 
 exit 0
