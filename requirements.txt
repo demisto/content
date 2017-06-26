@@ -3,3 +3,4 @@ pyping
 threatconnect
 psycopg2
 PyPDF2
+splunk-sdk
