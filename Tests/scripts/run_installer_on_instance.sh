@@ -20,9 +20,6 @@ INSTALLER=$(ls demistoserver*.sh)
 USER="centos"
 INSTALL_COMMAND="yum"
 
-chmod +x ./configure_installer_commands.sh
-./configure_installer_commands.sh
-
 EXP_FILE="./Tests/scripts/installer_commands-centos.exp"
 
 echo "create installer files folder"
