@@ -1124,6 +1124,162 @@ script: |-
       return false;
   }
 
+  /********************************** Date Formatting **************************************/
+  /* Date formats
+    %d - day 01, 02 ... 31
+    %m - month 01, 02 .. 12
+    %y - 95, 17
+    %Y - year 1995, 2017
+    %H - hour 01, 02 .. 24
+    %M - minute 01, 02 .. 60
+    %S - seconds 01, 02 .. 60
+    %f - millisecond 001, 002, 003 ... 999
+    %z - timezone (empty), +0000, -0400, +1030
+    %Z - timezone (empty), UTC, EST, CST
+  */
+  var month_names_short = {
+      'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun':6, 'Jul':7, 'Aug':8, 'Sep':9, 'Oct':20, 'Nov':11, 'Dec':0
+  };
+
+  /**
+   * Formats date object to string according to format. 
+   * @deprecated
+   * @param {Date} date
+   * @param {Date} format - format should be followed to python datetime formats. 
+   * @returns {string} string representation of date object according to format
+   */
+  function dateToString(date, format) {
+      if (!date || !(date instanceof Date) || typeof date.getMonth !== 'function' || String(date.getDate()) === 'NaN') {
+          throw date + ' must be of type Date';
+      }
+
+      var dateString = format;
+      if (format.indexOf('%d') > -1) {
+          if (Number(date.getDate()) < 10) {
+              dateString = dateString.replace('%d', '0' + date.getDate());
+          } else {
+              dateString = dateString.replace('%d', date.getDate());
+          }
+      }
+      if (format.indexOf('%m') > -1) {
+          if (Number(date.getMonth()) + 1 < 10) {
+              dateString = dateString.replace('%m', '0' + (date.getMonth() + 1));
+          } else {
+              dateString = dateString.replace('%m', date.getMonth() + 1);
+          }
+      }
+      if (format.indexOf('%y') > -1) {
+          if (Number(date.getYear()) < 10) {
+              dateString = dateString.replace('%y', '0' + date.getYear());
+          } else {
+              dateString = dateString.replace('%y', date.getYear());
+          }
+      }
+      if (format.indexOf('%Y') > -1) {
+          dateString = dateString.replace('%Y', date.getFullYear());
+      }
+      if (format.indexOf('%H') > -1) {
+          if (date.getHours() < 10) {
+              dateString = dateString.replace('%H', '0' + date.getHours());
+          } else {
+              dateString = dateString.replace('%H', date.getHours());
+          }
+      }
+      if (format.indexOf('%M') > -1) {
+          if (date.getMinutes() < 10) {
+              dateString = dateString.replace('%M', '0' + date.getMinutes());
+          } else {
+              dateString = dateString.replace('%M', date.getMinutes());
+          }
+      }
+      if (format.indexOf('%S') > -1) {
+          if (date.getSeconds() < 10) {
+              dateString = dateString.replace('%S', '0' + date.getSeconds());
+          } else {
+              dateString = dateString.replace('%S', date.getSeconds());
+          }
+      }
+      if (format.indexOf('%f') > -1) {
+          if (date.getMilliseconds() < 10) {
+              dateString = dateString.replace('%f', '00' + date.getMilliseconds());
+          } else if (date.getMilliseconds() < 100) {
+              dateString = dateString.replace('%f', '0' + date.getMilliseconds());
+          } else {
+              dateString = dateString.replace('%f', date.getMilliseconds());
+          }
+      }
+
+      return dateString;
+  }
+
+  /**
+   * Parses date string to date object. 
+   * @deprecated
+   * @param {string} dateString - date as string
+   * @param {string} format - the dateString must fit the format. 
+   * format is according to date format of python datetime library
+   * @returns {Date} parsed date object
+   */
+  function stringToDate(dateString, format) {
+      if (typeof dateString !== 'string') {
+          throw dateString  + ' must be string';
+      } else if (typeof format !== 'string') {
+          throw format + ' must be string';
+      }
+
+      var newDate = new Date(1970, 0, 1, 0, 0, 0, 0);
+      var newString = dateString;
+      var delta = 0;
+      for(var i = 0; i < format.length - 1; i++) {
+          switch (format.charAt(i) + format.charAt(i + 1)) {
+              case '%d':
+                  var d = newString.substring(delta + i, delta + i + 2);
+                  newDate.setDate(Number(d));
+                  break;
+              case '%m':
+                  var m = newString.substring(delta + i, delta + i + 2);
+                  newDate.setMonth(Number(m) - 1);
+                  break;
+              case '%b':
+                  var b = newString.substring(delta + i, delta + i + 3);
+                  var month = month_names_short[b];
+                  newDate.setMonth(month - 1);
+                  delta += 1;
+                  break;
+              case '%y':
+                  var y = newString.substring(delta + i, delta + i + 2);
+                  newDate.setYear('20' + y);
+                  break;
+              case '%Y':
+                  var Y = newString.substring(delta + i, delta + i + 4);
+                  newDate.setFullYear(Y);
+                  delta += 2;
+                  break;
+              case '%H':
+                  var H = newString.substring(delta + i, delta + i + 2);
+                  newDate.setHours(H);
+                  break;
+              case '%M':
+                  var M = newString.substring(delta + i, delta + i + 2);
+                  newDate.setMinutes(M);
+                  break;
+              case '%S':
+                  var S = newString.substring(delta + i, delta + i + 2);
+                  newDate.setSeconds(S);
+                  break;
+              case '%f':
+                  var f = newString.substring(delta + i, delta + i + 3);
+                  newDate.setMilliseconds(f);
+                  delta += 1;
+                  break;
+          }
+      }
+
+      return newDate;
+  }
+  
+  /********************************** Date Formatting end **************************************/
+
   /********************************** HMAC_SHA256 **************************************/
 
       /* string_to_array: convert a string to a character (byte) array */
@@ -1370,6 +1526,7 @@ script: |-
       }
 
       /**************************** HMAC_SHA256 end *******************************/
+
 
 type: javascript
 tags:
