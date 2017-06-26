@@ -14,15 +14,15 @@ test:
     #- cd bundle/ && zip ../content.zip *
     #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
-    # get installer from server TODO - move after validate
-    #- chmod +x ./Tests/scripts/server_get_artifact.sh
-    #- ./Tests/scripts/server_get_artifact.sh
-
     # validate yaml
     #- chmod +x ./Tests/yamlvalidator
     #- ./Tests/yamlvalidator
     #- chmod +x ./Tests/ensurefilenames.sh
     #- ./Tests/ensurefilenames.sh
+
+    # get installer from server TODO - move after validate
+    - chmod +x ./Tests/scripts/server_get_artifact.sh
+    - ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
     #- chmod +x ./Tests/scripts/aws/create_instance.sh
@@ -38,4 +38,4 @@ test:
     #        --remote-name --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json"
 
     # run tests
-    - python ./Tests/test.py
+    #- python ./Tests/test.py
