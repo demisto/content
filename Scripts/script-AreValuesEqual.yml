@@ -8,9 +8,8 @@ script: |
   var answer = 'no';
   if (left === right) {
     answer = 'yes';
-  } else {
-    answer = 'no';
   }
+  
   setContext('AreValuesEqual', answer)
   return answer;
 type: javascript
