@@ -38,3 +38,7 @@ test:
 
     # run tests
     #- python ./Tests/test.py
+
+    # terminate instance
+    - chmod +x ./Tests/scripts/destroy_instnaces.sh
+    - ./Tests/scripts/destroy_instnaces.sh
