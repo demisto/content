@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
-
-ADMIN_CRED=$(cat ./conf.json | jq '.goldi')
-echo "ADMIN_CREDENTIALS = ${ADMIN_CRED}"
+ADMIN_CREDENTIALS=$(cat ./conf.json | jq '.admin')
+echo "ADMIN_CREDENTIALS = ${ADMIN_CREDENTIALS}"
 
 ADMIN_EXP=$(echo $ADMIN_CREDENTIALS | sed -e 's/\(.\)/send -- "\1"\nexpect -exact "*"\n/g')
 echo "ADMIN_EXP = ${ADMIN_EXP}"
