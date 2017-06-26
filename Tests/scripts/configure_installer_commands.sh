@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
-goldi=$(cat ./conf.json | jq '.goldi')
+
+echo ./conf.json
+
+goldi=$(cat ./conf.json | jq '.')
 echo "goldy = ${goldi}"
 
 exit 0
