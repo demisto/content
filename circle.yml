@@ -21,8 +21,8 @@ test:
     #- ./Tests/ensurefilenames.sh
 
     # get installer from server
-    #- chmod +x ./Tests/scripts/server_get_artifact.sh
-    #- ./Tests/scripts/server_get_artifact.sh
+    - chmod +x ./Tests/scripts/server_get_artifact.sh
+    - ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
     - chmod +x ./Tests/scripts/create_instance.sh
