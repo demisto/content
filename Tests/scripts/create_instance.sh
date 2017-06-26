@@ -10,8 +10,6 @@ echo "after configure"
 
 
 IMAGE_ID="ami-d2c924b2" # centos
-# if [ $CIRCLE_NODE_INDEX -eq 0 ]; then IMAGE_ID="ami-775e4f16"; fi # RHEL
-# if [ $CIRCLE_NODE_INDEX -eq 1 ]; then IMAGE_ID="ami-a58d0dc5"; fi # ubuntu 16
 
 #create instance
 INSTANCE_ID=$(aws ec2 run-instances \

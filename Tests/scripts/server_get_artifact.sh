@@ -14,6 +14,4 @@ echo "SERVER_DOWNLOAD_LINK = ${SERVER_DOWNLOAD_LINK}"
 
 curl -o demistoserver.sh ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
 
-ls -la
-
 echo "Done!"
