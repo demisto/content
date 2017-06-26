@@ -38,4 +38,4 @@ ssh -t ${USER}@${PUBLIC_IP} ${SSH_COMMAND}
 echo "wait for server to start"
 wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 
-echo "server started"
+echo "server started!"
