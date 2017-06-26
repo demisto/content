@@ -10,7 +10,9 @@ ARTIFACT_BUILD_NUM=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limi
 SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep demistoserver | grep /0/)
 
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
-curl ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
+echo "SERVER_DOWNLOAD_LINK = ${SERVER_DOWNLOAD_LINK}"
+
+#curl ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
 #rm -f server_darwin_amd64 server_windows_amd64.exe
 
 ls -la
