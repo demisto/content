@@ -16,7 +16,7 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --security-group-ids sg-714f3816 \
     --instance-type t2.micro \
     --key-name ci-key \
-    --tags Key=Name,Value=Content-test \
+    --tags Key=Name,Value=ContentTest \
     --instance-initiated-shutdown-behavior terminate \
     --block-device-mappings DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true} \
     --user-data file://Tests/scripts/shutdown_instance.sh \
