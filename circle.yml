@@ -20,7 +20,7 @@ test:
     #- chmod +x ./Tests/ensurefilenames.sh
     #- ./Tests/ensurefilenames.sh
 
-    # get installer from server TODO - move after validate
+    # get installer from server
     - chmod +x ./Tests/scripts/server_get_artifact.sh
     - ./Tests/scripts/server_get_artifact.sh
 
