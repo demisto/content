@@ -25,12 +25,12 @@ test:
     - ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
-    #- chmod +x ./Tests/scripts/aws/create_instance.sh
-    #- ./Tests/scripts/aws/create_instance.sh
+    - chmod +x ./Tests/scripts/create_instance.sh
+    - ./Tests/scripts/create_instance.sh
 
     # run installer
-    #- chmod +x ./Tests/scripts/aws/run_installer_on_instance.sh
-    #- ./Tests/scripts/aws/run_installer_on_instance.sh
+    - chmod +x ./Tests/scripts/run_installer_on_instance.sh
+    - ./Tests/scripts/run_installer_on_instance.sh
 
     # download conf file
     #- chmod +x ./Tests/download_conf_file.sh

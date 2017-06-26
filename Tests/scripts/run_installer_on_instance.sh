@@ -14,35 +14,17 @@ echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
+INSTALLER=$(ls demistoserver*.sh)
+echo "INSTALLER is $INSTALLER"
+
 exit 0
 
 #copy installer files to instance
-INSTALLER=$(ls $CIRCLE_ARTIFACTS/demistoserver*.sh)
+INSTALLER=$(ls demistoserver*.sh)
 
 USER="centos"
 INSTALL_COMMAND="yum"
-EXP_FILE="./scripts/aws/installer_commands-centos.exp"
-
-: '
-case $CIRCLE_NODE_INDEX in
-    0)
-        echo 'Testing against RHEL remote server'
-        USER="ec2-user"
-        ;;
-    1)
-        echo 'Testing against ubuntu remote server'
-        USER="ubuntu"
-        INSTALL_COMMAND="apt-get"
-        EXP_FILE="./scripts/aws/installer_commands-ubuntu.exp"
-        ;;
-    2)
-        echo 'Testing against centos multi tenant remote server'
-        cp ./scripts/aws/installer_commands-centos.exp ./scripts/aws/installer_commands-mt.exp
-        sed -i -- "s|bash installer.sh|bash installer.sh -- -multi-tenant|g" ./scripts/aws/installer_commands-mt.exp
-        EXP_FILE="./scripts/aws/installer_commands-mt.exp"
-        ;;
-    esac
-'
+EXP_FILE="./scripts/installer_commands-centos.exp"
 
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
