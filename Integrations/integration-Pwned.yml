@@ -75,11 +75,14 @@ script:
         obj.forEach(function (item) {
             compSites.push(item.Domain);
         });
+        compSites = compSites.sort();
         var compEmail = {};
-        addCompromised(compEmail, personsOutputPath, {
-            'Emails': email,
-            'Compromised': {Vendor:'Pwned',Email:email,Sites:compSites}
-        });
+        if (compSites.length > 0) {
+            addCompromised(compEmail, personsOutputPath, {
+                'Emails': email,
+                'Compromised': {Vendor:'Pwned', Description: compSites.join(', ')}
+            });
+        }
         return compEmail;
     }
     var domainToEc = function(domain,obj) {
@@ -87,11 +90,14 @@ script:
         obj.forEach(function (item) {
             compSites.push(item.Domain);
         });
+        compSites = compSites.sort();
         var compDomain = {};
-        addCompromised(compDomain, outputPaths.domain, {
-            'Name': domain,
-            'Compromised': {Vendor:'Pwned',Name:domain}
-        });
+        if (compSites.length > 0) {
+            addCompromised(compDomain, outputPaths.domain, {
+                'Name': domain,
+                'Compromised': {Vendor:'Pwned', Description: compSites.join(', ')}
+            });
+        }
         return compDomain;
     }
 
@@ -100,49 +106,59 @@ script:
             var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=demisto.com';
             var res = sendRequest(url);
             return 'ok';
-        case 'email':
+        case 'pwned-email':
             var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/' + args.email;
             var res = sendRequest(url);
             var md = dataToMd("Email",args.email,res);
-            var ec = emailToEc(args.email,res);
+            var ec = emailToEc(args.email,res || []);
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-        case 'domain':
+        case 'pwned-domain':
             var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=' + args.domain;
             var res = sendRequest(url);
             var md = dataToMd("Domain",args.domain,res);
-            var ec = domainToEc(args.domain,res);
+            var ec = domainToEc(args.domain,res || []);
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
         default:
             throw 'Unknown command - ' + command;
     }
   type: javascript
   commands:
-  - name: email
+  - name: pwned-email
     arguments:
     - name: email
       required: true
       default: true
       description: Email to check
     outputs:
-    - contextPath: Persons.Compromised.Email
-      description: Compromised email address
-    - contextPath: Persons.Compromised.Sites
-      description: Sites that were compromised and included the email address
+    - contextPath: Persons.Compromised.Vendor
+      description: For comporomised emails, the vendor that made the decision
+    - contextPath: Persons.Compromised.Reason
+      description: For comporomised emails, the reason for the vendor to make the
+        compromised decision
+    - contextPath: Persons.Emails
+      description: Email address
     important:
-    - description: Persons.Compromised.Email
-      related: Compromised email address
+    - contextPath: Persons(val.Compromised)
+      description: Compromised Persons
+      related: ""
     description: Check if an email has been compromised as part of past breaches
-  - name: domain
+  - name: pwned-domain
     arguments:
     - name: domain
       required: true
       default: true
       description: Domain to check
     outputs:
-    - contextPath: Domain.Compromised.Name
-      description: Compromised domain
+    - contextPath: Domain.Compromised.Vendor
+      description: For comporomised domains, the vendor that made the decision
+    - contextPath: Domain.Compromised.Reason
+      description: For comporomised domains, the reason for the vendor to make the
+        compromised decision
+    - contextPath: Domain.Name
+      description: Domain name
     important:
-    - description: Domain.Compromised.Name
-      related: Compromised domain
+    - contextPath: Domain(val.Compromised)
+      description: Compromised Domains
+      related: ""
     description: Check if domain has been compromised
 hidden: false
