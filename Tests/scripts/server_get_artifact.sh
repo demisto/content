@@ -7,11 +7,11 @@ echo "Getting latest build num"
 
 ARTIFACT_BUILD_NUM=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=1&filter=successful&$TOKEN_ATTR" | jq '.[0].build_num')
 
-SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep server.tar.gz | grep /0/)
+SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep demistoserver | grep /0/)
 
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
-curl ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR} | tar -xz
-rm -f server_darwin_amd64 server_windows_amd64.exe
+curl ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
+#rm -f server_darwin_amd64 server_windows_amd64.exe
 
 ls -la
 
