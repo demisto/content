@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-echo ./conf.json
+cat ./conf.json
 
-goldi=$(cat ./conf.json | jq '.admin')
-echo "goldy = ${goldi}"
+echo cat ./conf.json | jq '.admin'
 
 exit 0
 
