@@ -12,11 +12,11 @@ script: |-
       HumanReadable: 'Key ' + args.key + ' set'
   };
 
-  if (args.append) {
-      result.EntryContext = ec;
-  } else if (!args.append || args.append === 'false') {
+  if (!args.append || args.append === 'false') {
       setContext(args.key, args.value);
-  }
+  } else {
+      result.EntryContext = ec;
+  } 
 
   return result;
 type: javascript
