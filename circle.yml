@@ -21,12 +21,12 @@ test:
     #- ./Tests/ensurefilenames.sh
 
     # download conf file
-    - chmod +x ./Tests/download_conf_file.sh
-    - ./Tests/download_conf_file.sh
+    - chmod +x ./Tests/scripts/download_conf_file.sh
+    - ./Tests/scripts/download_conf_file.sh
 
     # download conf file
-    - chmod +x ./Tests/configure_installer_commands.sh
-    - ./Tests/configure_installer_commands.sh
+    - chmod +x ./Tests/scripts/configure_installer_commands.sh
+    - ./Tests/scripts/configure_installer_commands.sh
 
     # get installer from server
     #- chmod +x ./Tests/scripts/server_get_artifact.sh

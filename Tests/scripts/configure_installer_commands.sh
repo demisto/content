@@ -18,3 +18,6 @@ EOM
 echo "someVar = ${someVar}"
 
 cat ./conf.json
+
+goldi=$(cat ./conf.json | jq '.goldi')
+echo "goldy = ${goldi}"
