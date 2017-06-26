@@ -1,0 +1,33 @@
+commonfields:
+  id: Append
+  version: -1
+name: Append
+script: |
+  result = demisto.args()["prefix"] + demisto.args()["suffix"]
+  res = {
+      'ContentsFormat': formats['text'],
+      'Type': entryTypes['note'],
+      'Contents': result,
+      'ReadableContentsFormat': formats['text'],
+      'HumanReadable': result,
+      'EntryContext': {demisto.args()['key']: result}
+  }
+  demisto.results(res)
+type: python
+tags:
+- Utility
+comment: 'will append prefix string to suffix string, and return to context under
+  key given'
+enabled: true
+args:
+- name: prefix
+  required: true
+  default: true
+  description: left side string
+- name: suffix
+  required: true
+  description: right side string
+- name: key
+  required: true
+  description: key to place result in context
+scripttarget: 0
