@@ -4,8 +4,8 @@ commonfields:
 name: Qualys
 display: Qualys
 category: Network Security
+image: data:image/png;base64,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
 description: Network Security and Vulnerability Management
-image: data:image/png;base64,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
 configuration:
 - display: Qualys API server URL
   name: server
@@ -945,6 +945,27 @@ script:
     - name: expires_before_datetime
       description: Specify the date and time to get only reports that expire before
         it. use YYYY-MM-DD[THH:MM:SSZ] format (UTC/GMT), like “2007-07-01” or “2007-01-25T23:12:00Z”
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    - contextPath: Qualys.Report.Title
+      description: Report title
+    - contextPath: Qualys.Report.Type
+      description: Report type
+    - contextPath: Qualys.Report.LaunchDatetime
+      description: Date and time the report launched
+    - contextPath: Qualys.Report.OutputFormat
+      description: Report output format
+    - contextPath: Qualys.Report.Size
+      description: Report size
+    - contextPath: Qualys.Report.Status.State
+      description: Report state status
+    - contextPath: Qualys.Report.Status.Message
+      description: Report status message
+    - contextPath: Qualys.Report.Status.Percent
+      description: Report status percent
+    - contextPath: Qualys.Report.ExpirationDatetime
+      description: Report expiration datetime
     description: get list of generated reports in the system
   - name: qualys-report-cancel
     arguments:
@@ -952,12 +973,17 @@ script:
       required: true
       description: Report ID
     description: Cancel running report
+    execution: true
   - name: qualys-report-delete
     arguments:
     - name: id
       required: true
       description: Report ID
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: Delete a saved report in the user’s Report Share
+    execution: true
   - name: qualys-scorecard-launch
     arguments:
     - name: name
@@ -1017,7 +1043,11 @@ script:
         with available patches. Multiple QIDs are comma separated.
     - name: missing_qids
       description: One or two QIDs for missing software. Two QIDs are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: Launch a vulnerability scorecard report
+    execution: true
   - name: qualys-report-fetch
     arguments:
     - name: id
@@ -1076,6 +1106,37 @@ script:
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
       defaultValue: "1"
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
+    - contextPath: Qualys.Scan.Reference
+      description: Sacn ref
+    - contextPath: Qualys.Scan.Type
+      description: Scan type
+    - contextPath: Qualys.Scan.Title
+      description: Scan title
+    - contextPath: Qualys.Scan.LaunchDatetime
+      description: Date and time the scan launched
+    - contextPath: Qualys.Scan.Duration
+      description: Scan Duration
+    - contextPath: Qualys.Scan.ProcessingPriority
+      description: Scan Processing Priority
+    - contextPath: Qualys.Scan.Processed
+      description: Scan Processed
+    - contextPath: Qualys.Scan.Status.State
+      description: Scan status state
+    - contextPath: Qualys.Scan.Status.SubState
+      description: Scan status sub state
+    - contextPath: Qualys.Scan.Schedule
+      description: Scan Schedule
+    - contextPath: Qualys.Scan.Target
+      description: Scan Target
+    - contextPath: Qualys.Scan.AssetGroupTitle
+      description: Target Asset Group Title
+    - contextPath: Qualys.Scan.DeafualtFlag
+      description: Scan Deafualt Flag
+    - contextPath: Qualys.Scan.UserLogin
+      description: The user that created the scan
     description: Lists vulnerability scans in the user’s account
   - name: qualys-vm-scan-launch
     arguments:
@@ -1200,8 +1261,11 @@ script:
       required: true
       description: 'The scan reference for a vulnerability scan. This will have the
         format: scan/nnnnnnnnnn.nnnnn'
+    outputs:
+    - description: Report.ID
     description: allows users to take actions on vulnerability scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results
+    execution: true
   - name: qualys-scap-scan-list
     arguments:
     - name: scan_id
@@ -1254,6 +1318,37 @@ script:
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
       defaultValue: "1"
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
+    - contextPath: Qualys.Scan.Reference
+      description: Sacn ref
+    - contextPath: Qualys.Scan.Type
+      description: Scan type
+    - contextPath: Qualys.Scan.Title
+      description: Scan title
+    - contextPath: Qualys.Scan.LaunchDatetime
+      description: Date and time the scan launched
+    - contextPath: Qualys.Scan.Duration
+      description: Scan Duration
+    - contextPath: Qualys.Scan.ProcessingPriority
+      description: Scan Processing Priority
+    - contextPath: Qualys.Scan.Processed
+      description: Scan Processed
+    - contextPath: Qualys.Scan.Status.State
+      description: Scan status state
+    - contextPath: Qualys.Scan.Status.SubState
+      description: Scan status sub state
+    - contextPath: Qualys.Scan.Schedule
+      description: Scan Schedule
+    - contextPath: Qualys.Scan.Target
+      description: Scan Target
+    - contextPath: Qualys.Scan.AssetGroupTitle
+      description: Target Asset Group Title
+    - contextPath: Qualys.Scan.DeafualtFlag
+      description: Scan Deafualt Flag
+    - contextPath: Qualys.Scan.UserLogin
+      description: The user that created the scan
     description: Gives you a list of SCAP scans in your account
   - name: qualys-pc-scan-launch
     arguments:
@@ -1362,7 +1457,11 @@ script:
         used in the “Qualys-Scan:” header that will be set for many CGI and web application
         fingerprinting checks. Some discovery and web server fingerprinting checks
         will not use this header.
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
     description: launch compliance scans.
+    execution: true
   - name: qualys-pc-scan-manage
     arguments:
     - name: action
@@ -1378,8 +1477,12 @@ script:
       required: true
       description: ' The scan reference for a compliance scan. This will have the
         format: compliance/nnnnnnnnnn.nnnnn'
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
     description: Allows users to take actions on compliance scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results.
+    execution: true
   - name: qualys-schedule-scan-list
     arguments:
     - name: id
@@ -1391,6 +1494,37 @@ script:
       - "1"
       description: Specify 1 for active schedules only, or 0 for deactivated schedules
         only.
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
+    - contextPath: Qualys.Scan.Reference
+      description: Sacn ref
+    - contextPath: Qualys.Scan.Type
+      description: Scan type
+    - contextPath: Qualys.Scan.Title
+      description: Scan title
+    - contextPath: Qualys.Scan.LaunchDatetime
+      description: Date and time the scan launched
+    - contextPath: Qualys.Scan.Duration
+      description: Scan Duration
+    - contextPath: Qualys.Scan.ProcessingPriority
+      description: Scan Processing Priority
+    - contextPath: Qualys.Scan.Processed
+      description: Scan Processed
+    - contextPath: Qualys.Scan.Status.State
+      description: Scan status state
+    - contextPath: Qualys.Scan.Status.SubState
+      description: Scan status sub state
+    - contextPath: Qualys.Scan.Schedule
+      description: Scan Schedule
+    - contextPath: Qualys.Scan.Target
+      description: Scan Target
+    - contextPath: Qualys.Scan.AssetGroupTitle
+      description: Target Asset Group Title
+    - contextPath: Qualys.Scan.DeafualtFlag
+      description: Scan Deafualt Flag
+    - contextPath: Qualys.Scan.UserLogin
+      description: The user that created the scan
     description: Shows schedule scans
   - name: qualys-ip-list
     arguments:
@@ -1413,6 +1547,11 @@ script:
       description: ' Specify 1 to list compliance IP addresses in the user’s account.
         These hosts are assigned to the policy compliance module. or 0 to get host
         that are not'
+    outputs:
+    - contextPath: IP.Address
+      description: IP Addresses
+    - contextPath: IP.Range
+      description: IP Range
     description: View a list of IP addresses in the user account.
   - name: qualys-ip-add
     arguments:
@@ -1517,12 +1656,22 @@ script:
     - name: comment
       description: User-defined comments.
     description: gives you the ability to update IP addresses within the subscription.
+    execution: true
   - name: qualys-virtual-host-list
     arguments:
     - name: ip
       description: Show only virtual hosts that have a certain IP address.
     - name: port
       description: Show only virtual hosts that have a certain port.
+    outputs:
+    - contextPath: Qualys.VirtualEndpoint.IP
+      description: IP
+    - contextPath: Qualys.VirtualEndpoint.Port
+      description: Port
+    - contextPath: Qualys.VirtualEndpoint.FQDN
+      description: Fully qualified domain name
+    - contextPath: Qualys.VirtualEndpoint.NetworkID
+      description: Network ID
     description: View a list of virtual hosts in the user account.
   - name: qualys-virtual-host-manage
     arguments:
@@ -1550,12 +1699,18 @@ script:
         One or more fully-qualified domain names (FQDNs) for the virtual host configuration.
         Multiple entries are comma separated.*
     description: Create, edit and delete virtual hosts in the user account.
+    execution: true
   - name: qualys-host-excluded-list
     arguments:
     - name: ips
     - name: network_id
       description: (Optional, and valid only when the Network Support feature is enabled
         for the user’s account) Restrict the request to a certain custom network ID.
+    outputs:
+    - contextPath: Qualys.Excluded.Host.Address
+      description: IP Address
+    - contextPath: Qualys.Excluded.Host.Range
+      description: IP Range
     description: Show only certain excluded IP addresses/ranges. When unspecified,
       all excluded IPs/ranges in your account will be listed. One or more IPs/ranges
       may be specified. Multiple entries are comma separated. An IP range is specified
@@ -1590,6 +1745,7 @@ script:
         list. By default, the user’s default network ID is assigned.
     description: Manage your excluded IPs list using the Excluded IP. The IPs in your
       excluded IPs list will not be scanned.
+    execution: true
   - name: qualys-scheduled-report-list
     arguments:
     - name: id
@@ -1600,13 +1756,38 @@ script:
       - "true"
       - "false"
       description: Select active or in active scheduled reports to view
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    - contextPath: Qualys.Report.Title
+      description: Report title
+    - contextPath: Qualys.Report.Type
+      description: Report type
+    - contextPath: Qualys.Report.LaunchDatetime
+      description: Date and time the report launched
+    - contextPath: Qualys.Report.OutputFormat
+      description: Report output format
+    - contextPath: Qualys.Report.Size
+      description: Report size
+    - contextPath: Qualys.Report.Status.State
+      description: Report state status
+    - contextPath: Qualys.Report.Status.Message
+      description: Report status message
+    - contextPath: Qualys.Report.Status.Percent
+      description: Report status percent
+    - contextPath: Qualys.Report.ExpirationDatetime
+      description: Report expiration datetime
     description: Get list of scheduled reports
   - name: qualys-scheduled-report-launch
     arguments:
     - name: id
       required: true
       description: Scheduled report ID
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: Lunch a scheduled report now
+    execution: true
   - name: qualys-host-list
     arguments:
     - name: truncation_limit
@@ -1680,6 +1861,23 @@ script:
       description: how only hosts which have an operating system matching a certain
         regular expression. An empty value cannot be specified. Use “%5E%24” to match
         empty string.
+    outputs:
+    - contextPath: Qualys.Endpoint.ID
+      description: Endpoint ID
+    - contextPath: Qualys.Endpoint.IP
+      description: IP
+    - contextPath: Qualys.Endpoint.DNS
+      description: DNS
+    - contextPath: Qualys.Endpoint. EC2InstanceID
+      description: EC2 instance ID
+    - contextPath: Qualys.Endpoint.NETBIOS
+      description: NETBIOS
+    - contextPath: Qualys.Endpoint.OS
+      description: Endpoint operation system
+    - contextPath: Qualys.Endpoint.AssetGroupIDs
+      description: Endpoint Asset Group IDs
+    - contextPath: Qualys.Endpoint.NetworkID
+      description: Endpoint Network ID
     description: View a list of scanned hosts in the user account.
   - name: qualys-pc-scan-list
     arguments:
@@ -1733,9 +1931,62 @@ script:
       - "1"
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID
+    - contextPath: Qualys.Scan.Reference
+      description: Sacn ref
+    - contextPath: Qualys.Scan.Type
+      description: Scan type
+    - contextPath: Qualys.Scan.Title
+      description: Scan title
+    - contextPath: Qualys.Scan.LaunchDatetime
+      description: Date and time the scan launched
+    - contextPath: Qualys.Scan.Duration
+      description: Scan Duration
+    - contextPath: Qualys.Scan.ProcessingPriority
+      description: Scan Processing Priority
+    - contextPath: Qualys.Scan.Processed
+      description: Scan Processed
+    - contextPath: Qualys.Scan.Status.State
+      description: Scan status state
+    - contextPath: Qualys.Scan.Status.SubState
+      description: Scan status sub state
+    - contextPath: Qualys.Scan.Schedule
+      description: Scan Schedule
+    - contextPath: Qualys.Scan.Target
+      description: Scan Target
+    - contextPath: Qualys.Scan.AssetGroupTitle
+      description: Target Asset Group Title
+    - contextPath: Qualys.Scan.DeafualtFlag
+      description: Scan Deafualt Flag
+    - contextPath: Qualys.Scan.UserLogin
+      description: The user that created the scan
     description: Get  list of compliance scans in your account.
   - name: qualys-report-template-list
     arguments: []
+    outputs:
+    - contextPath: Qualys.ReportTemplate.ID
+      description: Report template ID
+    - contextPath: Qualys.ReportTemplate.
+      description: Report type
+    - contextPath: Qualys.ReportTemplate.
+      description: Report template type
+    - contextPath: Qualys.ReportTemplate.
+      description: Report template title
+    - contextPath: Qualys.ReportTemplate.LastUpdate
+      description: Last update time
+    - contextPath: Qualys.ReportTemplate.Global
+      description: Report template global
+    - contextPath: Qualys.ReportTemplate.Default
+      description: Report template default
+    - contextPath: Qualys.ReportTemplate.User.Login
+      description: Last updated user login
+    - contextPath: Qualys.ReportTemplate.User.FirstName
+      description: Last updated user login first name
+    - contextPath: Qualys.ReportTemplate.User.LastName
+      description: Last updated user login last name
+    description: get list of report template for user
   - name: qualys-report-launch-map
     arguments:
     - name: template_id
@@ -1837,7 +2088,11 @@ script:
       description: Specify a tag set to exclude. Hosts that match these tags will
         be excluded. You identify the tag set by providing tag name or IDs. Multiple
         entries are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: Launches a map report
+    execution: true
   - name: qualys-report-launch-scan-based-findings
     arguments:
     - name: template_id
@@ -1929,6 +2184,9 @@ script:
       description: (Optional for Manual scan report) For a scan report, the report
         content will be restricted to the specified IPs/ranges. Multiple IPs and/or
         ranges are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-host-based-findings
     arguments:
@@ -2026,6 +2284,10 @@ script:
         network ID (note this does not filter IPs/ranges specified in “asset_group_ids”).
         Or set to “0” (the default) for the Global Default Network - this is used
         to report on hosts outside of your custom networks.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    execution: true
   - name: qualys-report-launch-patch
     arguments:
     - name: template_id
@@ -2114,6 +2376,10 @@ script:
         When specified, hosts defined in the report template are not included in the
         report. Looking for asset group IDs? Use the asset_group_list.php function
         (see the API v1 User Guide).
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    execution: true
   - name: qualys-report-launch-remediation
     arguments:
     - name: template_id
@@ -2207,6 +2473,10 @@ script:
       description: ' Specifies whether the report will include tickets assigned to
         the current user, or all tickets in the user account. By default tickets assigned
         to the current user are included. Valid values are: User (default) or All.'
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    execution: true
   - name: qualys-report-launch-compliance
     arguments:
     - name: template_id
@@ -2299,6 +2569,10 @@ script:
         starts with the string “scan/” followed by a reference ID number. The scan
         reference must be for a scan that was run using the PCI Options profile. Only
         one scan reference may be specified.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    execution: true
   - name: qualys-report-launch-compliance-policy
     arguments:
     - name: template_id
@@ -2399,6 +2673,10 @@ script:
     - name: instance_string
       description: Specifies a single instance on the selected host. The instance
         string may be “os” or a string like “oracle10:1:1521:ora10204u”.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID
+    execution: true
   - name: qualys-vulnerability-list
     arguments:
     - name: details
@@ -2538,6 +2816,21 @@ script:
       - CVSS
       description: ' Show attributes for each asset group along with the ID. Your
         options are: None, All or a comma-separated list of attribute names.'
+    outputs:
+    - contextPath: Qualys.AssetGroup.ID
+      description: Asset Group ID
+    - contextPath: Qualys.AssetGroup.Title
+      description: Asset Group title
+    - contextPath: Qualys.AssetGroup.OwnerID
+      description: Asset Group owner ID
+    - contextPath: Qualys.AssetGroup.UnitID
+      description: Asset Group unit ID
+    - contextPath: Qualys.AssetGroup.NetworkID
+      description: Asset Group network ID
+    - contextPath: Qualys.AssetGroup.IP.Address
+      description: 'Asset Group IP addresses '
+    - contextPath: Qualys.AssetGroup.IP.Range
+      description: Asset Group IP range
     description: Get account asset groups
   - name: qualys-vm-scan-fetch
     arguments:
