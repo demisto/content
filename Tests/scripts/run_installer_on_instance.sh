@@ -14,11 +14,6 @@ echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
-INSTALLER=$(ls demistoserver*.sh)
-echo "INSTALLER is $INSTALLER"
-
-exit 0
-
 #copy installer files to instance
 INSTALLER=$(ls demistoserver*.sh)
 
@@ -32,16 +27,15 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 echo "copy installer files"
 scp ${EXP_FILE} ${USER}@${PUBLIC_IP}:~/installer_files/installer_commands.exp
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
-scp ./conf_for_systemtests-e2e ${USER}@${PUBLIC_IP}:~/installer_files/conf_for_systemtests
 
 echo "get installer and run installation script"
 SSH_COMMAND="cd ~/installer_files \
-    && sudo cp conf_for_systemtests /etc/demisto.conf
     && sudo ${INSTALL_COMMAND} install -y -q expect less \
     && chmod +x installer.sh \
     && sudo expect installer_commands.exp"
 ssh -t ${USER}@${PUBLIC_IP} ${SSH_COMMAND}
 
-# wait for server to start
+echo "wait for server to start"
 wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 
+echo "server started"
