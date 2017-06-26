@@ -10,7 +10,7 @@ echo "ADMIN_EXP = ${ADMIN_EXP}"
 
 echo "BEFORE"
 cat ./Tests/scripts/installer_commands-centos.exp
-sed -i 's/original/new/g' ./Tests/scripts/installer_commands-centos.exp
+sed -i 's/<PASSWORD>/${ADMIN_EXP}/g' ./Tests/scripts/installer_commands-centos.exp
 
 echo "AFTER"
 cat ./Tests/scripts/installer_commands-centos.exp
