@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -e
+ADMIN_CREDENTIALS=$(cat ./conf.json | jq '.admin')
+echo "ADMIN_CREDENTIALS = ${ADMIN_CREDENTIALS}"
 
-echo "configure installer commands start"
+for (( i=0; i<${#ADMIN_CREDENTIALS}; i++ )); do
+  echo "${ADMIN_CREDENTIALS:$i:1}"
+done
 
-cat ./conf.json
 
-goldi=$(cat ./conf.json | jq '.goldi')
-echo "goldy = ${goldi}"
