@@ -8,8 +8,6 @@ temp="${ADMIN_CREDENTIALS%\"}"
 temp="${temp#\"}"
 ADMIN_CREDENTIALS=$temp
 
-echo "ADMIN_CREDENTIALS = ${ADMIN_CREDENTIALS}"
-
 # create exp of password
 ADMIN_EXP=$(echo $ADMIN_CREDENTIALS | sed -e 's/\(.\)/send -- "\1"\nexpect -exact "*"\n/g' | sed ':a $!{N; ba}; s/\n/\\n/g')
 
