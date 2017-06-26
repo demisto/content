@@ -29,7 +29,6 @@ expect -exact "*"
 send -- "\r"
 expect -exact "Verify password: "
 <PASSWORD>
-expect -exact "*"
 send -- "\r"
 expect -exact "Otherwise, hit enter. "
 send -- "\r"
