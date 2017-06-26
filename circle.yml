@@ -40,5 +40,5 @@ test:
     #- python ./Tests/test.py
 
     # terminate instance
-    - chmod +x ./Tests/scripts/destroy_instances.sh
-    - ./Tests/scripts/destroy_instances.sh
+    #- chmod +x ./Tests/scripts/destroy_instances.sh
+    #- ./Tests/scripts/destroy_instances.sh
