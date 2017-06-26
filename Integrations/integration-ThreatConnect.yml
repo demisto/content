@@ -27,6 +27,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: ProxyIP
+  name: proxyIp
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ProxyPort
+  name: proxyPort
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     from threatconnect import ThreatConnect
@@ -39,8 +49,12 @@ script:
         secert = demisto.params()['secretKey']
         url = demisto.params()['baseUrl']
         default_org = demisto.params()['defaultOrg']
-        # tc.set_proxies('10.10.10.10', 8443, 'proxy_user', 'password123')
-        return ThreatConnect(access, secert, default_org, url)
+        proxy_ip = demisto.params()['proxyIp']
+        proxy_port = demisto.params()['proxyPort']
+        tc = ThreatConnect(access, secert, default_org, url)
+        if len(proxy_ip) > 0 and len(proxy_port) > 0:
+            tc.set_proxies(proxyIP, int(proxy_port))
+        return tc
 
     def getIndicator(indicatorType, value, owners, limit):
         tc = getClient()
@@ -158,6 +172,12 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
+        owners_arr = []
+        owners = tc.owners()
+        owners.retrieve()
+        for owner in owners:
+            owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
         indicators.retrieve()
 
         for indicator in indicators:
@@ -256,7 +276,7 @@ script:
     - name: indicator
       required: true
       default: true
-      description: Indicator value to search by, can be an IP, url, file Hash
+      description: Indicator value to search by, can be an IP, url, file Hash. will retrieve from all owners
     description: Get indicator
   - name: tc-get-indicators-by-tag
     arguments:
@@ -276,4 +296,3 @@ script:
       description: confidence in indicator, in scale of 1-100
     description: Add a new indicator to ThreatConnect
   dockerimage: demisto/threatconnect-sdk
-system: true
