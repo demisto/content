@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -e
+
 ADMIN_CREDENTIALS=$(cat ./conf.json | jq '.admin')
 echo "ADMIN_CREDENTIALS = ${ADMIN_CREDENTIALS}"
 
-for (( i=0; i<${#ADMIN_CREDENTIALS}; i++ )); do
-  echo "${ADMIN_CREDENTIALS:$i:1}"
-done
-
-
+ADMIN_EXP=$(ADMIN_CREDENTIALS | sed -e 's/\(.\)/send -- "\1"\nexpect -exact "*"/g')
+echo "ADMIN_EXP = ${ADMIN_EXP}"
