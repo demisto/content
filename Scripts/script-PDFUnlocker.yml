@@ -1,0 +1,42 @@
+commonfields:
+  id: PDFUnlocker
+  version: -1
+name: PDFUnlocker
+script: |
+  from PyPDF2 import PdfFileWriter, PdfFileReader
+
+  res = demisto.executeCommand("getFilePath", {"id":demisto.args()["entryID"]})
+  originPath = res[0]['Contents']['path']
+  outputName = "UNLOCKED_" + res[0]['Contents']['name']
+
+  input1 = PdfFileReader(open(originPath, "rb"))
+  input1.decrypt(str(demisto.args()["password"]))
+
+  output = PdfFileWriter()
+  for pageNum in range(0, input1.getNumPages()):
+      output.addPage(input1.getPage(pageNum))
+  outputStream = file(outputName, "wb")
+  output.write(outputStream)
+  outputStream.close()
+
+  with open(outputName, 'r') as f:
+      data = f.read()
+
+  if data:
+      demisto.results(fileResult(outputName,  data))
+type: python
+tags: []
+comment: Removing the password protection from a PDF file and adding a new file entry
+  with the unlocked PDF.
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: Entry ID with PDF file
+- name: password
+  required: true
+  secret: true
+  description: Password of PDF file
+scripttarget: 0
+dockerimage: demisto/pypdf2

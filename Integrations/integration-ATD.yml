@@ -286,6 +286,11 @@ script:
 
     var uploadFile = function(body,fileParam) {
         uri = '/php/fileupload.php'
+        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name') 
+        filename = undefined
+        if (filenameDq && filenameDq[0]) {
+            filename = filenameDq[0]
+        }
         res = httpMultipart(
             base+uri,
             fileParam,
@@ -297,7 +302,8 @@ script:
             insecure,
             proxy,
             false,
-            'amas_filename'
+            'amas_filename',
+            filename
         );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to use uri ' + base+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';

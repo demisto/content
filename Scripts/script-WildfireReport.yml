@@ -39,7 +39,7 @@ tags:
 - enhancement
 - wildfire
 - sandbox
-comment: Use wildfire file analysis and parse result
+comment: Use WildFire file analysis and parse result
 system: true
 args:
 - name: md5

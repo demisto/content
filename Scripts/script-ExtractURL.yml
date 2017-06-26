@@ -17,13 +17,14 @@ script: |-
       }
   }
   var uniqueMatches = Object.keys(matches);
-  var ec = {URL: []};
+  var ec = {};
+  ec[outputPaths.url] = []
   var md = '### Extract URL\n';
   for (var i=0; i < uniqueMatches.length; i++) {
-      ec.URL.push({Data: uniqueMatches[i]});
-      md += '- ' + uniqueMatches + '\n';
+      ec[outputPaths.url]push({Data: uniqueMatches[i]});
+      md += '- ' + uniqueMatches[i] + '\n';
   }
-  return {Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+  return {Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
 type: javascript
 tags:
 - Utility
