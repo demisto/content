@@ -1,0 +1,354 @@
+commonfields:
+  id: ForcePoint Web
+  version: -1
+name: ForcePoint Web
+display: ForcePoint Web
+category: Network Security
+image: data:image/png;base64,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
+configuration:
+- display: 'URL of Forcepoint WEB API. Example: https://<IP>:15873/'
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "True"
+  type: 8
+  required: false
+script:
+  script: |
+    var usr = params.credentials.identifier;
+    var pass = params.credentials.password;
+
+    var sendRequest = function(method, body, action){
+        headers = {
+            'Accept': ['application/json'],
+            'Content-Type': ['application/json']
+        };
+
+        url = params.url+"/api/web/v1/categories/"+action;
+        res = http(url,{Method: method,Headers: headers,Body: body, Username: usr, Password: pass},true,params.proxy);
+        return JSON.parse(res.Body);
+    };
+
+    var getTansId = function(){
+        res = sendRequest("POST", "", "start");
+
+        try {
+            tran_id = res["Transaction ID"];
+        } catch (ex) {
+            throw "Error getting Transaction ID";
+        }
+    };
+
+    var commit = function(){
+        return sendRequest("POST", "", "commit?transactionid="+tran_id);
+    };
+
+    var status = function(){
+        var body = {};
+        var res = sendRequest("GET", JSON.stringify(body), "status");
+
+        var md = "";
+        for(var i = 0; i<res["Status"]; i++){
+            md += res["Status"][i]+"\n";
+        }
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+    };
+
+    var addCategory = function(){
+        var body = {};
+
+        body["Transaction ID"] = getTansId();
+        var categories = [];
+        categories.push({
+            "Category Name": args["category-name"],
+            "Category Description" : args["category-description"],
+            "Parent": parseInt(args["parent"])
+        });
+        body.Categories = categories;
+        var res = sendRequest("POST", JSON.stringify(body), "");
+        commit();
+
+        var md = "Category "+res["Categories"][0]["Category Name"]+" added";
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+    };
+
+    var deleteCategory = function(){
+        var body = {};
+
+        body["Transaction ID"] = getTansId();
+        if(args["ids"]){
+            body["Category IDs"] = args["ids"].split(',');
+        }
+
+        if(args["names"]){
+            body["Category Names"] = args["names"].split(',');
+        }
+
+        res = sendRequest("DELETE", JSON.stringify(body), "");
+        commit();
+        if (res["StatusCode"] !== 200){
+            return ("Error "+JSON.stringify(res));
+        }else{
+
+            var md = "Successfully deleted the categories. Please run status command for further details";
+
+            return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+        }
+    }
+
+    var addIps = function(){
+        var body = {};
+
+        body["Transaction ID"] = getTansId();
+
+        if(args["category-name"]){
+            body["Category Name"] = args["category-name"];
+            }
+
+        if(args["category-id"]){
+            body["Category ID"] = parseInt(args["category-id"]);
+        }
+
+        if (args["urls"]) {
+            body.URLs = args["urls"].split(',');
+        }
+
+        if (args["ips"]) {
+            body.IPs = args["ips"].split(',');
+        }
+
+        var res = sendRequest("POST", JSON.stringify(body), "urls");
+        commit();
+
+        var md = "### "+res["Category Name"];
+        md += "You added "+res["Totals"]["Added URLs"]+" urls and "+res["Totals"]["Added IPs"]+" IPs to the category "+res["Category Name"]
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+    };
+
+    var printSubCategories = function(res){
+        var md = "";
+
+        for(var i=0; i<res.length; i++){
+            md += "\tCategory Name: "+res[i]["Category Name"]+"\n";
+            md += "\tCategory ID:"+res[i]["Category ID"]+"\n";
+            md += "\tCategory Description: "+res[i]["Category Description"]+"\n";
+            if(res[i]["Children"] !== undefined){
+                md += "Children:\n"+"\t"+printSubCategories(res[i]["Children"],depth+1);
+            }
+            md += "\n==============\n";
+        }
+
+        return md;
+    }
+    var listCategories = function(){
+        var body = {};
+        var res = "";
+
+        res = sendRequest("GET", JSON.stringify(body), (args["master"] == 'true') ? "all" : "");
+
+        var ec = {"Categories":[]};
+        var md = "";
+        for(var i=0; i<res["Categories"].length; i++){
+            ec["Categories"].push({"Category name":res["Categories"][i]["Category Name"],
+                "Category id":res["Categories"][i]["Category ID"],
+                "Category description":res["Categories"][i]["Category Description"]
+            });
+            md += "Category Name: "+res["Categories"][i]["Category Name"]+"\n";
+            md += "Category ID: "+res["Categories"][i]["Category ID"]+"\n";
+            md += "Category Description: "+res["Categories"][i]["Category Description"]+"\n";
+            if (res["Categories"][i]["Children"] != undefined){
+                md += "Children:\n"+"\t"+printSubCategories(res["Categories"][i]["Children"],1);
+            }
+            md += "\n==============\n"
+        }
+
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    }
+
+    var listIps = function(){
+        var body = {};
+        var res;
+
+        if(args["category-name"]){
+            res = sendRequest("GET", JSON.stringify(body), "urls?catname="+args["category-name"]);
+        }
+
+        if(args["category-id"]){
+            res = sendRequest("GET", JSON.stringify(body), "urls?catid="+args["category-id"]);
+        }
+
+        var md = " ### Category Name: "+ res["Category Name"]+"\n";
+
+        md += "URLs\n";
+        ec = {"FP Category":{"Category Name":args["category-name"], "IPS":[], "URLS":[]}};
+
+        for (var i = 0; i<res["URLs"].length; i++){
+            md += res["URLs"][i]+"\n";
+            ec["FP Category"]["URLS"].push(res["URLs"][i]);
+        }
+
+        md += "IPs\n";
+
+        for (var i = 0; i<res["IPs"].length; i++){
+            md += res["IPs"][i]+"\n";
+            ec["FP Category"]["IPS"].push(res["IPs"][i]);
+        }
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    }
+
+    var deleteIps = function(){
+        var body = {};
+
+        body["Transaction ID"] = getTansId();
+
+        if(args["category-name"]){
+            body["Category Name"] = args["category-name"];
+        }
+
+        if(args["category-id"]){
+            body["Category ID"] = parseInt(args["category-id"]);
+        }
+
+        if (args["urls"]) {
+            body.URLs = args["urls"].split(',');
+        }
+
+        if (args["ips"]) {
+            body.IPs = args["ips"].split(',');
+        }
+
+        var res = sendRequest("DELETE", JSON.stringify(body), "urls");
+        commit();
+
+        var md = "You deleted "+res["Totals"]["Added URLs"]+" urls and "+res["Totals"]["Added IPs"]+" IPs from the category "+res["Category Name"]
+
+        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+    }
+
+    switch (command) {
+        case 'forcepoint-add-category':
+            return addCategory();
+
+        case 'forcepoint-delete-categories':
+            return deleteCategory();
+
+        case "forcepoint-add-ips":
+            return addIps();
+
+        case "forcepoint-list-categories":
+            return listCategories();
+
+        case "forcepoint-list-ips":
+            return listIps();
+
+        case "forcepoint-delete-ips":
+            return deleteIps();
+
+        case "forcepoint-status":
+            return status();
+
+        case 'test-module':
+            headers = {
+                'Accept': ['application/json'],
+                'Content-Type': ['application/json']
+            };
+
+            body = "";
+            url = params.url+"/api/web/v1/categories/start";
+            res = http(url,{Method: "POST",Headers: headers,Body: body, Username: usr, Password: pass},true);
+            if (res.StatusCode != 200) {
+                return JSON.stringify(res);
+            }else {
+                return 'ok';
+            }
+
+        default:
+            throw 'ForcePoint unknown command';
+    }
+  type: javascript
+  commands:
+  - name: forcepoint-add-category
+    arguments:
+    - name: category-name
+      required: true
+      default: true
+      description: Category name
+    - name: category-description
+      description: Description
+    - name: parent
+      required: true
+      description: ID of the parent category(Default is 0)
+      defaultValue: "0"
+    description: Add new category to Forcepoint Web
+  - name: forcepoint-add-ips
+    arguments:
+    - name: urls
+      description: List of URLs separated by comma
+      isArray: true
+    - name: ips
+      description: List of IPs separated by comma
+      isArray: true
+    - name: category-name
+      default: true
+      description: Category name
+    - name: category-id
+      description: Category ID
+    description: Add IPs or URLs to existing category
+  - name: forcepoint-delete-categories
+    arguments:
+    - name: ids
+      description: Categories IDs
+    - name: names
+      default: true
+      description: Categories names
+    description: Delete categories from Forcepoint WEB
+    execution: true
+  - name: forcepoint-delete-ips
+    arguments:
+    - name: category-id
+      description: Category ID
+    - name: category-name
+      default: true
+      description: Category name
+    - name: ips
+      description: List of IPs separated by comma
+    - name: urls
+      description: List of URLs separated by comma
+    description: Delete IPs or URLs from specific category
+    execution: true
+  - name: forcepoint-list-categories
+    arguments:
+    - name: master
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Do show Forcepoint defined master database categories
+      defaultValue: "false"
+    description: Show all categories
+  - name: forcepoint-list-ips
+    arguments:
+    - name: category-id
+      description: Category ID
+    - name: category-name
+      default: true
+      description: Category name
+    description: List IPs and URLs for specific category
+  - name: forcepoint-status
+    arguments: []
+    description: Show status of the Forcepoint WEB API
+hidden: false
