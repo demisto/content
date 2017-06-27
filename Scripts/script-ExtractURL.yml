@@ -50,7 +50,7 @@ script: |-
       ec[outputPaths.url].push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches[i] + '\n';
   }
-  return { Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
+  return { Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
 tags:
 - Utility

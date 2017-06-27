@@ -165,8 +165,7 @@ script:
           { // HTTP Request Headers
               Method: 'POST',
               Headers: {'Authorization': [auth]},
-              Body: JSON.stringify(body)
-
+              Body: ((body && body !== '') ? (JSON.stringify(body)) : '')
           },
           qParams.insecure
       );

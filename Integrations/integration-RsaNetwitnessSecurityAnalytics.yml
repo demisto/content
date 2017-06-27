@@ -1128,8 +1128,11 @@ script:
             break;
         case 'nw-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
-            var updatedIncident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = updatedIncident;
+            var update_incident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
+            results = {"ContentsFormat": formats["text"], "Type": entryTypes["note"], "Contents": "Incident updated successfully."};
+            if(!(update_incident.success==true && update_incident.data >= 1)){
+              results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", update_incident)};
+            }
             break;
         default:
             // You can use args[argName] or args.argName to get a specific arg. args are strings.

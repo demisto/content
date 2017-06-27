@@ -58,29 +58,87 @@ script:
         'moloch_unique_json': 'unique.txt',
     }
 
+    var prToName = {
+        1: 'icmp',
+        6: 'tcp',
+        17: 'udp',
+        47: 'gre',
+        58: 'icmpv6'
+    }
+
     var jsonResponses = ['moloch_connections_json', 'moloch_files_json', 'moloch_sessions_json', 'moloch_spigraph_json', 'moloch_spiview_json', 'moloch_unique_json'];
     var csvResponses = ['moloch_connections_csv', 'moloch_sessions_csv'];
     var pcapResponses = ['moloch_sessions_pcap'];
+
+    var parseSessions = function(response) {
+        var outputs = [];
+        var contexts = [];
+        for (var i = 0, objects = response.data; i < objects.length; i++) {
+            var output = {};
+
+            output['ID'] = objects[i].id;
+            output['Index'] = objects[i].index;
+            output['Protocol'] = objects[i].pr in prToName ? prToName[objects[i].pr] : objects[i].pr;
+            output['Start Time'] = convertTimestampToString(objects[i].fp);
+            output['End Time'] = convertTimestampToString(objects[i].lp);
+            output['Source IP'] = numToIp(objects[i].a1);
+            output['Source Port'] = objects[i].p1;
+            output['Source Packets'] = objects[i].pa1;
+            output['Source Bytes'] = objects[i].by1;
+            output['Source Databytes'] = objects[i].db1;
+            output['Destination IP'] = numToIp(objects[i].a2);
+            output['Destination Port'] = objects[i].p2;
+            output['Destination Packets'] = objects[i].pa2;
+            output['Destination Bytes'] = objects[i].by2;
+            output['Destination Databytes'] = objects[i].db2;
+
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        entry = {
+            Type: entryTypes.note,
+            Contents: null,
+            ContentsFormat: formats.json,
+            EntryContext: {'Moloch.Sessions': contexts},
+            HumanReadable: tableToMarkdown('Moloch Sessions Search', outputs)
+        };
+
+        return entry;
+    }
 
     switch (command) {
         case 'test-module':
             if (sendRequest(urlDict['moloch_connections_json'], 'Test')) {
                 return 'ok';
             }
+
             return 'not cool';
+
         default:
             var currentTime = new Date();
+
+            if (!args.date) {
+                args.date = -1;
+            }
+
             var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
             if (!res) {
                 return 'empty';
             }
+
             if (jsonResponses.indexOf(command) !== -1) {
-                return JSON.parse(res);
+                if (command == 'moloch_sessions_json') {
+                    return parseSessions(JSON.parse(res));
+                } else {
+                    return JSON.parse(res);
+                }
             } else if (csvResponses.indexOf(command) !== -1) {
                 return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.csv',  Contents: 'we must have contents for an entry'};
             } else if (pcapResponses.indexOf(command) !== -1) {
                 return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.pcap',  Contents: 'we must have contents for an entry'};
             }
+
             return res;
     }
   type: javascript
@@ -322,5 +380,4 @@ script:
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
-system: true
-fromversion: 1.6.1
+hidden: false
