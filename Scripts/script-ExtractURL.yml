@@ -37,7 +37,7 @@ script: |-
   ec[outputPaths.url] = []
   var md = '### Extract URL\n';
   for (var i=0; i < uniqueMatches.length; i++) {
-      ec[outputPaths.url]push({Data: uniqueMatches[i]});
+      ec[outputPaths.url].push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches[i] + '\n';
   }
   return {Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
