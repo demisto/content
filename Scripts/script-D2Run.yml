@@ -1,21 +1,26 @@
 commonfields:
-  id: 9a18460a-e72f-488a-8112-044c9a7be76a
-  version: 13
+  id: D2Run
+  version: -1
 name: D2Run
 script: |-
+  //Add this comments to unpack the Agent Tools that you uploaded to Demisto.
   //+TestBatch/TestBatch.bat
 
+  //Batch file name to run
   var batch_file = 'TestBatch.bat';
 
   if (env.OS !== 'windows') {
       throw ('script can only run on Windows');
     }
 
+  //D2 agent location in the remote computer.
   var d2path = pwd();
   var batch_path = d2path + '\\' + batch_file;
 
+  //Run the batch on the remote computer.
   pack(execute('cmd /c ' + batch_path, 60));
 type: javascript
 tags: []
+comment: This Automation runs a batch file on a host using the D2 agent.
 enabled: true
 scripttarget: 1
