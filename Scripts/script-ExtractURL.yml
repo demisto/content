@@ -3,27 +3,31 @@ commonfields:
   version: -1
 name: ExtractURL
 script: |-
-  var checkMatch = function(reg,str){
+  var checkMatch = function(reg,str) {
       if (reg === str) {
           return true;
       }
-      if(reg.indexOf('~') === 0){
+
+      if(reg.indexOf('~') === 0) {
           reg = reg.substring(1);
           return str.match(reg);
       }
+
       return false;
   }
 
   var text = args.text;
   if (typeof text !== 'string') {
-      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+      text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
   }
-  var matches = {}, found;
+
+  var matches = {};
+  var found;
   var reg;
 
-  if (args.urlRegex !== undefined) {
+  if (args.urlRegex) {
       reg = new RegExp(args.urlRegex, "gmi");
-  }else{
+  } else {
       reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
   }
 
@@ -32,9 +36,9 @@ script: |-
   while (found = reg.exec(text)) {
       matches[found[0]] = true;
       for (var i = 0 ; i < whitelist.length; i++) {
-          if(checkMatch(whitelist[i],found[0])){
-                  delete matches[found[0]];
-                  break;
+          if (checkMatch(whitelist[i],found[0])) {
+                delete matches[found[0]];
+                break;
           }
       }
   }
@@ -46,7 +50,7 @@ script: |-
       ec[outputPaths.url].push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches[i] + '\n';
   }
-  return {Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+  return { Type: entryTypes.note, Contents: ec.URL, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
 tags:
 - Utility
