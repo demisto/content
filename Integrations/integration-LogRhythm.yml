@@ -201,9 +201,6 @@ script:
     if (params.timeZone === '0') {
         tz = 0;
     }
-    if (!tz) {
-        tz = myTimezone;
-    }
 
     var dataObj = {
         Username: params.Credentials.identifier,
