@@ -3,10 +3,16 @@ commonfields:
   version: -1
 name: AreValuesEqual
 script: |
-  answer = 'yes' if demisto.args()['left'] == demisto.args()['right'] else 'no'
-  demisto.setContext('AreValuesEqual', answer)
-  demisto.results(answer)
-type: python
+  var left = (typeof args.left === 'string') ? args.left : args.left + '';
+  var right = (typeof args.right === 'string') ? args.right : args.right + '';
+  var answer = 'no';
+  if (left === right) {
+    answer = 'yes';
+  }
+  
+  setContext('AreValuesEqual', answer)
+  return answer;
+type: javascript
 tags:
 - Utility
 - Condition

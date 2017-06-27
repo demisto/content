@@ -22,6 +22,32 @@ script: |-
      return content;
   }
 
+  cleanSingleObject = function(contents) {
+      var cleanContents = {};
+      var keys = Object.keys(contents);
+      for (var i = 0; i < keys.length; i++) {
+          if (contents[keys[i]] || contents[keys[i]] === false) {
+              cleanContents[keys[i]] = contents[keys[i]];
+          }
+      }
+      return cleanContents;
+  }
+
+  /**
+   * Clean an object from empty fields
+   * @returns {Object} the clean object
+   */
+  var cleanObject = function(obj) {
+      if (obj instanceof Array) {
+          var res = [];
+          for (var j in obj) {
+              res.push(cleanObject(obj[j]));
+          }
+          return res;
+      }
+      cleanSingleObject(obj);
+  }
+
   /**
    * Creates a string from an object
    * @param {JSON or String} o - the object to create the string from
@@ -44,16 +70,21 @@ script: |-
       }
   }
 
-  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!|"
 
   /**
    * Escapes markdown characters in a string
    * @param {String} st - the string to fix
    * @returns {String} a string with the markdown characters escaped
    */
-  var stringEscapeMD = function(st) {
+  var stringEscapeMD = function(st, replaceNewlines) {
       if (typeof(st) != 'string') {
           return st;
+      }
+
+      if (replaceNewlines) {
+        st = st.replace(/\r\n/g, '<br>')
+        st = st.replace(/\n/g, '<br>')
       }
 
       escapedSt = '';
@@ -90,6 +121,21 @@ script: |-
   }
 
   /**
+   * converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
+   * @param {Dictionary} dict - only the keys matter
+   * @return {Dictionary} the same dictionary which the keys converted
+   */
+  var convertKeysToPascalCase = function(dict) {
+      var pascalDict = {};
+      for (var key in dict) {
+          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+          pascalDict[pascalCaseKey] = dict[key];
+      }
+
+      return pascalDict;
+  }
+
+  /**
    * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
    * @param {Object} arg the argument to convert to list
    * @returns {Array} of strings
@@ -117,7 +163,7 @@ script: |-
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers, cellDelimiter) {
+  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
@@ -136,17 +182,34 @@ script: |-
           mdResults = '### ' + name + '\n';
       }
       if (t && t.length) {
-          mdResults += headers.join('|') + '\n';
+          var newHeaders = [];
+          if(!headerTransform){
+            headerTransform = function(string){return string;};
+          }
+          for(var i=0; i<headers.length; i++){
+              newHeaders.push(headerTransform(headers[i]));
+          }
+          if (newHeaders.length > 1) {
+              mdResults += newHeaders.join('|') + '\n';
+          } else {
+              mdResults += newHeaders[0] + '|' + '\n';
+          }
           var sep = [];
           headers.forEach(function(h){
               sep.push('-');
           });
+          if (sep.length === 1) {
+              sep[0] = sep[0]+'|';
+          }
           mdResults += sep.join('|') + '\n';
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  vals.push((!!entry[h] || entry[h]==0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter)) : ' ');
+                  vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
               });
+              if (vals.length === 1) {
+                  vals[0] = vals[0]+'|';
+              }
               mdResults += vals.join('|') + '\n';
           });
       } else{
@@ -154,6 +217,18 @@ script: |-
       }
       return mdResults;
   }
+
+  var tblToMd = tableToMarkdown;
+
+  /**
+   * Converts underscore case strings to camel case
+   * @param {String} string - string to be converted - i.e. hello_world
+   * @returns {String} - converted string - i.e. HelloWorld
+  */
+  var underscoreToCamelCase = function(string){
+      var ret_string = '_'+string;
+      return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  };
 
   /**
    * Converts a demisto table in JSON form to a HTML table
@@ -195,8 +270,6 @@ script: |-
       }
       return htmlResults;
   }
-
-  var tblToMd = tableToMarkdown;
 
   /**
 
@@ -537,6 +610,31 @@ script: |-
   }
 
   /**
+  * Converts the given timestamp to a string
+  * @param {int} timestamp - the timestamp in UNIX format
+  * @returns {String} e.g. 'Thu, 11 May 2017 11:18:56 UTC'
+  */
+  function convertTimestampToString(timestamp) {
+    return (new Date(parseInt(timestamp))).toISOString();
+  }
+
+  /**
+  * Converts the given number (uint32) to an IP address string
+  * @param {int} num: the number to convert
+  * @returns {String} e.g. '192.168.2.1'
+  */
+  var numToIp = function(num) {
+    var ip = num % 256;
+
+    for (var i = 3; i > 0; i--) {
+        num = Math.floor(num / 256);
+        ip = num % 256 + '.' + ip;
+    }
+
+    return ip;
+  }
+
+  /**
    * Convert a given array to md table
    * @param {Array} arr - the array to convert
    * @returns {String} - the converted md string
@@ -676,7 +774,7 @@ script: |-
       return null;
   }
 
-  var brands = {xfe: 'xfe', vt: 'virustotal', cy: 'cylance', wf: 'wildfire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
+  var brands = {xfe: 'xfe', vt: 'VirusTotal', cy: 'cylance', wf: 'WildFire', cs: 'crowdstrike-intel', threatconnect: 'ThreatConnect'};
   var providers = {xfe: 'IBM X-Force Exchange', vt: 'VirusTotal', cy: 'Cylance', wf: 'WildFire', cs: 'CrowdStrike'};
   // Thresholds for the various reputation services to mark something as positive
   var thresholds = {xfeScore: 3, vtPositives: 10, vtPositiveUrlsForIP: 10};
@@ -1001,6 +1099,435 @@ script: |-
       domain: 'Domain(val.Name && val.Name == obj.Name)',
       cve: 'CVE(val.ID && val.ID == obj.ID)'
   };
+
+  //Check if ip is in subnet
+  function isIPInSubnet(ip, subnet) {
+      function IPnumber(IPaddress) {
+          var parsedIp = IPaddress.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+          if(parsedIp) {
+              return (+parsedIp[1]<<24) + (+parsedIp[2]<<16) + (+parsedIp[3]<<8) + (+parsedIp[4]);
+          }
+          return null;
+      }
+
+      function IPmask(maskSize) {
+          return -1<<(32-maskSize);
+      }
+
+      var parts = subnet.split('/');
+      if (parts.length == 1) {
+          return ip == parts[0];
+      }
+      if (IPnumber(parts[0]) && parts[1].match(/^(\d+)/)) {
+          return (IPnumber(ip) & IPmask(parts[1])) == IPnumber(parts[0]);
+      }
+      return false;
+  }
+
+  /********************************** Date Formatting **************************************/
+  /* Date formats
+    %d - day 01, 02 ... 31
+    %m - month 01, 02 .. 12
+    %y - 95, 17
+    %Y - year 1995, 2017
+    %H - hour 01, 02 .. 24
+    %M - minute 01, 02 .. 60
+    %S - seconds 01, 02 .. 60
+    %f - millisecond 001, 002, 003 ... 999
+    %z - timezone (empty), +0000, -0400, +1030
+    %Z - timezone (empty), UTC, EST, CST
+  */
+  var month_names_short = {
+      'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun':6, 'Jul':7, 'Aug':8, 'Sep':9, 'Oct':20, 'Nov':11, 'Dec':0
+  };
+
+  /**
+   * Formats date object to string according to format. 
+   * @deprecated
+   * @param {Date} date
+   * @param {Date} format - format should be followed to python datetime formats. 
+   * @returns {string} string representation of date object according to format
+   */
+  function dateToString(date, format) {
+      if (!date || !(date instanceof Date) || typeof date.getMonth !== 'function' || String(date.getDate()) === 'NaN') {
+          throw date + ' must be of type Date';
+      }
+
+      var dateString = format;
+      if (format.indexOf('%d') > -1) {
+          if (Number(date.getDate()) < 10) {
+              dateString = dateString.replace('%d', '0' + date.getDate());
+          } else {
+              dateString = dateString.replace('%d', date.getDate());
+          }
+      }
+      if (format.indexOf('%m') > -1) {
+          if (Number(date.getMonth()) + 1 < 10) {
+              dateString = dateString.replace('%m', '0' + (date.getMonth() + 1));
+          } else {
+              dateString = dateString.replace('%m', date.getMonth() + 1);
+          }
+      }
+      if (format.indexOf('%y') > -1) {
+          if (Number(date.getYear()) < 10) {
+              dateString = dateString.replace('%y', '0' + date.getYear());
+          } else {
+              dateString = dateString.replace('%y', date.getYear());
+          }
+      }
+      if (format.indexOf('%Y') > -1) {
+          dateString = dateString.replace('%Y', date.getFullYear());
+      }
+      if (format.indexOf('%H') > -1) {
+          if (date.getHours() < 10) {
+              dateString = dateString.replace('%H', '0' + date.getHours());
+          } else {
+              dateString = dateString.replace('%H', date.getHours());
+          }
+      }
+      if (format.indexOf('%M') > -1) {
+          if (date.getMinutes() < 10) {
+              dateString = dateString.replace('%M', '0' + date.getMinutes());
+          } else {
+              dateString = dateString.replace('%M', date.getMinutes());
+          }
+      }
+      if (format.indexOf('%S') > -1) {
+          if (date.getSeconds() < 10) {
+              dateString = dateString.replace('%S', '0' + date.getSeconds());
+          } else {
+              dateString = dateString.replace('%S', date.getSeconds());
+          }
+      }
+      if (format.indexOf('%f') > -1) {
+          if (date.getMilliseconds() < 10) {
+              dateString = dateString.replace('%f', '00' + date.getMilliseconds());
+          } else if (date.getMilliseconds() < 100) {
+              dateString = dateString.replace('%f', '0' + date.getMilliseconds());
+          } else {
+              dateString = dateString.replace('%f', date.getMilliseconds());
+          }
+      }
+
+      return dateString;
+  }
+
+  /**
+   * Parses date string to date object. 
+   * @deprecated
+   * @param {string} dateString - date as string
+   * @param {string} format - the dateString must fit the format. 
+   * format is according to date format of python datetime library
+   * @returns {Date} parsed date object
+   */
+  function stringToDate(dateString, format) {
+      if (typeof dateString !== 'string') {
+          throw dateString  + ' must be string';
+      } else if (typeof format !== 'string') {
+          throw format + ' must be string';
+      }
+
+      var newDate = new Date(1970, 0, 1, 0, 0, 0, 0);
+      var newString = dateString;
+      var delta = 0;
+      for(var i = 0; i < format.length - 1; i++) {
+          switch (format.charAt(i) + format.charAt(i + 1)) {
+              case '%d':
+                  var d = newString.substring(delta + i, delta + i + 2);
+                  newDate.setDate(Number(d));
+                  break;
+              case '%m':
+                  var m = newString.substring(delta + i, delta + i + 2);
+                  newDate.setMonth(Number(m) - 1);
+                  break;
+              case '%b':
+                  var b = newString.substring(delta + i, delta + i + 3);
+                  var month = month_names_short[b];
+                  newDate.setMonth(month - 1);
+                  delta += 1;
+                  break;
+              case '%y':
+                  var y = newString.substring(delta + i, delta + i + 2);
+                  newDate.setYear('20' + y);
+                  break;
+              case '%Y':
+                  var Y = newString.substring(delta + i, delta + i + 4);
+                  newDate.setFullYear(Y);
+                  delta += 2;
+                  break;
+              case '%H':
+                  var H = newString.substring(delta + i, delta + i + 2);
+                  newDate.setHours(H);
+                  break;
+              case '%M':
+                  var M = newString.substring(delta + i, delta + i + 2);
+                  newDate.setMinutes(M);
+                  break;
+              case '%S':
+                  var S = newString.substring(delta + i, delta + i + 2);
+                  newDate.setSeconds(S);
+                  break;
+              case '%f':
+                  var f = newString.substring(delta + i, delta + i + 3);
+                  newDate.setMilliseconds(f);
+                  delta += 1;
+                  break;
+          }
+      }
+
+      return newDate;
+  }
+  
+  /********************************** Date Formatting end **************************************/
+
+  /********************************** HMAC_SHA256 **************************************/
+
+      /* string_to_array: convert a string to a character (byte) array */
+      function string_to_array(str) {
+        var len = str.length;
+        var res = new Array(len);
+        for(var i = 0; i < len; i++)
+          res[i] = str.charCodeAt(i);
+        return res;
+      }
+
+      /* array_to_hex_string: convert a byte array to a hexadecimal string */
+      function array_to_hex_string(ary) {
+        var res = "";
+        for(var i = 0; i < ary.length; i++)
+          res += SHA256_hexchars[ary[i] >> 4] + SHA256_hexchars[ary[i] & 0x0f];
+        return res;
+      }
+
+
+      /* The following are the SHA256 routines */
+
+      /*
+         SHA256_init: initialize the internal state of the hash function. Call this
+         function before calling the SHA256_write function.
+      */
+
+      function SHA256_init() {
+        SHA256_H = new Array(0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+          0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19);
+        SHA256_buf = new Array();
+        SHA256_len = 0;
+      }
+
+      /*
+         SHA256_write: add a message fragment to the hash function's internal state.
+         'msg' may be given as string or as byte array and may have arbitrary length.
+
+      */
+
+      function SHA256_write(msg) {
+        if (typeof(msg) == "string")
+          SHA256_buf = SHA256_buf.concat(string_to_array(msg));
+        else
+          SHA256_buf = SHA256_buf.concat(msg);
+        for(var i = 0; i + 64 <= SHA256_buf.length; i += 64)
+          SHA256_Hash_Byte_Block(SHA256_H, SHA256_buf.slice(i, i + 64));
+        SHA256_buf = SHA256_buf.slice(i);
+        SHA256_len += msg.length;
+      }
+
+      /*
+         SHA256_finalize: finalize the hash value calculation. Call this function
+         after the last call to SHA256_write. An array of 32 bytes (= 256 bits)
+         is returned.
+      */
+
+      function SHA256_finalize() {
+        SHA256_buf[SHA256_buf.length] = 0x80;
+
+        if (SHA256_buf.length > 64 - 8) {
+          for(var i = SHA256_buf.length; i < 64; i++)
+            SHA256_buf[i] = 0;
+          SHA256_Hash_Byte_Block(SHA256_H, SHA256_buf);
+          SHA256_buf.length = 0;
+        }
+
+        for(var i = SHA256_buf.length; i < 64 - 5; i++)
+          SHA256_buf[i] = 0;
+          SHA256_buf[59] = (SHA256_len >>> 29) & 0xff;
+          SHA256_buf[60] = (SHA256_len >>> 21) & 0xff;
+          SHA256_buf[61] = (SHA256_len >>> 13) & 0xff;
+          SHA256_buf[62] = (SHA256_len >>> 5) & 0xff;
+          SHA256_buf[63] = (SHA256_len << 3) & 0xff;
+          SHA256_Hash_Byte_Block(SHA256_H, SHA256_buf);
+          var res = new Array(32);
+
+          for(var i = 0; i < 8; i++) {
+              res[4 * i + 0] = SHA256_H[i] >>> 24;
+              res[4 * i + 1] = (SHA256_H[i] >> 16) & 0xff;
+              res[4 * i + 2] = (SHA256_H[i] >> 8) & 0xff;
+              res[4 * i + 3] = SHA256_H[i] & 0xff;
+          }
+
+          delete SHA256_H;
+          delete SHA256_buf;
+          delete SHA256_len;
+          return res;
+      }
+
+      /*
+         SHA256_hash: calculate the hash value of the string or byte array 'msg'
+         and return it as hexadecimal string. This shortcut function may be more
+         convenient than calling SHA256_init, SHA256_write, SHA256_finalize
+         and array_to_hex_string explicitly.
+      */
+
+      function SHA256_hash(msg) {
+        var res;
+        SHA256_init();
+        SHA256_write(msg);
+        res = SHA256_finalize();
+        return array_to_hex_string(res);
+      }
+
+      /* The following are the HMAC-SHA256 routines */
+
+      /*
+         HMAC_SHA256_init: initialize the MAC's internal state. The MAC key 'key'
+         may be given as string or as byte array and may have arbitrary length.
+      */
+
+      function HMAC_SHA256_init(key) {
+        if (typeof(key) == "string")
+          HMAC_SHA256_key = string_to_array(key);
+        else
+          HMAC_SHA256_key = new Array().concat(key);
+
+        if (HMAC_SHA256_key.length > 64) {
+          SHA256_init();
+          SHA256_write(HMAC_SHA256_key);
+          HMAC_SHA256_key = SHA256_finalize();
+        }
+
+        for(var i = HMAC_SHA256_key.length; i < 64; i++)
+          HMAC_SHA256_key[i] = 0;
+        for(var i = 0; i < 64; i++)
+          HMAC_SHA256_key[i] ^=  0x36;
+        SHA256_init();
+        SHA256_write(HMAC_SHA256_key);
+      }
+
+      /*
+         HMAC_SHA256_write: process a message fragment. 'msg' may be given as
+         string or as byte array and may have arbitrary length.
+      */
+
+      function HMAC_SHA256_write(msg) {
+        SHA256_write(msg);
+      }
+
+      /*
+         HMAC_SHA256_finalize: finalize the HMAC calculation. An array of 32 bytes
+         (= 256 bits) is returned.
+      */
+
+      function HMAC_SHA256_finalize() {
+        var md = SHA256_finalize();
+        for(var i = 0; i < 64; i++)
+          HMAC_SHA256_key[i] ^= 0x36 ^ 0x5c;
+        SHA256_init();
+        SHA256_write(HMAC_SHA256_key);
+        SHA256_write(md);
+        for(var i = 0; i < 64; i++)
+          HMAC_SHA256_key[i] = 0;
+        delete HMAC_SHA256_key;
+        return SHA256_finalize();
+      }
+
+      /*
+         HMAC_SHA256_MAC: calculate the HMAC value of message 'msg' under key 'key'
+         (both may be of type string or byte array); return the MAC as hexadecimal
+         string. This shortcut function may be more convenient than calling
+         HMAC_SHA256_init, HMAC_SHA256_write, HMAC_SHA256_finalize and
+         array_to_hex_string explicitly.
+      */
+
+      function HMAC_SHA256_MAC(key, msg) {
+        var res;
+        HMAC_SHA256_init(key);
+        HMAC_SHA256_write(msg);
+        res = HMAC_SHA256_finalize();
+        return array_to_hex_string(res);
+      }
+
+      /* The following lookup tables and functions are for internal use only! */
+
+      SHA256_hexchars = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f');
+
+      SHA256_K = new Array(
+        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+        0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+        0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+        0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+        0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+        0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+        0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+        0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+        0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+      );
+
+      function SHA256_sigma0(x) {
+        return ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+      }
+
+      function SHA256_sigma1(x) {
+        return ((x >>> 17) | (x << 15)) ^ ((x >>> 19) | (x << 13)) ^ (x >>> 10);
+      }
+
+      function SHA256_Sigma0(x) {
+        return ((x >>> 2) | (x << 30)) ^ ((x >>> 13) | (x << 19)) ^
+          ((x >>> 22) | (x << 10));
+      }
+
+      function SHA256_Sigma1(x) {
+        return ((x >>> 6) | (x << 26)) ^ ((x >>> 11) | (x << 21)) ^
+          ((x >>> 25) | (x << 7));
+      }
+
+      function SHA256_Ch(x, y, z) {
+        return z ^ (x & (y ^ z));
+      }
+
+      function SHA256_Maj(x, y, z) {
+        return (x & y) ^ (z & (x ^ y));
+      }
+
+      function SHA256_Hash_Word_Block(H, W) {
+        for(var i = 16; i < 64; i++)
+          W[i] = (SHA256_sigma1(W[i - 2]) +  W[i - 7] +
+            SHA256_sigma0(W[i - 15]) + W[i - 16]) & 0xffffffff;
+        var state = new Array().concat(H);
+        for(var i = 0; i < 64; i++) {
+          var T1 = state[7] + SHA256_Sigma1(state[4]) +
+            SHA256_Ch(state[4], state[5], state[6]) + SHA256_K[i] + W[i];
+          var T2 = SHA256_Sigma0(state[0]) + SHA256_Maj(state[0], state[1], state[2]);
+          state.pop();
+          state.unshift((T1 + T2) & 0xffffffff);
+          state[4] = (state[4] + T1) & 0xffffffff;
+        }
+        for(var i = 0; i < 8; i++)
+          H[i] = (H[i] + state[i]) & 0xffffffff;
+      }
+
+      function SHA256_Hash_Byte_Block(H, w) {
+        var W = new Array(16);
+        for(var i = 0; i < 16; i++)
+          W[i] = w[4 * i + 0] << 24 | w[4 * i + 1] << 16 |
+            w[4 * i + 2] << 8 | w[4 * i + 3];
+        SHA256_Hash_Word_Block(H, W);
+      }
+
+      /**************************** HMAC_SHA256 end *******************************/
+
+
 type: javascript
 tags:
 - infra

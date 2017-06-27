@@ -31,6 +31,7 @@ tags:
 - checkpoint
 comment: Show items in an access rulebase configured in Checkpoint FW.
 system: true
+deprecated: true
 args:
 - name: name
   default: true

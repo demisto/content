@@ -52,7 +52,6 @@ script: |+
           md = data
       else:
           data = data if isinstance(data, list) else [data]
-          demisto.log(str(data))
           md = tableToMarkdown("Active Directory Group Members", data)
 
           if memberType == 'computer':
@@ -70,11 +69,10 @@ script: |+
 type: python
 tags:
 - active directory
-comment: "Use Active Directory to retrieve the list of computers that are members
+comment: "Use Active Directory to retrieve the list of users or computers that are members
   of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\"
   argument receives a comma-separated list of additional attributes you wish to be
-  displayed in the results.\nExample usage: !ADGetGroupComputers groupdn=\"CN=ImportantComputers,DC=demisto,DC=com\"
-  attributes=operatingsystem "
+  displayed in the results.\nExample usage: !ADGetGroupMembers memberType=user groupdn=\"CN=Administrators,CN=Builtin,DC=acme,DC=int\" attributes=name,email "
 system: true
 args:
 - name: groupdn

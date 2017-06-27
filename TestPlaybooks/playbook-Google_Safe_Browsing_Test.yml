@@ -1,0 +1,234 @@
+id: Google Safe Browsing Test
+version: -1
+name: Google Safe Browsing Test
+description: Checking Google Safe Browsing integration by running it on both malicious
+  and non-malicious URLs and checking the results
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c08891da-47e5-4d03-85dc-0fe33a5028cf
+    type: start
+    task:
+      id: c08891da-47e5-4d03-85dc-0fe33a5028cf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f45233a2-d1df-427c-8e02-73adfc62fac0
+    type: regular
+    task:
+      id: f45233a2-d1df-427c-8e02-73adfc62fac0
+      version: -1
+      name: Check non-malicious URL
+      script: GoogleSafeBrowsing|||url
+      type: regular
+      iscommand: true
+      brand: GoogleSafeBrowsing
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url: ${inputs.Non malicious URL}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 185
+        }
+      }
+  "3":
+    id: "3"
+    taskid: dc08926c-61ce-43a8-8b11-60ce13bf5699
+    type: condition
+    task:
+      id: dc08926c-61ce-43a8-8b11-60ce13bf5699
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      value: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 346
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4514b568-e44e-4f9c-8125-0ff3c9f87c9d
+    type: regular
+    task:
+      id: 4514b568-e44e-4f9c-8125-0ff3c9f87c9d
+      version: -1
+      name: Check malicious URL
+      script: GoogleSafeBrowsing|||url
+      type: regular
+      iscommand: true
+      brand: GoogleSafeBrowsing
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url: ${inputs.Malicious URL}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 619
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+    type: regular
+    task:
+      id: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+      version: -1
+      name: False Positive
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value: False Positive - found non-malicious URL as malicious
+    view: |-
+      {
+        "position": {
+          "x": 891,
+          "y": 524
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 73453e00-4e03-4639-8151-35aba065a287
+    type: regular
+    task:
+      id: 73453e00-4e03-4639-8151-35aba065a287
+      version: -1
+      name: Manual troubleshooting needed
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 891,
+          "y": 1121
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 4edc7a0e-66aa-4798-885a-ec83262013a8
+    type: condition
+    task:
+      id: 4edc7a0e-66aa-4798-885a-ec83262013a8
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 794
+        }
+      }
+  "8":
+    id: "8"
+    taskid: dfc74289-ba9a-4db9-8968-0997d329522b
+    type: regular
+    task:
+      id: dfc74289-ba9a-4db9-8968-0997d329522b
+      version: -1
+      name: Closing incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1121
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a046faf5-289a-4fa8-8df5-aa14f20e9c0a
+    type: regular
+    task:
+      id: a046faf5-289a-4fa8-8df5-aa14f20e9c0a
+      version: -1
+      name: False Negative
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value: Did not found malicious URL
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 955
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1166,
+        "width": 821,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Malicious URL
+  value: http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
+  description: ""
+- key: Non malicious URL
+  value: http://google.com
+  description: ""

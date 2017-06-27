@@ -42,7 +42,7 @@ script: |
           if (isNaN(i)) {
               return {ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'filter is not a number'};
           }
-          if i < 0 {
+          if (i < 0) {
               i = args.data.length + (i % args.data.length);
           }
           ec[args.out] = args.data[i];
