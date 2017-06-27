@@ -1,16 +1,27 @@
 commonfields:
-  id: ef9edd54-0580-4945-8f06-f43dfb69fb20
-  version: 20
+  id: D2Execute
+  version: -1
 name: D2Execute
 script: |-
+  #Add new system(computer) to the incident to use it in the incident.
   demisto.results(demisto.executeCommand("addSystem", {"name":demisto.args()["name"], "host":demisto.args()["host"],
   "username":demisto.args()["username"], "password":demisto.args()["password"], "os":demisto.args()["os"]}))
+
   demisto.results("Installing Agent...")
+  #Push D2 agent to system that was created with the command before.
   demisto.results(demisto.executeCommand("d2_install", {"system":demisto.args()["name"]}))
+
+
   demisto.results("Running script...")
+  #Run automation on this D2 agent.
   demisto.results(demisto.executeCommand(demisto.args()["scriptName"], {"id":demisto.args()["name"], "using":demisto.args()["name"]}))
 type: python
 tags: []
+comment: |-
+  This automation is an example on how D2 agent can be used in a playbook.
+  First of all, it creates new System in Demisto with hostname and credentials that are provided as arguments to the automation.
+  Then, it installs the D2 agent on this system(host).
+  And finally, it run Automation on this system(host).
 enabled: true
 args:
 - name: name
