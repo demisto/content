@@ -43,7 +43,7 @@ echo "update server with branch content"
 
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
 echo "###1"
-scp -r bundle ${USER}@${PUBLIC_IP}:~/content
+scp -r bundle/* ${USER}@${PUBLIC_IP}:~/content
 
 echo "###2"
 # override exiting content with current
