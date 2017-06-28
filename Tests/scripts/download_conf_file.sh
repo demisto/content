@@ -3,17 +3,25 @@
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/$CIRCLE_BRANCH/conf.json" -o conf.json
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=CIRCLE_BRANCH" -o conf.json
 
 echo "MIDDLE"
 cat ./conf.json
 echo "#################"
 
-curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+NOT_FOUND_MESSAGE=$(cat ./conf.json | jq '.message')
+echo "NOT_FOUND_MESSAGE=$NOT_FOUND_MESSAGE"
+
+if [ NOT_FOUND_MESSAGE == "Not Found" ]
+  then
+    echo "branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
+
+    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o conf.json
 
-echo "END"
-cat ./conf.json
-echo "#################"
+    echo "END"
+    cat ./conf.json
+    echo "#################"
+fi
 
 echo "Successfully downloaded configuration file"
