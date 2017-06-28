@@ -20,7 +20,7 @@ INSTALLER=$(ls demistoserver*.sh)
 USER="centos"
 INSTALL_COMMAND="yum"
 
-EXP_FILE="./Tests/scripts/installer_commands-centos.exp"
+EXP_FILE="./Tests/scripts/installer_commands.exp"
 
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'

@@ -26,6 +26,6 @@ send -- "\r"
 expect -exact "Is this configuration OK? \[yes no\] "
 send -- "yes\r"
 expect -exact "Start the server? \[yes no\] "
-send -- "no\r"
+send -- "yes\r"
 expect -exact "Finished Successfully."
 expect eof
