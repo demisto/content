@@ -1,20 +1,20 @@
 test:
   pre:
     # install python client
-    - pip install git+https://github.com/demisto/demisto-py.git@test-content
+    #- pip install git+https://github.com/demisto/demisto-py.git@test-content
 
     # create content bundle
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
+    #- mkdir bundle
+    #- cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    #- cp Integrations/* bundle/
+    #- cp Misc/* bundle/
+    #- cp Playbooks/* bundle/
+    #- cp Reports/* bundle/
 
-    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
-    - cp $(find Scripts -type f -print) bundle/
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    #- if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
+    #- cp $(find Scripts -type f -print) bundle/
+    #- cd bundle/ && zip ../content.zip *
+    #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     # validate yaml
     #- chmod +x ./Tests/yamlvalidator
