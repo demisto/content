@@ -47,7 +47,7 @@ scp -r bundle/* ${USER}@${PUBLIC_IP}:~/content
 
 echo "###2"
 # override exiting content with current
-COPY_CONTENT_COMMAND="sudo yes | cp -rf ~/content/* /usr/local/demisto/res/"
+COPY_CONTENT_COMMAND="sudo cp ~/content/* /usr/local/demisto/res/"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "wait for server to start on ip $PUBLIC_IP"
