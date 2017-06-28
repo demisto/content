@@ -94,12 +94,13 @@ script:
             malFile[o.type.toUpperCase()] = hash;
             addMalicious(ec, outputPaths.file, malFile);
         }
-        var md = '## X-Force Hash Reputation for: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
+        var md = '## X-Force Hash Reputation for: ' + hash + '\n';
         md += 'Type: **' + o.type + '**\n';
         md += 'Risk: **' + o.risk + '**\n';
         md += 'Created: **' + o.created + '**\n';
         md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\n';
         md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr) {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A') + '**\n';
+        md += 'XFE Link: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
         if (longFormat === 'true' && o.origins) {
             if (o.origins.CnCServers && o.origins.CnCServers.rows) {
                 md += '### CNC Servers\n';
@@ -151,12 +152,13 @@ script:
             dbotScore = 1;
         }
         ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force IP Reputation for: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
+        var md = '## X-Force IP Reputation for: ' + ip + '\n';
         md += 'Score: **' + o.score + '**\n';
         md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
         md += 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\n';
         md += 'Reason: **' + o.reason + '**\n';
         md += 'Reason description: **' + o.reasonDescription + '**\n';
+        md += 'XFE Link: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
         if (o.subnets) {
             md += '### Subnets\n';
             md += arrToMd(o.subnets) + '\n';
@@ -212,10 +214,11 @@ script:
             dbotScore = 1;
         }
         ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force URL Reputation for: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + url + ')\n';
+        var md = '## X-Force URL Reputation for: ' + url + '\n';
         if (o.result) {
             md += 'Score: **' + o.result.score + '**\n';
             md += 'Categories: **' + Object.keys(o.result.cats).join(', ') + '**\n';
+            md += 'XFE Link: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(url) + ')\n';
         } else {
             md += 'No result found';
         }

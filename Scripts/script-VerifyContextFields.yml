@@ -1,0 +1,34 @@
+commonfields:
+  id: ed24d63f-4134-49c4-82c0-96885a7a1cc3
+  version: 9
+name: VerifyContextFields
+script: |
+  var fields = [args.field1, args.field2, args.field3, args.field4];
+  var values = [args.value1, args.value2, args.value3, args.value4];
+
+  for (i = 0; i < fields.length; i++) {
+      if (fields[i] !== undefined) {
+          if (values[i] !== undefined) {
+              verifyContextField(fields[i], values[i]);
+              log('Verified: ' + fields[i] + ' == ' + values[i]);
+          } else {
+              verifyContextField(fields[i]);
+              log('Verified field existence: ' + fields[i]);
+          }
+      }
+  }
+type: javascript
+tags:
+- Utility
+enabled: true
+args:
+- name: field1
+  default: true
+- name: value1
+- name: field2
+- name: value2
+- name: field3
+- name: value3
+- name: field4
+- name: value4
+scripttarget: 0
