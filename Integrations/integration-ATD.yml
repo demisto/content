@@ -109,11 +109,10 @@ script:
         if ((reportSummary) && (reportSummary.Subject)) {
             var subject = reportSummary.Subject;
             context = { DBotScore: {Vendor: 'McAfee-Advanced-Threat-Defense', Score: 0 }};
-
-            if ( subject.FileType === 0 ) {//file
+            if ( subject.FileType ) {//file
                 context.DBotScore.Indicator = subject.md5;
                 context.DBotScore.Type = 'hash';
-                if (subject.Verdict.Severity > 3) {
+                if (reportSummary.Verdict.Severity > 3) {
                     context.DBotScore.Score = 3;
                     addMalicious(context, outputPaths.file, {
                         Type : subject.Type,
@@ -123,13 +122,14 @@ script:
                         Size : subject.size,
                         Name : subject.Name,
                         Malicious: {Vendor: 'McAfee-Advanced-Threat-Defense',
-                            Description: 'Severity: ' + subject.Verdict.Severity}
+                            Description: 'Severity: ' + reportSummary.Verdict.Severity}
                     });
                 } else {
                     context.DBotScore.Score = 1;
                 }
             }
         }
+
         return context;
     };
 
