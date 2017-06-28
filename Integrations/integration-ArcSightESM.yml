@@ -410,9 +410,5 @@ script:
       required: true
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
-  - name: as-koko
-    arguments:
-    - name: moo
-      required: true
   isfetch: true
 hidden: false
