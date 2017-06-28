@@ -20,16 +20,17 @@ script: |
   }
 
   var uniqueMatches = Object.keys(matches);
-  var emailContext = { Account: { Email: [] } };
+  var emailContext = {};
+  emailContext[outputPaths.email] = [];
   var md = '### Extract Email\n';
   for (var i = 0; i < uniqueMatches.length; i++) {
-      emailContext.Account.Email.push(uniqueMatches[i]);
+      emailContext[outputPaths.email].push({ Address: uniqueMatches[i] });
       md += '- ' + uniqueMatches[i] + '\n';
   }
 
   return {
       Type: entryTypes.note,
-      Contents: emailContext.Account.Email,
+      Contents: emailContext[outputPaths.email],
       ContentsFormat: formats.json,
       HumanReadable: md,
       EntryContext: emailContext
@@ -46,6 +47,6 @@ args:
   default: true
   description: The text to extract Emails from. If object will convert to JSON.
 outputs:
-- contextPath: Account.Email
-  description: Extracted URLs
+- contextPath: Account.Email.Address
+  description: Extracted emails
 scripttarget: 0

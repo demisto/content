@@ -25,7 +25,7 @@ script: |-
   var md = '### Extract IP\n';
   for (var i=0; i < uniqueMatches.length; i++) {
       if (isValidIP(uniqueMatches[i])) {
-          ec[outputPaths.ip]push({Address: uniqueMatches[i]});
+          ec[outputPaths.ip].push({Address: uniqueMatches[i]});
           md += '- ' + uniqueMatches[i] + '\n';
       }
   }

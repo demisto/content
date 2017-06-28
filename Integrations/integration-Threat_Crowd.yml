@@ -40,10 +40,10 @@ script:
             },
             translator: [
                 {to: 'ThreatCrowd-Domains', from: 'domains'},
-                {to: 'Email', from: 'email'},
+                {to: 'Address', from: 'email'},
                 {to: 'Type', from: 'type'},
             ],
-            contextKey: 'Account(val.Email==obj.Email)',
+            contextKey: 'Account.Email(val.Address==obj.Address)',
         },
         'threat-crowd-domain': {
             url: 'domain',
@@ -204,7 +204,7 @@ script:
       default: true
       description: Email to get report of
     outputs:
-    - contextPath: Account.Email
+    - contextPath: Account.Email.Address
       description: The email in threat crowd
     - contextPath: Account.Type
       description: Email type
