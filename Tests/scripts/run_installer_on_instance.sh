@@ -18,7 +18,6 @@ echo ${PUBLIC_IP} > public_ip
 INSTALLER=$(ls demistoserver*.sh)
 
 USER="centos"
-INSTALL_COMMAND="yum"
 
 EXP_FILE="./Tests/scripts/installer_commands.exp"
 
@@ -32,13 +31,20 @@ echo "copy installer file"
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
 echo "get installer and run installation script"
-SSH_COMMAND="cd ~/installer_files \
-    && sudo ${INSTALL_COMMAND} install -y -q expect less \
+INSTALL_COMMAND="cd ~/installer_files \
+    && sudo yum install -y -q expect less \
     && chmod +x installer.sh \
     && sudo expect installer_commands.exp"
-ssh -t ${USER}@${PUBLIC_IP} ${SSH_COMMAND}
+ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND}
 
-echo "wait for server to start"
+echo "Server is ready to start!"
+
+START_SERVER_COMMAND="sudo systemctl start demisto"
+ssh -t ${USER}@${PUBLIC_IP} ${START_SERVER_COMMAND}
+
+
+echo "wait for server to start on ip $PUBLIC_IP"
+
 wget --retry-connrefused --no-check-certificate -T 60 "https://${PUBLIC_IP}:443"
 
 echo "server started!"

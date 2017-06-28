@@ -40,6 +40,9 @@ test:
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
+    # start server
+    - ./Tests/scripts/start_server.sh
+
     # run tests
     - ./Tests/scripts/run_tests.sh
 
