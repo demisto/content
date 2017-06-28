@@ -11,7 +11,7 @@ test:
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
 
-    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp /TestPlaybooks/* bundle/ ; fi
+    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
     - cp content-descriptor.json bundle/
     - cp $(find Scripts -type f -print) bundle/
     - cd bundle/ && zip ../content.zip *
@@ -24,8 +24,8 @@ test:
     #- ./Tests/ensurefilenames.sh
 
     # download conf file
-    #- chmod +x ./Tests/scripts/download_conf_file.sh
-    #- ./Tests/scripts/download_conf_file.sh
+    - chmod +x ./Tests/scripts/download_conf_file.sh
+    - ./Tests/scripts/download_conf_file.sh
 
     # configure installer commands
     #- chmod +x ./Tests/scripts/configure_installer_commands.sh
