@@ -3,7 +3,7 @@
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=CIRCLE_BRANCH" -o conf.json
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o conf.json
 
 echo "MIDDLE"
 cat ./conf.json
