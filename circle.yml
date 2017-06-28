@@ -3,8 +3,19 @@ test:
     # install python client
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
-    - chmod +x ./Tests/scripts/*
-    - ./Tests/scripts/create_content_artifact.sh
+    # create content bundle
+    - mkdir bundle
+    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    - cp Integrations/* bundle/
+    - cp Misc/* bundle/
+    - cp Playbooks/* bundle/
+    - cp Reports/* bundle/
+
+    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp /TestPlaybooks/* bundle/ ; fi
+    - cp content-descriptor.json bundle/
+    - cp $(find Scripts -type f -print) bundle/
+    - cd bundle/ && zip ../content.zip *
+    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     # validate yaml
     #- chmod +x ./Tests/yamlvalidator
@@ -37,5 +48,5 @@ test:
     # ./Tests/scripts/run_tests.sh
 
     # terminate instance
-    - chmod +x ./Tests/scripts/destroy_instances.sh
-    - ./Tests/scripts/destroy_instances.sh
+    #- chmod +x ./Tests/scripts/destroy_instances.sh
+    #- ./Tests/scripts/destroy_instances.sh
