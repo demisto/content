@@ -24,10 +24,7 @@ EXP_FILE="./Tests/scripts/installer_commands.exp"
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
-echo "copy exp file"
 scp ${EXP_FILE} ${USER}@${PUBLIC_IP}:~/installer_files/installer_commands.exp
-
-echo "copy installer file"
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
 echo "get installer and run installation script"
@@ -42,6 +39,16 @@ echo "Server is ready to start!"
 START_SERVER_COMMAND="sudo systemctl start demisto"
 ssh -t ${USER}@${PUBLIC_IP} ${START_SERVER_COMMAND}
 
+echo "update server with branch content"
+
+ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
+echo "###1"
+scp -r bundle ${USER}@${PUBLIC_IP}:~/content
+
+echo "###2"
+# override exiting content with current
+COPY_CONTENT_COMMAND="sudo yes | cp -rf ~/content/* /usr/local/demisto/res/"
+ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "wait for server to start on ip $PUBLIC_IP"
 
