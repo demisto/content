@@ -68,7 +68,6 @@ script:
       obj['properties_to_append'] = ['Compromised'];
       context[path] = obj;
     }
-    var personsOutputPath= 'Persons(val.Emails && val.Emails == obj.Emails)';
 
     var emailToEc = function(email,obj) {
         var compSites = [];
@@ -78,8 +77,8 @@ script:
         compSites = compSites.sort();
         var compEmail = {};
         if (compSites.length > 0) {
-            addCompromised(compEmail, personsOutputPath, {
-                'Emails': email,
+            addCompromised(compEmail, outputPaths.email, {
+                'Address': email,
                 'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
             });
         }
@@ -130,12 +129,12 @@ script:
       default: true
       description: Email to check
     outputs:
-    - contextPath: Persons.Compromised.Vendor
+    - contextPath: Account.Email.Compromised.Vendor
       description: For comporomised emails, the vendor that made the decision
-    - contextPath: Persons.Compromised.Reason
+    - contextPath: Account.Email.Reason
       description: For comporomised emails, the reason for the vendor to make the
         compromised decision
-    - contextPath: Persons.Emails
+    - contextPath: Account.Email.Address
       description: Email address
     important:
     - contextPath: Persons(val.Compromised)
