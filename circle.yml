@@ -3,16 +3,8 @@ test:
     # install python client
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
-    # create content artifact
-    #- mkdir bundle
-    #- cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    #- cp Integrations/* bundle/
-    #- cp Misc/* bundle/
-    #- cp Playbooks/* bundle/
-    #- cp Reports/* bundle/
-    #- cp $(find Scripts -type f -print) bundle/
-    #- cd bundle/ && zip ../content.zip *
-    #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    - chmod +x ./Tests/scripts/*
+    - ./Tests/scripts/create_content_artifact.sh
   override:
     # validate yaml
     #- chmod +x ./Tests/yamlvalidator
@@ -21,28 +13,29 @@ test:
     #- ./Tests/ensurefilenames.sh
 
     # download conf file
-    - chmod +x ./Tests/scripts/download_conf_file.sh
-    - ./Tests/scripts/download_conf_file.sh
+    #- chmod +x ./Tests/scripts/download_conf_file.sh
+    #- ./Tests/scripts/download_conf_file.sh
 
     # configure installer commands
-    - chmod +x ./Tests/scripts/configure_installer_commands.sh
-    - ./Tests/scripts/configure_installer_commands.sh
+    #- chmod +x ./Tests/scripts/configure_installer_commands.sh
+    #- ./Tests/scripts/configure_installer_commands.sh
 
     # get installer from server
-    - chmod +x ./Tests/scripts/server_get_artifact.sh
-    - ./Tests/scripts/server_get_artifact.sh
+    #- chmod +x ./Tests/scripts/server_get_artifact.sh
+    #- ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
-    - chmod +x ./Tests/scripts/create_instance.sh
-    - ./Tests/scripts/create_instance.sh
+    #- chmod +x ./Tests/scripts/create_instance.sh
+    #- ./Tests/scripts/create_instance.sh
 
     # run installer
-    - chmod +x ./Tests/scripts/run_installer_on_instance.sh
-    - ./Tests/scripts/run_installer_on_instance.sh
+    #- chmod +x ./Tests/scripts/run_installer_on_instance.sh
+    #- ./Tests/scripts/run_installer_on_instance.sh
 
     # run tests
-    #- python ./Tests/test.py
+    # chmod +x ./Tests/scripts/run_tests.sh
+    # ./Tests/scripts/run_tests.sh
 
     # terminate instance
-    #- chmod +x ./Tests/scripts/destroy_instances.sh
-    #- ./Tests/scripts/destroy_instances.sh
+    - chmod +x ./Tests/scripts/destroy_instances.sh
+    - ./Tests/scripts/destroy_instances.sh
