@@ -1,51 +1,52 @@
 test:
   pre:
     # install python client
-    #- pip install git+https://github.com/demisto/demisto-py.git@test-content
+    - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
     # create content bundle
-    #- mkdir bundle
-    #- cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    #- cp Integrations/* bundle/
-    #- cp Misc/* bundle/
-    #- cp Playbooks/* bundle/
-    #- cp Reports/* bundle/
+    - mkdir bundle
+    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    - cp Integrations/* bundle/
+    - cp Misc/* bundle/
+    - cp Playbooks/* bundle/
+    - cp Reports/* bundle/
 
-    #- if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
-    #- cp $(find Scripts -type f -print) bundle/
-    #- cd bundle/ && zip ../content.zip *
-    #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
+    - cp $(find Scripts -type f -print) bundle/
+    - cd bundle/ && zip ../content.zip *
+    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     # validate yaml
-    #- chmod +x ./Tests/yamlvalidator
-    #- ./Tests/yamlvalidator
-    #- chmod +x ./Tests/ensurefilenames.sh
-    #- ./Tests/ensurefilenames.sh
+    - chmod +x ./Tests/yamlvalidator
+    - ./Tests/yamlvalidator
+    - chmod +x ./Tests/ensurefilenames.sh
+    - ./Tests/ensurefilenames.sh
+
+    - chmod +x ./Tests/scripts/*
 
     # download conf file
-    - chmod +x ./Tests/scripts/download_conf_file.sh
     - ./Tests/scripts/download_conf_file.sh
 
     # configure installer commands
     #- chmod +x ./Tests/scripts/configure_installer_commands.sh
-    #- ./Tests/scripts/configure_installer_commands.sh
+    - ./Tests/scripts/configure_installer_commands.sh
 
     # get installer from server
     #- chmod +x ./Tests/scripts/server_get_artifact.sh
-    #- ./Tests/scripts/server_get_artifact.sh
+    - ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
     #- chmod +x ./Tests/scripts/create_instance.sh
-    #- ./Tests/scripts/create_instance.sh
+    - ./Tests/scripts/create_instance.sh
 
     # run installer
     #- chmod +x ./Tests/scripts/run_installer_on_instance.sh
-    #- ./Tests/scripts/run_installer_on_instance.sh
+    - ./Tests/scripts/run_installer_on_instance.sh
 
     # run tests
-    # chmod +x ./Tests/scripts/run_tests.sh
-    # ./Tests/scripts/run_tests.sh
+    #- chmod +x ./Tests/scripts/run_tests.sh
+    - ./Tests/scripts/run_tests.sh
 
     # terminate instance
     #- chmod +x ./Tests/scripts/destroy_instances.sh
-    #- ./Tests/scripts/destroy_instances.sh
+    - ./Tests/scripts/destroy_instances.sh

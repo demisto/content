@@ -9,7 +9,7 @@ NOT_FOUND_MESSAGE=$(cat ./conf.json | jq '.message')
 
 if [ ! -z NOT_FOUND_MESSAGE ]
   then
-    echo "branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
+    echo "Branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
     echo "Got message from github=$NOT_FOUND_MESSAGE"
 
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
