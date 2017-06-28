@@ -198,7 +198,7 @@ script:
             return JSON.stringify(incidents);
         case 'qr-offenses':
         case 'qradar-offenses':
-            return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offeneses', headers);
+            return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offenses', headers);
         case 'qr-get-assets':
         case 'qradar-get-assets':
             return addHumanRedable(getAssets(args.filter, args.fields, args.range), 'QRadar get assets', headers);
