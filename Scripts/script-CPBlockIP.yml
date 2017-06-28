@@ -78,6 +78,7 @@ tags:
 - response
 comment: Block one or more IP addresses using Checkpoint Firewall.
 system: true
+deprecated: true
 args:
 - name: ip
   required: true

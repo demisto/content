@@ -56,3 +56,4 @@ dependson:
   must:
   - splunk|||search
 timeout: 0s
+deprecated: true

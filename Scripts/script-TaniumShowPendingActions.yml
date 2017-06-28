@@ -101,7 +101,22 @@ script: |
           for (var i=0; i < savedActions.length; i++)
               entry.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
 
-          entry.HumanReadable = tableToMarkdown("Tanium pending actions", entry.Contents, null);
+          entry.HumanReadable = tableToMarkdown("Tanium pending actions", cleanObject(entry.Contents), null);
+          savedActions = cleanObject(savedActions);
+          var actionsForContext = [];
+          for (var s in savedActions) {
+            actionsForContext.push({
+              State: "Pending",
+              Name: savedActions[s].name,
+              Comment: savedActions[s].comment,
+              AvailableTime: savedActions[s].package_spec.available_time,
+              ID: savedActions[s].package_spec.id,
+              PackageName: savedActions[s].package_spec.name
+            });
+          }
+          entry.EntryContext = {
+                    'Tanium.Action(val.ID == obj.ID)': actionsForContext
+                }
           return entry;
       }
   }
@@ -111,11 +126,23 @@ tags:
 comment: Send a request for a formatted result of a saved question. To receive the
   most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
   for more information
-system: true
 args:
 - name: fulljson
   default: true
   description: If true - returns full json for each task instead of a table summary.
+outputs:
+- contextPath: Tanium.Action.Name
+  description: Action name
+- contextPath: Tanium.Action.State
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  description: Tanium package name
+- contextPath: Tanium.Action.PackageID
+  description: Tanium package id
+- contextPath: Tanium.Action.AvailableTime
+  description: Tanium available time
 scripttarget: 0
 dependson:
   must:

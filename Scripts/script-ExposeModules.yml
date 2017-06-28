@@ -10,6 +10,7 @@ type: javascript
 tags:
 - Utility
 system: true
+deprecated: true
 args:
 outputs:
 - contextPath: ConfiguredModules.instance

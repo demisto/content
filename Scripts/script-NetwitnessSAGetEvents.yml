@@ -24,8 +24,8 @@ script: |
           demisto.results("No results.")
 type: python
 tags:
-- RSA Netwitness Security Analytics
-comment: Returns all the RSA Netwitness SA events in the defined time range
+- RSA NetWitness Security Analytics
+comment: Returns all the RSA NetWitness SA events in the defined time range
 system: true
 args:
 - name: timeRangeType

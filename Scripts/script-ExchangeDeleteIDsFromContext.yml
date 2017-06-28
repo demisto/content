@@ -50,3 +50,4 @@ dependson:
   must:
   - ews-delete-items
 timeout: 0s
+deprecated: true
