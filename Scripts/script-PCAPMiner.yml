@@ -88,4 +88,4 @@ args:
 scripttarget: 0
 timeout: 360ns
 dockerimage: trorabaugh/dempcap:1.0
-system:true
+system: true
