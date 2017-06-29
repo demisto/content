@@ -13,7 +13,7 @@ IMAGE_ID="ami-d2c924b2" # centos
 #create instance
 INSTANCE_ID=$(aws ec2 run-instances \
     --image-id ${IMAGE_ID} \
-    --security-group-ids sg-714f3816 \
+    --security-group-ids sg-92758ae8 \
     --instance-type t2.micro \
     --key-name ci-key \
     --instance-initiated-shutdown-behavior terminate \
