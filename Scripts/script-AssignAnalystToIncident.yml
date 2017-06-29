@@ -35,7 +35,7 @@ script: |
       if (!isError(res[0])) {
           return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
       } else {
-          return 'User \'' + userToAssign + '\' was not found.'
+          return 'User \'' + userToAssign + '\' was not found.';
       }
   } else {
       return 'No user found.';
