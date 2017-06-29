@@ -40,10 +40,13 @@ test:
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
+    # wait for server to finish loading - TODO - replace with script that waits to server finish loading (status 433)
+    - sleep 5m
+
     # run tests
     - ./Tests/scripts/run_tests.sh
 
-    - sleep 60m
+    #- ./Test/script/sleep.sh
 
     # terminate instance
     - ./Tests/scripts/destroy_instances.sh
