@@ -34,21 +34,21 @@ INSTALL_COMMAND="cd ~/installer_files \
     && sudo expect installer_commands.exp"
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND}
 
-echo "Server is ready to start!"
-
-START_SERVER_COMMAND="sudo systemctl start demisto"
-ssh -t ${USER}@${PUBLIC_IP} ${START_SERVER_COMMAND}
+echo "server is ready to start!"
 
 echo "update server with branch content"
 
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
-echo "###1"
 scp -r bundle/* ${USER}@${PUBLIC_IP}:~/content
 
-echo "###2"
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo cp ~/content/* /usr/local/demisto/res/"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
+
+echo "start server"
+
+START_SERVER_COMMAND="sudo systemctl start demisto"
+ssh -t ${USER}@${PUBLIC_IP} ${START_SERVER_COMMAND}
 
 echo "wait for server to start on ip $PUBLIC_IP"
 
