@@ -10,7 +10,7 @@ curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: 
 
 NOT_FOUND_MESSAGE=$(cat ./conf.json | jq '.message')
 
-if [ ! -z NOT_FOUND_MESSAGE ]
+if [ ! -z $NOT_FOUND_MESSAGE ] && [ $NOT_FOUND_MESSAGE -ne 'null' ]
   then
     echo "Branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
     echo "Got message from github=$NOT_FOUND_MESSAGE"
@@ -20,9 +20,5 @@ if [ ! -z NOT_FOUND_MESSAGE ]
 fi
 
 cat "$CONF_PATH"
-
-echo "####"
-
-cat ./conf.json
 
 echo "Successfully downloaded configuration file"

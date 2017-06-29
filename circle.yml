@@ -17,7 +17,6 @@ test:
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     - chmod +x ./Tests/scripts/*
-    - ls
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
