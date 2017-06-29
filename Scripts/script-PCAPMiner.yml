@@ -1,0 +1,100 @@
+commonfields:
+  id: 56983cc2-c987-43a6-8abd-fb3c745964c7
+  version: -1
+name: PCAPMiner
+script: |
+  #!/usr/bin/env python2.7
+  # -*- coding: utf8 -*-
+
+  import os
+  import dpkt
+  import cymruwhois
+  import simplejson as json
+
+  dir_path = os.path.dirname(os.path.realpath(__file__))
+  listdir = os.listdir(dir_path)
+  os.chdir('/app/pcapminey')
+  dir_path = os.path.dirname(os.path.realpath(__file__))
+  listdir = os.listdir(dir_path)
+  path = "/app/pcapminey/"
+  if path not in sys.path:
+      sys.path.append(path)
+
+  from core.Dispatcher import Dispatcher
+  from minepcaps import pcap_miner
+
+  os.popen('rm -f ./output/*')
+
+  filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId'] })
+  readyPath = filePath[0]["Contents"]["path"]
+  ret = []
+  filename = filePath[0]["Contents"]["name"]
+  rPath = '/var/lib/demisto/' + readyPath
+  miner = pcap_miner(rPath)
+  jsonResults = miner.summary2json()
+  pyResults = json.loads(jsonResults)
+
+
+
+  from shutil import copyfile
+
+  def saveFileResult(filename, data):
+      temp = demisto.uniqueFile()
+      #newFileName = demisto.investigation()['id'] + '_' + temp
+      with open('/var/lib/demisto/' + demisto.investigation()['id'] + '_' + temp,'wb') as f:
+          f.write(data)
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+
+  dispatcher = Dispatcher(rPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
+  results = dispatcher.run()
+  pyResults['files_found'] = results.filenamelist
+
+  listdir = os.listdir('./output')
+
+  if(pyResults["counts"]):
+      displayData = tableToMarkdown('PCAP Data Frequency Counts', pyResults["counts"])
+  if(pyResults["destination_ip_details"]):
+      displayData += tableToMarkdown('Destination IP Details', pyResults["destination_ip_details"])
+  if(pyResults["dns_data"]):
+      displayData += tableToMarkdown('DNS Details', pyResults["dns_data"])
+  if(pyResults["http_requests"]):
+      displayData += tableToMarkdown('Http Requests', pyResults["http_requests"])
+  if(pyResults["flows"]):
+      displayData += tableToMarkdown('Flow Data', pyResults["flows"])
+  if(pyResults["files_found"]):
+      mdTableList = []
+      for fileFound in pyResults["files_found"]:
+          mdTableList.append({'Files Found': fileFound})
+
+      displayData += tableToMarkdown('Files Add', mdTableList)
+
+  import glob
+  ouputPath = './output/*'
+  files=glob.glob(ouputPath)
+  import os
+  fileCounter = 0
+
+  for file in files:
+      f=open(file,  mode='r')
+      tmpLines = f.readlines()
+      fdata = f.read()
+      filename = file.replace("./output/","")
+      fileNameCount = "file_" + str(fileCounter)
+      fileCounter += 1
+      demisto.results(saveFileResult(filename,"".join(tmpLines)))
+      f.close()
+
+  demisto.results({'Type': entryTypes['note'], 'Contents': pyResults, 'EntryContext': {'pcap_results': pyResults}, 'ContentsFormat': formats['json'], 'HumanReadable': displayData})
+type: python
+tags:
+- enhancement
+enabled: true
+args:
+- name: entryId
+  required: true
+  default: true
+  description: Enter the EntryID of the file
+scripttarget: 0
+timeout: 360ns
+dockerimage: trorabaugh/dempcap:1.0
+system: true
