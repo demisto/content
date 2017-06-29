@@ -3,7 +3,7 @@
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
 
 CONF_PATH="./conf.json"
-echo CONF_PATH > conf_path
+echo ${CONF_PATH} > conf_path
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$CONF_PATH"
