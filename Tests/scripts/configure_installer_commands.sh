@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-ADMIN_CREDENTIALS=$(cat ./conf.json | jq '.admin')
+ADMIN_PASSWORD=$(cat ./conf.json | jq '.adminPassword')
 
 # remove quotes from cred
-temp="${ADMIN_CREDENTIALS%\"}"
+temp="${ADMIN_PASSWORD%\"}"
 temp="${temp#\"}"
-ADMIN_CREDENTIALS=$temp
+ADMIN_PASSWORD=$temp
+
+echo ${ADMIN_PASSWORD} > admin_password
 
 # create exp of password
-ADMIN_EXP=$(echo $ADMIN_CREDENTIALS | sed -e 's/\(.\)/send -- "\1"\nexpect -exact "*"\n/g' | sed ':a $!{N; ba}; s/\n/\\n/g')
+ADMIN_EXP=$(echo $ADMIN_PASSWORD | sed -e 's/\(.\)/send -- "\1"\nexpect -exact "*"\n/g' | sed ':a $!{N; ba}; s/\n/\\n/g')
 
 sed -i "s/<PASSWORD>/$ADMIN_EXP/g" ./Tests/scripts/installer_commands.exp
 
