@@ -19,4 +19,10 @@ if [ ! -z NOT_FOUND_MESSAGE ]
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o "$CONF_PATH"
 fi
 
+cat "$CONF_PATH"
+
+echo "####"
+
+cat ./conf.json
+
 echo "Successfully downloaded configuration file"
