@@ -1,5 +1,5 @@
 import time
-from pprint import pformat
+from pprint import pformat, pprint
 import uuid
 import urllib
 
@@ -32,6 +32,8 @@ def __get_integration_config(client, integration_name):
     })
 
     res = res.json()
+    print ('Res= ')
+    pprint(res)
     all_configurations = res['configurations']
     print "##### conf len=" + str(len(all_configurations))
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
@@ -194,6 +196,7 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # return True if playbook completed successfully
 def test_integration(client, integration_name, integration_params, playbook_id, options={}):
     # create integration instance
+    print('Test integration: ' + integration_name + ' with playbook: ' + playbook_id)
     instance_id = __create_integration_instance(client, integration_name, integration_params)
 
     if not instance_id:

@@ -26,10 +26,6 @@ def main():
     if not (username and password and server):
         raise ValueError('You must provide server user & password arguments')
 
-    print("username - " + username)
-    print("password - " + password)
-    print("server - " + server)
-    print("conf - " + conf)
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
     if res.status_code is not 200:
@@ -45,10 +41,10 @@ def main():
     all_completed = True
     for integration in integrations:
         test_options = {
-            'timeout': integration['timeout'] if 'timeout' in integration else conf['testTimeout'],
+            'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout'),
             'interval': conf['testInterval']
         }
-        all_completed = all_completed and test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options)
+        all_completed = test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options) and all_completed
 
     if not all_completed:
         sys.exit(1)
