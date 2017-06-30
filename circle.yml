@@ -41,7 +41,7 @@ test:
     - ./Tests/scripts/run_installer_on_instance.sh
 
     # wait for server to finish loading
-    - ./Test/script/wait_until_server_ready.sh
+    - ./Tests/scripts/wait_until_server_ready.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh
