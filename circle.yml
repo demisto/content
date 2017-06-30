@@ -46,7 +46,7 @@ test:
     # run tests
     - ./Tests/scripts/run_tests.sh
 
-    #- ./Test/script/sleep.sh
+    ./Test/script/sleep.sh
 
     # terminate instance
     - ./Tests/scripts/destroy_instances.sh
