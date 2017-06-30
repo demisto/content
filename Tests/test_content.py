@@ -29,7 +29,7 @@ def main():
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
     if res.status_code is not 200:
-        raise ValueError("Login has failed")
+        raise ValueError("Login has failed with status code " + str(res.status_code))
 
     with open(conf) as data_file:
         conf = json.load(data_file)
