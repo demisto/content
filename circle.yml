@@ -40,13 +40,8 @@ test:
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
-    # wait for server to finish loading
-    - ./Tests/scripts/wait_until_server_ready.sh
-
     # run tests
     - ./Tests/scripts/run_tests.sh
-
-    - ./Tests/scripts/sleep.sh
 
     # terminate instance
     - ./Tests/scripts/destroy_instances.sh

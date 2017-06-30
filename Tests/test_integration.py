@@ -1,5 +1,5 @@
 import time
-from pprint import pformat, pprint
+from pprint import pformat
 import uuid
 import urllib
 
@@ -32,10 +32,7 @@ def __get_integration_config(client, integration_name):
     })
 
     res = res.json()
-    print ('Res= ')
-    pprint(res)
     all_configurations = res['configurations']
-    print "##### conf len=" + str(len(all_configurations))
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
     if not match_configurations or len(match_configurations) == 0:
