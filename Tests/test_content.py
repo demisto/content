@@ -44,7 +44,9 @@ def main():
             'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout'),
             'interval': conf['testInterval']
         }
-        all_completed = test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options) and all_completed
+        all_completed = \
+            test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options)\
+            and all_completed
 
     if not all_completed:
         sys.exit(1)
