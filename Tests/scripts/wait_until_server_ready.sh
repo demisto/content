@@ -1,7 +1,6 @@
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
-GET_HTTP_CODE_COMMAND="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL -k"
-GET_HTTP_CODE_COMMAND_SECURE="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL "
+GET_HTTP_CODE_COMMAND="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL/user -k"
 
 NEXT_WAIT_TIME=0
 HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
