@@ -410,8 +410,8 @@ script:
         });
 
         context = {
-            IP: {
-                Address: address,
+            Domain: {
+                Name: domain,
                 DNSHistory: DNSHistoryContext
             }
         }
