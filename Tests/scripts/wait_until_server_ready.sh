@@ -8,8 +8,8 @@ echo "HTTP_CODE = $HTTP_CODE"
 echo "GET_HTTP_CODE_COMMAND_SECURE = $GET_HTTP_CODE_COMMAND_SECURE"
 
 MAX_TRIES=5
-until ["$HTTP_CODE" -eq "200"] || [ $NEXT_WAIT_TIME -eq $MAX_TRIES ]; do
-   sleep 1m
+until ["$HTTP_CODE" -ne "433"] || [ $NEXT_WAIT_TIME -eq $MAX_TRIES ]; do
+   sleep 30s
    ((MAX_TRIES++))
    HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
     echo "HTTP_CODE = $HTTP_CODE"
