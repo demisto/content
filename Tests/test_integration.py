@@ -222,13 +222,15 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
 
         if playbook_state == PB_Status.COMPLETED:
-            print 'Playbook ' + playbook_id + ' succeed'
+            print 'PASS: Playbook ' + playbook_id + ' succeed'
             break
         if playbook_state == PB_Status.FAILED:
+            print_error('FAILED: Integration ' + integration_name + ' has failed with error/s')
             __print_investigation_error(client, playbook_id, investigation_id)
             break
         if time.time() > timeout:
-            print_error('Playbook ' + playbook_id + ' timeout failure')
+            print_error('FAILED: Integration ' + integration_name + ' has failed on timeout')
+            print_error('FAILED: Playbook ' + playbook_id + ' timeout failure')
             break
 
         print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
