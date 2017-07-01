@@ -40,6 +40,8 @@ test:
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
+    - sleep 5m
+
     # run tests
     - ./Tests/scripts/run_tests.sh
 
