@@ -22,3 +22,6 @@ then
     echo "Server is not ready :("
     exit 1
 fi
+
+echo "Server is ready :)"
+
