@@ -1,6 +1,6 @@
 commonfields:
-  id: VerifyContext
-  version: 1
+  id: d98506ea-fd06-49d6-8f1e-bb29ab06766e
+  version: 16
 name: VerifyContext
 script: |-
   var path = args.path;
@@ -8,47 +8,47 @@ script: |-
   var expectedValue = args.expectedValue;
 
   var verifyFields = function(obj) {
-      fields.forEach(function(field) {
-          if(dq(obj, field) === undefined) {
-              throw 'field ' + field + ' is missing from ' + JSON.stringify(obj);
+      fields.forEach(function (field) {
+          if (dq(obj, field) === undefined) {
+              throw 'Field ' + field + ' is missing from ' + JSON.stringify(obj) + '.';
           }
       });
   }
 
   var contextObject = dq(invContext, path);
-  if(contextObject === undefined) {
-        throw 'path ' + path + ' is not in context';
+  if (contextObject === undefined) {
+        throw 'Path ' + path + ' is not in context.';
   }
 
   var isArray = contextObject instanceof Array;
 
-  if(isArray) {
+  if (isArray) {
       contextObject.forEach(verifyFields);
   } else {
       verifyFields(contextObject);
   }
 
-  if(expectedValue) {
+  if (expectedValue) {
       var value;
       try {
          value = JSON.parse(expectedValue);
       } catch (e) {
           value = expectedValue;
       }
-      if(JSON.stringify(value) !== JSON.stringify(contextObject)) {
-          throw 'context path ' + path + ' is not equal to expected value';
+      if (JSON.stringify(value) !== JSON.stringify(contextObject)) {
+          throw ('Context path ' + path + ' is not equal to expected value. Found: ' + JSON.stringify(contextObject) + ', expected: ' + JSON.stringify(value));
       }
   }
 type: javascript
 tags:
 - context
-comment: |+
-  Verify path in context
-  - Verify path existence
-  - If matching object is array - verify fields exists in each object in array
-  - If matching object is not array - verify fields exists in matching object
-  - if 'expectedValue' supplied - ensure that given value equal to context path
-
+- Utilities
+comment: |-
+  Verifies path in context:
+  - Verifies path existence
+  - If matching object is an array: verify fields exists in each of the objects in the array
+  - If matching object is not an array: verify fields exists in matching object
+  - if 'expectedValue' is given: ensure that the given value is equal to the context path
 enabled: true
 args:
 - name: path
@@ -56,7 +56,7 @@ args:
   default: true
   description: Context path (e.g. 'Incidents')
 - name: fields
-  description: Comma separated values to verify that are in context(e.g. 'one,two,three')
+  description: Comma separated values to verify that are in context (e.g. 'one,two,three')
 - name: expectedValue
   description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
     ''{"a": 1, "b": ["hello", "world" ]}'

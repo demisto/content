@@ -1,12 +1,12 @@
 commonfields:
   id: DeleteContext
-  version: 1
+  version: -1
 name: DeleteContext
 script: |
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes')
   if(!shouldDeleteAll && !args.key) {
-      return 'You must specify key or all=true';
+      return 'You must specify key or all=yes';
   }
   if(shouldDeleteAll) {
       fieldsToDelete = Object.keys(invContext);

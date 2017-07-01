@@ -37,6 +37,7 @@
     "investigation.created": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
     "investigation.closed": { "type": "date", "value": "02 Jan 2006" },
     "investigation.openDuration": { "type": "duration" },
+    "incident.openDuration": { "type": "duration" },
     "evidences.occurred": { "type": "date", "value": "02/01/06 3:04:05 PM" },
     "evidences.markedDate": { "type": "date", "value": "02/01/06 3:04:05 PM" },
     "evidences.fetched": { "type": "date", "value": "02/01/06 3:04:05 PM" }

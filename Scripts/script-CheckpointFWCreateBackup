@@ -1,0 +1,79 @@
+commonfields:
+  id: ad7de731-cadc-4f49-81cd-522cd4b7bfa5
+  version: 10
+name: CheckpointFWCreateBackup
+script: |-
+  CLI_ADD = "add backup local"
+  BASH_ADD = '/etc/cli.sh -c "' + CLI_ADD + '"'
+
+  res = []
+  tbl = []
+  devices = demisto.get(demisto.args(), 'devices')
+  devicesBackupStarted = []
+  devicesBackupError = []
+  if not devices:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty device list!"})
+  else:
+      devices = ','.join(devices) if isinstance(devices, list) else devices
+      sshArgs = {"using": devices,
+               "cmd": CLI_ADD
+               }
+      resSSH = demisto.executeCommand("ssh", sshArgs)
+      try:
+          for entry in resSSH:
+              if isError(entry) and not demisto.get(entry, 'Contents.command'):
+                  res += resSSH
+                  break
+              else:
+                  device = entry['ModuleName']
+                  if demisto.get(entry, 'Contents.success'):
+                      output = demisto.get(entry, 'Contents.output')
+                      backFileLoc = output.find("Backup file location")
+                      result = 'Answer returned'
+                      devicesBackupStarted.append({
+                          'DeviceName' : device,
+                          'System' : demisto.get(entry, 'Contents.system'),
+                          'Status': ("Done" if output.find("local backup succeeded.") > -1 else "Pending"),
+                          'Path': (output[backFileLoc, :] if backFileLoc > -1 else None)
+                          })
+                  else:
+                      devicesBackupError.append(device)
+                      output = "Output:\n" + str(demisto.get(entry, 'Contents.output')) + "Error:\n" + str(demisto.get(entry, 'Contents.error'))
+                      result = 'Failed to query'
+
+                  tbl.append({'DeviceName': device, 'System': demisto.get(entry, 'Contents.system'), 'Query result': result, 'Output': output })
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSSH)})
+      demisto.setContext('CheckpointBackup', devicesBackupStarted )
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": tbl})
+  demisto.results(res)
+
+type: python
+tags:
+- checkpoint
+comment: Connect to a checkpoint firewall appliance using SSH and trigger a task to
+  create a configuration backup of the device. The user account being used to access
+  the device must be set to use the SSH shell and not the built in Checkpoint CLI.
+  Consult the Checkpoint documentation for instructions on how to do this.
+enabled: true
+args:
+- name: devices
+  required: true
+  default: true
+  description: List of RemoteAccess instances of the checkpoint firewall appliances
+    to back up
+outputs:
+- contextPath: CheckpointBackup.DeviceName
+  description: Name of backed-up device
+- contextPath: CheckpointBackup.System
+  description: Backed up system
+- contextPath: CheckpointBackup.Status
+  description: Status of the backup process
+- contextPath: CheckpointBackup.Path
+  description: Path of backup file
+scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s

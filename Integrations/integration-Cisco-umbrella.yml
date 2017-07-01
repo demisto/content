@@ -230,7 +230,7 @@ script:
         matches.forEach(function (match) {
             var securityCategoriesStr = match.securityCategories.join(',');
             var domain = {
-                SecurityCategory: securityCategoriesStr,
+                SecurityCategories: securityCategoriesStr,
                 FirstSeen: match.firstSeen,
                 FirstSeenISO:match.firstSeenISO
             };
@@ -410,8 +410,8 @@ script:
         });
 
         context = {
-            IP: {
-                Address: address,
+            Domain: {
+                Name: domain,
                 DNSHistory: DNSHistoryContext
             }
         }
@@ -490,22 +490,31 @@ script:
         case 'test-module':
             getDomainSearch('www.demisto.com');
             return 'ok';
+        case 'investigate-umbrella-domain-categorization':
         case 'umbrella-domain-categorization':
             return getDomainCategorization(domainArg);
+        case 'investigate-umbrella-domain-search':
         case 'umbrella-domain-search':
             return getDomainSearch(args.regex, args.start);
+        case 'investigate-umbrella-domain-co-occurrences':
         case 'umbrella-domain-co-occurrences':
             return getDomainCooccurrences(domainArg);
+        case 'investigate-umbrella-domain-related':
         case 'umbrella-domain-related':
             return getDomainRelated(domainArg);
+        case 'investigate-umbrella-domain-security':
         case 'umbrella-domain-security':
             return getDomainSecurity(domainArg);
+        case 'investigate-umbrella-domain-tags':
         case 'umbrella-domain-tags':
             return getDomainTags(domainArg);
+        case 'investigate-umbrella-domain-dns-history':
         case 'umbrella-domain-dns-history':
             return getDomainDNSHistory(domainArg);
+        case 'investigate-umbrella-ip-dns-history':
         case 'umbrella-ip-dns-history':
             return getIpDNSHistory(args.ip);
+        case 'investigate-umbrella-ip-malicious-domains':
         case 'umbrella-ip-malicious-domains':
             return getIpMaliciousDomains(args.ip);
     }
@@ -513,6 +522,30 @@ script:
   type: javascript
   commands:
   - name: umbrella-domain-categorization
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter the domain you would like to categorize (e.g. amazon.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.SecurityCategories
+      description: The Umbrella security category, or categories, that match this
+        domain
+    - contextPath: Domain.ContentCategories
+      description: The Umbrella content category or categories that match this domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+    description: Returns the category of a domain. e.g. domain=amazon.com returns
+      Ecommerce/Shopping
+    deprecated: true
+  - name: investigate-umbrella-domain-categorization
     arguments:
     - name: domain
       required: true
@@ -552,6 +585,24 @@ script:
       isn't necessarily a bad thing, legitimate sites co-occur with each other as
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
+    deprecated: true
+  - name: investigate-umbrella-domain-co-occurrences
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Score
+      description: Domain score - value range between 0 and 1
+    description: Get a list of related domains back and returns a list of co-occurences
+      for the specified domain. A co-occurrence is when two or more domains are being
+      accessed by the same users within a small window of time. Being a co-occurrence
+      isn't necessarily a bad thing, legitimate sites co-occur with each other as
+      a part of normal web activity. However, unusual or suspicious co-occurence can
+      provide additional information regarding attacks
   - name: umbrella-domain-related
     arguments:
     - name: domain
@@ -568,7 +619,77 @@ script:
       seen requested b around the same time (up to 60 seconds before or after) as
       the given domain name, but that are not frequently associated with other domain
       names.
+    deprecated: true
+  - name: investigate-umbrella-domain-related
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Score
+      description: This is a score reflecting the number of client IPs looking up
+        related sites within 60 seconds of the original request
+    description: This will return a list of domain names that have been frequently
+      seen requested b around the same time (up to 60 seconds before or after) as
+      the given domain name, but that are not frequently associated with other domain
+      names.
   - name: umbrella-domain-security
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Security.DGA
+      description: Domain Generation Algorithm. This score is generated based on the
+        likeliness of the domain name being generated by an algorithm rather than
+        a human
+    - contextPath: Domain.Security.Perplexity
+      description: A second score on the likeliness of the name to be algorithmically
+        generated, on a scale from 0 to 1
+    - contextPath: Domain.Security.Entropy
+      description: The number of bits required to encode the domain name, as a score
+    - contextPath: Domain.Security.SecureRank
+      description: Suspicious rank for a domain that reviews based on the lookup behavior
+        of client IP for the domain
+    - contextPath: Domain.Security.PageRank
+      description: Popularity according to Google's pagerank algorithm
+    - contextPath: Domain.Security.ASNScore
+      description: ASN reputation score, ranges from -100 to 0 with -100 being very
+        suspicious
+    - contextPath: Domain.Security.PrefixScore
+      description: Prefix ranks domains given their IP prefixes (an IP prefix is the
+        first three octets in an IP address) and the reputation score of these prefixes.
+        Ranges from -100 to 0, -100 being very suspicious
+    - contextPath: Domain.Security.RipScore
+      description: RIP ranks domains given their IP addresses and the reputation score
+        of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
+    - contextPath: Domain.Security.Popularity
+      description: The number of unique client IPs visiting this site, relative to
+        the all requests to all sites
+    - contextPath: Domain.Security.GeoScore
+      description: A score that represents how far the different physical locations
+        serving this name are from each other
+    - contextPath: Domain.Security.KolmoorovSmirnov
+      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
+        traffic matches what is expected for this TLD
+    - contextPath: Domain.Security.AttackName
+      description: The name of any known attacks associated with this domain, or blank
+        if no known threat
+    - contextPath: Domain.Security.ThreatType
+      description: The type of the known attack, such as botnet or APT, or blank if
+        no known threat
+    description: This contains multiple scores or security features, each of which
+      can be used to determine relevant datapoints to build insight on the reputation
+      or security risk posed by the site. See security information about this specific
+      domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
+    deprecated: true
+  - name: investigate-umbrella-domain-security
     arguments:
     - name: domain
       required: true
@@ -644,7 +765,100 @@ script:
       a domain has been in the block list for domains being blocked currently. However
       it will also show a record of the history of the domain in the Umbrella block
       list.
+    deprecated: true
+  - name: investigate-umbrella-domain-tags
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Category
+      description: The Umbrella security category or categories that match this domain
+    - contextPath: Domain.Url
+      description: The full URL containing the malicious code at the domain requested.
+        or null if URL is not available
+    - contextPath: Domain.Period.Begin
+      description: 'The beginning date of domain being added to block list '
+    - contextPath: Domain.Period.End
+      description: The end date of domain being added to block list, if domain is
+        currently blocked - value will be 'Current'
+    description: This command returns the date range when the domain being queried
+      was a part of the Umbrella block list. A common use case is to find how long
+      a domain has been in the block list for domains being blocked currently. However
+      it will also show a record of the history of the domain in the Umbrella block
+      list.
   - name: umbrella-domain-dns-history
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Enter a domain like (www.cnn.com)
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.DNSHistory.Age
+      description: The day in days between now and the last request for this domain.
+        This value is only useful if present
+    - contextPath: IP.DNSHistory.TtlsMin
+      description: Minimum amount of time set that DNS records should be cached
+    - contextPath: IP.DNSHistory.TtlsMax
+      description: Maximum amount of time set that DNS records should be cached
+    - contextPath: IP.DNSHistory.TtlsMean
+      description: Average amount of time set that DNS records should be cached
+    - contextPath: IP.DNSHistory.TtlsMedian
+      description: Median amount of time set that DNS records should be cached
+    - contextPath: IP.DNSHistory.TtlsStddev
+      description: Standard deviation of the amount of time set that DNS records should
+        be cached
+    - contextPath: IP.DNSHistory.CountryCodes
+      description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
+        to'
+    - contextPath: IP.DNSHistory.CountryCount
+      description: Number of countries the IPs are hosted in
+    - contextPath: IP.DNSHistory.Asns
+      description: List of ASN numbers the IPs are in
+    - contextPath: IP.DNSHistory.AsnsCount
+      description: Number of ASNs the IPs map to
+    - contextPath: IP.DNSHistory.Prefixes
+      description: List of network prefixes the IPs map to
+    - contextPath: IP.DNSHistory.PrefixesCount
+      description: Number of network prefixes the IPs map to
+    - contextPath: IP.DNSHistory.Rips
+      description: Number of IPs seen for the domain name
+    - contextPath: IP.DNSHistory.DivRips
+      description: The number of prefixes over the number of IPs
+    - contextPath: IP.DNSHistory.Locations
+      description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
+        mapping to
+    - contextPath: IP.DNSHistory.LocationsCount
+      description: Number of distinct geo coordinates the IPs are mapping to
+    - contextPath: IP.DNSHistory.GeoDistanceSum
+      description: Minimum sum of distance between locations, in kilometers
+    - contextPath: IP.DNSHistory.GeoDistancMean
+      description: Mean distance between the geo median and each location, in kilometers
+    - contextPath: IP.DNSHistory.MailExchanger
+      description: Boolean, If an MX query for this domain name has been seen
+    - contextPath: IP.DNSHistory.NonRoutable
+      description: Boolean. If one of the IPs is in a reserved, non-routable IP range
+    - contextPath: IP.DNSHistory.FfCandidate
+      description: Boolean. If the domain name looks like a candidate for fast flux.
+        This does not necessarily mean the domain is in fast flux, but rather that
+        the IP address the domain resolves to changes rapidly
+    - contextPath: IP.DNSHistory.RipsStability
+      description: 1.0 divided by the number of times the set of IP addresses changed
+    - contextPath: IP.DNSHistory.BaseDomain
+      description: The base domain of the requested domain
+    - contextPath: IP.DNSHistory.IsSubdomain
+      description: Boolean. True if the requested domain is a subdomain of another
+    description: 'The DNS database can be used to query the history that Umbrella
+      has seen for a given domain. The most common use case is to obtain the RRs (Resource
+      Record) history for a given domain, passing in the record query type as a parameter,
+      to help build intelligence around an domain. '
+    deprecated: true
+  - name: investigate-umbrella-domain-dns-history
     arguments:
     - name: domain
       required: true
@@ -755,6 +969,72 @@ script:
       Record (RR) history for a given IP, passing in the record query type as a parameter,
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
+    deprecated: true
+  - name: investigate-umbrella-ip-dns-history
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'Enter an IP Address:'
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.DNSHistory.RRS.Name
+      description: The looked up IP addres
+    - contextPath: IP.DNSHistory.RRS.Class
+      description: DNS class type
+    - contextPath: IP.DNSHistory.RRS.Type
+      description: Query type
+    - contextPath: IP.DNSHistory.RRS.RR
+      description: Resource record owner
+    - contextPath: IP.DNSHistory.RRS.TTL
+      description: Time to live for this record
+    - contextPath: IP.DNSHistory.Feature.RrCount
+      description: Number of records of that type mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld2Count
+      description: Number of 2-level names mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld3Count
+      description: Number of 3-level names mapping to the given IP
+    - contextPath: IP.DNSHistory.Feature.Ld21Count
+      description: Number of 2-level names, without the TLD, mapping to the given
+        IP
+    - contextPath: IP.DNSHistory.Feature.Ld22Count
+      description: Number of 3-level names, without the TLD, mapping to the given
+        IP
+    - contextPath: IP.DNSHistory.Feature.DivLd2
+      description: ld2_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd3
+      description: ld3_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd21
+      description: ld2_1_count divided by the number of records
+    - contextPath: IP.DNSHistory.Feature.DivLd22
+      description: ld2_2_count divided by the number of records
+    description: The DNS database can be used to query the history that Umbrella has
+      seen for a given IP address. The most common use case is to obtain the DNS Resource
+      Record (RR) history for a given IP, passing in the record query type as a parameter,
+      to help build intelligence around an IP or a range of IPs. The information provided
+      is from within the last 90 days.
+  - name: investigate-umbrella-ip-malicious-domains
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: An IP Address
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+    description: This command  shows whether the IP address you’ve entered as input
+      has any known malicious domains associated with it. The domains that appear
+      when using this endpoint are those that currently exist in the Umbrella block
+      list. This endpoint will return an array with a single domain name for each
+      domain associated with the IP, along with an id number that can be ignored.
   - name: umbrella-ip-malicious-domains
     arguments:
     - name: ip
@@ -776,7 +1056,32 @@ script:
       when using this endpoint are those that currently exist in the Umbrella block
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
+    deprecated: true
   - name: umbrella-domain-search
+    arguments:
+    - name: regex
+      required: true
+      default: true
+      description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
+        use double backslash ("\\\\")
+    - name: start
+      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.FirstSeean
+      description: First seen time in Epoch format
+    - contextPath: Domain.FirstSeeanISO
+      description: First seen time in ISO format
+    - contextPath: Domain. SecurityCategories
+      description: Matching Umbrella Security Categories
+    description: This produces a list of matching domains based on a regular expression.
+      You could use this for domain squatting. The pattern search functionality in
+      Investigate uses regular expressions (RegEx) to search against the Investigate
+      database. There are several excellent tools online such as http://regexr.com
+      to help if you’re not familiar with building RegEx.
+    deprecated: true
+  - name: investigate-umbrella-domain-search
     arguments:
     - name: regex
       required: true
