@@ -193,7 +193,7 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # return True if playbook completed successfully
 def test_integration(client, integration_name, integration_params, playbook_id, options={}):
     # create integration instance
-    print('Test integration: ' + integration_name + ' with playbook: ' + playbook_id)
+    print('----------- Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' starts -----------')
     instance_id = __create_integration_instance(client, integration_name, integration_params)
 
     if not instance_id:
@@ -240,4 +240,5 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
     # delete integration instance
     __delete_integration_instance(client, instance_id)
 
+    print('----------- Test integration: ' + integration_name + ' end ------------')
     return playbook_state == PB_Status.COMPLETED
