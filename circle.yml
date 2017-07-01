@@ -40,7 +40,8 @@ test:
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
-    - sleep 5m
+    # wait until server is ready
+    - ./Tests/scripts/wait_until_server_ready.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh

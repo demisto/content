@@ -1,10 +1,12 @@
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
 GET_HTTP_CODE_COMMAND="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL -k"
+GET_HTTP_CODE_COMMAND_SECURE="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL "
 
 NEXT_WAIT_TIME=0
 HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
 echo "HTTP_CODE = $HTTP_CODE"
+echo "GET_HTTP_CODE_COMMAND_SECURE = $GET_HTTP_CODE_COMMAND_SECURE"
 
 MAX_TRIES=5
 until ["$HTTP_CODE" -eq "200"] || [ $NEXT_WAIT_TIME -eq $MAX_TRIES ]; do
