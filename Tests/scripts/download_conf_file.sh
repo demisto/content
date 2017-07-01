@@ -1,5 +1,7 @@
-# download configuration file from github repo
+#!/usr/bin/env bash
+set -e
 
+# download configuration file from github repo
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
 
 CONF_PATH="./conf.json"

@@ -1,1 +1,0 @@
-echo "update current branch"
