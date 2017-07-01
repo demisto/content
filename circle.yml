@@ -7,6 +7,9 @@ test:
     - chmod +x ./Tests/yamlvalidator
     - ./Tests/yamlvalidator
 
+    # build content descriptor
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM
+
     # create content bundle
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
@@ -14,10 +17,11 @@ test:
     - cp Misc/* bundle/
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
+    - cp content-descriptor.json bundle/
+    - cp $(find Scripts -type f -print) bundle/
 
     - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
 
-    - cp $(find Scripts -type f -print) bundle/
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
