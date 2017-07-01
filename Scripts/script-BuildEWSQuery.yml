@@ -1,0 +1,24 @@
+commonfields:
+  id: 6b33d8e5-44da-4322-8f06-c19bf4232cc6
+  version: 9
+name: BuildEWSQuery
+script: |-
+  var keys = Object.keys(args);
+  var str = '';
+  for (var j in keys) {
+      if (args[keys[j]]) {
+          str += keys[j] + ':"' + args[keys[j]] + (j < (keys.length - 1) ? '" AND ' : '"');
+      }
+  }
+  return str || ' ';
+type: javascript
+tags:
+- ews
+enabled: true
+args:
+- name: from
+  default: true
+- name: subject
+- name: attachmentName
+- name: body
+scripttarget: 0
