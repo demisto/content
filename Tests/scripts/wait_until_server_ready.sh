@@ -17,7 +17,7 @@ until [ $HTTP_CODE != 433 ] || [ $TRY_COUNT = $MAX_TRIES ]; do
    HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
 done
 
-if [ $HTTP_CODE == 433 ]
+if [ $HTTP_CODE = 433 ]
 then
     echo "Server is not ready :("
     exit 1
