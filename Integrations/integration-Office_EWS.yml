@@ -787,7 +787,7 @@ script:
      - contextPath: EWS.Searchs.Search.Results.ItemID
        description: Results item ID
      - contextPath: EWS.Searchs.Search.Results.MailAddress
-        description: Results mail address
+       description: Results mail address
      - contextPath: EWS.Searchs.Search.Filter
        description: Search filter
     description: Search across mailboxes using a filter
