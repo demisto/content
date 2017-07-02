@@ -75,9 +75,9 @@ def main():
             integration_params = integration['params']
         else:
             # get from secret conf
-            secret_integration_match = (item for item in secret_integrations if item["name"] == integration_name)
+            secret_integration_match = (item for item in secret_integrations if item["name"] == integration_name).next()
             if len(secret_integration_match) > 0:
-                integration_params = secret_integration_match[0].get('params')
+                integration_params = secret_integration_match.get('params')
             else:
                 integration_params = {}
 
