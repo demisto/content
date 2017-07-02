@@ -112,7 +112,7 @@ def __create_integration_instance(client, integration_name, integration_params):
     test_succeed = __test_integration_instance(client, module_instance)
 
     if not test_succeed:
-        __delete_integration_instance(client, module_instance['id'])
+        #__delete_integration_instance(client, module_instance['id'])
         return
 
     return module_instance['id']

@@ -10,6 +10,6 @@ def print_color(str, color):
 
 
 def print_error(error_str):
-    print_color(error_str, LOG_COLORS.GREEN)
+    print_color(error_str, LOG_COLORS.RED)
 
 
