@@ -185,7 +185,7 @@ script:
             if (categorization.content_categories && categorization.content_categories.length > 0) {
                 var contentCategories = categorization.content_categories.join(',');
                 table['Content Catecories'] = contentCategories;
-                domainContext.ContentCategory = contentCategories;
+                domainContext.ContentCategories = contentCategories;
             }
             if (categorization.security_categories && categorization.security_categories.length > 0) {
                 var securityCategories = categorization.security_categories.join(',');
