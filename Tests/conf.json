@@ -21,6 +21,10 @@
         {
             "name": "Qualys",
             "playbookID": "Qualys-Test"
+        },
+        {
+            "name": "OpenPhish",
+            "playbookID": "OpenPhish Test Playbook"
         }
     ]
 }
