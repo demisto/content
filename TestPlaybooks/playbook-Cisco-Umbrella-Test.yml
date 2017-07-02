@@ -264,7 +264,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      fields: Name,ContentCategory
+      fields: Name,ContentCategories
       isArray: "false"
       path: Domain
     view: |-
