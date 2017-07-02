@@ -23,6 +23,7 @@
             "playbookID": "Qualys-Test"
         },
         {
+            "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         }

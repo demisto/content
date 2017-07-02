@@ -93,11 +93,10 @@ def __create_integration_instance(client, integration_name, integration_params):
 
             param_conf['value'] = param_value
             param_conf['hasvalue'] = True
-        elif param_conf['required'] is True:
+        elif param_conf['defaultValue']:
             # param is required - take default falue
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
-
     res = client.req('PUT', '/settings/integration', module_instance)
 
     if res.status_code != 200:
