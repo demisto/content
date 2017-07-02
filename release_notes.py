@@ -4,7 +4,7 @@ import sys
 import abc
 import datetime
 
-contentLibPath = "/Users/aviad/demisto/content/"
+contentLibPath = "./"
 limitedVersion = False
 
 class Content:
