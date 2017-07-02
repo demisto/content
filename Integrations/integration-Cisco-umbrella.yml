@@ -230,7 +230,7 @@ script:
         matches.forEach(function (match) {
             var securityCategoriesStr = match.securityCategories.join(',');
             var domain = {
-                SecurityCategories: securityCategoriesStr,
+                //SecurityCategories: securityCategoriesStr,
                 FirstSeen: match.firstSeen,
                 FirstSeenISO:match.firstSeenISO
             };
