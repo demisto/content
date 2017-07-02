@@ -10,6 +10,8 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
 
+echo "GITHUB_TOKEN - $GITHUB_TOKEN"
+
 NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
 echo "NOT_FOUND_MESSAGE - $NOT_FOUND_MESSAGE"
 cat $SECRET_CONF_PATH
