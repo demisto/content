@@ -1,5 +1,6 @@
 import argparse
 import demisto
+from pprint import pprint
 from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
 import json
@@ -46,12 +47,17 @@ def main():
     with open(conf_path) as data_file:
         conf = json.load(data_file)
 
+    print "### secret_conf_path is " + secret_conf_path
     if secret_conf_path:
         with open(secret_conf_path) as data_file:
+            print "### going to open secret_conf_path"
             secret_conf = json.load(data_file)
+            pprint(secret_conf)
 
     integrations = conf['integrations']
-    secret_integrations = secret_conf['integrations']
+
+    secret_integrations = secret_conf['integrations'] if secret_conf else []
+
     if not integrations or len(integrations) is 0:
         print 'no integrations are configured for test'
 
