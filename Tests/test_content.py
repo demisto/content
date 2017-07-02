@@ -47,10 +47,8 @@ def main():
     with open(conf_path) as data_file:
         conf = json.load(data_file)
 
-    print "### secret_conf_path is " + secret_conf_path
     if secret_conf_path:
         with open(secret_conf_path) as data_file:
-            print "### going to open secret_conf_path"
             secret_conf = json.load(data_file)
             pprint(secret_conf)
 
@@ -75,12 +73,17 @@ def main():
             integration_params = integration['params']
         else:
             # get from secret conf
+            print("### secret_integrations")
+            print(secret_integrations)
             secret_integration_match = (item for item in secret_integrations if item["name"] == integration_name).next()
             if len(secret_integration_match) > 0:
+                print("### secret_integration_match")
+                print(secret_integration_match)
                 integration_params = secret_integration_match.get('params')
             else:
                 integration_params = {}
-
+        print("integration_params")
+        print(integration_params)
         print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
         # run test
