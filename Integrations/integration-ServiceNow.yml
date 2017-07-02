@@ -100,7 +100,7 @@ script:
         var body = {};
         var tmpRes;
 
-        if (templateName !== undefined){
+        if (templateName){
             tmpRes = SNGetTemplate(templateName);
         }
 
