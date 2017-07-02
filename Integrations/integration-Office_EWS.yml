@@ -305,6 +305,7 @@ script:
             innerPath: 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox',
             translator: [
                 {to: 'MailAddress', from: 'PrimarySmtpAddress'},
+                {to: 'ReferenceId', from: 'ReferenceId'},
                 {to: 'IsExternal', from: 'IsExternalMailbox'},
                 {to: 'Display', from: 'DisplayName'},
             ],
@@ -328,6 +329,49 @@ script:
                    '</soap:Body>'+
                 '</soap:Envelope>'
             },
+        'ews-search-mailboxes': {
+          arrayArgName: 'mailbox-search-scope',
+          tableTitle: 'EWS search mail boxes result for filter %filter%',
+          template:
+            '<?xml version="1.0" encoding="utf-8"?>' +
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+                           'xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
+                           'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" ' +
+                           'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                '<soap:Header>' +
+                    '<t:RequestServerVersion Version="%version%"/>' +
+                    '<t:ExchangeImpersonation>' +
+                        '<t:ConnectingSID>' +
+                            '<t:SmtpAddress>%impersonating-mailbox%</t:SmtpAddress>' +
+                        '</t:ConnectingSID>' +
+                    '</t:ExchangeImpersonation>' +
+                '</soap:Header>' +
+                '<soap:Body>' +
+                    '<m:SearchMailboxes>' +
+                        '<m:SearchQueries>' +
+                            '<t:MailboxQuery>' +
+                                '<t:Query>%filter%</t:Query>' +
+                                '<t:MailboxSearchScopes>' +
+                                    '%mailbox-search-scope%'+
+                                '</t:MailboxSearchScopes>' +
+                            '</t:MailboxQuery>' +
+                        '</m:SearchQueries>' +
+                        '<m:ResultType>PreviewOnly</m:ResultType>' +
+                        '<m:Deduplication>false</m:Deduplication>' +
+                        '<m:PageSize>1000</m:PageSize>' +
+                        '<m:PageDirection>Next</m:PageDirection>' +
+                    '</m:SearchMailboxes>' +
+                '</soap:Body>' +
+            '</soap:Envelope>',
+            innerPath: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem',
+            translator: [
+                {to: 'MailAddress', from: 'Mailbox.PrimarySmtpAddress'},
+                {to: 'ItemID', from: 'OwaLink=function(link){ if (link) { var regexp=/&ItemID=(.*)$/; var match = regexp.exec(link); if (match && match[1]) { return match[1];}} return undefined;}(val)'},
+            ],
+            contextKey: 'EWS.Searchs.Search(obj.filter==val.filter)',
+            contextArrayName: 'Results',
+            argsToContext: ['filter'],
+        },
         'folders-ids': {
             template:
                 '<t:DistinguishedFolderId Id="%id%" />'
@@ -339,6 +383,14 @@ script:
         'attachments-ids': {
             template:
                 '<t:AttachmentId Id="%id%" />'
+        },
+        'mailbox-search-scope': {
+            template:
+                '<t:MailboxSearchScope>' +
+                    '<t:Mailbox>%id%</t:Mailbox>' +
+                    '<t:SearchScope>All</t:SearchScope>' +
+                    '<t:ExtendedAttributes/>' +
+                '</t:MailboxSearchScope>'
         }
     };
 
@@ -426,7 +478,11 @@ script:
         }
         var ids = [];
         if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName]) {
-            ids = args[currentCommand.arrayArgName].split(',');
+            if (Array.isArray(args[currentCommand.arrayArgName])) {
+                ids = args[currentCommand.arrayArgName];
+            } else {
+                ids = args[currentCommand.arrayArgName].split(',');
+            }
         }
         var httpParams = {
                 Method: 'POST',
@@ -443,7 +499,8 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
-        var raw = JSON.parse(x2j(res.Body));
+        var bdy = res.Body.replace(/&#x0;/g, "");
+        var raw = JSON.parse(x2j(bdy));
         var entry = {
             Type: entryTypes.note,
             Contents: raw,
@@ -452,20 +509,34 @@ script:
         };
         if (currentCommand.innerPath) {
             var data = dq(raw, currentCommand.innerPath);
-            if (data && currentCommand.translator) {
-                var translated = mapObjFunction(currentCommand.translator)(data);
-                if (currentCommand.contextKey) {
-                    entry.EntryContext = {};
-                    entry.EntryContext[currentCommand.contextKey] = createContext(translated);
-                } else if (currentCommand.deleteContextKey && ids.length) {
-                    entry.EntryContext = {};
-                    entry.EntryContext[currentCommand.deleteContextKey] = ids;
+            if (currentCommand.translator) {
+                if (data) {
+                    var translated = mapObjFunction(currentCommand.translator)(data);
+                    if (currentCommand.contextKey) {
+                        entry.EntryContext = {};
+                        var arrContext;
+                        if (currentCommand.contextArrayName) {
+                            arrContext = {};
+                            arrContext[currentCommand.contextArrayName] = createContext(translated);
+                        }
+                        entry.EntryContext[currentCommand.contextKey] = arrContext ? arrContext : createContext(translated);
+                        if (currentCommand.argsToContext) {
+                            for (var k in currentCommand.argsToContext) {
+                                entry.EntryContext[currentCommand.contextKey][currentCommand.argsToContext[k]] = args[currentCommand.argsToContext[k]];
+                            }
+                        }
+                    } else if (currentCommand.deleteContextKey && ids.length) {
+                        entry.EntryContext = {};
+                        entry.EntryContext[currentCommand.deleteContextKey] = ids;
+                    }
+                    var disp = buildDisplay(currentCommand, translated);
+                    entry.HumanReadable = tableToMarkdown(
+                        hrTitle,
+                        disp
+                    );
+                } else {
+                    entry.HumanReadable = 'No results';
                 }
-                var disp = buildDisplay(currentCommand, translated);
-                entry.HumanReadable = tableToMarkdown(
-                    hrTitle,
-                    disp
-                );
             }
         }
         return entry;
@@ -481,7 +552,12 @@ script:
             }
         }
         if (currentCommand.arrayArgName) {
-            var items = args[currentCommand.arrayArgName].split(',');
+            var items = [];
+            if (Array.isArray(args[currentCommand.arrayArgName])) {
+                items = args[currentCommand.arrayArgName];
+            } else {
+                items = args[currentCommand.arrayArgName].split(',');
+            }
             var itemsStr = '';
             for (var i in items) {
                 itemsStr += replaceInTemplates(commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template, {id: items[i]});
@@ -500,6 +576,17 @@ script:
             args['target-mailbox'] = params.credentials.identifier + '@' + params.domain;
             execute('ews-get-folder', args);
             return 'ok'; // need to implement the test
+        case 'ews-search-mailboxes':
+            if (!args['mailbox-search-scope']) {
+                var mailboxes = execute('ews-get-searchable-mailboxes', {});
+                args['mailbox-search-scope'] = dq(mailboxes, 'Contents.Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
+            } else {
+                if (!Array.isArray(args['mailbox-search-scope'])) {
+                    args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
+                }
+            }
+            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.trim(); });
+            args['impersonating-mailbox'] = params.credentials.identifier + '@' + params.domain;
         default:
             return execute(command, args);
     }
@@ -682,4 +769,19 @@ script:
       description: Searchable mail ecternal
     - contextPath: EWS.Mailboxes.Display
       description: Searchable mail display name
+    - contextPath: EWS.Mailboxes.ReferenceId
+      description: Reference ID of the mail box, for further use on other ews queries
+  - name: ews-search-mailboxes
+    arguments:
+    - name: filter
+      required: true
+      description: Filter to search upon
+    - name: version
+      description: Exchange version (by default 2010, change to 2013 if using 2013).
+        This can also be set in the settings/integrations page
+    - name: mailbox-search-scope
+      description: An array of mail boxes references id, or string semicolon separated
+        ids
+      isArray: true
+    description: Search across mailboxes using a filter
 hidden: false
