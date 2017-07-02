@@ -22,8 +22,13 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: ""
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
-  script: |
+  script: |+
     var username = params.credentials.identifier;
     var password = params.credentials.password;
     var server = params.server;
@@ -31,14 +36,21 @@ script:
     var insecure = params.insecure;
 
     var urlDict = {
-        'login': 'login.html'
+        'login': 'login.html',
+        'cybereason-check-machine': 'rest/visualsearch/query/simple'
     }
 
     var headersDict = {
-        'login': ['application/x-www-form-urlencoded']
+        'login': {
+            'Content-Type': ['application/x-www-form-urlencoded'],
+            'Accept': ['*/*']
+        },
+        'cybereason-check-machine': {'Content-Type': ['application/json']}
     };
 
     var saveCookies = function(cookies) {
+        console.log('new cookies = ' + JSON.stringify(cookies));
+        console.log('cookies length = ' + cookies.length);
         for (var i = 0; i < cookies.length; i++) {
             setIntegrationContext({cookies: [cookies[i]]});
         }
@@ -60,19 +72,40 @@ script:
         return {'shouldRequestCookies': shouldRequestCookies, 'cookies': cookies};
     }
 
-    var sendRequest = function(url, body, contentType, queryName, cookies, shouldSaveCookies) {
-        if (contentType) {
-            headers = {'ContentType': contentType};
+    var login = function() {
+        var url = urlDict['login'];
+        var headers = headersDict['login'];
+        var body = 'username=' + username + '&password=' + password;
+        var completeUrl = server + '/' + url;
+
+        var res = http(
+            completeUrl,
+            {
+                Method: 'POST',
+                Body: body,
+                Headers: headers
+            },
+            insecure,
+            proxy,
+            true // no redirection
+        );
+
+        if ((res.StatusCode < 200 || res.StatusCode >= 300) && (res.StatusCode != 302)) {
+            throw 'Failed to login, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
+        return res;
+    }
+
+    var sendRequest = function(url, headers, body, cookies) {
+        // var completeUrl = server + '/' + url + encodeToURLQuery(args);
+        var completeUrl = server + '/' + url;
 
         console.log('headers: ' + JSON.stringify(headers));
         console.log('body: ' + JSON.stringify(body));
-        console.log('queryName: ' + queryName);
-        console.log('shouldRequestCookies: ' + shouldRequestCookies);
-
-        var completeUrl = server + '/' + url + encodeToURLQuery(args);
-
-        console.log('URL = ' + completeUrl);
+        console.log('hello!');
+        // console.log('URL = ' + completeUrl);
+        // console.log('proxy = ' + proxy);
 
         var res = http(
             completeUrl,
@@ -87,39 +120,54 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-
-        if (shouldRequestCookies) {
-            saveCookies(res.Cookies);
+            throw 'Action failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
 
         return res;
     }
 
-    var cookiesInfo = checkCookies();
-    var shouldRequestCookies = cookiesInfo.shouldRequestCookies;
-    var cookies = cookiesInfo.cookies;
-    console.log('Before: shouldRequestCookies = ' + shouldRequestCookies);
-    console.log('cookies = ' + JSON.stringify(cookies));
+    if (command != 'test-module') {
+        var cookiesInfo = checkCookies();
+        var shouldLogin = cookiesInfo.shouldRequestCookies;
+        var cookies = cookiesInfo.cookies;
+        console.log('Before: shouldLogin = ' + shouldLogin);
+        console.log('cookies = ' + JSON.stringify(cookies));
 
-    var raw;
+        if (shouldLogin) {
+            res = login();
+            saveCookies(res.Cookies);
+        }
+    }
+
+    var res;
     switch (command) {
         case 'test-module':
-            // verify successful login (status code of 200) - updates the cookie
-            var query = 'login';
-            var body = 'username=' + username + '&password=' + password;
-            sendRequest(urlDict[query], body, headersDict[query], query, null, true);
-            return 'ok';
+            login();
+            if (res.Cookies) {
+                return 'ok';
+            }
+            break;
+
+        case 'cybereason-check-machine':
+            res = sendRequest(urlDict[command], headersDict[command], body, cookies);
+            break;
 
         default:
-            var query = 'login';
-            var body = 'username=' + username + '&password=' + password;
-            raw = sendRequest(urlDict[query], body, headersDict[query], query, null, true);
-            return raw;
+            res = login();
+            saveCookies(res.Cookies);
+            return res;
     }
+
+    return res;
+
   type: javascript
   commands:
   - name: cybereason-test
     arguments: []
+  - name: cybereason-check-machine
+    arguments:
+    - name: name
+      required: true
+      description: The hostname of the machine.
+    description: Checks whether a machine exists in the Cybereason database.
 hidden: false
