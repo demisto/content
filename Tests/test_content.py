@@ -55,12 +55,23 @@ def main():
             'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout'),
             'interval': conf['testInterval']
         }
-        succeed = \
-            test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options)
+
+        integration_name = integration['name']
+        playbook_id = integration['playbookID']
+        print('----------- Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' starts -----------')
+
+        # run test
+        succeed = test_integration(c, integration_name, integration['params'], playbook_id, test_options)
+
+        # use results
         if succeed:
+            print 'PASS: Integration ' + integration_name + ' succeed'
             succeed_integrations.append(integration['name'])
         else:
+            print_error('FAILED: Integration ' + integration_name + ' failed')
             failed_integrations.append(integration['name'])
+
+        print('----------- Test integration: ' + integration_name + ' end ------------')
 
     print_test_summary(succeed_integrations, failed_integrations)
     if len(failed_integrations):
