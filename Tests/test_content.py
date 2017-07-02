@@ -58,6 +58,7 @@ def main():
 
     if not integrations or len(integrations) is 0:
         print 'no integrations are configured for test'
+        return
 
     succeed_integrations = []
     failed_integrations = []
@@ -73,13 +74,10 @@ def main():
             integration_params = integration['params']
         else:
             # get from secret conf
-            print("### secret_integrations")
             print(secret_integrations)
-            secret_integration_match = (item for item in secret_integrations if item["name"] == integration_name).next()
+            secret_integration_match = [item for item in secret_integrations if item["name"] == integration_name]
             if len(secret_integration_match) > 0:
-                print("### secret_integration_match")
-                print(secret_integration_match)
-                integration_params = secret_integration_match.get('params')
+                integration_params = secret_integration_match[0].get('params')
             else:
                 integration_params = {}
         print("integration_params")
