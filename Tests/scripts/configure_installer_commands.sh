@@ -5,7 +5,7 @@ SECRET_CONF_PATH=$(cat secret_conf_path)
 
 ADMIN_PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
 
-# remove quotes from cred
+# remove quotes from password
 temp="${ADMIN_PASSWORD%\"}"
 temp="${temp#\"}"
 ADMIN_PASSWORD=$temp
