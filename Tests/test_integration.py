@@ -83,9 +83,20 @@ def __create_integration_instance(client, integration_name, integration_params):
     # set module params
     for param_conf in module_configuration:
         if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
-            # param name defined by user
+            # param defined in conf
+
             key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-            param_value = integration_params[key]
+            if key == 'credentials':
+                credentials = integration_params[key]
+                param_value = {
+                    'credential': '',
+                    'identifier': credentials['identifier'],
+                    'password': credentials['password'],
+                    'passwordChanged': False
+                }
+            else:
+                param_value = integration_params[key]
+
             param_conf['value'] = param_value
             param_conf['hasvalue'] = True
         elif param_conf['required'] is True:
