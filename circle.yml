@@ -1,38 +1,38 @@
 test:
   pre:
     # install python client
-    - pip install git+https://github.com/demisto/demisto-py.git@test-content
+    #- pip install git+https://github.com/demisto/demisto-py.git@test-content
 
     # validate yaml
-    - chmod +x ./Tests/yamlvalidator
-    - ./Tests/yamlvalidator
+    #- chmod +x ./Tests/yamlvalidator
+    #- ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM
+    #- ./setContentDescriptor.sh $CIRCLE_BUILD_NUM
 
     # create content bundle
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp content-descriptor.json bundle/
-    - cp $(find Scripts -type f -print) bundle/
+    #- mkdir bundle
+    #- cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
+    #- cp Integrations/* bundle/
+    #- cp Misc/* bundle/
+    #- cp Playbooks/* bundle/
+    #- cp Reports/* bundle/
+    #- cp content-descriptor.json bundle/
+    #- cp $(find Scripts -type f -print) bundle/
 
-    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
+    #- if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
 
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    #- cd bundle/ && zip ../content.zip *
+    #- cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
     - chmod +x ./Tests/scripts/*
 
     # ensure file name
-    - ./Tests/scripts/ensurefilenames.sh
+    #- ./Tests/scripts/ensurefilenames.sh
 
     # download conf file
     - ./Tests/scripts/download_secret_conf_file.sh
-
+    - exit 0
     # configure installer commands
     - ./Tests/scripts/configure_installer_commands.sh
 
