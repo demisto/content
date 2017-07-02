@@ -7,6 +7,10 @@ SERVER_URL="https://$SERVER_IP"
 CONF_PATH="./Tests/conf.json"
 SECRET_CONF_PATH=$(cat secret_conf_path)
 
+echo "###"
+ls
+echo "### ---"
+
 echo "SECRET_CONF_PATH - $SECRET_CONF_PATH"
 
 echo "Starts tests with server url - $SERVER_URL"
