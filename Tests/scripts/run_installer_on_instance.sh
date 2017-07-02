@@ -43,7 +43,7 @@ echo "update server with branch content"
 
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
 ls
-scp -r ../content.zip ${USER}@${PUBLIC_IP}:~/content
+scp -r content.zip ${USER}@${PUBLIC_IP}:~/content
 
 echo "unzip..."
 

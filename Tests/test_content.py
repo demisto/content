@@ -1,6 +1,5 @@
 import argparse
 import demisto
-from pprint import pprint
 from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
 import json
@@ -20,7 +19,7 @@ def options_handler():
 
 
 def print_test_summary(succeed_integration, failed_integrations):
-    print '\nINTEGRATIONS TEST RESULTS:'
+    print('\nINTEGRATIONS TEST RESULTS:')
     print_color('\t Number of succeeded tests - ' + str(len(succeed_integration)), LOG_COLORS.GREEN)
     if len(failed_integrations) > 0:
         print_error('\t Number of failed tests - ' + str(len(failed_integrations)) + ':')
@@ -47,17 +46,17 @@ def main():
     with open(conf_path) as data_file:
         conf = json.load(data_file)
 
+    secret_conf = None
     if secret_conf_path:
         with open(secret_conf_path) as data_file:
             secret_conf = json.load(data_file)
-            pprint(secret_conf)
 
     integrations = conf['integrations']
 
     secret_integrations = secret_conf['integrations'] if secret_conf else []
 
     if not integrations or len(integrations) is 0:
-        print 'no integrations are configured for test'
+        print('no integrations are configured for test')
         return
 
     succeed_integrations = []
@@ -74,7 +73,6 @@ def main():
             integration_params = integration['params']
         else:
             # get from secret conf
-            print(secret_integrations)
             secret_integration_match = [item for item in secret_integrations if item["name"] == integration_name]
             if len(secret_integration_match) > 0:
                 integration_params = secret_integration_match[0].get('params')
@@ -87,7 +85,7 @@ def main():
 
         # use results
         if succeed:
-            print 'PASS: Integration ' + integration_name + ' succeed'
+            print('PASS: Integration ' + integration_name + ' succeed')
             succeed_integrations.append(integration['name'])
         else:
             print_error('FAILED: Integration ' + integration_name + ' failed')
