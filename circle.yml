@@ -1,7 +1,7 @@
 test:
   pre:
     # install python client
-    - pip install git+https://github.com/demisto/demisto-py.git@test-contnet
+    - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
