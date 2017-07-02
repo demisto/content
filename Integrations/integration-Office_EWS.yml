@@ -766,7 +766,7 @@ script:
     - contextPath: EWS.Mailboxes.MailAddress
       description: Searchable mail address
     - contextPath: EWS.Mailboxes.IsExternal
-      description: Searchable mail ecternal
+      description: Searchable mail external
     - contextPath: EWS.Mailboxes.Display
       description: Searchable mail display name
     - contextPath: EWS.Mailboxes.ReferenceId
@@ -783,5 +783,12 @@ script:
       description: An array of mail boxes references id, or string semicolon separated
         ids
       isArray: true
+    outputs:
+     - contextPath: EWS.Searchs.Search.Results.ItemID
+       description: Results item ID
+     - contextPath: EWS.Searchs.Search.Results.MailAddress
+        description: Results mail address
+     - contextPath: EWS.Searchs.Search.Filter
+       description: Search filter
     description: Search across mailboxes using a filter
 hidden: false
