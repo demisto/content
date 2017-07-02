@@ -80,8 +80,6 @@ def main():
                 integration_params = secret_integration_match[0].get('params')
             else:
                 integration_params = {}
-        print("integration_params")
-        print(integration_params)
         print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
         # run test
