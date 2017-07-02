@@ -483,7 +483,9 @@ script:
         var dicRes = {};
 
         for(var i=0; i<tmpRes.length-1; i++){
-            dicRes[tmpRes[i].split('=')[0]] = tmpRes[i].split('=')[1];
+            if (tmpRes[i].split('=').length > 1){
+                dicRes[tmpRes[i].split('=')[0]] = tmpRes[i].split('=')[1];
+            }
         }
 
         return dicRes;
