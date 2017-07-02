@@ -1,7 +1,7 @@
 test:
   pre:
     # install python client
-    - pip install demisto
+    - pip install git+https://github.com/demisto/demisto-py.git@master
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
@@ -50,8 +50,6 @@ test:
 
     # run tests
     - ./Tests/scripts/run_tests.sh
-
-    - sleep 9m
 
     # terminate instance
     - ./Tests/scripts/destroy_instances.sh
