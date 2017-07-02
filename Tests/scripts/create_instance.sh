@@ -6,8 +6,6 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
-echo "after configure"
-
 IMAGE_ID="ami-d2c924b2" # centos
 
 #create instance

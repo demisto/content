@@ -21,6 +21,4 @@ if [ ! -z "$NOT_FOUND_MESSAGE" ] || [ "$NOT_FOUND_MESSAGE" != 'null' ]
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o "$SECRET_CONF_PATH"
 fi
 
-cat $SECRET_CONF_PATH
-
 echo "Successfully downloaded secret configuration file to $SECRET_CONF_PATH"
