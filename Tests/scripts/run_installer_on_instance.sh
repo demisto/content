@@ -48,7 +48,7 @@ scp -r content.zip ${USER}@${PUBLIC_IP}:~/content
 echo "unzip..."
 
 # override exiting content with current
-COPY_CONTENT_COMMAND="sudo unzip ~/content/content.zip -d /usr/local/demisto/res"
+COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content.zip -d /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
