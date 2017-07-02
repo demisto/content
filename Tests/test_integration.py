@@ -198,7 +198,6 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # return True if playbook completed successfully
 def test_integration(client, integration_name, integration_params, playbook_id, options={}):
     # create integration instance
-    print('----------- Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' starts -----------')
     instance_id = __create_integration_instance(client, integration_name, integration_params)
 
     if not instance_id:
@@ -230,15 +229,13 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
 
         if playbook_state == PB_Status.COMPLETED:
-            print 'PASS: Playbook ' + playbook_id + ' succeed'
             break
         if playbook_state == PB_Status.FAILED:
-            print_error('FAILED: Integration ' + integration_name + ' has failed with error/s')
+            print_error(integration_name + ' failed with error/s')
             __print_investigation_error(client, playbook_id, investigation_id)
             break
         if time.time() > timeout:
-            print_error('FAILED: Integration ' + integration_name + ' has failed on timeout')
-            print_error('FAILED: Playbook ' + playbook_id + ' timeout failure')
+            print_error(integration_name + ' failed on timeout')
             break
 
         print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
@@ -250,5 +247,4 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
     # delete integration instance
     __delete_integration_instance(client, instance_id)
 
-    print('----------- Test integration: ' + integration_name + ' end ------------')
     return playbook_state == PB_Status.COMPLETED
