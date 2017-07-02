@@ -11,10 +11,11 @@ curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: 
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
 
 NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
-
+echo "NOT_FOUND_MESSAGE - $NOT_FOUND_MESSAGE"
 cat $SECRET_CONF_PATH
 
-if [ ! -z $NOT_FOUND_MESSAGE ] && [ $NOT_FOUND_MESSAGE -ne 'null' ]
+#if [ -z "$WEB_CLIENT_ARTIFACT_VERSION" ] || [ $CIRCLE_BRANCH -eq 'master' ]
+if [ ! -z "$NOT_FOUND_MESSAGE" ] || [ "$NOT_FOUND_MESSAGE" != 'null' ]
   then
     echo "Branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
     echo "Got message from github=$NOT_FOUND_MESSAGE"
