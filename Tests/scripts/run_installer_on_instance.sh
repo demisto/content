@@ -21,8 +21,8 @@ USER="centos"
 
 EXP_FILE="./Tests/scripts/installer_commands.exp"
 
-echo "wait 30 seconds to ensure server is ready for ssh"
-sleep 30s
+echo "wait 1 minute to ensure server is ready for ssh"
+sleep 1m
 
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
