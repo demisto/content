@@ -1,6 +1,7 @@
 import argparse
 import demisto
 from test_integration import test_integration
+from test_utils import print_color, print_error, LOG_COLORS
 import json
 import sys
 
@@ -14,6 +15,15 @@ def options_handler():
     options = parser.parse_args()
 
     return options
+
+
+def print_test_summary(succeed_integration, failed_integrations):
+    print '--- INTEGRATIONS TEST RESULTS:'
+    print_color('\t Number of succeeded tests - ' + str(len(succeed_integration)), LOG_COLORS.GREEN)
+    if len(failed_integrations) > 0:
+        print_error('\t Number of failed tests - ' + str(len(failed_integrations)) + ':')
+        for integration_name in failed_integrations:
+            print_error('\t - ' + integration_name)
 
 
 def main():
@@ -38,17 +48,22 @@ def main():
     if not integrations or len(integrations) is 0:
         print 'no integrations are configured for test'
 
-    all_completed = True
+    succeed_integrations = []
+    failed_integrations = []
     for integration in integrations:
         test_options = {
             'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout'),
             'interval': conf['testInterval']
         }
-        all_completed = \
-            test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options)\
-            and all_completed
+        succeed = \
+            test_integration(c, integration['name'], integration['params'], integration['playbookID'], test_options)
+        if succeed:
+            succeed_integrations.append(integration['name'])
+        else:
+            failed_integrations.append(integration['name'])
 
-    if not all_completed:
+    print_test_summary(succeed_integrations, failed_integrations)
+    if len(failed_integrations):
         sys.exit(1)
 
 if __name__ == '__main__':

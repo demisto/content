@@ -2,14 +2,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
-
-# ----- Utils ----- #
-
-NATIVE_COLOR = '\033[m'
-RED_COLOR = '\033[01;31m'
-
-def print_error(error_str):
-    print(RED_COLOR + error_str + NATIVE_COLOR)
+from test_utils import print_error
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
@@ -21,6 +14,7 @@ class PB_Status:
     COMPLETED = 'completed'
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
+
 
 # ----- Functions ----- #
 
@@ -119,7 +113,7 @@ def __create_integration_instance(client, integration_name, integration_params):
 
     if not test_succeed:
         __delete_integration_instance(client, module_instance['id'])
-        return None
+        return
 
     return module_instance['id']
 
@@ -213,6 +207,9 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
 
     # create incident with playbook
     incident = __create_incident_with_playbook(client, integration_name, playbook_id)
+
+    if not incident:
+        return False
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
