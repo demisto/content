@@ -42,10 +42,13 @@ echo "server is ready to start!"
 echo "update server with branch content"
 
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
-scp -r bundle/* ${USER}@${PUBLIC_IP}:~/content
+ls
+scp -r ../content.zip ${USER}@${PUBLIC_IP}:~/content
+
+echo "unzip..."
 
 # override exiting content with current
-COPY_CONTENT_COMMAND="sudo cp ~/content/* /usr/local/demisto/res/"
+COPY_CONTENT_COMMAND="sudo cp ~/content/content.zip -d /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
