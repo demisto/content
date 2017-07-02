@@ -31,7 +31,7 @@ test:
     - ./Tests/scripts/ensurefilenames.sh
 
     # download conf file
-    - ./Tests/scripts/download_conf_file.sh
+    - ./Tests/scripts/download_secret_conf_file.sh
 
     # configure installer commands
     - ./Tests/scripts/configure_installer_commands.sh

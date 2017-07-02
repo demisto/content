@@ -12,6 +12,7 @@ def options_handler():
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
+    parser.add_argument('-e', '--secret', help='Path to secret conf file')
     options = parser.parse_args()
 
     return options
@@ -31,7 +32,8 @@ def main():
     username = options.user
     password = options.password
     server = options.server
-    conf = options.conf
+    conf_path = options.conf
+    secret_conf_path = options.secret
 
     if not (username and password and server):
         raise ValueError('You must provide server user & password arguments')
@@ -41,10 +43,15 @@ def main():
     if res.status_code is not 200:
         raise ValueError("Login has failed with status code " + str(res.status_code))
 
-    with open(conf) as data_file:
+    with open(conf_path) as data_file:
         conf = json.load(data_file)
 
+    if secret_conf_path:
+        with open(secret_conf_path) as data_file:
+            secret_conf = json.load(data_file)
+
     integrations = conf['integrations']
+    secret_integrations = secret_conf['integrations']
     if not integrations or len(integrations) is 0:
         print 'no integrations are configured for test'
 
@@ -58,10 +65,20 @@ def main():
 
         integration_name = integration['name']
         playbook_id = integration['playbookID']
-        print('----------- Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' starts -----------')
+        if 'params' in integration:
+            integration_params = integration['params']
+        else:
+            # get from secret conf
+            secret_integration_match = (item for item in secret_integrations if item["name"] == integration_name)
+            if len(secret_integration_match) > 0:
+                integration_params = secret_integration_match[0].get('params')
+            else:
+                integration_params = {}
+
+        print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
         # run test
-        succeed = test_integration(c, integration_name, integration['params'], playbook_id, test_options)
+        succeed = test_integration(c, integration_name, integration_params, playbook_id, test_options)
 
         # use results
         if succeed:
@@ -71,7 +88,7 @@ def main():
             print_error('FAILED: Integration ' + integration_name + ' failed')
             failed_integrations.append(integration['name'])
 
-        print('----------- Test integration: ' + integration_name + ' end ------------')
+        print('------ Test integration: ' + integration_name + ' end ------')
 
     print_test_summary(succeed_integrations, failed_integrations)
     if len(failed_integrations):
