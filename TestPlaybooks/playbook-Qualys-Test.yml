@@ -1,5 +1,5 @@
 id: Qualys-Test
-version: 1
+version: -1
 name: Qualys-Test
 starttaskid: "0"
 tasks:

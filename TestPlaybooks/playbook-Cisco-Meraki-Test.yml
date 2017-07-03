@@ -1,5 +1,5 @@
 id: Cisco-Meraki-Test
-version: 1
+version: -1
 name: Cisco-Meraki-Test
 starttaskid: "0"
 tasks:
