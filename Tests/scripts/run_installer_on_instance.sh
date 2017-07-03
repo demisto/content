@@ -39,7 +39,7 @@ INSTALL_COMMAND="cd ~/installer_files \
 INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
     && ls \
-    && sudo ./installer.sh -y -do-not-start-server"
+    && sudo ./installer.sh -- -y -do-not-start-server"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
