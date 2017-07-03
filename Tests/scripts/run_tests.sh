@@ -8,9 +8,9 @@ USERNAME="admin"
 PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
 
 # remove quotes from password
-temp="${ADMIN_PASSWORD%\"}"
+temp="${PASSWORD%\"}"
 temp="${temp#\"}"
-ADMIN_PASSWORD=$temp
+PASSWORD=$temp
 
 echo "Starts tests with server url - $SERVER_URL"
 python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH"
