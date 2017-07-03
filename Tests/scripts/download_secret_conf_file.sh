@@ -12,7 +12,7 @@ curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: 
 
 NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
 
-if [ ! -z "$NOT_FOUND_MESSAGE" ] || [ "$NOT_FOUND_MESSAGE" != 'null' ]
+if [ "$NOT_FOUND_MESSAGE" != 'null' ]
   then
     echo "Branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
     echo "Got message from github=$NOT_FOUND_MESSAGE"

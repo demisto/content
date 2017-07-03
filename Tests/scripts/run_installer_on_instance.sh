@@ -19,26 +19,17 @@ INSTALLER=$(ls demistoserver*.sh)
 
 USER="centos"
 
-EXP_FILE="./Tests/scripts/installer_commands.exp"
-
 echo "wait 1 minute to ensure server is ready for ssh"
 sleep 1m
 
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
-scp ${EXP_FILE} ${USER}@${PUBLIC_IP}:~/installer_files/installer_commands.exp
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
 echo "get installer and run installation script"
-INSTALL_COMMAND="cd ~/installer_files \
-    && sudo yum install -y -q expect less \
-    && chmod +x installer.sh \
-    && sudo expect installer_commands.exp"
-
 INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
-    && ls \
     && sudo ./installer.sh -- -y -do-not-start-server"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
