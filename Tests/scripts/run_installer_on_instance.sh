@@ -35,7 +35,12 @@ INSTALL_COMMAND="cd ~/installer_files \
     && sudo yum install -y -q expect less \
     && chmod +x installer.sh \
     && sudo expect installer_commands.exp"
-ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND}
+
+INSTALL_COMMAND_Y="cd ~/installer_files \
+    && chmod +x installer.sh \
+    && sudo installer.sh -y -do-not-start-server"
+
+ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
 echo "server is ready to start!"
 
