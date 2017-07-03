@@ -33,9 +33,6 @@ test:
     # download conf file
     - ./Tests/scripts/download_secret_conf_file.sh
 
-    # configure installer commands
-    - ./Tests/scripts/configure_installer_commands.sh
-
     # get installer from server
     - ./Tests/scripts/server_get_artifact.sh
 
