@@ -38,16 +38,14 @@ echo "server is ready to start!"
 
 echo "update server with branch content"
 
-ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/content'
-ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/TestPlaybooks'
+ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
+ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 
 echo "#### 1"
-ls ../
+ls ./
 
-echo "#### 2"
-ls ../../
 scp content.zip ${USER}@${PUBLIC_IP}:~/content
-scp -r ../../TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
+scp -r ./TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
 
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content.zip -d /usr/local/demisto/res \
