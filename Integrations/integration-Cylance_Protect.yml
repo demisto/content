@@ -78,6 +78,11 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request to Cylance protect Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
         }
+        // If we have a body, it should have application/json content type.
+        if (res.Body &&
+            (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1)) {
+            throw 'Invalid content type, expected application/json. Check your url!';
+        }
         return res.Body ? JSON.parse(res.Body) : 'empty';
     };
     var commandsThatTakeSha256AsArray = ['cp-update-device-threats', 'cp-delete-hash-from-lists', 'cp-update-hash-at-lists', 'cp-upload-threat'];
