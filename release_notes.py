@@ -195,11 +195,10 @@ def parseChangeList(filePath):
 
 def createFileReleaseNotes(fileName):
     if len(fileName) > 0:
-        print("fileName: " + fileName)
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
-        print("full: " + contentLibPath + fullFileName)
+        print("full path: " + contentLibPath + fullFileName)
         return
         with open(contentLibPath + fullFileName, 'r') as f:
             data = f.read()
