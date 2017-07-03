@@ -64,7 +64,7 @@ def main():
     for integration in integrations:
         test_options = {
             'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout', 30),
-            'interval': conf['testInterval']
+            'interval': conf.get('testInterval', 10)
         }
 
         integration_name = integration['name']
