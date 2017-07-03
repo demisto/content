@@ -81,7 +81,7 @@ script:
         // If we have a body, it should have application/json content type.
         if (res.Body &&
             (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1)) {
-            throw 'Invalid content type, expected application/json. Check your url!';
+            throw 'Check your URL - got invalid content type, expected application/json. Response body: ' + res.Body;
         }
         return res.Body ? JSON.parse(res.Body) : 'empty';
     };
