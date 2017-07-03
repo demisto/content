@@ -5,3 +5,4 @@ psycopg2
 pdfx
 PyPDF2
 splunk-sdk
+PyYAML
