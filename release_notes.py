@@ -198,8 +198,6 @@ def createFileReleaseNotes(fileName):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
-        print("full path: " + contentLibPath + fullFileName)
-        print("- changeType: " + changeType)
         if changeType != "R100":
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
