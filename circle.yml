@@ -20,8 +20,6 @@ test:
     - cp content-descriptor.json bundle/
     - cp $(find Scripts -type f -print) bundle/
 
-    - if [ "$CIRCLE_BRANCH" != "master" ]; then cp TestPlaybooks/* bundle/ ; fi
-
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
