@@ -36,12 +36,14 @@ def main():
     secret_conf_path = options.secret
 
     if not (username and password and server):
-        raise ValueError('You must provide server user & password arguments')
+        print_error('You must provide server user & password arguments')
+        exit(1)
 
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
     if res.status_code is not 200:
-        raise ValueError("Login has failed with status code " + str(res.status_code))
+        print_error("Login has failed with status code " + str(res.status_code))
+        exit(1)
 
     with open(conf_path) as data_file:
         conf = json.load(data_file)
