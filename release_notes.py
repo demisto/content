@@ -199,6 +199,7 @@ def createFileReleaseNotes(fileName):
         changeType = names[0]
         fullFileName = names[1]
         print("full path: " + contentLibPath + fullFileName)
+        print("- changeType: " + changeType)
         with open(contentLibPath + fullFileName, 'r') as f:
             data = f.read()
             if "/" in fullFileName:
@@ -230,6 +231,7 @@ def main(argv):
         print "<Release version>, <File with the full list of changes is mandatory>, <assetID>"
         sys.exit(1)
     files = parseChangeList(argv[1])
+
     for file in files:
         createFileReleaseNotes(file)
 
