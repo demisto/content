@@ -111,7 +111,6 @@ def __create_integration_instance(client, integration_name, integration_params):
     test_succeed = __test_integration_instance(client, module_instance)
 
     if not test_succeed:
-        __delete_integration_instance(client, module_instance['id'])
         return
 
     return module_instance['id']
@@ -241,10 +240,12 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
         i = i + 1
 
-    # delete incident
-    __delete_incident(client, incident)
+    test_pass = playbook_state == PB_Status.COMPLETED
+    if test_pass:
+        # delete incident
+        __delete_incident(client, incident)
 
-    # delete integration instance
-    __delete_integration_instance(client, instance_id)
+        # delete integration instance
+        __delete_integration_instance(client, instance_id)
 
-    return playbook_state == PB_Status.COMPLETED
+    return test_pass
