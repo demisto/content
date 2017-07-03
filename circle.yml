@@ -9,7 +9,7 @@ test:
 
     # build content descriptor
     - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 88f9b10b22b0d27bd5b8d589957b8b3d60874391 2.5.1
-
+    - exit 0
     # create content bundle
     - mkdir bundle
     - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done

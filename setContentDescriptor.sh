@@ -2,8 +2,6 @@
 
 git diff --name-status $2 > changelog.txt
 
-cat changelog.txt
-
 ASSETID=$1
 VERSION=$3
 

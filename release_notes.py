@@ -232,8 +232,6 @@ def main(argv):
         print "<Release version>, <File with the full list of changes is mandatory>, <assetID>"
         sys.exit(1)
     files = parseChangeList(argv[1])
-    print "### files"
-    print(files)
     for file in files:
         createFileReleaseNotes(file)
 
