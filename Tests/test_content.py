@@ -19,10 +19,14 @@ def options_handler():
 
 
 def print_test_summary(succeed_integration, failed_integrations):
+    succeed_integration_count = len(succeed_integration)
+    failed_integration_count = len(failed_integrations)
+
     print('\nINTEGRATIONS TEST RESULTS:')
-    print_color('\t Number of succeeded tests - ' + str(len(succeed_integration)), LOG_COLORS.GREEN)
+    print('\t Number of integration tested - ' + str(succeed_integration_count + failed_integration_count))
+    print_color('\t Number of succeeded tests - ' + str(succeed_integration_count), LOG_COLORS.GREEN)
     if len(failed_integrations) > 0:
-        print_error('\t Number of failed tests - ' + str(len(failed_integrations)) + ':')
+        print_error('\t Number of failed tests - ' + str(failed_integration_count) + ':')
         for integration_name in failed_integrations:
             print_error('\t - ' + integration_name)
 

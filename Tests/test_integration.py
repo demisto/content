@@ -192,17 +192,17 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 1. create integration instance
 # 2. create incident with playbook
 # 3. wait for playbook to finish run
-# 4. delete incident
-# 5. delete instance
+# 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
 def test_integration(client, integration_name, integration_params, playbook_id, options={}):
     # create integration instance
     instance_id = __create_integration_instance(client, integration_name, integration_params)
 
     if not instance_id:
-        print_error('failed to create instance')
+        print_error('Failed to create instance')
         return False
 
+    print('Create integration succeed')
     # create incident with playbook
     incident = __create_incident_with_playbook(client, integration_name, playbook_id)
 
@@ -211,7 +211,7 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
-        print_error('failed to get investigation id of incident:' + incident)
+        print_error('Failed to get investigation id of incident:' + incident)
         return False
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
