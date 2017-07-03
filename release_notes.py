@@ -200,6 +200,7 @@ def createFileReleaseNotes(fileName):
         changeType = names[0]
         fullFileName = names[1]
         print("full: " + contentLibPath + fullFileName)
+        return
         with open(contentLibPath + fullFileName, 'r') as f:
             data = f.read()
             if "/" in fullFileName:
