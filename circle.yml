@@ -30,9 +30,6 @@ test:
     # ensure file name
     - ./Tests/scripts/ensurefilenames.sh
 
-    # download conf file
-    - ./Tests/scripts/download_secret_conf_file.sh
-
     # get installer from server
     - ./Tests/scripts/server_get_artifact.sh
 
@@ -44,6 +41,9 @@ test:
 
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
+
+    # download conf file
+    - ./Tests/scripts/download_secret_conf_file.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh
