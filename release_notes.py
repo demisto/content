@@ -195,9 +195,11 @@ def parseChangeList(filePath):
 
 def createFileReleaseNotes(fileName):
     if len(fileName) > 0:
+        print("fileName: " + fileName)
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+        print("full: " + contentLibPath + fullFileName)
         with open(contentLibPath + fullFileName, 'r') as f:
             data = f.read()
             if "/" in fullFileName:
@@ -229,7 +231,8 @@ def main(argv):
         print "<Release version>, <File with the full list of changes is mandatory>, <assetID>"
         sys.exit(1)
     files = parseChangeList(argv[1])
-
+    print "### files"
+    print(files)
     for file in files:
         createFileReleaseNotes(file)
 
