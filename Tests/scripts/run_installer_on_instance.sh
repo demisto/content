@@ -41,9 +41,6 @@ echo "update server with branch content"
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 
-echo "#### 1"
-ls ./
-
 scp content.zip ${USER}@${PUBLIC_IP}:~/content
 scp -r ./TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
 
