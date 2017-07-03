@@ -63,7 +63,7 @@ def main():
     failed_integrations = []
     for integration in integrations:
         test_options = {
-            'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout'),
+            'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout', 30),
             'interval': conf['testInterval']
         }
 

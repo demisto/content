@@ -22,7 +22,7 @@ class PB_Status:
 # get integration configuration
 def __get_integration_config(client, integration_name):
     res = client.req('POST', '/settings/integration/search', {
-        'page': 0, 'size': 100, 'query': 'name:' + integration_name  # TODO - fix query
+        'page': 0, 'size': 100, 'query': 'name:' + integration_name
     })
 
     res = res.json()
