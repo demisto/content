@@ -48,5 +48,9 @@ test:
     # run tests
     - ./Tests/scripts/run_tests.sh
 
+    - sleep 9m
+    - sleep 9m
+    - sleep 9m
+
     # terminate instance
     - ./Tests/scripts/destroy_instances.sh
