@@ -18,7 +18,20 @@ script: |-
   if demisto.get(demisto.args(), 'task'):
       subjectSuffix += ' #' + demisto.get(demisto.args(), 'task')
   message = '%s\n\nPlease reply with either %s or %s' % (demisto.args()['message'].replace('\\n', '\n'), option1, option2)
-  demisto.results(demisto.executeCommand('send-mail', {'to': demisto.get(demisto.args(), 'email'), 'subject': demisto.get(demisto.args(), 'subject') + subjectSuffix, 'body': message}))
+  roles = demisto.get(demisto.args(), 'roles')
+  addresses = []
+  if roles is not None:
+            usersRes = demisto.executeCommand('getUsers', { "roles": roles });
+            emails =  map(lambda x: x["email"], usersRes[0]["Contents"])
+            addresses.extend(emails)
+  argMail = demisto.get(demisto.args(), 'email')
+  if argMail is not None:
+      addresses.extend(argMail)
+  if len(addresses) > 0:
+      adStr = ",".join(addresses)
+      demisto.results(demisto.executeCommand('send-mail', {'to': adStr, 'subject': demisto.get(demisto.args(), 'subject') + subjectSuffix, 'body': message}))
+  else:
+      demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No email address found' })
 type: python
 tags:
 - email
@@ -26,7 +39,6 @@ comment: Ask a user a question via email and process the reply directly into the
 system: true
 args:
 - name: email
-  required: true
   default: true
   description: The email of the user to ask
 - name: subject
@@ -42,8 +54,7 @@ args:
 - name: task
   description: Which task should we close with the reply. If none then no playbook
     tasks will be closed.
+- name: roles
+  description: Send mail to all users of these roles (csv list)
 scripttarget: 0
-dependson:
-  must:
-  - send-mail
-timeout: 0s
+releaseNotes: Added support to send emails according to roles

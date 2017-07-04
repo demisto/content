@@ -792,3 +792,4 @@ script:
        description: Search filter
     description: Search across mailboxes using a filter
 hidden: false
+releaseNotes: "Support querying multiple mailboxes"
