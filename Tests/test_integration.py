@@ -204,6 +204,11 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
 
     print('Create integration succeed')
     # create incident with playbook
+
+    if skip_playbook:
+        print('Skip playbook')
+        return True
+
     incident = __create_incident_with_playbook(client, integration_name, playbook_id)
 
     if not incident:
@@ -213,10 +218,6 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
         return False
-
-    if skip_playbook:
-        print('Skip playbook')
-        return True
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount

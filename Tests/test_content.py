@@ -100,6 +100,9 @@ def main():
         skip_test_playbook = True if is_nightly and not nightly_test else False
 
         # run test
+        print (" # is_nightly - " + str(is_nightly))
+        print (" # nightly_test - " + str(nightly_test))
+        print (" # skip_test_playbook - " + str(skip_test_playbook))
         succeed = test_integration(c, integration_name, integration_params, playbook_id,
                                    skip_test_playbook, test_options)
 
