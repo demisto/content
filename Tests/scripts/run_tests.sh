@@ -15,13 +15,8 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
-if [ -n "${NIGHTLY}" ]; then echo "nightly" ; fi
 
-[ -n "${NIGHTLY}" ] ; IS_NIGHTLY=$?
-echo "IS_NIGHTLY - $IS_NIGHTLY"
-
-[ -n "${NIGHTLY}" ] && BOOL=0 || BOOL=1
-echo "BOOL - $BOOL"
+[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 
 echo "Starts tests with server url - $SERVER_URL"

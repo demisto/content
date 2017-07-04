@@ -5,6 +5,13 @@ from test_utils import print_color, print_error, LOG_COLORS
 import json
 import sys
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
@@ -13,7 +20,7 @@ def options_handler():
     parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
-    parser.add_argument('-n', '--nightly', help='Run nightly tests')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
     options = parser.parse_args()
 
     return options
@@ -90,8 +97,13 @@ def main():
                 integration_params = {}
         print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
+        nightly_test = integration_params and integration_params.get('nightly', False)
+
+        skip_test_playbook = nightly_test and not is_nightly
+        print("### skip_test_playbook - " + str(skip_test_playbook))
         # run test
-        succeed = test_integration(c, integration_name, integration_params, playbook_id, test_options)
+        succeed = test_integration(c, integration_name, integration_params, playbook_id,
+                                   skip_test_playbook, test_options)
 
         # use results
         if succeed:
