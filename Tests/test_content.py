@@ -97,7 +97,7 @@ def main():
 
         nightly_test = integration.get('nightly', False)
 
-        skip_test_playbook = True if is_nightly and not nightly_test else False
+        skip_test_playbook = True if nightly_test and not is_nightly else False
 
         # run test
         succeed = test_integration(c, integration_name, integration_params, playbook_id,
