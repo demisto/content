@@ -366,7 +366,16 @@ script:
             innerPath: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem',
             translator: [
                 {to: 'MailAddress', from: 'Mailbox.PrimarySmtpAddress'},
-                {to: 'ItemID', from: 'OwaLink=function(link){ if (link) { var regexp=/&ItemID=(.*)$/; var match = regexp.exec(link); if (match && match[1]) { return match[1];}} return undefined;}(val)'},
+                {to: 'ItemID', from: 'Id.-Id'},
+                {to: 'HasAttachment', from: 'HasAttachment'},
+                {to: 'MailboxID', from: 'Mailbox.MailboxId'},
+                {to: 'Read', from: 'Read'},
+                {to: 'ReceivedTime', from: 'ReceivedTime'},
+                {to: 'Sender', from: 'Sender'},
+                {to: 'SentTime', from: 'SentTime'},
+                {to: 'Size', from: 'Size'},
+                {to: 'Subject', from: 'Subject'},
+                {to: 'ToRecipients', from: 'ToRecipients.SmtpAddress'},
             ],
             contextKey: 'EWS.Searchs.Search(obj.filter==val.filter)',
             contextArrayName: 'Results',
@@ -784,12 +793,30 @@ script:
         ids
       isArray: true
     outputs:
-     - contextPath: EWS.Searchs.Search.Results.ItemID
-       description: Results item ID
-     - contextPath: EWS.Searchs.Search.Results.MailAddress
-       description: Results mail address
-     - contextPath: EWS.Searchs.Search.Filter
-       description: Search filter
+    - contextPath: EWS.Searchs.Search.Results.ItemID
+      description: Results item ID
+    - contextPath: EWS.Searchs.Search.Results.MailAddress
+      description: Results mail address
+    - contextPath: EWS.Searchs.Search.Filter
+      description: Search filter
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.MailAddress
+      description: Result has attachment
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.MailboxID
+      description: Result mailbox id
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.Read
+      description: Result was read
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.ReceivedTime
+      description: Result received time
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.Sender
+      description: Result sender
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.SentTime
+      description: Result sent time
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.Size
+      description: Result size
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.Subject
+      description: Result subject
+    - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.ToRecipients
+      description: Result to recipients
     description: Search across mailboxes using a filter
 hidden: false
 releaseNotes: "Support querying multiple mailboxes"
