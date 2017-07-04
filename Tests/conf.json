@@ -1,0 +1,31 @@
+{
+    "testTimeout": 60,
+    "testInterval": 10,
+    "integrations": [
+        {
+            "name": "Cisco Umbrella Investigate",
+            "playbookID": "Cisco-Umbrella-Test"
+        },
+        {
+            "name": "Cisco Meraki",
+            "playbookID": "Cisco-Meraki-Test"
+        },
+        {
+            "name": "GoogleSafeBrowsing",
+            "playbookID": "Google Safe Browsing Test"
+        },
+        {
+            "name": "PostgreSQL",
+            "playbookID": "PostgreSQL Test"
+        },
+        {
+            "name": "Qualys",
+            "playbookID": "Qualys-Test"
+        },
+        {
+            "timeout": 60,
+            "name": "OpenPhish",
+            "playbookID": "OpenPhish Test Playbook"
+        }
+    ]
+}
