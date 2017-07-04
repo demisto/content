@@ -95,14 +95,11 @@ def main():
                 integration_params = {}
         print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
-        nightly_test = integration_params and integration_params.get('nightly', False)
+        nightly_test = integration.get('nightly', False)
 
         skip_test_playbook = True if is_nightly and not nightly_test else False
 
         # run test
-        print (" # is_nightly - " + str(is_nightly))
-        print (" # nightly_test - " + str(nightly_test))
-        print (" # skip_test_playbook - " + str(skip_test_playbook))
         succeed = test_integration(c, integration_name, integration_params, playbook_id,
                                    skip_test_playbook, test_options)
 
