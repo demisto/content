@@ -435,3 +435,4 @@ script:
       is retrieved
   isfetch: true
 hidden: false
+releaseNotes: "Better error notifications"

@@ -1,11 +1,1 @@
-{
-  "installDate": "0001-01-01T00:00:00Z",
-  "assetId": "REPLACE_THIS_WITH_CI_BUILD_NUM",
-  "releaseNotes": "## Release Notes for version 2.5.0",
-  "modified": "REPLACE_THIS_WITH_RELEASE_DATE",
-  "ignoreGit": false,
-  "releaseDate": "REPLACE_THIS_WITH_RELEASE_DATE",
-  "version": -1,
-  "release": "2.5.0",
-  "id": ""
-}
+{"releaseDate": "2017-07-04T15:02:58.0+00:00", "release": "2.5.1", "version": -1, "id": "", "installDate": "0001-01-01T00:00:00Z", "assetId": 1234, "releaseNotes": "## Release Notes for version 2.5.1 (1234)\n\n### Integrations\n#### New Integrations\n- MISP\n-- Malware Information Sharing Platform and Threat Sharing\n#### Modified Integrations\n- Cylance Protect\n-- Better error notifications\n- EWS\n-- Support querying multiple mailboxes\n- ServiceNow\n-- Support templates on ticket/incident creation\n\n\n\n\n### Scripts\n#### New Scripts\n- AddEvidence\n-- Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)\n\n- misp_download_sample\n-- Download malicious file sample from MISP\n- misp_upload_sample\n-- Upload malicious file sample to MISP\n#### Modified Scripts\n- EmailAskUser\n-- Added support to send emails according to roles\n- StringContains\n-- Support looking for one substring out of a list\n", "modified": "2017-07-04T15:02:58.0+00:00", "ignoreGit": false}
