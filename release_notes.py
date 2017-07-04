@@ -38,10 +38,6 @@ class Content:
         return
 
     @abc.abstractmethod
-    def deletedReleaseNotes(self, data):
-        return
-
-    @abc.abstractmethod
     def loadData(self, data):
         return
 
@@ -50,10 +46,13 @@ class Content:
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
             res = "### " + self.getHeader() +"\n"
             if len(self.addedStore) > 0 :
-                res += "#### New " +  self.getHeader() +  "\n"
+                newStr = ""
                 for rawContent in self.addedStore:
                     cnt = self.loadData(rawContent)
-                    res += self.addedReleaseNotes(cnt)
+                    newStr += self.addedReleaseNotes(cnt)
+                if len(newStr) > 0:
+                    res += "#### New " + self.getHeader() + "\n"
+                    res += newStr
             if len(self.modifiedStore) > 0 :
                 modifiedStr = ""
                 for rawContent in self.modifiedStore:
@@ -65,8 +64,7 @@ class Content:
             if len(self.deletedStore) > 0 :
                 res += "#### Removed " +  self.getHeader() +  "\n"
                 for rawContent in self.deletedStore:
-                    cnt = self.loadData(rawContent)
-                    res += self.deletedReleaseNotes(cnt)
+                    res += "- " + rawContent + "\n"
         return res
 
 
@@ -79,6 +77,9 @@ class ScriptContent(Content):
         return "Scripts"
 
     def addedReleaseNotes(self,cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
         res =  "- " + cnt["name"] + "\n"
         if len(cnt.get("comment")) > 0:
             res += "-- " + cnt["comment"] + "\n"
@@ -95,9 +96,6 @@ class ScriptContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
-    def deletedReleaseNotes(self,cnt):
-        return "- " + cnt["name"] + "\n"
-
 Content.register(ScriptContent)
 
 
@@ -109,6 +107,9 @@ class PlaybookContent(Content):
         return "Playbooks"
 
     def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
         res = "- " + cnt["name"] + "\n"
         if len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
@@ -124,9 +125,6 @@ class PlaybookContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
-
-    def deletedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
 
 Content.register(PlaybookContent)
 
@@ -139,6 +137,9 @@ class ReportContent(Content):
         return "Reports"
 
     def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
         res = "- " + cnt["name"] + "\n"
         if len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
@@ -155,9 +156,6 @@ class ReportContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
-    def deletedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
-
 Content.register(ReportContent)
 
 
@@ -169,14 +167,8 @@ class ReputationContent(Content):
         return "Hypersearch"
 
     def addedReleaseNotes(self, cnt):
-        rn = cnt.get("releaseNotes", "")
-        if len(rn) == 0:
-            raise Exception(cnt["details"] + "missing release notes yml entry")
-        res = ""
-        # Add a comment only if there are release notes
-        if rn != '-':
-            res += "- " + cnt["releaseNotes"] + "\n"
-        return res
+        #This should never happen
+        return ""
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -188,9 +180,6 @@ class ReputationContent(Content):
             res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
-
-    def deletedReleaseNotes(self, cnt):
-        return "- " + cnt["details"] + "\n"
 
 Content.register(ReputationContent)
 
@@ -219,13 +208,7 @@ class IntegrationContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
-    def deletedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
-
 Content.register(IntegrationContent)
-
-
-
 
 
 releaseNoteGenerator = {
@@ -243,12 +226,32 @@ def parseChangeList(filePath):
         return data.split("\n")
     return []
 
-def createFileReleaseNotes(fileName):
+def getDeletedContent(fullFileName, data):
+    startIndex = data.find(fullFileName)
+    if startIndex > 0:
+        nameIndex = data.find("-name:", startIndex)
+        if nameIndex > 0:
+            return data[nameIndex:].split("\n")[0][len("-name:"):].strip()
+    return ""
+
+def handleDeletedFiles(deleteFilePath, fullFileName):
+    with open(deleteFilePath, 'r') as f:
+        data = f.read()
+        if "/" in fullFileName:
+            fileType = fullFileName.split("/")[0]
+            fileTypeMapping = releaseNoteGenerator.get(fileType)
+            deletedContent = getDeletedContent(fullFileName, data)
+            if fileTypeMapping is not None:
+                fileTypeMapping.add("D", deletedContent)
+
+def createFileReleaseNotes(fileName, deleteFilePath):
     if len(fileName) > 0:
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
-        if changeType != "R100" and changeType != "D":
+        if changeType == "D":
+            handleDeletedFiles(deleteFilePath, fullFileName)
+        elif changeType != "R100":
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 if "/" in fullFileName:
@@ -276,13 +279,13 @@ def createContentDescriptor(version, assetId, res):
 
 
 def main(argv):
-    if len(argv) < 3:
-        print "<Release version>, <File with the full list of changes is mandatory>, <assetID>"
+    if len(argv) < 4:
+        print "<Release version>, <File with the full list of changes>, <Complete diff file for deleted files>, <assetID>"
         sys.exit(1)
     files = parseChangeList(argv[1])
 
     for file in files:
-        createFileReleaseNotes(file)
+        createFileReleaseNotes(file, argv[2])
 
     res = ""
     for key, value in releaseNoteGenerator.iteritems():
@@ -290,7 +293,7 @@ def main(argv):
             res += "\n\n"
         res += value.generateRN()
     version = argv[0]
-    assetId = argv[2]
+    assetId = argv[3]
     createContentDescriptor(version, assetId, res)
 
 
