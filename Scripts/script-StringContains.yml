@@ -47,3 +47,4 @@ outputs:
 - contextPath: no
   description: if string does not contain substring
 scripttarget: 0
+releaseNotes: "Support looking for one substring out of a list"

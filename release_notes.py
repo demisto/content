@@ -55,10 +55,13 @@ class Content:
                     cnt = self.loadData(rawContent)
                     res += self.addedReleaseNotes(cnt)
             if len(self.modifiedStore) > 0 :
-                res += "#### Modified " +  self.getHeader() +  "\n"
+                modifiedStr = ""
                 for rawContent in self.modifiedStore:
                     cnt = self.loadData(rawContent)
-                    res += self.modifiedReleaseNotes(cnt)
+                    modifiedStr += self.modifiedReleaseNotes(cnt)
+                if len(modifiedStr) > 0:
+                    res += "#### Modified " + self.getHeader() + "\n"
+                    res += modifiedStr
             if len(self.deletedStore) > 0 :
                 res += "#### Removed " +  self.getHeader() +  "\n"
                 for rawContent in self.deletedStore:
@@ -82,7 +85,15 @@ class ScriptContent(Content):
         return res
 
     def modifiedReleaseNotes(self,cnt):
-        return "- " + cnt["name"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["name"] + " missing release notes yml entry")
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def deletedReleaseNotes(self,cnt):
         return "- " + cnt["name"] + "\n"
@@ -104,7 +115,15 @@ class PlaybookContent(Content):
         return res
 
     def modifiedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["name"] + "missing release notes yml entry")
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def deletedReleaseNotes(self, cnt):
         return "- " + cnt["name"] + "\n"
@@ -126,7 +145,15 @@ class ReportContent(Content):
         return res
 
     def modifiedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["name"] + "missing release notes yml entry")
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def deletedReleaseNotes(self, cnt):
         return "- " + cnt["name"] + "\n"
@@ -142,10 +169,25 @@ class ReputationContent(Content):
         return "Hypersearch"
 
     def addedReleaseNotes(self, cnt):
-        return "- " + cnt["details"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["details"] + "missing release notes yml entry")
+        res = ""
+        # Add a comment only if there are release notes
+        if rn != '-':
+            res += "- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def modifiedReleaseNotes(self, cnt):
-        return "- " + cnt["details"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["details"] + "missing release notes yml entry")
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["details"] + "\n"
+            res += "-- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def deletedReleaseNotes(self, cnt):
         return "- " + cnt["details"] + "\n"
@@ -167,7 +209,15 @@ class IntegrationContent(Content):
         return res
 
     def modifiedReleaseNotes(self, cnt):
-        return "- " + cnt["name"] + "\n"
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            raise Exception(cnt["name"] + "missing release notes yml entry")
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def deletedReleaseNotes(self, cnt):
         return "- " + cnt["name"] + "\n"
@@ -213,7 +263,7 @@ def createContentDescriptor(version, assetId, res):
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),
-        "releaseNotes": "## Release Notes for version " + version + "\n\n" + res,
+        "releaseNotes": "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res,
         "modified": date,
         "ignoreGit": False,
         "releaseDate": date,

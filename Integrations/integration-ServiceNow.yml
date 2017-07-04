@@ -1360,3 +1360,4 @@ script:
     description: Upload new file
   isfetch: true
 hidden: false
+releaseNotes: "Support templates on ticket/incident creation"
