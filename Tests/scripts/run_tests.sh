@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
 echo "start content tests"
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
@@ -12,8 +15,12 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
-IS_NIGHTLY=$(-n "${WITH_COVERAGE}")
+[ -n "${NIGHTLY}" ] ; IS_NIGHTLY=$?
 echo "IS_NIGHTLY - $IS_NIGHTLY"
+
+[ -n "${NIGHTLY}" ] && BOOL=0 || BOOL=1
+echo "BOOL - $BOOL"
+
 
 echo "Starts tests with server url - $SERVER_URL"
 python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY

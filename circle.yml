@@ -1,7 +1,7 @@
 test:
   pre:
-    - IS_NIGHTLY=$(-n "${WITH_COVERAGE}")
-    - echo "IS_NIGHTLY - $IS_NIGHTLY"
+    - [ -n "${NIGHTLY}" ] ; BOOL=$?
+    - echo "BOOL - $BOOL"
     # install python client
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
 
