@@ -215,6 +215,7 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         return False
 
     if skip_playbook:
+        print('Skip playbook')
         return True
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
