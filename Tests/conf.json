@@ -8,7 +8,8 @@
         },
         {
             "name": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
+            "playbookID": "Cisco-Meraki-Test",
+            "nightly": false
         },
         {
             "name": "GoogleSafeBrowsing",
