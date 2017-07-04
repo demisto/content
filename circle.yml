@@ -1,7 +1,6 @@
 test:
   pre:
-    - [ -n "${NIGHTLY}" ] ; BOOL=$?
-    - echo "BOOL - $BOOL"
+    - if [ -n "${NIGHTLY}" ]; then echo "nightly" ; fi
     # install python client
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
 

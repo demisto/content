@@ -15,6 +15,8 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
+if [ -n "${NIGHTLY}" ]; then echo "nightly" ; fi
+
 [ -n "${NIGHTLY}" ] ; IS_NIGHTLY=$?
 echo "IS_NIGHTLY - $IS_NIGHTLY"
 
