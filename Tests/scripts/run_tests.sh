@@ -12,5 +12,8 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
+IS_NIGHTLY=$(-n "${WITH_COVERAGE}")
+echo "IS_NIGHTLY - $IS_NIGHTLY"
+
 echo "Starts tests with server url - $SERVER_URL"
-python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH"
+python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY
