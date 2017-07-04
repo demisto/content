@@ -194,7 +194,7 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integration_name, integration_params, playbook_id, options={}):
+def test_integration(client, integration_name, integration_params, playbook_id, skip_playbook, options={}):
     # create integration instance
     instance_id = __create_integration_instance(client, integration_name, integration_params)
 
@@ -204,6 +204,11 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
 
     print('Create integration succeed')
     # create incident with playbook
+
+    if skip_playbook:
+        print('Skip playbook')
+        return True
+
     incident = __create_incident_with_playbook(client, integration_name, playbook_id)
 
     if not incident:
