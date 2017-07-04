@@ -48,8 +48,6 @@ def main():
     secret_conf_path = options.secret
     is_nightly = options.nightly
 
-    print("### is_nightly:" + str(is_nightly))
-
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
         exit(1)
@@ -98,9 +96,9 @@ def main():
         print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
 
         nightly_test = integration_params and integration_params.get('nightly', False)
-        print("### nightly_test: " + str(nightly_test))
-        skip_test_playbook = True if nightly_test and not is_nightly else False
-        print("### skip_test_playbook: " + str(skip_test_playbook))
+
+        skip_test_playbook = True if is_nightly and not nightly_test else False
+
         # run test
         succeed = test_integration(c, integration_name, integration_params, playbook_id,
                                    skip_test_playbook, test_options)
