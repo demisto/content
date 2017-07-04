@@ -19,7 +19,7 @@ script: |+
 
 type: python
 tags: []
-comment: Expire the password of an Active Directory user
+comment: Upload malicious file sample to MISP
 enabled: true
 args:
 - name: fileEntryID
