@@ -198,13 +198,14 @@ def createFileReleaseNotes(fileName):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
-        with open(contentLibPath + fullFileName, 'r') as f:
-            data = f.read()
-            if "/" in fullFileName:
-                fileType = fullFileName.split("/")[0]
-                fileTypeMapping = releaseNoteGenerator.get(fileType)
-                if fileTypeMapping is not None:
-                    fileTypeMapping.add(changeType, data)
+        if changeType != "R100" and changeType != "D":
+            with open(contentLibPath + fullFileName, 'r') as f:
+                data = f.read()
+                if "/" in fullFileName:
+                    fileType = fullFileName.split("/")[0]
+                    fileTypeMapping = releaseNoteGenerator.get(fileType)
+                    if fileTypeMapping is not None:
+                        fileTypeMapping.add(changeType, data)
 
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
