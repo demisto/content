@@ -90,7 +90,7 @@ class ScriptContent(Content):
             raise Exception(cnt["name"] + " missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
@@ -120,7 +120,7 @@ class PlaybookContent(Content):
             raise Exception(cnt["name"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
@@ -150,7 +150,7 @@ class ReportContent(Content):
             raise Exception(cnt["name"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
@@ -174,7 +174,7 @@ class ReputationContent(Content):
             raise Exception(cnt["details"] + "missing release notes yml entry")
         res = ""
         # Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res += "- " + cnt["releaseNotes"] + "\n"
         return res
 
@@ -184,7 +184,7 @@ class ReputationContent(Content):
             raise Exception(cnt["details"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
@@ -214,7 +214,7 @@ class IntegrationContent(Content):
             raise Exception(cnt["name"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
-        if rn != '-' > 0:
+        if rn != '-':
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
