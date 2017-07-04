@@ -39,6 +39,9 @@ def main():
     server = options.server
     conf_path = options.conf
     secret_conf_path = options.secret
+    is_nightly = options.nightly
+
+    print("### is_nightly:" + str(is_nightly))
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
