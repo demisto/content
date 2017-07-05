@@ -96,7 +96,7 @@ script:
         }
     };
 
-    var getBody = function(templateName) {
+    var getBody = function(templateName, cusFields) {
         var body = {};
         var tmpRes;
 
@@ -114,6 +114,13 @@ script:
                     }
             }
         }
+
+        if(cusFields){
+            for (fd in cusFields){
+                body["u_"+fd] = cusFields[fd];
+            }
+        }
+
         return body;
     }
 
@@ -292,8 +299,16 @@ script:
     }
 
     var SNUpdate = function(){
+        var cusFields;
+
         var ticket_type = getTableName();
-        var body = getBody();
+
+        if (args.custom_fields){
+            cusFields = splitCusFilds(args.custom_fields);
+        }
+
+        var body = getBody(args.template, cusFields);
+
         var path = "table/"+ticket_type+"/"+args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident updated\n";
@@ -301,9 +316,30 @@ script:
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
     }
 
-    var SNCreate = function(){
 
-        var body = getBody(args.template);
+    var splitCusFilds = function(cusFields){
+        var dicFields = {};
+        var arrFields = cusFields.split(';');
+
+        for(var i=0; i<arrFields.length; i++){
+            var field = arrFields[i].split('=');
+            if (field.length > 1){
+                dicFields[field[0]] = field[1];
+            }
+        }
+
+        return dicFields;
+    }
+
+    var SNCreate = function(){
+        var cusFields;
+
+        if (args.custom_fields){
+            cusFields = splitCusFilds(args.custom_fields);
+        }
+
+        var body = getBody(args.template, cusFields);
+
         var ticket_type = getTableName();
         var path = "table/"+ticket_type;
         var res = sendRequest('POST',path,null,JSON.stringify(body));
@@ -724,6 +760,8 @@ script:
     - name: priority
     - name: template
       description: Template name to use as a base to create new incidents.
+    - name: custom_fields
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
@@ -1027,6 +1065,8 @@ script:
     - name: id
       required: true
       description: Id(UID) of the ticket to update
+    - name: custom_fields
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     description: Update specific ticket by providing ticket id
   - name: servicenow-incident-update
     deprecated: true
@@ -1360,4 +1400,4 @@ script:
     description: Upload new file
   isfetch: true
 hidden: false
-releaseNotes: "Support templates on ticket/incident creation"
+releaseNotes: "Added support for custom fields in commands (servicenow-update and servicenow-create)."
