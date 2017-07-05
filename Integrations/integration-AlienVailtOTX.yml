@@ -70,7 +70,7 @@ script:
             translator: [
                 {to: 'Data', from: 'indicator'},
             ],
-            tableTitle: 'AlienVault url response %Address%',
+            tableTitle: 'AlienVault url response %Data%',
         },
         'ipv6': {
             type: 'IPv6',
@@ -279,31 +279,33 @@ script:
         malInfo = {
             Malicious: {Vendor: 'AlienVault OTX', Description: 'Found in ' + dq(raw, 'pulse_info.count') + ' pulses'}
         };
-        switch (argName) {
-            case 'ip':
-                malInfo['Address'] = args[argName];
-                outputPath = outputPaths.ip;
-                break;
-            case 'domain':
-                malInfo['Name'] = args[argName];
-                outputPath = outputPaths.domain;
-                break;
-            case 'url':
-                malInfo['Data'] = args[argName];
-                outputPath = outputPaths.url;
-                break;
-            case 'file':
-                delete(malInfo[argName.toUpperCase()]);
-                malInfo.MD5 = args[argName];
-                dbotScoreType = 'hash';
-                break;
-            default:
-                dbotScoreType = 'hash';
-                malInfo[argName.toUpperCase()] = args[argName];
-        }
-        if (argName && dq(raw, 'pulse_info.count') > 0) {
-            dbotScore = dq(raw, 'pulse_info.count');
-            addMalicious(ec, outputPath, malInfo);
+        if (argName) {
+            switch (argName) {
+                case 'ip':
+                    malInfo['Address'] = args[argName];
+                    outputPath = outputPaths.ip;
+                    break;
+                case 'domain':
+                    malInfo['Name'] = args[argName];
+                    outputPath = outputPaths.domain;
+                    break;
+                case 'url':
+                    malInfo['Data'] = args[argName];
+                    outputPath = outputPaths.url;
+                    break;
+                case 'file':
+                    delete(malInfo[argName.toUpperCase()]);
+                    malInfo.MD5 = args[argName];
+                    dbotScoreType = 'hash';
+                    break;
+                default:
+                    dbotScoreType = 'hash';
+                    malInfo[argName.toUpperCase()] = args[argName];
+            }
+            if (dq(raw, 'pulse_info.count') > 0) {
+                dbotScore = dq(raw, 'pulse_info.count');
+                addMalicious(ec, outputPath, malInfo);
+            }
         }
         ec.DBotScore = {Indicator: args[argName], Type: dbotScoreType, Vendor: 'AlienVault OTX', Score: dbotScore};
         ec[contextKey] = createContext(translated);
