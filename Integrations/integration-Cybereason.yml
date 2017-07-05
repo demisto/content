@@ -37,37 +37,68 @@ script:
 
     var urlDict = {
         'login': 'login.html',
-        'cybereason-check-machine': 'rest/visualsearch/query/simple'
+        'query': 'rest/visualsearch/query/simple',
+        'cybereason-query-processes': 'rest/visualsearch/query/simple'
     }
 
     var headersDict = {
-        'login': {
-            'Content-Type': ['application/x-www-form-urlencoded'],
-            'Accept': ['*/*']
-        },
-        'cybereason-check-machine': {'Content-Type': ['application/json']}
+        'login': {'Content-Type': ['application/x-www-form-urlencoded']},
+        'query': {'Content-Type': ['application/json']},
+        'cybereason-query-processes': {'Content-Type': ['application/json']}
     };
 
-    var saveCookies = function(cookies) {
-        console.log('new cookies = ' + JSON.stringify(cookies));
-        console.log('cookies length = ' + cookies.length);
-        for (var i = 0; i < cookies.length; i++) {
-            setIntegrationContext({cookies: [cookies[i]]});
+    var bodyDict = {
+        'cybereason-query-machine': {
+            customFields: [
+                "osVersionType",
+                "platformArchitecture",
+                "uptime",
+                "isActiveProbeConnected",
+                "activeUsers",
+                "mountPoints",
+                "processes",
+                "services",
+                "elementDisplayName"
+            ],
+            perFeatureLimit: 100,
+            perGroupLimit: 100,
+            queryPath: [
+                {
+                    filters: [
+                        {
+                            facetName: "elementDisplayName",
+                            values: ["{0}"]
+                        }
+                    ],
+                    isResult: true,
+                    requestedType: "Machine"
+                }
+            ],
+            queryTimeout: 120000,
+            templateContext: "SPECIFIC",
+            totalResultLimit: 10000
         }
+    }
+
+    var saveCookies = function(cookies) {
+        setIntegrationContext({'cookies': cookies});
     }
 
     var checkCookies = function() {
         var contextData = getIntegrationContext();
         var cookies = contextData.cookies;
-        var shouldRequestCookies = !cookies;
-        for (var i = 0; !shouldRequestCookies && i < cookies.length; i++) {
+        var shouldRequestCookies = true;
+        if (cookies && (cookies.length == 2)) {
             var currentTime = new Date();
-            var cookiesTime = new Date(cookies[i].Expires);
+            var cookiesTime = new Date(cookies[1].Expires);
             var timeDifferenceInDays = Math.abs((currentTime.getTime() - cookiesTime.getTime()) / (1000 * 60 * 60 * 24));
-            if (timeDifferenceInDays > 100) {
-                shouldRequestCookies = true;
+            if (timeDifferenceInDays <= 100) {
+                shouldRequestCookies = false;
             }
         }
+
+        console.log('checkCookies: shouldRequestCookies = ' + shouldRequestCookies);
+        console.log('checkCookies: cookies = ' + JSON.stringify(cookies));
 
         return {'shouldRequestCookies': shouldRequestCookies, 'cookies': cookies};
     }
@@ -98,14 +129,14 @@ script:
     }
 
     var sendRequest = function(url, headers, body, cookies) {
-        // var completeUrl = server + '/' + url + encodeToURLQuery(args);
         var completeUrl = server + '/' + url;
-
         console.log('headers: ' + JSON.stringify(headers));
         console.log('body: ' + JSON.stringify(body));
         console.log('hello!');
-        // console.log('URL = ' + completeUrl);
-        // console.log('proxy = ' + proxy);
+        console.log('sendRequest: cookies = ' + JSON.stringify(cookies));
+        console.log('sendRequest: cookies[0] = ' + JSON.stringify(cookies[0]));
+        console.log('URL = ' + completeUrl);
+        console.log('body =\n{0}'.format(body, null, 4));
 
         var res = http(
             completeUrl,
@@ -123,16 +154,19 @@ script:
             throw 'Action failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
 
-        return res;
+        return JSON.parse(res.Body);
+    }
+
+    var getMachineGuidByHostname = function(hostname, cookies) {
+        var body = JSON.stringify(bodyDict['cybereason-query-machine']).format(args.hostname);
+        res = sendRequest(urlDict['query'], headersDict['query'], body, cookies);
+        return Object.keys(res.data.resultIdToElementDataMap);
     }
 
     if (command != 'test-module') {
         var cookiesInfo = checkCookies();
         var shouldLogin = cookiesInfo.shouldRequestCookies;
         var cookies = cookiesInfo.cookies;
-        console.log('Before: shouldLogin = ' + shouldLogin);
-        console.log('cookies = ' + JSON.stringify(cookies));
-
         if (shouldLogin) {
             res = login();
             saveCookies(res.Cookies);
@@ -148,26 +182,37 @@ script:
             }
             break;
 
-        case 'cybereason-check-machine':
-            res = sendRequest(urlDict[command], headersDict[command], body, cookies);
+        case 'cybereason-query-processes':
+            var guids = getMachineGuidByHostname(args.hostname, cookies);
+            if (guids.length == 0) {
+                return 'A machine with the given hostname was not found: {0}.'.format(args.hostname);
+            }
+
+            var guid = guids[0];
+
+            return guid;
+
             break;
 
-        default:
+        case 'cybereason-login':
             res = login();
             saveCookies(res.Cookies);
-            return res;
+            return 'Cookies: ' + JSON.stringify(res.Cookies);
+
+        default:
+            break;
     }
 
     return res;
 
   type: javascript
   commands:
-  - name: cybereason-test
-    arguments: []
-  - name: cybereason-check-machine
+  - name: cybereason-query-processes
     arguments:
-    - name: name
+    - name: hostname
       required: true
       description: The hostname of the machine.
-    description: Checks whether a machine exists in the Cybereason database.
+    description: Retrieves the processes on a host.
+  - name: cybereason-login
+    arguments: []
 hidden: false
