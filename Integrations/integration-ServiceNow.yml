@@ -761,7 +761,7 @@ script:
     - name: template
       description: Template name to use as a base to create new incidents.
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;filedname=value...'
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
@@ -1066,7 +1066,7 @@ script:
       required: true
       description: Id(UID) of the ticket to update
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;filedname=value...'
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     description: Update specific ticket by providing ticket id
   - name: servicenow-incident-update
     deprecated: true
