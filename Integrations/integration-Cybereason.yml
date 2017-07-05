@@ -62,22 +62,11 @@ script:
             ],
             perFeatureLimit: 100,
             perGroupLimit: 100,
-            queryPath: [
-                {
-                    filters: [
-                        {
-                            facetName: "elementDisplayName",
-                            values: ["{0}"]
-                        }
-                    ],
-                    isResult: true,
-                    requestedType: "Machine"
-                }
-            ],
+            queryPath: [{filters: [{facetName: "elementDisplayName", values: ["{0}"]}], isResult: true, requestedType: "Machine"}],
             queryTimeout: 120000,
             templateContext: "SPECIFIC",
             totalResultLimit: 10000
-        }
+        },
     }
 
     var saveCookies = function(cookies) {
@@ -132,11 +121,10 @@ script:
         var completeUrl = server + '/' + url;
         console.log('headers: ' + JSON.stringify(headers));
         console.log('body: ' + JSON.stringify(body));
-        console.log('hello!');
         console.log('sendRequest: cookies = ' + JSON.stringify(cookies));
         console.log('sendRequest: cookies[0] = ' + JSON.stringify(cookies[0]));
         console.log('URL = ' + completeUrl);
-        console.log('body =\n{0}'.format(body, null, 4));
+        console.log('body =\n{0}'.format(body));
 
         var res = http(
             completeUrl,
@@ -163,6 +151,64 @@ script:
         return Object.keys(res.data.resultIdToElementDataMap);
     }
 
+    var queryProcesses = function(hostname, cookies) {
+        var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
+        var filters = [];
+
+        console.log('resultsLimit = ' + JSON.stringify(resultsLimit));
+        console.log('only_suspicious = ' + JSON.stringify(args.only_suspicious));
+
+        if (args.only_suspicious && (args.only_suspicious == 'true')) {
+           filters.push({facetName: "hasSuspicions", values: [true]});
+        }
+
+        console.log('filters = ' + JSON.stringify(filters));
+
+        var body = {
+            customFields: [
+                // "elementDisplayName",
+                "creationTime",
+                "endTime",
+                // "commandLine",
+                // "isImageFileSignedAndVerified",
+                // "imageFile.maliciousClassificationType",
+                // "productType",
+                // "children",
+                "parentProcess",
+                // "ownerMachine",
+                // "calculatedUser",
+                // "imageFile",
+                // "imageFile.sha1String",
+                // "imageFile.md5String",
+                // "imageFile.companyName",
+                // "imageFile.productName",
+                // "iconBase64",
+                // "ransomwareAutoRemediationSuspended",
+                // "executionPrevented"
+            ],
+            perFeatureLimit: 100,
+            perGroupLimit: 100,
+            queryPath: [
+                {
+                    connectionFeature: {
+                        elementInstanceType: "Machine",
+                        featureName: "processes"
+                    },
+                    filters: [{facetName: "elementDisplayName", values: [hostname]}],
+                    requestedType: "Machine"
+                },
+                {requestedType: "Process", filters: filters, isResult: true}
+            ],
+            queryTimeout: 120000,
+            templateContext: "SPECIFIC",
+            totalResultLimit: resultsLimit
+        };
+
+        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+
+        return res;
+    }
+
     if (command != 'test-module') {
         var cookiesInfo = checkCookies();
         var shouldLogin = cookiesInfo.shouldRequestCookies;
@@ -183,15 +229,7 @@ script:
             break;
 
         case 'cybereason-query-processes':
-            var guids = getMachineGuidByHostname(args.hostname, cookies);
-            if (guids.length == 0) {
-                return 'A machine with the given hostname was not found: {0}.'.format(args.hostname);
-            }
-
-            var guid = guids[0];
-
-            return guid;
-
+            res = queryProcesses(args.hostname, cookies);
             break;
 
         case 'cybereason-login':
@@ -212,7 +250,16 @@ script:
     - name: hostname
       required: true
       description: The hostname of the machine.
+    - name: only_suspicious
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Show only suspicious processes.
+    - name: limit
+      defaultValue: "10000"
     description: Retrieves the processes on a host.
   - name: cybereason-login
     arguments: []
+    description: Performs a login and updates the cookies.
 hidden: false
