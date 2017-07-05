@@ -92,6 +92,10 @@ script:
         return {'shouldRequestCookies': shouldRequestCookies, 'cookies': cookies};
     }
 
+    var buildEmptyEntryContext = function() {
+        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
+    }
+
     var login = function() {
         var url = urlDict['login'];
         var headers = headersDict['login'];
@@ -155,18 +159,12 @@ script:
         var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
         var filters = [];
 
-        console.log('resultsLimit = ' + JSON.stringify(resultsLimit));
-        console.log('only_suspicious = ' + JSON.stringify(args.only_suspicious));
-
         if (args.only_suspicious && (args.only_suspicious == 'true')) {
            filters.push({facetName: "hasSuspicions", values: [true]});
         }
 
-        console.log('filters = ' + JSON.stringify(filters));
-
         var body = {
             customFields: [
-                // "elementDisplayName",
                 "creationTime",
                 "endTime",
                 // "commandLine",
@@ -205,8 +203,36 @@ script:
         };
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+        // return res;
 
-        return res;
+        var elements = res.data.resultIdToElementDataMap;
+
+        // build output
+        var outputs = [];
+        for (var key in elements) {
+            console.log(JSON.stringify(elements[key].elementValues));
+            var output = {
+                'Name': elements[key].filterData.groupByValue,
+                'Creation Time': convertTimestampToString(elements[key].simpleValues.creationTime.values[0])
+            }
+
+            if (elements[key].elementValues.parentProcess) {
+                output['Parent'] = elements[key].elementValues.parentProcess.elementValues[0].name;
+            }
+
+            if (elements[key].simpleValues.endTime) {
+                output['End Time'] = convertTimestampToString(elements[key].simpleValues.endTime.values[0]);
+            }
+
+            outputs.push(output);
+        }
+
+
+        var entry = buildEmptyEntryContext();
+        var headers = ['Name', 'Parent', 'Creation Time', 'End Time'];
+        entry.HumanReadable = tableToMarkdown('Cybereason Processes for Hostname: ' + hostname, outputs, headers);
+
+        return entry;
     }
 
     if (command != 'test-module') {
