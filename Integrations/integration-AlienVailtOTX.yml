@@ -279,6 +279,7 @@ script:
         malInfo = {
             Malicious: {Vendor: 'AlienVault OTX', Description: 'Found in ' + dq(raw, 'pulse_info.count') + ' pulses'}
         };
+        ec[contextKey] = createContext(translated);
         if (argName) {
             switch (argName) {
                 case 'ip':
@@ -304,11 +305,11 @@ script:
             }
             if (dq(raw, 'pulse_info.count') > 0) {
                 dbotScore = dq(raw, 'pulse_info.count');
+                malInfo.Malicious.PulseIDs = dq(raw, 'pulse_info.pulses.id');
                 addMalicious(ec, outputPath, malInfo);
             }
         }
         ec.DBotScore = {Indicator: args[argName], Type: dbotScoreType, Vendor: 'AlienVault OTX', Score: dbotScore};
-        ec[contextKey] = createContext(translated);
         entry.EntryContext = ec;
     }
 
@@ -341,6 +342,8 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: IP.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query IP in AlienVault OTX
   - name: domain
     arguments:
@@ -362,6 +365,8 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: Domain.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query domain in AlienVault OTX
   - name: ipv6
     arguments:
@@ -383,6 +388,8 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: IP.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query IP in AlienVault OTX
   - name: hostname
     arguments:
@@ -412,6 +419,10 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: IP.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
+    - contextPath: File.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
   - name: alienvault-query-file
     arguments:
@@ -436,6 +447,8 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: File.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
   - name: alienvault-search-pulses
     arguments:
