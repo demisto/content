@@ -59,6 +59,7 @@ tags:
 comment: Check the URLs in the incident, or raw text provided as argument, for malicious
   URLs
 system: true
+deprecated: true
 args:
 - name: data
   default: true

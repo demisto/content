@@ -21,6 +21,7 @@ tags:
 - QRadar
 comment: Searches in QRadar
 system: true
+deprecated: true
 args:
 - default: true
   description: The query expressions in AQL

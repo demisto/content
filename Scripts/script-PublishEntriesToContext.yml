@@ -16,13 +16,20 @@ script: |-
       }
   }
   if (data.length > 0) {
-      setContext(out, data);
-      return 'Published ' + data.length + ' entries to context under ' + out;
+      var ec = {};
+      ec[out] = data;
+      return {
+          Type: entryTypes.note,
+          Contents: data,
+          ContentsFormat: formats.json,
+          HumanReadable: 'Published ' + data.length + ' entries to context under ' + out,
+          EntryContext: ec
+      };
   }
   return 'No entries found';
 type: javascript
 tags:
-- util
+- Utility
 enabled: true
 args:
 - name: ids
@@ -32,6 +39,9 @@ args:
     list of strings.
 - name: out
   description: The name of the context key. Default is "entries".
+outputs:
+- contextPath: entries
+  description: The entries published to context if out key was not provided
 scripttarget: 0
 dependson: {}
 timeout: 0s

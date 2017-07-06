@@ -27,16 +27,13 @@ script: |-
                               if demisto.get(v1, 'status') == 'ACCEPTED':
                                   time.sleep(10)
                                   rep = demisto.executeCommand('file', {'file': demisto.get(fe, 'FileMetadata.md5'), 'using-brand': brands['cy']})
-                                  if rep and len(rep) == 1 and rep[0]['Type'] != entryTypes['error']:
-                                      demisto.results(shortFile(rep[0]))
-                                  else:
-                                      demisto.results(rep)
+                                  demisto.results(rep)
                               else:
                                   demisto.results(upload)
                       else:
                           demisto.results(upload)
                   else:
-                      demisto.results(shortFile(rep[0]))
+                      demisto.results(rep)
           else:
               demisto.results(rep)
       else:
@@ -56,9 +53,32 @@ args:
   required: true
   default: true
   description: The ID of a file entry to upload
+outputs:
+- contextPath: File.MD5
+  description: Bad hash MD5
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+- contextPath: DBotScore.Score
+  description: The actual score
+important:
+- contextPath: File(val.Malicious)
+  description: Malicious Files
+  related: File
 scripttarget: 0
 dependson:
   must:
-  - file
+  - cylance|||file
   - cy-upload
 timeout: 0s

@@ -1,496 +1,310 @@
 id: playbook10
-version: -1
+fromversion: 2.5.0
 system: true
+version: -1
 name: Rapid IOC Hunting Playbook
-description: |
-  Playbook to quickly react to discovery of new IOCs. Receive a list of IOCs in a file and hunt rapidly across the infrastructure.
+description: "Playbook to quickly react to discovery of new IOCs. Receive a list of IOCs as attached text / csv files, extract IOCs using regular expressions and hunt rapidly across the infrastructure using various integrations. Also supports attaching multiple files."
+starttaskid: "0"
 tasks:
-- id: "1"
-  taskid: a815b6ec-64bf-4a15-8314-5055c5d6d89d
-  type: title
-  task:
-    id: a815b6ec-64bf-4a15-8314-5055c5d6d89d
-    version: 1
-    name: Set up the investigation and acquire IOCs
-- id: "2"
-  taskid: 1bf3408d-bfcc-4030-8406-126c9514ee5b
-  type: regular
-  task:
-    id: 1bf3408d-bfcc-4030-8406-126c9514ee5b
-    version: 33
-    name: Set initial incident context
-    script: IncidentToContext
-  results:
-  - Label/Application
-  - Label/Database
-  - Label/Directory
-  - Label/Email
-  - Label/Email/cc
-  - Label/Email/from
-  - Label/Email/format
-  - Label/Email/html
-  - Label/Email/text
-  - Label/Email/subject
-  - Label/Email/attachments
-  - Label/Email/headers
-  - Label/IP
-  - Label/System
-  - Label/URL
-  - Label/User
-  - Label/Brand
-  - Label/Instance
-  - id
-  - created
-  - modified
-  - occurred
-  - dueDate
-  - name
-  - owner
-  - type
-  - severity
-  - phase
-  - status
-  - details
-  - score
-- id: "3"
-  taskid: 15952207-2fb9-4f2e-8b89-7e59dbd6d4b4
-  type: regular
-  task:
-    id: 15952207-2fb9-4f2e-8b89-7e59dbd6d4b4
-    version: 1
-    name: Load CSV file into context
-    script: IngestCSV
-  results:
-  - csv
-- id: "4"
-  taskid: 98026204-9976-4ae0-8794-f7a0e543aea3
-  type: regular
-  task:
-    id: 98026204-9976-4ae0-8794-f7a0e543aea3
-    version: 1
-    name: Extract md5 hash IOCs
-    script: MD5Extract
-  scriptarguments:
-    text: ${csv}
-  results:
-  - md5s
-- id: "5"
-  taskid: 088ffb7f-22b7-441c-8ee4-0c5df680bc76
-  type: regular
-  task:
-    id: 088ffb7f-22b7-441c-8ee4-0c5df680bc76
-    version: 1
-    name: Extract IP address IOCs
-    script: IPExtract
-  scriptarguments:
-    text: ${csv}
-  results:
-  - ips
-- id: "6"
-  taskid: c105e3b1-8e9a-40cd-8249-5337e8417b06
-  type: title
-  task:
-    id: c105e3b1-8e9a-40cd-8249-5337e8417b06
-    version: 1
-    name: Hunt
-- id: "7"
-  taskid: f0529a47-dbde-4f16-8b56-597049cdcdc4
-  type: condition
-  task:
-    id: f0529a47-dbde-4f16-8b56-597049cdcdc4
-    version: 1
-    name: Is Carbon Black Protection (Bit9) Available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "8"
-      taskid: b92995d8-3a8a-4cb4-80bc-61138e1ac46e
-      type: regular
-      task:
-        id: b92995d8-3a8a-4cb4-80bc-61138e1ac46e
-        version: 1
-        name: Search observed hashes in the Bit9 file catalog
-        script: CBPCatalogFindHash
-      scriptarguments:
-        md5: ${md5s}
-    - id: "9"
-      taskid: 191fb470-abd1-4913-89e4-5d10fd47948d
-      type: regular
-      task:
-        id: 191fb470-abd1-4913-89e4-5d10fd47948d
-        version: 1
-        name: Check if the hashes are included in any Bit9 rules
-        script: CBPFindRule
-      scriptarguments:
-        hash: ${md5s}
-  scriptarguments:
-    brandname: carbonblackprotection
-  results:
-  - brandInstances
-- id: "10"
-  taskid: 7167575d-5af8-4c51-88f2-85b4ab42cd40
-  type: condition
-  task:
-    id: 7167575d-5af8-4c51-88f2-85b4ab42cd40
-    version: 2
-    name: Is ProtectWise available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "11"
-      taskid: 816664c9-eb93-4fb8-88ba-898c0fc767ed
-      type: regular
-      task:
-        id: 816664c9-eb93-4fb8-88ba-898c0fc767ed
-        version: 5
-        name: Search ProtectWise for events involving IP IOCs
-        description: Return up to 50 results. Investigator can paginate if necessary.
-          Does not limit by timespan - searching for all events since beginning of
-          time.
-        script: PWFindEvents
-      scriptarguments:
-        end: ""
-        eventType: ""
-        expandDetails: ""
-        ip: ${ips}
-        killChainStage: ""
-        maxLimit: "50"
-        minLimit: ""
-        nextPage: ""
-        observationStage: ""
-        reverseOrder: ""
-        start: "0"
-        threatCategory: ""
-        threatLevel: ""
-      results:
-      - pwevents
-    - id: "12"
-      taskid: 6d117e6e-138a-437e-87b7-71a6a58b2c9c
+  "0":
+    id: "0"
+    taskid: bba2ed1f-ba17-4fcc-81b3-990115ff1608
+    type: start
+    task:
+      id: bba2ed1f-ba17-4fcc-81b3-990115ff1608
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: a815b6ec-64bf-4a15-8314-5055c5d6d89d
+    type: title
+    task:
+      id: a815b6ec-64bf-4a15-8314-5055c5d6d89d
+      version: -1
+      name: Set up the investigation and acquire IOCs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "38"
+      - "39"
+      - "47"
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 7e822405-36be-4341-857e-bcc4e6b98402
+    type: condition
+    task:
+      id: 7e822405-36be-4341-857e-bcc4e6b98402
+      version: -1
+      name: Need to Load data from attached text files?
+      scriptName: Exists
       type: condition
-      task:
-        id: 6d117e6e-138a-437e-87b7-71a6a58b2c9c
-        version: 2
-        name: Were any events found in ProtectWise?
-        script: UtilAnyResults
-      condition:
-        "no": []
-        "yes":
-        - id: "13"
-          taskid: 794371f4-2579-4185-8b5d-76d564c38c9c
-          type: regular
-          task:
-            id: 794371f4-2579-4185-8b5d-76d564c38c9c
-            version: 3
-            name: ProtectWise - Download full pcaps for detected events
-            script: PWEventPcapDownload
-          scriptarguments:
-            burstsize: ""
-            eventId: ${pwevents}
-            filename: ""
-            waitms: ""
-      scriptarguments:
-        data: ${pwevents}
-  scriptarguments:
-    brandname: protectwise
-  results:
-  - brandInstances
-- id: "14"
-  taskid: bfc248d4-ad90-4e37-8a3a-09dd5fcc95b3
-  type: condition
-  task:
-    id: bfc248d4-ad90-4e37-8a3a-09dd5fcc95b3
-    version: 3
-    name: Is Carbon Black Enterprise Response available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "15"
-      taskid: b94c81f7-3681-4427-8e6d-9a8e8006c5a1
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "41"
+    scriptarguments:
+      value: ${File.EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 340
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ef989693-4e8e-472e-84bf-bf6566ef1851
+    type: regular
+    task:
+      id: ef989693-4e8e-472e-84bf-bf6566ef1851
+      version: -1
+      name: Extract hashes from text file
+      scriptName: ExtractHash
       type: regular
-      task:
-        id: b94c81f7-3681-4427-8e6d-9a8e8006c5a1
-        version: 1
-        name: Search for file hashes using Carbon Black
-        script: CBFindHash
-      scriptarguments:
-        md5: ${md5s}
-      results:
-      - found_file_locations
-    - id: "16"
-      taskid: d072aa22-422f-4630-85ce-80280e60a02f
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      text: ${FileData}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 43ddbd9e-84f5-42c1-8398-e94851c85cff
+    type: regular
+    task:
+      id: 43ddbd9e-84f5-42c1-8398-e94851c85cff
+      version: -1
+      name: Extract IP address from text file
+      scriptName: ExtractIP
       type: regular
-      task:
-        id: d072aa22-422f-4630-85ce-80280e60a02f
-        version: 3
-        name: Search for connections to IP IOCs using Carbon Black
-        script: CBFindIP
-      scriptarguments:
-        ip: ${ips}
-  scriptarguments:
-    brandname: carbonblack
-  results:
-  - brandInstances
-- id: "17"
-  taskid: b044bf8d-f4a3-4385-8433-73b564548e9e
-  type: condition
-  task:
-    id: b044bf8d-f4a3-4385-8433-73b564548e9e
-    version: 3
-    name: Is Crowdstrike Falcon Host available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "18"
-      taskid: bb7e7f30-a83f-48c2-8f78-b3450956a262
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      text: ${FileData}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    taskid: c105e3b1-8e9a-40cd-8249-5337e8417b06
+    type: title
+    task:
+      id: c105e3b1-8e9a-40cd-8249-5337e8417b06
+      version: -1
+      name: Hunt
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+  "38":
+    id: "38"
+    taskid: 37fc767e-b23c-463a-84da-40a94e6b1b6a
+    type: regular
+    task:
+      id: 37fc767e-b23c-463a-84da-40a94e6b1b6a
+      version: -1
+      name: Collect Hashes from incident
+      scriptName: ExtractHash
       type: regular
-      task:
-        id: bb7e7f30-a83f-48c2-8f78-b3450956a262
-        version: 1
-        name: Search Crowdstrike Falcon Host for hash IOCs
-        script: CSCountDevicesForIOC
-      scriptarguments:
-        type: md5
-        value: ${md5s}
-  scriptarguments:
-    brandname: crowdstrike-host
-  results:
-  - brandInstances
-- id: "19"
-  taskid: bdf251f0-b43d-4ad8-86bc-4be6820992ee
-  type: title
-  task:
-    id: bdf251f0-b43d-4ad8-86bc-4be6820992ee
-    version: 1
-    name: Respond
-- id: "20"
-  taskid: 0a67caf0-d135-4090-8af0-f5f68f5f50f4
-  type: regular
-  task:
-    id: 0a67caf0-d135-4090-8af0-f5f68f5f50f4
-    version: 2
-    name: Aggregate detected IOCs
-    script: AggregateIOCs
-  scriptarguments:
-    domains: ""
-    hashes: ${found_hashes}
-    ips: ${found_ips}
-  results:
-  - found_iocs
-- id: "21"
-  taskid: 1752cc03-e89e-4984-8f5e-abd02ee4e2de
-  type: condition
-  task:
-    id: 1752cc03-e89e-4984-8f5e-abd02ee4e2de
-    version: 3
-    name: Were any IOCs detected in our environment?
-    script: UtilAnyResults
-  condition:
-    "no": []
-    "yes":
-    - id: "22"
-      taskid: 3f0b4461-5357-4006-85f5-28a76f840423
-      type: condition
-      task:
-        id: 3f0b4461-5357-4006-85f5-28a76f840423
-        version: 2
-        name: Were any files with matching hashes found on endpoints?
-        script: UtilAnyResults
-      condition:
-        "no": []
-        "yes":
-        - id: "23"
-          taskid: e4e55580-56d4-41ce-8793-4794ee341dc2
-          type: condition
-          task:
-            id: e4e55580-56d4-41ce-8793-4794ee341dc2
-            version: 2
-            name: Is Carbon Black Enterprise Response available?
-            script: IsIntegrationAvailable
-          condition:
-            "no": []
-            "yes":
-            - id: "24"
-              taskid: 9a4f2fc3-1610-4193-8c96-6c6982707feb
-              type: regular
-              task:
-                id: 9a4f2fc3-1610-4193-8c96-6c6982707feb
-                version: 3
-                name: Pull files from endpoints using Carbon Black Live
-                script: CBLiveFetchFiles
-              scriptarguments:
-                filelocations: ${found_file_locations}
-          scriptarguments:
-            brandname: carbonblack
-          results:
-          - brandInstances
-      scriptarguments:
-        data: ${found_file_locations}
-    - id: "25"
-      taskid: 07ca8293-9700-4749-830b-0e5e548c0acd
-      type: condition
-      task:
-        id: 07ca8293-9700-4749-830b-0e5e548c0acd
-        version: 1
-        name: Is Slack Available?
-        script: IsIntegrationAvailable
-      condition:
-        "no": []
-        "yes":
-        - id: "26"
-          taskid: a6874334-2b8d-4cb5-8610-41d427021078
-          type: regular
-          task:
-            id: a6874334-2b8d-4cb5-8610-41d427021078
-            version: 2
-            name: Send alert to SOC team Slack channel
-            script: SlackSend
-          scriptarguments:
-            channel: ""
-            entry: ""
-            group: ""
-            message: ${found_iocs}
-            to: ""
-      scriptarguments:
-        brandname: slack
-      results:
-      - brandInstances
-    - id: "27"
-      taskid: b0613079-c6f9-444d-8e1e-9fe47970b75e
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: ""
+      text: ${incident}
+      value: ${File.Extension(val.indexOf('csv')>=0)}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+  "39":
+    id: "39"
+    taskid: 7845e26f-f375-4a41-8720-0d186a052382
+    type: regular
+    task:
+      id: 7845e26f-f375-4a41-8720-0d186a052382
+      version: -1
+      name: Collect IPs from incident
+      scriptName: ExtractIP
       type: regular
-      task:
-        id: b0613079-c6f9-444d-8e1e-9fe47970b75e
-        version: 1
-        name: Raise incident severity to High
-        script: IncidentSet
-      scriptarguments:
-        addLabels: ""
-        details: ""
-        labels: ""
-        name: ""
-        owner: ""
-        playbook: ""
-        severity: high
-        stage: ""
-        type: ""
-        updatePlaybookForType: ""
-    - id: "28"
-      taskid: 9d51363b-f3b6-467d-866e-a944747a8da5
-      type: condition
-      task:
-        id: 9d51363b-f3b6-467d-866e-a944747a8da5
-        version: 1
-        name: Is Twilio Available?
-        script: IsIntegrationAvailable
-      condition:
-        "no": []
-        "yes":
-        - id: "29"
-          taskid: 3e9137ce-18e4-4bfe-8277-391e21eaeeed
-          type: regular
-          task:
-            id: 3e9137ce-18e4-4bfe-8277-391e21eaeeed
-            version: 1
-            name: Send SMS alert
-            description: ' '
-      scriptarguments:
-        brandname: twilio
-      results:
-      - brandInstances
-    - id: "30"
-      taskid: 74a84917-90f0-4922-8f3a-6d01050e9687
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: ""
+      text: ${incident}
+      value: ${File.Extension(val.indexOf('csv')>=0)}
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+  "41":
+    id: "41"
+    taskid: 5e13d196-7f69-48e0-88d8-e9347d2b0567
+    type: regular
+    task:
+      id: 5e13d196-7f69-48e0-88d8-e9347d2b0567
+      version: -1
+      name: Load contents of attached textual files
+      scriptName: ReadFile
       type: regular
-      task:
-        id: 74a84917-90f0-4922-8f3a-6d01050e9687
-        version: 1
-        name: Issue report to IR team leader by email
-        script: SendEmail
-      scriptarguments:
-        attachIDs: ""
-        bcc: ""
-        body: 'IPs found: ${found_ips}\nHashes found: ${found_md5s}\n'
-        cc: ""
-        subject: Rapid IOC Hunt completed
-        to: ""
-  scriptarguments:
-    data: ${found_iocs}
-- id: "31"
-  taskid: afade9c4-b1d2-4bb6-8a60-6db1163e6560
-  type: title
-  task:
-    id: afade9c4-b1d2-4bb6-8a60-6db1163e6560
-    version: 1
-    name: Deploy IOCs in preventive measures
-- id: "32"
-  taskid: e588edda-2586-452c-84db-393852676d6b
-  type: condition
-  task:
-    id: e588edda-2586-452c-84db-393852676d6b
-    version: 1
-    name: Is Checkpoint FW Available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "33"
-      taskid: a90fd545-bf25-46fe-8e2c-f7102fd8ed1a
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    scriptarguments:
+      entryID: ${File.EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+  "47":
+    id: "47"
+    taskid: 41007d8b-b092-4c62-8bb4-9176b3b8ad62
+    type: regular
+    task:
+      id: 41007d8b-b092-4c62-8bb4-9176b3b8ad62
+      version: -1
+      name: Collect URLs from incident
+      scriptName: ExtractURL
       type: regular
-      task:
-        id: a90fd545-bf25-46fe-8e2c-f7102fd8ed1a
-        version: 3
-        name: Block IP addresses using Checkpoint
-        script: CPBlockIP
-      scriptarguments:
-        direction: both
-        ip: ${ips}
-        ipname: ioc-ip
-        rulename: ioc-rule
-      results:
-      - BlockedIPs
-  scriptarguments:
-    brandname: checkpoint
-  results:
-  - brandInstances
-- id: "34"
-  taskid: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
-  type: condition
-  task:
-    id: 748ff23d-6431-46bf-81e5-769ce4e4ac7d
-    version: 1
-    name: Is Carbon Black Protection (Bit9) Available?
-    script: IsIntegrationAvailable
-  condition:
-    "no": []
-    "yes":
-    - id: "35"
-      taskid: f6cf0409-0427-4e73-8f38-c9716574da76
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: ""
+      text: ${incident}
+      value: ${File.Extension(val.indexOf('csv')>=0)}
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 690
+        }
+      }
+  "48":
+    id: "48"
+    taskid: 80ca226e-af97-4a74-818b-5cbc2f74e7e5
+    type: regular
+    task:
+      id: 80ca226e-af97-4a74-818b-5cbc2f74e7e5
+      version: -1
+      name: Analyst work - hunt manually
+      scriptName: Print
       type: regular
-      task:
-        id: f6cf0409-0427-4e73-8f38-c9716574da76
-        version: 1
-        name: Ban the hashes in Bit9
-        script: CBPBanHash
-      scriptarguments:
-        hash: ${md5s}
-  scriptarguments:
-    brandname: carbonblackprotection
-  results:
-  - brandInstances
-- id: "36"
-  taskid: 7328ba29-4b00-4e85-8a6f-71a38657a064
-  type: regular
-  task:
-    id: 7328ba29-4b00-4e85-8a6f-71a38657a064
-    version: 1
-    name: Pause for analyst's approval
-- id: "37"
-  taskid: 90a62474-344b-4c59-866c-57e556d97672
-  type: regular
-  task:
-    id: 90a62474-344b-4c59-866c-57e556d97672
-    version: 1
-    name: Close Investigation
-    script: CloseInvestigation
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Happy hunting!
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1185
+        }
+      }
+  "49":
+    id: "49"
+    taskid: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+    type: playbook
+    task:
+      id: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+      version: -1
+      name: ""
+      playbookName: Hunt for bad IOCs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_41_yes": 0.55,
+      "3_6_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

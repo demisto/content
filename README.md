@@ -22,6 +22,12 @@ The scripts are built to run inside the Demisto Platform - they can query or sen
 You can take your logic and the way you want to work and write your own scripts, allowing for maximum flexibility.
 The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
+## Integrations
+Integrations written in Javascript or Python enable the Demisto Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
+
+## Reports
+Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
+
 ## Contributing Content
 For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 

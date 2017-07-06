@@ -574,7 +574,7 @@ script: |-
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType:
+  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
@@ -613,6 +613,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package.
 system: true
+deprecated: true
 args:
 - name: entryid
   required: true

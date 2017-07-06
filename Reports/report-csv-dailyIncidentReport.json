@@ -15,6 +15,7 @@
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
+    "incident.severity.0.5": { "type": "string", "value": "Informational" },
     "incident.severity.1": { "type": "string", "value": "Low" },
     "incident.severity.2": { "type": "string", "value": "Medium" },
     "incident.severity.3": { "type": "string", "value": "High" },
@@ -32,7 +33,8 @@
     "investigation.type.9": { "type": "string", "value": "Playground" },
     "investigation.created": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
     "investigation.closed": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
-    "investigation.openDuration": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" }
+    "investigation.openDuration": { "type": "duration" },
+    "incident.openDuration": { "type": "duration" }
   },
   "sections": [
     {

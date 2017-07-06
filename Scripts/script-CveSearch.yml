@@ -45,6 +45,7 @@ tags:
 - enhancement
 comment: Search vulnerability information based on CVE ID
 system: true
+deprecated: true
 args:
 - name: cveId
   required: true

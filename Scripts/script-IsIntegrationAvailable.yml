@@ -14,6 +14,7 @@ script: |
 type: python
 tags:
 - infra
+- Condition
 system: true
 args:
 - name: brandname
@@ -22,3 +23,8 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+outputs:
+- contextPath: yes
+  description: if integration is available
+- contextPath: no
+  description: if there is no instance for the given brand

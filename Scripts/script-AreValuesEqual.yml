@@ -3,12 +3,19 @@ commonfields:
   version: -1
 name: AreValuesEqual
 script: |
-  answer = 'yes' if demisto.args()['left'] == demisto.args()['right'] else 'no'
-  demisto.setContext('AreValuesEqual', answer)
-  demisto.results(answer)
-type: python
+  var left = (typeof args.left === 'string') ? args.left : args.left + '';
+  var right = (typeof args.right === 'string') ? args.right : args.right + '';
+  var answer = 'no';
+  if (left === right) {
+    answer = 'yes';
+  }
+  
+  setContext('AreValuesEqual', answer)
+  return answer;
+type: javascript
 tags:
-- util
+- Utility
+- Condition
 system: true
 args:
 - name: left
@@ -18,6 +25,11 @@ args:
 - name: right
   required: true
   description: Second value for comparison
+outputs:
+- contextPath: yes
+  description: if left is equal to right
+- contextPath: no
+  description: if left is not equal to right
 scripttarget: 0
 comment: Check whether the values provided in arguments are equal.
 dependson: {}

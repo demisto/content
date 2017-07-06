@@ -12,8 +12,10 @@ script: |
 type: python
 tags:
 - server
-- util
+- Utility
+- Condition
 system: true
+deprecated: true
 args:
 - name: key
   required: true
@@ -26,3 +28,8 @@ comment: Check if a context key is set. Can also optionally provide a value argu
 scripttarget: 0
 dependson: {}
 timeout: 0s
+outputs:
+- contextPath: yes
+  description: if given value exists in context
+- contextPath: no
+  description: if given value does not exist in context

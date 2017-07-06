@@ -11,8 +11,8 @@ script: |-
   import time
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8}
   formats = {'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
-  brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'wildfire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
-  providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'Wildfire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
+  brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'WildFire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
+  providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   # Checks if the given entry from a URL reputation query is positive (known bad)
   def positiveUrl(entry):
@@ -65,6 +65,24 @@ script: |-
       if t:
           return time.ctime(t)
       return ''
+  def compareDates(date1, date2, dateFormat):
+    # should return delta between two dates
+    # if instead of date passed string 'now' then will be compared to current time
+    # date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
+    first = None
+    if date1 == 'now':
+        first = datetime.now(tzlocal())
+    elif isinstance(date1, basestring):
+        first = parse(date1)
+
+    second = None
+    if date2 == 'now':
+        second = datetime.now(tzlocal())
+    elif isinstance(date2, basestring):
+        second = parse(date2)
+    delta = first - second
+
+    return delta
   def shortCrowdStrike(entry):
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['cs'] and demisto.get(entry, 'Contents'):
@@ -228,11 +246,20 @@ script: |-
         mdResult = '### ' + name + '\n'
 
     if t:
-        mdResult += '|'.join(headers) + '\n'
-        mdResult += '|'.join(['-'] * len(headers)) + '\n'
+        if len(headers) == 1:
+          mdResult += headers[0]+'|' + '\n'
+        else:
+          mdResult += '|'.join(headers) + '\n'
+        sep = '-'
+        if len(headers) == 1:
+          sep = '-|'
+        mdResult += '|'.join([sep] * len(headers)) + '\n'
         for entry in t:
             vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
-            mdResult += '|'.join(vals) + '\n'
+            if len(vals) == 1:
+              mdResult += vals[0]+'|' + '\n'
+            else:
+              mdResult += '|'.join(vals) + '\n'
     else:
         mdResult += '**No entries.**\n'
     return mdResult

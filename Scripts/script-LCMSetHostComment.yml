@@ -46,7 +46,6 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - LCMHosts
   - lcm-set-host-comment
 timeout: 0s
 system: true

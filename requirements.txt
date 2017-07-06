@@ -1,0 +1,8 @@
+Google-Search-API
+pyping
+threatconnect
+psycopg2
+pdfx
+PyPDF2
+splunk-sdk
+PyYAML

@@ -1,0 +1,427 @@
+id: Qualys-Test
+version: -1
+name: Qualys-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e68e7fba-f38f-43da-8445-09bf55af9215
+    type: start
+    task:
+      id: e68e7fba-f38f-43da-8445-09bf55af9215
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 130
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 61b07821-5b91-4e88-84f0-fd36f6bd21dc
+    type: regular
+    task:
+      id: 61b07821-5b91-4e88-84f0-fd36f6bd21dc
+      version: -1
+      name: Delete All Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 746
+        }
+      }
+  "25":
+    id: "25"
+    taskid: cc82da4d-4b6f-4a85-8a02-b729c2d15e45
+    type: regular
+    task:
+      id: cc82da4d-4b6f-4a85-8a02-b729c2d15e45
+      version: -1
+      name: qualys-report-list
+      description: get list of generated reports in the system
+      script: Qualys|||qualys-report-list
+      type: regular
+      iscommand: true
+      brand: Qualys
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expires_before_datetime: ""
+      id: ""
+      state: ""
+      user_login: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 350
+        }
+      }
+  "26":
+    id: "26"
+    taskid: d2ff0bc8-af4e-4a8b-8186-febe3535d70a
+    type: regular
+    task:
+      id: d2ff0bc8-af4e-4a8b-8186-febe3535d70a
+      version: -1
+      name: VerifyContext qualys-report-list
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue: ""
+      extend-context: ""
+      fields: ID,OutputFormat,Type,Title,Status
+      isArray: "true"
+      path: Qualys.Report
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 551
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 1aaf2615-d941-4a4f-8a5f-73e71896bd2f
+    type: regular
+    task:
+      id: 1aaf2615-d941-4a4f-8a5f-73e71896bd2f
+      version: -1
+      name: qualys-pc-scan-list
+      description: Get  list of compliance scans in your account.
+      script: Qualys|||qualys-pc-scan-list
+      type: regular
+      iscommand: true
+      brand: Qualys
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      launched_after_datetime: ""
+      launched_before_datetime: ""
+      processed: ""
+      scan_id: ""
+      show_ags: ""
+      show_last: ""
+      show_op: ""
+      show_status: ""
+      state: ""
+      target: ""
+      type: ""
+      user_login: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 920
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 9a545037-29ec-45eb-877a-49cfb8533657
+    type: regular
+    task:
+      id: 9a545037-29ec-45eb-877a-49cfb8533657
+      version: -1
+      name: VerifyContext qualys-pc-scan-list
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      expectedValue: ""
+      extend-context: ""
+      fields: Reference,LaunchDatetime,Processed,Target,Duration,Title,Type,ID,UserLogin,Status
+      isArray: "true"
+      path: Qualys.Scan
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1125
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 07793278-6de6-4aa5-8c16-7fb0be95f7df
+    type: regular
+    task:
+      id: 07793278-6de6-4aa5-8c16-7fb0be95f7df
+      version: -1
+      name: Delete All Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1299
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 4a350a03-7926-4e51-8ba7-a85e245d91d1
+    type: regular
+    task:
+      id: 4a350a03-7926-4e51-8ba7-a85e245d91d1
+      version: -1
+      name: qualys-vm-scan-list
+      description: Lists vulnerability scans in the user’s account
+      script: Qualys|||qualys-vm-scan-list
+      type: regular
+      iscommand: true
+      brand: Qualys
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      launched_after_datetime: ""
+      launched_before_datetime: ""
+      processed: ""
+      scan_ref: ""
+      show_ags: ""
+      show_last: ""
+      show_op: ""
+      show_status: ""
+      state: ""
+      target: ""
+      type: ""
+      user_login: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1490
+        }
+      }
+  "31":
+    id: "31"
+    taskid: d0fef404-7f83-4e84-8a33-ad1d2c1c4246
+    type: regular
+    task:
+      id: d0fef404-7f83-4e84-8a33-ad1d2c1c4246
+      version: -1
+      name: VerifyContext qualys-vm-scan-list
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      expectedValue: ""
+      extend-context: ""
+      fields: Reference,LaunchDatetime,Processed,Target,Duration,Title,Type,UserLogin,ProcessingPriority
+      isArray: "true"
+      path: Qualys.Scan
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1692
+        }
+      }
+  "32":
+    id: "32"
+    taskid: 9103f94a-a410-4c1b-8885-749f1f05b6ea
+    type: regular
+    task:
+      id: 9103f94a-a410-4c1b-8885-749f1f05b6ea
+      version: -1
+      name: Delete All Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1915
+        }
+      }
+  "33":
+    id: "33"
+    taskid: d17743e8-95b1-48cf-8460-f4b621b24721
+    type: regular
+    task:
+      id: d17743e8-95b1-48cf-8460-f4b621b24721
+      version: -1
+      name: qualys-report-template-list
+      script: Qualys|||qualys-report-template-list
+      type: regular
+      iscommand: true
+      brand: Qualys
+    nexttasks:
+      '#none#':
+      - "34"
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 2122
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 0155ac99-ce9f-4033-86e4-4eb7a80ef7a6
+    type: regular
+    task:
+      id: 0155ac99-ce9f-4033-86e4-4eb7a80ef7a6
+      version: -1
+      name: VerifyContext qualys-report-template-list
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      expectedValue: ""
+      extend-context: ""
+      fields: Global,ID,LastUpdate,Title,Type,User.FirstName,User.LastName,User.Login,TemplateType
+      isArray: "true"
+      path: Qualys.ReportTemplate
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 2333
+        }
+      }
+  "35":
+    id: "35"
+    taskid: cb946444-044f-4240-8c23-253108639daa
+    type: regular
+    task:
+      id: cb946444-044f-4240-8c23-253108639daa
+      version: -1
+      name: Delete All Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 2546
+        }
+      }
+  "37":
+    id: "37"
+    taskid: 49e5ffd3-6275-44f3-88ef-4f59e68be8a6
+    type: regular
+    task:
+      id: 49e5ffd3-6275-44f3-88ef-4f59e68be8a6
+      version: -1
+      name: VerifyContext qualys-scheduled-report-list
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      extend-context: ""
+      fields: ID,OutputFormat,Schedule,Title
+      isArray: "true"
+      path: Qualys.Report
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 3004
+        }
+      }
+  "38":
+    id: "38"
+    taskid: cf7fd751-a6d6-4c15-87a5-d8d0a70114ab
+    type: regular
+    task:
+      id: cf7fd751-a6d6-4c15-87a5-d8d0a70114ab
+      version: -1
+      name: qualys-scheduled-report-list
+      description: Get list of scheduled reports
+      script: Qualys|||qualys-scheduled-report-list
+      type: regular
+      iscommand: true
+      brand: Qualys
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id: ""
+      is_active: ""
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 2784
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2969,
+        "width": 380,
+        "x": 603,
+        "y": 130
+      }
+    }
+  }
+inputs: []

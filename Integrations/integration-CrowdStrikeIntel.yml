@@ -1,0 +1,775 @@
+commonfields:
+  id: FalconIntel
+  version: -1
+name: FalconIntel
+display: Falcon Intel
+category: Data Enrichment
+image: data:image/png;base64,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
+description: Actors, indicators and reports intelligence
+detaileddescription: |-
+  Please provide the API id and key for the CrowsStrike Falcon Intelligence.
+  API Key Pairs can be generated by accessing the CrowdStrike API tab located in the user settings on the Intelligence Portal.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://intelapi.crowdstrike.com/
+  type: 0
+  required: true
+- display: API ID
+  name: id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    var serverUrl = params.url;
+    if (serverUrl[serverUrl.length - 1] !== '/') {
+        serverUrl += '/';
+    }
+
+    var doReq = function(method, path, query, body) {
+        var result = http(
+            serverUrl + path + encodeToURLQuery(query),
+            {
+                Headers: {
+                    'X-CSIX-CUSTID': [params.id],
+                    'X-CSIX-CUSTKEY': [params.key],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Method: method,
+                Body: body ? JSON.stringify(body) : ''
+            },
+            params.insecure,
+            params.useproxy
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+        }
+        if (result.Body === '') {
+            throw 'No content recieved.';
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (obj.errors && obj.errors.length > 0) {
+            throw JSON.stringify(obj.errors);
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+    };
+
+    var dateToEpoch = function(d) {
+        return d ? new Date(d).getTime() : null;
+    };
+
+    var add = function(a, k, ok, f) {
+        if (args[k]) {
+            var parts = args[k].split(',');
+            for (var i=0; i<parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+            a[ok ? ok : k] = f ? f(args[k]) : parts.length > 1 ? parts : args[k];
+        }
+    };
+
+    var simpleValue = function(o, t) {
+        return o ? '- ' + t + ': ' + o.map(function(curr) {return curr.value;}).join(', ') + '\n' : '';
+    };
+
+    // Not passing the arguments because there are a lot of them
+    var doActors = function() {
+        var a = {};
+        add(a, 'q');
+        add(a, 'name');
+        add(a, 'desc');
+        add(a, 'origins');
+        add(a, 'targetContries', 'target_countries');
+        add(a, 'targetIndustries', 'target_industries');
+        add(a, 'motivations');
+        add(a, 'slug');
+        add(a, 'offset');
+        add(a, 'limit');
+        add(a, 'sort');
+        add(a, 'minLastModifiedDate', 'min_last_modified_date', dateToEpoch);
+        add(a, 'maxLastModifiedDate', 'max_last_modified_date', dateToEpoch);
+        add(a, 'minLastActivityDate', 'min_last_activity_date', dateToEpoch);
+        add(a, 'maxLastActivityDate', 'max_last_activity_date', dateToEpoch);
+        var res = doReq('GET', 'actors/queries/actors/v1', a);
+        var md = '## Falcon Intel Actor search\n';
+        if (res.obj.resources) {
+            // Now need to retrieve the full data for each id
+            var fullArgs = {ids: res.obj.resources, fields: '__full__'};
+            var resFull = doReq('GET', 'actors/entities/actors/v1', fullArgs);
+            // Restore original pagination
+            resFull.obj.meta.pagination = res.obj.meta.pagination;
+            res = resFull;
+            if (res.obj.resources) {
+                var o = res.obj.resources;
+                for (var i=0; i<o.length; i++) {
+                    /*if (o[i].image && o[i].image.url) {
+                        md += '![' + o[i].name +'](' + o[i].image.url + ' "' + o[i].name + '")\n';
+                    }*/
+                    md += '### ' + o[i].name + '\n';
+                    md += '- ID: [' + o[i].id + '](' + o[i].url + ')\n';
+                    md += '- Slug: ' + o[i].slug + '\n';
+                    md += '- Description: ' + o[i].short_description + '\n';
+                    md += '- First/Last activity: ' + new Date(o[i].first_activity_date * 1000) + ' / ' + new Date(o[i].last_activity_date * 1000) + '\n';
+                    md += '- Active: ' + nvl(o[i].active) + '\n';
+                    md += '- Known as: ' + nvl(o[i].known_as) + '\n';
+                    md += simpleValue(o[i].target_industries, 'Target industries');
+                    md += simpleValue(o[i].target_countries, 'Target countries');
+                    md += simpleValue(o[i].origins, 'Origins');
+                    md += simpleValue(o[i].motivations, 'Motivations');
+                    md += '- Capability: ' + (o[i].capability ? o[i].capability.value : 'Unknown') + '\n';
+                    md += '- Group: ' + (o[i].group ? o[i].group.value : 'Unknown') + '\n';
+                    md += '- Region: ' + (o[i].region ? o[i].region.value : 'Unknown') + '\n';
+                    if (o[i].kill_chain) {
+                        md += '#### Kill chain\n';
+                        var kkeys = Object.keys(o[i].kill_chain);
+                        for (var j=0; j<kkeys.length; j++) {
+                            if (kkeys[j].indexOf('rich_text') === 0) {
+                                continue;
+                            }
+                            md += '- ' + kkeys[j] + ': ' + o[i].kill_chain[kkeys[j]] + '\n';
+                        }
+                    }
+                    md += '\n';
+                }
+            } else {
+                md = 'No result found';
+            }
+        } else {
+            md = 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var indicatorToMd = function(o) {
+        var md = '';
+        if (o) {
+            md += '### ' + o.indicator + '\n';
+            md += '- Type: ' + nvl(o.type) + '\n';
+            md += '- Last update: ' + nvl(o.last_update) + '\n';
+            md += '- Publish date: ' + nvl(o.publish_date) + '\n';
+            md += '- Malicious confidence: ' + nvl(o.malicious_confidence) + '\n';
+            if (o.reports) {
+                md += '- Reports: ' + o.reports.join(', ') + '\n';
+            }
+            if (o.actors) {
+                md += '- Actors: ' + o.actors.join(', ') + '\n';
+            }
+            if (o.malware_families) {
+                md += '- Malware families: ' + o.malware_families.join(', ') + '\n';
+            }
+            if (o.kill_chains) {
+                md += '- Kill chains: ' + o.kill_chains.join(', ') + '\n';
+            }
+            if (o.domain_types) {
+                md += '- Domain types: ' + o.domain_types.join(', ') + '\n';
+            }
+            if (o.ip_address_types) {
+                md += '- IP Address types: ' + o.ip_address_types.join(', ') + '\n';
+            }
+            if (o.relations) {
+                md += '#### Relations\n';
+                md += arrToMd(o.relations) + '\n';
+            }
+            if (o.labels) {
+                md += '#### Labels\n';
+                md += arrToMd(o.labels) + '\n';
+            }
+        }
+        return md;
+    };
+
+    var addIndicatorToContext = function(t, v, score, ec, path) {
+        var n = {properties_to_append: ['Malicious', 'Reports', 'Actors', 'MalwareFamilies', 'KillChains']};
+        n[t] = v.indicator;
+        if (v.reports && v.reports.length > 0) {
+            n.Reports = v.reports;
+        }
+        if (v.actors && v.actors.length > 0) {
+            n.Actors = v.actors;
+        }
+        if (v.malware_families && v.malware_families.length > 0) {
+            n.MalwareFamilies = v.malware_families;
+        }
+        if (v.kill_chains && v.kill_chains.length > 0) {
+            n.KillChains = v.kill_chains;
+        }
+        if (score === 3) {
+            n.Malicious = {Vendor: 'CrowdStrike', Description: 'High confidence'};
+        }
+        if (!ec[path]) {
+            ec[path] = [];
+        }
+        ec[path].push(n);
+    };
+
+    // Not passing the arguments because there are a lot of them
+    var doIndicators = function() {
+        var a = {};
+        a[args.filter] = args.value;
+        add(a, 'page');
+        add(a, 'pageSize');
+        if (args.sort) {
+            var parts = args.sort.split('.');
+            a.sort = parts[0];
+            if (parts.length > 1) {
+                a.order = parts[1];
+            }
+        }
+        var res = doReq('GET', 'indicator/v1/search/' + args.parameter, a);
+        var md = '## Falcon Intel Indicator Search for: ' + args.value + '\n';
+        var found = false;
+        var ec = {};
+        if (res.obj) {
+            for (var i=0; i<res.obj.length; i++) {
+                md += indicatorToMd(res.obj[i]);
+                var dbotScore = 0;
+                if (res.obj[i].malicious_confidence === 'high') {
+                    dbotScore = 3;
+                } else if (res.obj[i].malicious_confidence === 'medium') {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                var dbotType = '';
+                if (res.obj[i].type === 'hash_md5') {
+                    addIndicatorToContext('MD5', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'hash_sha1') {
+                    addIndicatorToContext('SHA1', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'hash_sha256') {
+                    addIndicatorToContext('SHA256', res.obj[i], dbotScore, ec, outputPaths.file);
+                    dbotType = 'hash';
+                } else if (res.obj[i].type === 'ip_address') {
+                    addIndicatorToContext('Address', res.obj[i], dbotScore, ec, outputPaths.ip);
+                    dbotType = 'ip';
+                } else if (res.obj[i].type === 'url') {
+                    addIndicatorToContext('Data', res.obj[i], dbotScore, ec, outputPaths.url);
+                    dbotType = 'url';
+                } else if (res.obj[i].type === 'domain') {
+                    addIndicatorToContext('Name', res.obj[i], dbotScore, ec, outputPaths.domain);
+                    dbotType = 'domain';
+                }
+                if (dbotType) {
+                    if (!ec.DBotScore) {
+                        ec.DBotScore = [];
+                    }
+                    ec.DBotScore.push({Indicator: res.obj[i].indicator, Type: dbotType, Vendor: 'CrowdStrike', Score: dbotScore});
+                }
+                found = true;
+            }
+        }
+        if (!found) {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doIndicator = function(ind, type, title, appendContextFunc) {
+        var a = {equal: ind};
+        var res = doReq('GET', 'indicator/v1/search/indicator', a);
+        var md = '## ' + title + ': ' + ind + '\n';
+        var ec = {};
+        var found = false;
+        if (res.obj) {
+            for (var i=0; i<res.obj.length; i++) {
+                md += indicatorToMd(res.obj[i]);
+                var dbotScore = 0;
+                if (res.obj[i].malicious_confidence === 'high') {
+                    dbotScore = 3;
+                    appendContextFunc(ec);
+                } else if (res.obj[i].malicious_confidence === 'medium') {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: dbotScore}; // ok to override, we expect only one
+                found = true;
+            }
+        }
+        if (!found) {
+            md += 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+    var doFile = function(hash) {
+        return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
+            var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
+            var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
+            malFile[hashType] = hash;
+            addMalicious(ec, outputPaths.file, malFile);
+        });
+    };
+
+    var doIP = function(ip) {
+        return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+        });
+    };
+
+    var doURL = function(url) {
+        return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+        });
+    };
+
+    var doDomain = function(domain) {
+        return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
+            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+        });
+    };
+
+    var doReports = function() {
+        var a = {};
+        add(a, 'q');
+        add(a, 'name');
+        add(a, 'actor');
+        add(a, 'targetContries', 'target_countries');
+        add(a, 'targetIndustries', 'target_industries');
+        add(a, 'motivations');
+        add(a, 'slug');
+        add(a, 'description');
+        add(a, 'type');
+        add(a, 'subType', 'sub_type');
+        add(a, 'tags');
+        add(a, 'offset');
+        add(a, 'limit');
+        add(a, 'sort');
+        add(a, 'minLastModifiedDate', 'min_last_modified_date', dateToEpoch);
+        add(a, 'maxLastModifiedDate', 'max_last_modified_date', dateToEpoch);
+        var res = doReq('GET', 'reports/queries/reports/v1', a);
+        var md = '';
+        if (res.obj.resources) {
+            // Now need to retrieve the full data for each id
+            var resFull = doReq('GET', '/reports/entities/reports/v1', {ids: res.obj.resources});
+            // Restore original pagination
+            resFull.obj.meta.pagination = res.obj.meta.pagination;
+            res = resFull;
+            if (res.obj.resources) {
+                var o = res.obj.resources;
+                for (var i=0; i<o.length; i++) {
+                    md += 'ID: [' + o[i].id + '](' + o[i].url + ')\n';
+                    md += 'Name: ' + o[i].name + '\n';
+                    md += 'Type: ' + o[i].type.name + '\n';
+                    md += 'Sub type: ' + o[i].sub_type.name + '\n';
+                    md += 'Slug: ' + o[i].slug + '\n';
+                    md += 'Created: ' + new Date(o[i].created_date) + '\n';
+                    md += 'Last modified: ' + new Date(o[i].last_modified_date) + '\n'
+                    md += 'Description: ' + o[i].short_description + '\n';
+                    md += 'Target industries: ' + o[i].target_industries.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    md += 'Target countries: ' + o[i].target_countries.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    md += 'Motivations: ' + o[i].motivations.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    md += 'Tags: ' + o[i].tags.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                }
+            } else {
+                md = 'No result found';
+            }
+        } else {
+            md = 'No result found';
+        }
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    switch (command) {
+        case 'test-module':
+            doReq('GET', 'actors/queries/actors/v1', {q: 'panda'});
+            return true;
+        case 'file':
+            return doFile(args.file);
+        case 'ip':
+            return doIP(args.ip);
+        case 'url':
+            return doURL(args.url);
+        case 'domain':
+            return doDomain(args.domain);
+        case 'cs-actors':
+            return doActors();
+        case 'cs-indicators':
+            return doIndicators();
+        case 'cs-reports':
+            return doReports();
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: file
+    deprecated: false
+    arguments:
+    - name: file
+      required: true
+      deprecated: false
+      default: true
+      description: The file hash md5/sha1/sha256 to check
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+    description: Check file reputation
+  - name: url
+    deprecated: false
+    arguments:
+    - name: url
+      required: true
+      deprecated: false
+      default: true
+      description: URL to be checked
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URL
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+    description: Check the given URL reputation
+  - name: domain
+    deprecated: false
+    arguments:
+    - name: domain
+      required: true
+      deprecated: false
+      default: true
+      description: Domain to be checked
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+    description: Check the given URL reputation
+  - name: ip
+    deprecated: false
+    arguments:
+    - name: ip
+      required: true
+      deprecated: false
+      default: true
+      description: IP to check
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    description: Check IP reputation
+  - name: cs-actors
+    deprecated: false
+    arguments:
+    - name: q
+      deprecated: false
+      default: true
+      description: Search all fields for the given data
+    - name: name
+      deprecated: false
+      description: Search based on actor name
+    - name: desc
+      deprecated: false
+      description: Search based on description
+    - name: minLastModifiedDate
+      deprecated: false
+      description: Search range from modified date. Dates are formatted as YYYY-MM-DD.
+    - name: maxLastModifiedDate
+      deprecated: false
+      description: Search range to modified date. Dates are formatted as YYYY-MM-DD.
+    - name: minLastActivityDate
+      deprecated: false
+      description: Search range from activity date. Dates are formatted as YYYY-MM-DD.
+    - name: maxLastActivityDate
+      deprecated: false
+      description: Search range to activity date. Dates are formatted as YYYY-MM-DD.
+    - name: origins
+      deprecated: false
+      description: Search by origins separated by ","
+    - name: targetCountries
+      deprecated: false
+      description: Search by target countries separated by ","
+    - name: targetIndustries
+      deprecated: false
+      description: Search by target industries separated by ","
+    - name: motivations
+      deprecated: false
+      description: Search by motivations separated by ","
+    - name: offset
+      deprecated: false
+      description: Which page of the results to retrieve. It is 0 based.
+    - name: limit
+      deprecated: false
+      description: Number of results for the page
+    - name: sort
+      deprecated: false
+      description: Sort is field_name.order, field_name.order where order is either
+        asc or desc
+    - name: slug
+      deprecated: false
+      description: 'Search by ''slug'' or short descriptive name. Ex: "anchor-panda"'
+    description: Search known actors based on the given parameters. Dates are formatted
+      as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time. Origins,
+      targetCountries, targetIndustries and motivations can all receive multiple values
+      separated by ",". Offset is 0 based. Sort is field_name.order, field_name.order
+      where order is either asc or desc.
+  - name: cs-indicators
+    deprecated: false
+    arguments:
+    - name: parameter
+      required: true
+      deprecated: false
+      description: Based on what parameter to search. See CrowdStrike documentation
+        for details. Can be one of indicator, type, report, actor, malicious_confidence,
+        published_date, last_updated, malware_family, kill_chain, labels, DomainType,
+        EmailAddressType, IntelNews, IPAddressType, Malware, Status, Target, ThreatType,
+        Vulnerability
+    - name: filter
+      required: true
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - match
+      - equal
+      - gt
+      - gte
+      - lt
+      - lte
+      description: Can be either match, equal, gt(e), lt(e)
+    - name: value
+      required: true
+      deprecated: false
+      description: The value for the given parameter
+    - name: sort
+      deprecated: false
+      description: Sort by a field. Should be field_name.order where order is either
+        asc or desc. Fields are indicator, type, report, actor, malicious_confidence,
+        published_date, last_updated.
+    - name: page
+      deprecated: false
+      description: The page to retrieve - 1 based
+    - name: pageSize
+      deprecated: false
+      description: The size of the page to retrieve
+    outputs:
+    - contextPath: File.MD5
+      description: hash MD5
+    - contextPath: File.SHA1
+      description: hash SHA1
+    - contextPath: File.SHA256
+      description: hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Reports
+      description: For malicious files, the associated reports describing the hash
+    - contextPath: File.Actors
+      description: For malicious files, the associated actors
+    - contextPath: File.MalwareFamilies
+      description: For malicious files, the associated malware family
+    - contextPath: File.KillChains
+      description: For malicious files, the associated kill chain
+    - contextPath: URL.Data
+      description: Bad URL
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Reports
+      description: For malicious URL, the associated reports describing the URL
+    - contextPath: URL.Actors
+      description: For malicious URL, the associated actors
+    - contextPath: URL.MalwareFamilies
+      description: For malicious URL, the associated malware family
+    - contextPath: URL.KillChains
+      description: For malicious URL, the associated kill chain
+    - contextPath: Domain.Name
+      description: Bad domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: Domain.Reports
+      description: For malicious domain, the associated reports describing the domain
+    - contextPath: Domain.Actors
+      description: For malicious domain, the associated actors
+    - contextPath: Domain.MalwareFamilies
+      description: For malicious domain, the associated malware family
+    - contextPath: Domain.KillChains
+      description: For malicious domain, the associated kill chain
+    - contextPath: IP.Address
+      description: IP Indicators
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: IP.Reports
+      description: For malicious IP, the associated reports describing the IP
+    - contextPath: IP.Actors
+      description: For malicious IP, the associated actors
+    - contextPath: IP.MalwareFamilies
+      description: For malicious IP, the associated malware family
+    - contextPath: IP.KillChains
+      description: For malicious IP, the associated kill chain
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+    description: Search known indicators based on the given parameters
+  - name: cs-reports
+    deprecated: false
+    arguments:
+    - name: q
+      deprecated: false
+      description: Perform a generic substring search across all fields in a report
+    - name: name
+      deprecated: false
+      description: Search for keywords across report names (i.e. the report’s title)
+    - name: actor
+      deprecated: false
+      description: Search for a report related to a particular actor. For a list of
+        actors, refer to the Intel Actors API
+    - name: targetCountries
+      deprecated: false
+      description: Search reports by targeted country/countries
+    - name: targetIndustries
+      deprecated: false
+      description: Search reports by targeted industry/industries
+    - name: motivations
+      deprecated: false
+      description: Search by motivation
+    - name: slug
+      deprecated: false
+      description: Search by report 'slug' or short descriptive name
+    - name: description
+      deprecated: false
+      description: Search the body of the report
+    - name: type
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - intelligence report
+      - alert
+      - periodic report
+      - tipper
+      description: The type of object to search for.
+    - name: subType
+      deprecated: false
+      auto: PREDEFINED
+      predefined:
+      - weekly
+      - monthly
+      - quarterly
+      - annual
+      description: The sub-type to search for.
+    - name: tags
+      deprecated: false
+      description: Tags associated with a report (managed internally by CS)
+    - name: minLastModifiedDate
+      deprecated: false
+      description: Constrain results to those modified on or after a certain date
+        - format YYYY-MM-DD
+    - name: maxLastModifiedDate
+      deprecated: false
+      description: Constrain results to those modified on or before a certain date
+        - format YYYY-MM-DD
+    - name: offset
+      deprecated: false
+      description: Used to paginate the response. You can then use limit to set the
+        number of results for the next page.
+    - name: limit
+      deprecated: false
+      description: Limits the number of results to return
+    - name: sort
+      deprecated: false
+      description: 'The field and direction to sort results on in the format of: <field>.<asc>
+        or <field>.<desc>. Valid values include: name, target_countries, target_industries,
+        type, created_date, last_modified_date'
+    description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+      publications.
+hidden: false
+fromversion: 2.5.0
