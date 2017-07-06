@@ -419,8 +419,6 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
-    - contextPath: IP.Malicious.PulseIDs
-      description: IDs of pulses marked this as malicious
     - contextPath: File.Malicious.PulseIDs
       description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
