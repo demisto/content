@@ -234,7 +234,8 @@ script:
             return {
                 "name": 'LightCyber: ' + entity['Entity Type'] + ' {' + eid + '} - ' + entity['Final Status'],
                 "labels": labels,
-                "details": JSON.stringify(entity)
+                "details": JSON.stringify(entity),
+                "rawJSON": JSON.stringify(entity),
             };
         };
 

@@ -209,6 +209,7 @@ script:
                 "name": singleAlert.alertType,
                 "occurred": alertTime,
                 "labels": labels,
+                "rawJSON": JSON.stringify(singleAlert),
             }
     }
 

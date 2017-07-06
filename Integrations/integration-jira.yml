@@ -343,7 +343,8 @@ script:
             "name": name,
             "labels": labels,
             "details": issue.fields.description,
-            "severity": severity
+            "severity": severity,
+            "rawJSON": JSON.stringify(issue),
         };
     };
 

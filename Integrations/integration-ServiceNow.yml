@@ -490,7 +490,8 @@ script:
                 "name": 'ServiceNow Incident ' + incident["number"],
                 "labels": labels,
                 "details" : JSON.stringify(incident),
-                "severity" : severity
+                "severity" : severity,
+                "rawJSON": JSON.stringify(incident),
             });
 
             sertime = incident.opened_at;

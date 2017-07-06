@@ -347,7 +347,8 @@ script:
                 name: 'LogRhythm alarm ' + alarmList[i].AlarmID,
                 occurred: getOccurredTime(alarmList[i]),
                 created: new Date(),
-                details: prepareDetailsString(alarmList[i])
+                details: prepareDetailsString(alarmList[i]),
+                rawJSON: JSON.stringify(alarmList[i]),
             };
             // Check that it is in the time range and in the id range
             var alarmIdInt = parseInt(alarmList[i].AlarmID);

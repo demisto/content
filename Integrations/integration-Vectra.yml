@@ -80,7 +80,8 @@ script:
         }
         return {
             "name": incident.id + ' ' + incident.type_vname,
-            "labels": labels
+            "labels": labels,
+            "rawJSON": JSON.stringify(incident),
         };
     };
 

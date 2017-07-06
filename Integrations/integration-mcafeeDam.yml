@@ -153,7 +153,7 @@ script:
                 labels.push({type: keys[j], value: alert[keys[j]]});
             }
         }
-        return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation};
+        return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation, rawJSON: JSON.stringify(alert)};
     };
     var alertsToIncident = function(alerts) {
         var incidents = [];
