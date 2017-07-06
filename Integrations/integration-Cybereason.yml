@@ -47,6 +47,8 @@ script:
         'cybereason-query-processes': {'Content-Type': ['application/json']}
     };
 
+    var processHeaders = ['Name', 'PID', 'Parent', 'User', 'Creation Time', 'End Time', 'Command Line'];
+
     var saveCookies = function(cookies) {
         setIntegrationContext({'cookies': cookies});
     }
@@ -146,12 +148,12 @@ script:
             'calculatedUser'
         ];
 
-        if (args.only_suspicious && (args.only_suspicious == 'true')) {
+        if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
             processFilters.push({facetName: 'hasSuspicions', values: [true]});
         }
 
-        if (args.process_name) {
-            processFilters.push({facetName: 'elementDisplayName', values: [args.process_name]});
+        if (args.processName) {
+            processFilters.push({facetName: 'elementDisplayName', values: [args.processName]});
         }
 
         var body = {
@@ -215,8 +217,15 @@ script:
         }
 
         var entry = buildEmptyEntryContext();
-        var headers = ['Name', 'PID', 'Parent', 'User', 'Creation Time', 'End Time', 'Command Line'];
-        entry.HumanReadable = tableToMarkdown('Cybereason Processes for Hostname: ' + hostname, outputs, headers);
+        entry.HumanReadable = tableToMarkdown('Cybereason Processes for Hostname: ' + hostname, outputs, processHeaders);
+
+        if (args.saveToContext && args.saveToContext == 'true') {
+            var contexts = [];
+            for (var i = 0; i < outputs.length; i++) {
+                contexts.push(convertKeysToPascalCase(outputs[i]));
+            }
+            entry.EntryContext.Process = contexts;
+        }
 
         return entry;
     }
@@ -262,7 +271,7 @@ script:
     - name: hostname
       required: true
       description: The hostname of the machine.
-    - name: only_suspicious
+    - name: onlySuspicious
       auto: PREDEFINED
       predefined:
       - "true"
@@ -272,8 +281,16 @@ script:
     - name: limit
       description: Maximum number of results to retrieve.
       defaultValue: "10000"
-    - name: process_name
+    - name: processName
       description: Process name to filter by.
+    - name: saveToContext
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, save the result to the context.
+      defaultValue: "false"
     description: Retrieves the processes on a host.
   - name: cybereason-login
     arguments: []
