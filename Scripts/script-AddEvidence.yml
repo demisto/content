@@ -1,31 +1,49 @@
 commonfields:
-  id: 74eb90a9-cffc-44e1-8fac-6d7e2ddd5b0e
-  version: 12
+  id: AddEvidence
+  version: -1
 name: AddEvidence
-fromversion: 2.0.1
+fromversion: 2.5.0
 script: |-
-  entryIDs = demisto.get( demisto.args(), 'entryIDs')
-  desc = demisto.get( demisto.args(), 'description')
-  if not desc:
-      desc = 'Evidence added by DBot'
-  if entryIDs:
-      entryIDs =argToList(entryIDs)
-  else:
-      entryIDs = demisto.get( demisto.context(), 'lastCompletedTaskEntries')
-  res = []
-  for e in entryIDs:
-      ent = demisto.executeCommand('getEntry', {'id': e})[0]
-      if (ent['ContentsFormat'] in ['table', 'markdown'] and ent['Contents']) or ent['Type'] == entryTypes['file']:
-          demisto.log("Executing demisto.executeCommand('markAsEvidence', {'id': '"+ e +"', 'description': '" + desc + "'})")
-          res += demisto.executeCommand('markAsEvidence', {'id': e, 'description': desc})
-  demisto.results([e for e in res if isError(e)])
-type: python
-tags: []
-system: true
+  if (!args.entryIDs) {
+      throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
+  }
+  var entryIDs = args.entryIDs;
+  var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
+  entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
+
+  for (var i=0;i<entryIDs.length;i++) {
+      var entryID = entryIDs[i];
+      entries = executeCommand('getEntry', {'id': entryID});
+      if (isValidRes(entries)) {
+          for (var j=0;j<entries.length;j++){
+              var ent=entries[j];
+              var res = executeCommand('markAsEvidence', {'id': entryID, 'description': desc});
+              if (!isValidRes(res)) {
+                  return res;
+              }
+          }
+      } else {
+          return entries;
+      }
+
+  }
+
+  return "Entry ID " + entryIDs + " added to evidence";
+type: javascript
+tags:
+- Utility
+comment: |
+  Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+enabled: true
 args:
 - name: entryIDs
+  description: Entry IDs to add its output to Evidence Board
+  defaultValue: ${lastCompletedTaskEntries}
+  required: true
   default: true
+- name: desc
+  description: Description to add to Evidence Board
+  deprecated: true
 - name: description
+  description: Description to add to Evidence Board
 scripttarget: 0
-dependson: {}
-timeout: 0s

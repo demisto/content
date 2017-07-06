@@ -52,10 +52,10 @@ script: |-
   taskAssign({id: taskId, assignee: user});
   You can change incident type, name, severity, details and systems for an investigation with a single incident.
   This can be done by sending an object to setIncident with the details.
-  setIncident({type: 'Phishing', details: 'Phishing on my computer', severity: 'Critical', incName: 'Phishing incident',
+  setIncident({type: 'Phishing', details: 'Phishing on my computer', severity: 'Critical', name: 'Phishing incident',
               systems: '2.2.2.2,10.10.10.10'});
   You can also spawn a new incident from the current one, in the same manner as changing the details of the incident:
-  createNewIncident({type: 'Phishing', details: 'Phishing on your computer', severity: 'Critical', incName: 'Phishing incident',
+  createNewIncident({type: 'Phishing', details: 'Phishing on your computer', severity: 'Critical', name: 'Phishing incident',
                                 systems: '2.2.2.2,10.10.10.10'});
   return;
   */

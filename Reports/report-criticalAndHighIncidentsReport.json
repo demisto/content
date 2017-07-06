@@ -2,6 +2,7 @@
   "id": "criticalAndHighIncidentsReport",
   "name": "Critical and High incidents",
   "description": "All critical and high severity incidents that may need the analyst attention.",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -15,6 +16,7 @@
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
+    "incident.severity.0.5": { "type": "string", "value": "Informational" },
     "incident.severity.1": { "type": "string", "value": "Low" },
     "incident.severity.2": { "type": "string", "value": "Medium" },
     "incident.severity.3": { "type": "string", "value": "High" },
@@ -32,7 +34,8 @@
     "investigation.type.9": { "type": "string", "value": "Playground" },
     "investigation.created": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
     "investigation.closed": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
-    "investigation.openDuration": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" }
+    "investigation.openDuration": { "type": "duration" },
+    "incident.openDuration": { "type": "duration" }
   },
   "sections": [
     {
@@ -163,6 +166,7 @@
           { "name": "High", "fill": "#D00a00" },
           { "name": "Medium", "fill": "#cb4a00" },
           { "name": "Low", "fill": "#267634" },
+          { "name": "Informational", "fill": "#4357b8" },
           { "name": "Unknown", "fill": "#999999" }
         ]
       }
@@ -354,7 +358,16 @@
       "layout": {
         "rowPos": 10,
         "columnPos": 1,
-        "tableColumns": ["name", "occurred", "type", "owner", "severity", "status", "dueDate" ],
+        "tableColumns": ["Name", "Occurred", "Type", "Owner", "Severity", "Status", "Due date" ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "dueDate": "Due date"
+        },
         "classes": "striped stackable small very compact"
       }
     }

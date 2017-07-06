@@ -15,7 +15,7 @@ script: |-
       demisto.results('Could not extract text')
 type: python
 tags:
-- infra
+- Utility
 comment: Extract regular text from the given HTML
 system: true
 args:

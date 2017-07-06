@@ -2,6 +2,7 @@ commonfields:
   id: SandboxDetonateFile
   version: -1
 name: SandboxDetonateFile
+fromversion: 2.5.0
 script: |-
   from time import sleep
   res = []
@@ -15,9 +16,9 @@ script: |-
   sandblastDone = False
   cuckooDone = False
   wildfireDone = False
-  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'wildfire'})[0]['Contents'] != 'yes':
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'WildFire'})[0]['Contents'] != 'yes':
       wildfireDone = True
-      #demisto.log('Wildfire not available.')
+      #demisto.log('WildFire not available.')
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'cuckoo'})[0]['Contents'] != 'yes':
       cuckooDone = True
       #demisto.log('Cuckoo not available.')
@@ -46,10 +47,10 @@ script: |-
   ############ Hash check stage ############
   # Wildfire
   if not wildfireDone:
-      resCheckWildfire = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
+      resCheckWildfire = demisto.executeCommand("wildfire-report", {"md5": fileMd5})
       if isError(resCheckWildfire[0]):
-          if "don't have an available report" in resCheckWildfire[0]['Contents']:
-              pass # No report in wildfire, need to upload the file
+          if "The report was not found" in resCheckWildfire[0]['Contents']:
+              pass # No report in WildFire, need to upload the file
           else: # Any other error should be reported back to war room
               res += resCheckWildfire
               wildfireDone = True
@@ -73,11 +74,11 @@ script: |-
   ############ Submit stage ############
   # Wildfire
   if not wildfireDone:
-      resWFUpload = demisto.executeCommand("WildfireUpload", {"upload": demisto.args()["entryID"]})
+      resWFUpload = demisto.executeCommand("wildfire-upload", {"upload": demisto.args()["entryID"]})
       if isError(resWFUpload[0]):
           wildfireDone = True
-          if 'Wildfire does not support this file type.' in resWFUpload[0]['Contents']:
-              res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : 'Wildfire does not support this file type.' } )
+          if 'file type is not supported' in resWFUpload[0]['Contents']:
+              res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : 'WildFire does not support this file type.' } )
           else:
               res += resWFUpload
 
@@ -122,7 +123,7 @@ script: |-
 
       # Wildfire
       if not wildfireDone:
-          resWildfireReport = demisto.executeCommand("WildfireReport", {"md5": fileMd5})
+          resWildfireReport = demisto.executeCommand("wildfire-report", {"md5": fileMd5})
 
           if isError(resWildfireReport[0]):
               if "don't have an available report" in resWildfireReport[0]['Contents']:

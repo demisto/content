@@ -1,0 +1,126 @@
+id: ATD-playbook
+version: -1
+name: ATD-playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 46b565a4-9fa9-45b6-86a5-62cc458967a8
+    type: start
+    task:
+      id: 46b565a4-9fa9-45b6-86a5-62cc458967a8
+      version: 1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 2ec7cd6e-978e-4682-88db-82594cb37fe0
+    type: regular
+    task:
+      id: 2ec7cd6e-978e-4682-88db-82594cb37fe0
+      version: 1
+      name: atd-file-upload
+      description: upload a file/web URL for dynamic analysis by using the provided
+        Analyzer Profile. Only single file/web URL can be submitted at a time.
+      script: McAfee Advanced Threat Defense|||atd-file-upload
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      analyzeAgain: ""
+      dstIp: ""
+      entryID: ${File.EntryID}
+      filePriorityQ: ""
+      messageId: ""
+      skipTaskId: ""
+      srcIp: ""
+      submitType: "0"
+      url: ""
+      vmProfileList: "11"
+      xMode: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 12679a99-43ed-434a-8592-6edc2148fb13
+    type: regular
+    task:
+      id: 12679a99-43ed-434a-8592-6edc2148fb13
+      version: 1
+      name: atd-get-report
+      description: ' download the analysis report files'
+      script: McAfee Advanced Threat Defense|||atd-get-report
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    scriptarguments:
+      jobId: ""
+      taskId: ${ATD.taskId}
+      type: json
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ce1aed16-1d6d-413a-86be-0ca723d4e446
+    type: regular
+    task:
+      id: ce1aed16-1d6d-413a-86be-0ca723d4e446
+      version: 1
+      name: Wait for ATD results
+      scriptName: WhileLoop
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cmdArguments: taskId=${ATD.taskId}
+      cmdToRun: atd-check-status
+      keyToWatch: ATD.status
+      maxIterations: "60"
+      sleepTime: ""
+      value: Completed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -67,7 +67,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - scan-export
-  - scan-export-status
-  - scan-report-download
+  - Nessus|||scan-export
+  - Nessus|||scan-export-status
+  - Nessus|||scan-report-download
 timeout: 0s

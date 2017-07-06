@@ -1,0 +1,396 @@
+id: Remedy-On-Demand-Test
+version: 1
+name: Remedy-On-Demand-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92c5b103-bae7-4036-8a3d-aa3e6939b373
+    type: start
+    task:
+      id: 92c5b103-bae7-4036-8a3d-aa3e6939b373
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 4f675811-a7f9-4d04-83fb-3e5eecce340e
+    type: regular
+    task:
+      id: 4f675811-a7f9-4d04-83fb-3e5eecce340e
+      version: -1
+      name: remedy-incident-create
+      script: Remedy On-Demand|||remedy-incident-create
+      type: regular
+      iscommand: true
+      brand: Remedy On-Demand
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      description: hola mundo
+      first-name: App
+      impact: 1-Extensive/Widespread
+      last-name: admin
+      service-type: User Service Request
+      source: Direct Input
+      status: New
+      urgency: '3-Medium '
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: d520afef-5636-4760-8344-4599716b1455
+    type: regular
+    task:
+      id: d520afef-5636-4760-8344-4599716b1455
+      version: -1
+      name: remedy-get-incident
+      description: Get one incident by ID
+      script: Remedy On-Demand|||remedy-get-incident
+      type: regular
+      iscommand: true
+      brand: Remedy On-Demand
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ID: ${TicketID1}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 114d7125-5891-42b8-80eb-408055f5df11
+    type: regular
+    task:
+      id: 114d7125-5891-42b8-80eb-408055f5df11
+      version: -1
+      name: remedy-fetch-incidents
+      description: Fetch all incidents
+      script: Remedy On-Demand|||remedy-fetch-incidents
+      type: regular
+      iscommand: true
+      brand: Remedy On-Demand
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      query: Description LIKE "new description"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ac138d97-ca4b-4cad-8581-2facca56f4e0
+    type: regular
+    task:
+      id: ac138d97-ca4b-4cad-8581-2facca56f4e0
+      version: -1
+      name: remedy-incident-update
+      description: Update exiting incident
+      script: Remedy On-Demand|||remedy-incident-update
+      type: regular
+      iscommand: true
+      brand: Remedy On-Demand
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ID: ${TicketID2}
+      description: new description
+      impact: 3-Moderate/Limited
+      service-type: User Service Restoration
+      source: Web
+      status: Cancelled
+      urgency: 4-Low
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 645d066e-c3d2-48bf-85b4-43c9949389fc
+    type: regular
+    task:
+      id: 645d066e-c3d2-48bf-85b4-43c9949389fc
+      version: -1
+      name: Delete All Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: fd8dbbc3-bae6-4883-8ea6-65ee274febd5
+    type: regular
+    task:
+      id: fd8dbbc3-bae6-4883-8ea6-65ee274febd5
+      version: -1
+      name: VerifyContext-remedy-ticket
+      description: |-
+        Verify path exists in context.
+        If matching object is array - verify fields exists in each object in array.
+        If matching object is not array - verify fields exists in matching object.
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      fields: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 965749ac-5450-4b5e-8b9e-76ba846ef57f
+    type: regular
+    task:
+      id: 965749ac-5450-4b5e-8b9e-76ba846ef57f
+      version: -1
+      name: VerifyContext-remedy-ticket
+      description: |-
+        Verify path exists in context.
+        If matching object is array - verify fields exists in each object in array.
+        If matching object is not array - verify fields exists in matching object.
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      fields: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 409f7b7e-ea43-473f-8572-94420edc6ce1
+    type: regular
+    task:
+      id: 409f7b7e-ea43-473f-8572-94420edc6ce1
+      version: -1
+      name: VerifyContext-remedy-incident-update
+      description: |-
+        Verify path exists in context.
+        If matching object is array - verify fields exists in each object in array.
+        If matching object is not array - verify fields exists in matching object.
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: "{\n\t\"Description\": \"new description\",\n\t\"ID\": \"${TicketID2}\",\n\t\"Impact\":
+        \"3-Moderate/Limited\",\n\t\"Source\": \"Web\",\n\t\"Status\": \"Cancelled\",\n\t\"Submitter\":
+        \"appadmin\",\n\t\"Type\": \"User Service Restoration\",\n\t\"Urgency\": \"4-Low\"\n}"
+      fields: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 0492afa2-716b-4a52-8736-3e19f2070f05
+    type: regular
+    task:
+      id: 0492afa2-716b-4a52-8736-3e19f2070f05
+      version: -1
+      name: VerifyContext-remedy-ticket
+      description: |-
+        Verify path exists in context.
+        If matching object is array - verify fields exists in each object in array.
+        If matching object is not array - verify fields exists in matching object.
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      fields: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "10":
+    id: "10"
+    taskid: bd5e285e-e098-469c-82a4-d74e1b628985
+    type: regular
+    task:
+      id: bd5e285e-e098-469c-82a4-d74e1b628985
+      version: -1
+      name: Save Ticket ID1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key: TicketID1
+      value: ${Ticket.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f40614be-ed08-4763-8f74-b6dd04f7b599
+    type: regular
+    task:
+      id: f40614be-ed08-4763-8f74-b6dd04f7b599
+      version: -1
+      name: Delete Ticket Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: ""
+      key: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 7c7fe6b5-d1db-41a8-8c9e-09f7f30b2479
+    type: regular
+    task:
+      id: 7c7fe6b5-d1db-41a8-8c9e-09f7f30b2479
+      version: -1
+      name: Save Ticket ID2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key: TicketID2
+      value: ${Ticket.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1422
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 88c03e72-9f6f-4d72-8551-ec181ec1ba4b
+    type: regular
+    task:
+      id: 88c03e72-9f6f-4d72-8551-ec181ec1ba4b
+      version: -1
+      name: Delete Ticket Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all: ""
+      key: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

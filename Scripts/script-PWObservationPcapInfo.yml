@@ -50,5 +50,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - observation-pcap-info
+  - ProtectWise|||observation-pcap-info
 timeout: 0s

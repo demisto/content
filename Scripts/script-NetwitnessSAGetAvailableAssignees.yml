@@ -17,8 +17,8 @@ script: |
           demisto.results("No results.")
 type: python
 tags:
-- RSA Netwitness Security Analytics
-comment: Returns the available Netwitness SA users to be assigned to incidents
+- RSA NetWitness Security Analytics
+comment: Returns the available NetWitness SA users to be assigned to incidents
 system: true
 scripttarget: 0
 dependson:

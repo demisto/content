@@ -18,8 +18,8 @@ script: |
           demisto.results("No results.")
 type: python
 tags:
-- RSA Netwitness Security Analytics
-comment: List Netwitness SA incidents. Filtering and sorting the list is also supported
+- RSA NetWitness Security Analytics
+comment: List NetWitness SA incidents. Filtering and sorting the list is also supported
   (see optional arguments).
 system: true
 args:
@@ -38,10 +38,12 @@ args:
   description: 'By default filters by "created" from 1996 to this date. Example: "[{"property":"id",
     "value":"INC-21"}]"'
 - name: incidentManagementId
-  description: '[optional number] This is the id of Netwitness INCIDENT_MANAGEMENT
+  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
     device/component id. It can be received by running nw-get-component command. If
     this argument is not filled/passed, the script will automatically get the first
     device of type INCIDENT_MANAGEMENT from the SA server.'
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - nw-list-incidents
 timeout: 0s

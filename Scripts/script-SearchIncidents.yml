@@ -1,54 +1,100 @@
 commonfields:
   id: SearchIncidents
-  version: -1
+  version: 4
 name: SearchIncidents
 script: |-
-  FOUND_INCIDENTS_IDS_LABEL = "foundIncidentsIDs"
-
-  resp = []
-  dArgs, qArgs = {}, {}
-  incidents_ids = ""
-
-  dArgs = demisto.args()
-
-  qArgs['fromdate'] = dArgs.pop('fromdate') if dArgs.has_key('fromdate') else None
-  qArgs['todate'] = dArgs.pop('todate') if dArgs.has_key('todate') else None
-  [qArgs.pop(k) if not qArgs[k] else None for k in qArgs.keys()]
-
-  qArgs['query'] = " and ".join([str(k) + ':"' + str(dArgs[k]) + '"' for k in dArgs.keys()])
-  resp = demisto.executeCommand("getIncidents", qArgs)
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents.data")
-
-      if data:
-          incidents_ids = ','.join([str(row['id']) for row in data])
-
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-
-  demisto.setContext(FOUND_INCIDENTS_IDS_LABEL, incidents_ids)
-type: python
+  var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
+  for (var i=0; i<arrArgs.length; i++) {
+      var tmp = argToList(args[arrArgs[i]]);
+      if (tmp && tmp.length > 0) {
+          args[arrArgs[i]] = tmp.join(',');
+      }
+  }
+  // Clean all the empty ones
+  Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
+  var res = executeCommand('getIncidents', args);
+  if (isValidRes(res)) {
+      var data = res[0].Contents.data;
+      var md = tableToMarkdown('Incidents found', data, ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']);
+      return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {foundIncidents: data}};
+  } else {
+      return res;
+  }
+type: javascript
 tags:
-- Incident
-comment: |-
-  Return incidents that match the search criteria. Supports wildcards.
-  Saves all the incidents ids in context under "foundIncidentsIDs"
-system: true
+- Utility
+enabled: true
 args:
-- name: name
+- name: id
   default: true
-  description: Filter by incident name (Uses Lucene. Wildcards supported within single terms)
+  description: Filter by incident IDs
+  isArray: true
+- name: name
+  description: Filter by incident name
+  isArray: true
+- name: status
+  description: Filter by the status (e.g. assigned)
+  isArray: true
+- name: notstatus
+  description: Filter by excluding status (e.g. assigned)
+  isArray: true
+- name: reason
+  description: Filter by closing reason
+  isArray: true
 - name: fromdate
-  description: Filter by from date (e.g. 2006-01-02T15:04:05Z)
+  description: Filter by from date (e.g. 2006-01-02T15:04:05Z07:00)
 - name: todate
-  description: Filter by to date (e.g. 2016-01-02T15:04:05Z)
-- name: user
-  description: Filter by incident owners (Uses Lucene. Wildcards supported within single terms)
+  description: Filter by to date (e.g. 2006-01-02T15:04:05Z07:00)
+- name: fromclosedate
+  description: Filter by from close date (e.g. 2006-01-02T15:04:05Z07:00)
+- name: toclosedate
+  description: Filter by to close date (e.g. 2006-01-02T15:04:05Z07:00)
+- name: fromduedate
+  description: Filter by from due date (e.g. 2006-01-02T15:04:05Z07:00)
+- name: toduedate
+  description: Filter by to due date (e.g. 2006-01-02T15:04:05Z07:00)
+- name: level
+  description: Filter by Severity
+  isArray: true
+- name: owner
+  description: Filter by incident owners
+  isArray: true
+- name: details
+  description: Filter by incident details
+- name: type
+  description: Filter by incident type
+  isArray: true
+- name: query
+  description: Use free form query (use Lucene syntax) as filter. All other filters
+    will be ignored when this filter is used.
+  isArray: true
+- name: page
+  description: Filter by the page number
+- name: size
+  description: Filter by the page size (per fetch)
+- name: sort
+  description: Sort in format of field.asc,field.desc,...
+outputs:
+- contextPath: foundIncidents.id
+  description: IDs of the found incidents
+- contextPath: foundIncidents.name
+  description: Names of the found incidents
+- contextPath: foundIncidents.severity
+  description: Severities of the found incidents
+- contextPath: foundIncidents.status
+  description: Statuses of the found incidents
+- contextPath: foundIncidents.owner
+  description: Owners of the found incidents
+- contextPath: foundIncidents.created
+  description: Create dates of the found incidents
+- contextPath: foundIncidents.closed
+  description: Close dates of the found incidents
+- contextPath: foundIncidents.labels
+  description: An array of labels per incident of the found incidents
+- contextPath: foundIncidents.details
+  description: Details of the found incidents
+- contextPath: foundIncidents.dueDate
+  description: Due dates of the found incidents
+- contextPath: foundIncidents.phase
+  description: Phases of the found incidents
 scripttarget: 0
-timeout: 0s

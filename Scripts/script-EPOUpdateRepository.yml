@@ -67,6 +67,7 @@ tags:
 - epo
 comment: Trigger a Server Task in specific ePO servers to pull latest signatures from update server
 system: true
+deprecated: true
 args:
 - name: repos
   required: true

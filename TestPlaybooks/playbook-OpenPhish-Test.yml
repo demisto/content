@@ -1,0 +1,251 @@
+id: OpenPhish Test Playbook
+version: 7
+name: OpenPhish Test Playbook
+description: Checking OpenPhish integration by running it on both known phishing and
+  a safe URL and checking the results
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c08891da-47e5-4d03-85dc-0fe33a5028cf
+    type: start
+    task:
+      id: c08891da-47e5-4d03-85dc-0fe33a5028cf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -134
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 2944ea73-dbaa-4554-8a6b-f7965e97d527
+    type: regular
+    task:
+      id: 2944ea73-dbaa-4554-8a6b-f7965e97d527
+      version: -1
+      name: Check non-malicious URL
+      script: OpenPhish|||url
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url: ${inputs.Non malicious URL}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 185
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
+    type: condition
+    task:
+      id: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      value: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 346
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 41095935-b8f8-4713-84dd-d4b4431d6913
+    type: regular
+    task:
+      id: 41095935-b8f8-4713-84dd-d4b4431d6913
+      version: -1
+      name: Check malicious URL
+      script: OpenPhish|||url
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url: ${inputs.Malicious URL}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 619
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+    type: regular
+    task:
+      id: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+      version: -1
+      name: False Positive
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: False Positive - found non-malicious URL as malicious
+    view: |-
+      {
+        "position": {
+          "x": 891,
+          "y": 524
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0acab294-4534-4eae-870e-5f2322be251e
+    type: regular
+    task:
+      id: 0acab294-4534-4eae-870e-5f2322be251e
+      version: -1
+      name: Manual troubleshooting needed
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 891,
+          "y": 1121
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 31274de5-0c80-4041-8171-07dac9932450
+    type: condition
+    task:
+      id: 31274de5-0c80-4041-8171-07dac9932450
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value: ${URL.Data}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 794
+        }
+      }
+  "8":
+    id: "8"
+    taskid: dfc74289-ba9a-4db9-8968-0997d329522b
+    type: regular
+    task:
+      id: dfc74289-ba9a-4db9-8968-0997d329522b
+      version: -1
+      name: Closing incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1121
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 1f515876-7ad2-4e9e-8454-3fde14722c60
+    type: regular
+    task:
+      id: 1f515876-7ad2-4e9e-8454-3fde14722c60
+      version: -1
+      name: False Negative
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Did not find malicious URL
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 956
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 72f4341b-3cce-471a-816d-0ec51bd36b22
+    type: regular
+    task:
+      id: 72f4341b-3cce-471a-816d-0ec51bd36b22
+      version: -1
+      name: Check OpenPhish status
+      description: Show OpenPhish database status
+      script: OpenPhish|||openphish-status
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 11
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1350,
+        "width": 821,
+        "x": 450,
+        "y": -134
+      }
+    }
+  }
+inputs:
+- key: Malicious URL
+  value: http://www.santoguia.net/sew/html/
+  description: ""
+- key: Non malicious URL
+  value: http://google.com
+  description: ""

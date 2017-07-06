@@ -49,5 +49,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - event-pcap-download
+  - ProtectWise|||event-pcap-download
 timeout: 0s

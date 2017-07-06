@@ -2,6 +2,7 @@
   "id": "investigationSummaryReport",
   "name": "Investigation Summary",
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
+  "fromVersion": "2.5.0",
   "tags": [],
   "createdBy": "Demisto",
   "type": "pdf",
@@ -16,6 +17,7 @@
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
+    "incident.severity.0.5": { "type": "string", "value": "Informational" },
     "incident.severity.1": { "type": "string", "value": "Low" },
     "incident.severity.2": { "type": "string", "value": "Medium" },
     "incident.severity.3": { "type": "string", "value": "High" },
@@ -35,6 +37,7 @@
     "investigation.created": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
     "investigation.closed": { "type": "date", "value": "02 Jan 2006" },
     "investigation.openDuration": { "type": "duration" },
+    "incident.openDuration": { "type": "duration" },
     "evidences.occurred": { "type": "date", "value": "02/01/06 3:04:05 PM" },
     "evidences.markedDate": { "type": "date", "value": "02/01/06 3:04:05 PM" },
     "evidences.fetched": { "type": "date", "value": "02/01/06 3:04:05 PM" }
@@ -672,7 +675,12 @@
       "layout": {
         "rowPos": 300020,
         "columnPos": 100,
-        "tableColumns": ["occurred", "description", "id"],
+        "tableColumns": ["Occurred", "Description", "ID"],
+        "readableHeaders": {
+          "occurred": "Occurred",
+          "description": "Description",
+          "id": "ID"
+        },
         "classes": "selectable celled fixed unstackable"
       }
     },
