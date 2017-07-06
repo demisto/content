@@ -190,6 +190,19 @@ script:
       description: Certificates that expire after the specified date
     - name: ValidToLess
       description: Certificates that expire before the specified date
+    outputs:
+    - contextPath: Venafi.Certificats.CreatedOn
+      description: Certificate creation date
+    - contextPath: Venafi.Certificats.DN
+      description: Certificate DN
+    - contextPath: Venafi.Certificats.Name
+      description: Certificate name
+    - contextPath: Venafi.Certificats.ParentDN
+      description: Certificate parent DN
+    - contextPath: Venafi.Certificats.SchemaClass
+      description: Certificate schema
+    - contextPath: Venafi.Certificats.ID
+      description: Certificate ID (GUID)
     description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
       format. Additional fields can be used in the query by adding them in a key=value
       manner
