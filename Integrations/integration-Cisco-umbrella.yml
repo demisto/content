@@ -426,7 +426,7 @@ script:
         var rrs = res && res.rrs;
         var features = res && res.features;
         if (!rrs || !features) {
-            return "No information found about this domain";
+            return "No information found about this ip";
         };
 
         var rrsTable = rrs.map(function(obj) {
