@@ -1105,4 +1105,4 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Fix response in non-existing domains/ip"
