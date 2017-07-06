@@ -304,12 +304,24 @@ script:
             }
             if (dq(raw, 'pulse_info.count') > 0) {
                 dbotScore = dq(raw, 'pulse_info.count');
+                malInfo.Malicious.PulseIDs = dq(raw, 'pulse_info.pulses.id');
                 addMalicious(ec, outputPath, malInfo);
             }
+            ec[contextKey] = createContext(translated);
         }
         ec.DBotScore = {Indicator: args[argName], Type: dbotScoreType, Vendor: 'AlienVault OTX', Score: dbotScore};
-        ec[contextKey] = createContext(translated);
         entry.EntryContext = ec;
+        if (ec && ec[contextKey] && ec[contextKey].Geo && ec[contextKey].Geo.Latitude && ec[contextKey].Geo.Longitude) {
+            entry = [
+                entry,
+                {
+                    Type: entryTypes.map,
+                    Contents: {lat: parseFloat(ec[contextKey].Geo.Latitude),
+                    lng: parseFloat(ec[contextKey].Geo.Longitude)},
+                    ContentsFormat: formats.json
+                }
+            ];
+        }
     }
 
     return entry;
@@ -412,6 +424,8 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    - contextPath: IP.Malicious.PulseIDs
+      description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
   - name: alienvault-query-file
     arguments:
