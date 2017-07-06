@@ -64,6 +64,7 @@ script:
         return {
             "name": incident.id + ' ' + incident.description,
             "labels": labels,
+            "rawJSON": JSON.stringify(incident),
         }
     }
 

@@ -153,6 +153,7 @@ script:
         return {
             "name": ioc.Type + ' ' + ioc.Value,
             "labels": labels,
+            "rawJSON": JSON.stringify(ioc),
         }
     }
 
