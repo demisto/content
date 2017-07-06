@@ -206,3 +206,4 @@ script:
     description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
       format. Additional fields can be used in the query by adding them in a key=value
       manner
+releaseNotes: "Context creation by Venafi search and new serach arguments"
