@@ -66,7 +66,27 @@ script:
             }
             return 'something is wrong';
         case 'venafi-get-certificates':
-            return sendRequest('GET', '/vedsdk/certificates/' + encodeToURLQuery(args), undefined, auth.APIKey);
+            var raw = sendRequest('GET', '/vedsdk/certificates/' + encodeToURLQuery(args), undefined, auth.APIKey);
+            var certs = [];
+            for (var i in raw.Certificates) {
+                certs.push({
+                    CreatedOn: raw.Certificates[i].CreatedOn,
+                    DN: raw.Certificates[i].DN,
+                    Name: raw.Certificates[i].Name,
+                    ParentDN: raw.Certificates[i].ParentDn,
+                    SchemaClass: raw.Certificates[i].SchemaClass,
+                    ID: raw.Certificates[i].Guid.substring(1, raw.Certificates[i].Guid.length - 1),
+                });
+            }
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: {'Venafi.Certificats(val.ID==obj.ID)': certs},
+                HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
+            };
+            return entry;
         default:
             throw 'No can do';
     }
