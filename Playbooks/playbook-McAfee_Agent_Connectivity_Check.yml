@@ -2,7 +2,7 @@ id: playbook13
 version: -1
 system: true
 fromversion: 2.5.0
-name: McAfee ePO Endpoint Connectivity Diagnostics Playbook
+name: McAfee Agent Connectivity Check
 description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
   or lost connectivity with ePO and take steps to return to valid state.
 starttaskid: "0"
