@@ -127,29 +127,40 @@ script:
         return JSON.parse(res.Body);
     }
 
-    var checkMachine = function(hostname, cookies) {
+    var isProbeConnected = function(cookies) {
         var body = {
+            customFields: ["elementDisplayName"],
             perFeatureLimit: 100,
             perGroupLimit: 100,
-            queryPath: [{
-                filters: [{facetName: "elementDisplayName", values: [hostname]}],
-                isResult: true,
-                requestedType: "Machine"
-            }],
+            queryPath: [
+                {
+                    requestedType: 'Machine',
+                    filters: [
+                        {facetName: 'elementDisplayName', values: [args.machineName]},
+                        {facetName: 'isActiveProbeConnected', values: [true]}
+                    ],
+                    isResult: true
+                }
+            ],
             queryTimeout: 120000,
             templateContext: "SPECIFIC",
             totalResultLimit: 10000
         };
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        var guids = Object.keys(res.data.resultIdToElementDataMap);
+        var elements = res.data.resultIdToElementDataMap
+        for (var key in elements) {
+            if (elements[key].simpleValues.elementDisplayName.values[0] == args.machineName) {
+                return true;
+            }
+        }
 
-        return (guids.length > 0);
+        return false;
     }
 
-    var buildQueryRequest = function(hostname) {
+    var buildQueryRequest = function() {
         var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
-        var machineFilters = [{facetName: 'elementDisplayName', values: [hostname]}];
+        var machineFilters = [];
         var processFilters = [];
         var processFields = [
             'creationTime',
@@ -160,12 +171,16 @@ script:
             'calculatedUser'
         ];
 
-        if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
-            processFilters.push({facetName: 'hasSuspicions', values: [true]});
+        if (args.machine) {
+            machineFilters.push({facetName: 'elementDisplayName', values: [args.machine]});
         }
 
         if (args.processName) {
             processFilters.push({facetName: 'elementDisplayName', values: [args.processName]});
+        }
+
+        if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
+            processFilters.push({facetName: 'hasSuspicions', values: [true]});
         }
 
         var body = {
@@ -192,8 +207,8 @@ script:
         return body;
     }
 
-    var queryProcesses = function(hostname, cookies) {
-        var body = buildQueryRequest(hostname);
+    var queryProcesses = function(cookies) {
+        var body = buildQueryRequest();
         console.log('body = ' + JSON.stringify(body, null, 4));
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
@@ -229,7 +244,7 @@ script:
         }
 
         var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tableToMarkdown('Cybereason Processes for Hostname: ' + hostname, outputs, processHeaders);
+        entry.HumanReadable = tableToMarkdown('Cybereason Processes', outputs, processHeaders);
 
         if (args.saveToContext && args.saveToContext == 'true') {
             var contexts = [];
@@ -261,12 +276,12 @@ script:
             }
             break;
 
-        case 'cybereason-check-machine':
-            res = checkMachine(args.hostname, cookies);
+        case 'cybereason-is-probe-connected':
+            res = isProbeConnected(cookies);
             break;
 
         case 'cybereason-query-processes':
-            res = queryProcesses(args.hostname, cookies);
+            res = queryProcesses(cookies);
             break;
 
         case 'cybereason-login':
@@ -284,8 +299,7 @@ script:
   commands:
   - name: cybereason-query-processes
     arguments:
-    - name: hostname
-      required: true
+    - name: machine
       description: The hostname of the machine.
     - name: onlySuspicious
       auto: PREDEFINED
@@ -311,10 +325,10 @@ script:
   - name: cybereason-login
     arguments: []
     description: Performs a login and updates the cookies.
-  - name: cybereason-check-machine
+  - name: cybereason-is-probe-connected
     arguments:
-    - name: hostname
+    - name: machineName
       required: true
-      description: The hostname to check.
+      description: The hostname of the machine to check.
     description: Checks if the given hostname exists in Cybereason.
 hidden: false
