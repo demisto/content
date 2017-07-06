@@ -47,28 +47,6 @@ script:
         'cybereason-query-processes': {'Content-Type': ['application/json']}
     };
 
-    var bodyDict = {
-        'cybereason-query-machine': {
-            customFields: [
-                "osVersionType",
-                "platformArchitecture",
-                "uptime",
-                "isActiveProbeConnected",
-                "activeUsers",
-                "mountPoints",
-                "processes",
-                "services",
-                "elementDisplayName"
-            ],
-            perFeatureLimit: 100,
-            perGroupLimit: 100,
-            queryPath: [{filters: [{facetName: "elementDisplayName", values: ["{0}"]}], isResult: true, requestedType: "Machine"}],
-            queryTimeout: 120000,
-            templateContext: "SPECIFIC",
-            totalResultLimit: 10000
-        },
-    }
-
     var saveCookies = function(cookies) {
         setIntegrationContext({'cookies': cookies});
     }
@@ -81,7 +59,7 @@ script:
             var currentTime = new Date();
             var cookiesTime = new Date(cookies[1].Expires);
             var timeDifferenceInDays = Math.abs((currentTime.getTime() - cookiesTime.getTime()) / (1000 * 60 * 60 * 24));
-            if (timeDifferenceInDays <= 100) {
+            if (timeDifferenceInDays <= 1) {
                 shouldRequestCookies = false;
             }
         }
@@ -155,64 +133,65 @@ script:
         return Object.keys(res.data.resultIdToElementDataMap);
     }
 
-    var queryProcesses = function(hostname, cookies) {
+    var buildQueryRequest = function(hostname) {
         var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
-        var filters = [];
+        var machineFilters = [{facetName: 'elementDisplayName', values: [hostname]}];
+        var processFilters = [];
+        var processFields = [
+            'creationTime',
+            'endTime',
+            'pid',
+            'commandLine',
+            'parentProcess',
+            'calculatedUser'
+        ];
 
         if (args.only_suspicious && (args.only_suspicious == 'true')) {
-           filters.push({facetName: "hasSuspicions", values: [true]});
+            processFilters.push({facetName: 'hasSuspicions', values: [true]});
+        }
+
+        if (args.process_name) {
+            processFilters.push({facetName: 'elementDisplayName', values: [args.process_name]});
         }
 
         var body = {
-            customFields: [
-                "creationTime",
-                "endTime",
-                // "commandLine",
-                // "isImageFileSignedAndVerified",
-                // "imageFile.maliciousClassificationType",
-                // "productType",
-                // "children",
-                "parentProcess",
-                // "ownerMachine",
-                // "calculatedUser",
-                // "imageFile",
-                // "imageFile.sha1String",
-                // "imageFile.md5String",
-                // "imageFile.companyName",
-                // "imageFile.productName",
-                // "iconBase64",
-                // "ransomwareAutoRemediationSuspended",
-                // "executionPrevented"
-            ],
+            customFields: processFields,
             perFeatureLimit: 100,
             perGroupLimit: 100,
             queryPath: [
                 {
-                    connectionFeature: {
-                        elementInstanceType: "Machine",
-                        featureName: "processes"
-                    },
-                    filters: [{facetName: "elementDisplayName", values: [hostname]}],
-                    requestedType: "Machine"
+                    requestedType: "Machine",
+                    filters: machineFilters,
+                    connectionFeature: {elementInstanceType: "Machine", featureName: "processes"}
                 },
-                {requestedType: "Process", filters: filters, isResult: true}
+                {
+                    requestedType: "Process",
+                    filters: processFilters,
+                    isResult: true
+                }
             ],
             queryTimeout: 120000,
             templateContext: "SPECIFIC",
             totalResultLimit: resultsLimit
         };
 
+        return body;
+    }
+
+    var queryProcesses = function(hostname, cookies) {
+        var body = buildQueryRequest(hostname);
+        console.log('body = ' + JSON.stringify(body, null, 4));
+
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        // return res;
 
         var elements = res.data.resultIdToElementDataMap;
 
-        // build output
         var outputs = [];
         for (var key in elements) {
             console.log(JSON.stringify(elements[key].elementValues));
             var output = {
                 'Name': elements[key].filterData.groupByValue,
+                'PID': elements[key].simpleValues.pid.values[0],
                 'Creation Time': convertTimestampToString(elements[key].simpleValues.creationTime.values[0])
             }
 
@@ -220,16 +199,23 @@ script:
                 output['Parent'] = elements[key].elementValues.parentProcess.elementValues[0].name;
             }
 
+            if (elements[key].simpleValues.commandLine) {
+                output['Command Line'] = elements[key].simpleValues.commandLine.values[0];
+            }
+
             if (elements[key].simpleValues.endTime) {
                 output['End Time'] = convertTimestampToString(elements[key].simpleValues.endTime.values[0]);
+            }
+
+            if (elements[key].elementValues.calculatedUser) {
+                output['User'] = elements[key].elementValues.calculatedUser.elementValues[0].name;
             }
 
             outputs.push(output);
         }
 
-
         var entry = buildEmptyEntryContext();
-        var headers = ['Name', 'Parent', 'Creation Time', 'End Time'];
+        var headers = ['Name', 'PID', 'Parent', 'User', 'Creation Time', 'End Time', 'Command Line'];
         entry.HumanReadable = tableToMarkdown('Cybereason Processes for Hostname: ' + hostname, outputs, headers);
 
         return entry;
@@ -282,8 +268,12 @@ script:
       - "true"
       - "false"
       description: Show only suspicious processes.
+      defaultValue: "false"
     - name: limit
+      description: Maximum number of results to retrieve.
       defaultValue: "10000"
+    - name: process_name
+      description: Process name to filter by.
     description: Retrieves the processes on a host.
   - name: cybereason-login
     arguments: []
