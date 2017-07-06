@@ -340,11 +340,6 @@ script:
                            'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
                 '<soap:Header>' +
                     '<t:RequestServerVersion Version="%version%"/>' +
-                    '<t:ExchangeImpersonation>' +
-                        '<t:ConnectingSID>' +
-                            '<t:SmtpAddress>%impersonating-mailbox%</t:SmtpAddress>' +
-                        '</t:ConnectingSID>' +
-                    '</t:ExchangeImpersonation>' +
                 '</soap:Header>' +
                 '<soap:Body>' +
                     '<m:SearchMailboxes>' +
@@ -508,7 +503,7 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
-        var bdy = res.Body.replace(/&#x0;/g, "");
+        var bdy = res.Body.replace(/&#x.*?;/g, "");
         var raw = JSON.parse(x2j(bdy));
         var entry = {
             Type: entryTypes.note,
