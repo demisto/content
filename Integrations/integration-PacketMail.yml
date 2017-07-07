@@ -1,0 +1,118 @@
+commonfields:
+  id: PacketMail
+  version: -1
+name: PacketMail
+display: PacketMail.net
+category: Authentication
+image: data:image/png;base64,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
+description: Intel look up for IPS
+configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use Proxy
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: CSV list of lists that should be considered malicious
+  name: maliciousList
+  defaultvalue: cleanmx_virus,et_c2
+  type: 0
+  required: false
+script:
+  script: |+
+    var initialurl = 'https://www.packetmail.net/iprep.php/';
+    var malLists = params.maliciousList.split(',');
+    for (i = 0 ; i < malLists.length; i++) {
+        malLists[i] = malLists[i].trim();
+    }
+
+    var sendRequest = function(url, param) {
+
+        // handle '/' at the end of the url
+        if (url[url.length - 1] === '/') {
+            url = url.substring(0, url.length - 1);
+        }
+
+        var res = http(
+            url,
+            {
+                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: {
+                    Accept: ['application/json']
+                }
+            },
+            true,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    };
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            res = sendRequest(initialurl + '8.8.8.8' + '?apikey='+params.apikey);
+            if (res.query_result === 'Success') {
+                return 'ok';
+            } else {
+                return res;
+            }
+            break;
+        case 'packetmail-ip':
+            var res =  sendRequest(initialurl + args.ip + '?apikey='+params.apikey);
+            md = '';
+            maliciousLists = '';
+            var keys = Object.keys(res);
+            keys = keys.sort();
+            for (i = 0 ; i < keys.length; i++) {
+                if (md.length > 0) {
+                    md += '\n\n';
+                }
+                if (res[keys[i]] instanceof Object) {
+                    if (malLists.indexOf(keys[i]) >= 0) {
+                        if (maliciousLists.length > 0) {
+                            maliciousLists += ',';
+                        }
+                        maliciousLists += keys[i];
+                    }
+                    md += tableToMarkdown(keys[i], res[keys[i]]);
+                }
+            }
+            ec = {};
+            if (maliciousLists. length > 0) {
+                addMalicious(ec, outputPaths.ip,{
+                        Address: args.ip,
+                        Malicious: {Vendor: 'PacketMail', Description: 'Found in malicious lists: ' + maliciousLists}});
+            }
+            return {Contents: res, HumanReadable: md, ContentsFormat: formats.json, Type: entryTypes.note, EntryContext: ec};
+        default:
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
+    }
+
+  type: javascript
+  commands:
+  - name: packetmail-ip
+    arguments:
+    - name: ip
+      required: true
+      description: The ip to check on
+    outputs:
+    - contextPath: IP
+    - contextPath: IP.Malicious
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+      related: ""
+    description: Get intel from PacketMail.net on IPs
+hidden: false
