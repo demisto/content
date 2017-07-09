@@ -28,32 +28,31 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |
     var username = params.credentials.identifier;
     var password = params.credentials.password;
     var server = params.server;
     var proxy = params.proxy;
     var insecure = params.insecure;
-
     var urlDict = {
         'login': 'login.html',
         'query': 'rest/visualsearch/query/simple',
-    };
+    }
 
     var headersDict = {
         'login': {'Content-Type': ['application/x-www-form-urlencoded']},
         'query': {'Content-Type': ['application/json']},
     };
 
-    // var processHeaders = [
-    //     'Name',
-    //     'PID',
-    //     'Parent',
-    //     'User',
-    //     'Creation Time',
-    //     'End Time',
-    //     'Command Line'
-    // ];
+    var processHeaders = [
+        'Name',
+        'PID',
+        'Parent',
+        'User',
+        'Creation Time',
+        'End Time',
+        'Command Line'
+    ];
 
     var processInfo = [
         {field: 'elementDisplayName', header: 'Name', type: 'filterData'},
@@ -71,21 +70,18 @@ script:
         {field: 'imageFile.sha1String', header: 'SHA1', type: 'simple'},
         {field: 'imageFile.md5String', header: 'MD5', type: 'simple'},
         {field: 'imageFile.companyName', header: 'Company Name', type: 'simple'},
-        {field: 'imageFile.productName', header: 'Product Name', type: 'simple'},
-        // {field: 'iconBase64', header: 'bla1', type: 'simple'},
-        // {field: 'ransomwareAutoRemediationSuspended', header: 'bla1', type: 'simple'},
-        // {field: 'executionPrevented', header: 'bla1', type: 'simple'}
+        {field: 'imageFile.productName', header: 'Product Name', type: 'simple'}
     ];
 
     var processFields = [];
     processInfo.forEach(function(element) {
-        processFields.push(element.field);
-    });
+        processFields.push(element.field)
+    })
 
     var processHeaders = [];
     processInfo.forEach(function(element) {
-        processHeaders.push(element.header);
-    });
+        processHeaders.push(element.header)
+    })
 
     var connectionInfo = [
         {field: 'elementDisplayName', header: 'Name', type: 'simple'},
@@ -104,17 +100,17 @@ script:
 
     var connectionFields = [];
     connectionInfo.forEach(function(element) {
-        connectionFields.push(element.field);
-    });
+        connectionFields.push(element.field)
+    })
 
     var connectionHeaders = [];
     connectionInfo.forEach(function(element) {
-        connectionHeaders.push(element.header);
-    });
+        connectionHeaders.push(element.header)
+    })
 
     var saveCookies = function(cookies) {
         setIntegrationContext({'cookies': cookies});
-    };
+    }
 
     var checkCookies = function() {
         var contextData = getIntegrationContext();
@@ -206,7 +202,7 @@ script:
             {
                 Method: 'POST',
                 Body: body,
-
+                Headers: headers,
                 Cookies: cookies
             },
             insecure,
@@ -220,113 +216,37 @@ script:
         return JSON.parse(res.Body);
     }
 
-    // var buildQuery = function(command) {
-    //     var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
-    //     var fields;
-    //     var path;
-    //     switch (command) {
-    //         case 'cybereason-is-probe-connected':
-    //             fields = ['elementDisplayName'];
-    //             path = [{
-    //                 requestedType: 'Machine',
-    //                 filters: [
-    //                     {facetName: 'elementDisplayName', values: [args.machine]},
-    //                     {facetName: 'isActiveProbeConnected', values: [true]}
-    //                 ],
-    //                 isResult: true
-    //             }];
-    //             break;
+    var buildQuery = function(queryFields, path) {
+        var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
 
-    //         case 'cybereason-query-processes':
-    //             fields = processFields;
-
-    //             var machineFilters = [];
-    //             var processFilters = [];
-
-    //             if (args.machine) {
-    //                 machineFilters.push({facetName: 'elementDisplayName', values: [args.machine]});
-    //             }
-
-    //             if (args.processName) {
-    //                 processFilters.push({facetName: 'elementDisplayName', values: [args.processName]});
-    //             }
-
-    //             if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
-    //                 processFilters.push({facetName: 'hasSuspicions', values: [true]});
-    //             }
-
-    //             if (args.hasIncomingConnection == 'true') {
-    //                 processFilters.push({facetName: 'hasIncomingConnection', values: [true]});
-    //             }
-
-    //             if (args.hasOutgoingConnection == 'true') {
-    //                 processFilters.push({facetName: 'hasOutgoingConnection', values: [true]});
-    //             }
-
-    //             path = [
-    //                 {
-    //                     requestedType: 'Machine',
-    //                     filters: machineFilters,
-    //                     connectionFeature: {elementInstanceType: 'Machine', featureName: 'processes'}
-    //                 },
-    //                 {
-    //                     requestedType: 'Process',
-    //                     filters: processFilters,
-    //                     isResult: true
-    //                 }
-    //             ];
-
-    //             break;
-
-    //         case 'cybereason-query-connections':
-    //             var connectionFilters = [];
-    //             if (args.ip) {
-    //                 connectionFilters.push({facetName: 'elementDisplayName', values: [args.ip]});
-    //             }
-
-    //             path = [{
-    //                 requestedType: 'Connection',
-    //                 filters: connectionFilters,
-    //                 isResult: true
-    //             }];
-
-    //             break;
-    //     }
-
-    //     var query = {
-    //         customFields: processFields,
-    //         perFeatureLimit: 100,
-    //         perGroupLimit: 100,
-    //         queryPath: path,
-    //         queryTimeout: 120000,
-    //         templateContext: 'SPECIFIC',
-    //         totalResultLimit: resultsLimit
-    //     };
-
-    //     return query;
-    // }
-
-    var isProbeConnected = function(cookies) {
-        var body = {
-            customFields: ['elementDisplayName'],
+        var query = {
+            customFields: queryFields,
             perFeatureLimit: 100,
             perGroupLimit: 100,
-            queryPath: [
-                {
-                    requestedType: 'Machine',
-                    filters: [
-                        {facetName: 'elementDisplayName', values: [args.machine]},
-                        {facetName: 'isActiveProbeConnected', values: [true]}
-                    ],
-                    isResult: true
-                }
-            ],
+            queryPath: path,
             queryTimeout: 120000,
             templateContext: 'SPECIFIC',
-            totalResultLimit: 10000
+            totalResultLimit: resultsLimit
         };
-        // var body = buildQuery('cybereason-is-probe-connected');
 
+        return query;
+    }
+
+    var isProbeConnected = function(cookies) {
+        var queryFields = ['elementDisplayName'];
+        var path = [
+            {
+                requestedType: 'Machine',
+                filters: [
+                    {facetName: 'elementDisplayName', values: [args.machine]},
+                    {facetName: 'isActiveProbeConnected', values: [true]}
+                ],
+                isResult: true
+            }
+        ];
+
+        var body = buildQuery(queryFields, path);
+        console.log('Body = \n' + JSON.stringify(body, null, 4));
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
@@ -338,8 +258,7 @@ script:
         return false;
     }
 
-    var buildQueryProcessesRequest = function() {
-        var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
+    var queryProcesses = function(cookies) {
         var machineFilters = [];
         var processFilters = [];
 
@@ -363,79 +282,42 @@ script:
             processFilters.push({facetName: 'hasOutgoingConnection', values: [true]});
         }
 
-        var body = {
-            customFields: processFields,
-            perFeatureLimit: 100,
-            perGroupLimit: 100,
-            queryPath: [
-                {
-                    requestedType: 'Machine',
-                    filters: machineFilters,
-                    connectionFeature: {elementInstanceType: 'Machine', featureName: 'processes'}
-                },
-                {
-                    requestedType: 'Process',
-                    filters: processFilters,
-                    isResult: true
-                }
-            ],
-            queryTimeout: 120000,
-            templateContext: 'SPECIFIC',
-            totalResultLimit: resultsLimit
-        };
+        var path = [
+            {
+                requestedType: 'Machine',
+                filters: machineFilters,
+                connectionFeature: {elementInstanceType: 'Machine', featureName: 'processes'}
+            },
+            {
+                requestedType: 'Process',
+                filters: processFilters,
+                isResult: true
+            }
+        ];
 
-        return body;
-    }
-
-    var buildQueryConnectionsRequest = function() {
-        var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
-        var machineFilters = [];
-        var connectionFilters = [];
-
-        if (args.ip) {
-            connectionFilters.push({facetName: 'elementDisplayName', values: [args.ip]});
-        }
-
-        var body = {
-            customFields: connectionFields,
-            perFeatureLimit: 100,
-            perGroupLimit: 100,
-            queryPath: [
-                {
-                    requestedType: 'Connection',
-                    filters: connectionFilters,
-                    isResult: true
-                }
-            ],
-            queryTimeout: 12000,
-            templateContext: 'SPECIFIC',
-            totalResultLimit: resultsLimit
-        };
-
-        return body;
-    }
-
-    var queryProcesses = function(cookies) {
-        var body = buildQueryProcessesRequest();
+        var body = buildQuery(processFields, path);
         console.log('body = ' + JSON.stringify(body, null, 4));
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        console.log('res = \n' + JSON.stringify(res, null, 4));
-        // return res;
 
         var elements = res.data.resultIdToElementDataMap;
         var outputs = [];
         for (var key in elements) {
-            console.log(JSON.stringify(elements[key].elementValues));
+            console.log(JSON.stringify(elements[key].elementValues, null, 4));
 
             var simpleValues = elements[key].simpleValues;
             var elementValues = elements[key].elementValues;
 
             var output = {};
-            output['Name'] = elements[key].filterData.groupByValue;
+            for (var i = 0; i < processInfo.length; i++) {
+                switch (processInfo[i].type) {
+                    case 'filterData':
+                        output[processInfo[i].header] = elements[key].filterData.groupByValue;
+                        break;
+                }
+            }
 
             output = updateOutput(output, simpleValues, elementValues, processInfo);
-
             outputs.push(output);
         }
 
@@ -447,8 +329,21 @@ script:
     }
 
     var queryConnections = function(cookies) {
-        var body = buildQueryConnectionsRequest();
+        queryFilters = [];
+        if (args.ip) {
+            queryFilters.push({facetName: 'elementDisplayName', values: [args.ip]});
+        }
+        var path = [
+            {
+                requestedType: 'Connection',
+                filters: queryFilters,
+                isResult: true
+            }
+        ];
+
+        var body = buildQuery(connectionFields, path);
         console.log('body = ' + JSON.stringify(body, null, 4));
+
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
 
         var elements = res.data.resultIdToElementDataMap;
@@ -467,7 +362,6 @@ script:
 
             var output = {};
             output = updateOutput(output, simpleValues, elementValues, connectionInfo);
-
             outputs.push(output);
         }
 
@@ -487,6 +381,7 @@ script:
             saveCookies(res.Cookies);
         }
     }
+
 
     var res;
     switch (command) {
@@ -512,14 +407,10 @@ script:
         case 'cybereason-login':
             res = login();
             saveCookies(res.Cookies);
-            return 'Cookies: ' + JSON.stringify(res.Cookies);
-
         default:
             break;
     }
-
     return res;
-
   type: javascript
   commands:
   - name: cybereason-query-processes
