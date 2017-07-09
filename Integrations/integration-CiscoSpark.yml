@@ -43,10 +43,14 @@ script:
     var proxy = params.proxy;
 
     commandParams = {
-        'cisco-spark-list-people': {
-            'method': 'GET',
-            'url': 'people'
-        }
+        'cisco-spark-list-people':          {'url': 'people', 'method': 'GET'},
+        'cisco-spark-create-person':        {'url': 'people', 'method': 'POST'},
+        'cisco-spark-get-person-details':   {'url': 'people', 'method': 'GET'},
+        'cisco-spark-update-person':        {'url': 'people', 'method': 'PUT'},
+        'cisco-spark-delete-person':        {'url': 'people', 'method': 'DELETE'},
+        'cisco-spark-get-own-details':      {'url': 'people', 'method': 'GET', 'urlArg': 'personId'}
+
+
     }
 
     var buildEmptyEntryContext = function() {
@@ -64,17 +68,23 @@ script:
         }
     };
 
-    var sendRequest = function(method, url) {
+    var sendRequest = function(method, url, urlArg) {
         if (url[url.length - 1] === '/') {
             url = url.substring(0, url.length - 1);
         }
 
         var body = null;
-        var requestUrl = server + '/' + url + buildArgs(args);
+        var requestUrl = server + '/' + url;
+
+        if (urlArg) {
+            requestUrl = requestUrl + '/' + urlArg;
+        }
+
+        requestUrl += buildArgs(args);
 
         console.log('method: ' + JSON.stringify(method));
         console.log('requestUrl: ' + JSON.stringify(requestUrl));
-        console.log('body: ' + JSON.stringify(requestUrl));
+        console.log('body: ' + JSON.stringify(body));
 
         var res = http(
             requestUrl,
@@ -90,6 +100,9 @@ script:
             proxy
         );
 
+
+        console.log('res =\n' + JSON.stringify(res));
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
@@ -98,10 +111,29 @@ script:
     };
 
     var processCommand = function(command) {
-        res = sendRequest(commandParams[command].method, commandParams[command].url);
+        var urlArg = null;
+        switch (command) {
+            case 'cisco-spark-get-person-details':
+                urlArg = args.personId;
+                delete args.personId;
+                break;
+        }
+
+        res = sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
+
+        var output;
+        switch (command) {
+            case 'cisco-spark-list-people':
+                output = res.items;
+                break;
+
+            default:
+                output = res;
+        }
+
+
         var entry = buildEmptyEntryContext();
-        var items = res.items;
-        entry.HumanReadable = tableToMarkdown('Cisco Spark Results', items);
+        entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
 
         return entry;
     }
@@ -138,22 +170,55 @@ script:
     - name: max
       description: Limit the maximum number of people in the response.
     description: List people
-  - name: cisco-spark-list-messages
+  - name: cisco-spark-create-person
     arguments:
-    - name: roomId
-      required: true
-      description: List messages for a room, by ID.
-    - name: mentionedPeople
-      auto: PREDEFINED
-      predefined:
-      - mentionedPeople
-      description: List messages where the caller is mentioned by specifying "me"
-        or the caller personId.
-    - name: before
-      description: List messages sent before a date and time, in ISO8601 format.
-    - name: beforeMessage
-      description: List messages sent before a message, by ID.
-    - name: max
-      description: Limit the maximum number of messages in the response.
-    description: List all messages in a room
+    - name: emails
+      description: Email addresses of the person
+      isArray: true
+    - name: displayName
+      description: Full name of the person
+    - name: firstName
+      description: First name of the person
+    - name: lastName
+      description: Last name of the person
+    - name: avatar
+      description: URL to the person's avatar in PNG format
+    - name: orgId
+      description: ID of the organization to which this person belongs
+    - name: roles
+      description: Roles of the person
+      isArray: true
+    - name: licenses
+      description: Licenses allocated to the person
+      isArray: true
+    description: Create a new user account for a given organization. Only an admin
+      can create a new user account.
+  - name: cisco-spark-get-person-details
+    arguments:
+    - name: personId
+      description: The person ID
+    description: Shows details for a person, by ID.
+  - name: cisco-spark-update-person
+    arguments:
+    - name: emails
+      description: Email addresses of the person
+      isArray: true
+    - name: displayName
+      description: Full name of the person
+    - name: firstName
+      description: First name of the person
+    - name: lastName
+      description: Last name of the person
+    - name: "avatar\t"
+      description: URL to the person's avatar in PNG format
+    - name: orgId
+      description: ID of the organization to which this person belongs
+    - name: roles
+      description: Roles of the person
+      isArray: true
+    - name: licenses
+      description: Licenses allocated to the person
+      isArray: true
+    description: Update details for a person, by ID. Only an admin can update a person
+      details.
 hidden: false
