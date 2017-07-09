@@ -44,16 +44,6 @@ script:
         'query': {'Content-Type': ['application/json']},
     };
 
-    var processHeaders = [
-        'Name',
-        'PID',
-        'Parent',
-        'User',
-        'Creation Time',
-        'End Time',
-        'Command Line'
-    ];
-
     var processInfo = [
         {field: 'elementDisplayName', header: 'Name', type: 'filterData'},
         {field: 'imageFile.maliciousClassificationType', header: 'Malicious', type: 'simple'},
@@ -75,13 +65,13 @@ script:
 
     var processFields = [];
     processInfo.forEach(function(element) {
-        processFields.push(element.field)
-    })
+        processFields.push(element.field);
+    });
 
     var processHeaders = [];
     processInfo.forEach(function(element) {
-        processHeaders.push(element.header)
-    })
+        processHeaders.push(element.header);
+    });
 
     var connectionInfo = [
         {field: 'elementDisplayName', header: 'Name', type: 'simple'},
@@ -100,13 +90,13 @@ script:
 
     var connectionFields = [];
     connectionInfo.forEach(function(element) {
-        connectionFields.push(element.field)
-    })
+        connectionFields.push(element.field);
+    });
 
     var connectionHeaders = [];
     connectionInfo.forEach(function(element) {
-        connectionHeaders.push(element.header)
-    })
+        connectionHeaders.push(element.header);
+    });
 
     var saveCookies = function(cookies) {
         setIntegrationContext({'cookies': cookies});
@@ -120,7 +110,7 @@ script:
             var currentTime = new Date();
             var cookiesTime = new Date(cookies[1].Expires);
             var timeDifferenceInDays = Math.abs((currentTime.getTime() - cookiesTime.getTime()) / (1000 * 60 * 60 * 24));
-            if (timeDifferenceInDays <= 1) {
+            if (timeDifferenceInDays < 2) {
                 shouldRequestCookies = false;
             }
         }
@@ -246,7 +236,6 @@ script:
         ];
 
         var body = buildQuery(queryFields, path);
-        console.log('Body = \n' + JSON.stringify(body, null, 4));
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
@@ -296,15 +285,12 @@ script:
         ];
 
         var body = buildQuery(processFields, path);
-        console.log('body = ' + JSON.stringify(body, null, 4));
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
 
         var elements = res.data.resultIdToElementDataMap;
         var outputs = [];
         for (var key in elements) {
-            console.log(JSON.stringify(elements[key].elementValues, null, 4));
-
             var simpleValues = elements[key].simpleValues;
             var elementValues = elements[key].elementValues;
 
@@ -342,7 +328,6 @@ script:
         ];
 
         var body = buildQuery(connectionFields, path);
-        console.log('body = ' + JSON.stringify(body, null, 4));
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
 
@@ -375,13 +360,16 @@ script:
     if (command != 'test-module') {
         var cookiesInfo = checkCookies();
         var shouldLogin = cookiesInfo.shouldRequestCookies;
-        var cookies = cookiesInfo.cookies;
+
+        var cookies;
         if (shouldLogin) {
-            res = login();
-            saveCookies(res.Cookies);
+            var loginRes = login();
+            cookies = loginRes.Cookies;
+            saveCookies(cookies);
+        } else {
+            cookies = cookiesInfo.cookies;
         }
     }
-
 
     var res;
     switch (command) {
@@ -410,6 +398,7 @@ script:
         default:
             break;
     }
+
     return res;
   type: javascript
   commands:
@@ -453,7 +442,7 @@ script:
     description: Searches for processes with various filters.
   - name: cybereason-login
     arguments: []
-    description: Performs a login and updates the cookies.
+    description: Logs in and updates the cookies.
   - name: cybereason-is-probe-connected
     arguments:
     - name: machine
