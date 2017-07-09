@@ -107,3 +107,4 @@ script:
     description: Rasterize an email body into an image
   dockerimage: demisto/rasterize
 hidden: false
+releaseNotes: "rasterize-email allows rasterizing HTML emails, now with dimensions and output type arguments"
