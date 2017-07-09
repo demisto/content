@@ -48,9 +48,7 @@ script:
         'cisco-spark-get-person-details':   {'url': 'people', 'method': 'GET'},
         'cisco-spark-update-person':        {'url': 'people', 'method': 'PUT'},
         'cisco-spark-delete-person':        {'url': 'people', 'method': 'DELETE'},
-        'cisco-spark-get-own-details':      {'url': 'people', 'method': 'GET', 'urlArg': 'personId'}
-
-
+        'cisco-spark-get-own-details':      {'url': 'people/me', 'method': 'GET'}
     }
 
     var buildEmptyEntryContext = function() {
@@ -114,6 +112,8 @@ script:
         var urlArg = null;
         switch (command) {
             case 'cisco-spark-get-person-details':
+            case 'cisco-spark-get-update-person':
+            case 'cisco-spark-get-delete-person':
                 urlArg = args.personId;
                 delete args.personId;
                 break;
@@ -196,6 +196,7 @@ script:
   - name: cisco-spark-get-person-details
     arguments:
     - name: personId
+      required: true
       description: The person ID
     description: Shows details for a person, by ID.
   - name: cisco-spark-update-person
@@ -219,6 +220,18 @@ script:
     - name: licenses
       description: Licenses allocated to the person
       isArray: true
+    - name: personId
+      required: true
+      description: The person ID
     description: Update details for a person, by ID. Only an admin can update a person
       details.
+  - name: cisco-spark-delete-person
+    arguments:
+    - name: personId
+      required: true
+      description: The person ID
+    description: Remove a person from the system. Only an admin can remove a person.
+  - name: cisco-spark-get-own-details
+    arguments: []
+    description: Show the profile for the authenticated user.
 hidden: false
