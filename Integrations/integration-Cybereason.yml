@@ -38,22 +38,55 @@ script:
     var urlDict = {
         'login': 'login.html',
         'query': 'rest/visualsearch/query/simple',
-    }
+    };
 
     var headersDict = {
         'login': {'Content-Type': ['application/x-www-form-urlencoded']},
         'query': {'Content-Type': ['application/json']},
     };
 
-    var processHeaders = [
-        'Name',
-        'PID',
-        'Parent',
-        'User',
-        'Creation Time',
-        'End Time',
-        'Command Line'
+    // var processHeaders = [
+    //     'Name',
+    //     'PID',
+    //     'Parent',
+    //     'User',
+    //     'Creation Time',
+    //     'End Time',
+    //     'Command Line'
+    // ];
+
+    var processInfo = [
+        {field: 'elementDisplayName', header: 'Name', type: 'filterData'},
+        {field: 'imageFile.maliciousClassificationType', header: 'Malicious', type: 'simple'},
+        {field: 'creationTime', header: 'Creation Time', type: 'time'},
+        {field: 'endTime', header: 'End Time', type: 'time'},
+        {field: 'commandLine', header: 'Command Line', type: 'simple'},
+        {field: 'isImageFileSignedAndVerified', header: 'Signed and Verified', type: 'simple'},
+        {field: 'productType', header: 'Product Type', type: 'simple'},
+        {field: 'children', header: 'Children', type: 'simple'},
+        {field: 'parentProcess', header: 'Parent', type: 'element'},
+        {field: 'ownerMachine', header: 'Owner Machine', type: 'element'},
+        {field: 'calculatedUser', header: 'User', type: 'element'},
+        {field: 'imageFile', header: 'Image File', type: 'element'},
+        {field: 'imageFile.sha1String', header: 'SHA1', type: 'simple'},
+        {field: 'imageFile.md5String', header: 'MD5', type: 'simple'},
+        {field: 'imageFile.companyName', header: 'Company Name', type: 'simple'},
+        {field: 'imageFile.productName', header: 'Product Name', type: 'simple'},
+        // {field: 'iconBase64', header: 'bla1', type: 'simple'},
+        // {field: 'ransomwareAutoRemediationSuspended', header: 'bla1', type: 'simple'},
+        // {field: 'executionPrevented', header: 'bla1', type: 'simple'}
     ];
+
+    var processFields = [];
+    processInfo.forEach(function(element) {
+        processFields.push(element.field);
+    });
+
+    var processHeaders = [];
+    processInfo.forEach(function(element) {
+        processHeaders.push(element.header);
+    });
+
     var connectionInfo = [
         {field: 'elementDisplayName', header: 'Name', type: 'simple'},
         {field: 'direction', header: 'Direction', type: 'simple'},
@@ -71,17 +104,17 @@ script:
 
     var connectionFields = [];
     connectionInfo.forEach(function(element) {
-        connectionFields.push(element.field)
-    })
+        connectionFields.push(element.field);
+    });
 
     var connectionHeaders = [];
     connectionInfo.forEach(function(element) {
-        connectionHeaders.push(element.header)
-    })
+        connectionHeaders.push(element.header);
+    });
 
     var saveCookies = function(cookies) {
         setIntegrationContext({'cookies': cookies});
-    }
+    };
 
     var checkCookies = function() {
         var contextData = getIntegrationContext();
@@ -115,22 +148,30 @@ script:
         return entry;
     }
 
-    var setIfExists = function(element, field) {
-        if (!element[field][subField]) {
-            return undefined;
+    var updateOutput = function(output, simpleValues, elementValues, infoDict) {
+        for (var i = 0; i < infoDict.length; i++) {
+            switch (infoDict[i].type) {
+                case 'simple':
+                    if (simpleValues[infoDict[i].field]) {
+                        output[infoDict[i].header] = simpleValues[infoDict[i].field].values[0];
+                    }
+                    break;
+
+                case 'element':
+                    if (elementValues[infoDict[i].field]) {
+                        output[infoDict[i].header] = elementValues[infoDict[i].field].elementValues[0].name;
+                    }
+                    break;
+
+                case 'time':
+                    if (simpleValues[infoDict[i].field]) {
+                        output[infoDict[i].header] = convertTimestampToString(simpleValues[infoDict[i].field].values[0]);
+                    }
+                    break;
+            }
         }
 
-        switch (fieldTypes[field]) {
-            case 'simple':
-                return element[field].values[0];
-
-            case 'element':
-                // return element[field].elementValues[0].
-                break;
-
-            case 'time':
-                break;
-        }
+        return output;
     }
 
     var login = function() {
@@ -165,7 +206,7 @@ script:
             {
                 Method: 'POST',
                 Body: body,
-                Headers: headers,
+
                 Cookies: cookies
             },
             insecure,
@@ -178,6 +219,92 @@ script:
 
         return JSON.parse(res.Body);
     }
+
+    // var buildQuery = function(command) {
+    //     var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
+    //     var fields;
+    //     var path;
+    //     switch (command) {
+    //         case 'cybereason-is-probe-connected':
+    //             fields = ['elementDisplayName'];
+    //             path = [{
+    //                 requestedType: 'Machine',
+    //                 filters: [
+    //                     {facetName: 'elementDisplayName', values: [args.machine]},
+    //                     {facetName: 'isActiveProbeConnected', values: [true]}
+    //                 ],
+    //                 isResult: true
+    //             }];
+    //             break;
+
+    //         case 'cybereason-query-processes':
+    //             fields = processFields;
+
+    //             var machineFilters = [];
+    //             var processFilters = [];
+
+    //             if (args.machine) {
+    //                 machineFilters.push({facetName: 'elementDisplayName', values: [args.machine]});
+    //             }
+
+    //             if (args.processName) {
+    //                 processFilters.push({facetName: 'elementDisplayName', values: [args.processName]});
+    //             }
+
+    //             if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
+    //                 processFilters.push({facetName: 'hasSuspicions', values: [true]});
+    //             }
+
+    //             if (args.hasIncomingConnection == 'true') {
+    //                 processFilters.push({facetName: 'hasIncomingConnection', values: [true]});
+    //             }
+
+    //             if (args.hasOutgoingConnection == 'true') {
+    //                 processFilters.push({facetName: 'hasOutgoingConnection', values: [true]});
+    //             }
+
+    //             path = [
+    //                 {
+    //                     requestedType: 'Machine',
+    //                     filters: machineFilters,
+    //                     connectionFeature: {elementInstanceType: 'Machine', featureName: 'processes'}
+    //                 },
+    //                 {
+    //                     requestedType: 'Process',
+    //                     filters: processFilters,
+    //                     isResult: true
+    //                 }
+    //             ];
+
+    //             break;
+
+    //         case 'cybereason-query-connections':
+    //             var connectionFilters = [];
+    //             if (args.ip) {
+    //                 connectionFilters.push({facetName: 'elementDisplayName', values: [args.ip]});
+    //             }
+
+    //             path = [{
+    //                 requestedType: 'Connection',
+    //                 filters: connectionFilters,
+    //                 isResult: true
+    //             }];
+
+    //             break;
+    //     }
+
+    //     var query = {
+    //         customFields: processFields,
+    //         perFeatureLimit: 100,
+    //         perGroupLimit: 100,
+    //         queryPath: path,
+    //         queryTimeout: 120000,
+    //         templateContext: 'SPECIFIC',
+    //         totalResultLimit: resultsLimit
+    //     };
+
+    //     return query;
+    // }
 
     var isProbeConnected = function(cookies) {
         var body = {
@@ -198,9 +325,10 @@ script:
             templateContext: 'SPECIFIC',
             totalResultLimit: 10000
         };
+        // var body = buildQuery('cybereason-is-probe-connected');
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        var elements = res.data.resultIdToElementDataMap
+        var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
             if (elements[key].simpleValues.elementDisplayName.values[0] == args.machine) {
                 return true;
@@ -214,14 +342,6 @@ script:
         var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
         var machineFilters = [];
         var processFilters = [];
-        var processFields = [
-            'creationTime',
-            'endTime',
-            'pid',
-            'commandLine',
-            'parentProcess',
-            'calculatedUser'
-        ];
 
         if (args.machine) {
             machineFilters.push({facetName: 'elementDisplayName', values: [args.machine]});
@@ -264,8 +384,6 @@ script:
             totalResultLimit: resultsLimit
         };
 
-        console.log('body = \n' + JSON.stringify(body, null, 4));
-
         return body;
     }
 
@@ -302,32 +420,21 @@ script:
         console.log('body = ' + JSON.stringify(body, null, 4));
 
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+        console.log('res = \n' + JSON.stringify(res, null, 4));
+        // return res;
 
         var elements = res.data.resultIdToElementDataMap;
         var outputs = [];
         for (var key in elements) {
             console.log(JSON.stringify(elements[key].elementValues));
-            var output = {
-                'Name': elements[key].filterData.groupByValue,
-                'PID': elements[key].simpleValues.pid.values[0],
-                'Creation Time': convertTimestampToString(elements[key].simpleValues.creationTime.values[0])
-            }
 
-            if (elements[key].elementValues.parentProcess) {
-                output['Parent'] = elements[key].elementValues.parentProcess.elementValues[0].name;
-            }
+            var simpleValues = elements[key].simpleValues;
+            var elementValues = elements[key].elementValues;
 
-            if (elements[key].simpleValues.commandLine) {
-                output['Command Line'] = elements[key].simpleValues.commandLine.values[0];
-            }
+            var output = {};
+            output['Name'] = elements[key].filterData.groupByValue;
 
-            if (elements[key].simpleValues.endTime) {
-                output['End Time'] = convertTimestampToString(elements[key].simpleValues.endTime.values[0]);
-            }
-
-            if (elements[key].elementValues.calculatedUser) {
-                output['User'] = elements[key].elementValues.calculatedUser.elementValues[0].name;
-            }
+            output = updateOutput(output, simpleValues, elementValues, processInfo);
 
             outputs.push(output);
         }
@@ -359,27 +466,7 @@ script:
             }
 
             var output = {};
-            for (var i = 0; i < connectionInfo.length; i++) {
-                switch (connectionInfo[i].type) {
-                    case 'simple':
-                        if (simpleValues[connectionInfo[i].field]) {
-                            output[connectionInfo[i].header] = simpleValues[connectionInfo[i].field].values[0];
-                        }
-                        break;
-
-                    case 'element':
-                        if (elementValues[connectionInfo[i].field]) {
-                            output[connectionInfo[i].header] = elementValues[connectionInfo[i].field].elementValues[0].name;
-                        }
-                        break;
-
-                    case 'time':
-                        if (simpleValues[connectionInfo[i].field]) {
-                            output[connectionInfo[i].header] = convertTimestampToString(simpleValues[connectionInfo[i].field].values[0]);
-                        }
-                        break;
-                }
-            }
+            output = updateOutput(output, simpleValues, elementValues, connectionInfo);
 
             outputs.push(output);
         }
