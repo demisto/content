@@ -211,7 +211,7 @@ script:
         var matches = res && res.matches;
 
         if (!matches || !(matches instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // build table
@@ -252,7 +252,7 @@ script:
 
         var occurrences = res && res.pfs2;
         if (!occurrences || !(occurrences instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // table
@@ -280,7 +280,7 @@ script:
 
         var related = res && res.tb1;
         if (!related || !(related instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // table
@@ -307,7 +307,7 @@ script:
         var res = sendRequest(url);
 
         if (!res) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // each key in SecurityResultInfo corrispond to a key in 'res'
@@ -373,7 +373,7 @@ script:
 
         var features = res && res.features;
         if (!features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         };
         var address = res.rrs_tf && res.rrs_tf[0] && res.rrs_tf[0].rrs && res.rrs_tf[0].rrs[0] && res.rrs_tf[0].rrs[0].rr;
         features.ip = address;
@@ -426,7 +426,7 @@ script:
         var rrs = res && res.rrs;
         var features = res && res.features;
         if (!rrs || !features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this ip";
         };
 
         var rrsTable = rrs.map(function(obj) {
@@ -1105,4 +1105,4 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Fix response in non-existing domains/ip"
