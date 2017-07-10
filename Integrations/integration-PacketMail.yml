@@ -66,7 +66,7 @@ script:
         try {
           return JSON.parse(res.Body);
         }
-        throw 'Invalid response - expected JSON and get ' + res.Body;
+        throw 'Invalid response - expected JSON and got ' + res.Body;
     };
 
     // The command input arg holds the command sent from the user.
