@@ -63,7 +63,10 @@ script:
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
 
-        return JSON.parse(res.Body);
+        try {
+          return JSON.parse(res.Body);
+        }
+        throw 'Invalid response - expected JSON and get ' + res.Body;
     };
 
     // The command input arg holds the command sent from the user.
