@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: Rasterize
 display: Rasterize
-system: true
 category: Utilities
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAATRJREFUeNrsWO0NgjAQtcYBOkJHcATdRCeQDcQJcAPcQDeQDRgBN8ANaqv9UZt+Umgq3iUPEnohr+/6jguIUrrIOZaLzAMIzp7gil8QQjk4ZcvQyA+4gaHEQDBngmhCNPNqM45I1YLuuiqCSYDgL5jE1ILGDppCwTVDKe6mIAbHGmh/Rn6qgbwz05ocOyWnMuTVYn2jUfALb24jEuw88oi01voQtJ3BMrC82CPnoBwHrvplaIltMG1IzrlqNtArOV2MgqHBCT5EGZ8MN4aC4SzWC43KJMYkoQrKSlVSbi2e96Fn3WWSEIJYuBKLw6/mtx7vspb4ZFHk6FCMCALY0R8Htm/3rw/brrFDnZBqaBWM/ZJUUeokGBb2I4z//znNJPsTAQMrEMzCJI5mjUBBIDhhvAQYALha1fUnW57EAAAAAElFTkSuQmCC
 description: Rasterize URLs given to it
@@ -11,20 +10,53 @@ detaileddescription: Take a URL and create an image or PDF out of the page
 configuration: []
 script:
   script: |-
-    # The command demisto.command() holds the command sent from the user.
+    import os, subprocess,sys
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         demisto.results('ok')
         sys.exit(0)
-    if demisto.command() == 'rasterize':
-        import os
-        import subprocess
+    if demisto.command() == 'rasterize-email':
+        file = demisto.args()['htmlBody']
+
         return_code = 0
         error_message = ''
+        friendlyName = 'email.png'
+
+        f = open('htmlBody.html','w')
+        f.write(file)
+        f.close()
+
+        command = ['phantomjs', '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
+
+        try:
+            error_message = subprocess.check_output(command)
+        except Exception as e:
+            return_code = -1
+            error_message = e.output
+
+        if return_code == 0:
+            filename = demisto.uniqueFile()
+            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+        else:
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
+        sys.exit(0)
+
+    if demisto.command() == 'rasterize':
+        return_code = 0
+        error_message = ''
+        url = demisto.args()['url']
+
+        if not (url.startswith("http")):
+            url = "http://" + url
+
         friendlyName = 'url.png'
         if demisto.get(demisto.args(), 'type') == 'pdf':
             friendlyName = 'url.pdf'
-        command = ['phantomjs', '/usr/local/bin/rasterize.js', demisto.args()['url'], friendlyName]
+        command = ['phantomjs', '/usr/local/bin/rasterize.js', url, friendlyName]
         if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
             command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
         try:
@@ -36,7 +68,7 @@ script:
         if return_code == 0:
             filename = demisto.uniqueFile()
             subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -54,6 +86,14 @@ script:
     - name: height
       description: The page height, e.g. 50px (empty is entire page)
     - name: type
-      description: pdf or image. Default is png.
+      description: pdf or png. Default is png.
     description: Rasterize a URL into image or PDF
+  - name: rasterize-email
+    arguments:
+    - name: htmlBody
+      required: true
+      default: true
+      description: HTML body of the email
+    description: Rasterize an email body into an image
   dockerimage: demisto/rasterize
+hidden: false

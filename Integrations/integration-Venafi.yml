@@ -66,7 +66,27 @@ script:
             }
             return 'something is wrong';
         case 'venafi-get-certificates':
-            return sendRequest('GET', '/vedsdk/certificates/' + encodeToURLQuery(args), undefined, auth.APIKey);
+            var raw = sendRequest('GET', '/vedsdk/certificates/' + encodeToURLQuery(args), undefined, auth.APIKey);
+            var certs = [];
+            for (var i in raw.Certificates) {
+                certs.push({
+                    CreatedOn: raw.Certificates[i].CreatedOn,
+                    DN: raw.Certificates[i].DN,
+                    Name: raw.Certificates[i].Name,
+                    ParentDN: raw.Certificates[i].ParentDn,
+                    SchemaClass: raw.Certificates[i].SchemaClass,
+                    ID: raw.Certificates[i].Guid.substring(1, raw.Certificates[i].Guid.length - 1),
+                });
+            }
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: {'Venafi.Certificats(val.ID==obj.ID)': certs},
+                HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
+            };
+            return entry;
         default:
             throw 'No can do';
     }
@@ -126,6 +146,64 @@ script:
     - name: ValidationDisabled
       description: Include only certificates with validation disabled (1) or enabled
         (0)
+    - name: ValidFrom
+      description: Date on which the certificate was issued (e.g., 2015- 10-08T19:15:35.6431456Z
+        or 2015-10-08)
+    - name: ValidTo
+      description: Date on which the certificate expires (e.g., 2015-10- 08T19:15:35.6431456Z
+        or 2015-10-08)
+    - name: C
+      description: Country attribute of Subject DN
+    - name: CN
+      description: Common name attribute of Subject DN
+    - name: Issuer
+      description: Issuer DN. Note, since most Issuer DNs include commas between DN
+        components, it is important to surround the complete Issuer DN within double
+        quotes (“). In addition, if the Issuer DN includes double quotes, each double
+        quote should be prefixed by another double quote
+    - name: KeyAlgorithm
+      description: Algorithm for the public key in the certificate (e.g., RSA, DSA)
+    - name: KeySize
+      description: Size of the public key in the certificate (e.g., 2048). Accepts
+        multiple comma separated values
+    - name: KeySizeGreater
+      description: Key size greater than the specified value
+    - name: KeySizeLess
+      description: Key size less than the specified value
+    - name: L
+      description: Locality/City attribute of Subject DN in certificates
+    - name: O
+      description: Organization attribute of Subject DN in certificates
+    - name: S
+      description: State/Province attribute of Subject DN in certificates
+    - name: Serial
+      description: Serial number of the certificate
+    - name: SignatureAlgorithm
+      description: The algorithm used to sign the certificate (e.g. SHA1RSA)
+    - name: ValidFrom
+      description: Date on which the certificate was issued (e.g., 2015- 10-08T19:15:35.6431456Z
+        or 2015-10-08)
+    - name: ValidTo
+      description: Date on which the certificate expires (e.g., 2015-10- 08T19:15:35.6431456Z
+        or 2015-10-08)
+    - name: ValidToGreater
+      description: Certificates that expire after the specified date
+    - name: ValidToLess
+      description: Certificates that expire before the specified date
+    outputs:
+    - contextPath: Venafi.Certificats.CreatedOn
+      description: Certificate creation date
+    - contextPath: Venafi.Certificats.DN
+      description: Certificate DN
+    - contextPath: Venafi.Certificats.Name
+      description: Certificate name
+    - contextPath: Venafi.Certificats.ParentDN
+      description: Certificate parent DN
+    - contextPath: Venafi.Certificats.SchemaClass
+      description: Certificate schema
+    - contextPath: Venafi.Certificats.ID
+      description: Certificate ID (GUID)
     description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
       format. Additional fields can be used in the query by adding them in a key=value
       manner
+releaseNotes: "Context creation by Venafi search and new serach arguments"

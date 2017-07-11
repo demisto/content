@@ -1,0 +1,280 @@
+commonfields:
+  id: Threat Crowd
+  version: -1
+name: Threat Crowd
+display: Threat Crowd
+category: Data Enrichment
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAUVBMVEX/////mQD/////mQD/////mQD/////////mQD/////////mQD/////mQD/////mQD/////mQD/////////mQD/////mQD/////mQD/////mQBtb+gFAAAAGXRSTlMAESIiMzNEVVVmd3eIiJmZqqq7zMzd3e7u7+L68QAABBlJREFUeJztW2F36iAMVaytrZVhK2Pj///QVyFQVArtJNR3Tu9H51kuSYDcBHe7DRs2bNjwoSgbyjpGm3IN46TuxK+B6Krc5tvRugZvctqvn80rN9S5zJPOY/4Olsl+Py6677qej+7oSQ773ES9LeCjgvJ8DIx98Zj3Jit6dALdRLgJy5MHtV5+6/kTzbEXIAA++4YBR02DNuhmHR7ME4mI4Bq1fzgiAZ0B01Fu1N8R76Y+skLtIcSNIKYzUEPloUCzXygPh7K8jH7jLTTx9SkfoRUHNJ7kPBakt8Dip32PmoXqoOnWJrCmB2aEADcHVt8FepcXgW/ET4q3oE9aGvgG8kmoszB04WPfBXXkwm+xb0O48CfrAYFdD8ASp84i/IrI1IT+PGQ5pAHU/z4GzKcX0gPK/+55nVYwogt1UIaidimQxgpEdJFstamgozZ05Xo+BoMt3veuOoZP0XsV7NcPWolMDGruMc+HE7DMxYA0zxSgR1TA52glwYiKOV0yZjdfmY/BsNy6ZYy19UOFkNEHEzAMQnUDLsjHMMjUtvtMBv2nMAjrKFSszwAKBPzW5X/AIEcL2w/2KQxwu6cfzoCGGOjrlNGmQCRoGDypelIxt5gUnKJJyhZMuAwI9Yy9BEXyg2Fgl0iYb+qmKiscCjBkNAxeZo4uhRaFQuMwKJxyVgzCQs3dHEp9qAX0Z9SWwajh3LQjTomLI2+BQWftdC9JX1nNh6IqFAPraq7MHy/Xmxxwu16OLgXvTOxtDLLN2FcGDpdv6eD7cnBm4jgMzLz/fibtv+QLvvajtkPJA5Cu97vx9PNqX8qfk90kAmM39ta+Z/ngBFtRI5Qx+kAcbqX9dcq+lNc9NPvSp0Gh/u/9RgjYHxiYUCUPgq4MmoD/bRS0rxIru8J0UU9h+1KeYOqQ2AW6LCh3e2/+u/jZQ086bRZwSO1IACAIsRHtclTggEPcvpQHcEHKGonBki5zCFxg8JAyDVUEBq38HTc/3Asj4WSAYdZxjn0pjzoGCWc/Jeyr8zwC5x1RSZBuI5qBX/AQHHFNPv8zY+/bPAK35BNQCqfAPPtSAoF020AldbeEQOIh9GcQWDME7dpJWK+9DYulB1HyMfzaR/Hiy2jGa5FlMEfhous4ZUm0ekGilzS7JEN4F6iL0mpJUZpWpZO1y3IQJu0cYUIxhAm44N4mikmzOvxw9M+YK061hkJ4CQJTHB6R5wWaPDdL46s1KEyr7N6hmmrRVJgtmrFpO9mkgs423vgfGJg23dm06c6qTWeeJeC06YCB6RT29XOU7asI3Eco489TBBs5uL/ZEci/GnLewMArmMdnMC8vlNIj1K7P82sh77xEOQRrZvJKofW8w+E4w4oplDTX0CoAUrWUMdpW640VN2zYMA//AElFHQmZxf9TAAAAAElFTkSuQmCC
+description: Query threat crowd for reports
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://www.threatcrowd.org
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v2
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    var server = params.server.replace(/[\/]+$/, '') + '/searchApi/' + params.version + '/';
+
+    var commands = {
+        'threat-crowd-email': {
+            url: 'email',
+            title: 'Threat crowd report for email %email%',
+            defaultFields: {
+              'type': 'Email',
+            },
+            translator: [
+                {to: 'ThreatCrowd-Domains', from: 'domains'},
+                {to: 'Address', from: 'email'},
+                {to: 'Type', from: 'type'},
+            ],
+            contextKey: 'Account.Email(val.Address==obj.Address)',
+        },
+        'threat-crowd-domain': {
+            url: 'domain',
+            title: 'Threat crowd report for domain %domain%',
+            translator: [
+                {to: 'Name', from: 'domain'},
+                {to: 'ThreatCrowd-Emails', from: 'emails'},
+                {to: 'ThreatCrowd-SubDomains', from: 'subdomains'},
+                {to: 'ThreatCrowd-References', from: 'references'},
+            ],
+            contextKey: 'Domain(val.Name==obj.Name)',
+        },
+        'threat-crowd-ip': {
+            url: 'ip',
+            title: 'Threat crowd report for ip %ip%',
+            translator: [
+                {to: 'Address', from: 'ip'},
+                {to: 'ThreatCrowd-Hashes', from: 'hashes'},
+                {to: 'ThreatCrowd-References', from: 'references'},
+                {to: 'ThreatCrowd-Resolutions', from: 'resolutions'},
+                {to: 'ThreatCrowd-Votes', from: 'votes'},
+            ],
+            contextKey: 'IP(val.Address==obj.Address)',
+        },
+        'threat-crowd-antivirus': {
+            url: 'antivirus',
+            title: 'Threat crowd report for antivirus %antivirus%',
+            translator: [
+                {to: 'Name', from: 'antivirus'},
+                {to: 'Hashes', from: 'hashes'},
+                {to: 'References', from: 'references'},
+            ],
+            contextKey: 'ThreatCrowd.AntiVirus(val.Name==obj.Name)',
+        },
+        'threat-crowd-file': {
+            url: 'file',
+            title: 'Threat crowd report for file with hash %resource%',
+            translator: [
+                {to: 'MD5', from: 'md5'},
+                {to: 'ThreatCrowd-IPs', from: 'ips'},
+                {to: 'ThreatCrowd-Domains', from: 'ips'},
+                {to: 'ThreatCrowd-Resource', from: 'resource'},
+                {to: 'ThreatCrowd-SHA1', from: 'sha1'},
+                {to: 'ThreatCrowd-References', from: 'references'},
+                {to: 'ThreatCrowd-Scans', from: 'scans'},
+            ],
+            contextKey: 'File(val.MD5==obj.MD5)',
+        },
+        'test-module': {
+            url: 'email',
+            defaultArgs: {
+                email: 'william19770319@yahoo.com',
+            },
+        },
+    };
+
+    function createContext(data) {
+        var createContextSingle = function(obj) {
+            var res = {};
+            var keys = Object.keys(obj);
+            keys.forEach(function(k) {
+                var values = k.split('-');
+                var current = res;
+                for (var j = 0; j<values.length - 1; j++) {
+                    if (!current[values[j]]) {
+                        current[values[j]] = {};
+                    }
+                    current = current[values[j]];
+                }
+                current[values[j]] = obj[k];
+            });
+            return res;
+        };
+        if (data instanceof Array) {
+            var res = [];
+            for (var j=0; j < data.length; j++) {
+                res.push(createContextSingle(data[j]));
+            }
+            return res;
+        }
+        return createContextSingle(data);
+    }
+
+    function mapObjFunction(mapFields) {
+        var transformSingleObj= function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+               res[f.to] = dq(obj, f.from);
+            });
+            return res;
+        };
+        return function(obj) {
+            if (obj instanceof Array) {
+                var res = [];
+                for (var j=0; j < obj.length; j++) {
+                    res.push(transformSingleObj(obj[j]));
+                }
+                return res;
+            }
+            return transformSingleObj(obj);
+        };
+    }
+
+    function merge(obj1, obj2) {
+        if (!obj2) {
+            return obj1;
+        }
+        keys = Object.keys(obj2);
+        for (var k in keys) {
+            if (obj1[keys[k]] === undefined) {
+                obj1[keys[k]] = obj2[keys[k]]
+            }
+        }
+        return obj1;
+    }
+
+    if (args.file) {
+        args.resource = args.file;
+        delete(args.file);
+    }
+
+    function sendRequestAndParse(commandData) {
+        res = http(
+            server + commandData.url + '/report/' + encodeToURLQuery(args && Object.keys(args).length ? args : commandData.defaultArgs),
+            {},
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to ' + commandData.url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        entry = {
+            Type: entryTypes.note,
+            Contents: JSON.parse(res.Body),
+            ContentsFormat: formats.json,
+        };
+        if (commandData.translator) {
+            data = mapObjFunction(commandData.translator)(merge(merge(entry.Contents, args), commandData.defaultFields));
+            entry.ReadableContentsFormat = formats.markdown;
+            entry.HumanReadable = tableToMarkdown(replaceInTemplates(commandData.title, args), data);
+            entry.EntryContext = {};
+            entry.EntryContext[commandData.contextKey] = createContext(data);
+        }
+        return entry;
+    }
+
+    res = sendRequestAndParse(commands[command]);
+    if (command === 'test-module') {
+        return 'ok';
+    }
+    return res;
+  type: javascript
+  commands:
+  - name: threat-crowd-email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: Email to get report of
+    outputs:
+    - contextPath: Account.Email.Address
+      description: The email in threat crowd
+    - contextPath: Account.Type
+      description: Email type
+    - contextPath: Account.ThreatCrowd.Domains
+      description: Threat crowd domains linked to this account
+    description: Get email report
+  - name: threat-crowd-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to get report of
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.ThreatCrowd.Emails
+      description: Threat crowd emails
+    - contextPath: Domain.ThreatCrowd.SubDomains
+      description: Threat crowd subdomains
+    - contextPath: Domain.ThreatCrowd.References
+      description: Threat crowd references
+    description: Get domain report
+  - name: threat-crowd-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP to get report of
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.ThreatCrowd.Hashes
+      description: Hashes from threat crowd
+    - contextPath: IP.ThreatCrowd.References
+      description: References from threat crowd
+    - contextPath: IP.ThreatCrowd.Resolutions
+      description: Resolutions from threat crowd
+    - contextPath: IP.ThreatCrowd.Votes
+      description: Votes from threat crowd
+    description: Get ip report
+  - name: threat-crowd-antivirus
+    arguments:
+    - name: antivirus
+      required: true
+      description: Antivirus to get report of
+    outputs:
+    - contextPath: ThreatCrowd.AntiVirus.Name
+      description: AntiVirus name
+    - contextPath: ThreatCrowd.AntiVirus.Hashes
+      description: Hashes of the anti virus
+    - contextPath: ThreatCrowd.AntiVirus.References
+      description: References of the anti virus
+    description: Get antivirus report
+  - name: threat-crowd-file
+    arguments:
+    - name: file
+      required: true
+      description: hash to get report of
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.ThreatCrowd.IPs
+      description: IPs from threat crowd
+    - contextPath: File.ThreatCrowd.Domains
+      description: Domains from threat crowd
+    - contextPath: File.ThreatCrowd.Resource
+      description: Resource from threat crowd
+    - contextPath: File.ThreatCrowd.SHA1
+      description: SHA1 from threat crowd
+    - contextPath: File.ThreatCrowd.References
+      description: References from threat crowd
+    - contextPath: File.ThreatCrowd.Scans
+      description: Scans from threat crowd
+    description: Get file report
+hidden: false
