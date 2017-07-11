@@ -121,10 +121,11 @@ script:
         ec.DBotScore = [];
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
-            md += '## VirusTotal Hash Reputation for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
+            md += '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
+            md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             var dbotScore = 0;
             if (r[i].positives >= threshold) {
                 dbotScore = 3;
@@ -209,6 +210,7 @@ script:
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
         md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
         md += 'Country: **' + o.country + '**\n';
+        md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
         var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
             {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
             {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
@@ -266,6 +268,7 @@ script:
             md += 'Scan ID: **' + o.scan_id + '**\n\n';
             md += 'Total scans: **' + o.total + '**\n';
             md += 'Positive scans: **' + o.positives + '**\n';
+            md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
 
             if (longFormat === 'true') {
                 md += '### Scans\n';
@@ -324,6 +327,7 @@ script:
 
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";
+        md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
 
         var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
             {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},

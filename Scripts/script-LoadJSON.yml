@@ -1,0 +1,19 @@
+commonfields:
+  id: LoadJSON
+  version: -1
+name: LoadJSON
+script: |-
+  import json
+  obj = json.loads(demisto.args()['input'])
+  demisto.results(obj)
+type: python
+tags:
+- Utility
+comment: Loads a json from string input, and returns a json object result
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: input string to transform to json object
+scripttarget: 0

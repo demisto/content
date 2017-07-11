@@ -613,6 +613,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package.
 system: true
+deprecated: true
 args:
 - name: entryid
   required: true
