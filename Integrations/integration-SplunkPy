@@ -40,12 +40,20 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: 'Proxy - in format: localhost:8080'
+  name: proxy
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     import splunklib.client as client
     import splunklib.results as results
     import json
     from time import gmtime, strftime
+    import urllib2
+    import ssl
+    from StringIO import StringIO
 
     def severity_to_level(severity):
         if severity == 'informational':
@@ -70,11 +78,54 @@ script:
         incident['labels'] = labels
         return incident
 
+    def handler(proxy):
+        proxy_handler = urllib2.ProxyHandler({'http': proxy, 'https': proxy})
+        opener = urllib2.build_opener(proxy_handler)
+        urllib2.install_opener(opener)
+        return request
+
+    def request(url, message, **kwargs):
+        method = message['method'].lower()
+        data = message.get('body', "") if method == 'post' else None
+        headers = dict(message.get('headers', []))
+        req = urllib2.Request(url, data, headers)
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, response:
+            # If running Python 2.7.9+, disable SSL certificate validation and try again
+            if sys.version_info >= (2, 7, 9):
+                response = urllib2.urlopen(req, context=ssl._create_unverified_context())
+            else:
+                raise
+        except urllib2.HTTPError, response:
+            pass # Propagate HTTP errors via the returned response message
+        return {
+            'status': response.code,
+            'reason': response.msg,
+            'headers': response.info().dict,
+            'body': StringIO(response.read())
+        }
+
     service = client.connect(
             host=demisto.params()['host'],
             port=demisto.params()['port'],
             username=demisto.params()['authentication']['identifier'],
             password=demisto.params()['authentication']['password'])
+
+    proxy = demisto.params()['proxy']
+    if proxy:
+        try:
+            service = client.connect(
+                handler=handler(proxy),
+                host=demisto.params()['host'],
+                port=demisto.params()['port'],
+                username=demisto.params()['authentication']['identifier'],
+                password=demisto.params()['authentication']['password'])
+        except urllib2.URLError as e:
+            if e.reason.errno == 1 and sys.version_info < (2, 6, 3):
+                pass
+            else:
+                raise
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
