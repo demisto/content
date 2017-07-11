@@ -29,6 +29,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Default Target Mailbox
+  name: defaultTargetMailbox
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Default Version
   name: defaultServerVersion
   defaultvalue: Exchange2010
@@ -574,10 +579,12 @@ script:
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
+    if (!args['target-mailbox']) {
+        args['target-mailbox'] = params.defaultTargetMailbox;
+    }
     switch (command) {
         case 'test-module':
             args['folders-ids'] = 'inbox';
-            args['target-mailbox'] = params.credentials.identifier + '@' + params.domain;
             execute('ews-get-folder', args);
             return 'ok'; // need to implement the test
         case 'ews-search-mailboxes':
@@ -590,7 +597,6 @@ script:
                 }
             }
             args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.trim(); });
-            args['impersonating-mailbox'] = params.credentials.identifier + '@' + params.domain;
         default:
             return execute(command, args);
     }
@@ -602,7 +608,7 @@ script:
       required: true
       description: The Item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
@@ -628,7 +634,7 @@ script:
       default: true
       description: The item IDs (result of the ews-search-mailbox)
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
@@ -644,7 +650,7 @@ script:
       default: true
       description: The attachment IDs  (result of the ews-get-items command)
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
@@ -660,7 +666,7 @@ script:
       default: true
       description: The Item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
@@ -699,7 +705,7 @@ script:
       required: true
       description: The folders where the query will run
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
@@ -756,7 +762,7 @@ script:
       default: true
       description: The item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
-      required: true
+      required: false
       description: The user email address
     - name: version
       description: Exchange version (by default 2010, change to 2013 if using 2013).
