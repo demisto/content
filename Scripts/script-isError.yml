@@ -13,10 +13,13 @@ type: javascript
 tags:
 - Condition
 - Utility
+comment: Check whether a given entry is an error. Use ${lastCompletedTaskEntries.[0]}
+  to check the previous task entry.
 enabled: true
 args:
 - name: entryId
   required: true
   default: true
+  description: Entry to check
 scripttarget: 0
 releaseNotes: "New script to check whether a given entry is an error"
