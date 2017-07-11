@@ -1,0 +1,321 @@
+id: playbook-urlscan
+version: -1
+name: playbook-urlscan
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3ac0ffed-5825-478e-8f02-2e598e146ba1
+    type: start
+    task:
+      id: 3ac0ffed-5825-478e-8f02-2e598e146ba1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 9ecb9bc6-9b1b-4051-865c-274153d8182b
+    type: regular
+    task:
+      id: 9ecb9bc6-9b1b-4051-865c-274153d8182b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 87b9a427-c353-4759-8a55-e73a11390094
+    type: regular
+    task:
+      id: 87b9a427-c353-4759-8a55-e73a11390094
+      version: -1
+      name: Check IP command
+      script: urlscan|||ip
+      type: regular
+      iscommand: true
+      brand: urlscan
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip: 8.8.8.8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: f603e0a0-e89b-4330-82bc-a065e682c29f
+    type: condition
+    task:
+      id: f603e0a0-e89b-4330-82bc-a065e682c29f
+      version: -1
+      name: Check if DBot score is 0
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      chars: ""
+      distance: ""
+      dn: ""
+      domain: ""
+      email: ""
+      entry: ""
+      filter: ""
+      groupname: ""
+      key: ""
+      left: ${DBotScore.Score}
+      name: ""
+      nestedSearch: ""
+      right: "0"
+      sender: ""
+      size: ""
+      string: ${DBotScore.Score}
+      substring: "0"
+      value: ""
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 71d28939-8e98-4ee5-8b42-5e4fe56c0770
+    type: regular
+    task:
+      id: 71d28939-8e98-4ee5-8b42-5e4fe56c0770
+      version: -1
+      name: Check URL command
+      script: urlscan|||url
+      type: regular
+      iscommand: true
+      brand: urlscan
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b42b4b2e-f74b-4693-868a-a96374c0558c
+    type: regular
+    task:
+      id: b42b4b2e-f74b-4693-868a-a96374c0558c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8a164b0d-a3ba-458f-8806-26047b017306
+    type: condition
+    task:
+      id: 8a164b0d-a3ba-458f-8806-26047b017306
+      version: -1
+      name: Check if DBot score is 0
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      chars: ""
+      entry: ""
+      filter: ""
+      left: ${DBotScore.Score}
+      right: "1"
+      size: ""
+      string: ${DBotScore.Score}
+      substring: "0"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 76d48448-3907-4b1c-8916-2eeca8d602fe
+    type: regular
+    task:
+      id: 76d48448-3907-4b1c-8916-2eeca8d602fe
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: cd811ab0-665d-4bad-832f-c4cdf51511e3
+    type: regular
+    task:
+      id: cd811ab0-665d-4bad-832f-c4cdf51511e3
+      version: -1
+      name: Check submit command
+      script: urlscan|||urlscan-submit
+      type: regular
+      iscommand: true
+      brand: urlscan
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      url: www.demisto.com
+      wait: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a1805521-8ab4-416d-84ef-a9485063c5b9
+    type: condition
+    task:
+      id: a1805521-8ab4-416d-84ef-a9485063c5b9
+      version: -1
+      name: Check if URL submitted
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    scriptarguments:
+      chars: ""
+      entry: ""
+      filter: ""
+      left: ${Urlscan.Url}
+      right: www.demisto.com
+      size: ""
+      string: ${DBotScore.Score}
+      substring: "0"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 6129fe0c-24ac-4ea6-8f36-a491f0642777
+    type: regular
+    task:
+      id: 6129fe0c-24ac-4ea6-8f36-a491f0642777
+      version: -1
+      name: Close Investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_5_yes": 0.86
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
