@@ -24,6 +24,11 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Default Target Mailbox
+  name: defaultTargetMailbox
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Domain
   name: domain
   defaultvalue: ""
@@ -577,7 +582,6 @@ script:
     switch (command) {
         case 'test-module':
             args['folders-ids'] = 'inbox';
-            args['target-mailbox'] = params.credentials.identifier + '@' + params.domain;
             execute('ews-get-folder', args);
             return 'ok'; // need to implement the test
         case 'ews-search-mailboxes':
@@ -590,7 +594,6 @@ script:
                 }
             }
             args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.trim(); });
-            args['impersonating-mailbox'] = params.credentials.identifier + '@' + params.domain;
         default:
             return execute(command, args);
     }
