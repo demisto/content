@@ -134,13 +134,13 @@ script:
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
 
-    var updateContext = function(entry, outputs) {
+    var updateContext = function(entry, outputs, contextPath) {
         if (args.saveToContext == 'true') {
             var contexts = [];
             for (var i = 0; i < outputs.length; i++) {
                 contexts.push(convertKeysToPascalCase(outputs[i]));
             }
-            entry.EntryContext.Process = contexts;
+            entry.EntryContext[contextPath] = contexts;
         }
     }
 
@@ -321,7 +321,7 @@ script:
 
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cybereason Processes', outputs, processHeaders);
-        updateContext(entry, outputs);
+        updateContext(entry, outputs, 'Process');
 
         return entry;
     }
@@ -364,7 +364,7 @@ script:
 
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cybereason Connections', outputs, connectionHeaders);
-        updateContext(entry, outputs);
+        updateContext(entry, outputs, 'Connection');
 
         return entry;
     }
@@ -452,7 +452,38 @@ script:
       description: Filter only processes with outgoing connections.
       defaultValue: "false"
     outputs:
-    - {}
+    - contextPath: Process.Name
+      description: The process name
+    - contextPath: Process.Malicious
+      description: Malicious status of the process
+    - contextPath: Process.CreationTime
+      description: The process creation time
+    - contextPath: Process.EndTime
+      description: The process end time
+    - contextPath: Process.CommandLine
+      description: The command line of the process
+    - contextPath: Process.SignedAndVerified
+      description: Is the process signed and verified
+    - contextPath: Process.ProductType
+      description: The product type
+    - contextPath: Process.Children
+      description: Children of the process
+    - contextPath: Process.Parent
+      description: The parent process
+    - contextPath: Process.OwnerMachine
+      description: The machine's hostname
+    - contextPath: Process.User
+      description: The user who ran the process
+    - contextPath: Process.ImageFile
+      description: Image file of the process
+    - contextPath: Process.SHA1
+      description: SHA1 of the process file
+    - contextPath: Process.MD5
+      description: MD5 of the process file
+    - contextPath: Process.CompanyName
+      description: The company's name
+    - contextPath: Process.ProductName
+      description: The product's name
     description: Searches for processes with various filters.
   - name: cybereason-login
     arguments: []
@@ -476,5 +507,30 @@ script:
       - "false"
       description: If true, save the result to the context.
       defaultValue: "false"
+    outputs:
+    - contextPath: Connection.Name
+      description: The connection's name
+    - contextPath: Connection.Direction
+      description: OUTGOING/INCOMING
+    - contextPath: Connection.ServerAddress
+      description: Address of the Cybereason machine
+    - contextPath: Connection.ServerPort
+      description: Port of the Cybereason machine
+    - contextPath: Connection.PortType
+      description: Type of the connection
+    - contextPath: Connection.ReceivedBytes
+      description: Received bytes count
+    - contextPath: Connection.TransmittedBytes
+      description: Transmitted bytes count
+    - contextPath: Connection.RemoteCountry
+      description: The connection's remote country
+    - contextPath: Connection.OwnerMachine
+      description: The machine's hostname
+    - contextPath: Connection.OwnerProcess
+      description: The process which performed the connection
+    - contextPath: Connection.CreationTime
+      description: Creation time of the connection
+    - contextPath: Connection.EndTime
+      description: End time of the connection
     description: Searches for connections.
 hidden: false
