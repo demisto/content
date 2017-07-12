@@ -564,7 +564,7 @@ script:
             event = JSON.parse(res.Body);
             if (event.success) {
                 var content = getEventContent(sessionId, event.data.uri);
-                return [event.data, content];
+                return {data: event.data, content: content};
             } else {
                 throw FailedRequestError('Fetching event details', fullUrl, null, body, event).toString();
             }
@@ -1067,6 +1067,222 @@ script:
         }
     }
 
+    function makeUpperCase (o) {
+        for (var key in o ) {
+            if(o.hasOwnProperty(key)) {
+                var newKey = key.charAt(0).toUpperCase() + key.slice(1);
+                o[newKey] = o[key];
+                delete o[key];
+            }
+        }
+        return o;
+    }
+
+    function getIncidentObject(e) {
+        return {
+            "Id": e.id,
+            "Name": e.name,
+            "Status": e.status,
+            "Priority": e.priority,
+            "Summary": e.summary,
+            "Assignee": e.assignee ? e.assignee.name : "",
+            "CreatedBy": e.createdBy,
+            "Created": convertTimestampToString(e.created),
+            "FirstAlertTime": convertTimestampToString(e.firstAlertTime),
+            "LastUpdatedByUserName": e.lastUpdatedByUserName,
+            "RiskScore": e.riskScore,
+            "AverageAlertRiskScore": e.averageAlertRiskScore,
+            "Categories": e.categories,
+            "AlertCount": e.alertCount
+        };
+    }
+
+    function getAlert (alert) {
+        return {
+            "Id": alert.id,
+            "Name": alert.name,
+            "IncidentId": alert.incidentId,
+            "Timestamp": convertTimestampToString(alert.timestamp),
+            "HostSummary": alert.host_summary,
+            "SignatureId": alert.signature_id,
+            "Source": alert.source,
+            "Type": alert.type,
+            "RiskScore": alert.risk_score,
+            "SourceCountry": alert.groupby_source_country,
+            "DestinationCountry": alert.groupby_destination_country,
+            "NumEvents": alert.numEvents,
+            "SourceIp": alert.groupby_source_ip,
+            "DestonationIp": alert.groupby_destination_ip,
+            "DestonationPort": alert.groupby_destination_port
+        };
+    }
+    function buildRetValListIncidents (incidets) {
+        var md = [];
+        var ctx = {"Netwitness.Incident":[]}
+        if (!Array.isArray(incidets)) {
+            incidets = [incidets]
+        }
+        incidets.forEach(function (e) {
+            var toPush = getIncidentObject(e);
+            md.push(toPush);
+            ctx["Netwitness.Incident"].push(toPush);
+        })
+        return {Type: entryTypes.note, Contents: incidets, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
+    }
+
+    function buildRetValGetIncidentDetails (incident) {
+        var md = [];
+        var ctx = {"Netwitness.Incident":[]}
+        var toPush = getIncidentObject(incident);
+        md.push(toPush);
+        ctx["Netwitness.Incident"].push(toPush);
+        return {Type: entryTypes.note, Contents: incident, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
+    }
+
+    function buildRetValGetComponents (components) {
+        var md = [];
+        var ctx = {"Netwitness.Component":[]}
+        if (!Array.isArray(components)) {
+            components = [components]
+        }
+        components.forEach(function (e) {
+            var toPush = {
+                "Id": e.id,
+                "DisplayName": e.displayName,
+                "DeviceVersion": e.deviceVersion,
+                "DisplayType": e.deviceType,
+                "Host": e.host,
+                "Port": e.port,
+                "Validated": e.validated,
+                "Licensed": e.licensed,
+                "Username": e.username,
+                "EnableSSL": e.enableSSL
+            };
+            md.push(toPush)
+            ctx["Netwitness.Component"].push(toPush);
+        })
+        return {Type: entryTypes.note, Contents: components, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
+    }
+
+    function buildRetValGetEvents (events) {
+        var md = [];
+        var ctx = {"Netwitness.Event":[]}
+        if (!Array.isArray(events)) {
+            events = [events]
+        }
+        events.forEach(function (event) {
+            var toPush = {
+                "Id": event.id,
+                "Medium": event.medium,
+                "Service": event.service,
+                "Size": event.size
+            }
+            event["meta"].forEach(function (meta) {
+                toPush["meta." + meta.name] = meta.value
+            });
+            md.push(toPush);
+            ctx["Netwitness.Event"].push(toPush);
+        });
+        return {Type: entryTypes.note, Contents: events, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
+    }
+
+    function buildRetValGetEventDetails (event) {
+        var md = [];
+        var ctx = {"Netwitness.Event":[]};
+        var data = event.data;
+        var content = event.content;
+        var toPush = {
+            "EventId": data.eventId,
+            "DeviceId": data.deviceId,
+            "ReconstructedContentType": data.reconstructedContentType,
+            "PacketsTotal": data.stats ? data.stats.packetsTotal : "",
+            "PacketsProcessed": data.stats ? data.stats.packetsProcessed : ""
+        };
+        data.summaryAttributes.forEach(function (e) {
+            toPush[e.name] = e.value
+        });
+        md.push(toPush);
+        ctx["Netwitness.Event"].push(toPush);
+        return [{Type: entryTypes.note, Contents: event, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx}, content];
+    }
+
+    function buildRetValGetAlerts (alerts) {
+        var md = [];
+        var ctx = {"Netwitness.Alert":[]}
+        if (!Array.isArray(alerts)) {
+            alerts = [alerts]
+        }
+        alerts.forEach(function (e) {
+            var toPush = getAlert(e);
+            md.push(toPush);
+            ctx["Netwitness.Alert"].push(toPush);
+        })
+        return {Type: entryTypes.note, Contents: alerts, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
+    }
+
+    function buildRetValGetAlert (alert) {
+        var ctx = {"Netwitness.Alert":[]}
+        var alertValue = getAlert(alert);
+        var eventValue = [];
+        alert.events.forEach(function (evnt) {
+            eventValue.push(treeToFlattenObject(evnt));
+        });
+        var relatedLinksValue = alert.related_links;
+        var hr = tableToMarkdown('Alerts',alertValue)  + tableToMarkdown('Events', eventValue)  + tableToMarkdown('Related Links', relatedLinksValue);
+        ctx["Netwitness.Alert"].push(alertValue);
+        return {Type: entryTypes.note, Contents: alert, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: ctx};
+    }
+
+    function buildRetValGetAlertOrig (alertOrig) {
+        var md = [];
+        var ctx = {"Netwitness.Event": []}
+        alertOrig.events.forEach(function (evnt) {
+            for (var key in evnt) {
+                if (key === 'time') {
+                    evnt[key] = convertTimestampToString(evnt[key]);
+                }
+            }
+        });
+        md = alertOrig.events;
+        ctx["Netwitness.Event"] = alertOrig.events;
+        return {Type: entryTypes.note, Contents: alertOrig, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
+    }
+
+    function buildRetValAvailableAssignees(availableAssignees) {
+        var md = [];
+        var ctx = {"Netwitness.Account":[]}
+        if (!Array.isArray(availableAssignees)) {
+            availableAssignees = [availableAssignees]
+        }
+        availableAssignees.forEach(function (e) {
+            var toPush ={
+                "Id": e.id,
+                "Name": e.name,
+                "Login": e.login,
+                "EmailAddress": e.emailAddress
+            };
+            md.push(toPush);
+            ctx["Netwitness.Account"].push(toPush);
+        })
+        return {Type: entryTypes.note, Contents: availableAssignees, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
+    }
+
+    function buildRetValCreateIncident (newIncident) {
+        var md = [];
+        var ctx = {"Netwitness.Incident":[]}
+        var toPush = {
+            "Id": newIncident.id,
+            "Name": newIncident.name,
+            "Priority": newIncident.priority,
+            "CreatedBy": newIncident.createdBy,
+            "AlertIDList": newIncident.alertIdList
+        };
+        md.push(toPush);
+        ctx["Netwitness.Incident"].push(toPush)
+        results = {Type: entryTypes.note, Contents: newIncident, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
+    }
+
+
     // The command input arg holds the command sent from the user.
     var sessionId = login(url, username, password);
     var incidentManagementId = args.incidentManagementId || getIncidentManagementId(sessionId);
@@ -1081,57 +1297,60 @@ script:
         case 'nw-login':
             results = sessionId;
             break;
-        case 'nw-list-incidents':
+        case 'netwitness-im-list-incidents':
             var incidents = listIncidents(sessionId, args, incidentManagementId);
-            results = { incidents: incidents };
+            results = buildRetValListIncidents(incidents);
             break;
-        case 'nw-get-incident-details':
+        case 'netwitness-im-get-incident-details':
             var incident = getIncidentById(sessionId, args, incidentManagementId);
-            results = { incident: incident };
+            results = buildRetValGetIncidentDetails(incident);
             break;
-        case 'nw-get-components':
+        case 'netwitness-im-get-components':
             var components = getComponents(sessionId, args);
-            results = { components: components };
+            results = buildRetValGetComponents(components);
             break;
-        case 'nw-get-events':
+        case 'netwitness-im-get-events':
             var events = getEvents(sessionId, args);
-            results = { events: events };
+            results = buildRetValGetEvents(events);
             break;
-        case 'nw-get-event-details':
-            results = getEventDetails(sessionId, args);
+        case 'netwitness-im-get-event-details':
+            event = getEventDetails(sessionId, args);
+            results = buildRetValGetEventDetails(event);
             break;
-        case 'nw-get-alerts':
+        case 'netwitness-im-get-alerts':
             var alerts = filterAlerts(sessionId, args);
-            results = { alerts: alerts };
+            results = buildRetValGetAlerts(alerts);
             break;
-        case 'nw-get-alert-details':
+        case 'netwitness-im-get-alert-details':
             var alert = getAlertById(sessionId, args);
-            results = { alert: alert };
+            results = buildRetValGetAlert(alert);
             break;
-        case 'nw-get-alert-original':
+        case 'netwitness-im-get-alert-original':
             var alert = getOriginalAlertById(sessionId, args);
-            results = { alert: alert };
+            results = buildRetValGetAlertOrig(alert);
             break;
-        case 'nw-get-available-assignees':
+        case 'netwitness-im-get-available-assignees':
             var availableAssignees = getAvailableAssignees(sessionId);
-            results = { availableAssignees: availableAssignees };
+            results = buildRetValAvailableAssignees(availableAssignees);
             break;
-        case 'nw-create-incident':
+        case 'netwitness-im-create-incident':
             var availableAssignees = getAvailableAssignees(sessionId);
             var newIncident = createIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = { incident: newIncident };
+            results = buildRetValCreateIncident(newIncident);
             break;
-        case 'nw-add-events-to-incident':
+        case 'netwitness-im-add-events-to-incident':
+            var md = [];
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var isSuccess = addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = { success: isSuccess };
+            md.push({ success: isSuccess })
+            results = {Type: entryTypes.note, Contents: { success: isSuccess }, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown};
             break;
-        case 'nw-update-incident':
+        case 'netwitness-im-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var update_incident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
             results = {"ContentsFormat": formats["text"], "Type": entryTypes["note"], "Contents": "Incident updated successfully."};
             if(!(update_incident.success==true && update_incident.data >= 1)){
-              results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", update_incident)};
+                results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", update_incident)};
             }
             break;
         default:
@@ -1145,6 +1364,7 @@ script:
   type: javascript
   commands:
   - name: nw-list-incidents
+    deprecated: true
     arguments:
     - name: query
       description: 'If query provided all other parameters ignored. Query should contain
@@ -1176,11 +1396,13 @@ script:
     arguments: []
     description: Logins to the system and returns valid sessionId
   - name: nw-get-components
+    deprecated: true
     arguments:
     - name: query
       description: '[optional string] Query must contain page, start, limit'
     description: Returns all the components in the system
   - name: nw-get-events
+    deprecated: true
     arguments:
     - name: timeRangeType
       required: true
@@ -1243,9 +1465,11 @@ script:
         separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: nw-get-available-assignees
+    deprecated: true
     arguments: []
     description: Returns the available users to be assigned to incidents
   - name: nw-create-incident
+    deprecated: true
     arguments:
     - name: alertSummary
       required: true
@@ -1288,6 +1512,7 @@ script:
     description: Creating new incident
     execution: true
   - name: nw-add-events-to-incident
+    deprecated: true
     arguments:
     - name: incidentId
       required: true
@@ -1318,6 +1543,7 @@ script:
     description: This command will add new events to existing incident
     execution: true
   - name: nw-update-incident
+    deprecated: true
     arguments:
     - name: idList
       required: true
@@ -1365,6 +1591,7 @@ script:
   - name: fetch-incidents
     arguments: []
   - name: nw-get-alerts
+    deprecated: true
     arguments:
     - name: page
       description: The default is 1. Indicates the page number of incidents
@@ -1379,10 +1606,12 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
+    deprecated: true
     arguments:
     - name: alertId
       required: true
   - name: nw-get-event-details
+    deprecated: true
     arguments:
     - name: deviceId
       required: true
@@ -1394,6 +1623,7 @@ script:
     description: Returns two entries. One is event details json and the second is
       event/session content
   - name: nw-get-incident-details
+    deprecated: true
     arguments:
     - name: incidentId
       required: true
@@ -1401,6 +1631,270 @@ script:
       description: '[number] ID of incident. Example: "INC-12"'
     description: Returns incident json by id
   - name: nw-get-alert-original
+    deprecated: true
+    arguments:
+    - name: alertId
+      required: true
+      default: true
+      description: Id of the alert
+    description: Returns the original events which this alert contains
+  - name: netwitness-im-list-incidents
+    arguments:
+    - name: query
+      description: 'If query provided all other parameters ignored. Query should contain
+        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+    - name: page
+      description: The default is 1. Indicates the page number of incidents
+    - name: start
+      description: The default is 0. Indicates the start index of incident in page
+    - name: limit
+      description: The default is 100. Limits the number of incidents per page
+    - name: sort
+      description: 'By default sorts by "created" field in "DESC" order. Example:
+        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+    - name: filter
+      description: 'By default filters by "created" from 1996 to this date. Example:
+        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+    - name: incidentManagementId
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running netwitness-im-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
+    - name: loadAlerts
+      description: '[optinal boolean] By default alerts and events related to incident
+        not loaded. If loadAlerts is true, then command will load all alerts and their
+        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
+        alert XHR request send to SA.'
+    description: Fetches incidents by filter
+  - name: netwitness-im-login
+    arguments: []
+    description: Logins to the system and returns valid sessionId
+  - name: netwitness-im-get-components
+    arguments:
+    - name: query
+      description: '[optional string] Query must contain page, start, limit'
+    description: Returns all the components in the system
+  - name: netwitness-im-get-events
+    arguments:
+    - name: timeRangeType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_10_MINUTES
+      - LAST_15_MINUTES
+      - LAST_30_MINUTES
+      - LAST_HOUR
+      - LAST_3_HOURS
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_2_DAYS
+      - LAST_5_DAYS
+      - EARLY_MORNING
+      - MORNING
+      - AFTERNOON
+      - EVENING
+      - TODAY
+      - YESTERDAY
+      - THIS_WEEK
+      - LAST_WEEK
+      - ALL_DATA
+      - CUSTOM
+      description: Filter of time range in which events occured
+    - name: deviceId
+      required: true
+      description: '[number] Id of the device where the events stored/occurred. In
+        order to get list of available devices/components run command netwitness-im-get-components'
+    - name: collectionName
+      description: '[optional]'
+    - name: predicateIds
+      description: '[optional]'
+    - name: startDate
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
+        argument'
+    - name: endDate
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
+        argument'
+    - name: lastCollectionTime
+      description: '[optional datetime] Last collection time'
+    - name: mid1
+    - name: mid2
+    - name: investigationToken
+      description: '[optional guid] Investigation id token'
+    - name: page
+      description: '[optional number] Default set to 1. The page number'
+    - name: start
+      description: '[optional number] Default set to 0. The starting index of event
+        in page.'
+    - name: limit
+      description: '[optional number] Default set to 25. Limits the number of events
+        per page'
+    - name: sort
+      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
+    - name: filter
+      description: '<string> Must provide key value pairs of fieldName and their value
+        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
+    description: Returns all the events in defined time range
+  - name: netwitness-im-get-available-assignees
+    arguments: []
+    description: Returns the available users to be assigned to incidents
+  - name: netwitness-im-create-incident
+    arguments:
+    - name: alertSummary
+      required: true
+      description: '[string] Short summary of the alert which will be attached to
+        incident'
+    - name: severity
+      description: '[optional string] Default set to "50". '
+    - name: name
+      required: true
+      description: '[string] The name of the incident.'
+    - name: assigned
+      description: '[optional string] Set assignee login name if assignee has changed.
+        You can execute netwitness-im-get-available-assignees to get the list of users. Example:
+        demisto123'
+    - name: eventList
+      required: true
+      description: List of event ids separated by comma [,] must not include spaces
+        in it. In order to get list of events you can use netwitness-im-get-events
+    - name: deviceId
+      required: true
+      description: The id of the device/component (Concentrator, Log Decoder, Packet
+        Decoder, etc.) from which the events are. You can view the list of devices
+        by executing the command netwitness-im-get-components
+    - name: priority
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Priority of the incident
+    - name: summary
+      description: Summary of the incident
+    - name: incidentManagementId
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running netwitness-im-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
+    description: Creating new incident
+    execution: true
+  - name: netwitness-im-add-events-to-incident
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: '[string] Existing incident id. '
+    - name: eventList
+      required: true
+      description: '[array of strings] List of event ids separated by comma [,] must
+        not include spaces in it. In order to get list of events you can use netwitness-im-get-events.
+        Example: "23,12,3"'
+    - name: alertSummary
+      required: true
+      description: '[string] Short summary of the alert which will be attached to
+        incident'
+    - name: severity
+      required: true
+      description: '[number] Severity of the incident. Example: 50'
+    - name: deviceId
+      required: true
+      description: '[number] The id of the device/component (Concentrator, Log Decoder,
+        Packet Decoder, etc.) from which the events are. You can view the list of
+        devices by executing the command netwitness-im-get-components'
+    - name: incidentManagementId
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running netwitness-im-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
+    description: This command will add new events to existing incident
+    execution: true
+  - name: netwitness-im-update-incident
+    arguments:
+    - name: idList
+      required: true
+      description: 'List of incident ids which will be updated, separated by comma
+        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+    - name: name
+      description: '[optional string] Set name if incident name has been changed'
+    - name: summary
+      description: '[optional string] Updated incident summary'
+    - name: assignee
+      description: '[optional string] Set assignee login name if assignee has changed.
+        You can execute netwitness-im-get-available-assignees to get the list of users. Example:
+        demisto123'
+    - name: comment
+      description: '[optional string] Add a journal entry describing your changes'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - NEW
+      - ASSIGNED
+      - IN_PROGRESS
+      - REMEDIATION_REQUESTED
+      - REMEDIATION_COMPLETED
+      - CLOSED
+      - CLOSED_FALSE_POSITIVE
+      description: '[optional status] Set status if changed'
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: '[optional priority] Set priority if incident priority has been
+        changed'
+    - name: categories
+      description: List of categories.
+    - name: incidentManagementId
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+        device/component id. It can be received by running netwitness-im-get-component command.
+        If this argument is not filled/passed, the script will automatically get the
+        first device of type INCIDENT_MANAGEMENT from the SA server.'
+    description: Updates incident
+    execution: true
+  - name: fetch-incidents
+    arguments: []
+  - name: netwitness-im-get-alerts
+    arguments:
+    - name: page
+      description: The default is 1. Indicates the page number of incidents
+    - name: start
+      description: The default is 0. Indicates the start index of incident in page
+    - name: limit
+      description: The default is 100. Limits the number of incidents per page
+    - name: sort
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
+        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+    - name: filter
+      description: 'By default filters by "alert.timestamp" from 1996 to this date.
+        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+  - name: netwitness-im-get-alert-details
+    arguments:
+    - name: alertId
+      required: true
+  - name: netwitness-im-get-event-details
+    arguments:
+    - name: deviceId
+      required: true
+      description: '[number] Id of the device where the events stored/occurred. In
+        order to get list of available devices/components run command netwitness-im-get-components'
+    - name: eventId
+      required: true
+      description: '[number] Id of the event'
+    description: Returns two entries. One is event details json and the second is
+      event/session content
+  - name: netwitness-im-get-incident-details
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: '[number] ID of incident. Example: "INC-12"'
+    description: Returns incident json by id
+  - name: netwitness-im-get-alert-original
     arguments:
     - name: alertId
       required: true
