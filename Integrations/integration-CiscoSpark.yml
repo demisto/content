@@ -45,45 +45,54 @@ script:
     commandParams = {
         'cisco-spark-list-people':                  {'url': 'people', 'method': 'GET'},
         'cisco-spark-create-person':                {'url': 'people', 'method': 'POST'},
-        'cisco-spark-get-person-details':           {'url': 'people', 'method': 'GET'},
-        'cisco-spark-update-person':                {'url': 'people', 'method': 'PUT'},
-        'cisco-spark-delete-person':                {'url': 'people', 'method': 'DELETE'},
+        'cisco-spark-get-person-details':           {'url': 'people', 'method': 'GET', 'urlArg': 'personId'},
+        'cisco-spark-update-person':                {'url': 'people', 'method': 'PUT', 'urlArg': 'personId'},
+        'cisco-spark-delete-person':                {'url': 'people', 'method': 'DELETE', 'urlArg': 'personId'},
         'cisco-spark-get-own-details':              {'url': 'people/me', 'method': 'GET'},
 
         'cisco-spark-list-rooms':                   {'url': 'rooms', 'method': 'GET'},
         'cisco-spark-create-room':                  {'url': 'rooms', 'method': 'POST'},
-        'cisco-spark-get-room-details':             {'url': 'rooms', 'method': 'GET'},
-        'cisco-spark-update-room':                  {'url': 'rooms', 'method': 'PUT'},
-        'cisco-spark-delete-room':                  {'url': 'rooms', 'method': 'DELETE'},
+        'cisco-spark-get-room-details':             {'url': 'rooms', 'method': 'GET', 'urlArg': 'roomId'},
+        'cisco-spark-update-room':                  {'url': 'rooms', 'method': 'PUT', 'urlArg': 'roomId'},
+        'cisco-spark-delete-room':                  {'url': 'rooms', 'method': 'DELETE', 'urlArg': 'roomId'},
 
         'cisco-spark-list-memberships':             {'url': 'memberships', 'method': 'GET'},
         'cisco-spark-create-membership':            {'url': 'memberships', 'method': 'POST'},
-        'cisco-spark-get-membership-details':       {'url': 'memberships', 'method': 'GET'},
-        'cisco-spark-update-membership':            {'url': 'memberships', 'method': 'PUT'},
-        'cisco-spark-delete-membership':            {'url': 'memberships', 'method': 'DELETE'},
+        'cisco-spark-get-membership-details':       {'url': 'memberships', 'method': 'GET', 'urlArg': 'membershipId'},
+        'cisco-spark-update-membership':            {'url': 'memberships', 'method': 'PUT', 'urlArg': 'membershipId'},
+        'cisco-spark-delete-membership':            {'url': 'memberships', 'method': 'DELETE', 'urlArg': 'membershipId'},
 
         'cisco-spark-list-messages':                {'url': 'messages', 'method': 'GET'},
         'cisco-spark-create-message':               {'url': 'messages', 'method': 'POST'},
-        'cisco-spark-get-message-details':          {'url': 'messages', 'method': 'GET'},
-        'cisco-spark-delete-message':               {'url': 'messages', 'method': 'DELETE'},
+        'cisco-spark-get-message-details':          {'url': 'messages', 'method': 'GET', 'urlArg': 'messageId'},
+        'cisco-spark-delete-message':               {'url': 'messages', 'method': 'DELETE', 'urlArg': 'messageId'},
 
         'cisco-spark-list-teams':                   {'url': 'teams', 'method': 'GET'},
         'cisco-spark-create-team':                  {'url': 'teams', 'method': 'POST'},
-        'cisco-spark-get-team-details':             {'url': 'teams', 'method': 'GET'},
-        'cisco-spark-update-team':                  {'url': 'teams', 'method': 'PUT'},
-        'cisco-spark-delete-team':                  {'url': 'teams', 'method': 'DELETE'},
+        'cisco-spark-get-team-details':             {'url': 'teams', 'method': 'GET', 'urlArg': 'teamId'},
+        'cisco-spark-update-team':                  {'url': 'teams', 'method': 'PUT', 'urlArg': 'teamId'},
+        'cisco-spark-delete-team':                  {'url': 'teams', 'method': 'DELETE', 'urlArg': 'teamId'},
 
         'cisco-spark-list-team-memberships':        {'url': 'team/memberships', 'method': 'GET'},
         'cisco-spark-create-team-membership':       {'url': 'team/memberships', 'method': 'POST'},
-        'cisco-spark-get-team-membership-details':  {'url': 'team/memberships', 'method': 'GET'},
-        'cisco-spark-update-team-membership':       {'url': 'team/memberships', 'method': 'PUT'},
-        'cisco-spark-delete-team-membership':       {'url': 'team/memberships', 'method': 'DELETE'},
+        'cisco-spark-get-team-membership-details':  {'url': 'team/memberships', 'method': 'GET', 'urlArg': 'membershipId'},
+        'cisco-spark-update-team-membership':       {'url': 'team/memberships', 'method': 'PUT', 'urlArg': 'membershipId'},
+        'cisco-spark-delete-team-membership':       {'url': 'team/memberships', 'method': 'DELETE', 'urlArg': 'membershipId'},
 
         'cisco-spark-list-webhooks':                {'url': 'webhooks', 'method': 'GET'},
         'cisco-spark-create-webhook':               {'url': 'webhooks', 'method': 'POST'},
-        'cisco-spark-get-webhook-details':          {'url': 'webhooks', 'method': 'GET'},
-        'cisco-spark-update-webhook':               {'url': 'webhooks', 'method': 'PUT'},
-        'cisco-spark-delete-webhook':               {'url': 'webhooks', 'method': 'DELETE'},
+        'cisco-spark-get-webhook-details':          {'url': 'webhooks', 'method': 'GET', 'urlArg': 'webhookId'},
+        'cisco-spark-update-webhook':               {'url': 'webhooks', 'method': 'PUT', 'urlArg': 'webhookId'},
+        'cisco-spark-delete-webhook':               {'url': 'webhooks', 'method': 'DELETE', 'urlArg': 'webhookId'},
+
+        'cisco-spark-list-organizations':           {'url': 'organizations', 'method': 'GET'},
+        'cisco-spark-get-organization-details':     {'url': 'organizations', 'method': 'GET', 'urlArg': 'organizationId'},
+
+        'cisco-spark-list-licenses':                {'url': 'licenses', 'method': 'GET'},
+        'cisco-spark-get-license-details':          {'url': 'licenses', 'method': 'GET', 'urlArg': 'licenseId'},
+
+        'cisco-spark-list-roles':                   {'url': 'roles', 'method': 'GET'},
+        'cisco-spark-get-role-details':             {'url': 'roles', 'method': 'GET', 'urlArg': 'roleId'},
     }
 
     var buildEmptyEntryContext = function() {
@@ -113,7 +122,13 @@ script:
             requestUrl = requestUrl + '/' + urlArg;
         }
 
-        requestUrl += buildArgs(args);
+        if (method == 'GET') {
+            // query parameters
+            requestUrl += buildArgs(args);
+        } else {
+            // request (body) parameters
+            body = JSON.stringify(args);
+        }
 
         console.log('method: ' + JSON.stringify(method));
         console.log('requestUrl: ' + JSON.stringify(requestUrl));
@@ -125,16 +140,14 @@ script:
                 Method: method,
                 Body: body,
                 Headers: {
-                    Authorization: ['Bearer ' + apiKey],
-                    Accept: ['application/json']
+                    'Content-Type': ['application/json'],
+                    'Authorization': ['Bearer ' + apiKey],
+                    'Accept': ['application/json']
                 },
             },
             insecure,
             proxy
         );
-
-
-        console.log('res =\n' + JSON.stringify(res));
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -145,54 +158,9 @@ script:
 
     var processCommand = function(command) {
         var urlArg = null;
-        switch (command) {
-            case 'cisco-spark-get-person-details':
-            case 'cisco-spark-get-update-person':
-            case 'cisco-spark-get-delete-person':
-                urlArg = args.personId;
-                delete args.personId;
-                break;
-
-            case 'cisco-spark-get-room-details':
-            case 'cisco-spark-update-room':
-            case 'cisco-spark-delete-room':
-                urlArg = args.roomId;
-                delete args.roomId;
-                break;
-
-            case 'cisco-spark-get-membership-details':
-            case 'cisco-spark-update-membership':
-            case 'cisco-spark-delete-membership':
-                urlArg = args.membershipId;
-                delete args.membershipId;
-                break;
-
-            case 'cisco-spark-get-message-details':
-            case 'cisco-spark-delete-message':
-                urlArg = args.messageId;
-                delete args.messageId;
-                break;
-
-            case 'cisco-spark-get-team-details':
-            case 'cisco-spark-update-team':
-            case 'cisco-spark-delete-team':
-                urlArg = args.teamId;
-                delete args.teamId;
-                break;
-
-            case 'cisco-spark-get-team-membership':
-            case 'cisco-spark-update-team-membership':
-            case 'cisco-spark-delete-team-membership':
-                urlArg = args.membershipId;
-                delete args.membershipId;
-                break;
-
-            case 'cisco-spark-get-webhook-details':
-            case 'cisco-spark-update-webhook':
-            case 'cisco-spark-delete-webhook':
-                urlArg = args.webhookId;
-                delete args.webhookId;
-                break;
+        if (commandParams[command].urlArg) {
+            urlArg = args[commandParams[command].urlArg];
+            delete args[commandParams[command].urlArg];
         }
 
         res = sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
@@ -206,7 +174,6 @@ script:
             default:
                 output = res;
         }
-
 
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
@@ -587,4 +554,40 @@ script:
       required: true
       description: The webhook ID.
     description: Deletes a webhook, by ID.
+  - name: cisco-spark-list-organizations
+    arguments:
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    description: List all organizations visible by your account.
+  - name: cisco-spark-get-organization-details
+    arguments:
+    - name: orgId
+      required: true
+      description: The organization ID.
+    description: Shows details for an organization, by ID.
+  - name: cisco-spark-list-licenses
+    arguments:
+    - name: orgId
+      description: Specify the organization.
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    description: List all licenses for a given organization. If no orgId is specified,
+      the default is the organization of the authenticated user.
+  - name: cisco-spark-get-license-details
+    arguments:
+    - name: licenseId
+      required: true
+      description: The license ID.
+    description: Shows details for a license, by ID.
+  - name: cisco-spark-list-roles
+    arguments:
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    description: List all roles.
+  - name: cisco-spark-get-role-details
+    arguments:
+    - name: roleId
+      required: true
+      description: The role ID.
+    description: Shows details for a role, by ID.
 hidden: false
