@@ -43,18 +43,29 @@ script:
     var proxy = params.proxy;
 
     commandParams = {
-        'cisco-spark-list-people':          {'url': 'people', 'method': 'GET'},
-        'cisco-spark-create-person':        {'url': 'people', 'method': 'POST'},
-        'cisco-spark-get-person-details':   {'url': 'people', 'method': 'GET'},
-        'cisco-spark-update-person':        {'url': 'people', 'method': 'PUT'},
-        'cisco-spark-delete-person':        {'url': 'people', 'method': 'DELETE'},
-        'cisco-spark-get-own-details':      {'url': 'people/me', 'method': 'GET'},
+        'cisco-spark-list-people':              {'url': 'people', 'method': 'GET'},
+        'cisco-spark-create-person':            {'url': 'people', 'method': 'POST'},
+        'cisco-spark-get-person-details':       {'url': 'people', 'method': 'GET'},
+        'cisco-spark-update-person':            {'url': 'people', 'method': 'PUT'},
+        'cisco-spark-delete-person':            {'url': 'people', 'method': 'DELETE'},
+        'cisco-spark-get-own-details':          {'url': 'people/me', 'method': 'GET'},
 
-        'cisco-spark-list-rooms':           {'url': 'rooms', 'method': 'GET'},
-        'cisco-spark-create-room':          {'url': 'rooms', 'method': 'POST'},
-        'cisco-spark-get-room-details':     {'url': 'rooms', 'method': 'GET'},
-        'cisco-spark-update-room':          {'url': 'rooms', 'method': 'PUT'},
-        'cisco-spark-delete-room':          {'url': 'rooms', 'method': 'DELETE'},
+        'cisco-spark-list-rooms':               {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-create-room':              {'url': 'rooms', 'method': 'POST'},
+        'cisco-spark-get-room-details':         {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-update-room':              {'url': 'rooms', 'method': 'PUT'},
+        'cisco-spark-delete-room':              {'url': 'rooms', 'method': 'DELETE'},
+
+        'cisco-spark-list-memberships':         {'url': 'memberships', 'method': 'GET'},
+        'cisco-spark-create-membership':        {'url': 'memberships', 'method': 'POST'},
+        'cisco-spark-get-membership-details':   {'url': 'memberships', 'method': 'GET'},
+        'cisco-spark-update-membership':        {'url': 'memberships', 'method': 'PUT'},
+        'cisco-spark-delete-membership':        {'url': 'memberships', 'method': 'DELETE'},
+
+        'cisco-spark-list-messages':            {'url': 'messages', 'method': 'GET'},
+        'cisco-spark-create-message':           {'url': 'messages', 'method': 'POST'},
+        'cisco-spark-get-message-details':      {'url': 'messages', 'method': 'GET'},
+        'cisco-spark-delete-message':           {'url': 'messages', 'method': 'DELETE'},
     }
 
     var buildEmptyEntryContext = function() {
@@ -136,6 +147,12 @@ script:
             case 'cisco-spark-delete-membership':
                 urlArg = args.membershipId;
                 delete args.membershipId;
+                break;
+
+            case 'cisco-spark-get-message-details':
+            case 'cisco-spark-delete-message':
+                urlArg = args.messageId;
+                delete args.messageId;
                 break;
         }
 
@@ -348,4 +365,53 @@ script:
       required: true
       description: The membership ID.
     description: Deletes a membership by ID.
+  - name: cisco-spark-list-messages
+    arguments:
+    - name: roomId
+      required: true
+      description: List messages for a room, by ID.
+    - name: mentionedPeople
+      description: List messages where the caller is mentioned by specifying "me"
+        or the caller personId.
+    - name: before
+      description: List messages sent before a date and time, in ISO8601 format.
+    - name: beforeMessage
+      description: List messages sent before a message, by ID.
+    - name: max
+      description: Limit the maximum number of messages in the response.
+    description: Lists all messages in a room.
+  - name: cisco-spark-create-message
+    arguments:
+    - name: roomId
+      description: The room ID.
+    - name: toPersonId
+      description: The ID of the recipient when sending a private1:1 message.
+    - name: toPersonEmail
+      description: The email address of the recipient when sendinga private 1:1 message.
+    - name: text
+      description: The message, in plain text. If markdown is specifiedthis parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted intothe room. Only
+        one file is allowed per message. Uploaded files are automaticallyconverted
+        into a format that all Spark clients can render. For the supportedmedia types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+      isArray: true
+    description: Posts a plain text message, and optionally, a media content attachment,
+      to a room.
+  - name: cisco-spark-get-message-details
+    arguments:
+    - name: messageId
+      required: true
+      description: The message ID.
+    description: Shows details for a message, by message ID.
+  - name: cisco-spark-delete-message
+    arguments:
+    - name: messageId
+      required: true
+      description: The message ID.
+    description: Deletes a message, by message ID.
 hidden: false
