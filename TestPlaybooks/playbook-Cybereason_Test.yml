@@ -1,0 +1,223 @@
+id: 9c94b383-893a-42fd-8c41-d99b0a6e5492
+version: 12
+name: Cybereason Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7da45d65-8da3-416d-8e7a-9f625aaead92
+    type: start
+    task:
+      id: 7da45d65-8da3-416d-8e7a-9f625aaead92
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+    type: regular
+    task:
+      id: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
+    type: regular
+    task:
+      id: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
+      version: -1
+      name: cybereason-is-probe-connected (osboxes)
+      description: Checks if the given hostname exists in Cybereason.
+      script: Cybereason|||cybereason-is-probe-connected
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      machine: osboxes
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 0397738f-d2ce-407b-83e9-37149ebba12b
+    type: regular
+    task:
+      id: 0397738f-d2ce-407b-83e9-37149ebba12b
+      version: -1
+      name: cybereason-login
+      script: Cybereason|||cybereason-login
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      machine: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+    type: regular
+    task:
+      id: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+      version: -1
+      name: cybereason-query-processes (hasIncomingConnections=true)
+      script: Cybereason|||cybereason-query-processes
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hasIncomingConnection: "true"
+      hasOutgoingConnection: ""
+      limit: ""
+      machine: ""
+      onlySuspicious: ""
+      processName: ""
+      saveToContext: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 8871fe21-96f5-411e-8837-0eba18100e48
+    type: regular
+    task:
+      id: 8871fe21-96f5-411e-8837-0eba18100e48
+      version: -1
+      name: VerifyContext (Process)
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: ""
+      fields: Sha1,CompanyName,ProductType,Name,CreationTime,SignedAndVerified,OwnerMachine,Malicious,ImageFile,ProductName,Md5,CommandLine
+      path: Process
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+    type: regular
+    task:
+      id: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+      version: -1
+      name: cybereason-query-connections (machine=osboxes)
+      script: Cybereason|||cybereason-query-connections
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hasIncomingConnection: "true"
+      hasOutgoingConnection: ""
+      ip: ""
+      limit: ""
+      machine: osboxes
+      onlySuspicious: ""
+      processName: ""
+      saveToContext: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1071
+        }
+      }
+  "7":
+    id: "7"
+    taskid: d7be6d1a-3494-46c4-89db-13d46985b57e
+    type: regular
+    task:
+      id: d7be6d1a-3494-46c4-89db-13d46985b57e
+      version: -1
+      name: VerifyContext (Connection)
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ServerPort,EndTime,TransmittedBytes,ReceivedBytes,Name,CreationTime,RemoteCountry,ServerAddress,OwnerMachine,OwnerProcess,Direction
+      path: Connection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1241
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1286,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
