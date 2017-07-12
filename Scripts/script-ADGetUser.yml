@@ -11,7 +11,7 @@ script: |2-
           account['Type'] = 'AD'
           account['ID'] = demisto.get(l,'dn')
           account['Email'] = demisto.get(l,'mail')
-          account['Username'] = demisto.get(l,'name')
+          account['Username'] = demisto.get(l,'samAccountName')
           account['DisplayName'] = demisto.get(l,'displayName')
           account['Groups'] = demisto.get(l,'memberOf')
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
@@ -100,7 +100,7 @@ script: |2-
 
       return resAD
 
-  attrs = 'name,displayName,memberOf,mail'
+  attrs = 'name,displayName,memberOf,mail,samAccountName'
   queryValue, queryType = "",""
   headers = argToList(demisto.get(demisto.args(), 'headers'))
 
@@ -115,6 +115,9 @@ script: |2-
   elif demisto.get(demisto.args(), 'name'):
       queryValue = demisto.args()['name']
       queryType = "name"
+  elif demisto.get(demisto.args(), 'username'):
+      queryValue = demisto.args()['username']
+      queryType = "samAccountName"
   elif demisto.get(demisto.args(), 'customFieldType'):
       if not demisto.get(demisto.args(), 'customFieldData'):
           demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search, both "customFieldType" and "customFieldData" should be provided' })
@@ -175,6 +178,8 @@ args:
   - "false"
   description: ' Enter ''true'' to allow nested groups search as well (only works
     on a single user query)'
+- name: username
+  description: samAccountName of the desire user
 scripttarget: 0
 dependson:
   must:
