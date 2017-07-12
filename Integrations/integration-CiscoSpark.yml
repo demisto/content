@@ -99,6 +99,15 @@ script:
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     };
 
+    var cloneDict = function(x) {
+        var y = {};
+        Object.keys(x).forEach(function(key) {
+            y[key] = x[key];
+        })
+
+        return y;
+    }
+
     var buildArgs = function(args) {
         sArgs = Object.keys(args).map(function(key) {
             return [key, args[key]].map(encodeURIComponent).join("=");
@@ -126,9 +135,12 @@ script:
             // query parameters
             requestUrl += buildArgs(args);
         } else {
-            // request (body) parameters
+            // request parameters (body)
             body = JSON.stringify(args);
         }
+
+        console.log('requestUrl = ' + JSON.stringify(requestUrl));
+        console.log('body = \n' + body);
 
         var res = http(
             requestUrl,
@@ -163,17 +175,40 @@ script:
             delete args[commandParams[command].urlArg];
         }
 
-        res = sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
+        return sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
+    }
 
-        if (res) {
-            var output = (command.indexOf('list') != -1) ? res.items : res;
-            var entry = buildEmptyEntryContext();
-            entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
-        } else {
-            entry = 'Command succesful.';
+    var sendMessageToPerson = function() {
+        if ((!args.toPersonEmail) && (!args.toPersonId)) {
+            throw 'Either email or personId must be provided.';
         }
 
-        return entry;
+        return processCommand('cisco-spark-create-message');
+    }
+
+    var sendMessageToRoom = function() {
+        if (args.toRoomName) {
+            var res = processCommand('cisco-spark-list-rooms');
+            var rooms = res.items;
+            var roomId;
+            for (var i = 0; i < rooms.length; i++) {
+                if (rooms[i].title.indexOf(args.toRoomName) != -1) {
+                    if (roomId) {
+                        throw 'There is more than one room which start with the given name: ' + args.toRoomName;
+                    }
+
+                    roomId = rooms[i].id;
+                }
+            }
+
+            args.roomId = roomId;
+            delete args.toRoomName;
+
+        } else if (!args.roomId) {
+            throw 'Either room name or roomId must be provided.';
+        }
+
+        return processCommand('cisco-spark-create-message');
     }
 
     var res;
@@ -186,12 +221,30 @@ script:
             processCommand(command);
             return 'ok';
 
+        case 'cisco-spark-send-message-to-person':
+            res = sendMessageToPerson();
+            break;
+
+        case 'cisco-spark-send-message-to-room':
+            res = sendMessageToRoom();
+            break;
+
         default:
             res = processCommand(command);
             break;
     }
 
-    return res;
+    var entry;
+    if (res) {
+        var output = (command.indexOf('list') != -1) ? res.items : res;
+        entry = buildEmptyEntryContext();
+        entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
+    } else {
+        // for commands which return nothing
+        entry = 'Command succesful.';
+    }
+
+    return entry;
   type: javascript
   commands:
   - name: cisco-spark-list-people
@@ -279,6 +332,10 @@ script:
     - name: max
       description: Limit the maximum number of rooms in the response.
     - name: type
+      auto: PREDEFINED
+      predefined:
+      - direct
+      - group
       description: 'Available values: direct and group. direct returns all 1-to-1
         rooms. group returns all group rooms. If not specified or values not matched,
         will return all room types.'
@@ -384,24 +441,22 @@ script:
   - name: cisco-spark-create-message
     arguments:
     - name: roomId
-      required: true
       description: The room ID.
     - name: toPersonId
-      description: The ID of the recipient when sending a private1:1 message.
+      description: The ID of the recipient when sending a private 1:1 message.
     - name: toPersonEmail
-      description: The email address of the recipient when sendinga private 1:1 message.
+      description: The email address of the recipient when sending a private 1:1 message.
     - name: text
-      description: The message, in plain text. If markdown is specifiedthis parameter
+      description: The message, in plain text. If markdown is specified this parameter
         may be optionally used to provide alternate text forUI clients that do not
         support rich text.
     - name: markdown
       description: The message, in markdown format.
     - name: files
-      description: The public URL to a binary file to be posted intothe room. Only
-        one file is allowed per message. Uploaded files are automaticallyconverted
-        into a format that all Spark clients can render. For the supportedmedia types
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
         and the behavior of uploads, see the Message AttachmentsGuide.
-      isArray: true
     description: Posts a plain text message, and optionally, a media content attachment,
       to a room.
   - name: cisco-spark-get-message-details
@@ -586,4 +641,40 @@ script:
       required: true
       description: The role ID.
     description: Shows details for a role, by ID.
+  - name: cisco-spark-send-message-to-person
+    arguments:
+    - name: toPersonEmail
+      description: Email address of the recipient.
+    - name: toPersonId
+      description: The personId of the recipient.
+    - name: text
+      description: The message, in plain text. If markdown is specified this parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Sends a message to a person, by email or person ID.
+  - name: cisco-spark-send-message-to-room
+    arguments:
+    - name: toRoomName
+      description: The room name.
+    - name: roomId
+      description: The room ID.
+    - name: text
+      description: The message, in plain text. If markdown is specified this parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Sends a message to a room, by name or room ID.
 hidden: false
