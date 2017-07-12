@@ -48,7 +48,13 @@ script:
         'cisco-spark-get-person-details':   {'url': 'people', 'method': 'GET'},
         'cisco-spark-update-person':        {'url': 'people', 'method': 'PUT'},
         'cisco-spark-delete-person':        {'url': 'people', 'method': 'DELETE'},
-        'cisco-spark-get-own-details':      {'url': 'people/me', 'method': 'GET'}
+        'cisco-spark-get-own-details':      {'url': 'people/me', 'method': 'GET'},
+
+        'cisco-spark-list-rooms':           {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-create-room':          {'url': 'rooms', 'method': 'POST'},
+        'cisco-spark-get-room-details':     {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-update-room':          {'url': 'rooms', 'method': 'PUT'},
+        'cisco-spark-delete-room':          {'url': 'rooms', 'method': 'DELETE'},
     }
 
     var buildEmptyEntryContext = function() {
@@ -116,6 +122,20 @@ script:
             case 'cisco-spark-get-delete-person':
                 urlArg = args.personId;
                 delete args.personId;
+                break;
+
+            case 'cisco-spark-get-room-details':
+            case 'cisco-spark-update-room':
+            case 'cisco-spark-delete-room':
+                urlArg = args.roomId;
+                delete args.roomId;
+                break;
+
+            case 'cisco-spark-get-membership-details':
+            case 'cisco-spark-update-membership':
+            case 'cisco-spark-delete-membership':
+                urlArg = args.membershipId;
+                delete args.membershipId;
                 break;
         }
 
@@ -234,4 +254,98 @@ script:
   - name: cisco-spark-get-own-details
     arguments: []
     description: Show the profile for the authenticated user.
+  - name: cisco-spark-list-rooms
+    arguments:
+    - name: teamId
+      description: Limit the rooms to those associatedwith a team, by ID.
+    - name: max
+      description: Limit the maximum number of rooms in the response.
+    - name: type
+      description: 'Available values: direct and group. direct returns all 1-to-1
+        rooms. group returns all group rooms. If not specified or values not matched,
+        will return all room types.'
+    description: List rooms.
+  - name: cisco-spark-create-room
+    arguments:
+    - name: title
+      required: true
+      description: A user-friendly name for the room.
+    - name: teamId
+      description: The ID for the team with which this room is associated.
+    description: Creates a room.
+  - name: cisco-spark-get-room-details
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    description: Shows details for a room, by ID.
+  - name: cisco-spark-update-room
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    - name: title
+      required: true
+      description: A user-friendly name for the room.
+    description: ' Updates details for a room, by ID.'
+  - name: cisco-spark-delete-room
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    description: Deletes a room, by ID. Deleted rooms cannot be recovered.
+  - name: cisco-spark-list-memberships
+    arguments:
+    - name: roomId
+      description: Limit results to a specific room, by ID.
+    - name: personId
+      description: Limit results to a specific person, by ID.
+    - name: personEmail
+      description: Limit results to a specific person, by email address.
+    - name: max
+      description: Limit the maximum number of items in the response.
+    description: Lists all room memberships. Use either personId or personEmail to
+      filter the results.
+  - name: cisco-spark-create-membership
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    - name: personId
+      description: The person ID.
+    - name: personEmail
+      description: The email address of the person.
+    - name: isModerator
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a room moderator.
+    description: Add someone to a room by Person ID or email address; optionally making
+      them a moderator.
+  - name: cisco-spark-get-membership-details
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Get details for a membership by ID.
+  - name: cisco-spark-update-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    - name: isModerator
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a room moderator.
+    description: Updates properties for a membership by ID.
+  - name: cisco-spark-delete-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Deletes a membership by ID.
 hidden: false
