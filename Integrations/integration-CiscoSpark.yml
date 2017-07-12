@@ -66,6 +66,12 @@ script:
         'cisco-spark-create-message':           {'url': 'messages', 'method': 'POST'},
         'cisco-spark-get-message-details':      {'url': 'messages', 'method': 'GET'},
         'cisco-spark-delete-message':           {'url': 'messages', 'method': 'DELETE'},
+
+        'cisco-spark-list-teams':               {'url': 'teams', 'method': 'GET'},
+        'cisco-spark-create-team':              {'url': 'teams', 'method': 'POST'},
+        'cisco-spark-get-team-details':         {'url': 'teams', 'method': 'GET'},
+        'cisco-spark-update-team':              {'url': 'teams', 'method': 'PUT'},
+        'cisco-spark-delete-team':              {'url': 'teams', 'method': 'DELETE'},
     }
 
     var buildEmptyEntryContext = function() {
@@ -153,6 +159,13 @@ script:
             case 'cisco-spark-delete-message':
                 urlArg = args.messageId;
                 delete args.messageId;
+                break;
+
+            case 'cisco-spark-get-team-details':
+            case 'cisco-spark-update-team':
+            case 'cisco-spark-delete-team':
+                urlArg = args.teamId;
+                delete args.teamId;
                 break;
         }
 
@@ -414,4 +427,37 @@ script:
       required: true
       description: The message ID.
     description: Deletes a message, by message ID.
+  - name: cisco-spark-list-teams
+    arguments:
+    - name: max
+      description: Limit the maximum number of teams in the response.
+    description: Lists teams to which the authenticated user belongs.
+  - name: cisco-spark-create-team
+    arguments:
+    - name: name
+      required: true
+      description: A user-friendly name for the team.
+    description: Creates a team. The authenticated user is automatically added as
+      a member of the team.
+  - name: cisco-spark-get-team-details
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    description: Shows details for a team, by ID.
+  - name: cisco-spark-update-team
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    - name: name
+      required: true
+      description: A user-friendly name for the team.
+    description: Updates details for a team, by ID.
+  - name: cisco-spark-delete-team
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    description: Deletes a team, by ID.
 hidden: false
