@@ -43,35 +43,47 @@ script:
     var proxy = params.proxy;
 
     commandParams = {
-        'cisco-spark-list-people':              {'url': 'people', 'method': 'GET'},
-        'cisco-spark-create-person':            {'url': 'people', 'method': 'POST'},
-        'cisco-spark-get-person-details':       {'url': 'people', 'method': 'GET'},
-        'cisco-spark-update-person':            {'url': 'people', 'method': 'PUT'},
-        'cisco-spark-delete-person':            {'url': 'people', 'method': 'DELETE'},
-        'cisco-spark-get-own-details':          {'url': 'people/me', 'method': 'GET'},
+        'cisco-spark-list-people':                  {'url': 'people', 'method': 'GET'},
+        'cisco-spark-create-person':                {'url': 'people', 'method': 'POST'},
+        'cisco-spark-get-person-details':           {'url': 'people', 'method': 'GET'},
+        'cisco-spark-update-person':                {'url': 'people', 'method': 'PUT'},
+        'cisco-spark-delete-person':                {'url': 'people', 'method': 'DELETE'},
+        'cisco-spark-get-own-details':              {'url': 'people/me', 'method': 'GET'},
 
-        'cisco-spark-list-rooms':               {'url': 'rooms', 'method': 'GET'},
-        'cisco-spark-create-room':              {'url': 'rooms', 'method': 'POST'},
-        'cisco-spark-get-room-details':         {'url': 'rooms', 'method': 'GET'},
-        'cisco-spark-update-room':              {'url': 'rooms', 'method': 'PUT'},
-        'cisco-spark-delete-room':              {'url': 'rooms', 'method': 'DELETE'},
+        'cisco-spark-list-rooms':                   {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-create-room':                  {'url': 'rooms', 'method': 'POST'},
+        'cisco-spark-get-room-details':             {'url': 'rooms', 'method': 'GET'},
+        'cisco-spark-update-room':                  {'url': 'rooms', 'method': 'PUT'},
+        'cisco-spark-delete-room':                  {'url': 'rooms', 'method': 'DELETE'},
 
-        'cisco-spark-list-memberships':         {'url': 'memberships', 'method': 'GET'},
-        'cisco-spark-create-membership':        {'url': 'memberships', 'method': 'POST'},
-        'cisco-spark-get-membership-details':   {'url': 'memberships', 'method': 'GET'},
-        'cisco-spark-update-membership':        {'url': 'memberships', 'method': 'PUT'},
-        'cisco-spark-delete-membership':        {'url': 'memberships', 'method': 'DELETE'},
+        'cisco-spark-list-memberships':             {'url': 'memberships', 'method': 'GET'},
+        'cisco-spark-create-membership':            {'url': 'memberships', 'method': 'POST'},
+        'cisco-spark-get-membership-details':       {'url': 'memberships', 'method': 'GET'},
+        'cisco-spark-update-membership':            {'url': 'memberships', 'method': 'PUT'},
+        'cisco-spark-delete-membership':            {'url': 'memberships', 'method': 'DELETE'},
 
-        'cisco-spark-list-messages':            {'url': 'messages', 'method': 'GET'},
-        'cisco-spark-create-message':           {'url': 'messages', 'method': 'POST'},
-        'cisco-spark-get-message-details':      {'url': 'messages', 'method': 'GET'},
-        'cisco-spark-delete-message':           {'url': 'messages', 'method': 'DELETE'},
+        'cisco-spark-list-messages':                {'url': 'messages', 'method': 'GET'},
+        'cisco-spark-create-message':               {'url': 'messages', 'method': 'POST'},
+        'cisco-spark-get-message-details':          {'url': 'messages', 'method': 'GET'},
+        'cisco-spark-delete-message':               {'url': 'messages', 'method': 'DELETE'},
 
-        'cisco-spark-list-teams':               {'url': 'teams', 'method': 'GET'},
-        'cisco-spark-create-team':              {'url': 'teams', 'method': 'POST'},
-        'cisco-spark-get-team-details':         {'url': 'teams', 'method': 'GET'},
-        'cisco-spark-update-team':              {'url': 'teams', 'method': 'PUT'},
-        'cisco-spark-delete-team':              {'url': 'teams', 'method': 'DELETE'},
+        'cisco-spark-list-teams':                   {'url': 'teams', 'method': 'GET'},
+        'cisco-spark-create-team':                  {'url': 'teams', 'method': 'POST'},
+        'cisco-spark-get-team-details':             {'url': 'teams', 'method': 'GET'},
+        'cisco-spark-update-team':                  {'url': 'teams', 'method': 'PUT'},
+        'cisco-spark-delete-team':                  {'url': 'teams', 'method': 'DELETE'},
+
+        'cisco-spark-list-team-memberships':        {'url': 'team/memberships', 'method': 'GET'},
+        'cisco-spark-create-team-membership':       {'url': 'team/memberships', 'method': 'POST'},
+        'cisco-spark-get-team-membership-details':  {'url': 'team/memberships', 'method': 'GET'},
+        'cisco-spark-update-team-membership':       {'url': 'team/memberships', 'method': 'PUT'},
+        'cisco-spark-delete-team-membership':       {'url': 'team/memberships', 'method': 'DELETE'},
+
+        'cisco-spark-list-webhooks':                {'url': 'webhooks', 'method': 'GET'},
+        'cisco-spark-create-webhook':               {'url': 'webhooks', 'method': 'POST'},
+        'cisco-spark-get-webhook-details':          {'url': 'webhooks', 'method': 'GET'},
+        'cisco-spark-update-webhook':               {'url': 'webhooks', 'method': 'PUT'},
+        'cisco-spark-delete-webhook':               {'url': 'webhooks', 'method': 'DELETE'},
     }
 
     var buildEmptyEntryContext = function() {
@@ -166,6 +178,20 @@ script:
             case 'cisco-spark-delete-team':
                 urlArg = args.teamId;
                 delete args.teamId;
+                break;
+
+            case 'cisco-spark-get-team-membership':
+            case 'cisco-spark-update-team-membership':
+            case 'cisco-spark-delete-team-membership':
+                urlArg = args.membershipId;
+                delete args.membershipId;
+                break;
+
+            case 'cisco-spark-get-webhook-details':
+            case 'cisco-spark-update-webhook':
+            case 'cisco-spark-delete-webhook':
+                urlArg = args.webhookId;
+                delete args.webhookId;
                 break;
         }
 
@@ -460,4 +486,105 @@ script:
       required: true
       description: The team ID.
     description: Deletes a team, by ID.
+  - name: cisco-spark-list-team-memberships
+    arguments:
+    - name: teamId
+      required: true
+      description: List team memberships for a team, by ID.
+    - name: max
+      description: Limit the maximum number of items in the response.
+    description: Lists all team memberships for a given team, specified by the teamId
+      query parameter.
+  - name: cisco-spark-create-team-membership
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    - name: personId
+      description: The person ID.
+    - name: personEmail
+      description: The email address of the person.
+    - name: isModerator
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a team moderator
+    description: Add someone to a team by Person ID or email address; optionally making
+      them a moderator.
+  - name: cisco-spark-get-team-membership-details
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Shows details for a team membership, by ID.
+  - name: cisco-spark-update-team-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    - name: isModerator
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a team moderator
+    description: Updates a team membership, by ID.
+  - name: cisco-spark-delete-team-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Deletes a team membership, by ID.
+  - name: cisco-spark-list-webhooks
+    arguments:
+    - name: max
+      description: Limit the maximum number of webhooks in the response. Setting this
+        to greater than 100 will return an error.
+    description: Lists all of your webhooks.
+  - name: cisco-spark-create-webhook
+    arguments:
+    - name: name
+      required: true
+      description: A user-friendly name for this webhook.
+    - name: targetUrl
+      required: true
+      description: The URL that receives POST requests for each event.
+    - name: resource
+      required: true
+      description: The resource type for the webhook. Creating a webhook requires
+        'read' scope on the resource the webhook is for.
+    - name: event
+      required: true
+      description: The event type for the webhook.
+    - name: filter
+      description: The filter that defines the webhook scope.
+    - name: secret
+      description: Secret used to generate payload signature
+    description: Creates a webhook.
+  - name: cisco-spark-get-webhook-details
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    description: Shows details for a webhook, by ID.
+  - name: cisco-spark-update-webhook
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    - name: name
+      required: true
+      description: A user-friendly name for this webhook.
+    - name: targetUrl
+      required: true
+      description: The URL that receives POST requests for each event.
+    description: Updates a webhook, by ID.
+  - name: cisco-spark-delete-webhook
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    description: Deletes a webhook, by ID.
 hidden: false
