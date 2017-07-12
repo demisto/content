@@ -130,10 +130,6 @@ script:
             body = JSON.stringify(args);
         }
 
-        console.log('method: ' + JSON.stringify(method));
-        console.log('requestUrl: ' + JSON.stringify(requestUrl));
-        console.log('body: ' + JSON.stringify(body));
-
         var res = http(
             requestUrl,
             {
@@ -150,10 +146,14 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nResponse: ' + JSON.stringify(res);
         }
 
-        return JSON.parse(res.Body);
+        if (res.Body.length > 0) {
+            return JSON.parse(res.Body);
+        } else {
+            return null;
+        }
     };
 
     var processCommand = function(command) {
@@ -165,18 +165,13 @@ script:
 
         res = sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
 
-        var output;
-        switch (command) {
-            case 'cisco-spark-list-people':
-                output = res.items;
-                break;
-
-            default:
-                output = res;
+        if (res) {
+            var output = (command.indexOf('list') != -1) ? res.items : res;
+            var entry = buildEmptyEntryContext();
+            entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
+        } else {
+            entry = 'Command succesful.';
         }
-
-        var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
 
         return entry;
     }
@@ -253,7 +248,7 @@ script:
       description: First name of the person
     - name: lastName
       description: Last name of the person
-    - name: "avatar\t"
+    - name: avatar
       description: URL to the person's avatar in PNG format
     - name: orgId
       description: ID of the organization to which this person belongs
@@ -389,6 +384,7 @@ script:
   - name: cisco-spark-create-message
     arguments:
     - name: roomId
+      required: true
       description: The room ID.
     - name: toPersonId
       description: The ID of the recipient when sending a private1:1 message.
