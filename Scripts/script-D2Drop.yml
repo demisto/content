@@ -1,6 +1,6 @@
 commonfields:
   id: D2Drop
-  version: 1
+  version: -1
 name: D2Drop
 script: |-
   var tempDir = '';
@@ -35,6 +35,8 @@ args:
 - name: destpath
   required: true
   description: Full filesystem path and filename under which to save the file
+- name: files
+  required: true
+  description: the source file path in the server file system
 scripttarget: 1
-dependson: {}
-timeout: 0s
+releaseNotes: -
