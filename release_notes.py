@@ -23,7 +23,7 @@ class Content:
         elif changeType == "D":
             self.deletedStore.append(data)
         else:
-            print "Unkown change type " + changeType
+            print "Unknown change type " + changeType
 
     @abc.abstractmethod
     def getHeader(self):

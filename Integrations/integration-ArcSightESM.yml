@@ -346,9 +346,7 @@ script:
 
     switch (command) {
       case 'test-module':
-        if (!sendRequest(pathDictionary.logout, args)) {
-          return 'well, something really strange happen - you got 200 but logout failed';
-        }
+        sendRequest(pathDictionary.logout, args);
         return 'ok';
       case 'fetch-incidents':
         var lastRun = getLastRun();
