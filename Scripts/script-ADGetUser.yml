@@ -200,4 +200,4 @@ outputs:
   description: The groups the Account is part of
 - contextPath: Account.DisplayName
   description: The Account display name
-releaseNotes: "Quey by username (samAccountName)"
+releaseNotes: "Query by username (samAccountName)"
