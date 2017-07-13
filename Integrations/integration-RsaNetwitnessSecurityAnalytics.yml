@@ -1710,6 +1710,27 @@ script:
     - name: query
       description: '[optional string] Query must contain page, start, limit'
     description: Returns all the components in the system
+    outputs:
+    - contextPath: Netwitness.Component.Id
+      description: Netwitness Component ID
+    - contextPath: Netwitness.Component.DisplayName
+      description: Netwitness Component DisplayName
+    - contextPath: Netwitness.Component.DeviceVersion
+      description: Netwitness Component Device Version
+    - contextPath: Netwitness.Component.DisplayType
+      description: Netwitness Component Device Type
+    - contextPath: Netwitness.Component.Host
+      description: Netwitness Component Device Host
+    - contextPath: Netwitness.Component.Port
+      description: Netwitness Component Device Port
+    - contextPath: Netwitness.Component.Validated
+      description: Netwitness Component is passed validation
+    - contextPath: Netwitness.Component.Licensed
+      description: Netwitness Component license
+    - contextPath: Netwitness.Component.Username
+      description: Netwitness Component User Name
+    - contextPath: Netwitness.Component.EnableSSL
+      description: Netwitness Component Enable SSL
   - name: netwitness-im-get-events
     arguments:
     - name: timeRangeType
@@ -1772,30 +1793,18 @@ script:
       description: '<string> Must provide key value pairs of fieldName and their value
         separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
-    outputs:
-    - contextPath: Netwitness.Component.Id
-      description: Netwitness Component ID
-    - contextPath: Netwitness.Component.DisplayName
-      description: Netwitness Component DisplayName
-    - contextPath: Netwitness.Component.DeviceVersion
-      description: Netwitness Component Device Version
-    - contextPath: Netwitness.Component.DisplayType
-      description: Netwitness Component Device Type
-    - contextPath: Netwitness.Component.Host
-      description: Netwitness Component Device Host
-    - contextPath: Netwitness.Component.Port
-      description: Netwitness Component Device Port
-    - contextPath: Netwitness.Component.Validated
-      description: Netwitness Component is passed validation
-    - contextPath: Netwitness.Component.Licensed
-      description: Netwitness Component license
-    - contextPath: Netwitness.Component.Username
-      description: Netwitness Component User Name
-    - contextPath: Netwitness.Component.EnableSSL
-      description: Netwitness Component Enable SSL
   - name: netwitness-im-get-available-assignees
     arguments: []
     description: Returns the available users to be assigned to incidents
+    outputs:
+    - contextPath: Netwitness.Account.Id
+      description: Netwitness Account ID
+    - contextPath: Netwitness.Account.Name
+      description: Netwitness Account Name
+    - contextPath: Netwitness.Account.Login
+      description: Netwitness Account Login Name
+    - contextPath: Netwitness.Account.EmailAddress
+      description: Netwitness Account Email Address
   - name: netwitness-im-create-incident
     arguments:
     - name: alertSummary
@@ -1940,41 +1949,41 @@ script:
     - name: filter
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
-      outputs:
-      - contextPath: Netwitness.Alert.Id
-        description: Netwitness Alert ID
-      - contextPath: Netwitness.Alert.Name
-        description: Netwitness Alert Name
-      - contextPath: Netwitness.Alert.IncidentId
-        description: Id of Incident which caused to Alert
-      - contextPath: Netwitness.Alert.Timestamp
-        description: Time of Alert
-      - contextPath: Netwitness.Alert.HostSummary
-        description: Netwitness Alert Summary
-      - contextPath: Netwitness.Alert.SignatureId
-        description: Singnature Id of Alert
-      - contextPath: Netwitness.Alert.Source
-        description: Score of Alert
-      - contextPath: Netwitness.Alert.Type
-        description: Type of Alert
-      - contextPath: Netwitness.Alert.RiskScore
-        description: Risk score of Alert
-      - contextPath: Netwitness.Alert.SourceCountry
-        description: Netwitness Alert Source Country
-      - contextPath: Netwitness.Alert.DestinationCountry
-        description: Netwitness Alert Destination Country
-      - contextPath: Netwitness.Alert.NumEvents
-        description: Netwitness Alert Evevts Number
-      - contextPath: Netwitness.Alert.SourceIp
-        description: Netwitness Alert Source Ip
-      - contextPath: Netwitness.Alert.DestonationIp
-        description: Netwitness Alert Destonation Ip
-      - contextPath: Netwitness.Alert.DestonationPort
-        description: Netwitness Alert Destonation Port
   - name: netwitness-im-get-alert-details
     arguments:
     - name: alertId
       required: true
+    outputs:
+    - contextPath: Netwitness.Alert.Id
+      description: Netwitness Alert ID
+    - contextPath: Netwitness.Alert.Name
+      description: Netwitness Alert Name
+    - contextPath: Netwitness.Alert.IncidentId
+      description: Id of Incident which caused to Alert
+    - contextPath: Netwitness.Alert.Timestamp
+      description: Time of Alert
+    - contextPath: Netwitness.Alert.HostSummary
+      description: Netwitness Alert Summary
+    - contextPath: Netwitness.Alert.SignatureId
+      description: Singnature Id of Alert
+    - contextPath: Netwitness.Alert.Source
+      description: Score of Alert
+    - contextPath: Netwitness.Alert.Type
+      description: Type of Alert
+    - contextPath: Netwitness.Alert.RiskScore
+      description: Risk score of Alert
+    - contextPath: Netwitness.Alert.SourceCountry
+      description: Netwitness Alert Source Country
+    - contextPath: Netwitness.Alert.DestinationCountry
+      description: Netwitness Alert Destination Country
+    - contextPath: Netwitness.Alert.NumEvents
+      description: Netwitness Alert Evevts Number
+    - contextPath: Netwitness.Alert.SourceIp
+      description: Netwitness Alert Source Ip
+    - contextPath: Netwitness.Alert.DestonationIp
+      description: Netwitness Alert Destonation Ip
+    - contextPath: Netwitness.Alert.DestonationPort
+      description: Netwitness Alert Destonation Port
   - name: netwitness-im-get-event-details
     arguments:
     - name: deviceId
