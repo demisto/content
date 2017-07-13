@@ -37,6 +37,6 @@ args:
   description: Full filesystem path and filename under which to save the file
 - name: files
   required: true
-  description: the source file name
+  description: Source file name
 scripttarget: 1
 releaseNotes: -
