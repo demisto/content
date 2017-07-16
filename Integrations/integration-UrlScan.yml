@@ -8,19 +8,22 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAYAAAAehFoBAAAAAXN
 description: Urlscan.io reputation
 detaileddescription: |-
   This integration checks domain information from the urlscan.io Database.
-  No authentication is needed.
-  If you want to submit a scan you need an API key.
-  The API key provided by contacting the urlscan.io directly  by email.
+  This is a free service with an API key required. contact urlscan.io to obtain one.
 configuration:
-- display: URL for Urlscan API
+- display: Server URL (e.g. https://urlscan.io/api/v1/)
   name: url
   defaultvalue: https://urlscan.io/api/v1/
   type: 0
-  required: false
+  required: true
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey
   defaultvalue: ""
   type: 0
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -47,6 +50,7 @@ script:
                 {
                     Method: method
                 },
+                params.insecure,
                 params.proxy
             );
 
@@ -62,6 +66,7 @@ script:
                     Headers: headers,
                     Body: body
                 },
+                params.insecure,
                 params.proxy
             );
         }
@@ -75,7 +80,7 @@ script:
             return JSON.parse(res.Body);
         }
         catch(exc) {
-            throw "Urlscan Error: " + res.Body;
+            throw "Urlscan Error: JSON parse error";
         }
     };
 
@@ -83,6 +88,31 @@ script:
         var res = sendRequest("GET", "/result/" + id);
         return res;
     };
+
+    var addMD = function(res) {
+        var md = "";
+
+        if (res.securePercentage !== undefined) {
+            md += "Security Percentage: **"+res.securePercentage + "**\n";
+        }
+        if (res.resourceStats[0].countries !== undefined) {
+            md += "Number of countries associated with this site: **" + res.resourceStats[0].countries.length + " (**";
+        }
+        for (var i = 0; i < res.resourceStats[0].countries.length-1; i++){
+            md += " **" + res.resourceStats[0].countries[i] + ",**";
+        }
+        if (res.resourceStats[0].countries.length > 1) {
+            md += " **" + res.resourceStats[0].countries[res.resourceStats[0].countries.length-1] + ")**\n";
+        }
+        if (res.ipStats[0].asn !== undefined) {
+            md += "ASN: **" + res.ipStats[0].asn.asn + " " + res.ipStats[0].asn.description + "**\n";
+        }
+        if (res.malicious !== undefined) {
+            md += "Malicious: **" + res.malicious + "**";
+        }
+
+        return md;
+    }
 
     var searchUrl = function(url) {
         var res = sendRequest("GET","/search?q=domain:" + url);
@@ -95,24 +125,7 @@ script:
         if (res.results.length !== 0) {
             var resStats = searchResults(res.results[0]._id).stats;
 
-            if (resStats.securePercentage !== undefined) {
-                md += "Security Percentage: **"+resStats.securePercentage + "**\n";
-            }
-            if (resStats.resourceStats[0].countries !== undefined) {
-                md += "Number of countries associated with this site: **" + resStats.resourceStats[0].countries.length + " (**";
-            }
-            for (var i = 0; i < resStats.resourceStats[0].countries.length-1; i++){
-                md += " **" + resStats.resourceStats[0].countries[i] + ",**";
-            }
-            if (resStats.resourceStats[0].countries.length > 1) {
-                md += " **" + resStats.resourceStats[0].countries[resStats.resourceStats[0].countries.length-1] + ")**\n";
-            }
-            if (resStats.ipStats[0].asn !== undefined) {
-                md += "ASN: **" + resStats.ipStats[0].asn.asn + " " + resStats.ipStats[0].asn.description + "**\n";
-            }
-            if (resStats.malicious !== undefined) {
-                md += "Malicious: **" + resStats.malicious + "**";
-            }
+            md += addMD(resStats);
 
             if (resStats.malicious !== 0){
                 dbotScore = 3;
@@ -164,24 +177,7 @@ script:
         if (res.results.length !== 0){
             var resStats = searchResults(res.results[0]._id).stats;
 
-            if (resStats.securePercentage !== undefined) {
-                md += "Security Percentage: **"+resStats.securePercentage + "**\n";
-            }
-            if (resStats.resourceStats[0].countries !== undefined) {
-                md += "Number of countries associated with this site: **" + resStats.resourceStats[0].countries.length + " (**";
-            }
-            for (var i = 0; i < resStats.resourceStats[0].countries.length-1; i++){
-                md += " **" + resStats.resourceStats[0].countries[i] + ",**";
-            }
-            if (resStats.resourceStats[0].countries.length > 1) {
-                md += " **" + resStats.resourceStats[0].countries[resStats.resourceStats[0].countries.length-1] + ")**\n";
-            }
-            if (resStats.ipStats[0].asn !== undefined) {
-                md += "ASN: **" + resStats.ipStats[0].asn.asn + " " + resStats.ipStats[0].asn.description + "**\n";
-            }
-            if (resStats.malicious !== undefined) {
-                md += "Malicious: **" + resStats.malicious + "**";
-            }
+            md += addMD(resStats);
 
             if (resStats.malicious !== 0){
                 dbotScore = 3;
@@ -221,24 +217,7 @@ script:
         if(res.results.length !== 0) {
             var resStats = searchResults(res.results[0]._id).stats;
 
-            if (resStats.securePercentage !== undefined) {
-                md += "Security Percentage: **"+resStats.securePercentage + "**\n";
-            }
-            if (resStats.resourceStats[0].countries !== undefined) {
-                md += "Number of countries associated with this site: **" + resStats.resourceStats[0].countries.length + " (**";
-            }
-            for (var i = 0; i < resStats.resourceStats[0].countries.length-1; i++){
-                md += " **" + resStats.resourceStats[0].countries[i] + ",**";
-            }
-            if (resStats.resourceStats[0].countries.length > 1) {
-                md += " **" + resStats.resourceStats[0].countries[resStats.resourceStats[0].countries.length-1] + ")**\n";
-            }
-            if (resStats.ipStats[0].asn !== undefined) {
-                md += "ASN: **" + resStats.ipStats[0].asn.asn + " " + resStats.ipStats[0].asn.description + "**\n";
-            }
-            if (resStats.malicious !== undefined) {
-                md += "Malicious: **" + resStats.malicious + "**";
-            }
+            md += addMD(resStats);
 
             if (resStats.malicious !== 0) {
                 dbotScore = 3;
