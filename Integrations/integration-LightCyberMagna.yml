@@ -35,6 +35,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     var fixUrl = function(base) {
@@ -48,6 +53,7 @@ script:
     var buildArgs = function(args) {
         sArgs = Object.keys(args).map(function(key) {
             return [key, args[key]].map(encodeURIComponent).join("=");
+        log(JSON.stringify(sArgs));
         }).join("&");
         if (sArgs) {
             return '?' + sArgs;
@@ -509,49 +515,63 @@ script:
   - name: lcm-host-opened-ports
     arguments:
     - name: sort
+      description: How to sort the results
     - name: host_id
       required: true
+      description: Host id as presented in LightCyber Magna
+    description: Shows the used ports in this host
   - name: lcm-host-suspicious-artifacts
     arguments:
     - name: sort
       defaultValue: final_score
+      description: How to sort the results
     - name: host_id
       required: true
       default: true
+      description: Host id as presented in LightCyber Magna
     description: Returns all the suspicious artifacts of this host
   - name: lcm-host-processes
     arguments:
     - name: time
     - name: sort
       defaultValue: -score_e
+      description: How to sort the results
     - name: host_id
       required: true
       default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all the running processes in the host
   - name: lcm-host-loaded-modules
     arguments:
     - name: sort
       defaultValue: final_score
+      description: How to sort the results
     - name: host_id
       required: true
       default: true
+      description: Host id as presented in LightCyber Magna
     description: Returns all the modules of this host
   - name: lcm-host-processes-internet-connections
     arguments:
     - name: time
     - name: sort
       defaultValue: process_sig
+      description: How to sort the results
     - name: src_host_id
       required: true
       default: true
+      description: Host id as presented in LightCyber Magna
     description: Returns all the processes that established internet connection in
       this host
   - name: lcm-host-installed-executables
     arguments:
     - name: sort
       defaultValue: final_score
+      description: How to sort the results
     - name: host_id
       required: true
       default: true
+      description: Host id as presented in LightCyber Magna
     description: Returns all installed programs in this host
   isfetch: true
 hidden: false
