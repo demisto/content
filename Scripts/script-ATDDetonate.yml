@@ -157,3 +157,32 @@ args:
   description: Interval to poll for results. Default is 10 seconds.
 scripttarget: 0
 timeout: 960ns
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+important:
+- contextPath: File(val.Malicious)
+  description: Malicious files
+releaseNotes: "-"
