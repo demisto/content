@@ -1,5 +1,5 @@
 id: 9c94b383-893a-42fd-8c41-d99b0a6e5492
-version: 12
+version: 15
 name: Cybereason Test
 starttaskid: "0"
 tasks:
@@ -130,10 +130,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 8871fe21-96f5-411e-8837-0eba18100e48
+    taskid: 1498bffd-0f81-4486-8251-fd1d4b203778
     type: regular
     task:
-      id: 8871fe21-96f5-411e-8837-0eba18100e48
+      id: 1498bffd-0f81-4486-8251-fd1d4b203778
       version: -1
       name: VerifyContext (Process)
       scriptName: VerifyContext
@@ -145,7 +145,7 @@ tasks:
       - "6"
     scriptarguments:
       expectedValue: ""
-      fields: Sha1,CompanyName,ProductType,Name,CreationTime,SignedAndVerified,OwnerMachine,Malicious,ImageFile,ProductName,Md5,CommandLine
+      fields: Name,User,CreationTime,SignedAndVerified,CommandLine
       path: Process
     view: |-
       {
