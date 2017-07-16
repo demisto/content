@@ -119,6 +119,28 @@ script:
         }
     };
 
+    var capitalize = function(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    var capitalizeKeys = function(dict) {
+        var capitalizedDict = {};
+        for (var key in dict) {
+            var capitalizedKey = capitalize(key);
+            capitalizedDict[capitalizedKey] = dict[key];
+        }
+
+        return capitalizedDict;
+    }
+
+    var updateContext = function(entry, outputs, contextPath) {
+        var contexts = [];
+        for (var i = 0; i < outputs.length; i++) {
+            contexts.push(capitalizeKeys(outputs[i]));
+        }
+        entry.EntryContext[contextPath] = contexts;
+    }
+
     var sendRequest = function(method, url, urlArg) {
         if (url[url.length - 1] === '/') {
             url = url.substring(0, url.length - 1);
@@ -138,9 +160,6 @@ script:
             // request parameters (body)
             body = JSON.stringify(args);
         }
-
-        console.log('requestUrl = ' + JSON.stringify(requestUrl));
-        console.log('body = \n' + body);
 
         var res = http(
             requestUrl,
@@ -178,6 +197,33 @@ script:
         return sendRequest(commandParams[command].method, commandParams[command].url, urlArg);
     }
 
+    var parseResponse = function(command, res) {
+        var entry;
+        if (res) {
+            var isListCommand = (command.indexOf('list') != -1);
+            var outputs = isListCommand ? res.items : res;
+
+            if (outputs.length == 0) {
+                return 'Response is empty.';
+            }
+
+            entry = buildEmptyEntryContext();
+            entry.HumanReadable = tableToMarkdown('Cisco Spark Results', outputs);
+
+            if (isListCommand) {
+                var splitCommand = command.split('-');
+                var listType = capitalize(splitCommand[splitCommand.length - 1]);
+                updateContext(entry, outputs, 'CiscoSpark.' + listType);
+            }
+
+        } else {
+            // for commands which return nothing
+            entry = 'Command succesful.';
+        }
+
+        return entry;
+    }
+
     var sendMessageToPerson = function() {
         if ((!args.toPersonEmail) && (!args.toPersonId)) {
             throw 'Either email or personId must be provided.';
@@ -190,15 +236,20 @@ script:
         if (args.toRoomName) {
             var res = processCommand('cisco-spark-list-rooms');
             var rooms = res.items;
+            console.log('rooms = \n' + JSON.stringify(rooms, null, 4));
             var roomId;
             for (var i = 0; i < rooms.length; i++) {
                 if (rooms[i].title.indexOf(args.toRoomName) != -1) {
                     if (roomId) {
-                        throw 'There is more than one room which start with the given name: ' + args.toRoomName;
+                        throw 'More than one room starts with the given name: ' + args.toRoomName;
                     }
 
                     roomId = rooms[i].id;
                 }
+            }
+
+            if (!roomId) {
+                throw 'A room with the given name was not found: ' + args.toRoomName;
             }
 
             args.roomId = roomId;
@@ -234,17 +285,7 @@ script:
             break;
     }
 
-    var entry;
-    if (res) {
-        var output = (command.indexOf('list') != -1) ? res.items : res;
-        entry = buildEmptyEntryContext();
-        entry.HumanReadable = tableToMarkdown('Cisco Spark Results', output);
-    } else {
-        // for commands which return nothing
-        entry = 'Command succesful.';
-    }
-
-    return entry;
+    return parseResponse(command, res);
   type: javascript
   commands:
   - name: cisco-spark-list-people
@@ -260,6 +301,9 @@ script:
         (such as partners) may use this parameter.
     - name: max
       description: Limit the maximum number of people in the response.
+    outputs:
+    - contextPath: CiscoSpark.People
+      description: The list of people.
     description: List people
   - name: cisco-spark-create-person
     arguments:
@@ -339,6 +383,9 @@ script:
       description: 'Available values: direct and group. direct returns all 1-to-1
         rooms. group returns all group rooms. If not specified or values not matched,
         will return all room types.'
+    outputs:
+    - contextPath: CiscoSpark.Rooms
+      description: The list of rooms.
     description: List rooms.
   - name: cisco-spark-create-room
     arguments:
@@ -379,6 +426,9 @@ script:
       description: Limit results to a specific person, by email address.
     - name: max
       description: Limit the maximum number of items in the response.
+    outputs:
+    - contextPath: CiscoSpark.Memberships
+      description: List of memberships.
     description: Lists all room memberships. Use either personId or personEmail to
       filter the results.
   - name: cisco-spark-create-membership
@@ -437,6 +487,9 @@ script:
       description: List messages sent before a message, by ID.
     - name: max
       description: Limit the maximum number of messages in the response.
+    outputs:
+    - contextPath: CiscoSpark.Messages
+      description: List of messages, by roomId.
     description: Lists all messages in a room.
   - name: cisco-spark-create-message
     arguments:
@@ -475,6 +528,9 @@ script:
     arguments:
     - name: max
       description: Limit the maximum number of teams in the response.
+    outputs:
+    - contextPath: CiscoSpark.Teams
+      description: List of teams.
     description: Lists teams to which the authenticated user belongs.
   - name: cisco-spark-create-team
     arguments:
@@ -511,6 +567,9 @@ script:
       description: List team memberships for a team, by ID.
     - name: max
       description: Limit the maximum number of items in the response.
+    outputs:
+    - contextPath: CiscoSpark.TeamMemberships
+      description: List of team memberships.
     description: Lists all team memberships for a given team, specified by the teamId
       query parameter.
   - name: cisco-spark-create-team-membership
@@ -560,6 +619,9 @@ script:
     - name: max
       description: Limit the maximum number of webhooks in the response. Setting this
         to greater than 100 will return an error.
+    outputs:
+    - contextPath: CiscoSpark.Webhooks
+      description: List of webhooks.
     description: Lists all of your webhooks.
   - name: cisco-spark-create-webhook
     arguments:
@@ -609,6 +671,9 @@ script:
     arguments:
     - name: max
       description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Organizations
+      description: List of organizations.
     description: List all organizations visible by your account.
   - name: cisco-spark-get-organization-details
     arguments:
@@ -622,6 +687,9 @@ script:
       description: Specify the organization.
     - name: max
       description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Licenses
+      description: List of licenses.
     description: List all licenses for a given organization. If no orgId is specified,
       the default is the organization of the authenticated user.
   - name: cisco-spark-get-license-details
@@ -634,6 +702,9 @@ script:
     arguments:
     - name: max
       description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Roles
+      description: List of roles.
     description: List all roles.
   - name: cisco-spark-get-role-details
     arguments:
