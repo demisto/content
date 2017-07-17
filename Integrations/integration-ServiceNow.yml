@@ -1,5 +1,5 @@
 commonfields:
-  id: ServiceNow
+  id: ServiceNow2
   version: -1
 name: ServiceNow
 display: ServiceNow
