@@ -187,3 +187,4 @@ outputs:
   description: The Endpoint hostname
 - contextPath: Endpoint.Groups
   description: The groups the endpoint is part of
+releaseNotes: "Split Groups in context into array"
