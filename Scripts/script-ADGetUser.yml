@@ -13,7 +13,7 @@ script: |2-
           account['Email'] = demisto.get(l,'mail')
           account['Username'] = demisto.get(l,'samAccountName')
           account['DisplayName'] = demisto.get(l,'displayName')
-          account['Groups'] = demisto.get(l,'memberOf')
+          account['Groups'] = demisto.get(l,'memberOf').split('<br>')
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
               account[attr.title()] = demisto.get(l,attr)
           accounts.append(account)
