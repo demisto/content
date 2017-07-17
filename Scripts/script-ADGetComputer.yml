@@ -10,7 +10,7 @@ script: |-
           endpoint['Type'] = 'AD'
           endpoint['ID'] = demisto.get(l,'dn')
           endpoint['Hostname'] = demisto.get(l,'name')
-          endpoint['Groups'] = demisto.get(l,'memberOf')
+          endpoint['Groups'] = demisto.get(l,'memberOf').split("<br>")
           for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
               endpoint[attr.title()] = demisto.get(l,attr)
           endpoints.append(endpoint)
