@@ -1203,7 +1203,7 @@ script:
         });
         md.push(toPush);
         ctx["Netwitness.Event"].push(toPush);
-        return [{Type: entryTypes.note, Contents: event, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx}, content];
+        return {Type: entryTypes.note, Contents: event, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
     }
 
     function buildRetValGetAlerts (alerts) {
@@ -1236,6 +1236,9 @@ script:
     function buildRetValGetAlertOrig (alertOrig) {
         var md = [];
         var ctx = {"Netwitness.Event": []}
+        if(!alertOrig.events) {
+            return {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred alert Id exist in NetWitness"};
+        }
         alertOrig.events.forEach(function (evnt) {
             for (var key in evnt) {
                 if (key === 'time') {
@@ -1348,9 +1351,18 @@ script:
         case 'netwitness-im-update-incident':
             var availableAssignees = getAvailableAssignees(sessionId, args);
             var update_incident = updateIncident(sessionId, args, incidentManagementId, availableAssignees);
-            results = {"ContentsFormat": formats["text"], "Type": entryTypes["note"], "Contents": "Incident updated successfully."};
-            if(!(update_incident.success==true && update_incident.data >= 1)){
-                results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", update_incident)};
+            if( update_incident.success != true) {
+                results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Didn't succed to update incident.\n" + tableToMarkdown("Data returned:", update_incident)};
+            }
+            else if (update_incident.success == true && update_incident.data < 1) {
+                results = {"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": "Received an error from NetWitness Please ensure that the referred incidents exist in NetWitness.  Incidents count = " + update_incident.data};
+            }
+            else {
+                results = {
+                    "ContentsFormat": formats["text"],
+                    "Type": entryTypes["note"],
+                    "Contents": "Incident updated successfully."
+                };
             }
             break;
         default:
