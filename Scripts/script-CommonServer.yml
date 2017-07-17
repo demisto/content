@@ -128,7 +128,7 @@ script: |-
   var convertKeysToPascalCase = function(dict) {
       var pascalDict = {};
       for (var key in dict) {
-          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(' ', '');
+          var pascalCaseKey = key.replace(/\w+/g, function(w) { return w[0].toUpperCase() + w.slice(1).toLowerCase(); }).replace(/ /g, '');
           pascalDict[pascalCaseKey] = dict[key];
       }
 
