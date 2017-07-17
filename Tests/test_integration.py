@@ -31,7 +31,7 @@ def __get_integration_config(client, integration_name):
 
     if not match_configurations or len(match_configurations) == 0:
         print_error('integration was not found')
-        return False
+        return None
 
     return match_configurations[0]
 
@@ -56,6 +56,9 @@ def __test_integration_instance(client, module_instance):
 def __create_integration_instance(client, integration_name, integration_params):
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
+    if not configuration:
+        return None
+
     module_configuration = configuration['configuration']
 
     instance_name = integration_name + '_test' + str(uuid.uuid4())
