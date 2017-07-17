@@ -1,7 +1,7 @@
 commonfields:
-  id: fireeye_byoi
+  id: fireeye
   version: -1
-name: fireeye_byoi
+name: fireeye
 releaseNotes: "FireEye modified to JavaScript"
 display: FireEye (AX Series)
 category: Forensics & Malware Analysis
@@ -21,7 +21,7 @@ configuration:
 - display: clientToken
   name: Client token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 - display: Version
   name: version
