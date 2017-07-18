@@ -249,22 +249,29 @@ script:
     - name: uploadFile
       description: commands.server.feSubmit.arguments.uploadFile.description
     - name: analysistype
+      required: true
       description: commands.server.feSubmit.arguments.analysisType.description
     - name: profiles
+      required: true
       description: commands.server.feSubmit.arguments.profile.description
     - name: application
+      required: true
       description: commands.server.feSubmit.arguments.application.description
     - name: priority
+      required: true
       description: commands.server.feSubmit.arguments.priority.description
     - name: force
+      required: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       description: commands.server.feSubmit.arguments.force.description
     - name: prefetch
+      required: true
       description: commands.server.feSubmit.arguments.prefetch.description
     - name: timeout
+      required: true
       description: commands.server.feSubmit.arguments.timeout.description
     description: commands.server.feSubmit.description
   - name: fe-config
