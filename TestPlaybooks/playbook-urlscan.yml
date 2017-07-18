@@ -1,6 +1,6 @@
-id: playbook-urlscan
-version: -1
-name: playbook-urlscan
+id: 7ab45104-22aa-4e1b-8062-cadcbb28d87f
+version: 14
+name: Test - urlscan
 starttaskid: "0"
 tasks:
   "0":
@@ -51,16 +51,16 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 87b9a427-c353-4759-8a55-e73a11390094
+    taskid: 155c603c-f083-4eec-86a6-8a23a3e2e688
     type: regular
     task:
-      id: 87b9a427-c353-4759-8a55-e73a11390094
+      id: 155c603c-f083-4eec-86a6-8a23a3e2e688
       version: -1
       name: Check IP command
-      script: urlscan|||ip
+      script: urlscan.io|||ip
       type: regular
       iscommand: true
-      brand: urlscan
+      brand: urlscan.io
     nexttasks:
       '#none#':
       - "3"
@@ -118,16 +118,16 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 71d28939-8e98-4ee5-8b42-5e4fe56c0770
+    taskid: 4385fbf2-6ab8-48b4-83e4-e0397ecf83e2
     type: regular
     task:
-      id: 71d28939-8e98-4ee5-8b42-5e4fe56c0770
+      id: 4385fbf2-6ab8-48b4-83e4-e0397ecf83e2
       version: -1
       name: Check URL command
-      script: urlscan|||url
+      script: urlscan.io|||url
       type: regular
       iscommand: true
-      brand: urlscan
+      brand: urlscan.io
     nexttasks:
       '#none#':
       - "6"
@@ -226,20 +226,21 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: cd811ab0-665d-4bad-832f-c4cdf51511e3
+    taskid: 532ed6d2-0143-4365-82b1-b0b6508a362f
     type: regular
     task:
-      id: cd811ab0-665d-4bad-832f-c4cdf51511e3
+      id: 532ed6d2-0143-4365-82b1-b0b6508a362f
       version: -1
       name: Check submit command
-      script: urlscan|||urlscan-submit
+      script: urlscan.io|||urlscan-submit
       type: regular
       iscommand: true
-      brand: urlscan
+      brand: urlscan.io
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
+      timeout: "30"
       url: www.demisto.com
       wait: ""
     view: |-
@@ -247,39 +248,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1420
-        }
-      }
-  "9":
-    id: "9"
-    taskid: a1805521-8ab4-416d-84ef-a9485063c5b9
-    type: condition
-    task:
-      id: a1805521-8ab4-416d-84ef-a9485063c5b9
-      version: -1
-      name: Check if URL submitted
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    scriptarguments:
-      chars: ""
-      entry: ""
-      filter: ""
-      left: ${Urlscan.Url}
-      right: www.demisto.com
-      size: ""
-      string: ${DBotScore.Score}
-      substring: "0"
-    results:
-    - AreValuesEqual
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
         }
       }
   "10":
@@ -302,6 +270,49 @@ tasks:
         "position": {
           "x": 50,
           "y": 1770
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 9fb6c544-a827-480d-8482-7cf472afb017
+    type: condition
+    task:
+      id: 9fb6c544-a827-480d-8482-7cf472afb017
+      version: -1
+      name: Check if DBot score is 0
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    scriptarguments:
+      chars: ""
+      distance: ""
+      dn: ""
+      domain: ""
+      email: ""
+      entry: ""
+      filter: ""
+      groupname: ""
+      key: ""
+      left: ${DBotScore.Score}
+      name: ""
+      nestedSearch: ""
+      right: "1"
+      sender: ""
+      size: ""
+      string: ${DBotScore.Score}
+      substring: "0"
+      value: ""
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
         }
       }
 view: |-
