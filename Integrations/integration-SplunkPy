@@ -74,7 +74,7 @@ script:
         incident["name"] = event['rule_title'] + ' : ' + event['rule_name']
         incident["severity"]= severity_to_level(event['urgency'])
         incident["details"] = event["rule_description"]
-        incident["created"] = event["_time"]
+        incident["occurred"] = event["_time"]
         labels = []
         labels.append({'type':'security_domain','value':event["security_domain"]})
         incident['labels'] = labels
