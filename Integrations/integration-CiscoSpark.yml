@@ -12,8 +12,11 @@ detaileddescription: |-
   * Search for people in your company
   * Post messages into a room
   * Get room history
+  * All the other actions which are described in the docs
 
   For more information, please visit: [https://developer.ciscospark.com/getting-started.html](https://developer.ciscospark.com/getting-started.html).
+
+  The API key is displayed in the "Getting Started" page, after logging in.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -37,10 +40,16 @@ configuration:
   required: false
 script:
   script: |
-    var server = params.server + '/v1';
     var apiKey = params.apiKey;
     var insecure = params.insecure;
     var proxy = params.proxy;
+    var server = params.server;
+
+    if (server[server.length - 1] === '/') {
+        server = server.substring(0, server.length - 1);
+    }
+
+    server = params.server + '/v1';
 
     commandParams = {
         'cisco-spark-list-people':                  {'url': 'people', 'method': 'GET'},
@@ -108,17 +117,6 @@ script:
         return y;
     }
 
-    var buildArgs = function(args) {
-        sArgs = Object.keys(args).map(function(key) {
-            return [key, args[key]].map(encodeURIComponent).join("=");
-        }).join("&");
-        if (sArgs) {
-            return '?' + sArgs;
-        } else {
-            return '';
-        }
-    };
-
     var capitalize = function(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -142,10 +140,6 @@ script:
     }
 
     var sendRequest = function(method, url, urlArg) {
-        if (url[url.length - 1] === '/') {
-            url = url.substring(0, url.length - 1);
-        }
-
         var body = null;
         var requestUrl = server + '/' + url;
 
@@ -155,7 +149,7 @@ script:
 
         if (method == 'GET') {
             // query parameters
-            requestUrl += buildArgs(args);
+            requestUrl += encodeToURLQuery(args);
         } else {
             // request parameters (body)
             body = JSON.stringify(args);
@@ -236,7 +230,6 @@ script:
         if (args.toRoomName) {
             var res = processCommand('cisco-spark-list-rooms');
             var rooms = res.items;
-            console.log('rooms = \n' + JSON.stringify(rooms, null, 4));
             var roomId;
             for (var i = 0; i < rooms.length; i++) {
                 if (rooms[i].title.indexOf(args.toRoomName) != -1) {
@@ -308,7 +301,7 @@ script:
   - name: cisco-spark-create-person
     arguments:
     - name: emails
-      description: Email addresses of the person
+      description: Email addresses of the person (comma separated)
       isArray: true
     - name: displayName
       description: Full name of the person
@@ -321,7 +314,7 @@ script:
     - name: orgId
       description: ID of the organization to which this person belongs
     - name: roles
-      description: Roles of the person
+      description: Roles of the person (comma separated)
       isArray: true
     - name: licenses
       description: Licenses allocated to the person
@@ -337,7 +330,7 @@ script:
   - name: cisco-spark-update-person
     arguments:
     - name: emails
-      description: Email addresses of the person
+      description: Email addresses of the person (comma separated)
       isArray: true
     - name: displayName
       description: Full name of the person
@@ -350,10 +343,10 @@ script:
     - name: orgId
       description: ID of the organization to which this person belongs
     - name: roles
-      description: Roles of the person
+      description: Roles of the person (comma separated)
       isArray: true
     - name: licenses
-      description: Licenses allocated to the person
+      description: Licenses allocated to the person (comma separated)
       isArray: true
     - name: personId
       required: true
