@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: LightCyber Magna
 display: LightCyber Magna
+canGetSamples: true
 system: true
 category: Network Security
 releaseNotes: "Support exporting incident full JSON"

@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: ServiceNow
 display: ServiceNow
+canGetSamples: true
 -fromversion: 2.5.0
 releaseNotes: "Support exporting incident full JSON"
 category: IT Services
