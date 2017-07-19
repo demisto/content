@@ -36,28 +36,30 @@ script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/';
 
+    var FILE_TYPE = 9;
+
     var urlDictionary = {
         'login' : 'login',
         'logout': 'logout',
         'intsights-get-accounts': 'accounts',
         'intsights-get-alerts': 'alerts',
-        'intsights-get-alert-image': '/alerts/image/%AlertID%/%ImageID%',
-        'intsights-get-alert-actvities': '/alerts/get-activities/%AlertID%',
-        'intsights-check-notifications': '/alerts/check-new',
-        'intsights-get-notifications': '/alerts/get-notifications',
-        'intsights-ask-the-analys': '/alerts/ask-the-analyst/%AlertID%',
-        'intsights-send-mail': '/alerts/mail-to-others/%AlertID%',
-        'intsights-remediate': '/alerts/resolve-request/%AlertID%',
-        'intsights-whitelist': '/alerts/report-white-list/%AlertID%',
-        'intsights-assign': '/alerts/assign/%AlertID%',
-        'intsights-unassign': '/alerts/unassign/%AlertID%',
-        'intsights-tag': '/alerts/add-tag/%AlertID%',
-        'intsights-untag': '/alerts/remove-tag/%AlertID%',
-        'intsights-comment': '/alerts/comment/%AlertID%',
-        'intsights-alert-preview': '/alerts/preview/%AlertID%',
-        'intsights-get-alert-db-file': '/alerts/db-file/%AlertID%',
-        'intsights-get-alert-whois-file': '/alerts/whois-file/%AlertID%',
-        'intsights-mark-as-read': '/alerts/read/%AlertID%',
+        'intsights-get-alert-image': 'alerts/image/%AlertID%/%ImageID%',
+        'intsights-get-alert-actvities': 'alerts/get-activities/%AlertID%',
+        'intsights-check-notifications': 'alerts/check-new',
+        'intsights-get-notifications': 'alerts/get-notifications',
+        'intsights-ask-the-analys': 'alerts/ask-the-analyst/%AlertID%',
+        'intsights-send-mail': 'alerts/mail-to-others/%AlertID%',
+        'intsights-remediate': 'alerts/resolve-request/%AlertID%',
+        'intsights-whitelist': 'alerts/report-white-list/%AlertID%',
+        'intsights-assign': 'alerts/assign/%AlertID%',
+        'intsights-unassign': 'alerts/unassign/%AlertID%',
+        'intsights-tag': 'alerts/add-tag/%AlertID%',
+        'intsights-untag': 'alerts/remove-tag/%AlertID%',
+        'intsights-comment': 'alerts/comment/%AlertID%',
+        'intsights-alert-preview': 'alerts/preview/%AlertID%',
+        'intsights-get-alert-db-file': 'alerts/db-file/%AlertID%',
+        'intsights-get-alert-whois-file': 'alerts/whois-file/%AlertID%',
+        'intsights-mark-as-read': 'alerts/read/%AlertID%',
         'intsights-ioc-get-totals': 'iocs/get-totals',
         'intsights-get-iocs': 'iocs/get-iocs',
         'intsights-search-ioc': 'iocs/search',
@@ -92,7 +94,43 @@ script:
         'intsights-ioc-download-csv': 'GET'
     };
 
-    var FILE_TYPE = 9;
+    var outputsDictionary = {
+        'intsights-get-alerts': [
+            {from: '_id', to: 'ID'},
+            {from: 'FoundDate', to: 'Found Date'},
+            {from: 'Details.Title', to: 'Title'},
+            {from: 'Details.Type', to: 'Type'},
+            {from: 'Details.Severity', to: 'Severity'},
+            {from: 'Details.Source', to: 'Source', parser: function(src) {
+                return 'Type: {0}\nNetwork Type: {1}\nURL: {2}\nDate: {3}'.format(src.Type, src.NetworkType, src.URL, src.Date)
+            }},
+            {from: 'Details.Description', to: 'Description'},
+            {from: 'Details.Recommendations', to: 'Recommendations'},
+        ]
+    };
+
+    var headersDictionary = {
+        'intsights-get-alerts': ['Found Date', 'Title', 'Type', 'Severity', 'Source', 'Description', 'Recommendations', 'ID'],
+    }
+
+    var mapObjFunction = function(mapFields, isOutput) {
+        return function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+                if (f.parser && isOutput && isOutput === true) {
+                    res[f.to] = f.parser(dq(obj, f.from)) || null;
+                } else {
+                    res[f.to] = dq(obj, f.from) || null;
+                }
+            });
+
+            return res;
+        }
+    }
+
+    var buildEmptyEntryContext = function() {
+        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
+    }
 
     var getUrl = function(command, args) {
         var url = urlDictionary[command];
@@ -123,7 +161,13 @@ script:
             httpParams.Body = body;
         }
 
-        var res = http(server + url, httpParams, params.insecure, params.proxy);
+        var completeUrl = server + url;
+
+        console.log('completeUrl = ' + completeUrl);
+        // console.log('body =\n' + JSON.stringify(httpParams.Body, null, 4));
+
+        var res = http(completeUrl, httpParams, params.insecure, params.proxy);
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (!logout) {
                 sendRequest(
@@ -173,10 +217,35 @@ script:
                 'login',
                 {Email: params.credentials.identifier, Password: params.credentials.password, Type: 'pass'}
             )
-        );
+        ).Cookies;
     }
 
-    var loginCookie = login();
+    var parseResponse = function(command, response) {
+        console.log('command = ' + command);
+
+        var outputs = [];
+        // var contexts = [];
+
+        for (var data = dq(response, 'Data'), i = 0; i < data.length; i++) {
+            console.log('data =\n' + JSON.stringify(data[i]));
+            console.log('data.Source =\n' + JSON.stringify(data[i].Source));
+            var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
+            outputs.push(output);
+            // var context = mapObjFunction(outputsDictionary[command], false)(data[i]);
+            // var context = data;
+            // contexts.push(context);
+        }
+
+        var contexts = dq(response, 'Data');
+
+        var entry = buildEmptyEntryContext();
+        entry.HumanReadable = tblToMd('IntSights Alerts', outputs, headersDictionary[command]);
+        entry.EntryContext = {'IntSights.Alerts': contexts};
+
+        return entry;
+    }
+
+    var loginCookies = login();
 
     var result;
     switch (command) {
@@ -218,7 +287,7 @@ script:
     // logout
     sendRequest(methodDictionary['logout'], getUrl('logout'), undefined, loginCookies, true);
 
-    return result;
+    return parseResponse(command, result);
   type: javascript
   commands:
   - name: intsights-get-accounts
