@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: IntSights
 display: IntSights
+canGetSamples: true
 system: true
 releaseNotes: "Support exporting incident full JSON"
 category: Forensics & Malware Analysis
