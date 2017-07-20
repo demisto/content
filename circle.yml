@@ -23,28 +23,28 @@ test:
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
   override:
-    - chmod +x ./Tests/scripts/*
-
-    # ensure file name
-    - ./Tests/scripts/ensurefilenames.sh
-
-    # get installer from server
-    - ./Tests/scripts/server_get_artifact.sh
-
-    # run demisto instance
-    - ./Tests/scripts/create_instance.sh
-
-    # run installer
-    - ./Tests/scripts/run_installer_on_instance.sh
-
-    # wait until server is ready
-    - ./Tests/scripts/wait_until_server_ready.sh
-
-    # download conf file
-    - ./Tests/scripts/download_secret_conf_file.sh
-
-    # run tests
-    - ./Tests/scripts/run_tests.sh
-
-    # terminate instance
-    - ./Tests/scripts/destroy_instances.sh
+#    - chmod +x ./Tests/scripts/*
+#
+#    # ensure file name
+#    - ./Tests/scripts/ensurefilenames.sh
+#
+#    # get installer from server
+#    - ./Tests/scripts/server_get_artifact.sh
+#
+#    # run demisto instance
+#    - ./Tests/scripts/create_instance.sh
+#
+#    # run installer
+#    - ./Tests/scripts/run_installer_on_instance.sh
+#
+#    # wait until server is ready
+#    - ./Tests/scripts/wait_until_server_ready.sh
+#
+#    # download conf file
+#    - ./Tests/scripts/download_secret_conf_file.sh
+#
+#    # run tests
+#    - ./Tests/scripts/run_tests.sh
+#
+#    # terminate instance
+#    - ./Tests/scripts/destroy_instances.sh

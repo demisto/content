@@ -41,6 +41,10 @@ class Content:
     def loadData(self, data):
         return
 
+    @abc.abstractmethod
+    def verifyVersion(self, data):
+        return
+
     def generateRN(self):
         res = ""
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
@@ -96,6 +100,12 @@ class ScriptContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if len(version) > 0:
+            if version != -1:
+                raise Exception(cnt["name"] + " has version which is not -1")
+
 Content.register(ScriptContent)
 
 
@@ -125,6 +135,19 @@ class PlaybookContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if len(version) > 0:
+            if version != -1:
+                raise Exception(cnt["name"] + " has version which is not -1")
+
+        tasks = cnt.get("tasks", "")
+        if len(tasks) > 0:
+            for key, value in tasks.iteritems():
+                if value['task']['version'] != -1:
+                    raise Exception(cnt["name"] + " has task with version which is not -1")
+
 
 Content.register(PlaybookContent)
 
@@ -156,6 +179,12 @@ class ReportContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if len(version) > 0:
+            if version != -1:
+                raise Exception(cnt["name"] + " has version which is not -1")
+
 Content.register(ReportContent)
 
 
@@ -180,6 +209,12 @@ class ReputationContent(Content):
             res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if len(version) > 0:
+            if version != -1:
+                raise Exception(cnt["name"] + " has version which is not -1")
 
 Content.register(ReputationContent)
 
@@ -207,6 +242,12 @@ class IntegrationContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if len(version) > 0:
+            if version != -1:
+                raise Exception(cnt["name"] + " has version which is not -1")
 
 Content.register(IntegrationContent)
 
