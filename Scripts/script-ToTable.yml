@@ -23,3 +23,4 @@ args:
   description: Comma-separated list of columns to display. Accepts nested columns
     using dot notation.
 scripttarget: 0
+releaseNotes: "Convert data to a human readable table"
