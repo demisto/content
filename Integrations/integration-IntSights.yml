@@ -44,10 +44,10 @@ script:
         'intsights-get-accounts': 'accounts',
         'intsights-get-alerts': 'alerts',
         'intsights-get-alert-image': 'alerts/image/%AlertID%/%ImageID%',
-        'intsights-get-alert-actvities': 'alerts/get-activities/%AlertID%',
-        'intsights-check-notifications': 'alerts/check-new',
+        'intsights-get-alert-activities': 'alerts/get-activities/%AlertID%',
+        'intsights-check-new-notifications': 'alerts/check-new',
         'intsights-get-notifications': 'alerts/get-notifications',
-        'intsights-ask-the-analys': 'alerts/ask-the-analyst/%AlertID%',
+        'intsights-ask-the-analyst': 'alerts/ask-the-analyst/%AlertID%',
         'intsights-send-mail': 'alerts/mail-to-others/%AlertID%',
         'intsights-remediate': 'alerts/resolve-request/%AlertID%',
         'intsights-whitelist': 'alerts/report-white-list/%AlertID%',
@@ -72,10 +72,10 @@ script:
         'intsights-get-accounts': 'GET',
         'intsights-get-alerts': 'GET',
         'intsights-get-alert-image': 'GET',
-        'intsights-get-alert-actvities': 'GET',
-        'intsights-check-notifications': 'GET',
+        'intsights-get-alert-activities': 'GET',
+        'intsights-check-new-notifications': 'GET',
         'intsights-get-notifications': 'GET',
-        'intsights-ask-the-analys': 'POST',
+        'intsights-ask-the-analyst': 'POST',
         'intsights-send-mail': 'POST',
         'intsights-remediate': 'PATCH',
         'intsights-whitelist': 'PATCH',
@@ -106,11 +106,47 @@ script:
             }},
             {from: 'Details.Description', to: 'Description'},
             {from: 'Details.Recommendations', to: 'Recommendations'},
+        ],
+
+        'intsights-get-alert-activities': [
+            {from: 'Type', to: 'Type'},
+            {from: 'Initiator', to: 'Initiator', parser: function(initiator) {
+                return 'First Name: {0}\nLast Name: {1}'.format(initiator.FirstName, initiator.LastName)
+            }},
+            {from: 'CreatedDate', to: 'Created Date'},
+            {from: 'UpdateDate', to: 'Update Date'},
+            {from: '_id', to: 'ID'},
+            {from: 'ReadBy', to: 'Read By', parser: function(readBy) {
+                return readBy.join('\n');
+            }},
+            {from: 'IsRead', to: 'Is Read'}
+        ],
+
+        'intsights-check-new-notifications': [
+            {from: 'HasNew', to: 'Has New', parser: function(hasNew) {return '{0}'.format(hasNew)}},
+            {from: 'Date', to: 'Date'},
+        ],
+
+        'intsights-get-notifications': [
+            {from: '_id', to: 'ID'},
+            {from: 'Date', to: 'Date'},
+            {from: 'NotificationType', to: 'Notification Type'},
+            {from: 'Type', to: 'Type'},
+            {from: 'Severity', to: 'Severity'},
         ]
     };
 
     var headersDictionary = {
         'intsights-get-alerts': ['Found Date', 'Title', 'Type', 'Severity', 'Source', 'Description', 'Recommendations', 'ID'],
+        'intsights-get-alert-activities': ['ID', 'Type', 'Initiator', 'Created Date', 'Update Date', 'Read By', 'Is Read'],
+        'intsights-check-new-notifications': ['Date', 'Has New'],
+        'intsights-get-notifications': ['ID', 'Date', 'Notification Type', 'Type', 'Severity']
+    }
+
+    var contextsDictionary = {
+        'intsights-get-alerts': 'Alerts',
+        'intsights-get-alert-activities': 'AlertActivities',
+        'intsights-get-notifications': 'Notifications'
     }
 
     var mapObjFunction = function(mapFields, isOutput) {
@@ -120,7 +156,7 @@ script:
                 if (f.parser && isOutput && isOutput === true) {
                     res[f.to] = f.parser(dq(obj, f.from)) || null;
                 } else {
-                    res[f.to] = dq(obj, f.from) || null;
+                    res[f.to] = dq(obj, f.from);
                 }
             });
 
@@ -157,14 +193,16 @@ script:
             httpParams.Cookies = authCookies;
         }
 
+        console.log('method = ' + method);
         if (method !== 'GET' && body) {
+            console.log('Building body');
             httpParams.Body = body;
         }
 
         var completeUrl = server + url;
 
         console.log('completeUrl = ' + completeUrl);
-        // console.log('body =\n' + JSON.stringify(httpParams.Body, null, 4));
+        console.log('body =\n' + httpParams.Body);
 
         var res = http(completeUrl, httpParams, params.insecure, params.proxy);
 
@@ -206,7 +244,7 @@ script:
             'name': ioc.Type + ' ' + ioc.Value,
             'labels': labels,
             'rawJSON': JSON.stringify(ioc),
-        }
+        };
     }
 
     var login = function() {
@@ -222,25 +260,38 @@ script:
 
     var parseResponse = function(command, response) {
         console.log('command = ' + command);
-
-        var outputs = [];
-        // var contexts = [];
-
-        for (var data = dq(response, 'Data'), i = 0; i < data.length; i++) {
-            console.log('data =\n' + JSON.stringify(data[i]));
-            console.log('data.Source =\n' + JSON.stringify(data[i].Source));
-            var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
-            outputs.push(output);
-            // var context = mapObjFunction(outputsDictionary[command], false)(data[i]);
-            // var context = data;
-            // contexts.push(context);
-        }
-
-        var contexts = dq(response, 'Data');
+        console.log('response = ' + JSON.stringify(response, null, 4));
 
         var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tblToMd('IntSights Alerts', outputs, headersDictionary[command]);
-        entry.EntryContext = {'IntSights.Alerts': contexts};
+        var outputs = [];
+
+        if (command == 'intsights-ask-the-analyst') {
+            outputs = response;
+        } else {
+            var data = dq(response, 'Data');
+            if (command == 'intsights-get-notifications') {
+                data = dq(data, 'Results');
+            }
+
+            if (data.constructor !== Array) {
+                data = [data];
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
+                outputs.push(output);
+            }
+        }
+
+        entry.HumanReadable = tblToMd('IntSights: ' + command, outputs, headersDictionary[command]);
+
+        if (Object.keys(contextsDictionary).indexOf(command) != -1) {
+            console.log('has context key');
+            var contextKey = contextsDictionary[command];
+            var contexts = dq(response, 'Data');
+            entry.EntryContext = {};
+            entry.EntryContext['IntSights.' + contextKey] = contexts;
+        }
 
         return entry;
     }
@@ -248,8 +299,9 @@ script:
     var loginCookies = login();
 
     var result;
+    var shouldParseResponse = false;
     switch (command) {
-        case 'test-module':
+            case 'test-module':
             result = loginCookies ? 'ok' : 'login failed';
             break;
 
@@ -274,6 +326,7 @@ script:
             break;
 
         default:
+            console.log('sending');
             result = JSON.parse(
                 sendRequest(
                     methodDictionary[command],
@@ -282,17 +335,16 @@ script:
                     loginCookies
                 ).Body
             );
+
+            shouldParseResponse = true;
     }
 
     // logout
     sendRequest(methodDictionary['logout'], getUrl('logout'), undefined, loginCookies, true);
 
-    return parseResponse(command, result);
+    return shouldParseResponse ? parseResponse(command, result) : result;
   type: javascript
   commands:
-  - name: intsights-get-accounts
-    arguments: []
-    description: Get your assigned customer
   - name: intsights-get-alerts
     arguments:
     - name: NumOfResultForPage
@@ -371,14 +423,14 @@ script:
       required: true
       description: Image's unique ID
     description: Get's alert's image by ID
-  - name: intsights-get-alert-actvities
+  - name: intsights-get-alert-activities
     arguments:
     - name: AlertID
       required: true
       default: true
       description: Alert's unique ID
     description: Get all alert's activities
-  - name: intsights-check-notifications
+  - name: intsights-check-new-notifications
     arguments:
     - name: Date
       required: true
