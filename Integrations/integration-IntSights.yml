@@ -193,9 +193,7 @@ script:
             httpParams.Cookies = authCookies;
         }
 
-        console.log('method = ' + method);
         if (method !== 'GET' && body) {
-            console.log('Building body');
             httpParams.Body = body;
         }
 
@@ -265,22 +263,32 @@ script:
         var entry = buildEmptyEntryContext();
         var outputs = [];
 
-        if (command == 'intsights-ask-the-analyst') {
-            outputs = response;
-        } else {
-            var data = dq(response, 'Data');
-            if (command == 'intsights-get-notifications') {
-                data = dq(data, 'Results');
-            }
+        switch (command) {
+            case 'intsights-ask-the-analyst':
+            case 'intsights-send-mail':
+            case 'intsights-remediate':
+            case 'intsights-whitelist':
+            case 'intsights-assign':
+            case 'intsights-unassign':
+                outputs = response;
+                break;
 
-            if (data.constructor !== Array) {
-                data = [data];
-            }
+            default:
+                var data = dq(response, 'Data');
+                if (command == 'intsights-get-notifications') {
+                    data = dq(data, 'Results');
+                }
 
-            for (var i = 0; i < data.length; i++) {
-                var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
-                outputs.push(output);
-            }
+                if (data.constructor !== Array) {
+                    data = [data];
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
+                    outputs.push(output);
+                }
+
+                break;
         }
 
         entry.HumanReadable = tblToMd('IntSights: ' + command, outputs, headersDictionary[command]);
@@ -324,6 +332,13 @@ script:
                 Contents: fileName
             };
             break;
+
+        case 'intsights-send-mail':
+            // convert comma-separated to array
+            args.Emails = args.Emails.split(',');
+
+        case 'intsights-whitelist':
+            args.IsHidden = JSON.parse(args.IsHidden);
 
         default:
             console.log('sending');
@@ -462,7 +477,7 @@ script:
       description: Alert's unique ID
     - name: Emails
       required: true
-      description: Destinaions email addresses array (also for a single value)
+      description: Destination email addresses array (comma-separated)
     - name: Question
       required: true
       description: Question added to the alert details
@@ -482,11 +497,14 @@ script:
       description: Alert's unique ID
     - name: WhiteListReason
       required: true
+      description: White list reason (text)
     - name: IsHidden
+      required: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: Whether to hide the alert as well or not
     description: Report the alert as white list
   - name: intsights-assign
     arguments:
@@ -497,11 +515,6 @@ script:
     - name: AssigneeID
       required: true
       description: Assigned user ID
-    - name: IsMssp
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
     description: Assign an alert
   - name: intsights-unassign
     arguments:
