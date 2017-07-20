@@ -43,7 +43,6 @@ script:
         'logout': 'logout',
         'intsights-get-accounts': 'accounts',
         'intsights-get-alerts': 'alerts',
-        'intsights-get-alert-by-id': 'alerts/get-alert',
         'intsights-get-alert-image': 'alerts/image/%AlertID%/%ImageID%',
         'intsights-get-alert-activities': 'alerts/get-activities/%AlertID%',
         'intsights-check-new-notifications': 'alerts/check-new',
@@ -60,10 +59,14 @@ script:
         'intsights-archive': 'alerts/archive/%AlertID%',
         'intsights-change-severity': 'alerts/change-severity/%AlertID%',
 
-        'intsights-alert-preview': 'alerts/preview/%AlertID%',
+        'intsights-get-alert-by-id': 'alerts/get-alert',
+        'intsights-get-alert-preview': 'alerts/preview/%AlertID%',
         'intsights-get-alert-db-file': 'alerts/db-file/%AlertID%',
         'intsights-get-alert-whois-file': 'alerts/whois-file/%AlertID%',
-        'intsights-mark-as-read': 'alerts/read/%AlertID%',
+
+        'intsights-mark-alert-as-read': 'alerts/read/%AlertID%',
+        'intsights-mark-notifications-as-read': 'alerts/mark-notifications-as-read',
+
         'intsights-ioc-get-totals': 'iocs/get-totals',
         'intsights-get-iocs': 'iocs/get-iocs',
         'intsights-search-ioc': 'iocs/search',
@@ -75,7 +78,6 @@ script:
         'logout': 'GET',
         'intsights-get-accounts': 'GET',
         'intsights-get-alerts': 'GET',
-        'intsights-get-alert-by-id': 'GET',
         'intsights-get-alert-image': 'GET',
         'intsights-get-alert-activities': 'GET',
         'intsights-check-new-notifications': 'GET',
@@ -92,10 +94,14 @@ script:
         'intsights-archive': 'PATCH',
         'intsights-change-severity': 'PATCH',
 
-        'intsights-alert-preview': 'GET',
+        'intsights-get-alert-by-id': 'GET',
+        'intsights-get-alert-preview': 'GET',
         'intsights-get-alert-db-file': 'GET',
         'intsights-get-alert-whois-file': 'GET',
-        'intsights-mark-as-read': 'PATCH',
+
+        'intsights-mark-alert-as-read': 'PATCH',
+        'intsights-mark-notifications-as-read': 'POST',
+
         'intsights-ioc-get-totals': 'GET',
         'intsights-get-iocs': 'GET',
         'intsights-search-ioc': 'GET',
@@ -283,6 +289,8 @@ script:
             case 'intsights-comment':
             case 'intsights-archive':
             case 'intsights-change-severity':
+            case 'intsights-mark-alert-as-read':
+            case 'intsights-mark-notifications-as-read':
                 outputs = response;
                 break;
 
@@ -587,12 +595,6 @@ script:
       - "false"
       description: Desired archive status of the alert
     description: Archive or Un-archive an alert
-  - name: intsights-alert-preview
-    arguments:
-    - name: AlertID
-      required: true
-      description: Alert's unique ID
-    description: Get's alert's preview by ID
   - name: intsights-get-alert-db-file
     arguments:
     - name: AlertID
@@ -600,11 +602,10 @@ script:
       default: true
       description: Alert's unique ID
     description: Get's alert's DB file by ID
-  - name: intsights-mark-as-read
+  - name: intsights-mark-alert-as-read
     arguments:
     - name: AlertID
       required: true
-      default: true
       description: Alert's unique ID
     description: Marks the alert as read by the current user
   - name: intsights-get-alert-whois-file
@@ -676,4 +677,7 @@ script:
       required: true
       description: Alert's unique ID
     description: Returns alert object by alert ID
+  - name: intsights-mark-notifications-as-read
+    arguments: []
+    description: Marks all notifications as read by the current user
 hidden: false
