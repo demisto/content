@@ -1,6 +1,6 @@
 commonfields:
   id: AddEvidence
-  version: -1
+  version: 3
 name: AddEvidence
 fromversion: 2.5.0
 script: |-

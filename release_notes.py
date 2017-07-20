@@ -45,6 +45,17 @@ class Content:
     def verifyVersion(self, data):
         return
 
+    def verifyContentVersion(self):
+        if len(self.modifiedStore) + len(self.addedStore) > 0:
+            if len(self.modifiedStore) > 0:
+                for rawContent in self.modifiedStore:
+                    cnt = self.loadData(rawContent)
+                    self.verifyVersion(self, cnt)
+            if len(self.addedStore) > 0:
+                for rawContent in self.addedStore:
+                    cnt = self.loadData(rawContent)
+                    self.verifyVersion(self, cnt)
+
     def generateRN(self):
         res = ""
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
@@ -333,6 +344,7 @@ def main(argv):
         if len(res) > 0:
             res += "\n\n"
         res += value.generateRN()
+        value.verifyVersion()
     version = argv[0]
     assetId = argv[3]
     createContentDescriptor(version, assetId, res)

@@ -1,6 +1,6 @@
 commonfields:
   id: AlgoSec
-  version: -1
+  version: 1
 name: AlgoSec
 display: AlgoSec
 system: true
