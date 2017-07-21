@@ -113,9 +113,8 @@ class ScriptContent(Content):
 
     def verifyVersion(self,cnt):
         commonfields = cnt.get("commonfields", "")
-        if len(commonfields) > 0:
-            if commonfields["version"] != -1:
-                raise Exception(cnt["name"] + " has version which is not -1")
+        if commonfields["version"] != -1:
+            raise Exception(cnt["name"] + " has version which is not -1")
 
 Content.register(ScriptContent)
 
@@ -249,9 +248,8 @@ class IntegrationContent(Content):
 
     def verifyVersion(self,cnt):
         commonfields = cnt.get("commonfields", "")
-        if len(commonfields) > 0:
-            if commonfields["version"] != -1:
-                raise Exception(cnt["name"] + " has version which is not -1")
+        if commonfields["version"] != -1:
+            raise Exception(cnt["name"] + " has version which is not -1")
 
 Content.register(IntegrationContent)
 
