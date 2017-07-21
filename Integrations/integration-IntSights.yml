@@ -79,8 +79,7 @@ script:
         'intsights-mark-alert-as-read': 'alerts/read/%AlertID%',
         'intsights-mark-notifications-as-read': 'alerts/mark-notifications-as-read',
 
-        'intsights-ioc-get-totals': 'iocs/get-totals',
-        'intsights-get-iocs': 'iocs/get-iocs',
+        'intsights-get-iocs': 'iocs/iocs-by-type',
         'intsights-search-ioc': 'iocs/search',
         'intsights-ioc-download-csv': 'iocs/download-csv'
     };
@@ -114,7 +113,6 @@ script:
         'intsights-mark-alert-as-read': 'PATCH',
         'intsights-mark-notifications-as-read': 'POST',
 
-        'intsights-ioc-get-totals': 'GET',
         'intsights-get-iocs': 'GET',
         'intsights-search-ioc': 'GET',
         'intsights-ioc-download-csv': 'GET'
@@ -159,6 +157,16 @@ script:
             {from: 'NotificationType', to: 'Notification Type'},
             {from: 'Type', to: 'Type'},
             {from: 'Severity', to: 'Severity'},
+        ],
+
+        'intsights-get-iocs': [
+            {from: 'AccountID', to: 'Account ID'},
+            {from: 'FirstSeen', to: 'First Seen'},
+            {from: 'LastSeen', to: 'Last Seen'},
+            {from: 'SourceID', to: 'Source ID'},
+            {from: 'Type', to: 'Type'},
+            {from: 'Value', to: 'Value'},
+            {from: '_id', to: 'ID'}
         ]
     };
 
@@ -166,13 +174,15 @@ script:
         'intsights-get-alerts': ['Found Date', 'Title', 'Type', 'Severity', 'Source', 'Description', 'Recommendations', 'ID'],
         'intsights-get-alert-activities': ['ID', 'Type', 'Initiator', 'Created Date', 'Update Date', 'Read By', 'Is Read'],
         'intsights-check-new-notifications': ['Date', 'Has New'],
-        'intsights-get-notifications': ['ID', 'Date', 'Notification Type', 'Type', 'Severity']
+        'intsights-get-notifications': ['ID', 'Date', 'Notification Type', 'Type', 'Severity'],
+        'intsights-get-iocs': ['ID', 'Type', 'Value', 'Source ID', 'First Seen', 'Last Seen', 'Account ID']
     }
 
     var contextsDictionary = {
         'intsights-get-alerts': 'Alerts',
         'intsights-get-alert-activities': 'AlertActivities',
-        'intsights-get-notifications': 'Notifications'
+        'intsights-get-notifications': 'Notifications',
+        'intsights-get-iocs': 'IOCs'
     }
 
     var rawOutputCommands = [
@@ -256,7 +266,8 @@ script:
                     true
                 );
             }
-            throw 'Request to IntSights Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+            // throw 'Request to IntSights Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+            throw 'Request to IntSights Failed';
         }
 
         return res;
@@ -318,6 +329,9 @@ script:
             var data = dq(response, 'Data');
             if (command == 'intsights-get-notifications') {
                 data = dq(data, 'Results');
+            } else if (command == 'intsights-get-iocs') {
+                // go in one more level
+                data = dq(data, 'Data');
             }
 
             if (data.constructor !== Array) {
@@ -335,6 +349,12 @@ script:
         if (Object.keys(contextsDictionary).indexOf(command) != -1) {
             var contextKey = contextsDictionary[command];
             var contexts = dq(response, 'Data');
+
+            if (command == 'intsights-get-iocs') {
+                // go in one more level
+                contexts = dq(contexts, 'Data');
+            }
+
             entry.EntryContext = {};
             entry.EntryContext['IntSights.' + contextKey] = contexts;
         }
@@ -696,19 +716,16 @@ script:
       default: true
       description: Alert's unique ID
     description: Get's alert's WHOIS file by ID
-  - name: intsights-ioc-get-totals
-    arguments: []
-    description: Get totals count of the available IOCs
   - name: intsights-get-iocs
     arguments:
     - name: Type
       required: true
-      default: true
       auto: PREDEFINED
       predefined:
       - Urls
       - Hashes
       - IpAddresses
+      - Domains
       description: IOC's type
     - name: NumOfResultForPage
       description: Number of results per page
@@ -764,10 +781,8 @@ script:
   - name: intsights-mark-notifications-as-read
     arguments: []
     description: Marks all notifications as read by the current user
-  - name: intsights-fetch-test
+  - name: intsights-get-iocs-total
     arguments: []
-  - name: intsights-reset-last-run
-    arguments: []
-    description: Reset the last run to "null" (for fetching new incidents)
+    description: Get all the IOCs
   isfetch: true
 hidden: false
