@@ -35,6 +35,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/';
@@ -165,6 +175,22 @@ script:
         'intsights-get-notifications': 'Notifications'
     }
 
+    var rawOutputCommands = [
+        'intsights-ask-the-analyst',
+        'intsights-send-mail',
+        'intsights-remediate',
+        'intsights-whitelist',
+        'intsights-assign',
+        'intsights-unassign',
+        'intsights-tag',
+        'intsights-untag',
+        'intsights-comment',
+        'intsights-archive',
+        'intsights-change-severity',
+        'intsights-mark-alert-as-read',
+        'intsights-mark-notifications-as-read',
+    ]
+
     var mapObjFunction = function(mapFields, isOutput) {
         return function(obj) {
             var res = {};
@@ -216,7 +242,7 @@ script:
         var completeUrl = server + url;
 
         console.log('completeUrl = ' + completeUrl);
-        console.log('body =\n' + httpParams.Body);
+        // console.log('body =\n' + httpParams.Body);
 
         var res = http(completeUrl, httpParams, params.insecure, params.proxy);
 
@@ -279,46 +305,34 @@ script:
         var entry = buildEmptyEntryContext();
         var outputs = [];
 
-        switch (command) {
-            case 'intsights-ask-the-analyst':
-            case 'intsights-send-mail':
-            case 'intsights-remediate':
-            case 'intsights-whitelist':
-            case 'intsights-assign':
-            case 'intsights-unassign':
-            case 'intsights-tag':
-            case 'intsights-untag':
-            case 'intsights-comment':
-            case 'intsights-archive':
-            case 'intsights-change-severity':
-            case 'intsights-mark-alert-as-read':
-            case 'intsights-mark-notifications-as-read':
-                outputs = response;
-                break;
-
-            default:
-                if (command == 'intsights-get-alert-by-id') {
-                    if (response.Success !== true) {
-                        throw response.Data;
-                    }
-                    command = 'intsights-get-alerts';
+        if (rawOutputCommands.indexOf(command) != -1) {
+            outputs = response;
+        } else {
+            if (command == 'intsights-get-alert-by-id') {
+                if (response.Success !== true) {
+                    throw response.Data;
                 }
+                command = 'intsights-get-alerts';
+            }
 
-                var data = dq(response, 'Data');
-                if (command == 'intsights-get-notifications') {
-                    data = dq(data, 'Results');
-                }
+            var data = dq(response, 'Data');
+            if (command == 'intsights-get-notifications') {
+                data = dq(data, 'Results');
+            }
 
-                if (data.constructor !== Array) {
-                    data = [data];
-                }
+            if (data.constructor !== Array) {
+                data = [data];
+            }
 
-                for (var i = 0; i < data.length; i++) {
-                    var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
-                    outputs.push(output);
-                }
+            for (var i = 0; i < data.length; i++) {
+                var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
+                outputs.push(output);
+            }
 
-                break;
+            var foundDate = output['Found Date'];
+            console.log('output[Found Date] = ' + foundDate);
+            var dateX = Date.parse(foundDate);
+            console.log('parsed = ' + JSON.stringify(dateX));
         }
 
         entry.HumanReadable = tblToMd('IntSights: ' + command, outputs, headersDictionary[command]);
@@ -334,13 +348,60 @@ script:
         return entry;
     }
 
+    var alertsToIncidents = function(alerts) {
+        var incidents = [];
+        for (var i = 0; i < alerts.length; i++) {
+            console.log('alert = ' + JSON.stringify(alerts[i]));
+            var incident = {
+                name: 'IntSights alert ' + alerts[i]._id,
+                found: alerts[i].FoundDate,
+                rawJSON: JSON.stringify(alerts[i])
+            };
+
+            incidents.push(incident);
+        }
+
+        return JSON.stringify(incidents);
+    }
+
+    var fetchIncidents = function(loginCookies) {
+        var lastRun = getLastRun();
+        if (!lastRun || !lastRun.time) {
+            lastRun = {time: new Date().getTime() - (10 * 60 * 1000)};
+        }
+        console.log('lastRun = ' + JSON.stringify(lastRun.time));
+
+        command = 'intsights-get-alerts';
+        args.DateFrom = lastRun.time;
+        result = JSON.parse(
+            sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body
+        );
+
+        if (result.Data && result.Data.length) {
+            var alerts = result.Data;
+            console.log('alerts len = ' + alerts.length);
+            return alertsToIncidents(alerts);
+        }
+
+        setLastRun(lastRun);
+        console.log('IntSights: lastRun is: ',JSON.stringify(lastRun));
+        console.log('IntSights: returning incidents: ',JSON.stringify(incidents));
+
+        return '[]';
+    }
+
     var loginCookies = login();
 
     var result;
     var shouldParseResponse = false;
     switch (command) {
-            case 'test-module':
+        case 'test-module':
             result = loginCookies ? 'ok' : 'login failed';
+            break;
+
+        case 'fetch-incidents':
+        case 'intsights-fetch-test':
+            result = fetchIncidents(loginCookies);
             break;
 
         case 'intsights-get-alert-image':
@@ -697,4 +758,7 @@ script:
   - name: intsights-mark-notifications-as-read
     arguments: []
     description: Marks all notifications as read by the current user
+  - name: intsights-fetch-test
+    arguments: []
+  isfetch: true
 hidden: false
