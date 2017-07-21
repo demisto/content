@@ -261,4 +261,3 @@ script:
     - name: application
       description: application for the query
     description: Performs a batch traffic simulation query using Firewall Analyzer
-releaseNotes: "-"
