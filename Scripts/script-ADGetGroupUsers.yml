@@ -1,6 +1,6 @@
 commonfields:
   id: ADGetGroupUsers
-  version: 1
+  version: -1
 name: ADGetGroupUsers
 script: |-
   # Optional arguments and default values

@@ -1,6 +1,6 @@
 commonfields:
   id: da330ce7-3a93-430c-8454-03b96cf5184e
-  version: 2
+  version: -1
 name: OktaCreateUser
 script: |2
 

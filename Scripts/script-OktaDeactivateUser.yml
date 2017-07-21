@@ -1,6 +1,6 @@
 commonfields:
   id: 94f72ed9-49c8-40e5-89bb-7c98f914d2cc
-  version: 2
+  version: -1
 name: OktaDeactivateUser
 script: |2
 

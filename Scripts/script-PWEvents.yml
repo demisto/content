@@ -1,6 +1,6 @@
 commonfields:
   id: PWEvents
-  version: 1
+  version: -1
 name: PWEvents
 script: |
   from datetime import datetime, timedelta

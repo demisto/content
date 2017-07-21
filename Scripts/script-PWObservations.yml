@@ -1,6 +1,6 @@
 commonfields:
   id: PWObservations
-  version: 1
+  version: -1
 name: PWObservations
 script: |
   from datetime import datetime, timedelta

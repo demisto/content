@@ -1,6 +1,6 @@
 commonfields:
   id: CopyFileD2
-  version: 1
+  version: -1
 name: CopyFileD2
 script: |-
   var e = executeCommand( 'getEntry', { 'id' : args.entryid } );

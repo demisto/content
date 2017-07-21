@@ -1,6 +1,6 @@
 commonfields:
   id: RegPathReputationBasicLists
-  version: 1
+  version: -1
 name: RegPathReputationBasicLists
 script: |-
   whitelist = [ r'HKEY_LOCAL_MACHINE\Software\wow6432node\Microsoft\Windows\CurrentVersion\Run\vmware-tray.exe' ]

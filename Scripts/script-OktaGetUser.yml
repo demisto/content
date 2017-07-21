@@ -1,6 +1,6 @@
 commonfields:
   id: a6e348f4-1e40-4365-870c-52139c60779a
-  version: 2
+  version: -1
 name: OktaGetUser
 script: |2
 

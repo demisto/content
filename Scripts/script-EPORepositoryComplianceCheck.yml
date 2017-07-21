@@ -1,6 +1,6 @@
 commonfields:
   id: EPORepositoryComplianceCheck
-  version: 1
+  version: -1
 name: EPORepositoryComplianceCheck
 script: |
   def generateText(tbl):

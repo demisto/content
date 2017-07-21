@@ -1,6 +1,6 @@
 commonfields:
   id: EPORepoList
-  version: 1
+  version: -1
 name: EPORepoList
 script: |-
   cmds = demisto.getAllSupportedCommands()

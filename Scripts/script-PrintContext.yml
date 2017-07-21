@@ -1,6 +1,6 @@
 commonfields:
   id: PrintContext
-  version: 1
+  version: -1
 name: PrintContext
 script: |-
   fmt = demisto.get(demisto.args(), 'outputformat')

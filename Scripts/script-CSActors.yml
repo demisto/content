@@ -1,6 +1,6 @@
 commonfields:
   id: CSActors
-  version: 1
+  version: -1
 name: CSActors
 script: |-
   import time

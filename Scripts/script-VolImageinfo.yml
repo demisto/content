@@ -1,6 +1,6 @@
 commonfields:
   id: VolImageinfo
-  version: 1
+  version: -1
 name: VolImageinfo
 script: |-
   var cmdline = 'imageinfo';

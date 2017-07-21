@@ -1,6 +1,6 @@
 commonfields:
   id: PWEventPcapDownload
-  version: 1
+  version: -1
 name: PWEventPcapDownload
 script: |
   from time import sleep

@@ -79,7 +79,7 @@ tasks:
     type: regular
     task:
       id: 5c68a761-0c0c-4723-823b-708f069f53e4
-      version: 1
+      version: -1
       name: WhileNotMdLoop
       description: |
         While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
@@ -111,7 +111,7 @@ tasks:
     type: regular
     task:
       id: b830c09b-e391-4f98-8c9a-8c85a739fa9b
-      version: 1
+      version: -1
       name: NotInContextVerification
       description: |
         While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).

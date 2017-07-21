@@ -1,6 +1,6 @@
 commonfields:
   id: SplunkSearch
-  version: 1
+  version: -1
 name: SplunkSearch
 script: |-
   var rows = args.rows ? args.rows : 30;

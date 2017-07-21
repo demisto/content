@@ -1,6 +1,6 @@
 commonfields:
   id: ADGetEmailForUser
-  version: 1
+  version: -1
 name: ADGetEmailForUser
 script: |-
   # Optional arguments and default values

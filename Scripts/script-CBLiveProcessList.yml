@@ -1,6 +1,6 @@
 commonfields:
   id: CBLiveProcessList
-  version: 1
+  version: -1
 name: CBLiveProcessList
 script: |-
   //Execute 'process list' command on a sensor

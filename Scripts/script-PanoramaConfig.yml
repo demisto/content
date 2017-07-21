@@ -1,6 +1,6 @@
 commonfields:
   id: PanoramaConfig
-  version: 1
+  version: -1
 name: PanoramaConfig
 script: |-
   function AddArgumentOpen(arg, fieldName, member) {

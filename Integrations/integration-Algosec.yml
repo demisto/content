@@ -1,6 +1,6 @@
 commonfields:
   id: AlgoSec
-  version: 1
+  version: -1
 name: AlgoSec
 display: AlgoSec
 system: true
@@ -181,7 +181,8 @@ script:
       description: A list of device names, on which the change should be made
     - name: action
       required: true
-      description: "The device action to perform for the traffic. This can be either
+      description: |
+        The device action to perform for the traffic. This can be either
         of the following: \U0010FC00 1 - Allow the traffic \U0010FC00 0 - Block the
         traffic"
       predefined:
@@ -260,3 +261,4 @@ script:
     - name: application
       description: application for the query
     description: Performs a batch traffic simulation query using Firewall Analyzer
+releaseNotes: "-"

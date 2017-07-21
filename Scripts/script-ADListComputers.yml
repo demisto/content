@@ -1,6 +1,6 @@
 commonfields:
   id: ADListComputers
-  version: 1
+  version: -1
 name: ADListComputers
 script: |-
   # Optional arguments and default values

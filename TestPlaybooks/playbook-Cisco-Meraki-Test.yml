@@ -9,7 +9,7 @@ tasks:
     type: start
     task:
       id: d72f88e3-2a9e-41fd-814d-ed5ec01aa745
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -29,7 +29,7 @@ tasks:
     type: regular
     task:
       id: fcb395cb-fb45-4181-884c-48aec1db0dd2
-      version: 1
+      version: -1
       name: meraki-fetch-organizations
       description: List the organizations that the api-key has privileges on
       script: Cisco Meraki|||meraki-fetch-organizations
@@ -52,7 +52,7 @@ tasks:
     type: regular
     task:
       id: 6455b6ea-ca8c-400d-845f-10feb926d1ae
-      version: 1
+      version: -1
       name: meraki-get-organization-license-state
       description: License state for an organization
       script: Cisco Meraki|||meraki-get-organization-license-state
@@ -75,7 +75,7 @@ tasks:
     type: regular
     task:
       id: a84cf4f9-90e8-49bc-8adb-0fd91c761c6d
-      version: 1
+      version: -1
       name: meraki-fetch-organization-inventory
       description: List of Inventories for an organization
       script: Cisco Meraki|||meraki-fetch-organization-inventory
@@ -101,7 +101,7 @@ tasks:
     type: regular
     task:
       id: 2c6010f2-92c0-4079-86f8-16aa3a18b08f
-      version: 1
+      version: -1
       name: meraki-fetch-networks
       description: List the networks in an organization
       script: Cisco Meraki|||meraki-fetch-networks
@@ -128,7 +128,7 @@ tasks:
     type: regular
     task:
       id: 19ac3aae-c7da-48c6-8b9c-766d20bb47f5
-      version: 1
+      version: -1
       name: meraki-fetch-devices
       description: List the devices in a network
       script: Cisco Meraki|||meraki-fetch-devices
@@ -155,7 +155,7 @@ tasks:
     type: regular
     task:
       id: a6b9e3ba-ef25-4e72-8166-deb2598bff1d
-      version: 1
+      version: -1
       name: meraki-fetch-device-uplink
       description: List of uplink information for a device.
       script: Cisco Meraki|||meraki-fetch-device-uplink
@@ -179,7 +179,7 @@ tasks:
     type: regular
     task:
       id: 42b0c429-ea75-4f25-8c19-e7a48f0174bc
-      version: 1
+      version: -1
       name: meraki-fetch-ssids
       description: List the SSIDs in a network
       script: Cisco Meraki|||meraki-fetch-ssids
@@ -205,7 +205,7 @@ tasks:
     type: regular
     task:
       id: ef0b64e6-bdbb-4eb3-89f5-cbb3ad775f26
-      version: 1
+      version: -1
       name: meraki-fetch-firewall-rules
       description: List of L3 firewall rules for an SSID
       script: Cisco Meraki|||meraki-fetch-firewall-rules
@@ -232,7 +232,7 @@ tasks:
     type: regular
     task:
       id: 99fa8093-fa92-445c-8363-9c9238d55dd3
-      version: 1
+      version: -1
       name: meraki-get-device
       description: Get a single device
       script: Cisco Meraki|||meraki-get-device
@@ -256,7 +256,7 @@ tasks:
     type: regular
     task:
       id: fd693fc0-42a4-493f-832a-5519ba2d75dc
-      version: 1
+      version: -1
       name: VerifyContext-fetch-organizations
       scriptName: VerifyContext
       type: regular
@@ -284,7 +284,7 @@ tasks:
     type: regular
     task:
       id: 626896e9-f3af-46fa-8220-7b5f19845bfc
-      version: 1
+      version: -1
       name: VerifyContext-fetch-networks
       scriptName: VerifyContext
       type: regular
@@ -311,7 +311,7 @@ tasks:
     type: regular
     task:
       id: e9c76520-f481-49fb-8903-be34bc532d5e
-      version: 1
+      version: -1
       name: VerifyContext-fetch-organization-inventory
       scriptName: VerifyContext
       type: regular
@@ -335,7 +335,7 @@ tasks:
     type: regular
     task:
       id: 250be1de-ea0e-4584-8b9e-b9efacc78e7e
-      version: 1
+      version: -1
       name: VerifyContext-fetch-decive-ssid
       scriptName: VerifyContext
       type: regular
@@ -361,7 +361,7 @@ tasks:
     type: regular
     task:
       id: f0cf9f5f-2067-4b37-8372-9fbfc03a6bef
-      version: 1
+      version: -1
       name: VerifyContext-fetch-firewall-rules
       scriptName: VerifyContext
       type: regular
@@ -384,7 +384,7 @@ tasks:
     type: regular
     task:
       id: 4008b370-7f83-4b40-8777-cd49d17723dc
-      version: 1
+      version: -1
       name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext

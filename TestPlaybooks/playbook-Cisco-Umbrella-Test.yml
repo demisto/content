@@ -1,5 +1,5 @@
 id: Cisco-Umbrella-Test
-version: 1
+version: -1
 name: Cisco-Umbrella-Test
 starttaskid: "0"
 tasks:
@@ -9,7 +9,7 @@ tasks:
     type: start
     task:
       id: 833d78bc-27e5-4dc8-8c99-e38b57d8f283
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -29,7 +29,7 @@ tasks:
     type: regular
     task:
       id: da704354-6be9-453d-8b8f-c6a163898297
-      version: 1
+      version: -1
       name: umbrella-domain-categorization
       description: Returns the category of a domain. e.g. domain=amazon.com returns
         Ecommerce/Shopping
@@ -55,7 +55,7 @@ tasks:
     type: regular
     task:
       id: 03a21586-d20e-4c34-8769-b72e16263330
-      version: 1
+      version: -1
       name: umbrella-domain-co-occurrences
       description: Get a list of related domains back and returns a list of co-occurences
         for the specified domain. A co-occurrence is when two or more domains are
@@ -85,7 +85,7 @@ tasks:
     type: regular
     task:
       id: 3bc7c8e9-3e00-43b2-800b-9be5a747d834
-      version: 1
+      version: -1
       name: umbrella-domain-related
       description: This will return a list of domain names that have been frequently
         seen requested b around the same time (up to 60 seconds before or after) as
@@ -113,7 +113,7 @@ tasks:
     type: regular
     task:
       id: 79b8095e-42a7-4d41-8c7f-fe607a257c06
-      version: 1
+      version: -1
       name: umbrella-domain-security
       description: This contains multiple scores or security features, each of which
         can be used to determine relevant datapoints to build insight on the reputation
@@ -141,7 +141,7 @@ tasks:
     type: regular
     task:
       id: abca5ea8-bb8a-45be-88b7-5a3b5ac424d3
-      version: 1
+      version: -1
       name: umbrella-domain-dns-history
       description: 'The DNS database can be used to query the history that Umbrella
         has seen for a given domain. The most common use case is to obtain the RRs
@@ -169,7 +169,7 @@ tasks:
     type: regular
     task:
       id: 66167229-1cd8-4378-81c0-e458964519ef
-      version: 1
+      version: -1
       name: umbrella-ip-dns-history
       description: The DNS database can be used to query the history that Umbrella
         has seen for a given IP address. The most common use case is to obtain the
@@ -198,7 +198,7 @@ tasks:
     type: regular
     task:
       id: 3a213a69-48c6-402e-83f0-2488b7dec6e4
-      version: 1
+      version: -1
       name: umbrella-domain-search
       description: This produces a list of matching domains based on a regular expression.
         You could use this for domain squatting. The pattern search functionality
@@ -228,7 +228,7 @@ tasks:
     type: regular
     task:
       id: 22d50919-4344-40ad-8a5d-ab82b3616e0a
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -254,7 +254,7 @@ tasks:
     type: regular
     task:
       id: 7c0e85f0-05b5-4953-8701-30477e95e542
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-categorization
       scriptName: VerifyContext
       type: regular
@@ -280,7 +280,7 @@ tasks:
     type: regular
     task:
       id: 0177c284-d4cb-4178-8664-8a192d2ac9c6
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -306,7 +306,7 @@ tasks:
     type: regular
     task:
       id: 65669d2a-a8d8-4c8f-8399-23f685a5f04e
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-co-occurrences
       scriptName: VerifyContext
       type: regular
@@ -332,7 +332,7 @@ tasks:
     type: regular
     task:
       id: d7ca5358-35d6-4d3a-8a51-6243fa1b5f40
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -358,7 +358,7 @@ tasks:
     type: regular
     task:
       id: 4394dcf5-3f75-4bfc-8b5e-c09c7ad61ee7
-      version: 1
+      version: -1
       name: VerifyContext umbrella-ip-dns-history
       scriptName: VerifyContext
       type: regular
@@ -384,7 +384,7 @@ tasks:
     type: regular
     task:
       id: b7c3a7fd-5945-4998-8d9b-c50f688e380d
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -410,7 +410,7 @@ tasks:
     type: regular
     task:
       id: 42e3d77a-073f-4067-89f5-476fa42ce722
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-security
       scriptName: VerifyContext
       type: regular
@@ -436,7 +436,7 @@ tasks:
     type: regular
     task:
       id: 432ed122-bbc0-4be3-8f43-8e4667fb5193
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -462,7 +462,7 @@ tasks:
     type: regular
     task:
       id: c5787ccd-f118-4f27-864a-999af3c027b9
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-security
       scriptName: VerifyContext
       type: regular
@@ -488,7 +488,7 @@ tasks:
     type: regular
     task:
       id: 946730e0-659b-4190-81ca-e5a3541c08a1
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -514,7 +514,7 @@ tasks:
     type: regular
     task:
       id: 356ed908-7822-45f4-8ef9-5cfa882a262c
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-security
       scriptName: VerifyContext
       type: regular
@@ -540,7 +540,7 @@ tasks:
     type: regular
     task:
       id: 9999282d-fdc5-4447-84fe-ab5c0d672ae6
-      version: 1
+      version: -1
       name: Delete All Context
       description: Delete field from context
       scriptName: DeleteContext
@@ -566,7 +566,7 @@ tasks:
     type: regular
     task:
       id: 9f2d40fa-46ba-45cf-8651-2302e13bcdbd
-      version: 1
+      version: -1
       name: VerifyContext umbrella-domain-search
       scriptName: VerifyContext
       type: regular

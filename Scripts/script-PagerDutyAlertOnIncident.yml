@@ -1,6 +1,6 @@
 commonfields:
   id: PagerDutyAlertOnIncident
-  version: 1
+  version: -1
 name: PagerDutyAlertOnIncident
 script: |-
   if (incidents[0].severity == 4) {

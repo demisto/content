@@ -1,5 +1,5 @@
 id: cafc6f55-b05a-4349-8c21-dd05fb7db2b4
-version: 81
+version: -1
 name: ServiceNow Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"

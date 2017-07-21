@@ -1,6 +1,6 @@
 commonfields:
   id: DefaultIncidentClassifier
-  version: 1
+  version: -1
 name: DefaultIncidentClassifier
 script: |-
   for (var i =0; incidents[0].labels && i < incidents[0].labels.length; i++) {

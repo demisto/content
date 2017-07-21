@@ -1,6 +1,6 @@
 commonfields:
   id: MD5Extract
-  version: 1
+  version: -1
 name: MD5Extract
 script: |-
   import re

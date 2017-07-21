@@ -1,6 +1,6 @@
 commonfields:
   id: CheckFilesWildfirePy
-  version: 1
+  version: -1
 name: CheckFilesWildfirePy
 script: |-
   import time

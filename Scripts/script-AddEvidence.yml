@@ -1,6 +1,6 @@
 commonfields:
   id: AddEvidence
-  version: 3
+  version: -1
 name: AddEvidence
 fromversion: 2.5.0
 script: |-
@@ -47,3 +47,4 @@ args:
 - name: description
   description: Description to add to Evidence Board
 scripttarget: 0
+releaseNotes: "-"

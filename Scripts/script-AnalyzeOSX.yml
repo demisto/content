@@ -1,6 +1,6 @@
 commonfields:
   id: AnalyzeOSX
-  version: 1
+  version: -1
 name: AnalyzeOSX
 script: |-
   var osx_report = executeCommand('Osxcollector', {section: args.section, system: args.system, timeout: args.timeout});

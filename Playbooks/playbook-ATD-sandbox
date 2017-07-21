@@ -1,7 +1,8 @@
 id: ATD-playbook
-version: 1
+version: -1
 name: ATD-playbook
 starttaskid: "0"
+releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -9,7 +10,7 @@ tasks:
     type: start
     task:
       id: 46b565a4-9fa9-45b6-86a5-62cc458967a8
-      version: 1
+      version: -1
       name: ""
       iscommand: false
       brand: ""
@@ -29,7 +30,7 @@ tasks:
     type: regular
     task:
       id: 2ec7cd6e-978e-4682-88db-82594cb37fe0
-      version: 1
+      version: -1
       name: atd-file-upload
       description: upload a file/web URL for dynamic analysis by using the provided
         Analyzer Profile. Only single file/web URL can be submitted at a time.
@@ -65,7 +66,7 @@ tasks:
     type: regular
     task:
       id: 12679a99-43ed-434a-8592-6edc2148fb13
-      version: 1
+      version: -1
       name: atd-get-report
       description: ' download the analysis report files'
       script: McAfee Advanced Threat Defense|||atd-get-report
@@ -89,7 +90,7 @@ tasks:
     type: regular
     task:
       id: ce1aed16-1d6d-413a-86be-0ca723d4e446
-      version: 1
+      version: -1
       name: Wait for ATD results
       scriptName: WhileLoop
       type: regular

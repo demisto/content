@@ -1,6 +1,6 @@
 commonfields:
   id: NessusHostDetails
-  version: 1
+  version: -1
 name: NessusHostDetails
 script: |
   res = []

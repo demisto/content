@@ -1,6 +1,6 @@
 commonfields:
   id: SendURLDetailsByEmail
-  version: 1
+  version: -1
 name: SendURLDetailsByEmail
 script: |-
   import re

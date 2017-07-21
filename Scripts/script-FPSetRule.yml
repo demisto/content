@@ -1,6 +1,6 @@
 commonfields:
   id: FPSetRule
-  version: 1
+  version: -1
 name: FPSetRule
 script: |-
   from re import escape
