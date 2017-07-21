@@ -242,7 +242,7 @@ script:
         var completeUrl = server + url;
 
         console.log('completeUrl = ' + completeUrl);
-        // console.log('body =\n' + httpParams.Body);
+        console.log('body =\n' + httpParams.Body);
 
         var res = http(completeUrl, httpParams, params.insecure, params.proxy);
 
@@ -328,17 +328,11 @@ script:
                 var output = mapObjFunction(outputsDictionary[command], true)(data[i]);
                 outputs.push(output);
             }
-
-            var foundDate = output['Found Date'];
-            console.log('output[Found Date] = ' + foundDate);
-            var dateX = Date.parse(foundDate);
-            console.log('parsed = ' + JSON.stringify(dateX));
         }
 
         entry.HumanReadable = tblToMd('IntSights: ' + command, outputs, headersDictionary[command]);
 
         if (Object.keys(contextsDictionary).indexOf(command) != -1) {
-            console.log('has context key');
             var contextKey = contextsDictionary[command];
             var contexts = dq(response, 'Data');
             entry.EntryContext = {};
@@ -348,10 +342,9 @@ script:
         return entry;
     }
 
-    var alertsToIncidents = function(alerts) {
+    var alertsToIncidents = function(alerts, lastRun) {
         var incidents = [];
         for (var i = 0; i < alerts.length; i++) {
-            console.log('alert = ' + JSON.stringify(alerts[i]));
             var incident = {
                 name: 'IntSights alert ' + alerts[i]._id,
                 found: alerts[i].FoundDate,
@@ -361,15 +354,28 @@ script:
             incidents.push(incident);
         }
 
+        var lastFoundDate = 0;
+        for (var i = 0; i < incidents.length; i++) {
+            var foundDate = Date.parse(incidents[i].found);
+            if (foundDate > lastFoundDate) {
+                lastFoundDate = foundDate;
+            }
+        }
+
+        if (lastFoundDate > lastRun.lastFoundDate) {
+            lastRun.lastFoundDate = lastFoundDate;
+            setLastRun(lastRun);
+        }
+
         return JSON.stringify(incidents);
     }
 
     var fetchIncidents = function(loginCookies) {
         var lastRun = getLastRun();
-        if (!lastRun || !lastRun.time) {
-            lastRun = {time: new Date().getTime() - (10 * 60 * 1000)};
+        if (!lastRun || !lastRun.lastFoundDate) {
+            // fetch incidents only starting now (last minute)
+            lastRun = {lastFoundDate: new Date().getTime() - 1*60*1000};
         }
-        console.log('lastRun = ' + JSON.stringify(lastRun.time));
 
         command = 'intsights-get-alerts';
         args.DateFrom = lastRun.time;
@@ -377,17 +383,17 @@ script:
             sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body
         );
 
+        var incidents;
         if (result.Data && result.Data.length) {
             var alerts = result.Data;
-            console.log('alerts len = ' + alerts.length);
-            return alertsToIncidents(alerts);
+            incidents = alertsToIncidents(alerts, lastRun);
         }
 
-        setLastRun(lastRun);
-        console.log('IntSights: lastRun is: ',JSON.stringify(lastRun));
-        console.log('IntSights: returning incidents: ',JSON.stringify(incidents));
-
-        return '[]';
+        if (incidents) {
+            return incidents;
+        } else {
+            return '[]';
+        }
     }
 
     var loginCookies = login();
@@ -760,5 +766,8 @@ script:
     description: Marks all notifications as read by the current user
   - name: intsights-fetch-test
     arguments: []
+  - name: intsights-reset-last-run
+    arguments: []
+    description: Reset the last run to "null" (for fetching new incidents)
   isfetch: true
 hidden: false
