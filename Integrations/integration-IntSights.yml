@@ -50,6 +50,7 @@ script:
     var server = params.server.replace(/[\/]+$/, '') + '/';
 
     var FILE_TYPE = 9;
+    var iocTypes = ['Domains', 'Urls', 'IpAddresses', 'Hashes'];
 
     var urlDictionary = {
         'login' : 'login',
@@ -80,7 +81,7 @@ script:
         'intsights-mark-notifications-as-read': 'alerts/mark-notifications-as-read',
 
         'intsights-get-iocs': 'iocs/iocs-by-type',
-        'intsights-search-ioc': 'iocs/search',
+        'intsights-search-iocs': 'iocs/search',
         'intsights-ioc-download-csv': 'iocs/download-csv'
     };
 
@@ -114,7 +115,7 @@ script:
         'intsights-mark-notifications-as-read': 'POST',
 
         'intsights-get-iocs': 'GET',
-        'intsights-search-ioc': 'GET',
+        'intsights-search-iocs': 'GET',
         'intsights-ioc-download-csv': 'GET'
     };
 
@@ -167,6 +168,27 @@ script:
             {from: 'Type', to: 'Type'},
             {from: 'Value', to: 'Value'},
             {from: '_id', to: 'ID'}
+        ],
+
+        'intsights-search-iocs': [
+            {from: 'ResultType', to: 'Result Type'},
+            {from: '_id', to: 'ID'},
+            {from: 'document.Compaign.AssociatedThreatActors', to: 'Campaign Threat Actors', parser: joinLines},
+            {from: 'document.Compaign.CampaignType', to: 'Campaign Type'},
+            {from: 'document.Compaign.SocialMediaProfilesOrGroups', to: 'Social Media', parser: joinLines},
+            {from: 'document.Compaign.TTPs', to: 'TTPs', parser: joinLines},
+            {from: 'document.Hashtags', to: 'Hashtags', parser: joinLines},
+            {from: 'document.Image', to: 'Image'},
+            {from: 'document.Malware', to: 'Malware'},
+            {from: 'document.Name', to: 'Name'},
+            {from: 'document.Nationalities', to: 'Nationalities', parser: joinLines},
+            {from: 'document.OtherNames', to: 'Other Names'},
+            {from: 'document.TargetedSectors', to: 'Targeted Sectors', parser: joinLines},
+            {from: 'document.TargetedStates', to: 'Targeted States', parser: joinLines},
+            {from: 'document.ThreatActor', to: 'Threat Actor'},
+            {from: 'document.Type', to: 'Document Type'},
+            {from: 'document.Thumb', to: 'Thumb'},
+            {from: 'document._id', to: 'Document ID'},
         ]
     };
 
@@ -175,14 +197,16 @@ script:
         'intsights-get-alert-activities': ['ID', 'Type', 'Initiator', 'Created Date', 'Update Date', 'Read By', 'Is Read'],
         'intsights-check-new-notifications': ['Date', 'Has New'],
         'intsights-get-notifications': ['ID', 'Date', 'Notification Type', 'Type', 'Severity'],
-        'intsights-get-iocs': ['ID', 'Type', 'Value', 'Source ID', 'First Seen', 'Last Seen', 'Account ID']
+        'intsights-get-iocs': ['ID', 'Type', 'Value', 'Source ID', 'First Seen', 'Last Seen', 'Account ID'],
+        'intsights-search-iocs': ['ID', 'Result Type', 'Document Type', 'Document ID', 'Name', 'Nationalities', 'Severity', 'Targeted Sectors', 'Targeted States', 'Malware', 'Campaign Type', 'Campaign Threat Actors', 'Social Media', 'TTPs', 'Hashtags', 'Imgae', 'Hashtags', 'Image', 'OtherNames', 'Thumb', 'Threat Actor'],
     }
 
     var contextsDictionary = {
         'intsights-get-alerts': 'Alerts',
         'intsights-get-alert-activities': 'AlertActivities',
         'intsights-get-notifications': 'Notifications',
-        'intsights-get-iocs': 'IOCs'
+        'intsights-get-iocs': 'IOCs',
+        'intsights-search-iocs': 'SearchedIOCs'
     }
 
     var rawOutputCommands = [
@@ -214,6 +238,10 @@ script:
 
             return res;
         }
+    }
+
+    var joinLines = function(lines) {
+        return lines.join('\n');
     }
 
     var buildEmptyEntryContext = function() {
@@ -250,10 +278,6 @@ script:
         }
 
         var completeUrl = server + url;
-
-        console.log('completeUrl = ' + completeUrl);
-        console.log('body =\n' + httpParams.Body);
-
         var res = http(completeUrl, httpParams, params.insecure, params.proxy);
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -309,10 +333,18 @@ script:
         ).Cookies;
     }
 
-    var parseResponse = function(command, response) {
-        console.log('command = ' + command);
-        console.log('response = ' + JSON.stringify(response, null, 4));
+    var getIocsTotal = function() {
+        var entries = [];
+        for (var i = 0; i < iocTypes.length; i++) {
+            args.Type = iocTypes[i];
+            result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
+            entries.push(parseResponse('intsights-get-iocs', result))
+        }
 
+        return entries;
+    }
+
+    var parseResponse = function(command, response) {
         var entry = buildEmptyEntryContext();
         var outputs = [];
 
@@ -426,7 +458,6 @@ script:
             break;
 
         case 'fetch-incidents':
-        case 'intsights-fetch-test':
             result = fetchIncidents(loginCookies);
             break;
 
@@ -453,6 +484,11 @@ script:
         case 'intsights-send-mail':
             // convert comma-separated to array
             args.Emails = args.Emails.split(',');
+            break;
+
+        case 'intsights-get-iocs-total':
+            command = 'intsights-get-iocs';
+            result = getIocsTotal();
             break;
 
         case 'intsights-whitelist':
@@ -733,13 +769,19 @@ script:
       description: Zero based page number
     - name: FreeText
       description: Search for IOC value
+    outputs:
+    - contextPath: IntSights.IOCs
+      description: IOCs details
     description: Get count totals of the available IOCs
-  - name: intsights-search-ioc
+  - name: intsights-search-iocs
     arguments:
     - name: Value
       required: true
       default: true
       description: Desired IOC value
+    outputs:
+    - contextPath: IntSights.SearchedIOCs
+      description: Searched IOCs details
     description: Search for exact IOC value
   - name: intsights-ioc-download-csv
     arguments:
@@ -751,6 +793,7 @@ script:
       - Urls
       - Hashes
       - IpAddresses
+      - Domains
       description: IOC's type
     - name: SubType
       description: CnC,Tor,Phishing
@@ -782,7 +825,16 @@ script:
     arguments: []
     description: Marks all notifications as read by the current user
   - name: intsights-get-iocs-total
-    arguments: []
+    arguments:
+    - name: NumOfResultForPage
+      description: Number of results per page
+    - name: PageNumber
+      description: Zero based page number
+    - name: FreeText
+      description: Search for IOC value
+    outputs:
+    - contextPath: IntSights.IOCs
+      description: IOCs details
     description: Get all the IOCs
   isfetch: true
 hidden: false
