@@ -2,7 +2,6 @@ id: ATD-playbook
 version: -1
 name: ATD-playbook
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"
