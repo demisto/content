@@ -51,6 +51,7 @@ script:
       createRecord:  'archer-create-record',
       updateRecord:  'archer-update-record',
       getRecord:     'archer-get-record',
+      deleteRecord:  'archer-delete-record',
       searchApps:    'archer-search-applications',
       searchRecords: 'archer-search-records'
     };
@@ -62,6 +63,7 @@ script:
     urlDictionary.fieldByLevelId = '/api/core/system/fielddefinition/level/%levelId%';
     urlDictionary[commands.createRecord] = '/ws/record.asmx';
     urlDictionary[commands.updateRecord] = '/ws/record.asmx';
+    urlDictionary[commands.deleteRecord] = '/ws/record.asmx';
     urlDictionary[commands.getRecord] = '/api/core/content/%contentId%';
     urlDictionary[commands.searchApps] = '/api/core/system/application';
     urlDictionary[commands.searchRecords] = '/ws/search.asmx';
@@ -72,6 +74,7 @@ script:
     methodDictionary.levelIdByModuleId = 'POST';
     methodDictionary.fieldByLevelId = 'POST';
     methodDictionary[commands.createRecord] = 'POST';
+    methodDictionary[commands.deleteRecord] = 'POST';
     methodDictionary[commands.updateRecord] = 'POST';
     methodDictionary[commands.getRecord] = 'POST';
     methodDictionary[commands.searchApps] = 'POST';
@@ -275,6 +278,21 @@ script:
         );
     }
 
+    function deleteContentSoapRequest(token, appId, contentId) {
+        return (
+            '<?xml version="1.0" encoding="utf-8"?>' +
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+            '   <soap:Body>' +
+            '       <DeleteRecord xmlns="http://archer-tech.com/webservices/">' +
+            '           <sessionToken>' + token + '</sessionToken>' +
+            '           <moduleId>' + appId + '</moduleId>' +
+            '           <contentId>' + contentId + '</contentId>' +
+            '       </DeleteRecord>' +
+            '   </soap:Body>' +
+            '</soap:Envelope>'
+        );
+    }
+
     function updateContentSoapRequest(token, appId, contentId, fields) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -469,6 +487,9 @@ script:
         }
 
         var contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
+        var md = fieldsToValue;
+        md.Id = contentId;
+        console.log(JSON.stringify(md));
         if (!contentId) {
             return {
                 ContentsFormat: formats["markdown"],
@@ -479,9 +500,9 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: fieldsToValue,
+            Contents: md,
             ContentsFormat: formats.json,
-            HumanReadable: tableToMarkdown(command, fieldsToValue),
+            HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
             EntryContext: {'Archer.Content': {Id: contentId , Fields: fieldsToValue}}
         };
@@ -582,6 +603,33 @@ script:
         };
     }
 
+    function deleteRecord(command, token, arguments) {
+        var appId = arguments.applicationId;
+        var contentId = arguments.recordId;
+
+        var soap =  deleteContentSoapRequest(token, appId, contentId);
+        var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
+        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+
+        if (response === null || typeof response !== 'object' || response === undefined) {
+            throw "Error in response. Check request : " + soap;
+        }
+
+        var result = dq(response, 'Envelope.Body.DeleteRecordResponse.DeleteRecordResult');
+        if (!result && result < 1) {
+            return {
+                ContentsFormat: formats["markdown"],
+                Type: entryTypes["error"],
+                Contents: "Recived an error" + JSON.stringify(response)
+            };
+        }
+
+        return {
+            Type: entryTypes.note,
+            Contents: 'content id = ' + contentId + ' was deleted successfully'
+        }
+    }
+
     function getAuthToken() {
         var result = sendRestRequest("login",
             {
@@ -607,6 +655,8 @@ script:
             return createRecord(command, getAuthToken() , args);
         case commands.updateRecord:
             return updateRecord(command, getAuthToken() , args);
+        case commands.deleteRecord:
+            return deleteRecord(command, getAuthToken(), args);
         case commands.getRecord:
             return getRecord(command, getAuthToken());
         case commands.searchApps:
@@ -708,4 +758,13 @@ script:
     - contextPath: Archer.Content.Fields
       description: Content property fields
     description: Search for records inside the given application
+  - name: archer-delete-record
+    arguments:
+    - name: applicationId
+      required: true
+      description: Application Id where record will be deleted
+    - name: recordId
+      required: true
+      description: Record id to delete
+    description: Delete record by Id
   isfetch: true
