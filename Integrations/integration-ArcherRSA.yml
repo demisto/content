@@ -46,39 +46,36 @@ configuration:
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '');
+
     var commands = {
       createRecord:  'archer-create-record',
       updateRecord:  'archer-update-record',
       getRecord:     'archer-get-record',
       searchApps:    'archer-search-applications',
       searchRecords: 'archer-search-records'
-    }
-
-    var urlDictionary = {
-        login: '/api/core/security/login',
-        logout: '/api/core/security/logout',
-        levelIdByModuleId: '/api/core/system/level/module/%applicationId%',
-        fieldByLevelId: '/api/core/system/fielddefinition/level/%levelId%',
-
-        [commands.createRecord]:  '/ws/record.asmx',
-        [commands.updateRecord]:  '/ws/record.asmx',
-        [commands.getRecord]:     '/api/core/content/%contentId%',
-        [commands.searchApps]:    '/api/core/system/application',
-        [commands.searchRecords]: '/ws/search.asmx'
     };
 
-    var methodDictionary = {
-        login:              'POST',
-        logout:             'POST',
-        levelIdByModuleId:  'POST',
-        fieldByLevelId:     'POST',
+    var urlDictionary = {};
+    urlDictionary.login = '/api/core/security/login';
+    urlDictionary.logout = '/api/core/security/logout';
+    urlDictionary.levelIdByModuleId = '/api/core/system/level/module/%applicationId%';
+    urlDictionary.fieldByLevelId = '/api/core/system/fielddefinition/level/%levelId%';
+    urlDictionary[commands.createRecord] = '/ws/record.asmx';
+    urlDictionary[commands.updateRecord] = '/ws/record.asmx';
+    urlDictionary[commands.getRecord] = '/api/core/content/%contentId%';
+    urlDictionary[commands.searchApps] = '/api/core/system/application';
+    urlDictionary[commands.searchRecords] = '/ws/search.asmx';
 
-        [commands.createRecord]:  'POST',
-        [commands.updateRecord]:  'POST',
-        [commands.getRecord]:     'POST',
-        [commands.searchApps]:    'POST',
-        [commands.searchRecords]: 'POST'
-    };
+    var methodDictionary = {};
+    methodDictionary.login = 'POST';
+    methodDictionary.logout = 'POST';
+    methodDictionary.levelIdByModuleId = 'POST';
+    methodDictionary.fieldByLevelId = 'POST';
+    methodDictionary[commands.createRecord] = 'POST';
+    methodDictionary[commands.updateRecord] = 'POST';
+    methodDictionary[commands.getRecord] = 'POST';
+    methodDictionary[commands.searchApps] = 'POST';
+    methodDictionary[commands.searchRecords] = 'POST';
 
     function parseRecordsXml(response, mapping) {
         var searchRes = dq(response, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult');
@@ -206,7 +203,8 @@ script:
         return JSON.stringify(incidentRes);
     }
 
-    function getContentsByAppIdRequest(token, appId, displayFields, maxResults = '100') {
+    function getContentsByAppIdRequest(token, appId, displayFields, maxResults) {
+        var readyMaxReults = maxResults || '100';
         return (
         '<?xml version="1.0" encoding="UTF-8"?>' +
         '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
@@ -216,8 +214,8 @@ script:
         '           <searchOptions>' +
         '               <![CDATA[' +
         '                   <SearchReport>' +
-        '                       <PageSize>' + maxResults + '</PageSize>' +
-        '                       <MaxRecordCount>' + maxResults + '</MaxRecordCount>' +
+        '                       <PageSize>' + readyMaxReults + '</PageSize>' +
+        '                       <MaxRecordCount>' + readyMaxReults + '</MaxRecordCount>' +
         '                       <ShowStatSummaries>false</ShowStatSummaries>' +
         '                       <DisplayFields>' + displayFields + '</DisplayFields>' +
         '                       <Criteria>' +
@@ -583,8 +581,8 @@ script:
         case commands.searchRecords:
             return searchRecords(command, getAuthToken() , args);
         case 'fetch-incidents':
-            var args = createContentSoapRequest(getAuthToken(), 433, 'demo');
-            return fetchIncidentFlow(args);
+            var commandArgs = createContentSoapRequest(getAuthToken(), 433, 'demo');
+            return fetchIncidentFlow(commandArgs);
         default:
             break;
     }
@@ -597,7 +595,8 @@ script:
       description: ID of the application to create record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
+        Field name is case sensitive.'
     outputs:
     - contextPath: Archer.Content.Id
       description: Content Id
@@ -614,13 +613,15 @@ script:
       description: ID of the application to update record in
     - name: fieldsToValues
       required: true
-      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }. Field name is case sensitive.'
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
+        Field name is case sensitive.'
     description: Updates existing content record in the given application.
   - name: archer-get-record
     arguments:
     - name: contentId
       required: true
-      description: 'The Content (record) ID to get details for (for example: id=12345 for INC-12345)'
+      description: 'The Content (record) ID to get details for (for example: id=12345
+        for INC-12345)'
     - name: applicationId
       required: true
       description: ID of the application to get record from
@@ -653,7 +654,8 @@ script:
       description: ID of the application to search records in
     - name: fieldsToDisplay
       required: true
-      description: Fields to present in the search results in array format (for example,"[\"Title\",\"Incident Summary\"]")
+      description: Fields to present in the search results in array format (for example,"[\"Title\",\"Incident
+        Summary\"]")
       isArray: true
     - name: maxResults
       description: Maximum results to return from the search (default is 100)
