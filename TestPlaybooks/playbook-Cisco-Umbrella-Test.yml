@@ -599,7 +599,7 @@ tasks:
         in Investigate uses regular expressions (RegEx) to search against the Investigate
         database. There are several excellent tools online such as http://regexr.com
         to help if you’re not familiar with building RegEx.
-      script: Cisco Umbrella Investigate|||investigate-umbrella-domain-search
+      script: Cisco Umbrella Investigate|||investigate-domain-search
       type: regular
       iscommand: true
       brand: Cisco Umbrella Investigate
@@ -627,7 +627,7 @@ tasks:
         isn't necessarily a bad thing, legitimate sites co-occur with each other as
         a part of normal web activity. However, unusual or suspicious co-occurence
         can provide additional information regarding attacks
-      script: Cisco Umbrella Investigate|||investigate-umbrella-domain-co-occurrences
+      script: Cisco Umbrella Investigate|||investigate-domain-co-occurrences
       type: regular
       iscommand: true
       brand: Cisco Umbrella Investigate
@@ -655,7 +655,7 @@ tasks:
         seen requested b around the same time (up to 60 seconds before or after) as
         the given domain name, but that are not frequently associated with other domain
         names.
-      script: Cisco Umbrella Investigate|||investigate-umbrella-domain-related
+      script: Cisco Umbrella Investigate|||investigate-domain-related
       type: regular
       iscommand: true
       brand: Cisco Umbrella Investigate
@@ -683,7 +683,7 @@ tasks:
         has seen for a given domain. The most common use case is to obtain the RRs
         (Resource Record) history for a given domain, passing in the record query
         type as a parameter, to help build intelligence around an domain. '
-      script: Cisco Umbrella Investigate|||investigate-umbrella-domain-dns-history
+      script: Cisco Umbrella Investigate|||investigate-domain-dns-history
       type: regular
       iscommand: true
       brand: Cisco Umbrella Investigate
