@@ -1,0 +1,45 @@
+versionedfields: {}
+commonfields:
+  id: MatchRegex
+  version: -1
+name: MatchRegex
+script: |-
+  var data = (typeof args.data) === 'string' ? args.data : JSON.stringify(args.data);
+  var flags = args.flags ? args.flags : 'im';
+  var r = new RegExp(args.regex, flags);
+  var m = r.exec(data);
+  if (m && m.length > 0) {
+      var val = m[0];
+      var group = parseInt(args.group);
+      if (args.group && m.length > group) {
+          val = m[group];
+      }
+      var ec = {};
+      if (args.out) {
+          ec[args.out] = val;
+      }
+      return {Type: entryTypes.note, Contents: val, ContentsFormat: formats.text, EntryContext: ec};
+  }
+  return {Type: entryTypes.note, Contents: 'Regex does not match', ContentsFormat: formats.text};
+type: javascript
+tags:
+- Utility
+comment: Extract regex data from given text - supports groups as well
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The text date we should extract regex from
+- name: regex
+  required: true
+  description: The regex to match and extract
+- name: group
+  description: The matching group to return (if not provided will return the full
+    match)
+- name: out
+  description: The context key to populate with the result
+- name: flags
+  description: The regex flags for the match - i is the default
+scripttarget: 0
+releaseNotes: "Match regex including group support"
