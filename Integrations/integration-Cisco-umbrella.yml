@@ -490,31 +490,31 @@ script:
         case 'test-module':
             getDomainSearch('www.demisto.com');
             return 'ok';
-        case 'investigate-umbrella-domain-categorization':
+        case 'investigate-domain-categorization':
         case 'umbrella-domain-categorization':
             return getDomainCategorization(domainArg);
-        case 'investigate-umbrella-domain-search':
+        case 'investigate-domain-search':
         case 'umbrella-domain-search':
             return getDomainSearch(args.regex, args.start);
-        case 'investigate-umbrella-domain-co-occurrences':
+        case 'investigate-domain-co-occurrences':
         case 'umbrella-domain-co-occurrences':
             return getDomainCooccurrences(domainArg);
-        case 'investigate-umbrella-domain-related':
+        case 'investigate-domain-related':
         case 'umbrella-domain-related':
             return getDomainRelated(domainArg);
-        case 'investigate-umbrella-domain-security':
+        case 'investigate-domain-security':
         case 'umbrella-domain-security':
             return getDomainSecurity(domainArg);
-        case 'investigate-umbrella-domain-tags':
+        case 'investigate-domain-tags':
         case 'umbrella-domain-tags':
             return getDomainTags(domainArg);
-        case 'investigate-umbrella-domain-dns-history':
+        case 'investigate-domain-dns-history':
         case 'umbrella-domain-dns-history':
             return getDomainDNSHistory(domainArg);
-        case 'investigate-umbrella-ip-dns-history':
+        case 'investigate-ip-dns-history':
         case 'umbrella-ip-dns-history':
             return getIpDNSHistory(args.ip);
-        case 'investigate-umbrella-ip-malicious-domains':
+        case 'investigate-ip-malicious-domains':
         case 'umbrella-ip-malicious-domains':
             return getIpMaliciousDomains(args.ip);
     }
@@ -545,7 +545,7 @@ script:
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
     deprecated: true
-  - name: investigate-umbrella-domain-categorization
+  - name: investigate-domain-categorization
     arguments:
     - name: domain
       required: true
@@ -586,7 +586,7 @@ script:
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
     deprecated: true
-  - name: investigate-umbrella-domain-co-occurrences
+  - name: investigate-domain-co-occurrences
     arguments:
     - name: domain
       required: true
@@ -620,7 +620,7 @@ script:
       the given domain name, but that are not frequently associated with other domain
       names.
     deprecated: true
-  - name: investigate-umbrella-domain-related
+  - name: investigate-domain-related
     arguments:
     - name: domain
       required: true
@@ -689,7 +689,7 @@ script:
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
     deprecated: true
-  - name: investigate-umbrella-domain-security
+  - name: investigate-domain-security
     arguments:
     - name: domain
       required: true
@@ -766,7 +766,7 @@ script:
       it will also show a record of the history of the domain in the Umbrella block
       list.
     deprecated: true
-  - name: investigate-umbrella-domain-tags
+  - name: investigate-domain-tags
     arguments:
     - name: domain
       required: true
@@ -858,7 +858,7 @@ script:
       Record) history for a given domain, passing in the record query type as a parameter,
       to help build intelligence around an domain. '
     deprecated: true
-  - name: investigate-umbrella-domain-dns-history
+  - name: investigate-domain-dns-history
     arguments:
     - name: domain
       required: true
@@ -970,7 +970,7 @@ script:
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
     deprecated: true
-  - name: investigate-umbrella-ip-dns-history
+  - name: investigate-ip-dns-history
     arguments:
     - name: ip
       required: true
@@ -1014,7 +1014,7 @@ script:
       Record (RR) history for a given IP, passing in the record query type as a parameter,
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
-  - name: investigate-umbrella-ip-malicious-domains
+  - name: investigate-ip-malicious-domains
     arguments:
     - name: ip
       required: true
@@ -1081,7 +1081,7 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
     deprecated: true
-  - name: investigate-umbrella-domain-search
+  - name: investigate-domain-search
     arguments:
     - name: regex
       required: true
