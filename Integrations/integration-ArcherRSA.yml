@@ -207,7 +207,7 @@ script:
         return JSON.stringify(incidentRes);
     }
 
-    function getContentsByAppIdRequest(token, appId, displayFields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue) {
+    function getContentsByAppIdRequest(token, appId, displayFields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, sortByFieldId, isDescending) {
         var readyMaxReults = (maxResults === undefined || maxResults === null) ? '100' : maxResults;
         return (
         '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -236,6 +236,14 @@ script:
         '                                   </TextFilterCondition>' +
         '                               </Conditions>' +
         '                           </Filter>'
+                                    : '') +
+                                    (sortByFieldId ?
+        '                           <SortFields>' +
+        '                               <SortField>' +
+        '                                   <Field>' + sortByFieldId + '</Field>' +
+        '                                   <SortType>' + (isDescending ? 'Descending' : 'Ascending') + '</SortType>' +
+        '                               </SortField>' +
+        '                           </SortFields>'
                                     : '') +
         '                       </Criteria>' +
         '                   </SearchReport>' +
