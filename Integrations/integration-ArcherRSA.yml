@@ -226,6 +226,7 @@ script:
         '                           <ModuleCriteria>' +
         '                               <Module name="appname">' + appId + '</Module>' +
         '                           </ModuleCriteria>' +
+                                    (fieldIdToSearchOn ?
         '                           <Filter>' +
         '                               <Conditions>' +
         '                                   <TextFilterCondition>' +
@@ -234,7 +235,8 @@ script:
         '                                      <Value>' + searchValue + '</Value>' +
         '                                   </TextFilterCondition>' +
         '                               </Conditions>' +
-        '                           </Filter>' +
+        '                           </Filter>'
+                                    : '') +
         '                       </Criteria>' +
         '                   </SearchReport>' +
         '               ]]>' +
@@ -541,7 +543,14 @@ script:
             }
         });
 
-        var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, mapping[fieldToSearchOn].Id, fieldToSearchOn, searchValue);
+        var fieldIdToSearchOn;
+        var fieldNameToSearchOn;
+        if (fieldToSearchOn) {
+            fieldIdToSearchOn = mapping[fieldToSearchOn] ? mapping[fieldToSearchOn].id : '';
+            fieldNameToSearchOn = fieldToSearchOn;
+        }
+
+        var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue);
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
         var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
 
@@ -682,7 +691,7 @@ script:
     - name: searchValue
       description: Search value (leave empty to search for all)
     - name: fieldToSearchOn
-      description: Name of field to search on
+      description: Name of field to search on (leave empty to search for all)
     outputs:
     - contextPath: Archer.Content.Id
       description: Content Id
