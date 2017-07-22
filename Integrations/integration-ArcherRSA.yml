@@ -142,7 +142,7 @@ script:
         return result.Body;
     }
 
-    function sendRestRequest(cmd, bodyContent, token, httpTunneling) {
+    function sendRestRequest(cmd, bodyContent, token, httpTunneling, queryParams) {
         var headers = {
             'Content-Type': ['application/json'],
             'Accept': ['application/json']
@@ -157,6 +157,10 @@ script:
         }
 
         var url = server + replaceInTemplatesAndRemove(urlDictionary[cmd], args);
+        if (queryParams) {
+            url += queryParams;
+        }
+
         var body = JSON.stringify(bodyContent);
         var result = http(
             url,
@@ -203,8 +207,8 @@ script:
         return JSON.stringify(incidentRes);
     }
 
-    function getContentsByAppIdRequest(token, appId, displayFields, maxResults) {
-        var readyMaxReults = maxResults || '100';
+    function getContentsByAppIdRequest(token, appId, displayFields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue) {
+        var readyMaxReults = (maxResults === undefined || maxResults === null) ? '100' : maxResults;
         return (
         '<?xml version="1.0" encoding="UTF-8"?>' +
         '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
@@ -220,8 +224,17 @@ script:
         '                       <DisplayFields>' + displayFields + '</DisplayFields>' +
         '                       <Criteria>' +
         '                           <ModuleCriteria>' +
-        '                               <Module>' + appId + '</Module>' +
+        '                               <Module name="appname">' + appId + '</Module>' +
         '                           </ModuleCriteria>' +
+        '                           <Filter>' +
+        '                               <Conditions>' +
+        '                                   <TextFilterCondition>' +
+        '                                      <Operator>Contains</Operator>' +
+        '                                      <Field name="'+ fieldNameToSearchOn +'">' + fieldIdToSearchOn + '</Field>' +
+        '                                      <Value>' + searchValue + '</Value>' +
+        '                                   </TextFilterCondition>' +
+        '                               </Conditions>' +
+        '                           </Filter>' +
         '                       </Criteria>' +
         '                   </SearchReport>' +
         '               ]]>' +
@@ -384,11 +397,15 @@ script:
     function getListOfApplications(command, token) {
         var body = '';
         var applicatInfo = [];
+        var queryParams = '';
         if (args.findByName !== undefined) {
-            body = { Value:"?$filter=Name eq '" + args.findByName + "'" };
+            body = { Value: "?$filter=Name eq '" + args.findByName + "'" };
+        } else if (args.findById) {
+            queryParams = '/' + args.findById;
         }
 
-        var applictions = sendRestRequest(command, body, token, true)
+        var applictions = sendRestRequest(command, body, token, true, queryParams)
+
         if (!Array.isArray(applictions)) {
             applictions = [applictions];
         }
@@ -505,7 +522,9 @@ script:
     function searchRecords(command, token, arguments) {
         var appId = arguments.applicationId;
         var fieldsToDisplay = arguments.fieldsToDisplay;
-        var maxResults = arguments.maxResults || '100';
+        var maxResults = arguments.maxResults;
+        var fieldToSearchOn = arguments.fieldToSearchOn;
+        var searchValue = arguments.searchValue;
 
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
@@ -513,7 +532,7 @@ script:
         var fields = ''
 
         if (!Array.isArray(fieldsToDisplay)){
-            fieldsToDisplay = [fieldsToDisplay];
+            fieldsToDisplay = fieldsToDisplay.split(',');
         }
 
         fieldsToDisplay.forEach(function (field) {
@@ -522,7 +541,7 @@ script:
             }
         });
 
-        var soap = getContentsByAppIdRequest(token, appId, fields, maxResults);
+        var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, mapping[fieldToSearchOn].Id, fieldToSearchOn, searchValue);
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
         var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
 
@@ -546,9 +565,6 @@ script:
         };
     }
 
-    /**
-     * Getting Authentication token
-     */
     function getAuthToken() {
         var result = sendRestRequest("login",
             {
@@ -634,7 +650,10 @@ script:
   - name: archer-search-applications
     arguments:
     - name: findByName
+      default: true
       description: Get application by name (leave empty to get all applications)
+    - name: findById
+      description: Get application by ID (leave empty to get all applications)
     outputs:
     - contextPath: Archer.Applications.Id
       description: Application Id
@@ -654,12 +673,16 @@ script:
       description: ID of the application to search records in
     - name: fieldsToDisplay
       required: true
-      description: Fields to present in the search results in array format (for example,"[\"Title\",\"Incident
-        Summary\"]")
+      description: 'Fields to present in the search results in array format (for example:
+        "Title,Incident Summary")'
       isArray: true
     - name: maxResults
       description: Maximum results to return from the search (default is 100)
       defaultValue: "100"
+    - name: searchValue
+      description: Search value (leave empty to search for all)
+    - name: fieldToSearchOn
+      description: Name of field to search on
     outputs:
     - contextPath: Archer.Content.Id
       description: Content Id
