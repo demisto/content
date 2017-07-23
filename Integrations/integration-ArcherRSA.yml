@@ -48,7 +48,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Date field ID for fetch
+- display: 'Date field name for fetch (en-US format: 07/22/2016 3:58 PM)'
   name: fetchByField
   defaultvalue: Date Created
   type: 0
@@ -685,7 +685,7 @@ script:
         }
 
         var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
-    console.log(soap)
+
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
         var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
 
@@ -806,14 +806,12 @@ script:
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
 
-    function fetchIncidentFlow(token, arguments) {
+    function fetchIncidents(token, arguments) {
         var myTimezone = new Date().getTimezoneOffset();
         var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
         if (params.timeZone === '0') {
             tz = 0;
         }
-    // setLastRun({ lastTime: null });
-    // return '[]';
 
         var cmd = commands.searchRecords;
         var incidentRes = [];
@@ -822,19 +820,14 @@ script:
         var day = 60 * 1000 * 60 * 24;
         var lastTime = lastRun.lastTime;
         if (!lastRun.lastTime) {
-            console.log('heree')
             lastTime = new Date().getTime() - (day * 1);
         }
-        console.log('lastTime', lastTime)
 
         var searchByField = params.fetchByField;
         arguments.applicationId = params.fetchApplicationId;
-        //arguments.dateOperator = 'GreaterThan';
-        //arguments.searchValue = toDateArcherString(new Date(lastTime));
-        //arguments.fieldToSearchOn = searchByField;
-        arguments.numericOperator = 'Equals';
-        arguments.searchValue = '224932';
-        arguments.fieldToSearchOn = 'Incident ID';
+        arguments.dateOperator = 'GreaterThan';
+        arguments.searchValue = toDateArcherString(new Date(lastTime));
+        arguments.fieldToSearchOn = searchByField;
         arguments.fieldsToDisplay = params.fetchFields + ',' + searchByField;
 
         var incidents = [];
@@ -867,7 +860,7 @@ script:
                 });
             }
 
-            setLastRun({ lastTime: lastTime.getTime() + (60 * 1000 * tz * -1) });
+            setLastRun({ lastTime: lastTime.getTime() + (60 * 1000 * new Date().getTimezoneOffset()) });
         }
 
         return (JSON.stringify(incidents));
@@ -908,10 +901,8 @@ script:
             return searchRecords(command, getAuthToken() , args);
         case commands.getAppFields:
             return getAppFields(getAuthToken());
-        case 'archer-test-fetch-incidents':
-            return fetchIncidentFlow(getAuthToken(), args);
         case 'fetch-incidents':
-            return fetchIncidentFlow(getAuthToken(), args);
+            return fetchIncidents(getAuthToken(), args);
         default:
             break;
     }
@@ -1019,8 +1010,6 @@ script:
     - contextPath: Archer.Content.Fields
       description: Content property fields
     description: Search for records inside the given application
-  - name: archer-test-fetch-incidents
-    arguments: []
   - name: archer-get-application-fields
     arguments:
     - name: applicationId
