@@ -487,7 +487,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, nameToValue),
             ReadableContentsFormat: formats.markdown,
-            EntryContext: {'Archer.Content': createContentContext(contentId, nameToValue)}
+            EntryContext: {'Archer.Content(true)': createContentContext(contentId, nameToValue)}
         };
     }
 
@@ -573,7 +573,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
-            EntryContext: {'Archer.Content': {Id: contentId , Fields: fieldsToValue}}
+            EntryContext: {'Archer.Content(true)': {Id: contentId , Fields: fieldsToValue}}
         };
     }
 
@@ -705,7 +705,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
-            EntryContext: { 'Archer.Content': output }
+            EntryContext: { 'Archer.Content(true)': output }
         };
     }
 
