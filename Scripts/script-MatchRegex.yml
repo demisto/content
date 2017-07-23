@@ -15,8 +15,8 @@ script: |-
           val = m[group];
       }
       var ec = {};
-      if (args.out) {
-          ec[args.out] = val;
+      if (args.contextKey) {
+          ec[args.contextKey] = val;
       }
       return {Type: entryTypes.note, Contents: val, ContentsFormat: formats.text, EntryContext: ec};
   }
@@ -37,7 +37,7 @@ args:
 - name: group
   description: The matching group to return (if not provided will return the full
     match)
-- name: out
+- name: contextKey
   description: The context key to populate with the result
 - name: flags
   description: The regex flags for the match - i is the default
