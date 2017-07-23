@@ -807,7 +807,7 @@ script:
     }
 
     function fetchIncidents(token, arguments) {
-        var myTimezone = new Date().getTimezoneOffset();
+        var myTimezone = new Date().getTimezoneOffset() * -1;
         var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
         if (params.timeZone === '0') {
             tz = 0;
@@ -860,7 +860,8 @@ script:
                 });
             }
 
-            setLastRun({ lastTime: lastTime.getTime() + (60 * 1000 * new Date().getTimezoneOffset()) });
+            var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
+            setLastRun({ lastTime: lastTime.getTime() + offset });
         }
 
         return (JSON.stringify(incidents));
