@@ -282,7 +282,7 @@ script:
         var incident = {
             name: threat.priority + ' ' + threat.name,
             labels: [],
-            rawJSON: JSON.stringify(threat),
+            rawJSON: JSON.stringify(threat).replace(/\\"/g, '"'),
         };
         delete(threat.name);
         var keys = Object.keys(threat);
