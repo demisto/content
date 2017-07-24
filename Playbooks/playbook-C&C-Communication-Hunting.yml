@@ -1160,7 +1160,7 @@ tasks:
     task:
       id: a38ffd8c-2fc9-4c28-8726-a9f59033aaca
       version: -1
-      name: Expose Configured Intergrations
+      name: Expose Configured Integrations
       script: ExposeModules
       type: regular
       iscommand: false
