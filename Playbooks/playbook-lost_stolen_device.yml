@@ -506,6 +506,7 @@ tasks:
         and cleanup, after which the account will be reinstated by an Active Directory
         administrator with the required permissions.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -621,6 +622,7 @@ tasks:
         company resources and information systems, these should be locked and revoked,
         and reinstated later with new passwords.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -1225,6 +1227,7 @@ tasks:
       version: -1
       name: Issue report to CISO by email
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     view: |-
