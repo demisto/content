@@ -41,6 +41,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     var fixUrl = function(base) {
