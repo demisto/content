@@ -122,6 +122,8 @@ tasks:
     scriptarguments:
       processNamePrefix: EC
       timeout: ""
+    results:
+    - TaniumFoundHostnames
     view: |-
       {
         "position": {

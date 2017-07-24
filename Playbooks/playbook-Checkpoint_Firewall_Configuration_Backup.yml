@@ -72,7 +72,8 @@ tasks:
     scriptarguments:
       devices: ${chkpdevicestobackup}
     results:
-    - CheckpointBackup
+    - chkpbackupstarted
+    - devicesbackuperrorstarting
     view: |-
       {
         "position": {
@@ -100,7 +101,9 @@ tasks:
       devices: ${chkpbackupstarted}
       waittimeout: "5"
     results:
-    - CheckpointBackup
+    - chkpbackupstarted
+    - devicesbackuperror
+    - backupsreporttext
     view: |-
       {
         "position": {
