@@ -492,7 +492,7 @@ script:
                 "labels": labels,
                 "details" : JSON.stringify(incident),
                 "severity" : severity,
-                "rawJSON": JSON.stringify(incident)
+                "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"')
             });
 
             sertime = incident.opened_at;
