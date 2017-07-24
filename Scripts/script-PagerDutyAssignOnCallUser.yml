@@ -1,6 +1,6 @@
 commonfields:
   id: PagerDutyAssignOnCallUser
-  version: 1
+  version: -1
 name: PagerDutyAssignOnCallUser
 script: |-
   var query = '' ;

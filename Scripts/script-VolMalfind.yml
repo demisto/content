@@ -1,6 +1,6 @@
 commonfields:
   id: VolMalfind
-  version: 1
+  version: -1
 name: VolMalfind
 script: |-
   var cmdline = 'malfind -p ' + args.pid;

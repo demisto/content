@@ -1,6 +1,6 @@
 commonfields:
   id: 7775cafc-a080-49a7-890b-6bcba60a4830
-  version: 2
+  version: -1
 name: CuckooDetonateURL
 script: |-
   res =  demisto.executeCommand("ck-url", demisto.args())

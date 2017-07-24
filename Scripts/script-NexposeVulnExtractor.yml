@@ -1,6 +1,6 @@
 commonfields:
   id: NexposeVulnExtractor
-  version: 1
+  version: -1
 name: NexposeVulnExtractor
 script: |-
   var report = args.report ? args.report : incidents[0].details;

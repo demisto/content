@@ -1,6 +1,6 @@
 commonfields:
   id: 7b02fa0f-94ff-48c7-8350-b4e353702e73
-  version: 3
+  version: -1
 name: VMRay
 script: |-
   import json

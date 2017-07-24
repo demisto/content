@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumAskQuestion
-  version: 1
+  version: -1
 name: TaniumAskQuestion
 script: |-
   // An example script for asking Tanium a question

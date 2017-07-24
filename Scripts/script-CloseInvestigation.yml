@@ -1,6 +1,6 @@
 commonfields:
   id: CloseInvestigation
-  version: 1
+  version: -1
 name: CloseInvestigation
 script: |-
   dArgs = {}

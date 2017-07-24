@@ -1,6 +1,6 @@
 commonfields:
   id: NessusScanDetails
-  version: 1
+  version: -1
 name: NessusScanDetails
 script: |
   from time import ctime

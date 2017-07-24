@@ -1,6 +1,6 @@
 commonfields:
   id: b4465e06-bf34-4b77-8373-5b8413c482ad
-  version: 4
+  version: -1
 name: FireEyeDetonateFile
 script: |+
   import json

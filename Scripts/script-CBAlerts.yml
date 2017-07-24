@@ -1,6 +1,6 @@
 commonfields:
   id: CBAlerts
-  version: 1
+  version: -1
 name: CBAlerts
 script: |-
   # args: same as cb-alert

@@ -1,6 +1,6 @@
 commonfields:
   id: 120c861a-e0ae-417e-8dcf-c3ee1dc15a42
-  version: 38
+  version: -1
 name: commentsToContext
 script: |-
   var entry = executeCommand("getEntry", {"id":args.entryId});

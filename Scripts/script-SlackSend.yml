@@ -1,6 +1,6 @@
 commonfields:
   id: SlackSend
-  version: 1
+  version: -1
 name: SlackSend
 script: |-
   dArgs = {}

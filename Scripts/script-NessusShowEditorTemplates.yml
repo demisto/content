@@ -1,6 +1,6 @@
 commonfields:
   id: NessusShowEditorTemplates
-  version: 1
+  version: -1
 name: NessusShowEditorTemplates
 script: |
   from time import ctime

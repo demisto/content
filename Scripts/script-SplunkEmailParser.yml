@@ -1,6 +1,6 @@
 commonfields:
   id: SplunkEmailParser
-  version: 1
+  version: -1
 name: SplunkEmailParser
 script: |-
   var body = args.body ? args.body : incidents[0].details;

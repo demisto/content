@@ -1,6 +1,6 @@
 commonfields:
   id: CommonServer
-  version: 1
+  version: -1
 name: CommonServer
 script: |-
   // Common functions script

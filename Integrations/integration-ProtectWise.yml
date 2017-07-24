@@ -1,6 +1,6 @@
 commonfields:
   id: ProtectWise
-  version: 1
+  version: -1
 name: ProtectWise
 display: ProtectWise
 category: Network Security

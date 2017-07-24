@@ -1,6 +1,6 @@
 commonfields:
   id: PanoramaMove
-  version: 1
+  version: -1
 name: PanoramaMove
 script: |-
   var req = {

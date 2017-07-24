@@ -1,6 +1,6 @@
 commonfields:
   id: bffdcf72-2061-4767-83d5-3ff2a9e8afe7
-  version: 5
+  version: -1
 name: BlockIP
 script: |-
   var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorame'})[0].Contents;

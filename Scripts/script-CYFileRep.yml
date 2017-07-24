@@ -1,6 +1,6 @@
 commonfields:
   id: CYFileRep
-  version: 1
+  version: -1
 name: CYFileRep
 script: |-
   # Retrieve file entry reputation using Cylance

@@ -1,6 +1,6 @@
 commonfields:
   id: 5e125fdd-72f1-455f-89fa-e6f9405174a4
-  version: 9
+  version: -1
 name: NotInContextVerification
 script: |+
   var val = invContext.keyToWatch;

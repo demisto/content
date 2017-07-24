@@ -1,6 +1,6 @@
 commonfields:
   id: BinaryReputationPy
-  version: 1
+  version: -1
 name: BinaryReputationPy
 script: |-
   from time import sleep

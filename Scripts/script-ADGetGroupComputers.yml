@@ -1,6 +1,6 @@
 commonfields:
   id: ADGetGroupComputers
-  version: 1
+  version: -1
 name: ADGetGroupComputers
 script: |-
   # Optional arguments and default values

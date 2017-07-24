@@ -41,6 +41,21 @@ class Content:
     def loadData(self, data):
         return
 
+    @abc.abstractmethod
+    def verifyVersion(self, data):
+        return
+
+    def verifyContentVersion(self):
+        if len(self.modifiedStore) + len(self.addedStore) > 0:
+            if len(self.modifiedStore) > 0:
+                for rawContent in self.modifiedStore:
+                    cnt = self.loadData(rawContent)
+                    self.verifyVersion(cnt)
+            if len(self.addedStore) > 0:
+                for rawContent in self.addedStore:
+                    cnt = self.loadData(rawContent)
+                    self.verifyVersion(cnt)
+
     def generateRN(self):
         res = ""
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
@@ -96,6 +111,11 @@ class ScriptContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+    def verifyVersion(self,cnt):
+        commonfields = cnt.get("commonfields", "")
+        if commonfields["version"] != -1:
+            raise Exception(cnt["name"] + " has version which is not -1")
+
 Content.register(ScriptContent)
 
 
@@ -125,6 +145,18 @@ class PlaybookContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        version = cnt.get("version", "")
+        if version != -1:
+            raise Exception(cnt["name"] + " has version which is not -1")
+
+        tasks = cnt.get("tasks", "")
+        if len(tasks) > 0:
+            for key, value in tasks.iteritems():
+                if value["task"]["version"] != -1:
+                    raise Exception(cnt["name"] + " has task " + value["task"]["id"] + " with version which is not -1")
+
 
 Content.register(PlaybookContent)
 
@@ -156,6 +188,9 @@ class ReportContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+    def verifyVersion(self,cnt):
+        return
+
 Content.register(ReportContent)
 
 
@@ -180,6 +215,9 @@ class ReputationContent(Content):
             res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        return
 
 Content.register(ReputationContent)
 
@@ -207,6 +245,11 @@ class IntegrationContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
+    def verifyVersion(self,cnt):
+        commonfields = cnt.get("commonfields", "")
+        if commonfields["version"] != -1:
+            raise Exception(cnt["name"] + " has version which is not -1")
 
 Content.register(IntegrationContent)
 
@@ -292,6 +335,7 @@ def main(argv):
         if len(res) > 0:
             res += "\n\n"
         res += value.generateRN()
+        value.verifyContentVersion()
     version = argv[0]
     assetId = argv[3]
     createContentDescriptor(version, assetId, res)

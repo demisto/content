@@ -1,6 +1,6 @@
 commonfields:
   id: 10cb3486-48f3-4d93-88af-b6be84ffd432
-  version: 2
+  version: -1
 name: OktaGetGroups
 script: |2
 

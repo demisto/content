@@ -1,6 +1,6 @@
 commonfields:
   id: Strings
-  version: 1
+  version: -1
 name: Strings
 script: |-
   import re

@@ -1,6 +1,6 @@
 commonfields:
   id: VolPSList
-  version: 1
+  version: -1
 name: VolPSList
 script: |-
   var cmdline = 'pslist';

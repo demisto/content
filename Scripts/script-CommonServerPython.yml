@@ -1,6 +1,6 @@
 commonfields:
   id: CommonServerPython
-  version: 1
+  version: -1
 name: CommonServerPython
 script: |-
   # Common functions script

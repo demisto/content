@@ -1,6 +1,6 @@
 commonfields:
   id: CBPApproveHash
-  version: 1
+  version: -1
 name: CBPApproveHash
 script: |-
   CBP_HASH_APPROVED = '2'

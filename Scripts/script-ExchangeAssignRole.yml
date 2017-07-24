@@ -1,6 +1,6 @@
 commonfields:
   id: ExchangeAssignRole
-  version: 1
+  version: -1
 name: ExchangeAssignRole
 script: |-
   //+ exchange/assign.ps1

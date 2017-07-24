@@ -1,6 +1,6 @@
 commonfields:
   id: CBSensors
-  version: 1
+  version: -1
 name: CBSensors
 script: |-
   //Show a list of carbon black sensors.

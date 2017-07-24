@@ -1,6 +1,6 @@
 commonfields:
   id: CBSearch
-  version: 1
+  version: -1
 name: CBSearch
 script: |-
   //Script to query carbon black servers:

@@ -1,6 +1,6 @@
 commonfields:
   id: ExampleJSScript
-  version: 1
+  version: -1
 name: ExampleJSScript
 script: |-
   // This is an Example server-side script that shows how to use and create JavaScript scripts in the Demisto server
