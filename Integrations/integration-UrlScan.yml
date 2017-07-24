@@ -95,16 +95,22 @@ script:
         if (res.securePercentage !== undefined) {
             md += "Security Percentage: **"+res.securePercentage + "**\n";
         }
-        if (res.resourceStats[0].countries !== undefined) {
-            md += "Number of countries associated with this site: **" + res.resourceStats[0].countries.length + " (**";
+
+        if (res.resourceStats[0] !== undefined) {
+            if (res.resourceStats[0].countries !== undefined) {
+                md += "Number of countries associated with this site: **" + res.resourceStats[0].countries.length + " (";
+            }
+            for (var i = 0; i < res.resourceStats[0].countries.length-1; i++){
+                md += " " + res.resourceStats[0].countries[i] + ",";
+            }
+            if (res.resourceStats[0].countries.length >= 1) {
+                md += " " + res.resourceStats[0].countries[res.resourceStats[0].countries.length-1] + ")**\n";
+            }
         }
-        for (var i = 0; i < res.resourceStats[0].countries.length-1; i++){
-            md += " **" + res.resourceStats[0].countries[i] + ",**";
-        }
-        if (res.resourceStats[0].countries.length > 1) {
-            md += " **" + res.resourceStats[0].countries[res.resourceStats[0].countries.length-1] + ")**\n";
-        }
-        if (res.ipStats[0].asn !== undefined) {
+
+        if (res.ipStats !== undefined &&
+            res.ipStats[0] !== undefined &&
+            res.ipStats[0].asn !== undefined) {
             md += "ASN: **" + res.ipStats[0].asn.asn + " " + res.ipStats[0].asn.description + "**\n";
         }
         if (res.malicious !== undefined) {
@@ -115,7 +121,7 @@ script:
     }
 
     var searchUrl = function(url) {
-        var res = sendRequest("GET","/search?q=domain:" + url);
+        var res = sendRequest("GET","/search?q=" + "\"" + url + "\"");
         var md = "";
         var ec = {};
         var resDis = [];
@@ -124,7 +130,6 @@ script:
 
         if (res.results.length !== 0) {
             var resStats = searchResults(res.results[0]._id).stats;
-
             md += addMD(resStats);
 
             if (resStats.malicious !== 0){
@@ -259,7 +264,7 @@ script:
         var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
         var resScan = sendRequest('POST', '/scan', body, headers);
 
-        var res = sendRequest("GET","/search?q=domain:" + scanUrl);
+        var res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
         var tWait = 0;
 
         if (!timeout) {
@@ -270,7 +275,7 @@ script:
                 res.results[0]._id !== resScan.uuid) {
                     wait(5);
                     tWait += 5;
-                    res = sendRequest("GET","/search?q=domain:" + scanUrl);
+                    res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
                 }
 
         if (res.results[0]._id === resScan.uuid) {
@@ -314,7 +319,7 @@ script:
         case 'test-module':
             searchHash("google.com");
 
-            if(params.apikey !== "") {
+            if(params.apikey) {
                 var body = JSON.stringify({"url": "www.demisto.com", "public": "on"});
                 var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
                 sendRequest('POST', '/scan', body, headers);
