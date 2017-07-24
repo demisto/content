@@ -332,7 +332,7 @@ tasks:
       }
   "33":
     id: "33"
-    taskid: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
+    taskid: get-email-sender-map
     type: condition
     task:
       id: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
