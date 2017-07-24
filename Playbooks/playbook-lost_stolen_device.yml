@@ -193,6 +193,7 @@ tasks:
       version: -1
       name: Retrieve device profile from IT asset management software
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -528,6 +529,7 @@ tasks:
       version: -1
       name: Revoke VPN credentials
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -598,6 +600,7 @@ tasks:
 
         This is not only for the benefit of the employee - there is a real danger to the organization: access to these accounts could allow the thief to convincingly impersonate the owner of the device in order to engage in Social Engineering against our other employees and further attack the organization.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
