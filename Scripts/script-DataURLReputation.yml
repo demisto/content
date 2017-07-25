@@ -1,11 +1,11 @@
 commonfields:
-  id: DataURLReputation
+  id: DataURLReputationV2
   version: -1
-name: DataURLReputation
+name: DataURLReputationV2
 script: |-
   var score = -1;
   var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"})
-  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0] && res[0].Contents[0].manualScore) {
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
       score = res[0].Contents[0].score;
   } else {
       var rep = executeCommand('url', {url: args.input});
@@ -34,6 +34,7 @@ args:
   predefined:
   - "yes"
   - "no"
+  defaultValue: "no"
   description: Whether to calculate reputation even if it is manual set - yes/no
 scripttarget: 0
 dependson:
