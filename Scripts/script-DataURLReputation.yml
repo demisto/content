@@ -4,7 +4,7 @@ commonfields:
 name: DataURLReputation
 script: |-
   var score = -1;
-  var res = executeCommand("findIndicators", {"query": "type:URL and value:" + args.input})
+  var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"})
   if (res[0] && res[0].Contents[0] && res[0].Contents[0].manualScore) {
       score = res[0].Contents[0].score;
   } else {
