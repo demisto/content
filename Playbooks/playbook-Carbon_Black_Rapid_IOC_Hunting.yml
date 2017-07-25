@@ -73,7 +73,7 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblack' && val.state == 'enabled')}
+      value: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
     view: |-
       {
         "position": {
