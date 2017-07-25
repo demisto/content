@@ -1,7 +1,7 @@
 commonfields:
-  id: DataURLReputationV2
+  id: DataURLReputation
   version: -1
-name: DataURLReputationV2
+name: DataURLReputation
 script: |-
   var score = -1;
   var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"})
