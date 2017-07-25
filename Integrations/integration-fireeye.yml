@@ -160,7 +160,7 @@ script:
                sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
                throw 'Request submissions failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
               }
-              return res.Body;
+              return JSON.parse(res.Body);
         default:
             respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
             result = respoonse.Body;

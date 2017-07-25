@@ -82,7 +82,7 @@ script:
         return {
             "name": incident.id + ' ' + incident.type_vname,
             "labels": labels,
-            "rawJSON": JSON.stringify(incident),
+            "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"'),
         };
     };
 

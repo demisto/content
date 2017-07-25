@@ -40,6 +40,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |2+
 
@@ -210,7 +215,7 @@ script:
                 "name": singleAlert.alertType,
                 "occurred": alertTime,
                 "labels": labels,
-                "rawJSON": JSON.stringify(singleAlert),
+                "rawJSON": JSON.stringify(singleAlert).replace(/\\"/g, '"'),
             }
     }
 
