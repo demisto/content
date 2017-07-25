@@ -1,6 +1,7 @@
 id: playbook17
 fromversion: 2.5.0
 system: true
+releaseNotes: "-"
 version: -1
 name: Carbon black Protection Rapid IOC Hunting
 description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
