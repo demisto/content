@@ -143,5 +143,5 @@ script:
     arguments:
     - name: file
       required: true
-      description: The dynamic block list file
+      description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
 hidden: false
