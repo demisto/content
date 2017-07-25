@@ -7,6 +7,7 @@ description: |-
   Initial incident details should be the name of the reporting person, or ID of the SIEM alert/incident, and description of the lost device.
   Labels:
    - User: the owner of the device
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -193,6 +194,7 @@ tasks:
       version: -1
       name: Retrieve device profile from IT asset management software
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -506,6 +508,7 @@ tasks:
         and cleanup, after which the account will be reinstated by an Active Directory
         administrator with the required permissions.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -527,6 +530,7 @@ tasks:
       version: -1
       name: Revoke VPN credentials
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -597,6 +601,7 @@ tasks:
 
         This is not only for the benefit of the employee - there is a real danger to the organization: access to these accounts could allow the thief to convincingly impersonate the owner of the device in order to engage in Social Engineering against our other employees and further attack the organization.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -621,6 +626,7 @@ tasks:
         company resources and information systems, these should be locked and revoked,
         and reinstated later with new passwords.
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -1225,6 +1231,7 @@ tasks:
       version: -1
       name: Issue report to CISO by email
       issystemtask: true
+      type: regular
       iscommand: false
       brand: ""
     view: |-

@@ -19,7 +19,7 @@ Here is a description of the script yml format's fields and structure:
 ``` yaml
 commonfields:
   id: MyScript
-  version: 1
+  version: -1
 name: MyScript
 script: |-
   //Execute a command on a remote machine
