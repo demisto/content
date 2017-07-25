@@ -28,13 +28,18 @@ script: |
       if content['success'] == True:
           resolvedUrl = content['resolved_url']
           shortenedUrl = content['requested_url']
+          usageCount = content['usage_count']
           ec = {};
           ec['URL.Data'] = [resolvedUrl]
           demisto.results({
             'Type': entryTypes['note'],
             'Contents': [resolvedUrl],
             'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown('Shorten URL results', [{ 'Shortened URL': shortenedUrl, 'Resolved URL': resolvedUrl }]),
+            'HumanReadable': tableToMarkdown('Shorten URL results', [{
+                'Shortened URL': shortenedUrl,
+                'Resolved URL': resolvedUrl,
+                'Usage count': usageCount
+            }]),
             'EntryContext': ec
           })
       else:
