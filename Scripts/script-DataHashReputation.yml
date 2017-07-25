@@ -1,7 +1,7 @@
 commonfields:
-  id: DataHashReputationV2
+  id: DataHashReputation
   version: 1
-name: DataHashReputationV2
+name: DataHashReputation
 script: |-
   var score = -1;
   var res = executeCommand("findIndicators", {"query": "type:File* and value:\"" + args.input + "\" and manualScore:T"})
