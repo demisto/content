@@ -16,7 +16,7 @@ script: |-
         }
       }
   }
-  return score < 0 ? 0 : score; 
+  return score < 0 ? 0 : score;
 type: javascript
 tags:
 - reputation
