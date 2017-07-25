@@ -102,24 +102,43 @@ script:
     - name: action
       description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
     - name: category
-      description: Category parameter. e.g. when exporting a configuration file use
-        category=configuration
+      description: Category parameter. e.g. when exporting a configuration file use category=configuration
     - name: cmd
-      description: Used for operations commands cmd specifies the xml struct that
-        defines the command.
+      description: Used for operations commands cmd specifies the xml struct that defines the command.
     - name: command
       description: Run a command. e.g. command =<show><arp><entry name='all'/></arp></show>
     - name: dst
       description: Specifies destination
     - name: element
       description: Used to define a new value for an object
+    - name: to
+      description: To parameter (used in specifying time and when cloning an object)
     - name: from
       description: From parameter (used in specifying time and when cloning an object)
     - name: key
       description: Sets a key value
     - name: log-type
       description: Used for retrieving logs. e.g. log-type=threat for threat logs
+    - name: where
+      description: Specifies the type of a move operation (e.g. where=after, where=before, where=top, where=bottom)
+    - name: period
+      description: Describe a time period. E.g. period=last-24-hrs
+    - name: xpath
+      description: Defines a location e.g. xpath=/config/predefined/application/entry[@name='hotmail']
+    - name: pcap-id
+      description: The threat pcap ID in the threat log
+    - name: serialno
+      description: Specifies the device serial number
+    - name: reporttype
+      description: Choose dynamic,predefined or custom report
+    - name: reportname
+      description: The report name
+    - name: log-type
+      descrition: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: type
+      descrition: The request type (e.g. export, import, log, config)
+    - name: search-time
+      description: Used for threat PCAPs, the time that the PCAP was received on the firewall.
   - name: panorama-dynamic-block-list
     arguments:
     - name: file
