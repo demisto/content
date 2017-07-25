@@ -19,7 +19,7 @@ script: |-
        </payload>\
   </uid-message>';
 
-  return {Type: 9,
+  return {Type: 3,
         FileID: saveFile(req),
         File: args.fileName ? args.fileName : 'Dynamic Address Group Mapping.xml',
         Contents: args.fileName
