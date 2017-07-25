@@ -134,9 +134,9 @@ script:
     - name: reportname
       description: The report name
     - name: log-type
-      descrition: Used for retrieving logs. e.g. log-type=threat for threat logs
+      description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: type
-      descrition: The request type (e.g. export, import, log, config)
+      description: The request type (e.g. export, import, log, config)
     - name: search-time
       description: Used for threat PCAPs, the time that the PCAP was received on the firewall.
   - name: panorama-dynamic-block-list
