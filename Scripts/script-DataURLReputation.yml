@@ -1,7 +1,7 @@
 commonfields:
-  id: DataURLReputationV2
+  id: DataURLReputation
   version: -1
-name: DataURLReputationV2
+name: DataURLReputation
 script: |-
   var score = -1;
   var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"})
@@ -11,9 +11,9 @@ script: |-
       var rep = executeCommand('url', {url: args.input});
       var scores = dq(rep, 'EntryContext.DBotScore.Score');
       for (var i = 0; scores && i < scores.length; i++) {
-        if (scores[i] && score < scores[i]) {
-          score = scores[i];
-        }
+          if (scores[i] && score < scores[i]) {
+            score = scores[i];
+          }
       }
   }
   return score < 0 ? 0 : score;
