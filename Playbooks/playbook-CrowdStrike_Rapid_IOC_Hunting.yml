@@ -417,7 +417,7 @@ tasks:
       "yes":
       - "17"
     scriptarguments:
-      value: ${modules(val.brand == 'FalconHost' && val.state == 'enabled')}
+      value: ${modules(val.brand == 'FalconHost' && val.state == 'active')}
     view: |-
       {
         "position": {

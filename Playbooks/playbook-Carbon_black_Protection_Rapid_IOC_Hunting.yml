@@ -96,7 +96,7 @@ tasks:
       "yes":
       - "12"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblackprotection' && val.state == 'enabled')}
+      value: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
     view: |-
       {
         "position": {
