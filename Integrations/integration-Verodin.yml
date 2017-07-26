@@ -468,7 +468,7 @@ script:
            },
            Username: params.credentials.identifier,
            Password: params.credentials.password,
-           Body: method == 'POST' ? JSON.stringify(args) : undefined
+           Body: method !== 'GET' ? JSON.stringify(args) : undefined
         };
         var res = http(
                 baseUrl + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
