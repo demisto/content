@@ -46,6 +46,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     var tmplAddAlarmComment = '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -349,7 +354,7 @@ script:
                 occurred: getOccurredTime(alarmList[i]),
                 created: new Date(),
                 details: prepareDetailsString(alarmList[i]),
-                rawJSON: JSON.stringify(alarmList[i]),
+                rawJSON: JSON.stringify(alarmList[i]).replace(/\\"/g, '"'),
             };
             // Check that it is in the time range and in the id range
             var alarmIdInt = parseInt(alarmList[i].AlarmID);

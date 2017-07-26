@@ -19,8 +19,8 @@ INSTALLER=$(ls demistoserver*.sh)
 
 USER="centos"
 
-echo "wait 1 minute to ensure server is ready for ssh"
-sleep 1m
+echo "wait 90 seconds to ensure server is ready for ssh"
+sleep 90s
 
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
