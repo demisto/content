@@ -150,4 +150,4 @@ script:
       required: true
       description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
 hidden: false
-releaseNote: "Added panorama as BYOI"
+releaseNotes: "Added panorama as BYOI"
