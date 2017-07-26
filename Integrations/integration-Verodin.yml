@@ -689,6 +689,33 @@ script:
       description: ID number of source Node
     - name: target_node_id_1
       description: ID number of destination Node
+    outputs:
+    - contextPath: Verodin.Jobs.ID
+      description: Job id
+    - contextPath: Verodin.Jobs.Description
+      description: Job description
+    - contextPath: Verodin.Jobs.Created
+      description: Job created
+    - contextPath: Verodin.Jobs.Name
+      description: Job name
+    - contextPath: Verodin.Jobs.OrganizationID
+      description: Job organization id
+    - contextPath: Verodin.Jobs.Updated
+      description: Job updated
+    - contextPath: Verodin.Jobs.NodeActionQueueID
+      description: Job node action queue id
+    - contextPath: Verodin.Jobs.PlanID
+      description: Job plan id
+    - contextPath: Verodin.Jobs.Tags.Verodin
+      description: Job verodin tags
+    - contextPath: Verodin.Jobs.Progress
+      description: Job progress
+    - contextPath: Verodin.Jobs.SimulationID
+      description: Job simulation id
+    - contextPath: Verodin.Jobs.Status
+      description: Job status
+    - contextPath: Verodin.Jobs.UserID
+      description: Job user id
     description: Executes the specified Action
   - name: verodin-get-security-zones
     arguments: []
