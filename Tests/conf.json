@@ -7,11 +7,6 @@
             "playbookID": "Cisco-Umbrella-Test"
         },
         {
-            "name": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test",
-            "nightly": true
-        },
-        {
             "name": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
