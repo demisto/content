@@ -188,6 +188,8 @@ script:
 
         // create human readable
         var entry = buildEmptyEntryContext();
+        entry.Contents = result;
+        entry.ContentsFormat = formats.json;
         var commandTitle = isStandardCommand(command) ? command : (command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1)));
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
@@ -320,7 +322,6 @@ script:
     }
 
     return parseResult(command, result);
-    // return result;
   type: javascript
   commands:
   - name: threatstream-intelligence
