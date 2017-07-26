@@ -4,6 +4,7 @@ system: true
 fromversion: 2.5.0
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -122,8 +123,6 @@ tasks:
     scriptarguments:
       processNamePrefix: EC
       timeout: ""
-    results:
-    - TaniumFoundHostnames
     view: |-
       {
         "position": {

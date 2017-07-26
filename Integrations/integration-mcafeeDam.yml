@@ -154,7 +154,7 @@ script:
                 labels.push({type: keys[j], value: alert[keys[j]]});
             }
         }
-        return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation, rawJSON: JSON.stringify(alert)};
+        return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation, rawJSON: JSON.stringify(alert).replace(/\\"/g, '"')};
     };
     var alertsToIncident = function(alerts) {
         var incidents = [];
@@ -291,7 +291,6 @@ script:
 
             if (res && res.alert) {
                 jsonRes = res.alert;
-                console.log(JSON.stringify(jsonRes));
                 var entryContext = {};
                 md = alertsToMd(jsonRes);
                 return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
