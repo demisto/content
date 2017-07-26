@@ -1,3 +1,4 @@
+versionedfields: {}
 commonfields:
   id: Cisco Spark
   version: -1
@@ -196,6 +197,8 @@ script:
 
             entry = buildEmptyEntryContext();
             entry.HumanReadable = tableToMarkdown('Cisco Spark Results', outputs);
+            entry.Contents = res;
+            entry.ContentsFormat = formats.json;
 
             if (isListCommand) {
                 var splitCommand = command.split('-');
