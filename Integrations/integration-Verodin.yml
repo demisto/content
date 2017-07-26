@@ -186,9 +186,24 @@ script:
         },
         'verodin-manage-sims-actions-run': {
             url: 'manage_sims/actions/%id%/run.json',
-            method: 'GET',
+            method: 'POST',
+            defaultArgs: {
+                'schedule_run_now_selector': 'run_now',
+                'repeat_job_period_type': 'minutes',
+                'repeat_job_times_selector_1': 'number',
+                'repeat_job_times_selector': 'number',
+                'repeat_job_count': "",
+                'job_name': "",
+                'repeat_job_period_number_1': "",
+                'repeat_job_count_1': "",
+                'attack_zone_id_1': "",
+                'schedule_job_datetime': "",
+                'target_zone_id_1': "",
+                'repeat_job_period_number': "",
+               'repeat_job_period_type_1': "",
+            },
         },
-        'verodin-get-secureity-zones': {
+        'verodin-get-security-zones': {
             url: 'security_zones.json',
             method: 'GET',
             extended: true,
@@ -208,7 +223,7 @@ script:
                 }
             ],
         },
-        'verodin-get-secureity-zone': {
+        'verodin-get-security-zone': {
             url: 'security_zones/%id%.json',
             method: 'GET',
             extended: true,
@@ -228,7 +243,7 @@ script:
                 }
             ],
         },
-        'verodin-delete-secureity-zone': {
+        'verodin-delete-security-zone': {
             url: 'security_zones/%id%',
             method: 'DELETE',
         },
@@ -423,12 +438,16 @@ script:
         };
     }
 
+
     var sendRequest = function(url, method, args) {
-        var headers = {};
         var httpParams = {
            Method: method,
+           Headers: {
+                'Content-Type': ['application/json']
+           },
            Username: params.credentials.identifier,
            Password: params.credentials.password,
+           Body: method == 'POST' ? JSON.stringify(args) : undefined
         };
         var res = http(
                 baseUrl + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
@@ -437,6 +456,7 @@ script:
                 params.proxy,
                 false
             );
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
@@ -492,6 +512,14 @@ script:
 
     var id = args.id;
     currentCommand = commandDictionary[command];
+    if (currentCommand.defaultArgs) {
+        keys = Object.keys(currentCommand.defaultArgs);
+        for (var k in keys) {
+            if (!args[keys[k]]) {
+                args[keys[k]] = currentCommand.defaultArgs[keys[k]];
+            }
+        }
+    }
     var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
     if (command === 'test-module') {
         return 'ok';
@@ -634,12 +662,12 @@ script:
     - name: id
       required: true
       description: Action’s ID number
-    - name: attack_node_id
+    - name: attack_node_id_1
       description: ID number of source Node
-    - name: target_node_id
+    - name: target_node_id_1
       description: ID number of destination Node
     description: Executes the specified Action
-  - name: verodin-get-secureity-zones
+  - name: verodin-get-security-zones
     arguments: []
     outputs:
     - contextPath: Verodin.Zones.ID
@@ -657,7 +685,7 @@ script:
     - contextPath: Verodin.Zones.Updated
       description: Zone updated
     description: Returns an array of all Security Zones and their details
-  - name: verodin-get-secureity-zone
+  - name: verodin-get-security-zone
     arguments:
     - name: id
       required: true
@@ -678,7 +706,7 @@ script:
     - contextPath: Verodin.Zones.Updated
       description: Zone updated
     description: Gets details on the specified Security Zone
-  - name: verodin-delete-secureity-zone
+  - name: verodin-delete-security-zone
     arguments:
     - name: id
       required: true
