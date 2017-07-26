@@ -202,6 +202,27 @@ script:
                 'repeat_job_period_number': "",
                'repeat_job_period_type_1': "",
             },
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'Verodin.Jobs(val.ID==obj.ID)',
+                    title: 'Verodin run simulation - result job',
+                    data: [
+                        {to: 'ID', from: 'id'},
+                        {to: 'Description', from: 'desc'},
+                        {to: 'Created', from: 'created_at'},
+                        {to: 'Name', from: 'name'},
+                        {to: 'OrganizationID', from: 'organization_id'},
+                        {to: 'Updated', from: 'updated_at'},
+                        {to: 'NodeActionQueueID', from: 'node_action_queue_id'},
+                        {to: 'PlanID', from: 'plan_id'},
+                        {to: 'Progress', from: 'progress'},
+                        {to: 'SimulationID', from: 'simulation_id'},
+                        {to: 'Status', from: 'status'},
+                        {to: 'UserID', from: 'user_id'},
+                    ]
+                }
+            ],
         },
         'verodin-get-security-zones': {
             url: 'security_zones.json',
@@ -460,8 +481,8 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        if (res.StatusCode === 204) {
-            return undefined;
+        if (!res.Body) {
+            return 'Done';
         }
         try {
             return JSON.parse(res.Body);
@@ -542,6 +563,8 @@ script:
             entry.EntryContext[current.contextPath] = context;
             entries.push(entry);
         }
+    } else {
+        return result;
     }
     return entries;
   type: javascript
