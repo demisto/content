@@ -1,3 +1,4 @@
+versionedfields: {}
 commonfields:
   id: IntSights 2
   version: -1
@@ -295,7 +296,7 @@ script:
         }
 
         return res;
-    };
+    }
 
     var createFileName = function(command, args) {
         var currentTime = new Date();
@@ -394,58 +395,34 @@ script:
         return entry;
     }
 
-    var alertsToIncidents = function(alerts, lastRun) {
-        var incidents = [];
-        for (var i = 0; i < alerts.length; i++) {
-            var incident = {
-                name: 'IntSights alert ' + alerts[i]._id,
-                found: alerts[i].FoundDate,
-                rawJSON: JSON.stringify(alerts[i])
-            };
+    var getAlerts = function(startTime) {
+        command = 'intsights-get-alerts';
+        args.DateFrom = startTime;
+        result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
 
-            incidents.push(incident);
+        return result;
+    }
+
+    var createIncidentFromAlert = function(alert) {
+        return {
+            'name': 'IntSights alert ' + alert._id,
+            'rawJSON': JSON.stringify(alert).replace(/\\"/g, '"')
         }
-
-        var lastFoundDate = 0;
-        for (var i = 0; i < incidents.length; i++) {
-            var foundDate = Date.parse(incidents[i].found);
-            if (foundDate > lastFoundDate) {
-                lastFoundDate = foundDate;
-            }
-        }
-
-        if (lastFoundDate > lastRun.lastFoundDate) {
-            lastRun.lastFoundDate = lastFoundDate;
-            setLastRun(lastRun);
-        }
-
-        return JSON.stringify(incidents);
     }
 
     var fetchIncidents = function(loginCookies) {
         var lastRun = getLastRun();
-        if (!lastRun || !lastRun.lastFoundDate) {
-            // fetch incidents only starting now (last minute)
-            lastRun = {lastFoundDate: new Date().getTime() - 1*60*1000};
+        var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
+        var res = getAlerts(startTime);
+        var incidents = [];
+        for (var i = 0; i < res.Data.length; i++) {
+            var alert = res.Data[i];
+            startTime = Math.max(startTime, Date.parse(alert.FoundDate));
+            incidents.push(createIncidentFromAlert(alert));
         }
+        setLastRun({startTime: startTime});
 
-        command = 'intsights-get-alerts';
-        args.DateFrom = lastRun.time;
-        result = JSON.parse(
-            sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body
-        );
-
-        var incidents;
-        if (result.Data && result.Data.length) {
-            var alerts = result.Data;
-            incidents = alertsToIncidents(alerts, lastRun);
-        }
-
-        if (incidents) {
-            return incidents;
-        } else {
-            return '[]';
-        }
+        return JSON.stringify(incidents);
     }
 
     var loginCookies = login();
@@ -458,6 +435,7 @@ script:
             break;
 
         case 'fetch-incidents':
+        case 'intsights-fetch-test':
             result = fetchIncidents(loginCookies);
             break;
 
@@ -836,5 +814,7 @@ script:
     - contextPath: IntSights.IOCs
       description: IOCs details
     description: Get all the IOCs
+  - name: intsights-fetch-test
+    arguments: []
   isfetch: true
 hidden: false
