@@ -1,9 +1,9 @@
 versionedfields: {}
 commonfields:
   id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 47
+  version: 64
 name: Malware
-script: |-
+script: |
   import hashlib
   import re
   import requests
@@ -11,7 +11,9 @@ script: |-
   import json
   from bs4 import BeautifulSoup
 
-  URL = 'https://malwr.com'
+  MAIN_URL = 'https://malwr.com'
+  STATUS_URL = '/submission/status/%s/'
+  RESULT_URL = '/analysis/%s/'
   SUPPORTED_COMMANDS = ['Submit', 'Status', 'Result']
 
   def md5(fname):
@@ -44,8 +46,6 @@ script: |-
       def login(self):
           """Login on malwr.com website"""
 
-          demisto.info('login...')
-
           if self.username and self.password:
               soup = self.request_to_soup(self.url + '/account/login')
               csrf_input = soup.find(attrs=dict(name='csrfmiddlewaretoken'))
@@ -76,23 +76,23 @@ script: |-
           soup = BeautifulSoup(req.content, "html.parser")
           return soup
 
+      @staticmethod
+      def find_submission_links(req):
+          # regex to check if the file was already submitted before
+          pattern = '(\/analysis\/[a-zA-Z0-9]{12,}\/)'
+          submission_links = re.findall(pattern, req.content)
+
+          demisto.info('submission_links = %s' % (submission_links, ))
+
+          return submission_links
+
       def submit_sample(self, filepath, analyze=True, share=True, private=True):
-          demisto.info('submit_sample, filepath: %s' % (filepath, ))
           if self.logged is False:
-              demisto.info('login is required, performing...')
               self.login()
 
           s = self.session
           req = s.get(self.url + '/submission/', headers=self.headers)
-
-          demisto.info('req = %s' % (req, ))
-
           soup = BeautifulSoup(req.content, "html.parser")
-
-          demisto.info('soup = %s' % (soup, ))
-
-          # TODO: math_captcha_question might be unused. Remove.
-          # math_captcha_question = soup.find('input', {'name': 'math_captcha_question'})['value']
 
           pattern = '(\d [-+*] \d) ='
           data = {
@@ -104,26 +104,13 @@ script: |-
               'private': 'on' if private else 'off'  # private by default
           }
 
-          req = s.post(self.url + '/submission/', data=data, headers=self.headers,
-                       files={'sample': open(filepath, 'rb')})
-
-          demisto.info('req2 = %s' % (req, ))
-
-          # TODO: soup might be unused. Remove.
-          # soup = BeautifulSoup(req.content, "html.parser")
-
-          # regex to check if the file was already submitted before
-          pattern = '(\/analysis\/[a-zA-Z0-9]{12,}\/)'
-          submission_links = re.findall(pattern, req.content)
-
-          demisto.info('submission_links = %s' % (submission_links, ))
+          req = s.post(self.url + '/submission/', data=data, headers=self.headers, files={'sample': open(filepath, 'rb')})
+          submission_links = MalwrAPI.find_submission_links(req)
 
           res = {
               'md5': hashlib.md5(open(filepath, 'rb').read()).hexdigest(),
               'file': filepath
           }
-
-          demisto.info('res = %s' % (res, ))
 
           if len(submission_links) > 0:
               res['analysis_link'] = submission_links[0]
@@ -136,11 +123,25 @@ script: |-
               elif 'file like this waiting for processing, submission aborted.' in req.content:
                   return 'File already submitted, check its status.'
               else:
-                  return 'Error with the file %s.' % (filepath, )
+                  return 'Error with the file.'
 
           return res
 
+      def get_status(self, analysis_id):
+          s = self.session
+          demisto.info('url = %s' % (self.url + STATUS_URL % (analysis_id, )))
+          req = s.get(self.url + STATUS_URL % (analysis_id, ), headers=self.headers)
+          soup = BeautifulSoup(req.content, 'html.parser')
 
+          demisto.info('%s' % (soup, ))
+
+          submission_links = MalwrAPI.find_submission_links(req)
+          if len(submission_links) > 0:
+              return 'The analysis is complete, you can view it at: %s%s.' % (MAIN_URL, submission_links[0])
+          elif 'The analysis is still pending' in str(soup):
+              return 'The analysis is still in progress.'
+          else:
+              return 'Error: the specified analysis does not exist.'
 
 
   commandAction = demisto.args()['commandAction']
@@ -157,7 +158,7 @@ script: |-
       password = None
 
   malwr = MalwrAPI(
-      url=URL,
+      url=MAIN_URL,
       username=username,
       password=password
   )
@@ -178,7 +179,9 @@ script: |-
           demisto.results(res)
 
   elif commandAction == 'Status':
-      pass
+      analysisId = demisto.args()['commandArgument']
+      message = malwr.get_status(analysisId)
+      demisto.results(message)
 
   elif commandAction == 'Result':
       pass
