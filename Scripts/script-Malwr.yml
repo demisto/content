@@ -1,7 +1,7 @@
 versionedfields: {}
 commonfields:
   id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 140
+  version: 149
 name: Malware
 script: |
   import hashlib
@@ -60,11 +60,9 @@ script: |
                                                 data=payload, headers=self.headers)
 
               if login_request.status_code == 200:
-                  demisto.info('Login OK')
                   self.logged = True
                   return True
               else:
-                  demisto.info('Login failed')
                   self.logged = False
                   return False
 
@@ -82,8 +80,6 @@ script: |
           # regex to check if the file was already submitted before
           pattern = '(\/analysis\/[a-zA-Z0-9]{12,}\/)'
           submission_links = re.findall(pattern, req.content)
-
-          demisto.info('submission_links = %s' % (submission_links, ))
 
           return submission_links
 
@@ -203,7 +199,7 @@ script: |
           analysisId = res['analysis_link'].split('/')[-2]
 
           message = 'File submitted: %s%s\n' % (MAIN_URL, res['analysis_link'])
-          message += 'Hash: %s\n' % (res['md5'], )
+          message += 'MD5: %s\n' % (res['md5'], )
           message += 'Analysis ID: %s' % (analysisId, )
 
           entry['Contents'] = str(soup)
@@ -230,25 +226,22 @@ script: |
   elif commandAction == 'Result':
       analysisId = demisto.args()['commandArgument']
       status, isMalicious, soup, md5 = malwr.get_result(analysisId)
-      demisto.info('md5 = %s' % (md5, ))
 
       if status == 'pending':
           message = 'The analysis is still in progress.'
           demisto.results(message)
           sys.exit(0)
-      elif isMalicious:
+
+      if isMalicious:
+          entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysisId, 'Status': status, 'Malicious': {'Vendor': 'Malwr'}}}
+          entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3 if isMalicious else 0}
           message = 'The file is malicious.'
       else:
+          entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysisId, 'Status': status}}
           message = 'The file is not malicious.'
 
       entry['Contents'] = str(soup)
       entry['HumanReadable'] = message
-      entry['EntryContext'] = {
-          'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysisId, 'Malicious': isMalicious},
-          'DBotScore': {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3 if isMalicious else 0}
-      }
-
-      addMalicious()
 
   demisto.results(entry)
 type: python
