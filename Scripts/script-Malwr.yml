@@ -1,9 +1,9 @@
 versionedfields: {}
 commonfields:
   id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 40
+  version: 47
 name: Malware
-script: |
+script: |-
   import hashlib
   import re
   import requests
@@ -11,7 +11,16 @@ script: |
   import json
   from bs4 import BeautifulSoup
 
+  URL = 'https://malwr.com'
   SUPPORTED_COMMANDS = ['Submit', 'Status', 'Result']
+
+  def md5(fname):
+      hash_md5 = hashlib.md5()
+      with open(fname, 'rb') as f:
+          for chunk in iter(lambda: f.read(4096), b''):
+              hash_md5.update(chunk)
+
+      return hash_md5.hexdigest()
 
   # The Malwar API from https://github.com/PaulSec/API-malwr.com
 
@@ -66,77 +75,6 @@ script: |
           req = self.session.get(url, headers=self.headers)
           soup = BeautifulSoup(req.content, "html.parser")
           return soup
-
-      def get_latest_comments(self):
-          """Request the last comments on malwr.com"""
-          res = []
-          soup = self.request_to_soup()
-          comments = soup.findAll('div', {'class': 'span6'})[3]
-
-          for comment in comments.findAll('tr'):
-              infos = comment.findAll('td')
-
-              infos_to_add = {
-                  'comment': infos[0].string,
-                  'comment_url': infos[1].find('a')['href']
-              }
-              res.append(infos_to_add)
-
-          return res
-
-      def get_recent_domains(self):
-          """Get recent domains on index page
-          Returns a list of objects with keys domain_name and url_analysis"""
-          res = []
-          soup = self.request_to_soup()
-
-          domains = soup.findAll('div', {'class': 'span6'})[1]
-          for domain in domains.findAll('tr'):
-              infos = domain.findAll('td')
-              infos_to_add = {
-                  'domain_name': infos[0].find('span').string,
-                  'url_analysis': infos[1].find('a')['href']
-              }
-              res.append(infos_to_add)
-
-          return res
-
-      def get_public_tags(self):
-          """Get public tags on index page
-          Return a tag list"""
-          res = []
-          soup = self.request_to_soup()
-
-          tags = soup.findAll('div', {'class': 'span6'})[2]
-          for tag in tags.findAll('a', {'class': 'tag-label'}):
-              res.append(tag.string)
-
-          return res
-
-      def get_recent_analyses(self):
-
-          res = []
-          soup = self.request_to_soup()
-
-          submissions = soup.findAll('div', {'class': 'span6'})[0]
-          for submission in submissions.findAll('tr'):
-              infos = submission.findAll('td')
-
-              infos_to_add = {
-                  'submission_time': infos[0].string,
-                  'hash': infos[1].find('a').string,
-                  'submission_url': infos[1].find('a')['href']
-              }
-              res.append(infos_to_add)
-
-          return res
-
-      def submit_folder(self, path, analyze=True, share=True, private=True):
-          filelist = [f for f in os.listdir(path)]
-          res = []
-          for item in filelist:
-              res.append(self.submit_sample(path + item, analyze, share, private))
-          return res
 
       def submit_sample(self, filepath, analyze=True, share=True, private=True):
           demisto.info('submit_sample, filepath: %s' % (filepath, ))
@@ -202,144 +140,8 @@ script: |
 
           return res
 
-      def search(self, search_word):
-          # Do nothing if not logged in
-          if not self.logged:
-              res = self.login()
-              if res is False:
-                  return False
-
-          search_url = self.url + '/analysis/search/'
-          c = self.request_to_soup(search_url)
-
-          csrf_input = c.find(attrs=dict(name='csrfmiddlewaretoken'))
-          csrf_token = csrf_input['value']
-          payload = {
-              'csrfmiddlewaretoken': csrf_token,
-              'search': u'{}'.format(search_word)
-          }
-          sc = self.session.post(search_url, data=payload, headers=self.headers)
-          ssc = BeautifulSoup(sc.content, "html.parser")
-
-          res = []
-          error = ssc.findAll('div', {'class': 'alert-error'})
-          if len(error) > 0:
-              self.display_message('Invalid search term')
-              return []
-          submissions = ssc.findAll('div', {'class': 'box-content'})[0]
-          sub = submissions.findAll('tbody')[0]
-          for submission in sub.findAll('tr'):
-              infos = submission.findAll('td')
-              infos_to_add = {
-                  'submission_time': infos[0].string,
-                  'hash': infos[1].find('a').string,
-                  'submission_url': infos[1].find('a')['href'],
-                  'file_name': infos[2].string
-              }
-              res.append(infos_to_add)
-
-          return res
-
-      def getReport(self, search_url):
-          # Do nothing if not logged in
-          if not self.logged:
-              res = self.login()
-              if res is False:
-                  return False
-
-          search_url = self.url + search_url
-          c = self.request_to_soup(search_url)
-
-          csrf_input = c.find(attrs=dict(name='csrfmiddlewaretoken'))
-          csrf_token = csrf_input['value']
-          payload = {
-              'csrfmiddlewaretoken': csrf_token,
-          }
-          sc = self.session.post(search_url, data=payload, headers=self.headers)
-          ssc = BeautifulSoup(sc.content, "html.parser")
-
-          output = {"IP": [], "Domain": []}
-
-          domains = ssc.find(id="domains").find_all("td")
-          # Will go domain, IP, domain, IP
-          for i in range(len(domains)):
-              if i%2 == 0:
-                  # Domain
-                  output["Domain"].append(domains[i].text)
-              else:
-                  # IP
-                  output["IP"].append(domains[i].text)
-
-          ips = ssc.find(id="hosts").find_all("td")
-          output["IP"] += [x.text for x in ips]
-
-          return output
 
 
-  def md5(fname):
-      hash_md5 = hashlib.md5()
-      with open(fname, "rb") as f:
-          for chunk in iter(lambda: f.read(4096), b""):
-              hash_md5.update(chunk)
-
-      return hash_md5.hexdigest()
-
-
-  # try:
-  #     api = MalwrAPI(verbose=True, username=demisto.args()['username'], password=demisto.args()['password'])
-  # except:
-  #     print('Trouble with ~/.malwr config file, authenticated features unavailable')
-  #     api = MalwrAPI(verbose=True)
-
-  # if args.search is not None:
-  #     if os.path.isfile(args.search):
-  #         fhash = md5(args.search)
-  #         print('Search for hash %s (file %s)' % (fhash, args.search))
-  #         res = api.search(fhash)
-  #     else:
-  #         print('Search for %s' % args.search)
-  #         res = api.search(args.search)
-  #     if res is False:
-  #         print('failed login')
-  #     else:
-  #         if res == []:
-  #             print('No results')
-  #         else:
-  #             for d in res:
-  #                 print(
-  #                     '%s\t%s\t%s\thttps://malwr.com%s' % (
-  #                         d['submission_time'], d['file_name'],
-  #                         d['hash'], d['submission_url']
-  #                     )
-  #                 )
-  # elif args.submit is not None:
-  #     res = api.submit_sample(
-  #             filepath=args.submit, share=args.no_share,
-  #             private=args.private
-  #     )
-  #     print('File submitted : https://malwr.com%s for %s (hash: %s)' % (res['analysis_link'], res['file'], res['md5']))
-  # elif args.domains:
-  #     res = api.get_recent_domains()
-  #     print('Recent domains:')
-  #     for d in res:
-  #         print('%s -> https://malwr.com%s' % (d['domain_name'], d['url_analysis']))
-  # elif args.tags:
-  #     res = api.get_public_tags()
-  #     print('Public tags:')
-  #     for t in res:
-  #         print(t)
-  # elif args.recent:
-  #     res = api.get_recent_analyses()
-  #     print('Recent analyses:')
-  #     for d in res:
-  #         print('%s -> https://malwr.com%s' % (d['hash'], d['submission_url']))
-
-  # demisto.info(demisto.args())
-
-  # demisto.log('Test message!!!')
-
-  # def return_message():
-  #     return 'message'
 
   commandAction = demisto.args()['commandAction']
 
@@ -354,30 +156,32 @@ script: |
       username = None
       password = None
 
-  api = MalwrAPI(
-      url='https://malwr.com',
+  malwr = MalwrAPI(
+      url=URL,
       username=username,
       password=password
   )
 
-  demisto.info('fileId = %s' % (demisto.args()['fileId'], ))
-  filepathResult = demisto.executeCommand('getFilePath', {'id': demisto.args()['fileId']})
-  demisto.info('filepathResult = %s' % (filepathResult, ))
+  if commandAction == 'Submit':
+      fileId = demisto.args()['commandArgument']
+      filepathResult = demisto.executeCommand('getFilePath', {'id': fileId})
+      if 'path' not in filepathResult[0]['Contents']:
+          demisto.results('Error: entry %s is not a file.' % (fileId, ))
+          sys.exit(0)
 
-  if 'path' not in filepathResult[0]['Contents']:
-      demisto.results('Error: entry %s is not a file.' % (demisto.args()['fileId'], ))
-      sys.exit(0)
+      res = malwr.submit_sample(filepath=filepathResult[0]['Contents']['path'])
 
-  demisto.info('filepath = %s' % (filepathResult[0]['Contents']['path'], ))
+      if 'analysis_link' in res:
+          message = 'File submitted: https://malwr.com%s (hash: %s)' % (res['analysis_link'], res['md5'])
+          demisto.results(message)
+      else:
+          demisto.results(res)
 
-  res = api.submit_sample(filepath=filepathResult[0]['Contents']['path'])
+  elif commandAction == 'Status':
+      pass
 
-  if 'analysis_link' in res:
-      # demisto.results(res['analysis_link'])
-      message = 'File submitted: https://malwr.com%s (hash: %s)' % (res['analysis_link'], res['md5'])
-      demisto.results(message)
-  else:
-      demisto.results(res)
+  elif commandAction == 'Result':
+      pass
 type: python
 tags: []
 enabled: true
