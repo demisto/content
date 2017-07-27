@@ -81,7 +81,7 @@ class ScriptContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res =  "- " + cnt["name"] + "\n"
-        if len(cnt.get("comment")) > 0:
+        if cnt.get("comment") is not None and len(cnt.get("comment")) > 0:
             res += "-- " + cnt["comment"] + "\n"
         return res
 
