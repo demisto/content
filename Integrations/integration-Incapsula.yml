@@ -17,11 +17,17 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: User system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
   script: |-
     var apiid = params.apiid;
     var apikey = params.apikey;
     var base = 'https://my.incapsula.com';
+    var proxy = params.proxy;
 
     var sendRequest = function(url, body, queryName) {
         var res = http(
@@ -31,7 +37,8 @@ script:
                     Body: body,
                     Headers: {'content-type': ['application/x-www-form-urlencoded']},
                 },
-                true
+                true,
+                proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
@@ -663,4 +670,4 @@ script:
       description: Protect admin areas of joomla | wordpress | phpBB
     description: Use this operation to configure Login Protect on wordpress | joomla
       | phpbb admin areas
-system: true
+cangetsamples: true
