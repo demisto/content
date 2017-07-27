@@ -1,7 +1,7 @@
 versionedfields: {}
 commonfields:
   id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 64
+  version: 75
 name: Malware
 script: |
   import hashlib
@@ -132,16 +132,39 @@ script: |
           demisto.info('url = %s' % (self.url + STATUS_URL % (analysis_id, )))
           req = s.get(self.url + STATUS_URL % (analysis_id, ), headers=self.headers)
           soup = BeautifulSoup(req.content, 'html.parser')
-
-          demisto.info('%s' % (soup, ))
-
           submission_links = MalwrAPI.find_submission_links(req)
           if len(submission_links) > 0:
-              return 'The analysis is complete, you can view it at: %s%s.' % (MAIN_URL, submission_links[0])
+              status = 'complete'
+              message = 'The analysis is complete, you can view it at: %s%s.' % (MAIN_URL, submission_links[0]),
           elif 'The analysis is still pending' in str(soup):
-              return 'The analysis is still in progress.'
+              status = pending
+              message = 'The analysis is still in progress.'
           else:
-              return 'Error: the specified analysis does not exist.'
+              status = 'error'
+              message = 'Error: the specified analysis does not exist.'
+
+          return status, message, soup
+
+      def get_result(self, analysis_id):
+          analysis_status, _, soup = self.get_status(analysis_id)
+          if analysis_status != 'complete':
+              status = 'pending'
+              message = 'The analysis is still in progress.'
+          else:
+              status = 'complete'
+
+              s = self.session
+              req = s.get(self.url + RESULT_URL % (analysis_id, ), headers=self.headers)
+              soup = BeautifulSoup(req.content, 'html.parser')
+
+              demisto.info(str(soup))
+              if 'malicious' in str(soup):
+                  message = 'File is malicious.'
+              else:
+                  status = 'complete'
+                  message = 'File is not malicious.'
+
+          return message
 
 
   commandAction = demisto.args()['commandAction']
@@ -173,18 +196,20 @@ script: |
       res = malwr.submit_sample(filepath=filepathResult[0]['Contents']['path'])
 
       if 'analysis_link' in res:
-          message = 'File submitted: https://malwr.com%s (hash: %s)' % (res['analysis_link'], res['md5'])
+          message = 'File submitted: https://malwr.com%s, hash: %s.' % (res['analysis_link'], res['md5'])
           demisto.results(message)
       else:
           demisto.results(res)
 
   elif commandAction == 'Status':
       analysisId = demisto.args()['commandArgument']
-      message = malwr.get_status(analysisId)
+      _, message = malwr.get_status(analysisId)
       demisto.results(message)
 
   elif commandAction == 'Result':
-      pass
+      analysisId = demisto.args()['commandArgument']
+      message = malwr.get_result(analysisId)
+      demisto.results(message)
 type: python
 tags: []
 enabled: true
