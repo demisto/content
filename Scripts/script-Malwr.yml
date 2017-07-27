@@ -1,7 +1,7 @@
 versionedfields: {}
 commonfields:
   id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 149
+  version: 151
 name: Malware
 script: |
   import hashlib
@@ -118,9 +118,9 @@ script: |
               if len(submission_status) > 0:
                   res['analysis_link'] = submission_status[0]
               elif 'file like this waiting for processing, submission aborted.' in req.content:
-                  return 'File already submitted, check its status.'
+                  res = 'File already submitted, check its status.'
               else:
-                  return 'Error with the file.'
+                  res = 'Error with the file.'
 
           return res, soup
 
@@ -132,7 +132,7 @@ script: |
           if len(submission_links) > 0:
               status = 'complete'
           elif 'The analysis is still pending' in str(soup):
-              status = pending
+              status = 'pending'
           else:
               status = 'error'
 
