@@ -4,7 +4,7 @@
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "docx",
   "orientation": "portrait",
   "recipients": [],

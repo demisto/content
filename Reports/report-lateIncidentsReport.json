@@ -4,7 +4,7 @@
   "description": "All the incidents that passed their SLA due date and the incidents that are at risk to soon pass their SLA.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],
