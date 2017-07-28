@@ -151,7 +151,7 @@ script:
                         res.append(result)
                 found = True
         if not found:
-            demisto.results("Not found job for sid: "+demisto.args()['sid'])
+            demisto.results("Found no job for sid: "+demisto.args()['sid'])
         if found:
             demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
         sys.exit(0)
