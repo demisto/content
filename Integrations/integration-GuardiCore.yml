@@ -691,6 +691,11 @@ script:
                 throw 'Unknown command';
         }
 
+        if (command != 'guardicore-get-incident-pcap') {
+            entry.Contents = response;
+            entry.ContentsFormat = formats.json;
+        }
+
         return entry;
     }
 
