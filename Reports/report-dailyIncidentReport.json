@@ -4,7 +4,7 @@
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],

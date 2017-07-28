@@ -4,7 +4,7 @@
   "description": "All critical and high severity incidents that may need the analyst attention.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],

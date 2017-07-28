@@ -4,7 +4,7 @@
   "description": "Shift summary which includes the last 6 hours open and closed incidents.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "pdf",
   "orientation": "landscape",
   "recipients": [],
