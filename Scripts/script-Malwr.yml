@@ -1,7 +1,7 @@
 versionedfields: {}
 commonfields:
-  id: 20bd44d4-9abf-4913-8903-c323baee80ab
-  version: 151
+  id: Malware
+  version: -1
 name: Malware
 script: |
   import hashlib
