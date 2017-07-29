@@ -46,6 +46,7 @@ script:
         proxy_flag = ""
         if proxy:
             proxy_flag = "--proxy=" + http_proxy
+        demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
         command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
         if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
@@ -83,7 +84,7 @@ script:
                 proxy_flag = "--proxy=" + https_proxy
             else:
                 proxy_flag = "--proxy=" + http_proxy
-
+        demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
         command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', url, friendlyName]
         if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
