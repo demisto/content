@@ -189,4 +189,4 @@ script:
     description: 'fetch splunk search results '
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: "Adding support for proxy in splunk"
+releaseNotes: "-"
