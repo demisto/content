@@ -4,9 +4,10 @@
   "description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "docx",
   "orientation": "portrait",
+  "releaseNotes": "-",
   "recipients": [],
   "system": true,
   "decoder": {
