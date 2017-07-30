@@ -53,6 +53,7 @@ script:
     import splunklib.results as results
     import json
     from time import gmtime, strftime
+    from datetime import timedelta, datetime
     import urllib2
     import ssl
     from StringIO import StringIO
@@ -160,12 +161,11 @@ script:
         lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
 
         incidents = []
-        now = strftime("%Y-%m-%dT%H:%M:%S", gmtime())
+        t = datetime.utcnow()
+        now = t.strftime("%Y-%m-%dT%H:%M:%S")
         if len(lastRun) == 0:
-            lastRun = now
-            demisto.incidents(incidents)
-            demisto.setLastRun({'time': now})
-            sys.exit(0)
+            t = t - timedelta(minutes=10)
+            lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
         kwargs_oneshot = {"earliest_time": lastRun,
                       "latest_time": now}
         searchquery_oneshot = demisto.params()['fetchQuery']
@@ -189,4 +189,4 @@ script:
     description: 'fetch splunk search results '
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: "-"
+releaseNotes: "First fetch to bring last 10 minutes notable events"
