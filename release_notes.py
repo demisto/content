@@ -111,14 +111,14 @@ class PlaybookContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res = "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            raise Exception(cnt["name"] + "missing release notes yml entry")
+            raise Exception(cnt["name"] + " missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -251,7 +251,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         fullFileName = names[1]
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
-        elif changeType != "R100":
+        elif changeType != "R100" and changeType != "R094":
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 if "/" in fullFileName:
