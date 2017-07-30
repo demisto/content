@@ -321,7 +321,7 @@ script:
     var url = params.server.replace(/[\/]+$/, '');
     switch (command) {
         case 'test-module':
-                var res = sendRequest(url + '/v1/domaintools.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+                var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
                 if(res.response.error){
                     log('Something went wrong - error code ' + error.code);
                 }
