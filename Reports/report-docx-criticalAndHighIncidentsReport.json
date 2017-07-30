@@ -4,10 +4,11 @@
   "description": "All critical and high severity incidents that may need the analyst attention.",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "docx",
   "orientation": "portrait",
   "recipients": [],
+  "releaseNotes": "-",
   "system": true,
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
