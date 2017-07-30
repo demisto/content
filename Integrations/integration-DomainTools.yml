@@ -107,6 +107,7 @@ script:
                 Type: entryTypes.note,
                 Contents: res,
                 ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
                 HumanReadable: md,
                 EntryContext: context
             };
@@ -145,6 +146,7 @@ script:
                 Contents: repRes,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
+                ReadableContentsFormat: formats.markdown,
                 EntryContext: context
             };
     };
@@ -200,6 +202,7 @@ script:
                 Type: entryTypes.note,
                 Contents: res,
                 ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
                 HumanReadable: 'Found '+numDomains +' domains:\n'+md,
                 EntryContext: context
             };
@@ -234,6 +237,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
             HumanReadable: md,
             EntryContext: context
         };
@@ -252,6 +256,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
             HumanReadable: md,
             EntryContext: context
         };
@@ -280,6 +285,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
             HumanReadable: md,
             EntryContext: context
         };
@@ -313,6 +319,7 @@ script:
             Type: entryTypes.note,
             Contents: res,
             ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
             HumanReadable: md,
             EntryContext: context
         };
