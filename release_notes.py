@@ -252,6 +252,11 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
+            if changeType == "R093":
+                # handle the same as modified
+                fullFileName = names[2]
+                changeType = 'M'
+
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 if "/" in fullFileName:
