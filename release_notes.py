@@ -131,7 +131,7 @@ Content.register(PlaybookContent)
 
 class ReportContent(Content):
     def loadData(self, data):
-        return json.load(data)
+        return json.loads(data)
 
     def getHeader(self):
         return "Reports"
@@ -161,7 +161,7 @@ Content.register(ReportContent)
 
 class ReputationContent(Content):
     def loadData(self, data):
-        return json.load(data)
+        return json.loads(data)
 
     def getHeader(self):
         return "Hypersearch"
@@ -252,6 +252,11 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
+            if changeType == "R093":
+                # handle the same as modified
+                fullFileName = names[2]
+                changeType = 'M'
+
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 if "/" in fullFileName:
