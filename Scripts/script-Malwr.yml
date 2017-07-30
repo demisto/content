@@ -246,6 +246,7 @@ script: |
   demisto.results(entry)
 type: python
 tags: []
+comment: Uses the Malwr API to analyze files.
 enabled: true
 args:
 - name: username
