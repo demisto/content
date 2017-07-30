@@ -811,7 +811,7 @@ script:
                         labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
 
                         incident.labels = labels;
-                        incident.rawJSON: JSON.stringify(message.Items.Message),
+                        incident.rawJSON = JSON.stringify(message.Items.Message);
                         incidents.push(incident);
                     }
                 }
