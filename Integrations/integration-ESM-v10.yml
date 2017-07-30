@@ -297,7 +297,8 @@ script:
             incidents.append({
                 'name': alarm['summary'],
                 'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'], alarm['ID'], alarm['conditionType']),
-                'severity': severity_to_level(alarm['severity'])
+                'severity': severity_to_level(alarm['severity']),
+                'rawJSON': json.dumps(alarm)
             })
         return incidents
 
