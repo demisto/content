@@ -30,6 +30,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     var toCamelCase = function(string){
@@ -46,12 +51,20 @@ script:
                 Headers: {
                     Accept: ['application/json']
                 }
-            }
+            },
+            params.insecure,
+            params.proxy
         );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-        return JSON.parse(res.Body);
+
+        try {
+            return JSON.parse(res.Body);
+        }
+        catch (err) {
+            throw 'Failed to parse JSON';
+        }
     };
 
     var addKeyToJson = function(cur, toAdd){
@@ -543,6 +556,5 @@ script:
   - name: domainProfile
     arguments:
     - name: domain
-hidden: false
 cangetsamples: true
 releaseNotes: "Added BYOI integration"
