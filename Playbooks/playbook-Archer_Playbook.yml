@@ -1,0 +1,341 @@
+id: 8d19cd76-5546-4435-8d86-91baa5ae315c
+version: 25
+name: Archer Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f954aa5-97c8-46b3-8fdd-4a23c8fb9eb1
+    type: start
+    task:
+      id: 9f954aa5-97c8-46b3-8fdd-4a23c8fb9eb1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 8352277d-92ef-4997-8561-8e42db723f23
+    type: regular
+    task:
+      id: 8352277d-92ef-4997-8561-8e42db723f23
+      version: -1
+      name: archer-create-record
+      description: Creates a new content record in the given application.
+      script: RSA Archer|||archer-create-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      fieldsToValues: '{"Title":"${incident.name}","Incident Summary":"Something"}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 37286454-86d0-49a9-8a8d-7fb7f6c0b3c8
+    type: regular
+    task:
+      id: 37286454-86d0-49a9-8a8d-7fb7f6c0b3c8
+      version: -1
+      name: archer-search-applications
+      description: Gets application details or list of all applications.
+      script: RSA Archer|||archer-search-applications
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      findById: ""
+      findByName: Security Incidents
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 638a28b2-74e7-480c-8651-df0008844d66
+    type: regular
+    task:
+      id: 638a28b2-74e7-480c-8651-df0008844d66
+      version: -1
+      name: archer-get-record
+      description: Gets information about a content record in the given application.
+      script: RSA Archer|||archer-get-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      contentId: ${Archer.Content.Id}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 123502e1-5985-48ef-8b45-e0c6de51696a
+    type: regular
+    task:
+      id: 123502e1-5985-48ef-8b45-e0c6de51696a
+      version: -1
+      name: archer-get-application-fields
+      description: Gets all application fields by application ID
+      script: RSA Archer|||archer-get-application-fields
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 63b0fb34-1646-4154-85e5-a6d1ea019bfa
+    type: regular
+    task:
+      id: 63b0fb34-1646-4154-85e5-a6d1ea019bfa
+      version: -1
+      name: archer-update-record
+      description: Updates existing content record in the given application.
+      script: RSA Archer|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      contentId: ${Archer.Content.Id}
+      fieldsToValues: '{"Title":"Update!!!"}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4bf19c29-d9fa-4b0a-81a1-d61c3469be11
+    type: regular
+    task:
+      id: 4bf19c29-d9fa-4b0a-81a1-d61c3469be11
+      version: -1
+      name: archer-search-records
+      description: Search for records inside the given application
+      script: RSA Archer|||archer-search-records
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      dateOperator: ""
+      fieldToSearchOn: Incident ID (KPI)
+      fieldsToDisplay: Incident ID,Title,Date Created
+      maxResults: "1"
+      numericOperator: ""
+      searchValue: ${Archer.Content.Id}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1418
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 7d2fd8ee-602e-4065-8434-0e5370b8bc99
+    type: regular
+    task:
+      id: 7d2fd8ee-602e-4065-8434-0e5370b8bc99
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 61a20cc7-32b4-47c6-8d1a-4210c1247acd
+    type: regular
+    task:
+      id: 61a20cc7-32b4-47c6-8d1a-4210c1247acd
+      version: -1
+      name: archer-delete-record
+      description: Delete existing content record in the given application.
+      script: RSA Archer|||archer-delete-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      contentId: ${Archer.Content.Id}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "9":
+    id: "9"
+    taskid: c62bd02f-ac8a-4b16-8adf-1a26276182c3
+    type: regular
+    task:
+      id: c62bd02f-ac8a-4b16-8adf-1a26276182c3
+      version: -1
+      name: archer-search-records
+      description: Search for records inside the given application
+      script: RSA Archer|||archer-search-records
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    scriptarguments:
+      applicationId: ${Archer.Applications.Id}
+      dateOperator: ""
+      fieldToSearchOn: Incident ID (KPI)
+      fieldsToDisplay: Incident ID,Title,Date Created
+      maxResults: "1"
+      numericOperator: ""
+      searchValue: ${Archer.Content.Id}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1952
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 1e5eaa9b-4e64-41cf-8131-638edec6ad73
+    type: regular
+    task:
+      id: 1e5eaa9b-4e64-41cf-8131-638edec6ad73
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field1: Archer.Content.Id
+      field2: Archer.Content.Fields.Title
+      field3: ""
+      field4: ""
+      value1: ${Archer.Content.Id}
+      value2: Update!!!
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f48e65d4-7412-4e1d-856f-77e077c51cdf
+    type: regular
+    task:
+      id: f48e65d4-7412-4e1d-856f-77e077c51cdf
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field1: Archer.Content.Id
+      field2: Archer.Content.Fields.Title
+      field3: ""
+      field4: ""
+      value1: ${Archer.Content.Id}
+      value2: ${incident.name}
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1997,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
