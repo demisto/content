@@ -27,7 +27,9 @@ dependson:
   must:
   - ad-search
 timeout: 0s
+deprecated: true
 outputs:
 - contextPath: Mailboxes
   description: List of all users mailbox addresses
+releaseNotes: "Deprecated"
 

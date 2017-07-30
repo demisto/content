@@ -236,7 +236,8 @@ script:
                 "Creator":data["opened_by"]["value"],
                 "Assignee":data["assigned_to"]["value"],
                 "State":data["state"],
-                "Summary":data["short_description"]
+                "Summary":data["short_description"],
+                "Number":data["number"]
             };
     }
 
@@ -490,7 +491,8 @@ script:
                 "name": 'ServiceNow Incident ' + incident["number"],
                 "labels": labels,
                 "details" : JSON.stringify(incident),
-                "severity" : severity
+                "severity" : severity,
+                "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"')
             });
 
             sertime = incident.opened_at;
@@ -1400,4 +1402,4 @@ script:
     description: Upload new file
   isfetch: true
 hidden: false
-releaseNotes: "Added support for custom fields in commands (servicenow-update and servicenow-create)."
+releaseNotes: "Added support for custom fields in commands (servicenow-update and servicenow-create). Added ticket number to the context."

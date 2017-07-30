@@ -52,7 +52,7 @@ script:
         proxy_ip = demisto.params()['proxyIp']
         proxy_port = demisto.params()['proxyPort']
         tc = ThreatConnect(access, secert, default_org, url)
-        if len(proxy_ip) > 0 and len(proxy_port) > 0:
+        if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
             tc.set_proxies(proxyIP, int(proxy_port))
         return tc
 
@@ -296,3 +296,4 @@ script:
       description: confidence in indicator, in scale of 1-100
     description: Add a new indicator to ThreatConnect
   dockerimage: demisto/threatconnect-sdk
+releaseNotes: "Fix proxy condition in TC"
