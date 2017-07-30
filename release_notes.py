@@ -131,7 +131,7 @@ Content.register(PlaybookContent)
 
 class ReportContent(Content):
     def loadData(self, data):
-        return json.load(data)
+        return json.loads(data)
 
     def getHeader(self):
         return "Reports"

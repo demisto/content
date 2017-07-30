@@ -4,6 +4,7 @@
   "description": "This report generates Mean Time to Resolve by Incident type for last 2 Quarters",
   "fromVersion": "2.5.0",
   "tags": [],
+  "releaseNotes": "-",
   "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
