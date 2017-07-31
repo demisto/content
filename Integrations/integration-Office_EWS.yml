@@ -199,7 +199,7 @@ script:
                 '<ItemShape>' +
                 '<t:BaseShape>AllProperties</t:BaseShape>' +
                 '<t:IncludeMimeContent>%include-mime-content%</t:IncludeMimeContent>'+
-                '<t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" />'+
+                '<t:AdditionalProperties><t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" /></t:AdditionalProperties>'+
                 '</ItemShape>' +
                 '<ItemIds>'+
                 '%item-ids%'+
@@ -668,7 +668,7 @@ script:
     '            <m:ItemShape>' +
     '                <t:BaseShape>IdOnly</t:BaseShape>' +
     '            </m:ItemShape>' +
-    '            <m:IndexedPageItemView MaxEntriesReturned="100" BasePoint="Beginning" />' +
+    '            <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />' +
     '            <m:Restriction>' +
     '                <t:And>' +
     '                    <t:IsGreaterThan>' +
@@ -720,6 +720,7 @@ script:
         incidents = [];
         if (itemIds) {
             itemArgs = {};
+            itemArgs['item-ids'] = '';
             for (var i = 0 ; i < itemIds.length; i++) {
                 itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
             }
