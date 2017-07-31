@@ -81,7 +81,7 @@ class ScriptContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res =  "- " + cnt["name"] + "\n"
-        if len(cnt.get("comment")) > 0:
+        if cnt.get("comment") is not None and len(cnt.get("comment")) > 0:
             res += "-- " + cnt["comment"] + "\n"
         return res
 
@@ -141,7 +141,7 @@ class ReportContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res = "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
@@ -193,7 +193,7 @@ class IntegrationContent(Content):
 
     def addedReleaseNotes(self, cnt):
         res =  "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
