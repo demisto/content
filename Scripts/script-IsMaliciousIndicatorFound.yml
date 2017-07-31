@@ -15,7 +15,7 @@ script: |-
           ips = dq(invContext,"DBotScore(val.Type.toLowerCase()=='ip' && val.Score>1)");
       }
       if (!urls || urls.length === 0) {
-          urls = dq(invContext,"DBotScore(val.Type.toLowerCase()=='urls' && val.Score>1)");
+          urls = dq(invContext,"DBotScore(val.Type.toLowerCase()=='url' && val.Score>1)");
       }
   }
   if (files && (!Array.isArray(files) || files.length > 0)) {
