@@ -1071,6 +1071,7 @@ script:
     arguments:
     - name: attachment-id
       description: The ID of the attachment as received via get-items
+      required: true
     - name: target-mailbox
       description: The mailbox where this attachment was found
     description: Get actual attachment file from email
