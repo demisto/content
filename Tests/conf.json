@@ -24,6 +24,10 @@
             "playbookID": "Qualys-Test"
         },
         {
+            "name": "GoogleApps API",
+            "playbookID": "GsuiteTest"
+        },
+        {
             "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
