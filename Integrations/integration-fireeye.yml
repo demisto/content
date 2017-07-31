@@ -58,6 +58,17 @@ script:
             url: 'submissions/status/%submission_Key%',
             method: 'GET',
             setContentType: true,
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
+                    title: 'FireEye submission',
+                    data: [
+                        {to: 'Key', from: 'submission_Key'},
+                        {to: 'Status', from: 'submissionStatus'},
+                    ]
+                }
+            ],
         },
         'fe-alert': {
             url: 'alerts',
@@ -68,12 +79,93 @@ script:
             url: 'submissions/results/%submission_Key%',
             method: 'GET',
             setContentType: true,
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
+                    title: 'FireEye submission result',
+                    data: [
+                        {to: 'Key', from: 'submission_Key'},
+                        {to: 'Severity', from: 'alerts.alert.-severity'},
+                    ]
+                }
+            ],
         },
         'fe-config': {
             url: 'config',
             method: 'GET',
+        },
+        'fe-submit': {
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
+                    title: 'FireEye submission',
+                    data: [
+                        {to: 'Key', from: 'ID'},
+                    ]
+                }
+            ],
         }
     };
+
+    function createContext(data, id) {
+        var createContextSingle = function(obj) {
+            var res = {};
+            var keys = Object.keys(obj);
+            keys.forEach(function(k) {
+                var values = k.split('-');
+                var current = res;
+                for (var j = 0; j<values.length - 1; j++) {
+                    if (!current[values[j]]) {
+                        current[values[j]] = {};
+                    }
+                    current = current[values[j]];
+                }
+                current[values[j]] = obj[k];
+            });
+            if (!res.ID && id) {
+                res.ID = id;
+            }
+            return res;
+        };
+        if (data instanceof Array) {
+            var res = [];
+            for (var j=0; j < data.length; j++) {
+                res.push(createContextSingle(data[j]));
+            }
+            return res;
+        }
+        return createContextSingle(data);
+    }
+
+    function mapObjFunction(mapFields, filter) {
+        var transformSingleObj= function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+                res[f.to] = dq(obj, f.from);
+            });
+            if (filter && !filter(res)) {
+                return undefined;
+            }
+            return res;
+        };
+        return function(obj) {
+            if (obj instanceof Array) {
+                var res = [];
+                for (var j=0; j < obj.length; j++) {
+                    var current = transformSingleObj(obj[j]);
+                    if (current) {
+                        res.push(current);
+                    }
+                }
+                return res;
+            }
+            return transformSingleObj(obj);
+        };
+    }
+
+    var submissionKey = args['submission_Key'];
 
     var getFileName = function(args) {
         var reportType = args['report_type'] || 'unknown';
@@ -160,7 +252,8 @@ script:
                sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
                throw 'Request submissions failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
               }
-              return JSON.parse(res.Body);
+              result = JSON.parse(res.Body);
+              break;
         default:
             respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
             result = respoonse.Body;
@@ -173,7 +266,29 @@ script:
             }
     }
     sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-    return result;
+    result['submission_Key'] = submissionKey;
+    currentCommand = commandDictionary[command];
+    var entries = [];
+    if (currentCommand.extended) {
+        for (var j in currentCommand.translator) {
+            var current = currentCommand.translator[j];
+            var entry = {
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.json,
+            };
+            var currentContent = current.innerPath ? dq(result, current.innerPath) : result;
+            var translated = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent) : currentContent);
+            entry.ReadableContentsFormat = formats.markdown;
+            entry.HumanReadable = tableToMarkdown(current.title,translated);
+            entry.EntryContext = {};
+            var context = createContext(translated);
+            entry.EntryContext[current.contextPath] = context;
+            entries.push(entry);
+        }
+    }
+    else {return result};
+    return entries;
   type: javascript
   commands:
   - name: fe-report
