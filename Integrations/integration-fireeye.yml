@@ -284,6 +284,17 @@ script:
             entry.EntryContext = {};
             var context = createContext(translated);
             entry.EntryContext[current.contextPath] = context;
+
+            if(command === 'fe-submit-result' && context.Severity === 'majr'){
+                var md5 = result.alerts.alert.dst.explanation['malware-detected'].malware.md5sum;
+                entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
+                var malFile = {};
+                addMalicious(malFile, outputPaths.file, {
+                        MD5: md5,
+                        Malicious: {Vendor: 'Fireeye'}
+                });
+                entry.EntryContext[outputPaths.file] =[malFile[outputPaths.file]];
+            }
             entries.push(entry);
         }
     }
@@ -317,6 +328,9 @@ script:
     - name: submission_Key
       required: true
       description: commands.server.feSubmit.arguments.submissionKey.description
+    outputs:
+    - contextPath: FireEyeAX.Submissions.Key
+    - contextPath: FireEyeAX.Submissions.Status
     description: commands.server.feSubmitStatus.description
   - name: fe-alert
     arguments:
@@ -357,6 +371,23 @@ script:
       description: commands.server.feSubmit.arguments.submissionKey.description
     - name: info_level
       description: commands.server.feAlert.arguments.infoLevel.description
+    outputs:
+    - contextPath: FireEyeAX.Submissions.Key
+      description: The submission key
+    - contextPath: FireEyeAX.Submissions.Severity
+      description: The severity level of the file
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: File.MD5
+      description: Bad hash found
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
     description: commands.server.feSubmit.arguments.submissionKey.description
   - name: fe-submit
     arguments:
@@ -389,8 +420,11 @@ script:
     - name: timeout
       required: true
       description: commands.server.feSubmit.arguments.timeout.description
+    outputs:
+    - contextPath: FireEyeAX.Submissions.Key
     description: commands.server.feSubmit.description
   - name: fe-config
     arguments: []
     description: commands.server.feConfig.description
-hidden: false
+cangetsamples: true
+releaseNotes: "Added outputs"
