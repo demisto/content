@@ -3,68 +3,82 @@ commonfields:
   version: -1
 name: EmailAskUser
 script: |-
-  #### email body type
-  if (demisto.args()['bodyType'] and demisto.args()['bodyType']=='html'):
-      bodyType = 'html'
-  else:
-      bodyType = 'text'
+  // email body type
+  var bodyType = 'text';
+  if (args.bodyType && args.bodyType=='html') {
+      bodyType = 'html';
+  }
 
-  #### Get entitlement
-  res = demisto.executeCommand('addOneTimeEntitlement', {})
-  if isError(res[0]):
-      demisto.results(res)
-      sys.exit(0)
-  entitlement = demisto.get(res[0], 'Contents')
+  // Get entitlement
+  res = executeCommand('addOneTimeEntitlement', {});
+  if (res[0].Type == entryTypes.error) {
+      return res;
+  }
+  var entitlement = res[0].Contents;
 
-  #### Handle options
-  option1 = demisto.get(demisto.args(), 'option1')
-  if not option1:
-      option1 = 'yes'
-  option2 = demisto.get(demisto.args(), 'option2')
-  if not option2:
-      option2 = 'no'
 
-  #### Create email subject
-  subjectSuffix = ' - #' + demisto.investigation()['id'] + ' ' + entitlement
-  if demisto.get(demisto.args(), 'task'):
-      subjectSuffix += ' #' + demisto.get(demisto.args(), 'task')
+  // Create email subject
+  var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
+  if (args.task) {
+      subjectSuffix += ' #' + args.task;
+  }
+  var subject = args.subject + subjectSuffix;
 
-  #### Create email body
-  if (bodyType == 'html'):
-      message = '%s<br/><br/>Please reply with either %s or %s' % (demisto.args()['message'], option1, option2)
-  else:
-      message = '%s\n\nPlease reply with either %s or %s' % (demisto.args()['message'].replace('\\n', '\n'), option1, option2)
+  // Handle options
+  var reply = args.replyAddress;
+  var option1 = args.option1;
+  if (!option1) {
+      option1 = 'yes';
+  }
+  var option2 = args.option2;
+  if (!option2) {
+      option2 = 'no';
+  }
+  if (reply && bodyType == 'html') {
+      option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
+      option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
+  }
 
-  #### Get email recipients
-  roles = demisto.get(demisto.args(), 'roles')
-  addresses = []
-  if roles is not None:
-            usersRes = demisto.executeCommand('getUsers', { "roles": roles });
-            emails =  map(lambda x: x["email"], usersRes[0]["Contents"])
-            addresses.extend(emails)
-  argMail = demisto.get(demisto.args(), 'email')
-  if argMail is not None:
-      addresses.extend([argMail])
+  // Create email body
+  var message = args.message;
+  if (bodyType == 'html') {
+      message += '<br/><br/>';
+  } else {
+      message += '\n\n';
+  }
+  message += 'Please reply with either ' +option1+' or '+option2;
 
-  if len(addresses) > 0:
-      #### prepare args and run send-mail
-      adStr = ",".join(addresses)
-      args = demisto.args()
-      args['to'] = adStr
-      args['subject'] = demisto.get(demisto.args(), 'subject') + subjectSuffix
-      args['body'] = message
-      if (bodyType == 'html'):
-          args['htmlBody'] = message
-      else:
-          args['body'] = message
+  // Get email recipients
+  var addresses = [];
+  if (args.roles) {
+      var usersRes = executeCommand('getUsers', { "roles": args.roles });
+      if (usersRes[0].Contents.length>0) {
+          addresses.push(dq(usersRes,"Contents.email"));
+      }
+  }
+  var email = args.email;
+  if (email) {
+      addresses.push(email.split(","));
+  }
 
-      attachIds = demisto.get(demisto.args(),'attachIds')
-      if attachIds is not None:
-          args['attachIDs'] = attachIds
-      demisto.results(demisto.executeCommand('send-mail', args))
-  else:
-      demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No email address found' })
-type: python
+  if (addresses.length >0) {
+      // prepare args and run send-mail
+      emailArgs = args;
+      emailArgs.to = addresses.join(",");
+      emailArgs.subject = subject;
+      if (bodyType == 'html') {
+          emailArgs.htmlBody = message;
+      } else {
+          emailArgs.body = message;
+      }
+      if (args.attachIds) {
+          emailArgs.attachIDs = args.attachIds;
+      }
+      return executeCommand('send-mail', emailArgs);
+  } else {
+      return {Type:entryTypes.error, ContentsFormat:formats.text, Contents:'No email address found'};
+  }
+type: javascript
 tags:
 - email
 comment: Ask a user a question via email and process the reply directly into the investigation.
@@ -93,9 +107,11 @@ args:
 - name: bodyType
   auto: PREDEFINED
   predefined:
-  - "text"
-  - "html"
-  defaultValue: "text"
+  - text
+  - html
   description: Type of email body to send - text ot HTML
+  defaultValue: text
+- name: replyAddress
+  description: Address of reply for html links
 scripttarget: 0
-releaseNotes: added capability to send HTML emails, and attachements
+releaseNotes: Options in HTML email are clickable links that open a new email with the selected option
