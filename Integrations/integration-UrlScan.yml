@@ -255,10 +255,17 @@ script:
             throw "Urlscan.io: No API key provided.";
         }
 
+
         var md = "";
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
+
+        if (scanUrl.indexOf('#') !== -1) {
+            md += "## Urlscan.io Reputation for " + scanUrl + "\n";
+            md += "Could not submit this url";
+            return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
+        }
 
         var body = JSON.stringify({"url": scanUrl, "public": "on"});
         var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
@@ -267,21 +274,32 @@ script:
         var res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
         var tWait = 0;
 
+        md += "## Urlscan.io Reputation for " + scanUrl + "\n";
+
         if (!timeout) {
             timeout = 30;
         }
 
-        while (tWait < timeout &&
-                res.results[0]._id !== resScan.uuid) {
+
+        if (res.results.length >= 1) {
+            while (tWait < timeout &&
+                    res.results[0]._id !== resScan.uuid) {
+                        wait(5);
+                        tWait += 5;
+                        res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+                    }
+        } else {
+            while (tWait < timeout &&
+                res.results.length < 1) {
                     wait(5);
                     tWait += 5;
                     res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
                 }
+        }
 
-        if (res.results[0]._id === resScan.uuid) {
+        if (res.results.length >= 1 &&
+            res.results[0]._id === resScan.uuid) {
             var scanResults = res.results[0];
-
-            md += "## Urlscan.io Reputation for " + scanUrl + "\n";
 
             var resStats = searchResults(scanResults._id).stats;
 
@@ -306,7 +324,7 @@ script:
 
         } else {
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No scan results yet.";
+            md += "No scan results.";
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
             return resDis;
         }
@@ -436,3 +454,4 @@ script:
       description: The actual score
     description: Submit an url to scan
 hidden: false
+releaseNotes: "Some bug fixes in the submit_url command."
