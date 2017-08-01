@@ -7,6 +7,17 @@ script: |-
   var urls = dq(invContext,'URL.Malicious');
   var ips = dq(invContext,'IP(val.Malicious)');
 
+  if (args.includeSuspicious == 'yes') {
+      if (!files || files.length === 0) {
+          files = dq(invContext,"DBotScore(val.Type.toLowerCase()=='file' && val.Score>1)");
+      }
+      if (!ips || ips.length === 0) {
+          ips = dq(invContext,"DBotScore(val.Type.toLowerCase()=='ip' && val.Score>1)");
+      }
+      if (!urls || urls.length === 0) {
+          urls = dq(invContext,"DBotScore(val.Type.toLowerCase()=='url' && val.Score>1)");
+      }
+  }
   if (files && (!Array.isArray(files) || files.length > 0)) {
       return 'yes';
   }
@@ -24,10 +35,19 @@ tags:
 comment: Checks if the investigation found any Malicious File/URL/IP, if so return
   yes, otherwise no.
 enabled: true
+args:
+- name: includeSuspicious
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  defaultValue: "no"
+  description: Whether to check also suspicious indicators - yes/no
 outputs:
-- contextPath: yes
+- contextPath: "yes"
   description: if found any Malicious File/URL/IP in the investigation
-- contextPath: no
+- contextPath: "no"
   description: if did not found any Malicious File/URL/IP in the investigation
 scripttarget: 0
-releaseNotes: Fixed malicious check in caes of only one result
+releaseNotes: Added the ability to check suspicious indicators as well
