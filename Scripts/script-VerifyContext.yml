@@ -9,7 +9,7 @@ script: |-
 
   var verifyFields = function(obj) {
       fields.forEach(function (field) {
-          if (dq(obj, field) === undefined) {
+          if (dq(obj, field.trim()) === undefined) {
               throw 'Field ' + field + ' is missing from ' + JSON.stringify(obj) + '.';
           }
       });
