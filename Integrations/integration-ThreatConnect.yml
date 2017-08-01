@@ -53,7 +53,7 @@ script:
         proxy_port = demisto.params()['proxyPort']
         tc = ThreatConnect(access, secert, default_org, url)
         if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
-            tc.set_proxies(proxyIP, int(proxy_port))
+            tc.set_proxies(proxy_ip, int(proxy_port))
         return tc
 
     def getIndicator(indicatorType, value, owners, limit):
