@@ -11,7 +11,7 @@ script: |+
   for (i = 0; i < argsArr.length ; i++) {
       var keyval = argsArr[i].split("=");
       if (keyval.length == 2) {
-          argsToCmd[keyval[0]] = keyval[1];
+          argsToCmd[keyval[0].trim()] = keyval[1];
       }
   }
 
