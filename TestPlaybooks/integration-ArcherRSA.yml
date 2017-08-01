@@ -1027,4 +1027,4 @@ script:
       required: true
       description: The Content (record) ID to delete
     description: Delete existing content record in the given application.
-  isfetch: false
+  isfetch: true
