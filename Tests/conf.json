@@ -24,7 +24,7 @@
             "playbookID": "Qualys-Test"
         },
         {
-            "name": "GoogleApps API",
+            "name": "google",
             "playbookID": "GsuiteTest"
         },
         {
