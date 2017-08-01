@@ -335,9 +335,10 @@ script:
       description: commands.server.feSubmit.arguments.submissionKey.description
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
-    description: The submission key of the file
+      description: The file submission key
     - contextPath: FireEyeAX.Submissions.Status
-    description: The current submission status
+      description: The file submission status
+    description: commands.server.feSubmitStatus.description
   - name: fe-alert
     arguments:
     - name: duration
@@ -428,7 +429,8 @@ script:
       description: commands.server.feSubmit.arguments.timeout.description
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
-    description: The submission key of the file
+      description: The file submission key
+    description: commands.server.feSubmit.description
   - name: fe-config
     arguments: []
     description: commands.server.feConfig.description
