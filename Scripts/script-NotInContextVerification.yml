@@ -45,3 +45,4 @@ args:
     exit while loop, otherwise continue to next loop iteration (will run command again)
 scripttarget: 0
 timeout: 900ns
+releaseNotes: "removed spaces from cmdArgs"
