@@ -285,15 +285,20 @@ script:
             var context = createContext(translated);
             entry.EntryContext[current.contextPath] = context;
 
-            if(command === 'fe-submit-result' && context.Severity === 'majr'){
+            if(command === 'fe-submit-result'){
                 var md5 = result.alerts.alert.dst.explanation['malware-detected'].malware.md5sum;
-                entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
-                var malFile = {};
-                addMalicious(malFile, outputPaths.file, {
-                        MD5: md5,
-                        Malicious: {Vendor: 'Fireeye'}
-                });
-                entry.EntryContext[outputPaths.file] =[malFile[outputPaths.file]];
+                if(context.Severity === 'majr'){
+                    entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
+                    var malFile = {};
+                    addMalicious(malFile, outputPaths.file, {
+                            MD5: md5,
+                            Malicious: {Vendor: 'Fireeye'}
+                    });
+                    entry.EntryContext[outputPaths.file] =[malFile[outputPaths.file]];
+                }
+                else{
+                    entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 0}];
+                }
             }
             entries.push(entry);
         }
