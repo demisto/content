@@ -529,6 +529,9 @@ script:
         return dicRes;
     }
 
+    if (!params.ticket_type) {
+        params.ticket_type = 'incident';
+    }
 
     switch (command) {
         case "servicenow-get":
