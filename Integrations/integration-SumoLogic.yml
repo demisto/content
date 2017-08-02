@@ -168,6 +168,8 @@ script:
         return v ? parseInt(v) : d;
     };
 
+    var defaultLimit = 100, defaultSleep = 3, defaultTimeout = 180, defaultSearchTimeout = 10;
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -183,7 +185,8 @@ script:
                 // First time, retrieve events from the last 10 min
                 lastRun = {time: now - 10 * 60 * 1000};
             }
-            var s = search(params.fetchQuery, lastRun.time, now, 100, 0, 'UTC', a2i(params.maxTimeout, 180), a2i(params.sleepBetweenChecks, 3));
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, 'UTC', a2i(params.maxTimeout, 180),
+                a2i(params.sleepBetweenChecks, defaultSleep));
             var incidents = [];
             if (s.messages) {
                 for (var i=0; i<s.messages.length; i++) {
@@ -201,17 +204,17 @@ script:
             setLastRun({time: now});
             return JSON.stringify(incidents);
         case 'search':
-            var s = search(args.query, args.from, args.to, a2i(args.limit, 100), a2i(args.offset, 0), args.timezone,
-                a2i(args.maxTimeToWaitForResults, 10) * 60, a2i(params.sleepBetweenChecks, 3));
+            var s = search(args.query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
+                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, a2i(params.sleepBetweenChecks, defaultSleep));
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
                 md = tableToMarkdown('Messages', s.messages) + '\n';
-                ec.Search = {Messages: s.messages.length > 100 ? s.messages.slice(0, 100) : s.messages};
+                ec.Search = {Messages: s.messages.length > defaultLimit ? s.messages.slice(0, defaultLimit) : s.messages};
             }
             if (s.records && s.records.length > 0) {
                 md += tableToMarkdown('Records', s.records);
-                ec.Search = {Records: s.records.length > 100 ? s.records.slice(0, 100) : s.records};
+                ec.Search = {Records: s.records.length > defaultLimit ? s.records.slice(0, defaultLimit) : s.records};
             }
             if (!md) {
                 md = 'No results found';
