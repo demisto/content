@@ -5,6 +5,7 @@ description: Triggers a backup task on each firewall appliance and pulls the res
   file into the war room via SCP.
 system: true
 fromversion: 2.5.0
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -72,8 +73,7 @@ tasks:
     scriptarguments:
       devices: ${chkpdevicestobackup}
     results:
-    - chkpbackupstarted
-    - devicesbackuperrorstarting
+    - CheckpointBackup
     view: |-
       {
         "position": {
@@ -101,9 +101,7 @@ tasks:
       devices: ${chkpbackupstarted}
       waittimeout: "5"
     results:
-    - chkpbackupstarted
-    - devicesbackuperror
-    - backupsreporttext
+    - CheckpointBackup
     view: |-
       {
         "position": {

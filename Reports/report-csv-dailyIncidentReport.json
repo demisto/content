@@ -3,9 +3,10 @@
   "name": "Daily incidents",
   "description": "Daily summary of all current open incidents (CSV format).",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "csv",
   "orientation": "",
+  "releaseNotes": "-",
   "recipients": [],
   "system": true,
   "decoder": {

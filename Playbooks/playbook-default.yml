@@ -4,6 +4,7 @@ name: Default
 description: Default playbook to help classify incoming incidents
 system: true
 fromversion: 2.5.0
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -332,7 +333,7 @@ tasks:
       }
   "33":
     id: "33"
-    taskid: get-email-sender-map
+    taskid: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
     type: condition
     task:
       id: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560

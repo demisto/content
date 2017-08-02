@@ -1,5 +1,5 @@
-id: 4c8954af-af6f-4c67-82c4-3d1d21bd34b6
-version: 45
+id: Cisco-Meraki-Test
+version: -1
 name: Cisco-Meraki-Test
 starttaskid: "0"
 tasks:
