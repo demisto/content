@@ -57,12 +57,24 @@ script:
             tc.set_proxies(proxy_ip, int(proxy_port))
         return tc
 
-    def getIndicator(indicatorType, value, owners, limit):
+    def buildFilters(args):
+        filters = '?'
+        if demisto.get(args, 'ratingThreshold'):
+            filters = filters + 'rating%3E' + demisto.args()['ratingThreshold']
+        if demisto.get(args, 'confidenceThreshold'):
+            if len(filters) > 1:
+                filters = filters + '&'
+            filters = filters + 'threatAssessConfidence%3E' + demisto.args()['confidenceThreshold']
+        if len(filters) == 1:
+            return '' # no filters at all in this case
+        return filters
+
+    def getIndicator(indicatorType, value, owners, limit, filters):
         tc = getClient()
         tc.set_api_result_limit(limit)
         ro = RequestObject()
         ro.set_http_method('GET')
-        ro.set_request_uri('/v2/indicators/'+indicatorType+'/'+value)
+        ro.set_request_uri('/v2/indicators/'+indicatorType+'/'+value+filters)
         if len(owners) > 0:
             ro.set_owner(owners)
             ro.set_owner_allowed(True)
@@ -87,7 +99,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('addresses',ip,owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('addresses',ip,owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'url':
@@ -99,7 +112,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('urls',urllib.quote(url, safe=''),owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('urls',urllib.quote(url, safe=''),owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'file':
@@ -111,7 +125,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('files',file,owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('files',file,owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'tc-owners':
@@ -179,6 +194,10 @@ script:
         for owner in owners:
             owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
+        if demisto.get(args, 'ratingThreshold'):
+            filters.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
+        if demisto.get(args, 'confidenceThreshold'):
+            filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
         indicators.retrieve()
 
         for indicator in indicators:
@@ -288,6 +307,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for IP indicator
   - name: url
     arguments:
@@ -300,6 +325,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for URL indicator
   - name: file
     arguments:
@@ -312,6 +343,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for File indicator
   - name: tc-owners
     arguments: []
