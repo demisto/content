@@ -42,6 +42,7 @@ script:
     from threatconnect import ThreatConnect
     from threatconnect.RequestObject import RequestObject
     from threatconnect.Config.IndicatorType import IndicatorType
+    from threatconnect.Config.ResourceType import ResourceType
     import urllib
 
     def getClient():
@@ -236,20 +237,41 @@ script:
     if demisto.command() == 'tc-fetch-incidents':
         tc = getClient()
         incidents = tc.incidents()
-        if demisto.get(demisto.args(), 'incidentId'):
+        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner'):
             filter1 = incidents.add_filter()
-            filter1.add_id(demisto.args()['incidentId'])
+            if demisto.get(demisto.args(), 'incidentId'):
+                filter1.add_id(int(demisto.args()['incidentId']))
+            if demisto.get(demisto.args(), 'owner'):
+                filter1.add_owner(demisto.args()['owner'])
         incidents.retrieve()
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": incidents.json})
+        incidentsJsonArr = []
+        for incident in incidents:
+            incidentsJsonArr.append(json.loads(incident.json))
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(incidentsJsonArr), "EntryContext": {"ThreatConnect.incidents": incidentsJsonArr}})
         sys.exit(0)
     if demisto.command() == 'tc-incident-associate-indicator':
         tc = getClient()
         incidents = tc.incidents()
         filter1 = incidents.add_filter()
-        filter1.add_id(demisto.args()['incidentId'])
+        filter1.add_id(int(demisto.args()['incidentId']))
+        if demisto.get(demisto.args(), 'owner'):
+            filter1.add_owner(demisto.args()['owner'])
+        indType = ResourceType.URLS
+        indTypeStr = demisto.get(demisto.args(), 'indicatorType')
+        if indTypeStr == 'ADDRESSES':
+            indType = ResourceType.ADDRESSES
+        elif indTypeStr == 'EMAIL_ADDRESSES':
+            indType = ResourceType.EMAIL_ADDRESSES
+        elif indTypeStr == 'FILES':
+            indType = ResourceType.FILES
+        elif indTypeStr == 'HOSTS':
+            indType = ResourceType.HOSTS
+        elif indTypeStr == 'CUSTOM_INDICATORS':
+            indType = ResourceType.CUSTOM_INDICATORS
         incidents.retrieve()
         for incident in incidents:
-            incident.associate_indicator(demisto.args()['indicatorType'], demisto.args()['indicator'])
+            incident.associate_indicator(indType, demisto.args()['indicator'])
+
             incident.commit()
             demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": incident.json})
         sys.exit(0)
@@ -363,6 +385,12 @@ script:
     - name: incidentId
       default: true
       description: filter by incident id
+        too
+    - name: owner
+      description: filter by owner
+    outputs:
+    - contextPath: threatconnect.incidents
+      description: Incidents from ThreatConnect
     description: Fetch TC incidents
   - name: tc-incident-associate-indicator
     arguments:
@@ -370,9 +398,12 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - addresses
-      - urls
-      - files
+      - ADDRESSES
+      - EMAIL_ADDRESSES
+      - URLS
+      - HOSTS
+      - FILES
+      - CUSTOM_INDICATORS
       description: indicator type
     - name: incidentId
       required: true
@@ -381,5 +412,7 @@ script:
       required: true
       default: true
       description: value of indicator (hash,ip, url...)
+    - name: owner
+      description: filter by owner
     description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
