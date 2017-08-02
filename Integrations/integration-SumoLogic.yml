@@ -209,11 +209,11 @@ script:
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
-                md = tableToMarkdown('Messages', s.messages) + '\n';
+                md = tableToMarkdown('SumoLogic Search Messages', s.messages) + '\n';
                 ec.Search = {Messages: s.messages.length > defaultLimit ? s.messages.slice(0, defaultLimit) : s.messages};
             }
             if (s.records && s.records.length > 0) {
-                md += tableToMarkdown('Records', s.records);
+                md += tableToMarkdown('SumoLogic Search Records', s.records);
                 ec.Search = {Records: s.records.length > defaultLimit ? s.records.slice(0, defaultLimit) : s.records};
             }
             if (!md) {
