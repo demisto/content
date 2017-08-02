@@ -111,9 +111,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       value: False Positive - found non-malicious URL as malicious
     view: |-
@@ -201,9 +198,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       value: Did not find malicious URL
     view: |-

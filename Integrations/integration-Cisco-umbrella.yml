@@ -185,7 +185,7 @@ script:
             if (categorization.content_categories && categorization.content_categories.length > 0) {
                 var contentCategories = categorization.content_categories.join(',');
                 table['Content Catecories'] = contentCategories;
-                domainContext.ContentCategory = contentCategories;
+                domainContext.ContentCategories = contentCategories;
             }
             if (categorization.security_categories && categorization.security_categories.length > 0) {
                 var securityCategories = categorization.security_categories.join(',');
@@ -211,7 +211,7 @@ script:
         var matches = res && res.matches;
 
         if (!matches || !(matches instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // build table
@@ -230,7 +230,7 @@ script:
         matches.forEach(function (match) {
             var securityCategoriesStr = match.securityCategories.join(',');
             var domain = {
-                SecurityCategory: securityCategoriesStr,
+                SecurityCategories: securityCategoriesStr,
                 FirstSeen: match.firstSeen,
                 FirstSeenISO:match.firstSeenISO
             };
@@ -252,7 +252,7 @@ script:
 
         var occurrences = res && res.pfs2;
         if (!occurrences || !(occurrences instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // table
@@ -280,7 +280,7 @@ script:
 
         var related = res && res.tb1;
         if (!related || !(related instanceof Array )) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // table
@@ -307,7 +307,7 @@ script:
         var res = sendRequest(url);
 
         if (!res) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         }
 
         // each key in SecurityResultInfo corrispond to a key in 'res'
@@ -373,7 +373,7 @@ script:
 
         var features = res && res.features;
         if (!features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this domain";
         };
         var address = res.rrs_tf && res.rrs_tf[0] && res.rrs_tf[0].rrs && res.rrs_tf[0].rrs[0] && res.rrs_tf[0].rrs[0].rr;
         features.ip = address;
@@ -410,8 +410,8 @@ script:
         });
 
         context = {
-            IP: {
-                Address: address,
+            Domain: {
+                Name: domain,
                 DNSHistory: DNSHistoryContext
             }
         }
@@ -426,7 +426,7 @@ script:
         var rrs = res && res.rrs;
         var features = res && res.features;
         if (!rrs || !features) {
-            throw 'Got an illegal response\n.Response: ' + JSON.stringify(res);
+            return "No information found about this ip";
         };
 
         var rrsTable = rrs.map(function(obj) {
@@ -1105,3 +1105,4 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
 hidden: false
+releaseNotes: "Fix response in non-existing domains/ip"
