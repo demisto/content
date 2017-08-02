@@ -43,7 +43,9 @@ script:
     from threatconnect.RequestObject import RequestObject
     from threatconnect.Config.IndicatorType import IndicatorType
     from threatconnect.Config.ResourceType import ResourceType
+    from threatconnect.Config.FilterOperator import FilterOperator
     import urllib
+    import datetime
 
     def getClient():
         access = demisto.params()['accessId']
@@ -194,17 +196,19 @@ script:
         for owner in owners:
             owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
-        if demisto.get(args, 'ratingThreshold'):
+        if demisto.get(demisto.args(), 'ratingThreshold'):
             filters.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
-        if demisto.get(args, 'confidenceThreshold'):
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
             filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
         indicators.retrieve()
 
+        indicatorsArr = []
         for indicator in indicators:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicator.json})
-
+            indicatorsArr.append(json.loads(indicator.json))
         if len(indicators) == 0:
             demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+demisto.args()['indicator']})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
         sys.exit(0)
     if demisto.command() == 'tc-get-indicators-by-tag':
         tc = getClient()
@@ -256,12 +260,14 @@ script:
     if demisto.command() == 'tc-fetch-incidents':
         tc = getClient()
         incidents = tc.incidents()
-        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner'):
+        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner') or demisto.get(demisto.args(), 'incidentName'):
             filter1 = incidents.add_filter()
             if demisto.get(demisto.args(), 'incidentId'):
                 filter1.add_id(int(demisto.args()['incidentId']))
             if demisto.get(demisto.args(), 'owner'):
                 filter1.add_owner(demisto.args()['owner'])
+            if demisto.get(demisto.args(), 'incidentName'):
+                filter1.add_pf_name(demisto.args()['incidentName'])
         incidents.retrieve()
         incidentsJsonArr = []
         for incident in incidents:
@@ -382,6 +388,12 @@ script:
       default: true
       description: Indicator value to search by, can be an IP, url, file Hash. will
         retrieve from all owners
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: Get indicator
   - name: tc-get-indicators-by-tag
     arguments:
@@ -421,10 +433,11 @@ script:
     arguments:
     - name: incidentId
       default: true
-      description: filter by incident id
-        too
+      description: filter by incident id too
     - name: owner
       description: filter by owner
+    - name: incidentName
+      description: filter by incident name
     outputs:
     - contextPath: threatconnect.incidents
       description: Incidents from ThreatConnect
@@ -453,4 +466,3 @@ script:
       description: filter by owner
     description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
-releaseNotes: "Fix proxy condition in TC"
