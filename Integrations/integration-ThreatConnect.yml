@@ -466,3 +466,4 @@ script:
       description: filter by owner
     description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
+releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues"
