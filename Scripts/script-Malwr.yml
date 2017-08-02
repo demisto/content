@@ -1,7 +1,7 @@
 versionedfields: {}
 commonfields:
-  id: 8fcb7252-6184-45b6-82a2-29f9ae48e603
-  version: 36
+  id: Malwr
+  version: -1
 name: Malwr
 script: |
   import hashlib
