@@ -22,6 +22,10 @@
             "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
+        },
+        {
+            "name": "RSA Archer",
+            "playbookID": "Archer-Test-Playbook"
         }
     ]
 }
