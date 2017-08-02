@@ -42,6 +42,7 @@ script:
     from threatconnect import ThreatConnect
     from threatconnect.RequestObject import RequestObject
     from threatconnect.Config.IndicatorType import IndicatorType
+    from threatconnect.Config.ResourceType import ResourceType
     import urllib
 
     def getClient():
@@ -53,7 +54,7 @@ script:
         proxy_port = demisto.params()['proxyPort']
         tc = ThreatConnect(access, secert, default_org, url)
         if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
-            tc.set_proxies(proxyIP, int(proxy_port))
+            tc.set_proxies(proxy_ip, int(proxy_port))
         return tc
 
     def getIndicator(indicatorType, value, owners, limit):
@@ -208,6 +209,72 @@ script:
         indicator.commit()
         demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Created new indicator: "+demisto.args()['indicator']})
         sys.exit(0)
+    if demisto.command() == 'tc-create-incident':
+        tc = getClient()
+        incidents = tc.incidents()
+        owner = demisto.params()['defaultOrg']
+        if demisto.get(demisto.args(), 'owner'):
+            owner = demisto.args()['owner']
+        incident = incidents.add(demisto.args()['incidentName'], owner)
+        eventDate = ""
+        if demisto.get(demisto.args(), 'eventDate'):
+            eventDate = demisto.args()['eventDate']
+        else:
+            d = datetime.utcnow()
+            dateStr = d.isoformat("T")
+            dateStr = dateStr[:dateStr.rfind(".")]
+            eventDate = dateStr + "Z"
+        incident.set_event_date(eventDate)
+        if demisto.get(demisto.args(), 'tag'):
+            incident.add_tag(demisto.args()['tag'])
+        if demisto.get(demisto.args(), 'securityLabel'):
+            incident.set_security_label(demisto.args()['securityLabel'])
+        if demisto.get(demisto.args(), 'description'):
+            incident.add_attribute('Description', demisto.args()['description'])
+        incident.commit()
+        demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Created new incident: "+demisto.args()['incidentName']})
+        sys.exit(0)
+    if demisto.command() == 'tc-fetch-incidents':
+        tc = getClient()
+        incidents = tc.incidents()
+        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner'):
+            filter1 = incidents.add_filter()
+            if demisto.get(demisto.args(), 'incidentId'):
+                filter1.add_id(int(demisto.args()['incidentId']))
+            if demisto.get(demisto.args(), 'owner'):
+                filter1.add_owner(demisto.args()['owner'])
+        incidents.retrieve()
+        incidentsJsonArr = []
+        for incident in incidents:
+            incidentsJsonArr.append(json.loads(incident.json))
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(incidentsJsonArr), "EntryContext": {"ThreatConnect.incidents": incidentsJsonArr}})
+        sys.exit(0)
+    if demisto.command() == 'tc-incident-associate-indicator':
+        tc = getClient()
+        incidents = tc.incidents()
+        filter1 = incidents.add_filter()
+        filter1.add_id(int(demisto.args()['incidentId']))
+        if demisto.get(demisto.args(), 'owner'):
+            filter1.add_owner(demisto.args()['owner'])
+        indType = ResourceType.URLS
+        indTypeStr = demisto.get(demisto.args(), 'indicatorType')
+        if indTypeStr == 'ADDRESSES':
+            indType = ResourceType.ADDRESSES
+        elif indTypeStr == 'EMAIL_ADDRESSES':
+            indType = ResourceType.EMAIL_ADDRESSES
+        elif indTypeStr == 'FILES':
+            indType = ResourceType.FILES
+        elif indTypeStr == 'HOSTS':
+            indType = ResourceType.HOSTS
+        elif indTypeStr == 'CUSTOM_INDICATORS':
+            indType = ResourceType.CUSTOM_INDICATORS
+        incidents.retrieve()
+        for incident in incidents:
+            incident.associate_indicator(indType, demisto.args()['indicator'])
+
+            incident.commit()
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": incident.json})
+        sys.exit(0)
   type: python
   commands:
   - name: ip
@@ -276,7 +343,8 @@ script:
     - name: indicator
       required: true
       default: true
-      description: Indicator value to search by, can be an IP, url, file Hash. will retrieve from all owners
+      description: Indicator value to search by, can be an IP, url, file Hash. will
+        retrieve from all owners
     description: Get indicator
   - name: tc-get-indicators-by-tag
     arguments:
@@ -295,5 +363,57 @@ script:
     - name: confidence
       description: confidence in indicator, in scale of 1-100
     description: Add a new indicator to ThreatConnect
+  - name: tc-create-incident
+    arguments:
+    - name: owner
+      description: Owner of new incident, default will be defaultOrg param
+    - name: incidentName
+      required: true
+      default: true
+      description: Incident group name
+    - name: eventDate
+      description: incident time in the format 2017-03-21T00:00:00Z
+    - name: tag
+      description: incident tag
+    - name: securityLabel
+      description: security label like 'TLP Green'
+    - name: description
+      description: incident description attribute
+    description: Create a new incident group
+  - name: tc-fetch-incidents
+    arguments:
+    - name: incidentId
+      default: true
+      description: filter by incident id
+        too
+    - name: owner
+      description: filter by owner
+    outputs:
+    - contextPath: threatconnect.incidents
+      description: Incidents from ThreatConnect
+    description: Fetch TC incidents
+  - name: tc-incident-associate-indicator
+    arguments:
+    - name: indicatorType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ADDRESSES
+      - EMAIL_ADDRESSES
+      - URLS
+      - HOSTS
+      - FILES
+      - CUSTOM_INDICATORS
+      description: indicator type
+    - name: incidentId
+      required: true
+      description: incident id to associate
+    - name: indicator
+      required: true
+      default: true
+      description: value of indicator (hash,ip, url...)
+    - name: owner
+      description: filter by owner
+    description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
 releaseNotes: "Fix proxy condition in TC"
