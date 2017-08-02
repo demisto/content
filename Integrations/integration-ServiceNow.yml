@@ -33,7 +33,7 @@ configuration:
   name: ticket_type
   defaultvalue: incident
   type: 0
-  required: true
+  required: false
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   defaultvalue: ""
@@ -529,6 +529,9 @@ script:
         return dicRes;
     }
 
+    if (!params.ticket_type) {
+        params.ticket_type = 'incident';
+    }
 
     switch (command) {
         case "servicenow-get":
