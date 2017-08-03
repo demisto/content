@@ -46,3 +46,5 @@ dependson:
   must:
   - ProtectWise|||sensors
 timeout: 0s
+deprecated: true
+releaseNotes: "-"
