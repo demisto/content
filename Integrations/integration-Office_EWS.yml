@@ -592,13 +592,11 @@ script:
             }
             args[currentCommand.arrayArgName] = itemsStr;
         }
-        console.log(replaceInTemplates(currentCommand.template, args))
         return replaceInTemplates(currentCommand.template, args);
     }
 
     function sendRequest(tmpl, reqArgs) {
         var readyBody = replaceInTemplates(tmpl, reqArgs);
-        console.log(readyBody)
         var httpParams = {
                 Method: 'POST',
                 Headers: {
