@@ -43,7 +43,9 @@ script:
     from threatconnect.RequestObject import RequestObject
     from threatconnect.Config.IndicatorType import IndicatorType
     from threatconnect.Config.ResourceType import ResourceType
+    from threatconnect.Config.FilterOperator import FilterOperator
     import urllib
+    import datetime
 
     def getClient():
         access = demisto.params()['accessId']
@@ -57,12 +59,24 @@ script:
             tc.set_proxies(proxy_ip, int(proxy_port))
         return tc
 
-    def getIndicator(indicatorType, value, owners, limit):
+    def buildFilters(args):
+        filters = '?'
+        if demisto.get(args, 'ratingThreshold'):
+            filters = filters + 'rating%3E' + demisto.args()['ratingThreshold']
+        if demisto.get(args, 'confidenceThreshold'):
+            if len(filters) > 1:
+                filters = filters + '&'
+            filters = filters + 'threatAssessConfidence%3E' + demisto.args()['confidenceThreshold']
+        if len(filters) == 1:
+            return '' # no filters at all in this case
+        return filters
+
+    def getIndicator(indicatorType, value, owners, limit, filters):
         tc = getClient()
         tc.set_api_result_limit(limit)
         ro = RequestObject()
         ro.set_http_method('GET')
-        ro.set_request_uri('/v2/indicators/'+indicatorType+'/'+value)
+        ro.set_request_uri('/v2/indicators/'+indicatorType+'/'+value+filters)
         if len(owners) > 0:
             ro.set_owner(owners)
             ro.set_owner_allowed(True)
@@ -87,7 +101,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('addresses',ip,owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('addresses',ip,owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'url':
@@ -99,7 +114,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('urls',urllib.quote(url, safe=''),owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('urls',urllib.quote(url, safe=''),owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'file':
@@ -111,7 +127,8 @@ script:
         if demisto.get(demisto.args(), 'limit'):
             limit = int(demisto.args()['limit'])
 
-        indicators = getIndicator('files',file,owners, int(limit))
+        filters = buildFilters(demisto.args())
+        indicators = getIndicator('files',file,owners, int(limit), filters)
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
         sys.exit(0)
     if demisto.command() == 'tc-owners':
@@ -179,13 +196,19 @@ script:
         for owner in owners:
             owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            filters.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
         indicators.retrieve()
 
+        indicatorsArr = []
         for indicator in indicators:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicator.json})
-
+            indicatorsArr.append(json.loads(indicator.json))
         if len(indicators) == 0:
             demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+demisto.args()['indicator']})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
         sys.exit(0)
     if demisto.command() == 'tc-get-indicators-by-tag':
         tc = getClient()
@@ -237,12 +260,14 @@ script:
     if demisto.command() == 'tc-fetch-incidents':
         tc = getClient()
         incidents = tc.incidents()
-        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner'):
+        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner') or demisto.get(demisto.args(), 'incidentName'):
             filter1 = incidents.add_filter()
             if demisto.get(demisto.args(), 'incidentId'):
                 filter1.add_id(int(demisto.args()['incidentId']))
             if demisto.get(demisto.args(), 'owner'):
                 filter1.add_owner(demisto.args()['owner'])
+            if demisto.get(demisto.args(), 'incidentName'):
+                filter1.add_pf_name(demisto.args()['incidentName'])
         incidents.retrieve()
         incidentsJsonArr = []
         for incident in incidents:
@@ -288,6 +313,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for IP indicator
   - name: url
     arguments:
@@ -300,6 +331,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for URL indicator
   - name: file
     arguments:
@@ -312,6 +349,12 @@ script:
         client’s API User has been granted permission.
     - name: limit
       description: int limit of results, default is 500
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: search for File indicator
   - name: tc-owners
     arguments: []
@@ -345,6 +388,12 @@ script:
       default: true
       description: Indicator value to search by, can be an IP, url, file Hash. will
         retrieve from all owners
+    - name: ratingThreshold
+      description: filter on indicators rating grater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence grater then given value(value between
+        0 to 100)
     description: Get indicator
   - name: tc-get-indicators-by-tag
     arguments:
@@ -384,10 +433,11 @@ script:
     arguments:
     - name: incidentId
       default: true
-      description: filter by incident id
-        too
+      description: filter by incident id too
     - name: owner
       description: filter by owner
+    - name: incidentName
+      description: filter by incident name
     outputs:
     - contextPath: threatconnect.incidents
       description: Incidents from ThreatConnect
@@ -416,4 +466,4 @@ script:
       description: filter by owner
     description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
-releaseNotes: "Fix proxy condition in TC"
+releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues"
