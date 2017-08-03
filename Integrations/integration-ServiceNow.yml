@@ -637,8 +637,6 @@ script:
       - change_request
       description: Ticket type to create
       defaultValue: incident
-    - name: assignment_group
-      description: The group that created the ticket
     - name: urgency
       description: Ticket urgency
     - name: severity
@@ -655,7 +653,6 @@ script:
       description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
-    - name: approval
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
@@ -756,8 +753,6 @@ script:
     - name: work_start
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
-    - name: impact
-      description: integer
     - name: incident_state
       description: integer
     - name: number
@@ -792,8 +787,6 @@ script:
       - change_request
       description: Ticket type to create
       defaultValue: incident
-    - name: assignment_group
-      description: The group that created the ticket
     - name: urgency
       description: Ticket urgency
     - name: severity
@@ -810,7 +803,6 @@ script:
       description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
-    - name: approval
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
@@ -911,8 +903,6 @@ script:
     - name: work_start
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
-    - name: impact
-      description: integer
     - name: incident_state
       description: integer
     - name: number
@@ -944,12 +934,11 @@ script:
       - change_request
       description: Ticket type to create
       defaultValue: incident
-    - name: assignment_group
-      description: The group that created the ticket
     - name: urgency
     - name: severity
       description: Ticket severity
     - name: impact
+      description: Ticket impact
     - name: active
       auto: PREDEFINED
       predefined:
@@ -960,7 +949,6 @@ script:
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: additional_assignee_list
       description: List of assigned users to the ticket
-    - name: approval
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
@@ -1060,8 +1048,6 @@ script:
     - name: work_start
     - name: assignment_group
       description: UID
-    - name: impact
-      description: integer
     - name: incident_state
       description: integer
     - name: number
@@ -1086,12 +1072,11 @@ script:
       - change_request
       description: Ticket type to create
       defaultValue: incident
-    - name: assignment_group
-      description: The group that created the ticket
     - name: urgency
     - name: severity
       description: Ticket severity
     - name: impact
+      description: Ticket impact
     - name: active
       auto: PREDEFINED
       predefined:
@@ -1102,7 +1087,6 @@ script:
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: additional_assignee_list
       description: List of assigned users to the ticket
-    - name: approval
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
@@ -1202,8 +1186,6 @@ script:
     - name: work_start
     - name: assignment_group
       description: UID
-    - name: impact
-      description: integer
     - name: incident_state
       description: integer
     - name: number
@@ -1406,3 +1388,4 @@ script:
   isfetch: true
 hidden: false
 releaseNotes: "Added support for custom fields in commands (servicenow-update and servicenow-create). Added ticket number to the context."
+
