@@ -239,8 +239,13 @@ script:
             return false;
         case 'fetch-incidents':
             var lastRun = getLastRun();
-            var startTime = (lastRun && lastRun.startTime ? lastRun.startTime : (new Date().getTime()- 1000 * 60 ));
-            var data = eventsSearch(startTime , new Date().getTime() , params.eventType, params.killChainStage, params.threatLevel,
+            var now = (new Date()).getTime();
+            if (!lastRun || !lastRun.time) {
+                // First time, retrieve events from the last 10 min
+                lastRun = {time: now - 10 * 60 * 1000};
+            }
+            setLastRun({time: now});
+            var data = eventsSearch(lastRun.time , now , params.eventType, params.killChainStage, params.threatLevel,
                                     params.threatCategory, undefined,undefined,undefined,undefined,undefined,undefined,undefined,token);
             try {
                 var res = JSON.parse(data).events;
@@ -265,7 +270,6 @@ script:
                     incidents.push(createIncidentFromEvent(res[i]));
                 }
             }
-            setLastRun({startTime: startTime});
             return JSON.stringify(incidents);
         case 'sensors':
         case 'protectwise-show-sensors':
