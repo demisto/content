@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Enter API Key (Full Access)
+- display: API Key (Full Access)
   name: api_key
   defaultvalue: ""
   type: 0
