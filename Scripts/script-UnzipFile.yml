@@ -2,7 +2,7 @@ commonfields:
   id: UnzipFile
   version: -1
 name: UnzipFile
-releaseNotes: "Remove unused arguments"
+releaseNotes: "-"
 script: |-
   import zipfile
   import os
