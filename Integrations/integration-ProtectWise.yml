@@ -225,6 +225,7 @@ script:
         return {
             "name": event.message,
             "labels": labels,
+            "rawJSON": JSON.stringify(event)
         };
     };
 
