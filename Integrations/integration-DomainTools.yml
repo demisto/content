@@ -1,0 +1,560 @@
+versionedfields: {}
+commonfields:
+  id: DomainTools
+  version: -1
+name: DomainTools
+fromversion: 3.0.0
+display: DomainTools
+category: Data Enrichment
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAA4KGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wNC0wMlQyMjo0Mzo1MyswMzowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTA0LTAzVDA5OjQ3OjE0KzAzOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wNC0wM1QwOTo0NzoxNCswMzowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDowODI3YmQyZi02OTIzLTQyN2QtYjRiZi1kZDdjMDcxY2Y1Yjk8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6MDgyN2JkMmYtNjkyMy00MjdkLWI0YmYtZGQ3YzA3MWNmNWI5PC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6MDgyN2JkMmYtNjkyMy00MjdkLWI0YmYtZGQ3YzA3MWNmNWI5PC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjA4MjdiZDJmLTY5MjMtNDI3ZC1iNGJmLWRkN2MwNzFjZjViOTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wNC0wMlQyMjo0Mzo1MyswMzowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzIwMDAwLzEwMDAwPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WVJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+NjU1MzU8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAg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
+description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and
+  cybercrime forensics products and data
+configuration:
+- display: DomainTools API URL
+  name: server
+  defaultvalue: http://api.domaintools.com/
+  type: 0
+  required: true
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Open authentication (less secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var toCamelCase = function(string){
+        var str = ' '+string.trim();
+        str=str.replace(/ ([a-z,A-Z])/g, function (g) { return g[1].toUpperCase(); });
+        return str;
+    };
+
+    var sendRequest = function(url) {
+        var res = http(
+            url,
+            {
+                Method: 'GET',
+                Headers: {
+                    Accept: ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        }
+        catch (err) {
+            throw 'Failed to parse JSON';
+        }
+    };
+
+    var addKeyToJson = function(cur, toAdd){
+        if(!cur){
+            return toAdd;
+        }
+        if(!Array.isArray(cur)){
+            return [cur, toAdd];
+        }
+        cur.push(toAdd);
+        return cur;
+    };
+
+    var changeKeys = function(conv, obj){
+        var output = {};
+        for (var i in obj) {
+            if (Object.prototype.toString.apply(obj[i]) === '[object Object]') {
+                output[conv(i)] = changeKeys(conv, obj[i]);
+            } else {
+                output[conv(i)] = obj[i];
+            }
+        }
+        return output;
+    };
+
+    var callWhoIs = function(query, parsed,url){
+        var res = sendRequest(url + query + '/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        var error = res.response.error;
+        if(error && error.code === 206){
+            parsed = false;
+            log('error code 206');
+        }
+        var splitRes = res.response.whois.record.split('\n');
+        var md = '### DomainTools whois result for '+ query + '\n';
+        var resMap = {};
+        splitRes.forEach(function(entry){
+            splitEntry = entry.split(/:\s(.+)/);
+            if(splitEntry[1]){
+                splitEntry[0] = toCamelCase(splitEntry[0]);
+                md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
+                resMap[splitEntry[0]] = addKeyToJson(resMap[splitEntry[0]], splitEntry[1]);
+            }
+        });
+
+        var context;
+        if(parsed === 'false'){
+            context = {'Domain': {'Name': res.response.record_source, 'Whois': resMap}};
+        }else{
+            context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: context
+            };
+    };
+
+    var scoreConv = function(score, threshold){
+        if(threshold){
+            return score>=threshold ? 3 : 1;
+        }
+        if(score === 0)
+            return 1;
+        if(score > 0 && score <=69)
+            return 2;
+        if(score >= 70)
+            return 3;
+        return -1;
+    };
+
+    var callDomain = function(url, domain, threshold){
+        var repRes = sendRequest(url + 'reputation/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'domain' : domain}));
+        var md = 'Domain '+repRes.response.domain+' found with risk score of '+ repRes.response.risk_score +'.';
+        var context = {
+            'DBotScore' : {
+                'Indicator' : domain,
+                'Score' : scoreConv(repRes.response.risk_score, threshold),
+                'Type': 'domain',
+                'Vendor': 'domaintools'
+            }
+        };
+        if(context.DBotScore.Score === 3){
+            addMalicious(context, outputPaths.domain, {'Name' : domain, 'RiskScore': repRes.response.risk_score ,'Malicious' : {'Vendor' : 'DomainTools'}});
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: repRes,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: context
+            };
+    };
+
+    var callProfile= function(url, domain){
+        var domRes = sendRequest(url + domain + '/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        return {
+                Type: entryTypes.note,
+                Contents: domRes,
+                ContentsFormat: formats.json
+            };
+    };
+
+    var argToUrlParam = function(string){
+        var map = {
+            'exclude':'exclude_query',
+            'maxLength':'max_length',
+            'minLength':'min_length',
+            'hesHyphen':'has_hyphen',
+            'hasNumber':'has_number',
+            'activeOnly':'active_only',
+            'deletedOnly':'deleted_only',
+            'anchorLeft':'anchor_left',
+            'anchorRight':'anchor_right',
+            'pageNumber':'page'
+        };
+        return map[string] ? map[string] : string;
+    };
+
+    var callDomainSearch = function(url, args){
+        args = changeKeys(argToUrlParam,args);
+        args.api_username = params.username;
+        args.api_key = params.key;
+        var res = sendRequest(url +  'domain-search/'+encodeToURLQuery(args));
+        var results = res.response.results;
+
+        var md = '';
+        var numDomains = 0;
+        var context = {'Domain' : []};
+        if(results && results.length > 0){
+            results.forEach(function(result){
+                if(result.hashad_tlds && result.hashad_tlds.length > 0){
+                    result.hashad_tlds.forEach(function(tld){
+                        md+='* '+result.sld+'.'+tld+'\n';
+                        numDomains++;
+                        context.Domain.push({'Name' : result.sld+'.'+tld});
+                    });
+                }
+            });
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: 'Found '+numDomains +' domains:\n'+md,
+                EntryContext: context
+            };
+    };
+
+    var callReverseIP = function(url, args){
+        var md = '';
+        var context = {'Domain' : []};
+        var res;
+        var addresses;
+        if(args.domain){
+            res = sendRequest(url + args.domain+'/reverse-ip/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
+
+        }
+        else if(args.ip){
+            res = sendRequest(url + args.ip+'/host-domains/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
+        }
+        addresses = res.response.ip_addresses;
+        if(!Array.isArray(addresses)){
+            addresses = [addresses];
+        }
+
+        addresses.forEach(function(address){
+            md+= '\nFound ' + address.domain_count + ' domains for ' +address.ip_address + '\n';
+            address.domain_names.forEach(function(domain){
+                md += '* ' + domain + '\n';
+                context.Domain.push({'Name': domain, 'DNS' : {'Address' : address.ip_address}});
+            });
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+    var callReverseNameServer = function(url, server, limit){
+        var res = sendRequest(url +server + '/name-server-domains/' + encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': limit? limit : 50}));
+        var md = 'Found ' +  res.response.primary_domains.length + ' domains\n';
+        var context = {'Domain' : []};
+        res.response.primary_domains.forEach(function(domain){
+            md += '* ' + domain + '\n';
+            context.Domain.push({'Name' : domain});
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+    var callReverseWhoIs = function(url, args){
+        args.api_username = params.username;
+        args.api_key = params.key;
+        args.mode = args.quoteMode;
+        args.scope = 'current';
+        if(args.onlyHistoricScope === 'true'){
+            args.scope = 'historic';
+        }
+        delete args.quoteModel
+        delete args.onlyHistoricScope;
+
+        var res = sendRequest(url + encodeToURLQuery(args));
+        var context = {'Domain' : []};
+        var md = 'Found '+res.response.domains.length+ ' domains: \n';
+        res.response.domains.forEach(function(domain){
+            md += '* ' + domain + '\n';
+            context.Domain.push({'Name' : domain});
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+    /*http://api.domaintools.com/v1/domaintools.com/whois/history/*/
+    var callWhoisHistory = function(url, domain){
+        var res = sendRequest(url+domain+'/whois/history/'+ encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+        var splitRecord;
+        var context = {'Domain' : {'Name' : domain, 'WhoisHistory' : []}};
+        var md = '';
+        var entryContext, record;
+        res.response.history.forEach(function(entry){
+            entryContext = {};
+            record = entry.whois.record;
+            if(record){
+                var splitRecord = record.split('\n');
+                splitRecord.forEach(function(pair){
+                    splitEntry = pair.split(/:\s(.+)/);
+                        if(splitEntry[1]){
+                            splitEntry[0] = toCamelCase(splitEntry[0]);
+                            md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
+                            entryContext[splitEntry[0]] = splitEntry[1];
+                        }
+                });
+            }
+            context.Domain.WhoisHistory.push(entryContext);
+        });
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: context
+        };
+    }
+
+    var url = params.server.replace(/[\/]+$/, '');
+    switch (command) {
+        case 'test-module':
+                var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+                if(res.response.error){
+                    log('Something went wrong - error code ' + error.code);
+                }
+                return 'ok';
+        case 'domain':
+            return callDomain(url+'/v1/', args.domain, args.threshold);
+        case 'domainSearch':
+            return callDomainSearch(url+'/v2/', args);
+        case 'reverseIP':
+            return callReverseIP(url+'/v1/', args);
+        case 'reverseNameServer':
+            return callReverseNameServer(url+'/v1/', args.nameServer, args.limit);
+        case 'reverseWhois':
+            return callReverseWhoIs(url + '/v1/reverse-whois/', args);
+        case 'whois':
+            return callWhoIs(args.query, args.parsed, url+'/v1/');
+        case 'whoisHistory':
+            return callWhoisHistory(url+'/v1/', args.domain);
+        case 'domainProfile':
+            return callProfile(url+'/v1/', args.domain);
+    }
+  type: javascript
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain name to check reputation
+    - name: long
+      description: Should we return full response with detected URLs
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections,
+        etc.) to display for long format
+    - name: threshold
+      description: ' If number of positive detected domains is bigger than the threshold
+        we will consider it malicious'
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+    - name: retries
+      description: Number of retries for API rate limit
+    - name: threshold
+    outputs:
+    - contextPath: Domain.Name
+      description: The tested domain
+    - contextPath: Domain.RiskScore
+      description: The reputation returned from DomainTools
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: ' DBotScore.Vendor'
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Retrieve domain information.
+  - name: domainSearch
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: (mandatory and default) Query strings. Each term in the query string
+        must be at least three characters long. Use spaces to separate multiple terms
+    - name: pageNumber
+      description: ' Sets the page of results to retrieve from the server. Each page
+        is limited to 100 results. Default: 1'
+      defaultValue: "1"
+    - name: maxLength
+      description: 'Limit the maximum domain character count. Default: 25'
+      defaultValue: "25"
+    - name: minLength
+      description: 'Limit the minimum domain character count. Default: 1'
+      defaultValue: "1"
+    - name: hesHyphen
+      description: ' (true or false) Return results with hyphens in the domain name.
+        Default: true'
+    - name: exclude
+      description: ' Terms to exclude from matching'
+    - name: activeOnly
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' (true or false) Return only domains currently registered.Default:
+        false'
+      defaultValue: "false"
+    - name: deletedOnly
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: '(true or false) Return only domains previously registered but
+        not currently registered. Default: false'
+      defaultValue: "false"
+    - name: anchorLeft
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' (true or false) Return only domains that start with the query
+        term. Default: false'
+      defaultValue: "false"
+    - name: anchorRight
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' (true or false) Return only domains that end with the query term.
+        Default: false'
+      defaultValue: "false"
+    - name: hasNumber
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: '(true or false) Return results with numbers in the domain name.
+        Default: true'
+      defaultValue: "true"
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain found by command
+    description: Search for domain based on the given parameters
+  - name: reverseIP
+    arguments:
+    - name: ip
+      default: true
+      description: (default) specify IP address
+    - name: domain
+      description: ' If you provide a domain name, DomainTools will respond with the
+        list of other domains that share the same IP'
+    - name: limit
+      description: Limits the size of the domain list than can appear in a response.
+        The limit is applied per-IP address, not for the entire request.
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.DNS.Address
+      description: IP address
+    description: Reverse loopkup of an IP address
+  - name: reverseNameServer
+    arguments:
+    - name: nameServer
+      required: true
+      default: true
+      description: ' (default and mandatory) specify the name of the primary or secondary
+        name server'
+    - name: limit
+      description: Limit the size of the domain list than can appear in a response
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    description: Reverse nameserver lookup
+  - name: reverseWhois
+    arguments:
+    - name: terms
+      required: true
+      default: true
+      description: ' (mandatory and default) List of one or more terms to search for
+        in the Whois record, separated with the pipe character ( | ).'
+    - name: exclude
+      description: Domain names with Whois records that match these terms will be
+        excluded from the result set. Separate multiple terms with the pipe character
+        ( | ).
+    - name: onlyHistoricScope
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' Show only historic records'
+      defaultValue: "false"
+    - name: quoteMode
+      description: 'Only lists the size and retail price of the query if you have
+        per-domain pricing access purchase : includes the complete list of domain
+        names that match the query'
+      defaultValue: purchase
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    description: Reverse lookup of whois information
+  - name: whois
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: ' (mandatory and default) enter domain (do not use full URL). e.g.
+        !whois [query=]demisto.com '
+    - name: parsed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    outputs:
+    - contextPath: Domain.Name
+      description: Requested domain name
+    - contextPath: Domain.Whois
+      description: Whois data
+    description: Provides registration details about a domain
+  - name: whoisHistory
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Specify domain e.g. mycompany.com
+    outputs:
+    - contextPath: Domain.Name
+      description: Name of domain
+    - contextPath: Domain.WhoisHistory
+      description: Domain Whois history data
+    description: Display a history of whois for a given domain
+  - name: domainProfile
+    arguments:
+    - name: domain
+cangetsamples: true
+releaseNotes: "Added BYOI integration"

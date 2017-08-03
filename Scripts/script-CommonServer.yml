@@ -85,6 +85,7 @@ script: |-
       if (replaceNewlines) {
         st = st.replace(/\r\n/g, '<br>')
         st = st.replace(/\n/g, '<br>')
+        st = st.replace(/\r/g, '<br>')
       }
 
       escapedSt = '';

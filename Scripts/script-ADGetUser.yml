@@ -2,7 +2,10 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
-script: |2-
+script: |-
+  limit = 20
+  if demisto.get(demisto.args(), 'limit'):
+      limit = demisto.args()['limit']
 
   def createAccountEntities(t,attrs):
       accounts = []
@@ -50,6 +53,7 @@ script: |2-
       args = {}
       args['filter'] = "(objectClass=User)"
       args['attributes'] = attrs
+      args['size-limit'] = limit
       if using:
           args['using'] = using
       resAD = demisto.executeCommand( 'ad-search', args )
@@ -61,6 +65,7 @@ script: |2-
 
   def queryBuilder(queryType,queryValue,attrs,nested,using):
       args = {}
+      args['size-limit'] = limit
       if using:
           args['using'] = using
       if not queryType == "distinguishedName":
@@ -85,7 +90,7 @@ script: |2-
       if nested:
           group_attrs = 'name'
           filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
-          group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs } )
+          group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs, 'size-limit' : limit } )
           if isError(group_resp[0]):
               return group_resp
           else:
@@ -97,7 +102,6 @@ script: |2-
           resAD[0]['Contents']['memberOf'] = memberOf
       except:
           pass # Could not get nested groups - return as is
-
       return resAD
 
   attrs = 'name,displayName,memberOf,mail,samAccountName'
@@ -180,6 +184,8 @@ args:
     on a single user query)'
 - name: username
   description: samAccountName of the desire user
+- name: limit
+  description: Maximum number of objects to return (default is 20)
 scripttarget: 0
 dependson:
   must:
@@ -200,4 +206,4 @@ outputs:
   description: The groups the Account is part of
 - contextPath: Account.DisplayName
   description: The Account display name
-releaseNotes: "Split Groups in context into array"
+releaseNotes: "Added limit param and set default size limit"
