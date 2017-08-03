@@ -335,7 +335,7 @@ script:
         if demisto.get(demisto.args(), 'eventDate'):
             eventDate = demisto.args()['eventDate']
         else:
-            d = datetime.utcnow()
+            d = datetime.datetime.utcnow()
             dateStr = d.isoformat("T")
             dateStr = dateStr[:dateStr.rfind(".")]
             eventDate = dateStr + "Z"
