@@ -27,7 +27,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: ProxyIP
+- display: ProxyIP  (or http://${ip} )
   name: proxyIp
   defaultvalue: ""
   type: 0
@@ -46,6 +46,13 @@ script:
     from threatconnect.Config.FilterOperator import FilterOperator
     import urllib
     import datetime
+
+    filePath= 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)'
+    ipPath= 'IP(val.Address && val.Address == obj.Address)'
+    urlPath= 'URL(val.Data && val.Data == obj.Data)'
+
+    defaultMaliciosConfidenceThreshold = 50
+    defaultMaliciosRatingThreshold = 3
 
     def getClient():
         access = demisto.params()['accessId']
@@ -71,6 +78,63 @@ script:
             return '' # no filters at all in this case
         return filters
 
+    def createContext(indicators,contextPath,ratingThreshold,confidenceThreshold,indicatorType):
+        ec = {};
+        ec['DBotScore'] = [];
+        ec[contextPath] = [];
+        if ratingThreshold < 0:
+            ratingThreshold = defaultMaliciosRatingThreshold
+        if confidenceThreshold < 0:
+            confidenceThreshold = defaultMaliciosConfidenceThreshold
+        for ind in indicators:
+            dbotScore = 0
+            if ind.confidence >= confidenceThreshold and ind.rating>= ratingThreshold:
+                dbotScore = 3
+                mal = {'Malicious':{'Vendor':'ThreatConnect','Description':ind.description}}
+                if indicatorType == 'ip':
+                    mal['Address'] = ind.summary
+                elif indicatorType == 'hash':
+                    if hasattr(ind, 'md5'):
+                        mal['MD5'] = ind.md5
+                    if hasattr(ind, 'sha1'):
+                        mal['SHA1'] = ind.sha1
+                    if hasattr(ind, 'sha256'):
+                        mal['SHA256'] = ind.sha256
+                elif indicatorType == 'url':
+                    mal['Data'] = ind.indicator
+                mal['properties_to_append'] = ['Malicious'];
+                ec[contextPath] = mal;
+            elif ind.rating >=1:
+                dbotScore = 2
+            else:
+                dbotScore = 1
+            ec['DBotScore'].append({'Indicator': ind.indicator, 'Type': indicatorType, 'Vendor': 'ThreatConnect', 'Score': dbotScore});
+        return ec
+
+    def getIndicatorsForDbot(args, indicatorValue, indicatorType):
+        tc = getClient()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(indicatorValue)
+        owners_arr = []
+        if demisto.get(demisto.args(), 'owners'):
+            owners = demisto.args()['owners'].split(",")
+            owners_arr.extend(owners)
+        else:
+            owners = tc.owners()
+            owners.retrieve()
+            for owner in owners:
+                owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            filter1.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GE)
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GE)
+        if indicatorType:
+            filter1.add_pf_type(indicatorType, FilterOperator.EQ)
+        indicators.retrieve()
+        return indicators
+
     def getIndicator(indicatorType, value, owners, limit, filters):
         tc = getClient()
         tc.set_api_result_limit(limit)
@@ -94,42 +158,57 @@ script:
         sys.exit(0)
     if demisto.command() == 'ip':
         ip = demisto.args()['ip']
-        owners = ''
-        if demisto.get(demisto.args(), 'owners'):
-            owners = demisto.args()['owners']
-        limit = 500
-        if demisto.get(demisto.args(), 'limit'):
-            limit = int(demisto.args()['limit'])
-
-        filters = buildFilters(demisto.args())
-        indicators = getIndicator('addresses',ip,owners, int(limit), filters)
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
+        malRatingThreshold = -1
+        malConfidenceThreshold = -1
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            malRatingThreshold = int(demisto.args()['ratingThreshold'])
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
+        indicators = getIndicatorsForDbot(demisto.args(), ip, 'Address')
+        ec = createContext(indicators,ipPath,malRatingThreshold,malConfidenceThreshold,'ip')
+        indicatorsArr = []
+        for indicator in indicators:
+            indicatorsArr.append(json.loads(indicator.json))
+        if len(indicators) == 0:
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+ip,"EntryContext": ec})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'url':
         url = demisto.args()['url']
-        owners = ''
-        if demisto.get(demisto.args(), 'owners'):
-            owners = demisto.args()['owners']
-        limit = 500
-        if demisto.get(demisto.args(), 'limit'):
-            limit = int(demisto.args()['limit'])
-
-        filters = buildFilters(demisto.args())
-        indicators = getIndicator('urls',urllib.quote(url, safe=''),owners, int(limit), filters)
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
+        malRatingThreshold = -1
+        malConfidenceThreshold = -1
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            malRatingThreshold = int(demisto.args()['ratingThreshold'])
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
+        indicators = getIndicatorsForDbot(demisto.args(), url, 'URL')
+        ec = createContext(indicators,urlPath,malRatingThreshold,malConfidenceThreshold,'url')
+        indicatorsArr = []
+        for indicator in indicators:
+            indicatorsArr.append(json.loads(indicator.json))
+        if len(indicators) == 0:
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+url,"EntryContext": ec})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'file':
         file = demisto.args()['file']
-        owners = ''
-        if demisto.get(demisto.args(), 'owners'):
-            owners = demisto.args()['owners']
-        limit = 500
-        if demisto.get(demisto.args(), 'limit'):
-            limit = int(demisto.args()['limit'])
-
-        filters = buildFilters(demisto.args())
-        indicators = getIndicator('files',file,owners, int(limit), filters)
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": indicators})
+        malRatingThreshold = -1
+        malConfidenceThreshold = -1
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            malRatingThreshold = int(demisto.args()['ratingThreshold'])
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
+        indicators = getIndicatorsForDbot(demisto.args(), file, 'File')
+        ec = createContext(indicators,filePath,malRatingThreshold,malConfidenceThreshold,'hash')
+        indicatorsArr = []
+        for indicator in indicators:
+            indicatorsArr.append(json.loads(indicator.json))
+        if len(indicators) == 0:
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+file,"EntryContext": ec})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'tc-owners':
         tc = getClient()
@@ -309,10 +388,8 @@ script:
       default: true
       description: IPv4/IPv6 address
     - name: owners
-      description: client’s Organization or any Sources or Communities to which a
-        client’s API User has been granted permission.
-    - name: limit
-      description: int limit of results, default is 500
+      description: 'client’s Organization or any Sources or Communities to which a
+        client’s API User has been granted permission, comma separated: owner1,owner2,owner3'
     - name: ratingThreshold
       description: filter on indicators rating grater then given value(value between
         0 to 5)
@@ -329,8 +406,6 @@ script:
     - name: owners
       description: client’s Organization or any Sources or Communities to which a
         client’s API User has been granted permission.
-    - name: limit
-      description: int limit of results, default is 500
     - name: ratingThreshold
       description: filter on indicators rating grater then given value(value between
         0 to 5)
@@ -347,8 +422,6 @@ script:
     - name: owners
       description: client’s Organization or any Sources or Communities to which a
         client’s API User has been granted permission.
-    - name: limit
-      description: int limit of results, default is 500
     - name: ratingThreshold
       description: filter on indicators rating grater then given value(value between
         0 to 5)
@@ -466,4 +539,3 @@ script:
       description: filter by owner
     description: associate an indicator to an existing incident
   dockerimage: demisto/threatconnect-sdk
-releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues"
