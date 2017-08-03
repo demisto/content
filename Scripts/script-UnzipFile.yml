@@ -2,6 +2,7 @@ commonfields:
   id: UnzipFile
   version: -1
 name: UnzipFile
+releaseNotes: "Remove unused arguments"
 script: |-
   import zipfile
   import os
@@ -97,12 +98,14 @@ tags:
 args:
 - name: fileName
   default: true
+  deprecated: true
 - name: password
   secret: true
   description: optional password which zip file protected by
 - name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
+  deprecated: true
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
