@@ -426,7 +426,8 @@ script:
         case 'event-pcap-download':
         case 'protectwise-event-pcap-download':
             var filename = (args.filename && args.filename.length > 0) ? args.filename : (args.eventId + '.pcap');
-            var url = params.url+'pcaps/events/'+ args.eventId + '?filename=' + filename;
+
+            var url = params.url+'pcaps/events/'+ args.eventId + '?filename=' + encodeURIComponent(filename);
             res = saveFile(doReq(url,token,true));
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'event-pcap-info':
@@ -449,7 +450,7 @@ script:
         case 'observation-pcap-download':
         case 'protectwise-observation-pcap-download':
             var filename = (args.filename && args.filename.length > 0) ? args.filename : ( args.sensorId+'-'+args.id + '.pcap');
-            var url = params.url+'pcaps/observations/'+args.sensorId+'/'+args.id + '?filename=' + filename;
+            var url = params.url+'pcaps/observations/'+args.sensorId+'/'+args.id + '?filename=' + encodeURIComponent(filename);
             res = saveFile(doReq(url,token,true));
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'observation-pcap-info':
