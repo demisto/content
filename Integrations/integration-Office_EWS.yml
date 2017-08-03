@@ -76,6 +76,7 @@ configuration:
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/';
+    var defaultPageSize = 100;
     var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
     var commandsDictionary = {
         'ews-get-folder': {
