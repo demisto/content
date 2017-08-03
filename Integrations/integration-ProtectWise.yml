@@ -229,6 +229,7 @@ script:
         };
     };
 
+    params.url = params.url[params.url.length - 1] === '/' ? (params.url) : (params.url + '/');
     var token = getToken();
     switch (command) {
         case 'test-module':
