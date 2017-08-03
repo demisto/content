@@ -92,7 +92,12 @@ script:
             if (tokResult.StatusCode !== 200 && tokResult.StatusCode !== 201) {
                 throw 'Failed to create token, request status code: ' + tokResult.StatusCode + ', body: ' + tokResult.Body;
             }
-            var body = JSON.parse(tokResult.Body);
+            try {
+                var body = JSON.parse(tokResult.Body);
+            } catch (ex) {
+                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+            }
+
             return body.token;
         }
         return token;
@@ -111,8 +116,11 @@ script:
         if (res.StatusCode !== 200) {
             throw 'Failed to execute ' + url + ' : ' + res.StatusCode + ', body: ' + res.Body;
         }
-
-        return (raw ? res.Body : JSON.parse(res.Body));
+        try {
+            return (raw ? res.Body : JSON.parse(res.Body));
+        } catch (ex) {
+            throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+        }
     };
 
     var filterClone = function(src, filter) {
@@ -232,7 +240,11 @@ script:
             var startTime = (lastRun && lastRun.startTime ? lastRun.startTime : (new Date().getTime()- 1000 * 60 ));
             var data = eventsSearch(startTime , new Date().getTime() , params.eventType, params.killChainStage, params.threatLevel,
                                     params.threatCategory, undefined,undefined,undefined,undefined,undefined,undefined,undefined,token);
-            var res = JSON.parse(data).events;
+            try {
+                var res = JSON.parse(data).events;
+            } catch (ex) {
+                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+            }
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var skip = true;
@@ -281,7 +293,11 @@ script:
         case 'protectwise-search-events':
             var raw = eventsSearch(args.start,args.end,args.eventType,args.killChainStage,args.threatLevel,
                 args.threatCategory,args.observationStage,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,token);
-            var res = JSON.parse(raw).events;
+            try {
+                var res = JSON.parse(data).events;
+            } catch (ex) {
+                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+            }
             var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
             var items = [];
             if (! Array.isArray(res)) {
@@ -352,7 +368,11 @@ script:
         case 'protectwise-search-observations':
             var raw = observationSearch(args.sensorId,args.start,args.end,args.type,args.killChainStage,args.threatLevel,
                 args.threatCategory,args.hasKillChain,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,args.signatureId,token);
-            var res = JSON.parse(raw).observations;
+            try {
+                var res = JSON.parse(raw).observations;
+            } catch (ex) {
+                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+            }
             var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
             var items = [];
             if (! Array.isArray(res)) {
