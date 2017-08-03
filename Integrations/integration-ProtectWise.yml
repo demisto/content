@@ -300,9 +300,9 @@ script:
             var raw = eventsSearch(args.start,args.end,args.eventType,args.killChainStage,args.threatLevel,
                 args.threatCategory,args.observationStage,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,token);
             try {
-                var res = JSON.parse(data).events;
+                var res = JSON.parse(raw).events;
             } catch (ex) {
-                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+                throw 'Error parsing result - ' + raw + ' - ' + ex;
             }
             var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
             var items = [];
@@ -377,7 +377,7 @@ script:
             try {
                 var res = JSON.parse(raw).observations;
             } catch (ex) {
-                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+                throw 'Error parsing result - ' + raw + ' - ' + ex;
             }
             var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
             var items = [];
