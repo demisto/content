@@ -228,7 +228,7 @@ script:
                 'HumanReadable': table,
             }
 
-        def featchAllFields(self):
+        def fetchAllFields(self):
             self.login()
             res = self.cmdquery('qryGetFilterFields')
 
@@ -305,11 +305,11 @@ script:
     esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
 
     if demisto.command() == 'test-module':
-        esm.featchAllFields()
+        esm.fetchAllFields()
         demisto.results('ok')
         sys.exit(0)
     if demisto.command() == 'esm-fetch-fields':
-        res = esm.featchAllFields()
+        res = esm.fetchAllFields()
         demisto.results(res)
         sys.exit(0)
     if demisto.command() == 'esm-search':
