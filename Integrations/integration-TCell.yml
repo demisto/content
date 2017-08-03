@@ -24,7 +24,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ""
+- display: "Proxy"
   name: proxy
   defaultvalue: ""
   type: 8
