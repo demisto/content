@@ -89,3 +89,5 @@ dependson:
   must:
   - ProtectWise|||observation-search
 timeout: 0s
+deprecated: true
+releaseNotes: "-"
