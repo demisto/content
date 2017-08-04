@@ -5,13 +5,13 @@ name: EmailAskUser
 script: |-
   // email body type
   var bodyType = 'text';
-  if (args.bodyType && args.bodyType=='html') {
+  if (args.bodyType && args.bodyType === 'html') {
       bodyType = 'html';
   }
 
   // Get entitlement
   res = executeCommand('addOneTimeEntitlement', {});
-  if (res[0].Type == entryTypes.error) {
+  if (res[0].Type === entryTypes.error) {
       return res;
   }
   var entitlement = res[0].Contents;
@@ -34,7 +34,7 @@ script: |-
   if (!option2) {
       option2 = 'no';
   }
-  if (reply && bodyType == 'html') {
+  if (reply && bodyType === 'html') {
       option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
       option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
   }
