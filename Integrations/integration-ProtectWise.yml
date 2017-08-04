@@ -244,7 +244,6 @@ script:
                 // First time, retrieve events from the last 10 min
                 lastRun = {time: now - 10 * 60 * 1000};
             }
-            setLastRun({time: now});
             var data = eventsSearch(lastRun.time , now , params.eventType, params.killChainStage, params.threatLevel,
                                     params.threatCategory, undefined,undefined,undefined,undefined,undefined,undefined,undefined,token);
             try {
@@ -270,6 +269,7 @@ script:
                     incidents.push(createIncidentFromEvent(res[i]));
                 }
             }
+            setLastRun({time: now});
             return JSON.stringify(incidents);
         case 'sensors':
         case 'protectwise-show-sensors':
