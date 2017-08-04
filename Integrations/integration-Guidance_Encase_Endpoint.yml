@@ -20,7 +20,7 @@ configuration:
   name: port
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
@@ -238,3 +238,4 @@ script:
       description: Input an MD5 to collect file by hash signature
     description: This command finds if a given hash is active on an endpoint
 hidden: false
+releaseNotes: "-"
