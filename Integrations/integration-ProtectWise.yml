@@ -95,7 +95,7 @@ script:
             try {
                 var body = JSON.parse(tokResult.Body);
             } catch (ex) {
-                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+                throw 'Error parsing token - ' + tokResult.Body + ' - ' + ex;
             }
 
             return body.token;
@@ -119,7 +119,7 @@ script:
         try {
             return (raw ? res.Body : JSON.parse(res.Body));
         } catch (ex) {
-            throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
     };
 
@@ -250,7 +250,7 @@ script:
             try {
                 var res = JSON.parse(data).events;
             } catch (ex) {
-                throw 'Error parsing result - ' + result.Body + ' - ' + ex;
+                throw 'Error parsing event fetch - ' + data + ' - ' + ex;
             }
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
@@ -302,7 +302,7 @@ script:
             try {
                 var res = JSON.parse(raw).events;
             } catch (ex) {
-                throw 'Error parsing result - ' + raw + ' - ' + ex;
+                throw 'Error parsing event search - ' + raw + ' - ' + ex;
             }
             var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
             var items = [];
@@ -377,7 +377,7 @@ script:
             try {
                 var res = JSON.parse(raw).observations;
             } catch (ex) {
-                throw 'Error parsing result - ' + raw + ' - ' + ex;
+                throw 'Error parsing observation search - ' + raw + ' - ' + ex;
             }
             var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
             var items = [];
