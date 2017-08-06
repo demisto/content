@@ -80,7 +80,7 @@ script: |-
       if (!(res && res[0] && res[0].Contents[0]) && markAsIndicator) {
           executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot'});
       }
-      ec[outputPaths.domain].push({Data: domain});
+      ec[outputPaths.domain].push({Name: domain});
       md += '- ' + domain + '\n';
   }
   return { Type: entryTypes.note, Contents: ec[outputPaths.domain], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
