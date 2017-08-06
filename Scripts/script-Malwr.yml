@@ -320,3 +320,4 @@ args:
 - name: timeout
   description: Command timeout (for Detonate)
 scripttarget: 0
+releaseNotes: "Added detonate"
