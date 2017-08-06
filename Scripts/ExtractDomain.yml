@@ -93,5 +93,5 @@ args:
   description: Regex to recognize urls
 outputs:
 - contextPath: Domain.Name
-  description: Extracted URLs
+  description: Extracted Domains
 scripttarget: 0
