@@ -27,6 +27,7 @@ tags:
 - domain
 comment: Extract Domain from a URL. Domain will include sub-domain as well
 system: true
+deprecated: true
 args:
 - name: url
   required: true
