@@ -189,9 +189,9 @@ script:
             return status, is_malicious, soup, md5
 
 
-    if 'username' in demisto.params() and 'password' in demisto.params():
-        username = demisto.params()['username']
-        password = demisto.params()['password']
+    if 'identifier' in demisto.params()['credentials'] and 'password' in demisto.params()['credentials']:
+        username = demisto.params()['credentials']['identifier']
+        password = demisto.params()['credentials']['password']
     else:
         username = None
         password = None
