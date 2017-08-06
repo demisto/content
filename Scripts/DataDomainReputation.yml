@@ -2,7 +2,7 @@ commonfields:
   id: DataDomainReputation
   version: -1
 name: DataDomainReputation
-script: |
+script: |-
   var score = -1;
   var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"});
   if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
@@ -20,13 +20,20 @@ script: |
   var domainScore = -1;
   var domainRes = executeCommand('ExtractDomain', {text: args.input});
   var domain = domainRes[0].Contents[0].Name;
-  var rep = executeCommand('domain', {domain: domain});
-  var scores = dq(rep, 'EntryContext.DBotScore.Score');
-  for (var i = 0; scores && i < scores.length; i++) {
-      if (scores[i] && score < scores[i]) {
-        domainScore = scores[i];
+
+  var res = executeCommand("findIndicators", {"query": "type:Domain and value:\"" + domain + "\" and manualScore:T"});
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      domainScore = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('domain', {domain: domain});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+              domainScore = scores[i];
+          }
       }
   }
+
   if (domainScore > score) {
       score = domainScore;
   }
