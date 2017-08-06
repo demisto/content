@@ -266,7 +266,11 @@ script:
             }
     }
     sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-    result['submission_Key'] = submissionKey;
+
+    if (!result['submission_Key']) {
+      result['submission_Key'] = submissionKey;
+    }
+
     currentCommand = commandDictionary[command];
     var entries = [];
     if (currentCommand.extended) {
@@ -286,7 +290,7 @@ script:
             entry.EntryContext[current.contextPath] = context;
 
             if(command === 'fe-submit-result'){
-                var md5 = result.alerts.alert.dst.explanation['malware-detected'].malware.md5sum;
+                var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;
                 if(context.Severity === 'majr'){
                     entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
                     var malFile = {};
