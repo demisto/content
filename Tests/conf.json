@@ -25,7 +25,8 @@
         },
         {
             "name": "google",
-            "playbookID": "GsuiteTest"
+            "playbookID": "GsuiteTest",
+            "byoi": false
         },
         {
             "timeout": 60,
