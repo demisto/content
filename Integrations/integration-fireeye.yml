@@ -438,5 +438,4 @@ script:
   - name: fe-config
     arguments: []
     description: commands.server.feConfig.description
-cangetsamples: true
 releaseNotes: "Added outputs"
