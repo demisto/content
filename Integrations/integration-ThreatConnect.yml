@@ -409,6 +409,25 @@ script:
     - name: confidenceThreshold
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+    important:
+    - contextPath: IP(val.Malicious)
+      description: Malicious IPs
+      related: ""
     description: search for IP indicator
   - name: url
     arguments:
@@ -425,6 +444,25 @@ script:
     - name: confidenceThreshold
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: URL(val.Malicious)
+      description: Malicious URLs
+      related: ""
     description: search for URL indicator
   - name: file
     arguments:
@@ -441,6 +479,29 @@ script:
     - name: confidenceThreshold
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash found
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+      related: ""
     description: search for File indicator
   - name: tc-owners
     arguments: []
@@ -525,7 +586,7 @@ script:
     - name: incidentName
       description: filter by incident name
     outputs:
-    - contextPath: threatconnect.incidents
+    - contextPath: ThreatConnect.incidents
       description: Incidents from ThreatConnect
     description: Fetch TC incidents
   - name: tc-incident-associate-indicator
