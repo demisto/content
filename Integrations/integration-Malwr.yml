@@ -343,4 +343,5 @@ script:
     - name: timeout
       description: The timeout of the command
     description: Detonate of file and return the result
+  dockerimage: demisto/bs4
 cangetsamples: true
