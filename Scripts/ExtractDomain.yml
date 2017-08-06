@@ -70,10 +70,14 @@ script: |-
   var ec = {};
   ec[outputPaths.domain] = [];
   var md = '### Extract Domain\n';
+  var markAsIndicator = true;
+  if ((args.markAsIndicator) && (args.markAsIndicator === 'false')){
+      markAsIndicator = false;
+  }
   for (var i=0; i < uniqueMatches.length; i++) {
       var domain = extractRootDomain(uniqueMatches[i]);
       var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
-      if (!(res && res[0] && res[0].Contents[0])) {
+      if (!(res && res[0] && res[0].Contents[0]) && markAsIndicator) {
           executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot'});
       }
       ec[outputPaths.domain].push({Data: domain});
@@ -93,6 +97,12 @@ args:
   description: The text to extract Domains from. If object will convert to JSON.
 - name: urlRegex
   description: Regex to recognize urls
+- name: markAsIndicator
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Create a new indicator for each new domain found, default is true
 outputs:
 - contextPath: Domain.Name
   description: Extracted domains
