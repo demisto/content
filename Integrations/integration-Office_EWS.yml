@@ -1080,4 +1080,4 @@ script:
       description: The mailbox where this attachment was found
     description: Get actual attachment file from email
   isfetch: true
-cangetsamples: true
+releaseNotes: "-"
