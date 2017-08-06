@@ -50,6 +50,7 @@ script:
     filePath= 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)'
     ipPath= 'IP(val.Address && val.Address == obj.Address)'
     urlPath= 'URL(val.Data && val.Data == obj.Data)'
+    domainPath= 'Domain(val.Name && val.Name == obj.Name)'
 
     defaultMaliciosConfidenceThreshold = 50
     defaultMaliciosRatingThreshold = 3
@@ -112,6 +113,9 @@ script:
                 elif indicatorType == 'url':
                     if hasattr(ind, 'indicator'):
                         mal['Data'] = ind.indicator
+                elif indicatorType == 'domain':
+                    if hasattr(ind, 'hostName'):
+                        mal['Name'] = ind.hostName
                 mal['properties_to_append'] = ['Malicious'];
                 ec[contextPath] = mal;
             elif ind.rating >=1:
@@ -222,6 +226,25 @@ script:
             demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+file,"EntryContext": ec})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect File Reputation for: "+file, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
+        sys.exit(0)
+    if demisto.command() == 'domain':
+        domain = demisto.args()['domain']
+        malRatingThreshold = -1
+        malConfidenceThreshold = -1
+        if demisto.get(demisto.args(), 'ratingThreshold'):
+            malRatingThreshold = int(demisto.args()['ratingThreshold'])
+        if demisto.get(demisto.args(), 'confidenceThreshold'):
+            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
+        indicators = getIndicatorsForDbot(demisto.args(), domain, 'Host')
+        ec = createContext(indicators,domainPath,malRatingThreshold,malConfidenceThreshold,'domain')
+        indicatorsArr = []
+        for indicator in indicators:
+            indJson = escapeNewLines(indicator.json)
+            indicatorsArr.append(json.loads(indJson))
+        if len(indicators) == 0:
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+domain,"EntryContext": ec})
+        else:
+            demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect Domain Reputation for: "+domain, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'tc-owners':
         tc = getClient()
@@ -612,5 +635,31 @@ script:
     - name: owner
       description: filter by owner
     description: associate an indicator to an existing incident
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check reputation
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    important:
+    - contextPath: Domain(val.Malicious)
+      description: Malicious Domains
+      related: ""
+    description: Check domain reputation
   dockerimage: demisto/threatconnect-sdk
 releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update"
