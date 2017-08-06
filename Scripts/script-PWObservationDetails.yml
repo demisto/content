@@ -45,3 +45,5 @@ dependson:
   must:
   - pw-observation-get
 timeout: 0s
+deprecated: true
+releaseNotes: "-"
