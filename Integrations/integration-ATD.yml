@@ -352,7 +352,7 @@ script:
     var downloadReport = function(uri,method, headers, filename) {
         var res = sendRequestRaw(uri,method, headers)
         return {
-            Type: 3,
+            Type: 9,
             FileID: saveFile(res),
             File: filename,
             Contents: filename
