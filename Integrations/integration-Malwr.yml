@@ -388,3 +388,4 @@ script:
       description: The actual score
   dockerimage: demisto/bs4
 cangetsamples: true
+releaseNotes: "Added BYOI Malwr integration"
