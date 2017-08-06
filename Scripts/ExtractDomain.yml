@@ -19,7 +19,6 @@ script: |-
   var extractHostname = function(url) {
       var hostname;
       if (url.indexOf("://") > -1) {
-          throw 'XXXX';
           hostname = url.split('/')[2];
       }
       else {
@@ -50,7 +49,6 @@ script: |-
   var matches = {};
   var found;
   var reg;
-
   if (args.urlRegex) {
       reg = new RegExp(args.urlRegex, "gmi");
   } else {
@@ -74,6 +72,10 @@ script: |-
   var md = '### Extract Domain\n';
   for (var i=0; i < uniqueMatches.length; i++) {
       var domain = extractRootDomain(uniqueMatches[i]);
+      var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
+      if (!(res && res[0] && res[0].Contents[0])) {
+          executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot'});
+      }
       ec[outputPaths.domain].push({Data: domain});
       md += '- ' + domain + '\n';
   }
@@ -93,5 +95,5 @@ args:
   description: Regex to recognize urls
 outputs:
 - contextPath: Domain.Name
-  description: Extracted Domains
+  description: Extracted domains
 scripttarget: 0
