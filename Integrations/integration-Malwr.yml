@@ -29,6 +29,7 @@ script:
     import json
     from bs4 import BeautifulSoup
 
+    MAIN_URL = 'https://malwr.com'
     STATUS_URL = '/submission/status/%s/'
     RESULT_URL = '/analysis/%s/'
     MD5_PREFIX_STR = 'with MD5 '
@@ -257,10 +258,11 @@ script:
 
             if is_malicious:
                 entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Status': status, 'Malicious': {'Vendor': 'Malwr'}}}
-                entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3 if is_malicious else 0}
+                entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 3}
                 message = 'The file is malicious.'
             else:
                 entry['EntryContext'] = {'Malwr.Submissions(val.Id==obj.Id)': {'Id': analysis_id, 'Status': status}}
+                entry['EntryContext']['DBotScore'] = {'Indicator': md5, 'Vendor': 'Malwr', 'Score': 0}
                 message = 'The file is not malicious.'
 
             entry['Contents'] = str(soup)
@@ -365,10 +367,11 @@ script:
       description: The actual score
   - name: malwr-detonate
     arguments:
-    - name: fieId
+    - name: fileId
       required: true
       description: The file ID to detonate
     - name: timeout
+      defaultValue: "7200"
       description: The timeout of the command
     description: Detonate of file and return the result
     outputs:

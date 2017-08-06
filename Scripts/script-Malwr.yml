@@ -319,5 +319,6 @@ args:
   description: fileId (Submit), queryId (Status / Result)
 - name: timeout
   description: Command timeout (for Detonate)
+  defaultValue: "7200"
 scripttarget: 0
 releaseNotes: "Added detonate"
