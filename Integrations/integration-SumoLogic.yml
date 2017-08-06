@@ -262,5 +262,4 @@ script:
       description: The array of aggregate records
     description: Search SumoLogic for matching records to the given query
   isfetch: true
-cangetsamples: true
 releaseNotes: "Implementation of SumoLogic with fetch incidents"

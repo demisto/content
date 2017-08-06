@@ -892,5 +892,4 @@ script:
     arguments: []
     description: Get API token, to use in integration configuration
   isfetch: true
-cangetsamples: true
 releaseNotes: "Consolidated command names. Upgraded with outputs. Can fetch incidents from Protectwise events with filtering on event names. Timestamps presented in human readble format."

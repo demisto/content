@@ -317,7 +317,8 @@ script:
                 name: inc.id,
                 occurred: new Date(inc.firstAlertTime),
                 owner: inc.assignee ? inc.assignee.login : '',
-                reason: inc.name
+                reason: inc.name,
+                rawJSON: JSON.stringify(inc)
             });
         }
 
@@ -2059,4 +2060,4 @@ script:
       description: Id of the alert
     description: Returns the original events which this alert contains
   isfetch: true
-  
+
