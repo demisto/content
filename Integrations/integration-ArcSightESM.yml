@@ -635,5 +635,5 @@ script:
       required: true
   isfetch: true
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Added as-get-security-events command. Fixed some bugs in parsing of SOAP response"
 
