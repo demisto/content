@@ -6,4 +6,4 @@ git diff  --diff-filter=D $2 > delete-changelog.txt
 ASSETID=$1
 VERSION=$3
 
-python release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID
+python Tests/release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID
