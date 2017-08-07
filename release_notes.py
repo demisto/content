@@ -61,7 +61,7 @@ class Content:
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
-                        print_error(cnt["name"] + " yml is missing releaseNotes entry")
+                        print_error(cnt["name"] + " is missing releaseNotes entry")
                         error_count += 1
                     else:
                         modifiedStr += ans
