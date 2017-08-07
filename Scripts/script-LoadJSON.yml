@@ -22,3 +22,4 @@ outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
 scripttarget: 0
+releaseNotes: "Add outputs and save in context"
