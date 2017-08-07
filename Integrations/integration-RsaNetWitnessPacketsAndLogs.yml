@@ -112,7 +112,7 @@ script:
                 var hr = tableToMarkdown(command, retVal.md);
                 return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown};
             } else {
-                return "No results found \n" + JSON.stringify(data);
+                return "No results found.";
             }
         };
 
