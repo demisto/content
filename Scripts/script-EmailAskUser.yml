@@ -5,7 +5,7 @@ name: EmailAskUser
 script: |-
   // email body type
   var bodyType = 'text';
-  if (args.bodyType && args.bodyType === 'html') {
+  if (args.bodyType === 'html') {
       bodyType = 'html';
   }
 
@@ -15,7 +15,6 @@ script: |-
       return res;
   }
   var entitlement = res[0].Contents;
-
 
   // Create email subject
   var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
@@ -34,37 +33,48 @@ script: |-
   if (!option2) {
       option2 = 'no';
   }
+  var additionalOptions = [];
+  if (args.additionalOptions) {
+      additionalOptions = args.additionalOptions.split(',');
+  }
+  var additionalOptionsHTML = [];
   if (reply && bodyType === 'html') {
       option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
       option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
+      for (var i=0; i<additionalOptions.length; i++) {
+          additionalOptionsHTML.push('<a href="mailto:' + reply + '?subject=' + subject + '&body=' + additionalOptions[i] + '">' + additionalOptions[i] + '</a>');
+      }
   }
 
   // Create email body
   var message = args.message;
-  if (bodyType == 'html') {
+  if (bodyType === 'html') {
       message += '<br/><br/>';
   } else {
       message += '\n\n';
   }
-  message += 'Please reply with either ' +option1+' or '+option2;
+  message += 'Please reply with either ' + option1 + ' or ' + option2;
+  if (additionalOptions.length > 0) {
+      message += ' or ' + (additionalOptionsHTML.length > 0 ? additionalOptionsHTML.join(' or ') : additionalOptions.join(' or '));
+  }
 
   // Get email recipients
   var addresses = [];
   if (args.roles) {
-      var usersRes = executeCommand('getUsers', { "roles": args.roles });
-      if (usersRes[0].Contents.length>0) {
-          addresses.push(dq(usersRes,"Contents.email"));
+      var usersRes = executeCommand('getUsers', { 'roles': args.roles });
+      if (usersRes[0].Contents.length > 0) {
+          addresses = addresses.concat(dq(usersRes, 'Contents.email'));
       }
   }
   var email = args.email;
   if (email) {
-      addresses.push(email.split(","));
+      addresses = addresses.concat(email.split(','));
   }
 
-  if (addresses.length >0) {
+  if (addresses.length > 0) {
       // prepare args and run send-mail
       emailArgs = args;
-      emailArgs.to = addresses.join(",");
+      emailArgs.to = addresses.join(',');
       emailArgs.subject = subject;
       if (bodyType === 'html') {
           emailArgs.htmlBody = message;
@@ -76,7 +86,7 @@ script: |-
       }
       return executeCommand('send-mail', emailArgs);
   } else {
-      return {Type:entryTypes.error, ContentsFormat:formats.text, Contents:'No email address found'};
+      return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
   }
 type: javascript
 tags:
@@ -97,6 +107,8 @@ args:
   description: First option for a user reply. "yes" is the default.
 - name: option2
   description: Second option for the user reply. "no" is the default.
+- name: additionalOptions
+  description: A comma delimited list of additional options if you have more than 2
 - name: task
   description: Which task should we close with the reply. If none then no playbook
     tasks will be closed.
