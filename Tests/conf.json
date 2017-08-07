@@ -7,11 +7,6 @@
             "playbookID": "Cisco-Umbrella-Test"
         },
         {
-            "name": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test",
-            "nightly": true
-        },
-        {
             "name": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
@@ -24,9 +19,18 @@
             "playbookID": "Qualys-Test"
         },
         {
+            "name": "google",
+            "playbookID": "GsuiteTest",
+            "byoi": false
+        },
+        {
             "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
+        },
+        {
+            "name": "RSA Archer",
+            "playbookID": "Archer-Test-Playbook"
         }
     ]
 }

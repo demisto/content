@@ -9,7 +9,7 @@ script: |-
 
   var verifyFields = function(obj) {
       fields.forEach(function (field) {
-          if (dq(obj, field) === undefined) {
+          if (dq(obj, field.trim()) === undefined) {
               throw 'Field ' + field + ' is missing from ' + JSON.stringify(obj) + '.';
           }
       });
@@ -61,3 +61,4 @@ args:
   description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
     ''{"a": 1, "b": ["hello", "world" ]}'
 scripttarget: 0
+releaseNotes: "removed spaces from field names"

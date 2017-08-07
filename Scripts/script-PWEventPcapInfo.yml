@@ -45,3 +45,5 @@ dependson:
   must:
   - ProtectWise|||event-pcap-info
 timeout: 0s
+deprecated: true
+releaseNotes: "-"

@@ -81,7 +81,7 @@ class ScriptContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res =  "- " + cnt["name"] + "\n"
-        if len(cnt.get("comment")) > 0:
+        if cnt.get("comment") is not None and len(cnt.get("comment")) > 0:
             res += "-- " + cnt["comment"] + "\n"
         return res
 
@@ -111,14 +111,14 @@ class PlaybookContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res = "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            raise Exception(cnt["name"] + "missing release notes yml entry")
+            raise Exception(cnt["name"] + " missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -131,7 +131,7 @@ Content.register(PlaybookContent)
 
 class ReportContent(Content):
     def loadData(self, data):
-        return json.load(data)
+        return json.loads(data)
 
     def getHeader(self):
         return "Reports"
@@ -141,7 +141,7 @@ class ReportContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
         res = "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
@@ -161,7 +161,7 @@ Content.register(ReportContent)
 
 class ReputationContent(Content):
     def loadData(self, data):
-        return json.load(data)
+        return json.loads(data)
 
     def getHeader(self):
         return "Hypersearch"
@@ -193,7 +193,7 @@ class IntegrationContent(Content):
 
     def addedReleaseNotes(self, cnt):
         res =  "- " + cnt["name"] + "\n"
-        if len(cnt.get("description")) > 0:
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
             res += "-- " + cnt["description"] + "\n"
         return res
 
@@ -251,7 +251,12 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         fullFileName = names[1]
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
-        elif changeType != "R100":
+        elif changeType != "R100" and changeType != "R094":
+            if changeType == "R093":
+                # handle the same as modified
+                fullFileName = names[2]
+                changeType = 'M'
+
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 if "/" in fullFileName:
