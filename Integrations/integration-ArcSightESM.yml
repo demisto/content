@@ -335,7 +335,6 @@ script:
             var newEntry = {};
             for (var columnIdx = 0; columnIdx < columns.length; columnIdx++) {
                 var column = columns[columnIdx];
-                // log(column)
                 var innerEntry = entries[i].entry[columnIdx];
                 newEntry[column] = innerEntry;
             }
@@ -430,7 +429,6 @@ script:
 
     function getDataMonitor(authToken, modCount, monitorID){
       var soapReq = replaceInTemplates(monitorDataTemplateWithEnv, { authToken:authToken, modificationCount : modCount, monitorID : monitorID});
-      //return soapReq;
       var res = sendSOAPRequest('www/manager-service/services/DataMonitorService/', null, soapReq);
       return res.Body;
     }
