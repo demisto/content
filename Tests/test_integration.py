@@ -2,7 +2,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
-from test_utils import print_error
+from utils.log import print_error
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
