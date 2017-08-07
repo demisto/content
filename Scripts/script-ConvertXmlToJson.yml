@@ -35,3 +35,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Converting xml to json object (till now it was string)"
