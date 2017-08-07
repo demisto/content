@@ -1,7 +1,7 @@
 import argparse
 import demisto
 from test_integration import test_integration
-from test_utils import print_color, print_error, LOG_COLORS
+from utils.log import print_color, print_error, LOG_COLORS
 import json
 import sys
 
