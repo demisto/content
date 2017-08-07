@@ -2,7 +2,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
-from utils.log import print_error
+from demisto.content.utils.log import print_error
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
