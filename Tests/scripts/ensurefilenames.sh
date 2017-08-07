@@ -1,8 +1,8 @@
-### this script ensure all files starts with the right prefix
+### this script ensure all files starts/ends with the right prefix/suffix
 
-foundWrongPrefix=false
+foundWrongName=false
 
-# ensures all files in dir starting with prefix
+# ensures all files in dir starting/ending with prefix/suffix
 ensureFilename() {
     dir="$1"
     prefix="$2"
@@ -15,13 +15,13 @@ ensureFilename() {
         if ! [[ $filename == $prefix* ]]
         then
         	echo "file $dir/$filename should start with $prefix"
-        	foundWrongPrefix=true
+        	foundWrongName=true
         fi
 
         if ! [[ $filename == *$suffix ]]
         then
         	echo "file $dir/$filename should end with $suffix"
-        	foundWrongPrefix=true
+        	foundWrongName=true
         fi
     done
 }
@@ -34,7 +34,7 @@ ensureFilename Scripts script- yml
 ensureFilename Misc reputations json
 ensureFilename TestPlaybooks playbook- yml
 
-if [ "$foundWrongPrefix" = true ]
+if [ "$foundWrongName" = true ]
 then
     echo "ensurefilenames.sh exiting with error"
     exit 1
