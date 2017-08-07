@@ -3,21 +3,39 @@ commonfields:
   version: -1
 name: EmailAskUser
 script: |-
+  #### email body type
+  if (demisto.args()['bodyType'] and demisto.args()['bodyType']=='html'):
+      bodyType = 'html'
+  else:
+      bodyType = 'text'
+
+  #### Get entitlement
   res = demisto.executeCommand('addOneTimeEntitlement', {})
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
   entitlement = demisto.get(res[0], 'Contents')
+
+  #### Handle options
   option1 = demisto.get(demisto.args(), 'option1')
   if not option1:
       option1 = 'yes'
   option2 = demisto.get(demisto.args(), 'option2')
   if not option2:
       option2 = 'no'
+
+  #### Create email subject
   subjectSuffix = ' - #' + demisto.investigation()['id'] + ' ' + entitlement
   if demisto.get(demisto.args(), 'task'):
       subjectSuffix += ' #' + demisto.get(demisto.args(), 'task')
-  message = '%s\n\nPlease reply with either %s or %s' % (demisto.args()['message'].replace('\\n', '\n'), option1, option2)
+
+  #### Create email body
+  if (bodyType == 'html'):
+      message = '%s<br/><br/>Please reply with either %s or %s' % (demisto.args()['message'], option1, option2)
+  else:
+      message = '%s\n\nPlease reply with either %s or %s' % (demisto.args()['message'].replace('\\n', '\n'), option1, option2)
+
+  #### Get email recipients
   roles = demisto.get(demisto.args(), 'roles')
   addresses = []
   if roles is not None:
@@ -27,16 +45,30 @@ script: |-
   argMail = demisto.get(demisto.args(), 'email')
   if argMail is not None:
       addresses.extend([argMail])
+
   if len(addresses) > 0:
+      #### prepare args and run send-mail
       adStr = ",".join(addresses)
-      demisto.results(demisto.executeCommand('send-mail', {'to': adStr, 'subject': demisto.get(demisto.args(), 'subject') + subjectSuffix, 'body': message}))
+      args = demisto.args()
+      args['to'] = adStr
+      args['subject'] = demisto.get(demisto.args(), 'subject') + subjectSuffix
+      args['body'] = message
+      if (bodyType == 'html'):
+          args['htmlBody'] = message
+      else:
+          args['body'] = message
+
+      attachIds = demisto.get(demisto.args(),'attachIds')
+      if attachIds is not None:
+          args['attachIDs'] = attachIds
+      demisto.results(demisto.executeCommand('send-mail', args))
   else:
       demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No email address found' })
 type: python
 tags:
 - email
 comment: Ask a user a question via email and process the reply directly into the investigation.
-system: true
+enabled: true
 args:
 - name: email
   default: true
@@ -56,5 +88,14 @@ args:
     tasks will be closed.
 - name: roles
   description: Send mail to all users of these roles (csv list)
+- name: attachIds
+  description: Attachments
+- name: bodyType
+  auto: PREDEFINED
+  predefined:
+  - "text"
+  - "html"
+  defaultValue: "text"
+  description: Type of email body to send - text ot HTML
 scripttarget: 0
-releaseNotes: Added support to send emails according to roles
+releaseNotes: added capability to send HTML emails, and attachements

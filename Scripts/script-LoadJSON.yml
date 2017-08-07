@@ -4,7 +4,9 @@ commonfields:
 name: LoadJSON
 script: |-
   import json
+  JSON_CONTEXT_KEY = "JsonObject"
   obj = json.loads(demisto.args()['input'])
+  demisto.setContext(JSON_CONTEXT_KEY, obj)
   demisto.results(obj)
 type: python
 tags:
@@ -16,4 +18,8 @@ args:
   required: true
   default: true
   description: input string to transform to json object
+outputs:
+- contextPath: JsonObject
+  description: The JSON object loaded from input
 scripttarget: 0
+releaseNotes: "Add outputs and save in context"

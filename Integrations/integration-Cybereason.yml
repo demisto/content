@@ -1,3 +1,4 @@
+versionedfields: {}
 commonfields:
   id: Cybereason
   version: -1
@@ -322,6 +323,8 @@ script:
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cybereason Processes', outputs, processHeaders);
         updateContext(entry, outputs, 'Process');
+        entry.Contents = res;
+        entry.ContentsFormat = formats.json;
 
         return entry;
     }
@@ -365,6 +368,8 @@ script:
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cybereason Connections', outputs, connectionHeaders);
         updateContext(entry, outputs, 'Connection');
+        entry.Contents = res;
+        entry.ContentsFormat = formats.json;
 
         return entry;
     }

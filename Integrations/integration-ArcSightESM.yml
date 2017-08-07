@@ -136,7 +136,8 @@ script:
           }
           newIncidents.push({
             name: data.Name || ('New event from arcsight at ' + Date.now()),
-            labels: labels
+            labels: labels,
+            rawJSON: JSON.stringify(data[i]).replace(/\\"/g, '"'),
           });
           delete(args.resourceId);
         }
@@ -189,7 +190,8 @@ script:
           }
           newIncidents.push({
             name: data[i].Name || ('New event from arcsight at ' + Date.now()),
-            labels: labels
+            labels: labels,
+            rawJSON: JSON.stringify(data[i]).replace(/\\"/g, '"'),
           });
         }
       }

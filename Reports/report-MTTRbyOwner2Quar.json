@@ -4,9 +4,10 @@
   "description": "This report generates Mean Time to Resolve by Incident Owner for last 2 Quarters",
   "fromVersion": "2.5.0",
   "tags": [],
-  "createdBy": "Demisto",
+  "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
+  "releaseNotes": "-",
   "recipients": [],
   "system": true,
   "decoder": {

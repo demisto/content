@@ -87,7 +87,7 @@ tasks:
       htmlBody: ""
       noteEntryID: ""
       subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${Account.Email}
+      to: ${incident.labels.Email/from}
     view: |-
       {
         "position": {
@@ -209,7 +209,7 @@ tasks:
     scriptarguments:
       distance: ""
       domain: ${inputs.CompanyDomains}
-      sender: ${Account.Email}
+      sender: ${incident.labels.Email/from}
     results:
     - LevenshteinDistance
     view: |-
@@ -388,7 +388,7 @@ tasks:
       htmlBody: ""
       noteEntryID: ""
       subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${Account.Email}
+      to: ${incident.labels.Email/from}
     view: |-
       {
         "position": {
@@ -447,7 +447,7 @@ tasks:
       htmlBody: ""
       noteEntryID: ""
       subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${Account.Email}
+      to: ${incident.labels.Email/from}
     view: |-
       {
         "position": {
@@ -633,8 +633,9 @@ tasks:
       '#none#':
       - "98"
     scriptarguments:
-      key: Account.Email
+      key: Account.Email.Address
       value: ${incident.labels.Email/from}
+      append: true
     view: |-
       {
         "position": {

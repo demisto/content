@@ -1,5 +1,6 @@
 id: Carbon Black Rapid IOC Hunting
 fromversion: 2.5.0
+releaseNotes: "-"
 system: true
 version: -1
 name: Carbon Black Rapid IOC Hunting
@@ -73,7 +74,7 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblack' && val.state == 'enabled')}
+      value: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
     view: |-
       {
         "position": {

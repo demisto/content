@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Cylance Protect
 display: Cylance Protect
+releaseNotes: "Fixed an error caused when trying to parse an object in query response"
 category: End Point
 system: true
 fromversion: 2.0.1
@@ -214,6 +215,10 @@ script:
             var context = {};
             context.Cylance = {};
             context.Cylance[contextType] = [];
+            
+            if (!Array.isArray(body)) {
+                body = [body];
+            }
 
             body.forEach(function(row){
                 var l = {};
@@ -282,7 +287,7 @@ script:
         var incident = {
             name: threat.priority + ' ' + threat.name,
             labels: [],
-            rawJSON: JSON.stringify(threat),
+            rawJSON: JSON.stringify(threat).replace(/\\"/g, '"'),
         };
         delete(threat.name);
         var keys = Object.keys(threat);

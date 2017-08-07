@@ -1,0 +1,101 @@
+id: GsuiteTest
+version: 4
+name: test-Gsuite
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 01939321-b14d-4200-800b-27cfce1b36e7
+    type: start
+    task:
+      id: 01939321-b14d-4200-800b-27cfce1b36e7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 958f4e13-e239-468c-81c7-4d6f05d5fd43
+    type: regular
+    task:
+      id: 958f4e13-e239-468c-81c7-4d6f05d5fd43
+      version: -1
+      name: googleapps-list-users
+      description: Retrieves a paginated list of either deleted users or all users
+        in a domain
+      script: google|||googleapps-list-users
+      type: regular
+      iscommand: true
+      brand: google
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      custom-field-mask: ""
+      customer: ""
+      domain: ""
+      event: ""
+      max-results: ""
+      projection: ""
+      query: ""
+      show-deleted: ""
+      sort-order: ""
+      view-type-public-domain: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 8a638dfd-6026-4425-8881-14f55485da96
+    type: regular
+    task:
+      id: 8a638dfd-6026-4425-8881-14f55485da96
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: ${Account.[1]}
+      field2: ${Account.[2]}
+      field3: ""
+      field4: ""
+      value1: ""
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
