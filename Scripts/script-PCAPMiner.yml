@@ -47,6 +47,7 @@ script: |
   files=glob.glob(ouputPath)
   fileCounter = 0
 
+
   if(pyResults["counts"]):
       displayData = tableToMarkdown('PCAP Data Frequency Counts', pyResults["counts"])
   if(pyResults["destination_ip_details"]):
@@ -80,6 +81,11 @@ tags:
 - Utilities
 - file
 - pcap
+comment: PCAPMiner is a tool to parse PCAP files and will return things like extracted
+  files that are found, HTTP flows, and a variety of other information. It is uses
+  a docker instance located on docker hub trorabaugh/dempcap:1.0.  To use simply upload
+  a PCAP file and then run PCAPMiner entryId="<your_entry_id>". To get the entry id
+  click on the link on the top right hand corner of a file attachment.
 enabled: true
 args:
 - name: entryId
@@ -89,4 +95,5 @@ args:
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
+releaseNotes: "Initial add of PCAPMiner a simple pcap parsing tool which uses a docker image to handle threading and parsing pcap files"
 system: true
