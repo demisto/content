@@ -26,13 +26,13 @@ ensureFilename() {
     done
 }
 
-ensureFilename Integrations integration- yml
-ensureFilename Playbooks playbook- yml
-ensureFilename Reports report- json
-ensureFilename Scripts script- yml
-ensureFilename Scripts script- yml
-ensureFilename Misc reputations json
-ensureFilename TestPlaybooks playbook- yml
+ensureFilename Integrations integration- .yml
+ensureFilename Playbooks playbook- .yml
+ensureFilename Reports report- .json
+ensureFilename Scripts script- .yml
+ensureFilename Scripts script- .yml
+ensureFilename Misc reputations .json
+ensureFilename TestPlaybooks playbook- .yml
 
 if [ "$foundWrongName" = true ]
 then
