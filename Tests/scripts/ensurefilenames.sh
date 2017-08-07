@@ -3,9 +3,10 @@
 foundWrongPrefix=false
 
 # ensures all files in dir starting with prefix
-ensurePrefix() {
+ensureFilename() {
     dir="$1"
     prefix="$2"
+    suffix="$3"
 
      # iterate all files in dir
     for entry in $dir/*
@@ -16,13 +17,22 @@ ensurePrefix() {
         	echo "file $dir/$filename should start with $prefix"
         	foundWrongPrefix=true
         fi
+
+        if ! [[ $filename == *$suffix ]]
+        then
+        	echo "file $dir/$filename should end with $suffix"
+        	foundWrongPrefix=true
+        fi
     done
 }
 
-ensurePrefix Integrations integration-
-ensurePrefix Playbooks playbook-
-ensurePrefix Reports report-
-ensurePrefix Scripts script-
+ensureFilename Integrations integration- yml
+ensureFilename Playbooks playbook- yml
+ensureFilename Reports report- json
+ensureFilename Scripts script- yml
+ensureFilename Scripts script- yml
+ensureFilename Misc reputations json
+ensureFilename TestPlaybooks playbook- yml
 
 if [ "$foundWrongPrefix" = true ]
 then
