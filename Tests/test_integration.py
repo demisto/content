@@ -53,7 +53,7 @@ def __test_integration_instance(client, module_instance):
 
 
 # return instance name if succeed, None otherwise
-def __create_integration_instance(client, integration_name, integration_params):
+def __create_integration_instance(client, integration_name, integration_params, is_byoi):
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -71,7 +71,7 @@ def __create_integration_instance(client, integration_name, integration_params):
         'enabled': "true",
         'engine': '',
         'id': '',
-        'isIntegrationScript': True,
+        'isIntegrationScript': is_byoi,
         'name': instance_name,
         'passwordProtected': False,
         'version': 0
@@ -197,9 +197,9 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integration_name, integration_params, playbook_id, skip_playbook, options={}):
+def test_integration(client, integration_name, integration_params, playbook_id, skip_playbook, is_byoi, options={}):
     # create integration instance
-    instance_id = __create_integration_instance(client, integration_name, integration_params)
+    instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
 
     if not instance_id:
         print_error('Failed to create instance')
