@@ -35,6 +35,11 @@
         {
             "name": "jira",
             "playbookID": "Jira-Test"
+        },
+        {
+            "name": "carbonblack",
+            "playbookID": "CB-Response-Test"
+
         }
     ]
 }
