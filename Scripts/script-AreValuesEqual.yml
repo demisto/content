@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: AreValuesEqual
 script: |
-  if (!args.left || !args.right) {
+  if (args.left === undefined || args.right === undefined) {
       return 'no';
   }
 
