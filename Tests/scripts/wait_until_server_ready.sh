@@ -14,7 +14,7 @@ HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
 MAX_TRIES=8
 TRY_COUNT=1
 until [ $HTTP_CODE != 433 ] || [ $TRY_COUNT = $MAX_TRIES ]; do
-    echo "server is not yet ready - wait another 30 seconds"
+    echo "server is not yet ready - wait another 45 seconds"
     sleep 45s
     ((TRY_COUNT++))
     HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
