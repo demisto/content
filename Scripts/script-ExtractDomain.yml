@@ -40,6 +40,18 @@ script: |-
       return domain;
   };
 
+  var scoreToReputation = function(score) {
+      if (score == 3){
+          return 'Bad';
+      }
+      if (score == 2){
+          return 'Suspicious';
+      }
+      if (score == 1){
+          return 'Good';
+      }
+      return 'None';
+  };
 
   var text = args.text;
   if (typeof text !== 'string') {
@@ -75,13 +87,30 @@ script: |-
       markAsIndicator = false;
   }
   for (var i=0; i < uniqueMatches.length; i++) {
-      var domain = extractRootDomain(uniqueMatches[i]);
-      var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
-      if (!(res && res[0] && res[0].Contents[0]) && markAsIndicator) {
-          executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot'});
+      var hostname = extractHostname(uniqueMatches[i]);
+      var rootDomain = extractRootDomain(uniqueMatches[i]);
+      var domains = [];
+      domains.push(rootDomain);
+      if (domain != hostname) {
+          domains.push(hostname);
       }
-      ec[outputPaths.domain].push({Name: domain});
-      md += '- ' + domain + '\n';
+      for (var j=0; j < domains.length; j++) {
+          var domain = domains[j];
+          var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
+          if (!(res && res[0] && res[0].Contents[0]) && markAsIndicator) {
+              var rep = executeCommand('domain', {domain: domain});
+              var scores = dq(rep, 'EntryContext.DBotScore.Score');
+              var domainScore = 0;
+              for (var i = 0; scores && i < scores.length; i++) {
+                  if (scores[i] && domainScore < scores[i]) {
+                      domainScore = scores[i];
+                  }
+              }
+              executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', reputation: scoreToReputation(domainScore)});
+          }
+          ec[outputPaths.domain].push({Name: domain});
+          md += '- ' + domain + '\n';
+      }
   }
   return { Type: entryTypes.note, Contents: ec[outputPaths.domain], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
