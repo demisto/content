@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+sleep 9m
+sleep 9m
+sleep 9m
 set -e
 
 INSTANCE_ID=$(cat instance_ids)
