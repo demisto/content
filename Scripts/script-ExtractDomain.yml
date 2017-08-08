@@ -113,9 +113,9 @@ script: |-
                               domainScore = scores[i];
                           }
                       }
-                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', reputation: scoreToReputation(domainScore)});
+                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', reputation: scoreToReputation(domainScore), relatedIncidents:investigation.id});
                   } else {
-                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot'});
+                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', relatedIncidents:investigation.id});
                   }
               }
           }
