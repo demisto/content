@@ -9,12 +9,12 @@ script: |-
   urls = []
   if response.history:
       for resp in response.history:
-          urls.append({'Details': resp.url, 'Status': resp.status_code})
-  urls.append({'Details': response.url, 'Status': response.status_code})
-  ec = {'URL(val.Details == obj.Details)': [{'Details': u['Details']} for u in urls]}
+          urls.append({'Data': resp.url, 'Status': resp.status_code})
+  urls.append({'Data': response.url, 'Status': response.status_code})
+  ec = {'URL(val.Data == obj.Data)': [{'Data': u['Data']} for u in urls]}
 
   demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': urls, 'ReadableContentsFormat': formats['markdown'],
-      'HumanReadable': tableToMarkdown('URLs', urls, ['Details', 'Status']), 'EntryContext': ec})
+      'HumanReadable': tableToMarkdown('URLs', urls, ['Data', 'Status']), 'EntryContext': ec})
 type: python
 tags:
 - Utility
@@ -34,7 +34,6 @@ args:
   description: Should we use HEAD instead of GET. Safer but might not be the same
     response.
 outputs:
-- contextPath: URL.Details
+- contextPath: URL.Data
   description: The URL redirects from the given URL
 scripttarget: 0
-releaseNotes: "New script to list redirects of URL"
