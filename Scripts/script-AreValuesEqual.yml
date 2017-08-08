@@ -20,6 +20,7 @@ type: javascript
 tags:
 - Utility
 - Condition
+system: true
 args:
 - name: left
   default: true
