@@ -3,7 +3,7 @@ import json
 import sys
 import abc
 import datetime
-from utils.log import print_color, print_error, LOG_COLORS
+from Tests.utils.log import print_color, print_error, LOG_COLORS
 
 contentLibPath = "./"
 limitedVersion = False
