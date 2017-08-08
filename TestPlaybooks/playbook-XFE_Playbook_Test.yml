@@ -1,15 +1,15 @@
 id: XFE Test
-version: 15
+version: 10
 name: XFE Test
 description: Test XFE commands via playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d579df3d-1022-4794-8b86-46cd886c6a05
+    taskid: 41dcb735-e333-4c4b-8252-a96941196a59
     type: start
     task:
-      id: d579df3d-1022-4794-8b86-46cd886c6a05
+      id: 41dcb735-e333-4c4b-8252-a96941196a59
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 5b55718a-ec8c-4e6b-8daa-4638f7e55578
+    taskid: 4bc7bebd-5b7f-4167-8223-0022f3f73a89
     type: regular
     task:
-      id: 5b55718a-ec8c-4e6b-8daa-4638f7e55578
+      id: 4bc7bebd-5b7f-4167-8223-0022f3f73a89
       version: -1
       name: url
       description: Check the given URL reputation
@@ -53,10 +53,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: e50a84cd-dce2-482b-8951-80eb1a04bc69
+    taskid: 3a8745c7-1711-4a79-8493-8f165b09feb5
     type: regular
     task:
-      id: e50a84cd-dce2-482b-8951-80eb1a04bc69
+      id: 3a8745c7-1711-4a79-8493-8f165b09feb5
       version: -1
       name: VerifyContext
       description: |-
@@ -85,10 +85,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 5d28a8fc-0e6a-4e4e-8770-362ce7869fe5
+    taskid: 23249eac-b6ba-462e-84a0-27e26762a409
     type: regular
     task:
-      id: 5d28a8fc-0e6a-4e4e-8770-362ce7869fe5
+      id: 23249eac-b6ba-462e-84a0-27e26762a409
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -111,10 +111,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 34a63461-b789-4d40-8464-4aba2d258027
+    taskid: 5c95a71e-7546-4600-8461-c7c82fd7ab7c
     type: regular
     task:
-      id: 34a63461-b789-4d40-8464-4aba2d258027
+      id: 5c95a71e-7546-4600-8461-c7c82fd7ab7c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -137,10 +137,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 410d845a-1135-4e19-8b52-e16892895b43
+    taskid: 24cee891-c1af-4bf3-80db-c13a2677d72f
     type: regular
     task:
-      id: 410d845a-1135-4e19-8b52-e16892895b43
+      id: 24cee891-c1af-4bf3-80db-c13a2677d72f
       version: -1
       name: ip
       description: Check the given URL reputation
@@ -165,10 +165,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 61720f46-d104-4c3c-8e0f-f386b574b5be
+    taskid: 2fc4eb69-5cef-4d32-8080-f89c20fab879
     type: regular
     task:
-      id: 61720f46-d104-4c3c-8e0f-f386b574b5be
+      id: 2fc4eb69-5cef-4d32-8080-f89c20fab879
       version: -1
       name: VerifyContext
       description: |-
@@ -197,10 +197,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 9ad16883-b41f-4e21-8a8c-4193d1944c68
+    taskid: b5c8e01a-215c-4167-829a-f896eb52641d
     type: regular
     task:
-      id: 9ad16883-b41f-4e21-8a8c-4193d1944c68
+      id: b5c8e01a-215c-4167-829a-f896eb52641d
       version: -1
       name: domain
       description: Check domain reputation
@@ -225,10 +225,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 539aff71-3a15-44bf-8067-40a757c8f77f
+    taskid: 854edff0-1395-4c8c-88fc-0b84e80d8899
     type: regular
     task:
-      id: 539aff71-3a15-44bf-8067-40a757c8f77f
+      id: 854edff0-1395-4c8c-88fc-0b84e80d8899
       version: -1
       name: VerifyContext
       description: |-
@@ -251,16 +251,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 2295
         }
       }
   "9":
     id: "9"
-    taskid: 59bf3a21-f040-4578-893b-7d2e6622575a
+    taskid: 7979da72-a5ac-4d63-8343-76fc3af37aaa
     type: regular
     task:
-      id: 59bf3a21-f040-4578-893b-7d2e6622575a
+      id: 7979da72-a5ac-4d63-8343-76fc3af37aaa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -283,10 +283,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 6beeea9a-cbf6-4200-867b-d87f35e0c63c
+    taskid: 247bc241-8aa2-4b96-8349-af3e03af5a1d
     type: condition
     task:
-      id: 6beeea9a-cbf6-4200-867b-d87f35e0c63c
+      id: 247bc241-8aa2-4b96-8349-af3e03af5a1d
       version: -1
       name: Check No Malicious found
       scriptName: Exists
@@ -301,16 +301,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 2295
         }
       }
   "12":
     id: "12"
-    taskid: 42b1c971-d319-4710-84fa-c02565368291
+    taskid: f5eda1de-ba9e-48f2-8641-986880914246
     type: regular
     task:
-      id: 42b1c971-d319-4710-84fa-c02565368291
+      id: f5eda1de-ba9e-48f2-8641-986880914246
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -333,10 +333,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: ec5afe1e-2a48-4bd6-8b2a-7ffbc7f47044
+    taskid: f38f08ff-7c9c-48b0-87ff-c7e4b12984e1
     type: regular
     task:
-      id: ec5afe1e-2a48-4bd6-8b2a-7ffbc7f47044
+      id: f38f08ff-7c9c-48b0-87ff-c7e4b12984e1
       version: -1
       name: cve-latest
       description: Return the latest vulnerabilities found
@@ -346,9 +346,9 @@ tasks:
       brand: XFE
     nexttasks:
       '#none#':
-      - "14"
+      - "16"
     scriptarguments:
-      limit: "3"
+      limit: "1"
     view: |-
       {
         "position": {
@@ -358,10 +358,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: ef710832-7498-436f-8a04-b5f9b25b9e58
+    taskid: b3d6aa4d-3575-4090-8c65-dbf3abb5b77e
     type: regular
     task:
-      id: ef710832-7498-436f-8a04-b5f9b25b9e58
+      id: b3d6aa4d-3575-4090-8c65-dbf3abb5b77e
       version: -1
       name: cve-search
       description: Search for details about the given CVE
@@ -369,45 +369,8 @@ tasks:
       type: regular
       iscommand: true
       brand: XFE
-    nexttasks:
-      '#none#':
-      - "15"
     scriptarguments:
       cveId: ${CVE.ID}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2820
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 05c5d5f2-d26e-4a65-8b7a-8997d2a00f01
-    type: regular
-    task:
-      id: 05c5d5f2-d26e-4a65-8b7a-8997d2a00f01
-      version: -1
-      name: Count CVE array
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: CountArraySize
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      array: ${CVE}
-      contextKey: ""
-      expectedValue: "1"
-      fields: ""
-      path: DBotScore.Score
     view: |-
       {
         "position": {
@@ -417,10 +380,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 53671e73-655d-4e7c-8d31-1436db5de065
-    type: regular
+    taskid: 6ef50ed3-0c52-4d38-8945-c1b2e6386c59
+    type: condition
     task:
-      id: 53671e73-655d-4e7c-8d31-1436db5de065
+      id: 6ef50ed3-0c52-4d38-8945-c1b2e6386c59
       version: -1
       name: VerifyContext
       description: |-
@@ -429,29 +392,33 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: Exists
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "14"
     scriptarguments:
       array: ${ArraySize}
       contextKey: ""
       expectedValue: "3"
       fields: ""
-      path: ArraySize
+      path: CVE
+      value: ${CVE}
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3170
+          "y": 2820
         }
       }
   "17":
     id: "17"
-    taskid: 48b7735b-ae03-4f48-8541-87b97506716b
+    taskid: 8e8f9460-029b-4b59-8324-e974e22bd9ea
     type: regular
     task:
-      id: 48b7735b-ae03-4f48-8541-87b97506716b
+      id: 8e8f9460-029b-4b59-8324-e974e22bd9ea
       version: -1
       name: VerifyContext
       description: |-
@@ -480,10 +447,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: a994da9c-ceab-413e-8192-029c07aa0a15
+    taskid: fa7b29c7-43e3-4fda-8961-68e507f57db4
     type: regular
     task:
-      id: a994da9c-ceab-413e-8192-029c07aa0a15
+      id: fa7b29c7-43e3-4fda-8961-68e507f57db4
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -505,10 +472,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 318cd156-6521-4129-8256-bf06ff7a9e96
+    taskid: aee475f6-88d4-4f3f-87a8-01111f811b7d
     type: regular
     task:
-      id: 318cd156-6521-4129-8256-bf06ff7a9e96
+      id: aee475f6-88d4-4f3f-87a8-01111f811b7d
       version: -1
       name: file
       description: Check file reputation
@@ -533,10 +500,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: fd8ea90b-4444-40d7-8435-5d41634f6940
+    taskid: 6cc82bad-c0fd-4fc7-85a1-34bfe46e512b
     type: regular
     task:
-      id: fd8ea90b-4444-40d7-8435-5d41634f6940
+      id: 6cc82bad-c0fd-4fc7-85a1-34bfe46e512b
       version: -1
       name: VerifyContext
       description: |-
@@ -559,16 +526,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1770
         }
       }
   "21":
     id: "21"
-    taskid: 8dc7752d-b028-4be7-8a39-cf1a3e1bfeb5
+    taskid: c054ce1f-5f3d-41b2-89d1-664c62e25010
     type: regular
     task:
-      id: 8dc7752d-b028-4be7-8a39-cf1a3e1bfeb5
+      id: c054ce1f-5f3d-41b2-89d1-664c62e25010
       version: -1
       name: VerifyContext
       description: |-
@@ -591,16 +558,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1770
         }
       }
   "22":
     id: "22"
-    taskid: 6faf26ee-8e94-48ad-82cf-2fb8fb6b071d
+    taskid: 9a69412a-ce62-45f6-84f3-e8762801da47
     type: regular
     task:
-      id: 6faf26ee-8e94-48ad-82cf-2fb8fb6b071d
+      id: 9a69412a-ce62-45f6-84f3-e8762801da47
       version: -1
       name: VerifyContext
       description: |-
@@ -632,7 +599,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3215,
+        "height": 3040,
         "width": 1240,
         "x": 50,
         "y": 50
