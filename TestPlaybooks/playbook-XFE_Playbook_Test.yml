@@ -1,6 +1,6 @@
-id: 286c9967-d2f0-4555-8ed0-cc120993bf65
+id: XFE Test
 version: 15
-name: XFE Playbook Test
+name: XFE Test
 description: Test XFE commands via playbook.
 starttaskid: "0"
 tasks:
