@@ -1,5 +1,5 @@
 id: Jira-Test
-version: 30
+version: 33
 name: Jira-Test
 starttaskid: "0"
 tasks:
@@ -184,7 +184,7 @@ tasks:
       brand: jira
     nexttasks:
       '#none#':
-      - "8"
+      - "13"
     scriptarguments:
       globalId: ""
       issueId: ${Ticket.Id}
@@ -197,30 +197,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 1143
-        }
-      }
-  "8":
-    id: "8"
-    taskid: c9dd560e-2ccf-406f-880a-30cd96253f82
-    type: regular
-    task:
-      id: c9dd560e-2ccf-406f-880a-30cd96253f82
-      version: -1
-      name: testFileUploadPy
-      scriptName: testFileUploadPy
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      input: Hello Demisto
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1344
         }
       }
   "9":
@@ -303,6 +279,33 @@ tasks:
         "position": {
           "x": 450,
           "y": 1728
+        }
+      }
+  "13":
+    id: "13"
+    taskid: a5cf70c1-deda-4da5-8e94-880df22e9136
+    type: regular
+    task:
+      id: a5cf70c1-deda-4da5-8e94-880df22e9136
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file(using the given data input) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      data: Hello Demisto
+      filename: Ho
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1349
         }
       }
 view: |-
