@@ -33,6 +33,10 @@
             "playbookID": "Archer-Test-Playbook"
         },
         {
+            "name": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
             "name": "XFE",
             "playbookID": "XFE Test"
         }
