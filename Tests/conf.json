@@ -31,6 +31,10 @@
         {
             "name": "RSA Archer",
             "playbookID": "Archer-Test-Playbook"
+        },
+        {
+            "name": "XFE",
+            "playbookID": "XFE Test"
         }
     ]
 }
