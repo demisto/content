@@ -3,7 +3,7 @@ version: -1
 system: true
 fromversion: 2.5.0
 name: Phishing Playbook - Automated
-releaseNotes: "-"
+releaseNotes: "Fix default display name in email message"
 description: |-
   This is an automated playbook to investigate suspected Phishing attempts.
   It picks up the required information from the incident metadata as created by the mail listener.
@@ -80,7 +80,7 @@ tasks:
     scriptarguments:
       attachIDs: ""
       bcc: ""
-      body: "Hi ${Account=val.DisplayName || val.Email},\nWe've received your email
+      body: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received your email
         and are investigating.\nPlease do not touch the email until further notice.\n\nCordially,
         \n  Your friendly neighborhood security team"
       cc: ""
@@ -379,7 +379,7 @@ tasks:
       attachIDs: ""
       bcc: ""
       body: |-
-        Hi ${Account=val.DisplayName || val.Email},
+        Hi ${Account=val.DisplayName || val.Email.Address},
         We've concluded that the email you forwarded to us is safe.
         Thank you for your alertness and your participation in keeping our organization secure.
         Cordially,
@@ -438,7 +438,7 @@ tasks:
       attachIDs: ""
       bcc: ""
       body: |-
-        Hi ${Account=val.DisplayName || val.Email},
+        Hi ${Account=val.DisplayName || val.Email.Address},
         We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
 
         All the best,

@@ -33,8 +33,13 @@
             "playbookID": "Archer-Test-Playbook"
         },
         {
+
             "name": "jira",
             "playbookID": "Jira-Test"
+        },
+        {
+            "name": "XFE",
+            "playbookID": "XFE Test"
         }
     ]
 }
