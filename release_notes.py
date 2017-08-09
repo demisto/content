@@ -1,9 +1,10 @@
-import yaml
-import json
-import sys
 import abc
 import datetime
-from utils.log import print_color, print_error, LOG_COLORS
+import json
+import sys
+import yaml
+
+from Tests.test_utils import print_color, print_error, LOG_COLORS
 
 contentLibPath = "./"
 limitedVersion = False
