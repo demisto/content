@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 sleep 9m
+echo sss
 sleep 9m
+echo aaa
 sleep 9m
 set -e
 
