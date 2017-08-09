@@ -33,8 +33,7 @@ outputs:
 - contextPath: no
   description: if left is not equal to right
 scripttarget: 0
-comment: Check whether the values provided in arguments are equal. If either of the
-  arguments are missing, no is returned.
+comment: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
 dependson: {}
 timeout: 0s
-releaseNotes: Arguments are not mandatory anymore. If an argument is missing (or provided with an empty value), no is returned.
+releaseNotes: Arguments are not mandatory anymore. If either of the arguments are missing, no is returned.
