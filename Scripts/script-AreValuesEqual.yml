@@ -3,13 +3,17 @@ commonfields:
   version: -1
 name: AreValuesEqual
 script: |
+  if (args.left === undefined || args.right === undefined) {
+      return 'no';
+  }
+
   var left = (typeof args.left === 'string') ? args.left : args.left + '';
   var right = (typeof args.right === 'string') ? args.right : args.right + '';
   var answer = 'no';
   if (left === right) {
     answer = 'yes';
   }
-  
+
   setContext('AreValuesEqual', answer)
   return answer;
 type: javascript
@@ -19,11 +23,9 @@ tags:
 system: true
 args:
 - name: left
-  required: true
   default: true
   description: First value for comparison
 - name: right
-  required: true
   description: Second value for comparison
 outputs:
 - contextPath: yes
@@ -31,6 +33,7 @@ outputs:
 - contextPath: no
   description: if left is not equal to right
 scripttarget: 0
-comment: Check whether the values provided in arguments are equal.
+comment: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
 dependson: {}
 timeout: 0s
+releaseNotes: Arguments are not mandatory anymore. If either of the arguments are missing, no is returned.
