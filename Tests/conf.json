@@ -38,8 +38,8 @@
         },
         {
             "name": "carbonblack",
-            "playbookID": "CB-Response-Test"
-
+            "playbookID": "CB-Response-Test",
+            "byoi": false
         }
     ]
 }
