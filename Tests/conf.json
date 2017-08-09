@@ -40,6 +40,10 @@
             "name": "carbonblack",
             "playbookID": "CB-Response-Test",
             "byoi": false
+        },
+        {
+            "name": "XFE",
+            "playbookID": "XFE Test"
         }
     ]
 }
