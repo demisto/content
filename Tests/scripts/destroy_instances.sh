@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e
 
 INSTANCE_ID=$(cat instance_ids)
