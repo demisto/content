@@ -1,0 +1,323 @@
+id: Jira-Test
+version: 33
+name: Jira-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4d8d69b9-5cae-4c7c-8742-ea044c8b8385
+    type: start
+    task:
+      id: 4d8d69b9-5cae-4c7c-8742-ea044c8b8385
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 52d8b87e-7a08-491c-8394-fae98891841b
+    type: regular
+    task:
+      id: 52d8b87e-7a08-491c-8394-fae98891841b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f264f213-fd5b-4ffb-8ee0-e14ef80877ae
+    type: regular
+    task:
+      id: f264f213-fd5b-4ffb-8ee0-e14ef80877ae
+      version: -1
+      name: jira-create-issue
+      description: Create a new issue on Jira
+      script: jira|||jira-create-issue
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignee: ""
+      description: '"jira descriptions"'
+      dueDate: ""
+      issueJson: ""
+      issueTypeId: ""
+      issueTypeName: Incident
+      labels: ""
+      priority: ""
+      projectKey: SOC
+      projectName: ""
+      reporter: ""
+      summary: '"jira playbook test"'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 353cf0b7-7690-46f6-8e5d-1d2b7cbd7878
+    type: regular
+    task:
+      id: 353cf0b7-7690-46f6-8e5d-1d2b7cbd7878
+      version: -1
+      name: jira-get-issue
+      description: Fetch issue from Jira
+      script: jira|||jira-get-issue
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      headers: ""
+      issueId: ${Ticket.Id}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+  "4":
+    id: "4"
+    taskid: bd9af92d-9a1e-4de2-8a8a-4442d075a82f
+    type: regular
+    task:
+      id: bd9af92d-9a1e-4de2-8a8a-4442d075a82f
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field1: Ticket.Summary
+      field2: Ticket.Id
+      field3: ""
+      field4: ""
+      value1: '"jira playbook test"'
+      value2: ${Ticket.Id}
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 783
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 75f9f167-7236-453b-8562-81c3a32a69a6
+    type: regular
+    task:
+      id: 75f9f167-7236-453b-8562-81c3a32a69a6
+      version: -1
+      name: jira-issue-add-comment
+      description: Add new comment to existing Jira issue
+      script: jira|||jira-issue-add-comment
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      comment: Test Comment
+      issueId: ${Ticket.Id}
+      visibility: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 963
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 3972190f-b891-4e3d-8be3-8752d9de6392
+    type: regular
+    task:
+      id: 3972190f-b891-4e3d-8be3-8752d9de6392
+      version: -1
+      name: jira-issue-add-link
+      description: Creates (or updates) issue link
+      script: jira|||jira-issue-add-link
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      globalId: ""
+      issueId: ${Ticket.Id}
+      relationship: ""
+      summary: ""
+      title: Demisto
+      url: http://www.demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1143
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 0a643b7d-1c9d-477d-8d5d-7549b4dc599b
+    type: regular
+    task:
+      id: 0a643b7d-1c9d-477d-8d5d-7549b4dc599b
+      version: -1
+      name: jira-issue-upload-file
+      description: Upload a file attachments to an issue
+      script: jira|||jira-issue-upload-file
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      issueId: ${File.EntryID}
+      upload: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1547
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 00387e71-2136-49aa-8d49-6893c67d04e1
+    type: regular
+    task:
+      id: 00387e71-2136-49aa-8d49-6893c67d04e1
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: Ticket.Summary
+      field2: Ticket.Id
+      field3: ""
+      field4: ""
+      value1: '"jira playbook test"'
+      value2: ${Ticket.Id}
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1923
+        }
+      }
+  "12":
+    id: "12"
+    taskid: cc4047c9-706d-4ccd-89ee-0ab30574bd13
+    type: regular
+    task:
+      id: cc4047c9-706d-4ccd-89ee-0ab30574bd13
+      version: -1
+      name: jira-issue-query
+      description: Query Jira issues
+      script: jira|||jira-issue-query
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      headers: ""
+      maxResults: ""
+      query: id = ${Ticket.[0].Id}
+      startAt: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1728
+        }
+      }
+  "13":
+    id: "13"
+    taskid: a5cf70c1-deda-4da5-8e94-880df22e9136
+    type: regular
+    task:
+      id: a5cf70c1-deda-4da5-8e94-880df22e9136
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file(using the given data input) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      data: Hello Demisto
+      filename: Ho
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1349
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1968,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
