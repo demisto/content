@@ -48,7 +48,7 @@ tasks:
       "yes":
       - "2"
     scriptarguments:
-      value: ${modules.brand(val === 'activedir'}
+      value: ${modules.brand(val === 'activedir')}
     view: |-
       {
         "position": {
