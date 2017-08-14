@@ -1,0 +1,57 @@
+id: 513fc3de-3926-4f6c-8c7d-8123fb7c9ec5
+version: 2
+name: test-ThreatConnect
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bd18414b-24bc-4b6a-8417-3d398e06a6a3
+    type: start
+    task:
+      id: bd18414b-24bc-4b6a-8417-3d398e06a6a3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 219cafe9-c384-4722-8e37-ae359988f2b3
+    type: regular
+    task:
+      id: 219cafe9-c384-4722-8e37-ae359988f2b3
+      version: -1
+      name: check owners
+      script: ThreatConnectx|||tc-owners
+      type: regular
+      iscommand: true
+      brand: ThreatConnectx
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 308
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 353,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
