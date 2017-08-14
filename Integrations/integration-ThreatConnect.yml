@@ -185,7 +185,7 @@ script:
             indJson = escapeNewLines(indicator.json)
             indicatorsArr.append(json.loads(indJson))
         if len(indicators) == 0:
-            md = "## ThreatConnect ip Report for: " + ip + "\nNo results found!"
+            md = "## ThreatConnect IP Report for: " + ip + "\nNo results found!"
             demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect IP Reputation for: "+ip, indicatorsArr, ""),"Contents": json.dumps(indicatorsArr),"EntryContext": ec})
