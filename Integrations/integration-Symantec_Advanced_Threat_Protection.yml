@@ -785,6 +785,7 @@ script:
       description: Intrusion object
     description: Get events that are related to incidents
   - name: satp-incidents
+    arguments:
     - name: query
       description: Specifies a search condition.
     - name: start_time
