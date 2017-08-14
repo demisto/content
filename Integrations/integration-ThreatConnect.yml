@@ -666,4 +666,4 @@ script:
       related: ""
     description: Check domain reputation
   dockerimage: demisto/threatconnect-sdk
--releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update, change no results outputs"  
+releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update, change no results outputs"  
