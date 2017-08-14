@@ -225,6 +225,7 @@ script:
                     SignatureIssuer: f.signature_issuer, Age: f.file_age, Threat: f.threat_name, Cynic: f.cynic_verdict, TargetedAttack: f.targeted_attack,
                     ReputationBand: f.reputation_band, PrevalenceBand: f.prevalence_band, Health: f.file_health};
                 if (f.file_health === 3) {
+                    file.properties_to_append = ['Malicious'];
                     file.Malicious = {Vendor: 'Symantec', Description: 'File health: ' + f.file_health};
                 }
                 return file;
