@@ -1,0 +1,45 @@
+commonfields:
+  id: b20f7773-e478-4835-83a6-dc89052af836
+  version: 18
+name: SamGetUserFromHost
+script: |
+  computers = []
+  hostnames = []
+
+  if ',' in demisto.args()['q']:
+      hostnames = demisto.args()['q'].split(',')
+  else:
+      hostnames.append(demisto.args()['q'])
+
+  for i in range(len(hostnames)):
+      res = demisto.executeCommand( 'sam-hardware', { 'param' : 'name', 'query' : hostnames[i] } )
+
+      if not demisto.get(res[0], 'Contents.id'):
+          continue
+
+      for i in range(len(res)):
+          hostname = str(demisto.get(res[i], 'Contents.name'))
+          username = str(demisto.get(res[i], 'Contents.username'))
+          owner = str(demisto.get(res[i], 'Contents.owner.name'))
+          title = str(demisto.get(res[i], 'Contents.owner.title'))
+          email = str(demisto.get(res[i], 'Contents.owner.email'))
+          timestamp = str(demisto.get(res[i], 'Contents.updated_at'))
+
+          computers.append( { 'hostname' : hostname, 'owner' : owner, 'owner_email' : email, 'owner_title' : title, 'last_user' : username, 'updated_at' : timestamp[:-19] } )
+
+  if computers:
+      demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': computers } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : 'No results found' } )
+type: python
+tags:
+- samanage
+enabled: true
+args:
+- name: q
+  required: true
+  default: true
+  description: Hostname of the computer to get the user from
+scripttarget: 0
+dependson: {}
+timeout: 0s
