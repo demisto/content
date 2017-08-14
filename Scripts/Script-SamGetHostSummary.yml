@@ -1,0 +1,57 @@
+commonfields:
+  id: 1c16a480-8dd6-4dfb-8ec2-dda81f3a47f4
+  version: 48
+name: SamGetHostSummary
+script: |
+  computers = []
+  hostnames = []
+
+  if ',' in demisto.args()['q']:
+      hostnames = demisto.args()['q'].split(',')
+  else:
+      hostnames.append(demisto.args()['q'])
+
+  for idx in range(len(hostnames)):
+      res = demisto.executeCommand( 'sam-hardware', { 'param' : 'name', 'query' : hostnames[idx] } )
+
+      if not demisto.get(res[0],'Contents.id'):
+          continue
+
+      for hst in range(len(res)):
+          host_id = str(demisto.get(res[hst], 'Contents.id'))
+          hostname = str(demisto.get(res[hst], 'Contents.name'))
+          category = str(demisto.get(res[hst], 'Contents.category.name'))
+          model = str(demisto.get(res[hst], 'Contents.model'))
+          os = str(demisto.get(res[hst], 'Contents.operating_system'))
+          os_ver = str(demisto.get(res[hst], 'Contents.operating_system_version'))
+          timestamp = str(demisto.get(res[hst], 'Contents.updated_at'))
+          networks = demisto.get(res[hst], 'Contents.networks')
+
+          network = ''
+          for nics in range(len(networks)):
+              nic = demisto.get(networks[nics], 'status')
+              if demisto.get(networks[nics], 'status') == 'Up':
+                  mac = demisto.get(networks[nics], 'mac_address')
+                  ip_address = demisto.get(networks[nics], 'dhcp')
+                  if ip_address and ip_address!='0.0.0.0':
+                      network = network + ip_address + "\n" + mac + "\n"
+
+          if host_id != None:
+              computers.append( { 'hostname' : hostname, 'type' : category, 'model' : model, 'network' : network, 'os' : os + "\n" + os_ver, 'updated_at' : timestamp[:-19] } )
+
+  if computers:
+      demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': computers } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : 'No results found' } )
+type: python
+tags:
+- samanage
+enabled: true
+args:
+- name: q
+  required: true
+  default: true
+  description: Hostname(s) to query for. Wildcards and CSV accepted.
+scripttarget: 0
+dependson: {}
+timeout: 0s
