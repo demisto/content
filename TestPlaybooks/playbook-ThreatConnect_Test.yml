@@ -31,10 +31,10 @@ tasks:
       id: 219cafe9-c384-4722-8e37-ae359988f2b3
       version: -1
       name: check owners
-      script: ThreatConnectx|||tc-owners
+      script: ThreatConnect|||tc-owners
       type: regular
       iscommand: true
-      brand: ThreatConnectx
+      brand: ThreatConnect
     view: |-
       {
         "position": {
