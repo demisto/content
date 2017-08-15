@@ -61,7 +61,6 @@ script:
         if (!parameters) {
             parameters = {};
         }
-        parameters.apikey = params.APIKey;
         var result = http(
             serverUrl + 'atpapi/v1/' + path + (method === 'GET' ? encodeToURLQuery(parameters) : ''),
             {
