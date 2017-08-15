@@ -97,10 +97,14 @@ script: |-
       var domains = [];
       domains.push(rootDomain);
       if (domain != hostname) {
-          domains.push(hostname);
+        domains.push(hostname);
       }
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
+          var knownTld = executeCommand("getList", {"listName":"Known Tld"});
+          if ((knownTld) && (knownTld[0]) && (knownTld[0].Contents.indexOf(domain) > 0)) {
+              continue;
+          }
           if (markAsIndicator){
               var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
               if (!(res && res[0] && res[0].Contents[0])) {
