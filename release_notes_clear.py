@@ -105,12 +105,12 @@ def main(root_dir):
     for folder in yml_folders_to_scan:
         print 'scanning directory: %s' % (folder, ),
         changed = remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml')
-        print 'Done: removed %d files' % (changed, )
+        print 'Done: removed %d from files' % (changed, )
 
     for folder in json_folders_to_scan:
         print 'scanning directory: %s' % (folder, ),
         changed = remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json')
-        print 'Done: removed %d files' % (changed,)
+        print 'Done: removed %d from files' % (changed,)
 
 
 if __name__ == '__main__':
