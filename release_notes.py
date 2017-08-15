@@ -45,7 +45,7 @@ class Content:
 
     def generateRN(self):
         res = ""
-        error_count = 0
+        missingReleaseNotes = False
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
             res = "### " + self.getHeader() +"\n"
             if len(self.addedStore) > 0 :
@@ -63,7 +63,7 @@ class Content:
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
                         print_error(cnt["name"] + " is missing releaseNotes entry")
-                        error_count += 1
+                        missingReleaseNotes = True
                     else:
                         modifiedStr += ans
                 if len(modifiedStr) > 0:
@@ -73,7 +73,7 @@ class Content:
                 res += "#### Removed " +  self.getHeader() +  "\n"
                 for rawContent in self.deletedStore:
                     res += "- " + rawContent + "\n"
-        if error_count > 0:
+        if missingReleaseNotes == True:
             return None
         return res
 
@@ -302,16 +302,16 @@ def main(argv):
         createFileReleaseNotes(file, argv[2])
 
     res = ""
-    error_count = 0
+    missingReleaseNotes = False
     for key, value in releaseNoteGenerator.iteritems():
         if len(res) > 0:
             res += "\n\n"
         ans = value.generateRN()
         if ans is None:
-            error_count += 1
+            missingReleaseNotes = True
         else:
             res += ans
-    if error_count > 0:
+    if missingReleaseNotes == True:
         sys.exit(1)
     version = argv[0]
     assetId = argv[3]
