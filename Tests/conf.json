@@ -47,6 +47,10 @@
         {
             "name": "XFE",
             "playbookID": "XFE Test"
+        },
+        {
+            "name": "IPInfoTest",
+            "playbookID": "IPInfoTest"
         }
     ]
 }
