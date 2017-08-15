@@ -91,14 +91,18 @@ script: |-
   if ((args.calcReputation) && (args.calcReputation === 'false')){
       calcReputation = false;
   }
+  var allDomains = [];
   for (var i=0; i < uniqueMatches.length; i++) {
       var hostname = extractHostname(uniqueMatches[i]);
       var rootDomain = extractRootDomain(uniqueMatches[i]);
       var domains = [];
-      domains.push(rootDomain);
-      if (domain != hostname) {
-        domains.push(hostname);
+      if (allDomains.indexOf(rootDomain) < 0){
+          domains.push(rootDomain);
+          if (allDomains.indexOf(hostname) < 0) {
+              domains.push(hostname);
+          }
       }
+      allDomains = allDomains.concat(domains);
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
           var knownTld = executeCommand("getList", {"listName":"Known Tld"});
