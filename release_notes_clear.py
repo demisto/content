@@ -1,5 +1,7 @@
 # remove all releaseNotes from files in: Itegrations, Playbooks, Reports and Scripts.
-# Note: using yaml will destroy the file structures so filtering as regular text-file.
+# Note: using yaml will destroy the file structures so filtering as regular text-file.\
+# Note2: file must be run from root directory with 4 sub-directories: Integration, Playbook, Reports, Scripts
+# Usage: python release_notes_clear.py
 import os
 import glob
 
@@ -86,7 +88,6 @@ def remove_releaseNotes_folder(folder_path, files_extension):
     scan folder and remove all references to release notes
     :param folder_path: path of the folder
     :param files_extension: type of file to look for (json or yml)
-    :return:
     '''
     scan_files = glob.glob(os.path.join(folder_path, files_extension))
 
@@ -95,7 +96,7 @@ def remove_releaseNotes_folder(folder_path, files_extension):
         if FILE_EXTRACTER_DICT[files_extension](path):
             count += 1
 
-    return count
+    print '--> Changed %d out of %d files' % (count, len(scan_files), )
 
 
 def main(root_dir):
@@ -103,14 +104,12 @@ def main(root_dir):
     json_folders_to_scan = ['Reports', ] # json
 
     for folder in yml_folders_to_scan:
-        print 'scanning directory: %s' % (folder, ),
-        changed = remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml')
-        print 'Done: removed %d from files' % (changed, )
+        print 'Scanning directory: "%s"' % (folder, )
+        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml')
 
     for folder in json_folders_to_scan:
-        print 'scanning directory: %s' % (folder, ),
-        changed = remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json')
-        print 'Done: removed %d from files' % (changed,)
+        print 'Scanning directory: "%s"' % (folder, )
+        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json')
 
 
 if __name__ == '__main__':
