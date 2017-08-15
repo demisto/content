@@ -41,10 +41,6 @@
             "playbookID": "Jira-Test"
         },
         {
-            "name": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "name": "XFE",
             "playbookID": "XFE Test"
         },
