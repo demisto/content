@@ -25,7 +25,8 @@ script: |-
   r = requests.get(demisto.args()['url'])
   reasy = requests.get(demisto.args()['easylist'] if 'easylist' in demisto.args() else 'https://easylist.github.io/easylist/easylist.txt')
   res = ads(r.text, reasy.text)
-  demisto.results({'Type': entryTypes['note'], 'Contents': res, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', res), 'EntryContext': {'Ads': res}})
+  nicerRes = [{'URL': k, 'Count': res[k]} for k in res]
+  demisto.results({'Type': entryTypes['note'], 'Contents': nicerRes, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', nicerRes), 'EntryContext': {'Ads': nicerRes}})
 type: python
 tags:
 - Utility
@@ -39,6 +40,8 @@ args:
   description: Optional easylist to get ads from
   defaultValue: "https://easylist.github.io/easylist/easylist.txt"
 outputs:
-- contextPath: Ads
-  description: Ads found and number of encounters
+- contextPath: Ads.URL
+  description: Ad URL found
+- contextPath: Ads.Count
+  description: The count for the ad found
 scripttarget: 0
