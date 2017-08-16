@@ -2,6 +2,7 @@ commonfields:
   id: ExtractDomain
   version: -1
 name: ExtractDomain
+from: 3.0.1
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -91,16 +92,25 @@ script: |-
   if ((args.calcReputation) && (args.calcReputation === 'false')){
       calcReputation = false;
   }
+  var allDomains = [];
   for (var i=0; i < uniqueMatches.length; i++) {
       var hostname = extractHostname(uniqueMatches[i]);
       var rootDomain = extractRootDomain(uniqueMatches[i]);
       var domains = [];
-      domains.push(rootDomain);
-      if (domain != hostname) {
+      if (allDomains.indexOf(rootDomain) < 0){
+          domains.push(rootDomain);
+          allDomains.push(rootDomain);
+      }
+      if (allDomains.indexOf(hostname) < 0) {
           domains.push(hostname);
+          allDomains.push(hostname);
       }
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
+          var knownTld = executeCommand("getList", {"listName":"Known Tld"});
+          if ((knownTld) && (knownTld[0]) && (knownTld[0].Contents.indexOf(domain) > 0)) {
+              continue;
+          }
           if (markAsIndicator){
               var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
               if (!(res && res[0] && res[0].Contents[0])) {
@@ -117,6 +127,9 @@ script: |-
                   } else {
                       executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', relatedIncidents:investigation.id});
                   }
+              } else{
+                  var indicator = res[0].Contents[0];
+                  executeCommand("associateIndicatorToIncident", {id:indicator.id,incidentId:investigation.id});
               }
           }
           ec[outputPaths.domain].push({Name: domain});
