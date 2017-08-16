@@ -2,7 +2,7 @@ commonfields:
   id: ExtractDomain
   version: -1
 name: ExtractDomain
-from: 3.0.1
+fromversion: 3.0.1
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -107,7 +107,11 @@ script: |-
       }
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
-          var knownTld = executeCommand("getList", {"listName":"Known Tld"});
+          knownTldList = "Known Tld";
+          if ((args.tldList)&&(args.tldList.length > 0)){
+              knownTldList = args.tldList;
+          }
+          var knownTld = executeCommand("getList", {"listName": knownTldList});
           if ((knownTld) && (knownTld[0]) && (knownTld[0].Contents.indexOf(domain) > 0)) {
               continue;
           }
@@ -163,6 +167,9 @@ args:
   - "false"
   description: If to calculate reputation for new indicator created or not, default
     is true
+- name: tldList
+  description: Name of Demisto list to hold known TLD list, so will be ignored when
+    looking for domains
 outputs:
 - contextPath: Domain.Name
   description: Extracted domains
