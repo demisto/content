@@ -1,0 +1,44 @@
+commonfields:
+  id: URLNumberOfAds
+  version: -1
+name: URLNumberOfAds
+script: |-
+  import requests, re
+
+  def ads(html,termlist):
+      results = {}
+      tags = re.findall("<[^/][^>]*>",html)
+      for item in termlist.split('\n'):
+          if not item.strip():
+              continue
+          if item.startswith('!') or item.startswith('[Adbl') or item.startswith('@@'):
+              continue
+          if item.startswith('###'):
+              item = item[3:]
+          if item.startswith('||'):
+              item = item[2:item.find("^$")]
+          for t in tags:
+              if item in t:
+                  results[item] = (results[item] + 1) if item in results else 1
+      return results
+
+  r = requests.get(demisto.args()['url'])
+  reasy = requests.get(demisto.args()['easylist'] if 'easylist' in demisto.args() else 'https://easylist.github.io/easylist/easylist.txt')
+  res = ads(r.text, reasy.text)
+  demisto.results({'Type': entryTypes['note'], 'Contents': res, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', res), 'EntryContext': {'Ads': res}})
+type: python
+tags:
+- Utility
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to load and count ads on
+- name: easylist
+  description: Optional easylist to get ads from
+  defaultValue: "https://easylist.github.io/easylist/easylist.txt"
+outputs:
+- contextPath: Ads
+  description: Ads found and number of encounters
+scripttarget: 0

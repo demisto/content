@@ -91,6 +91,7 @@ tags:
 comment: Get all details about URL (reputation, number of ads, etc.) and send them
   via email
 system: true
+deprecated: true
 args:
 - name: url
   description: The URL to get details for. If not provided, will be taken from incident
