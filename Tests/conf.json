@@ -43,6 +43,10 @@
         {
             "name": "XFE",
             "playbookID": "XFE Test"
+        },
+        {
+            "name": "ipinfo",
+            "playbookID": "IPInfoTest"
         }
     ]
 }
