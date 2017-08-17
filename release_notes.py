@@ -1,10 +1,8 @@
-import abc
-import datetime
+import yaml
 import json
 import sys
-import yaml
-
-from Tests.test_utils import print_color, print_error, LOG_COLORS
+import abc
+import datetime
 
 contentLibPath = "./"
 limitedVersion = False
@@ -45,7 +43,6 @@ class Content:
 
     def generateRN(self):
         res = ""
-        missingReleaseNotes = False
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
             res = "### " + self.getHeader() +"\n"
             if len(self.addedStore) > 0 :
@@ -60,12 +57,7 @@ class Content:
                 modifiedStr = ""
                 for rawContent in self.modifiedStore:
                     cnt = self.loadData(rawContent)
-                    ans = self.modifiedReleaseNotes(cnt)
-                    if ans is None:
-                        print_error(cnt["name"] + " is missing releaseNotes entry")
-                        missingReleaseNotes = True
-                    else:
-                        modifiedStr += ans
+                    modifiedStr += self.modifiedReleaseNotes(cnt)
                 if len(modifiedStr) > 0:
                     res += "#### Modified " + self.getHeader() + "\n"
                     res += modifiedStr
@@ -73,8 +65,6 @@ class Content:
                 res += "#### Removed " +  self.getHeader() +  "\n"
                 for rawContent in self.deletedStore:
                     res += "- " + rawContent + "\n"
-        if missingReleaseNotes == True:
-            return None
         return res
 
 
@@ -98,7 +88,7 @@ class ScriptContent(Content):
     def modifiedReleaseNotes(self,cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            return None
+            raise Exception(cnt["name"] + " missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -128,7 +118,7 @@ class PlaybookContent(Content):
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            return None
+            raise Exception(cnt["name"] + " missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -158,7 +148,7 @@ class ReportContent(Content):
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            return None
+            raise Exception(cnt["name"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -183,7 +173,7 @@ class ReputationContent(Content):
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            return None
+            raise Exception(cnt["details"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -210,7 +200,7 @@ class IntegrationContent(Content):
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
-            return None
+            raise Exception(cnt["name"] + "missing release notes yml entry")
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
@@ -227,6 +217,7 @@ releaseNoteGenerator = {
     "Playbooks": PlaybookContent(),
     "Reports": ReportContent(),
     "Misc": ReputationContent()
+
 }
 
 def parseChangeList(filePath):
@@ -261,7 +252,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
-            if changeType == "R093" or changeType == "R098":
+            if changeType == "R093":
                 # handle the same as modified
                 fullFileName = names[2]
                 changeType = 'M'
@@ -302,17 +293,10 @@ def main(argv):
         createFileReleaseNotes(file, argv[2])
 
     res = ""
-    missingReleaseNotes = False
     for key, value in releaseNoteGenerator.iteritems():
         if len(res) > 0:
             res += "\n\n"
-        ans = value.generateRN()
-        if ans is None:
-            missingReleaseNotes = True
-        else:
-            res += ans
-    if missingReleaseNotes == True:
-        sys.exit(1)
+        res += value.generateRN()
     version = argv[0]
     assetId = argv[3]
     createContentDescriptor(version, assetId, res)

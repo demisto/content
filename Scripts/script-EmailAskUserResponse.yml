@@ -8,7 +8,6 @@ script: |
   if (res[0].Type==entryTypes.note) {
       text = res[0].Contents;
       response = text.replace(/<(?:.|\n)*?>/gm, '').trim("\n").split("\n")[0].trim();
-      setContext('EmailAskUserResponse', response);
       return response;
   } else {
       return res;
@@ -26,4 +25,3 @@ args:
   default: true
   description: Entry ID where EmailAskUser will complete when user replies
 scripttarget: 0
-releaseNotes: Adding user's response to context for additional analysis
