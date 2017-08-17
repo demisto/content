@@ -83,7 +83,7 @@ def main():
             'interval': conf.get('testInterval', 10)
         }
 
-        integration_name = integration.get(['name'], None)
+        integration_name = integration.get('name', None)
         playbook_id = integration['playbookID']
         if 'params' in integration:
             integration_params = integration['params']
