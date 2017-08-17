@@ -33,13 +33,24 @@
             "playbookID": "Archer-Test-Playbook"
         },
         {
-
+            "name": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
             "name": "jira",
             "playbookID": "Jira-Test"
         },
         {
+            "name": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
+        },
+        {
             "name": "XFE",
             "playbookID": "XFE Test"
+        },
+        {
+            "name": "ipinfo",
+            "playbookID": "IPInfoTest"
         },
         {
             "name": "carbonblack",

@@ -68,7 +68,9 @@ script:
     var DEFAULT_NETFLOW_HEADERS = ['key', 'id.srcIp', 'id.dstIp', 'id.srcPort', 'id.dstPort', 'id.layer4Proto'];
     var DEFAULT_OBSERVATION_HEADERS = ['id','killChainStage','source','sensorId','threatScore','severity','confidence','occurredAt','observedAt','endedAt','netflowId','observedStage'];
     var DEFAULT_SENSOR_HEADERS = ['id', 'friendly_name', 'ip_address', 'last_seen', 'customer_id', 'enabled'];
-    var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt']
+    var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
+
+    var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
 
     var getToken = function() {
         var token = '';
@@ -80,11 +82,11 @@ script:
                 throw 'If token configuration is empty , you must provide email+password configuration params for auth';
             }
             var tokResult = http(
-                params.url+'token',
+                serverUrl + 'token',
                 {
                     Headers: {'Content-Type': ['application/json']},
                     Method: 'POST',
-                    Body: JSON.stringify({'email':params.email,'password':params.password}),
+                    Body: JSON.stringify({'email': params.email, 'password': params.password}),
                 },
                 params.insecure,
                 params.proxy
@@ -103,7 +105,15 @@ script:
         return token;
     };
 
-    var doReq = function(url, token, raw) {
+    // If value for any argument is empty remove it
+    var cleanArgs = function(args) {
+        return Object.keys(args).filter(function(k) {return args[k];}).reduce(function(clean, k) {clean[k] = args[k]; return clean;}, {});
+    };
+
+    var doReq = function(url, token, raw, args) {
+        if (args) {
+            url += encodeToURLQuery(cleanArgs(args));
+        }
         var res = http(
             url,
             {
@@ -137,72 +147,6 @@ script:
         } else return undefined;
     };
 
-    var addQueryParam = function(urlSuffix, paramName, value){
-        if (value && value.length > 0){
-            urlSuffix = urlSuffix + '&' + paramName + '=' + value;
-        }
-        return urlSuffix;
-    };
-
-    var eventsSearch = function(start,end,eventType,killChainStage,threatLevel,threatCategory,observationStage,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,token) {
-        var url = params.url+'events?';
-        url = url + 'start=' + parseTime(start) + '&' + 'end='+ parseTime(end);
-        url = addQueryParam(url,'eventType',eventType);
-        url = addQueryParam(url,'killChainStage',killChainStage);
-        url = addQueryParam(url,'threatLevel',threatLevel);
-        url = addQueryParam(url,'threatCategory',threatCategory);
-        url = addQueryParam(url,'observationStage',observationStage);
-        url = addQueryParam(url,'ip',ip);
-        url = addQueryParam(url,'expandDetails',expandDetails);
-        url = addQueryParam(url,'minLimit',minLimit);
-        url = addQueryParam(url,'maxLimit',maxLimit);
-        url = addQueryParam(url,'reverseOrder',reverseOrder);
-        url = addQueryParam(url,'nextPage',nextPage);
-        var res = http(
-            url,
-            {
-                Headers: {'X-Access-Token': [ token ]},
-                Method: 'GET'
-            },
-            params.insecure,
-            params.proxy
-            );
-        if (res.StatusCode !== 200) {
-            throw 'Failed to execute request get events: ' + res.StatusCode + ', body: ' + res.Body;
-        }
-        return res.Body;
-    };
-
-    var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
-        var url = params.url+'observations?';
-        url = url + 'sensorId='+sensorId+'&start=' + parseTime(start) + '&' + 'end='+ parseTime(end);
-        url = addQueryParam(url,'type',type);
-        url = addQueryParam(url,'killChainStage',killChainStage);
-        url = addQueryParam(url,'threatLevel',threatLevel);
-        url = addQueryParam(url,'threatCategory',threatCategory);
-        url = addQueryParam(url,'hasKillChain',hasKillChain);
-        url = addQueryParam(url,'ip',ip);
-        url = addQueryParam(url,'expandDetails',expandDetails);
-        url = addQueryParam(url,'minLimit',minLimit);
-        url = addQueryParam(url,'maxLimit',maxLimit);
-        url = addQueryParam(url,'reverseOrder',reverseOrder);
-        url = addQueryParam(url,'nextPage',nextPage);
-        url = addQueryParam(url,'signatureId',signatureId);
-        var res = http(
-            url,
-            {
-                Headers: {'X-Access-Token': [ token ]},
-                Method: 'GET'
-            },
-            params.insecure,
-            params.proxy
-            );
-        if (res.StatusCode !== 200) {
-            throw 'Failed to execute request get events: ' + res.StatusCode + ', body: ' + res.Body;
-        }
-        return res.Body;
-    };
-
     var parseTime = function(time) {
         if ((typeof time === 'string' || time instanceof String) && (time.indexOf("-") >= 0 || time.indexOf("/") >= 0 )){
             var d = new Date(time);
@@ -211,6 +155,17 @@ script:
         return time;
     };
 
+    var eventsSearch = function(start, end, eventType, killChainStage, threatLevel, threatCategory, observationStage, ip, expandDetails, minLimit, maxLimit, reverseOrder, nextPage, token) {
+        return doReq(serverUrl + 'events', token, true, {start: parseTime(start), end: parseTime(end),
+            eventType: eventType, killChainStage: killChainStage, threatLevel: threatLevel, threatCategory: threatCategory, observationStage: observationStage,
+            ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit, reverseOrder: reverseOrder, nextPage: nextPage});
+    };
+
+    var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
+        return doReq(serverUrl + 'observations', token, true, {sensorId: sensorId, start: parseTime(start), end: parseTime(end), type: type, killChainStage: killChainStage,
+            threatLevel: threatLevel, threatCategory: threatCategory, hasKillChain: hasKillChain, ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit,
+            reverseOrder: reverseOrder, nextPage: nextPage, signatureId: signatureId});
+    };
 
     var createIncidentFromEvent = function(event) {
         var keys = Object.keys(event);
@@ -229,11 +184,10 @@ script:
         };
     };
 
-    params.url = params.url[params.url.length - 1] === '/' ? (params.url) : (params.url + '/');
     var token = getToken();
     switch (command) {
         case 'test-module':
-           if (token && token.length > 0){
+            if (token && token.length > 0) {
                 return true;
             }
             return false;
@@ -245,7 +199,7 @@ script:
                 lastRun = {time: now - 10 * 60 * 1000};
             }
             var data = eventsSearch(lastRun.time , now , params.eventType, params.killChainStage, params.threatLevel,
-                                    params.threatCategory, undefined,undefined,undefined,undefined,undefined,undefined,undefined,token);
+                params.threatCategory, null, null, null, null, null, null, null, token);
             try {
                 var res = JSON.parse(data).events;
             } catch (ex) {
@@ -257,7 +211,7 @@ script:
                 if (params.messageFilter && res[i].message) {
                     filters = params.messageFilter.split(',');
                     for (var j = 0; j < filters.length; j++) {
-                        if (filters[j] && filters[j].length > 0 &&  res[i].message.toLowerCase().indexOf(filters[j].toLowerCase()) > -1) {
+                        if (filters[j] && filters[j].length > 0 && res[i].message.toLowerCase().indexOf(filters[j].toLowerCase()) > -1) {
                             skip = false;
                             break;
                         }
@@ -273,17 +227,16 @@ script:
             return JSON.stringify(incidents);
         case 'sensors':
         case 'protectwise-show-sensors':
-            var url = params.url+'sensors';
+            var url = serverUrl + 'sensors';
             if (args.sensorId && args.sensorId.length > 0 ) {
                 url = url + '/' + args.sensorId;
             }
             var headers = args.headers ? args.headers : DEFAULT_SENSOR_HEADERS;
 
-
             var res = doReq(url, token);
             var items = [];
 
-            if (! Array.isArray(res)) {
+            if (!Array.isArray(res)) {
                 res = [res];
             }
             items = filterClone(res, headers);
@@ -297,8 +250,8 @@ script:
             };
         case 'search':
         case 'protectwise-search-events':
-            var raw = eventsSearch(args.start,args.end,args.eventType,args.killChainStage,args.threatLevel,
-                args.threatCategory,args.observationStage,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,token);
+            var raw = eventsSearch(args.start, args.end, args.eventType, args.killChainStage, args.threatLevel,
+                args.threatCategory, args.observationStage, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, token);
             try {
                 var res = JSON.parse(raw).events;
             } catch (ex) {
@@ -306,7 +259,7 @@ script:
             }
             var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
             var items = [];
-            if (! Array.isArray(res)) {
+            if (!Array.isArray(res)) {
                 res = [res];
             }
             items = filterClone(res, eventHeaders);
@@ -327,12 +280,12 @@ script:
             };
         case 'pw-event-get':
         case 'protectwise-event-info':
-            var url = params.url+'events/'+args.id;
+            var url = serverUrl + 'events/' + args.id;
             var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
             var res = doReq(url, token);
             var event = {};
             eventHeaders.forEach(function( col ) {
-               event[col] =  res[col];
+               event[col] = res[col];
             });
 
             TIME_FIELDS.forEach(function (timeKey) {
@@ -341,17 +294,16 @@ script:
                }
             });
 
-
             var md = tableToMarkdown('Protectwise Event ' + res.id, [event], eventHeaders);
 
             if (res.netflows && res.netflows.length > 0) {
-                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS );
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                 event['Netflows'] = nf;
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
 
             if (res.observations && res.observations.length > 0) {
-                var obs = filterClone(res.observations, DEFAULT_OBSERVATION_HEADERS );
+                var obs = filterClone(res.observations, DEFAULT_OBSERVATION_HEADERS);
                 obs.forEach(function(item) {
                     TIME_FIELDS.forEach(function (timeKey) {
                        if (item[timeKey]) {
@@ -372,8 +324,8 @@ script:
             };
         case 'observation-search':
         case 'protectwise-search-observations':
-            var raw = observationSearch(args.sensorId,args.start,args.end,args.type,args.killChainStage,args.threatLevel,
-                args.threatCategory,args.hasKillChain,args.ip,args.expandDetails,args.minLimit,args.maxLimit,args.reverseOrder,args.nextPage,args.signatureId,token);
+            var raw = observationSearch(args.sensorId, args.start, args.end, args.type, args.killChainStage, args.threatLevel,
+                args.threatCategory, args.hasKillChain, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, args.signatureId, token);
             try {
                 var res = JSON.parse(raw).observations;
             } catch (ex) {
@@ -381,7 +333,7 @@ script:
             }
             var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
             var items = [];
-            if (! Array.isArray(res)) {
+            if (!Array.isArray(res)) {
                 res = [res];
             }
             items = filterClone(res, headers);
@@ -402,12 +354,12 @@ script:
             };
         case 'pw-observation-get':
         case 'protectwise-observation-info':
-            var url = params.url + 'observations/' + args.id + '?sensorId=' + args.sensorId;
+            var url = serverUrl + 'observations/' + args.id;
             var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
-            var res = doReq(url, token);
+            var res = doReq(url, token, false, {'sensorId': args.sensorId});
             var obj = {};
             headers.forEach(function( col ) {
-               obj[col] =  res[col];
+               obj[col] = res[col];
             });
             TIME_FIELDS.forEach(function (timeKey) {
                if (obj[timeKey]) {
@@ -427,16 +379,16 @@ script:
         case 'protectwise-event-pcap-download':
             var filename = (args.filename && args.filename.length > 0) ? args.filename : (args.eventId + '.pcap');
 
-            var url = params.url+'pcaps/events/'+ args.eventId + '?filename=' + encodeURIComponent(filename);
-            res = saveFile(doReq(url,token,true));
+            var url = serverUrl + 'pcaps/events/' + args.eventId;
+            res = saveFile(doReq(url, token, true, {filename: filename}));
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'event-pcap-info':
         case 'protectwise-event-pcap-info':
-            var url = params.url+'pcaps/events/'+ args.eventId + '/info';
+            var url = serverUrl + 'pcaps/events/'+ args.eventId + '/info';
             var res = doReq(url, token);
             var md = '### Protectwise PCAP for Event ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
             if (res.netflows && res.netflows.length > 0) {
-                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS );
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -450,16 +402,16 @@ script:
         case 'observation-pcap-download':
         case 'protectwise-observation-pcap-download':
             var filename = (args.filename && args.filename.length > 0) ? args.filename : ( args.sensorId+'-'+args.id + '.pcap');
-            var url = params.url+'pcaps/observations/'+args.sensorId+'/'+args.id + '?filename=' + encodeURIComponent(filename);
-            res = saveFile(doReq(url,token,true));
+            var url = serverUrl + 'pcaps/observations/' + args.sensorId + '/' + args.id;
+            res = saveFile(doReq(url, token, true, {filename: filename}));
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'observation-pcap-info':
         case 'protectwise-observation-pcap-info':
-            var url = params.url+'pcaps/observations/'+ args.sensorId + '/' + args.id + '/info';
+            var url = serverUrl + 'pcaps/observations/' + args.sensorId + '/' + args.id + '/info';
             var res = doReq(url, token);
             var md = '### Protectwise PCAP for Observation ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
             if (res.netflows && res.netflows.length > 0) {
-                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS );
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
