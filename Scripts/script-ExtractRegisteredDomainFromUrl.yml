@@ -1,0 +1,23 @@
+commonfields:
+  id: ExtractRegisteredDomainFromUrl
+  version: 13
+name: ExtractRegisteredDomainFromUrl
+script: |
+  import tldextract
+
+  url = demisto.args()["url"]
+  ext = tldextract.extract(url)
+
+  domain = ext.registered_domain
+  ec = {"Domain(val.Name == obj.Name)": {"Name": domain}}
+  demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : domain, "HumanReadable": domain, "EntryContext": ec } )
+type: python
+tags: []
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: The url to extract domain from it
+scripttarget: 0
+dockerimage: demisto/tldextract
