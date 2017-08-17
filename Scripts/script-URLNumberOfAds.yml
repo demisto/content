@@ -22,11 +22,14 @@ script: |-
                   results[item] = (results[item] + 1) if item in results else 1
       return results
 
-  r = requests.get(demisto.args()['url'])
+  u = demisto.args()['url']
+  r = requests.get(u)
   reasy = requests.get(demisto.args()['easylist'] if 'easylist' in demisto.args() else 'https://easylist.github.io/easylist/easylist.txt')
   res = ads(r.text, reasy.text)
   nicerRes = [{'URL': k, 'Count': res[k]} for k in res]
-  demisto.results({'Type': entryTypes['note'], 'Contents': nicerRes, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', nicerRes), 'EntryContext': {'Ads': nicerRes}})
+  totalAds = reduce(lambda x, y: x+y['Count'], nicerRes, 0)
+  demisto.results({'Type': entryTypes['note'], 'Contents': nicerRes, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', nicerRes) + '\nTotal: ' + str(totalAds),
+      'EntryContext': {'Ads': nicerRes, 'URL(val.Data == obj.Data)': {'Data': u, 'AdsCount': totalAds}}})
 type: python
 tags:
 - Utility
@@ -44,4 +47,8 @@ outputs:
   description: Ad URL found
 - contextPath: Ads.Count
   description: The count for the ad found
+- contextPath: URL.Data
+  description: The URL we are checking
+- contextPath: URL.AdsCount
+  description: The ads count on the URL
 scripttarget: 0
