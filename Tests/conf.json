@@ -1,6 +1,6 @@
 {
     "testTimeout": 120,
-    "testInterval": 10,
+    "testInterval": 30,
     "integrations": [
         {
             "name": "Cisco Umbrella Investigate",
