@@ -51,6 +51,9 @@
         {
             "name": "ipinfo",
             "playbookID": "IPInfoTest"
+        },
+        {
+            "playbookID": "Monochrome"
         }
     ]
 }
