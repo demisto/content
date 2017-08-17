@@ -1,5 +1,5 @@
 {
-    "testTimeout": 60,
+    "testTimeout": 120,
     "testInterval": 10,
     "integrations": [
         {
