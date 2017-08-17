@@ -162,9 +162,10 @@ script: |-
    * @param {String} name - the name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
    * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
+   * @param {bool} useDq - optinal, use DQ to parse table, to better handle nested objects in the row
    * @returns {Array} array from the original string-list
    */
-  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
+  function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform, useDq) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
@@ -206,8 +207,12 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  var colData = dq(entry, h);
-                  vals.push((!!colData || colData===0) ? stringEscapeMD(formatCell(colData, cellDelimiter), true) : ' ');
+                  if !useDq{
+                      vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
+                  } else {
+                      var colData = dq(entry, h);
+                      vals.push((!!colData || colData===0) ? stringEscapeMD(formatCell(colData, cellDelimiter), true) : ' ');
+                  }
               });
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
