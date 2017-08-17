@@ -201,11 +201,11 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # return True if playbook completed successfully
 def test_integration(client, integration_name, integration_params, playbook_id, skip_playbook, is_byoi, options={}):
     # create integration instance
-    instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
-
-    if not instance_id:
-        print_error('Failed to create instance')
-        return False
+    if integration_name:
+        instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
+        if not instance_id:
+            print_error('Failed to create instance')
+            return False
 
     print('Create integration succeed')
     # create incident with playbook
@@ -214,7 +214,7 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         print('Skip playbook')
         return True
 
-    incident = __create_incident_with_playbook(client, integration_name, playbook_id)
+    incident = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
 
     if not incident:
         return False
@@ -255,7 +255,8 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         # delete incident
         __delete_incident(client, incident)
 
-        # delete integration instance
-        __delete_integration_instance(client, instance_id)
+        if integration_name:
+            # delete integration instance
+            __delete_integration_instance(client, instance_id)
 
     return test_pass
