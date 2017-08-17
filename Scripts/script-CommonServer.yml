@@ -206,8 +206,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  var colData = dq(entry, h);
-                  vals.push((!!colData || colData===0) ? stringEscapeMD(formatCell(colData, cellDelimiter), true) : ' ');
+                    vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
               });
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
