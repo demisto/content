@@ -240,11 +240,11 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         if playbook_state == PB_Status.COMPLETED:
             break
         if playbook_state == PB_Status.FAILED:
-            print_error(integration_name + ' failed with error/s')
+            print_error(playbook_id + ' failed with error/s')
             __print_investigation_error(client, playbook_id, investigation_id)
             break
         if time.time() > timeout:
-            print_error(integration_name + ' failed on timeout')
+            print_error(playbook_id + ' failed on timeout')
             break
 
         print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
