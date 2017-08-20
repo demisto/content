@@ -5,7 +5,8 @@ commonfields:
 name: ToTable
 script: |-
   var headers = args.columns ? args.columns.split(',') : null;
-  return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, args.data, headers), ContentsFormat: formats.markdown};
+  var flattenObject = treeToFlattenObject(args.data);
+  return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, flattenObject, headers), ContentsFormat: formats.markdown};
 type: javascript
 tags:
 - Utility
