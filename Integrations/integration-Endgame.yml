@@ -177,7 +177,6 @@ script:
         }
 
         var requestUrl = host + url;
-        console.log('\n'+host+url);
         if (queryParams) {
             requestUrl += encodeToURLQuery(queryParams);
         }
@@ -228,8 +227,7 @@ script:
         return get('/api/v1/auth/logout/');
     };
 
-
-    /****Get Functions****/
+    /**** Get Commands ****/
     var getDeploymentProfiles = function(){
         return get('/api/v1/deployment-profiles/').data;
     };
@@ -335,7 +333,7 @@ script:
         };
     }
 
-    /**** Create / Set ****/
+    /**** Create / Set Commands ****/
     var createSensorProfile = function(name, receiver, sensor_version, sensor_directory, api_key){
         reqBody = {
             'name' : name,
