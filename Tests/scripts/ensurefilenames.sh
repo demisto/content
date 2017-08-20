@@ -32,7 +32,6 @@ ensureFilename Reports report- .json
 ensureFilename Scripts script- .yml
 ensureFilename Scripts script- .yml
 ensureFilename Misc reputations .json
-ensureFilename TestPlaybooks playbook- .yml
 
 if [ "$foundWrongName" = true ]
 then
