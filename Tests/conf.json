@@ -1,6 +1,6 @@
 {
-    "testTimeout": 60,
-    "testInterval": 10,
+    "testTimeout": 120,
+    "testInterval": 30,
     "integrations": [
         {
             "name": "Cisco Umbrella Investigate",
@@ -51,6 +51,10 @@
         {
             "name": "ipinfo",
             "playbookID": "IPInfoTest"
+        },
+        {
+            "name": "jira",
+            "playbookID": "VerifyHumanReadableFormat"
         },
         {
             "name": "carbonblack",
