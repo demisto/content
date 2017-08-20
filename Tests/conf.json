@@ -55,6 +55,11 @@
         {
             "name": "jira",
             "playbookID": "VerifyHumanReadableFormat"
+        },
+        {
+            "name": "carbonblack",
+            "playbookID": "CB-Response-Test",
+            "byoi": false
         }
     ]
 }
