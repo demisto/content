@@ -46,7 +46,8 @@
         {
             "name": "XFE",
             "playbookID": "XFE Test",
-            "timeout": 140
+            "timeout": 140,
+            "nightly": true
         },
         {
             "name": "ipinfo",
