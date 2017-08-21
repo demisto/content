@@ -1,0 +1,165 @@
+commonfields:
+  id: ExtractDomain
+  version: -1
+name: ExtractDomain
+toversion: 3.0.0
+script: |-
+  var checkMatch = function(reg,str) {
+      if (reg === str) {
+          return true;
+      }
+
+      if(reg.indexOf('~') === 0) {
+          reg = reg.substring(1);
+          return str.match(reg);
+      }
+
+      return false;
+  };
+
+  var extractHostname = function(url) {
+      var hostname;
+      if (url.indexOf("://") > -1) {
+          hostname = url.split('/')[2];
+      }
+      else {
+          hostname = url.split('/')[0];
+      }
+      hostname = hostname.split(':')[0];
+      hostname = hostname.split('?')[0];
+      return hostname;
+  };
+
+  var extractRootDomain = function(url) {
+      var domain = extractHostname(url),
+          splitArr = domain.split('.'),
+          arrLen = splitArr.length;
+
+      if (arrLen > 2) {
+          domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+      }
+      return domain;
+  };
+
+  var scoreToReputation = function(score) {
+      if (score == 3){
+          return 'Bad';
+      }
+      if (score == 2){
+          return 'Suspicious';
+      }
+      if (score == 1){
+          return 'Good';
+      }
+      return 'None';
+  };
+
+  var text = args.text;
+  if (typeof text !== 'string') {
+      text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
+  }
+
+  var matches = {};
+  var found;
+  var reg;
+  if (args.urlRegex) {
+      reg = new RegExp(args.urlRegex, "gmi");
+  } else {
+      reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
+  }
+
+  var filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40'];
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+  while (found = reg.exec(text)) {
+      matches[found[0]] = true;
+      for (var i = 0 ; i < whitelist.length; i++) {
+          if (checkMatch(whitelist[i],found[0])) {
+                delete matches[found[0]];
+                break;
+          }
+      }
+  }
+
+  var uniqueMatches = Object.keys(matches);
+  var ec = {};
+  ec[outputPaths.domain] = [];
+  var md = '### Extract Domain\n';
+  var markAsIndicator = true;
+  if ((args.markAsIndicator) && (args.markAsIndicator === 'false')){
+      markAsIndicator = false;
+  }
+  var calcReputation = true;
+  if ((args.calcReputation) && (args.calcReputation === 'false')){
+      calcReputation = false;
+  }
+  var allDomains = [];
+  for (var i=0; i < uniqueMatches.length; i++) {
+      var hostname = extractHostname(uniqueMatches[i]);
+      var rootDomain = extractRootDomain(uniqueMatches[i]);
+      var domains = [];
+      if (allDomains.indexOf(rootDomain) < 0){
+          domains.push(rootDomain);
+          if (allDomains.indexOf(hostname) < 0) {
+              domains.push(hostname);
+          }
+      }
+      allDomains = allDomains.concat(domains);
+      for (var j=0; j < domains.length; j++) {
+          var domain = domains[j];
+          var knownTld = executeCommand("getList", {"listName":"Known Tld"});
+          if ((knownTld) && (knownTld[0]) && (knownTld[0].Contents.indexOf(domain) > 0)) {
+              continue;
+          }
+          if (markAsIndicator){
+              var res = executeCommand("findIndicators", {"query": "type:Domain* and value:\"" + domain + "\""});
+              if (!(res && res[0] && res[0].Contents[0])) {
+                  if (calcReputation){
+                      var rep = executeCommand('domain', {domain: domain});
+                      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+                      var domainScore = 0;
+                      for (var i = 0; scores && i < scores.length; i++) {
+                          if (scores[i] && domainScore < scores[i]) {
+                              domainScore = scores[i];
+                          }
+                      }
+                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', reputation: scoreToReputation(domainScore), relatedIncidents:investigation.id});
+                  } else {
+                      executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', relatedIncidents:investigation.id});
+                  }
+              }
+          }
+          ec[outputPaths.domain].push({Name: domain});
+          md += '- ' + domain + '\n';
+      }
+  }
+  return { Type: entryTypes.note, Contents: ec[outputPaths.domain], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
+type: javascript
+tags:
+- Utility
+comment: Extract Domains from the given text and place them both as output and in
+  the context of a playbook. If given an object, will convert to JSON.
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract Domains from. If object will convert to JSON.
+- name: urlRegex
+  description: Regex to recognize urls
+- name: markAsIndicator
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Create a new indicator for each new domain found, default is true
+- name: calcReputation
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If to calculate reputation for new indicator created or not, default
+    is true
+outputs:
+- contextPath: Domain.Name
+  description: Extracted domains
+scripttarget: 0
