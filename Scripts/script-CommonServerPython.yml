@@ -2,7 +2,7 @@ commonfields:
   id: CommonServerPython
   version: 1
 name: CommonServerPython
-releaseNotes: "-"
+releaseNotes: "Update escape characters: remove dot from MARKDOWN_CHARS"
 script: |-
   # Common functions script
   # =======================
