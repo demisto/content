@@ -665,6 +665,7 @@ script:
                 {to: 'Mail-Attachment-LastModifiedTime', from: 'Message.Attachments.ItemAttachment.LastModifiedTime'},
                 {to: 'Mail-Attachment-Name', from: 'Message.Attachments.ItemAttachment.Name'},
                 {to: 'Mail-Attachment-Size', from: 'Message.Attachments.ItemAttachment.Size'},
+                {to: 'Headers', from: "Message.InternetMessageHeaders.InternetMessageHeader"},
             ];
             var translated = mapObjFunction(translator)(data);
 
@@ -1244,6 +1245,10 @@ script:
       description: Last modified time of the mail attachment
     - contextPath: EWS.Items.Mail.Attachment.IsInline
       description: Whether the mail attachment appears inline within an item
+    - contextPath: EWS.Items. Headers.-HeaderName
+      description: Mail attachment header name
+    - contextPath: EWS.Items. Headers.#text
+      description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
 releaseNotes: "Support get attachment of an item(mail)"
