@@ -56,7 +56,7 @@ script: |-
   var objectWithURL = '{'+
       '"key": "www.url.com"' +
   '}';
-  var hrOfObjectWithUrl = "### DoNotEscape\nkey|\n-|\www.url.com|\n";
+  var hrOfObjectWithUrl = "### DoNotEscape\nkey|\n-|\nwww.url.com|\n";
   h = tableToMarkdown("DoNotEscape", JSON.parse(objectWithURL))
   if(h !== hrOfObjectWithUrl){
           throw "Data without escape characters failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
