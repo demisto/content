@@ -24,7 +24,6 @@
             "byoi": false
         },
         {
-            "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
@@ -46,7 +45,9 @@
         },
         {
             "name": "XFE",
-            "playbookID": "XFE Test"
+            "playbookID": "XFE Test",
+            "timeout": 140,
+            "nightly": true
         },
         {
             "name": "ipinfo",
