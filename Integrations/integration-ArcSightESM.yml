@@ -472,7 +472,7 @@ script:
 
         // creating human readable table
         var parsedEvents = parseSOAPResponse(res.Body)
-        if (!parsedEvents.return) {
+        if (!parsedEvents || !parsedEvents.return) {
           return 'No events found';
         }
 
