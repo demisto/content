@@ -94,18 +94,13 @@ script:
       }
 
       var result = json;
-       if (command === 'as-get-all-cases') {
-           var table = [];
-           json.forEach(function(item) {
-              table.push({})
-           });
-
+      if (command === 'as-get-all-cases') {
           result = {
               Type: entryTypes.note,
               ContentsFormat: formats.json,
               Contents: json,
               ReadableContensFormat: formats.markdown,
-              HumanReadable: tableToMarkdown('All Cases IDs', arrayToTable(json, 'Case ID'))
+              HumanReadable: arrayToMarkdownTable(json, 'Case ID')
           };
       } else if (translateTable[command]) {
           result = {

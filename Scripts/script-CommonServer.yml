@@ -227,7 +227,7 @@ script: |-
    * @param {String} header - optinal, the output markdown table will show only these headers (by order)
    * @returns {String} markdown string of table. Can be also 'No results' string if there are no items in arr
    */
-  function arrayToTable(arr, header) {
+  function arrayToMarkdownTable(arr, header) {
     if (!arr) {
         return 'No results';
     }
@@ -239,10 +239,10 @@ script: |-
     }
     
     if (typeof arr[0] === 'object') {
-        throw 'arrayToTable should receive arr which contain objects but simple types like string, int, bool'
+        throw 'arrayToMarkdownTable should receive arr which contain objects but simple types like string, int, bool'
     }
     if (!header) {
-        throw 'header is required for arrayToTable';
+        throw 'header is required for arrayToMarkdownTable';
     }
     
     var md = '|' + header + '|\n-';
