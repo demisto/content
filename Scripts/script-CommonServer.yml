@@ -251,7 +251,7 @@ script: |-
     });
     
     return md;
-}
+  }
 
   /**
    * Converts underscore case strings to camel case
