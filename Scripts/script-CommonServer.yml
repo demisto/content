@@ -223,6 +223,38 @@ script: |-
   var tblToMd = tableToMarkdown;
 
   /**
+   * Converts a array of stings to markdown table
+   * @param {Array} arr - from stings
+   * @param {String} header - optinal, the output markdown table will show only these headers (by order)
+   * @returns {String} markdown string of table. Can be also 'No results' string if there are no items in arr
+   */
+  function arrayToTable(arr, header) {
+    if (!arr) {
+        return 'No results';
+    }
+    if (!Array.isArray(arr)) {
+        throw arr + ' is not an array';
+    }
+    if (arr.length === 0) {
+        return 'No results';
+    }
+    
+    if (typeof arr[0] === 'object') {
+        throw 'arrayToTable should receive arr which contain objects but simple types like string, int, bool'
+    }
+    if (!header) {
+        throw 'header is required for arrayToTable';
+    }
+    
+    var md = '|' + header + '|\n-';
+    arr.forEach(function(item) {
+        md += '\n|' + item + '|';
+    });
+    
+    return md;
+}
+
+  /**
    * Converts underscore case strings to camel case
    * @param {String} string - string to be converted - i.e. hello_world
    * @returns {String} - converted string - i.e. HelloWorld
