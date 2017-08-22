@@ -5,6 +5,7 @@ from test_utils import print_color, print_error, LOG_COLORS
 import json
 import sys
 
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -26,17 +27,17 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_integration, failed_integrations):
-    succeed_integration_count = len(succeed_integration)
-    failed_integration_count = len(failed_integrations)
+def print_test_summary(succeed_playbooks, failed_playbooks):
+    succeed_count = len(succeed_playbooks)
+    failed_count = len(failed_playbooks)
 
-    print('\nINTEGRATIONS TEST RESULTS:')
-    print('\t Number of integration tested - ' + str(succeed_integration_count + failed_integration_count))
-    print_color('\t Number of succeeded tests - ' + str(succeed_integration_count), LOG_COLORS.GREEN)
-    if len(failed_integrations) > 0:
-        print_error('\t Number of failed tests - ' + str(failed_integration_count) + ':')
-        for integration_name in failed_integrations:
-            print_error('\t - ' + integration_name)
+    print('\nTEST RESULTS:')
+    print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
+    print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
+    if len(failed_playbooks) > 0:
+        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
+        for playbook_id in failed_playbooks:
+            print_error('\t - ' + playbook_id)
 
 
 def main():
@@ -74,15 +75,15 @@ def main():
         print('no integrations are configured for test')
         return
 
-    succeed_integrations = []
-    failed_integrations = []
+    succeed_playbooks = []
+    failed_playbooks = []
     for integration in integrations:
         test_options = {
             'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout', 30),
             'interval': conf.get('testInterval', 10)
         }
 
-        integration_name = integration['name']
+        integration_name = integration.get('name', None)
         playbook_id = integration['playbookID']
         if 'params' in integration:
             integration_params = integration['params']
@@ -93,7 +94,12 @@ def main():
                 integration_params = secret_integration_match[0].get('params')
             else:
                 integration_params = {}
-        print('------ Test integration: ' + integration_name + ' with playbook: ' + playbook_id + ' start ------')
+
+        if integration_name:
+            test_message = 'integration: ' + integration_name + ' with playbook: ' + playbook_id
+        else:
+            test_message = 'playbook: ' + playbook_id
+        print '------ Test %s start ------' % (test_message, )
 
         nightly_test = integration.get('nightly', False)
 
@@ -107,16 +113,16 @@ def main():
 
         # use results
         if succeed:
-            print('PASS: Integration ' + integration_name + ' succeed')
-            succeed_integrations.append(integration['name'])
+            print 'PASS: %s succeed' % (test_message, )
+            succeed_playbooks.append(playbook_id)
         else:
-            print_error('FAILED: Integration ' + integration_name + ' failed')
-            failed_integrations.append(integration['name'])
+            print 'Failed: %s failed' % (test_message,)
+            failed_playbooks.append(playbook_id)
 
-        print('------ Test integration: ' + integration_name + ' end ------')
+        print '------ Test %s end ------' % (test_message, )
 
-    print_test_summary(succeed_integrations, failed_integrations)
-    if len(failed_integrations):
+    print_test_summary(succeed_playbooks, failed_playbooks)
+    if len(failed_playbooks):
         sys.exit(1)
 
 if __name__ == '__main__':

@@ -1,0 +1,57 @@
+id: VerifyHumanReadableFormat
+version: 2
+name: VerifyHumanReadableFormat
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 484f452f-42f7-4452-8604-9ea0acd7aa25
+    type: start
+    task:
+      id: 484f452f-42f7-4452-8604-9ea0acd7aa25
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: acf7f94e-7935-4ead-8d5b-eb02484d7854
+    type: regular
+    task:
+      id: acf7f94e-7935-4ead-8d5b-eb02484d7854
+      version: -1
+      name: VerifyTableToMarkDown
+      scriptName: VerifyTableToMarkDown
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []

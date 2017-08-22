@@ -672,7 +672,6 @@ script:
     '                            <t:Constant Value="%last_time%"/>' +
     '                        </t:FieldURIOrConstant>' +
     '                    </t:IsGreaterThan>' +
-                        '%last_item_op%' +
     '                </t:And>' +
     '            </m:Restriction>' +
     '            <m:SortOrder>' +
@@ -736,6 +735,11 @@ script:
             if (actualMessages) {
                 //Now create an incident from each item
                 for (var i = 0 ; i < actualMessages.length; i++) {
+                    // if fetched incident is the same as the one in lastRun - ignore it
+                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
+                      continue;
+                    }
+
                     message = actualMessages[i];
                     if (message['-ResponseClass'] === 'Success') {
                         //There is a reall item here, lets start to create the incident
