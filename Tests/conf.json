@@ -1,6 +1,6 @@
 {
-    "testTimeout": 60,
-    "testInterval": 10,
+    "testTimeout": 120,
+    "testInterval": 30,
     "integrations": [
         {
             "name": "Cisco Umbrella Investigate",
@@ -24,13 +24,43 @@
             "byoi": false
         },
         {
-            "timeout": 60,
             "name": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
         {
             "name": "RSA Archer",
             "playbookID": "Archer-Test-Playbook"
+        },
+        {
+            "name": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
+            "name": "jira",
+            "playbookID": "Jira-Test"
+        },
+        {
+            "name": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
+        },
+        {
+            "name": "XFE",
+            "playbookID": "XFE Test",
+            "timeout": 140,
+            "nightly": true
+        },
+        {
+            "name": "ipinfo",
+            "playbookID": "IPInfoTest"
+        },
+        {
+            "name": "jira",
+            "playbookID": "VerifyHumanReadableFormat"
+        },
+        {
+            "name": "carbonblack",
+            "playbookID": "CB-Response-Test",
+            "byoi": false
         }
     ]
 }

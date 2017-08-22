@@ -146,7 +146,7 @@ script:
         var threats = res.data.threats;
         var countThreats = 0;
         var acThreats = [];
-        var md = "## PhishMe URL Reputation for: "+str+"\n";
+        var md = "## PhishMe Search Reputation for: "+str+"\n";
         var ec = {};
 
         if (threats.length !== 0) {
