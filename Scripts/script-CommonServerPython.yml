@@ -294,7 +294,7 @@ script: |-
   def flattenTable(tableDict):
       return [flattenRow(row) for row in tableDict]
  
-  MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
   def stringEscapeMD(st):
