@@ -12,21 +12,25 @@ configuration:
   defaultvalue: https://localhost:2443
   type: 0
   required: true
+  hidden: false
 - display: Username
   name: username
   defaultvalue: ""
   type: 9
   required: true
+  hidden: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  hidden: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  hidden: false
 script:
   script: |-
     var host = params.url;
@@ -380,7 +384,7 @@ script:
             return post(url, undefined, reqBody).data;
     };
 
-    var deploy = function(domain, username, password, api_key, endpoint_transaction, deployment_order){
+    var deploy = function(domain, username, password, api_key, endpoint_transaction, deployment_order, endpoint_ips, endpoint_ids){
         url = '/api/v1/deploy';
         requestBody = {
             'username' : username,
@@ -389,10 +393,21 @@ script:
             'api_key' : api_key,
             'deployment_order' : deployment_order,
             'transaction_id' : endpoint_transaction
-            };
+        };
+
+        if(endpoint_ips && endpoint_ids){
+            if(endpoint_ips.length !== endpoint_ids.length){
+                throw 'IP addresses don\'t match Endpoint IDs'
+            }
+            var targets = [];
+            for(var i=0; i<endpoint_ips.length; i++){
+                targets.push({'ip_address' : endpoint_ips[i], 'endpoint_uuid' : endpoint_ids[i]});
+            }
+            requestBody['targets'] = targets;
+        }
         res = post(url, undefined, requestBody);
         return res.data;
-    }
+    };
 
     var createTask = function(args){
         task = [];
@@ -465,9 +480,7 @@ script:
                 EntryContext : {}
             };
             entry.HumanReadable = tableToMarkdown(current.title, results, Object.keys(current.MDdata), undefined, headerTransform(current.MDdata));
-            //var context = createContext(translated);
             entry.EntryContext[current.contextPath] = jsonToEntity(results, underscoreToCamelCase);
-            //entry.EntryContext['bla'] = 'hello';
             entries.push(entry);
         }
         return entries;
@@ -509,7 +522,7 @@ script:
             results = getSensor(args.sensor_id);
             break;
         case 'endgame-deploy':
-            results = deploy(args.domain, args.username, args.password, args.api_key, args.endpoints_transaction_id, args.deployment_profile);
+            results = deploy(args.domain, args.username, args.password, args.api_key, args.endpoints_transaction_id, args.deployment_profile, makeArray(args.endpoint_ips), makeArray(args.endpoint_ids));
             if(results.submitted){
                 results.deployment_profile = args.deployment_profile;
                 results.id = results.submitted;
@@ -542,10 +555,11 @@ script:
     - name: endpoints_transaction_id
       required: true
       description: Last transaction id
-    - name: endpoint_id
-      description: Id of endpoint to be deployed
-    - name: endpoint_ip
-      description: IP address of endpoint to be deployed
+    - name: endpoint_ids
+      description: ID's of endpoints to be deployed. Must provide IP's as well
+    - name: endpoint_ips
+      description: IP addresses of endpoints to be deployed. Must provide ID's as
+        well
     outputs:
     - contextPath: EndGame.Deployment.DeploymentProfile
       description: The deployed sensor profile
