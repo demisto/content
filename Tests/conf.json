@@ -61,6 +61,10 @@
             "name": "carbonblack",
             "playbookID": "CB-Response-Test",
             "byoi": false
+        },
+        {
+            "name": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest"
         }
     ]
 }

@@ -55,6 +55,7 @@ script:
 
     verify =  demisto.params()['insecure'] == False
     isZeroVersion =  demisto.params()['isZeroVersion']
+    requests.packages.urllib3.disable_warnings()
 
     def throw_error(error_str):
         demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
@@ -627,7 +628,7 @@ script:
         if not users:
             return 'No users were found'
 
-        headers = ['ID', 'Name', 'Email', 'SMS', 'Master', 'Admin', 'Alias', ]
+        headers = ['ID', 'Name', 'Email', 'SMS', 'IsMaster', 'IsAdmin']
         fixed_users = []
         for user in users:
             fixed_users.append({
@@ -635,11 +636,11 @@ script:
                 'Name' : user['username'],
                 'Email' : user['email'],
                 'SMS' : user['sms'],
-                'Is Master' : user['master'],
-                'Is Admin' : user['admin'],
+                'IsMaster' : user['master'],
+                'IsAdmin' : user['admin'],
             })
 
-        context = {'User(val.ID && val.ID == obj.ID)' : fixed_users}
+        context = {'EsmUser(val.ID && val.ID == obj.ID)' : fixed_users}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -1074,6 +1075,19 @@ script:
     description: Get case organization
   - name: esm-get-user-list
     arguments: []
+    outputs:
+    - contextPath: EsmUser.ID
+      description: the ID of the user
+    - contextPath: EsmUser.Name
+      description: the esm user name
+    - contextPath: EsmUser.Email
+      description: the e-mail of the user
+    - contextPath: EsmUser.SMS
+      description: the SMS details of the user
+    - contextPath: EsmUser.IsMaster
+      description: whether the user is a master user
+    - contextPath: EsmUser.IsAdmin
+      description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
 releaseNotes: "Added Support for case management"
