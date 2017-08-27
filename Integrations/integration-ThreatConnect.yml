@@ -395,7 +395,6 @@ script:
         sys.exit(0)
     if demisto.command() == 'tc-get-incident-associate-indicators':
         tc = getClient()
-        tc.set_activity_log(True)
         incidents = tc.incidents()
         filter1 = incidents.add_filter()
         filter1.add_id(int(demisto.args()['incidentId']))
