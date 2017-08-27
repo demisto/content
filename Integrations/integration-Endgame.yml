@@ -175,7 +175,7 @@ script:
         }]
     };
 
-    var sendRequest = function(url, method, queryParams, data) {
+    var sendRequest = function(url, method, queryParams, data, isLogout) {
         if (url[url.length - 1] === '/') {
             url = url.substring(0, url.length - 1);
         }
@@ -197,18 +197,21 @@ script:
         );
 
         if (res.StatusCode >= 300 || res.StatusCode < 200) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nResponse Body: ' + res.Body;
-        } else {
-            try {
-                return JSON.parse(res.Body);
-            } catch (err) {
-                return res.Body;
+            if(token && !isLogout){
+                  logout();
             }
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nResponse Body: ' + res.Body;
         }
+        try {
+            return JSON.parse(res.Body);
+        } catch (err) {
+            return res.Body;
+        }
+
     };
 
-    var get = function(url, queryParams){
-        return sendRequest(url, 'GET', queryParams);
+    var get = function(url, queryParams, isLogout){
+        return sendRequest(url, 'GET', queryParams, undefined, isLogout);
     };
 
     var post = function(url, queryParams, data){
@@ -222,13 +225,13 @@ script:
                 token = resp.metadata.token;
                 headers = { 'Content-Type': ['application/json'], 'Authorization': ['JWT ' + token] };
             } catch (err) {
-                throw 'ERROR: failure while authenticating to platform: ' + err + ' ' + JSON.stringify(resp);
+                throw 'ERROR: failure while authenticating to platform: ' + err;
             }
         }
     };
 
     var logout = function(){
-        return get('/api/v1/auth/logout/');
+        return get('/api/v1/auth/logout/', undefined, true);
     };
 
     /**** Get Commands ****/
