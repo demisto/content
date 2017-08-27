@@ -43,7 +43,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     import base64
     import json
     import re
@@ -51,6 +51,7 @@ script:
     import requests
     import time
     import datetime
+    from distutils.util import strtobool
 
     verify =  demisto.params()['insecure'] == False
     isZeroVersion =  demisto.params()['isZeroVersion']
@@ -140,7 +141,7 @@ script:
             except KeyError as e:
                 throw_error("Failed login\n error: {}".format(e))
 
-        def cmdquery(self, cmd, query=None):
+        def cmdquery(self, cmd, query=None, no_answer=False):
             """ Send query to ESM, return JSON result """
             self.cmd = cmd
             self.query = query
@@ -148,13 +149,17 @@ script:
             self.result = requests.post(self.url + self.cmd,
                                         headers=self.session_headers,
                                         data=self.query, verify=verify)
-            try:
-                res = self.result.json()
-                if not isZeroVersion:
-                    res = res['return']
-                return res
-            except:
-                throw_error("Error - ESM replied with:\n - status code: {} \n - body: {}".format(self.result.status_code, self.result.text))
+            if no_answer:
+                if self.result.status_code != 200:
+                    throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
+            else:
+                try:
+                    res = self.result.json()
+                    if not isZeroVersion:
+                        res = res['return']
+                    return res
+                except:
+                    throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
 
         def execute_query(self, time_range, custom_start, custom_end, filters, query_type):
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
@@ -244,14 +249,7 @@ script:
                 'HumanReadable': tblToMd('Result:' ,res),
             }
 
-        def get_user(self):
-            cmd = 'userGetUserList'
-            query = json.dumps({"authPW": {"value": self.passwd}})
-            res = self.cmdquery(cmd, query)
-
-            matches = [user for user in res if user['username'] == self.user]
-            return matches[0]
-
+        # alarms commands
         def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
@@ -272,10 +270,216 @@ script:
             res = self.cmdquery(cmd, query)
 
             for alarm in res:
-                alarm['ID'] = alarm['id']
+                alarm['ID'] = alarm['id']['value']
                 del alarm["id"]
 
             return res
+
+        # case statuses commands
+        def add_case_status(self, name, should_show_in_case_pane):
+            '''add a new type of case status with given parameters'''
+            self.login()
+            status_details = {
+                'name' : name,
+                'default' : False,
+                'showInCasePane' : should_show_in_case_pane
+            }
+
+            cmd = 'caseAddCaseStatus'
+            query = json.dumps({'status' : status_details})
+            self.cmdquery(cmd, query)
+            return 'Added case status : %s' % (name, )
+
+        def edit_case_status(self, original_name, new_name, show_in_case_pane):
+            '''edit a  case status with given id'''
+            self.login()
+
+            status_id = self.case_status_name_to_id(original_name)
+            status_details = {
+                'id' : status_id,
+                'name': new_name
+            }
+
+            if show_in_case_pane is not None:
+                status_details['showInCasePane'] = show_in_case_pane
+
+            cmd = 'caseEditCaseStatus'
+            query = json.dumps({'status' : status_details})
+            self.cmdquery(cmd, query, no_answer=True)
+
+            return 'Edit case status with ID: %d' % (status_id, )
+
+        def delete_case_status(self, name):
+            '''delete a new type of case status with given name'''
+            self.login()
+            status_id = self.case_status_name_to_id(name)
+            status_id = {'value' : status_id}
+
+            cmd = 'caseDeleteCaseStatus'
+            query = json.dumps({'statusId' : status_id})
+            self.cmdquery(cmd, query, no_answer=True)
+
+            return 'Deleted case status with ID: %d' % (status_id['value'], )
+
+        def get_case_statuses(self, should_login = False): # TODO: consider using cache for the mapping id<->name
+            '''get all case statuses'''
+            if should_login:
+                self.login()
+
+            cmd = 'caseGetCaseStatusList'
+            query = json.dumps({"authPW": {"value": self.passwd}})
+            return self.cmdquery(cmd, query)
+
+        def case_status_id_to_name(self, status_id):
+            '''convert case status id to name'''
+            res = self.get_case_statuses()
+            matches = [status['name'] for status in res if status['id'] == status_id]
+            return matches[0] if matches else 'Unknown - %d' % (status_id, )
+
+        def case_status_name_to_id(self, status_name):
+            '''convert case status name to id'''
+            res = self.get_case_statuses()
+            matches = [status['id'] for status in res if status['name'].lower() == status_name.lower()]
+            return matches[0] if matches else 0 # 0 is not a valid value
+
+        # user commands
+        def get_users(self, should_login = False):
+            '''get all user's names'''
+            if should_login:
+                self.login()
+
+            cmd = 'userGetUserList'
+            query = json.dumps({"authPW": {"value": self.passwd}})
+            return self.cmdquery(cmd, query)
+
+        def user_name_to_id(self, user_name):
+            '''convert user name to id'''
+            if user_name is None or user_name.lower() == 'me':
+                user_name = self.user
+            res = self.get_users()
+            matches = [user['id']['value'] for user in res if user['username'] == user_name]
+            self_matches = [user['id']['value'] for user in res if user['username'] == self.user]
+
+            # the login user must appear in the user list
+            return matches[0] if matches else self_matches[0]
+
+        def user_id_to_name(self, user_id):
+            '''convert user id to name'''
+            res = self.get_users()
+            matches = [user['username'] for user in res if user['id']['value'] == user_id]
+
+            return matches[0] if matches else self.user
+
+        # organization commands
+        def get_organizations(self, should_login = False):
+            '''get all organization names'''
+            if should_login:
+                self.login()
+
+            cmd = 'caseGetOrganizationList'
+            return self.cmdquery(cmd, '')
+
+        def organization_name_to_id(self, organization_name):
+            '''convert organization name to id'''
+            if organization_name is None:
+                organization_name = ''
+            res = self.get_organizations()
+            matches = [org['id'] for org in res if org['name'].lower() == organization_name.lower()]
+
+            return matches[0] if matches else 1
+
+        def organization_id_to_name(self, organization_id):
+            '''convert organization name to id'''
+            res = self.get_organizations()
+            matches = [org['name'] for org in res if org['id'] == organization_id]
+
+            return matches[0] if matches else 'None'
+
+        # cases commands
+        def fetch_cases(self, ):
+            '''get all cases'''
+            self.login()
+            cmd = 'caseGetCaseList'
+            res = self.cmdquery(cmd)
+
+            return res
+
+        def get_case_detail(self, case_id, should_login = False):
+            if should_login:
+                self.login()
+
+            cmd = 'caseGetCaseDetail'
+            case_id = {'id' : {'value' : case_id}}
+            query = json.dumps(case_id)
+            res = self.cmdquery(cmd, query)
+
+            return res
+
+        def add_case(self, summary, severity, status, assignee, organization):
+            self.login()
+
+            if severity < 1:
+                severity = 1
+            elif severity > 100:
+                severity = 100
+
+            if status is None:
+                status = 'Open'
+
+            assignee = self.user_name_to_id(assignee)
+            org_id = self.organization_name_to_id(organization)
+
+            cmd = 'caseAddCase'
+            case_details = {
+                'summary' : summary,
+                'assignedTo' : assignee,
+                'severity' : severity,
+                'orgId' : org_id,
+                'statusId' : {'value' : self.case_status_name_to_id(status)},
+            }
+
+            query = json.dumps({ 'caseDetail' : case_details})
+            res = self.cmdquery(cmd, query)
+            return res['value']
+
+        def edit_case(self, case_id, summary, severity, status, assignee, organization):
+            self.login()
+
+            case = self.get_case_detail(case_id)
+
+            if summary is not None:
+                case['summary'] = summary
+
+            if severity is not None:
+                if severity < 1:
+                    severity = 1
+                elif severity > 100:
+                    severity = 100
+                case['severity'] = severity
+
+            if status is not None:
+                case['statusId'] = self.case_status_name_to_id(status)
+
+            if assignee is not None:
+                case['assignedTo'] = self.user_name_to_id(assignee)
+
+            cmd = 'caseEditCase'
+            query = json.dumps({'caseDetail' : case})
+            self.cmdquery(cmd, query, True)
+
+            return
+
+        def get_case_event_list(self, event_ids):
+            self.login()
+
+            event_ids = {'list' : event_ids}
+
+            cmd = 'caseGetCaseEventsDetail'
+            query = json.dumps({'eventIds' : event_ids})
+            res = self.cmdquery(cmd, query)
+
+            return res
+
 
     def alarms_to_entry(alarms):
         if not alarms:
@@ -302,43 +506,153 @@ script:
             })
         return incidents
 
+    def cases_to_entry(esm, title, cases):
+        if not cases:
+            return 'No cases were found'
+
+        headers = ['ID', 'Summary', 'Status', 'Severity', 'Open Time']
+        fixed_cases = []
+        context_cases = []
+        for case in cases:
+            fixed_case = {}
+            fixed_case['ID'] = case['id']['value']
+            fixed_case['Summary'] = case['summary']
+            fixed_case['Status'] = esm.case_status_id_to_name(case['statusId']['value'])
+            fixed_case['OpenTime'] = case['openTime']
+            fixed_case['Severity'] = case['severity']
+
+            if case.has_key('assignedTo'):
+                fixed_case['Assignee'] = esm.user_id_to_name(case['assignedTo'])
+                headers.append('Assignee')
+
+            if case.has_key('orgId'):
+                fixed_case['Organization'] = esm.organization_id_to_name(case['orgId'])
+                headers.append('Organization')
+
+            context_case = fixed_case.copy()
+            if case.has_key('eventList'):
+                fixed_case['Event List'] = json.dumps(case['eventList']).replace('|', '\|')
+                context_case['EventList'] = case['eventList']
+                headers.append('Event List')
+
+            if case.has_key('notes'):
+                fixed_case['Notes'] = json.dumps(case['notes']).replace('|', '\|')
+                context_case['Notes'] = case['notes']
+                headers.append('Notes')
+
+            fixed_cases.append(fixed_case)
+            context_cases.append(context_case)
+
+        context = { 'Case(val.ID && val.ID == obj.ID)': context_cases }
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': cases,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd(title, fixed_cases, headers),
+            'EntryContext': context
+        }
+
+    def case_statuses_to_entry(case_statuses):
+        if not case_statuses:
+            return 'No case statuses were found'
+
+        headers = ['ID', 'Name', 'Is Default', 'Show In Case Pane']
+        fixed_statuses = []
+        for status in case_statuses:
+            fixed_statuses.append({
+                'ID' : status['id'],
+                'Name' : status['name'],
+                'Is Default' : status['default'],
+                'Show In Case Pane' : status['showInCasePane']
+            })
+
+
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_statuses,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Result:', fixed_statuses, headers),
+            'EntryContext': {}
+        }
+
+    def organizations_to_entry(organizations):
+        if not organizations:
+            return 'No organizations were found'
+
+        headers = ['ID', 'Name']
+        fixed_organizations = []
+        for organization in organizations:
+            fixed_organizations.append({
+                'ID' : organization['id'],
+                'Name' : organization['name'],
+            })
+
+
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_organizations,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Case Events:', fixed_organizations, headers),
+            'EntryContext': {}
+       }
+
+    def events_to_entry(events):
+        if not events:
+            return 'No events were found'
+
+        headers = ['ID', 'LastTime', 'Message']
+        fixed_events = []
+        for event in events:
+            fixed_events.append({
+                'ID' : event['id']['value'].replace('|', '\|'),
+                'LastTime' : event['lastTime'],
+                'Message' : event['message'],
+            })
+
+        context = {'CaseEvents(val.ID && val.ID == obj.ID)' : fixed_events}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_events,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Case Events:', fixed_events, headers),
+            'EntryContext': context
+       }
+
+    def users_to_entry(users):
+        # unreachable code - in order to send command, one must be logged in. therefore there is at least one user.
+        if not users:
+            return 'No users were found'
+
+        headers = ['ID', 'Name', 'Email', 'SMS', 'Master', 'Admin', 'Alias', ]
+        fixed_users = []
+        for user in users:
+            fixed_users.append({
+                'ID' : user['id']['value'],
+                'Name' : user['username'],
+                'Email' : user['email'],
+                'SMS' : user['sms'],
+                'Is Master' : user['master'],
+                'Is Admin' : user['admin'],
+            })
+
+        context = {'User(val.ID && val.ID == obj.ID)' : fixed_users}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_users,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Users:', fixed_users, headers),
+            'EntryContext': context
+       }
+
     esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
+    final_result = 'No result set'
 
-    if demisto.command() == 'test-module':
-        esm.fetchAllFields()
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'esm-fetch-fields':
-        res = esm.fetchAllFields()
-        demisto.results(res)
-        sys.exit(0)
-    if demisto.command() == 'esm-search':
-        args = demisto.args()
-        res = esm.search(
-            demisto.get(args, 'timeRange'),
-            demisto.get(args, 'customStart'),
-            demisto.get(args, 'customEnd'),
-            json.loads(demisto.get(args, 'filters')),
-            demisto.get(args, 'queryType') or 'EVENT',
-            demisto.get(args, 'maxWait') or 30
-            )
-        demisto.results(res)
-        sys.exit(0)
-    if demisto.command() == 'esm-fetch-alarms':
-        args= demisto.args()
-        res = esm.fetch_alarms(
-            demisto.get(args, 'timeRange'),
-            demisto.get(args, 'customStart'),
-            demisto.get(args, 'customEnd'),
-            demisto.get(args, 'assignedUser')
-        )
-
-        entry = alarms_to_entry(res)
-
-        demisto.results(entry)
-        sys.exit(0)
     if demisto.command() == 'fetch-incidents':
-
         last_run = demisto.getLastRun()
         start = last_run and last_run['value']
 
@@ -357,6 +671,122 @@ script:
         incidents = alarms_to_incidents(res)
         demisto.incidents(incidents)
         sys.exit(0)
+
+
+    if demisto.command() == 'test-module':
+        esm.fetchAllFields()
+        final_result = 'ok'
+
+    elif demisto.command() == 'esm-fetch-fields':
+        res = esm.fetchAllFields()
+        final_result = res
+
+    elif demisto.command() == 'esm-search':
+        args = demisto.args()
+        res = esm.search(
+            demisto.get(args, 'timeRange'),
+            demisto.get(args, 'customStart'),
+            demisto.get(args, 'customEnd'),
+            json.loads(demisto.get(args, 'filters')),
+            demisto.get(args, 'queryType') or 'EVENT',
+            demisto.get(args, 'maxWait') or 30
+            )
+        final_result = res
+
+    elif demisto.command() == 'esm-get-case-list':
+        res = esm.fetch_cases()
+        final_result = cases_to_entry(esm, 'All cases:', res)
+
+    elif demisto.command() == 'esm-get-case-detail':
+        args = demisto.args()
+        case_id = int(demisto.get(args, 'id'))
+        res = esm.get_case_detail(case_id, True)
+        final_result = cases_to_entry(esm, 'Case %d:' % (case_id, ), [res])
+
+    elif demisto.command() == 'esm-add-case':
+        args = demisto.args()
+        res = esm.add_case(
+            demisto.get(args, 'summary'),
+            int(demisto.get(args, 'severity')),
+            demisto.get(args, 'status'),
+            demisto.get(args, 'assignee'),
+            demisto.get(args, 'organization'),
+            )
+        case = esm.get_case_detail(res)
+        final_result = cases_to_entry(esm, 'New Case:', [case])
+
+    elif demisto.command() == 'esm-edit-case':
+        args = demisto.args()
+        case_id = int(demisto.get(args, 'id'))
+        sevirity = demisto.get(args, 'severity')
+        esm.edit_case(
+            case_id,
+            demisto.get(args, 'summary'),
+            int(sevirity) if sevirity else None,
+            demisto.get(args, 'status'),
+            demisto.get(args, 'assignee'),
+            demisto.get(args, 'organization'),
+            )
+        case = esm.get_case_detail(case_id)
+        final_result = cases_to_entry(esm, 'Edited Case:', [case])
+
+    elif demisto.command() == 'esm-get-case-statuses':
+        res = esm.get_case_statuses(True)
+        final_result = case_statuses_to_entry(res)
+
+    elif demisto.command() == 'esm-add-case-status':
+        args = demisto.args()
+        res = esm.add_case_status(
+            demisto.get(args, 'name'),
+            bool(strtobool(demisto.get(args, 'show_in_case_pane'))),
+            )
+        final_result = res
+
+    elif demisto.command() == 'esm-edit-case-status':
+        args = demisto.args()
+        should_show = demisto.get(args, 'show_in_case_pane')
+        res = esm.edit_case_status(
+            demisto.get(args, 'original_name'),
+            demisto.get(args, 'new_name'),
+            bool(strtobool(should_show)) if should_show else None,
+            )
+        final_result = res
+
+    elif demisto.command() == 'esm-delete-case-status':
+        args = demisto.args()
+        res = esm.delete_case_status(
+            demisto.get(args, 'name')
+        )
+        final_result = res
+
+    elif demisto.command() == 'esm-get-case-event-list':
+        args = demisto.args()
+        event_ids = demisto.get(args, 'ids').split(',')
+        res = esm.get_case_event_list(event_ids)
+
+        final_result = events_to_entry(res)
+
+    elif demisto.command() == 'esm-get-organization-list':
+        res = esm.get_organizations(True)
+        final_result = organizations_to_entry(res)
+
+    elif demisto.command() == 'esm-get-user-list':
+        res = esm.get_users(True)
+        final_result = users_to_entry(res)
+
+    elif demisto.command() == 'esm-fetch-alarms':
+        args= demisto.args()
+        res = esm.fetch_alarms(
+            demisto.get(args, 'timeRange'),
+            demisto.get(args, 'customStart'),
+            demisto.get(args, 'customEnd'),
+            demisto.get(args, 'assignedUser')
+        )
+
+        final_result = alarms_to_entry(res)
+
+    demisto.results(final_result)
+    sys.exit(0)
   type: python
   commands:
   - name: esm-fetch-fields
@@ -461,6 +891,189 @@ script:
     - contextPath: Alarm.conditionType
       description: Alarm condition type
     description: Retrieves a list of alarms that have been triggered
+  - name: esm-get-case-list
+    arguments: []
+    outputs:
+    - contextPath: Case.ID
+      description: The ID of the case
+    - contextPath: Case.Summary
+      description: The summary of the case
+    - contextPath: Case.Status
+      description: The status of the case
+    - contextPath: Case.OpenTime
+      description: The open time of the case
+    - contextPath: Case.Severity
+      description: The severity of the case
+    - contextPath: Case.Assignee
+      description: The Assignee of the case
+    - contextPath: Case.Organization
+      description: The organization of the case
+    - contextPath: Case.EventList
+      description: List of case's events
+    - contextPath: Case.Notes
+      description: List of case's notes
+    description: Get a list of cases from the system
+  - name: esm-add-case
+    arguments:
+    - name: summary
+      required: true
+      default: true
+      description: the name of the case
+    - name: status
+      description: the status of the case (use `esm-get-case-statuses` to view all
+        statuses)
+      defaultValue: Open
+    - name: assignee
+      description: who the case is assigned to
+      defaultValue: me
+    - name: severity
+      description: the severity of the case (1 - 100)
+      defaultValue: "1"
+    - name: organization
+      description: the organization assigned to the case  (use `esm-get-organization-list`
+        to view all ogranizations)
+    outputs:
+    - contextPath: Case.ID
+      description: The ID of the case
+    - contextPath: Case.Summary
+      description: The summary of the case
+    - contextPath: Case.Status
+      description: The status of the case
+    - contextPath: Case.OpenTime
+      description: The open time of the case
+    - contextPath: Case.Severity
+      description: The severity of the case
+    - contextPath: Case.Assignee
+      description: The Assignee of the case
+    - contextPath: Case.Organization
+      description: The organization of the case
+    - contextPath: Case.EventList
+      description: List of case's events
+    - contextPath: Case.Notes
+      description: List of case's notes
+    description: Add a case to the system
+  - name: esm-edit-case
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the id of the case
+    - name: summary
+      description: the name of the case
+    - name: severity
+      description: the new severity of the case (1 - 100)
+    - name: assignee
+      description: who the case should be assigned to
+    - name: status
+      description: the new status of the case (use `esm-get-case-statuses` to view
+        all statuses)
+    - name: organization
+      description: the organization assigned to the case  (use `esm-get-organization-list`
+        to view all ogranizations)
+    outputs:
+    - contextPath: Case.ID
+      description: The ID of the case
+    - contextPath: Case.Summary
+      description: The summary of the case
+    - contextPath: Case.Status
+      description: The status of the case
+    - contextPath: Case.OpenTime
+      description: The open time of the case
+    - contextPath: Case.Severity
+      description: The severity of the case
+    - contextPath: Case.Assignee
+      description: The Assignee of the case
+    - contextPath: Case.Organization
+      description: The organization of the case
+    - contextPath: Case.EventList
+      description: List of case's events
+    - contextPath: Case.Notes
+      description: List of case's notes
+    description: Edit an existing case
+  - name: esm-get-case-statuses
+    arguments: []
+    description: Get a list of valid case statuses from the system
+  - name: esm-edit-case-status
+    arguments:
+    - name: original_name
+      required: true
+      default: true
+      description: the name of the case status to edit
+    - name: new_name
+      required: true
+      description: the new name for the case status
+    - name: show_in_case_pane
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: whether the status be shown in case pane
+    description: Edit a case status
+  - name: esm-get-case-detail
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the ID of the case
+    outputs:
+    - contextPath: Case.ID
+      description: The ID of the case
+    - contextPath: Case.Summary
+      description: The summary of the case
+    - contextPath: Case.Status
+      description: The status of the case
+    - contextPath: Case.OpenTime
+      description: The open time of the case
+    - contextPath: Case.Severity
+      description: The severity of the case
+    - contextPath: Case.Assignee
+      description: The Assignee of the case
+    - contextPath: Case.Organization
+      description: The organization of the case
+    - contextPath: Case.EventList
+      description: List of case's events
+    - contextPath: Case.Notes
+      description: List of case's notes
+    description: Get detail on an existing case
+  - name: esm-get-case-event-list
+    arguments:
+    - name: ids
+      required: true
+      description: Comma separated  list of event IDs
+    outputs:
+    - contextPath: CaseEvents.ID
+      description: The ID of the event
+    - contextPath: CaseEvents.LastTime
+      description: The last updated time of the event
+    - contextPath: CaseEvents.Message
+      description: The massage of the event
+    description: Get case events details
+  - name: esm-add-case-status
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: the name of the case status
+    - name: show_in_case_pane
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: whether the status be shown in case pane
+      defaultValue: "True"
+    description: Add a case status
+  - name: esm-delete-case-status
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: the name of the case status to delete
+    description: Delete a case status
+  - name: esm-get-organization-list
+    arguments: []
+    description: Get case organization
+  - name: esm-get-user-list
+    arguments: []
+    description: Get a list of all users.
   isfetch: true
-hidden: false
-releaseNotes: "Support ESM versions newer than 10.0"
+releaseNotes: "Added Support for case management"
