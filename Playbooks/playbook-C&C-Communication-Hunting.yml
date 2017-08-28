@@ -349,7 +349,7 @@ tasks:
       - "15"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='PassiveTotal')}
+      value: ${modules.brand(val==='PassiveTotal')}
     view: |-
       {
         "position": {
@@ -401,7 +401,7 @@ tasks:
       - "17"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='FalconIntel')}
+      value: ${modules.brand(val==='FalconIntel')}
     view: |-
       {
         "position": {
@@ -681,7 +681,7 @@ tasks:
       "yes":
       - "33"
     scriptarguments:
-      value: ${ConfiguredModules.brand(val=='slack')}
+      value: ${modules.brand(val==='slack')}
     view: |-
       {
         "position": {
@@ -731,7 +731,6 @@ tasks:
       - "32"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='Twilio')}
     view: |-
       {
         "position": {
@@ -1010,7 +1009,7 @@ tasks:
       - "44"
     scriptarguments:
       brandname: ""
-      value: ${ConfiguredModules.brand(val=='Twilio')}
+      value: ${modules.brand(val==='Twilio')}
     view: |-
       {
         "position": {
