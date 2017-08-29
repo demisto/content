@@ -731,6 +731,7 @@ tasks:
       - "32"
     scriptarguments:
       brandname: ""
+      value: ${modules.brand(val==='Twilio')}
     view: |-
       {
         "position": {
