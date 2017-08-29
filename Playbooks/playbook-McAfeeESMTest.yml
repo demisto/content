@@ -1,5 +1,5 @@
 id: McAfeeESMTest
-version: 27
+version: 30
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:
@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "4"
     view: |-
       {
         "position": {
@@ -185,27 +185,6 @@ tasks:
           "y": 1245
         }
       }
-  "8":
-    id: "8"
-    taskid: 0463d3a0-ed86-4e06-852f-080e66f21beb
-    type: regular
-    task:
-      id: 0463d3a0-ed86-4e06-852f-080e66f21beb
-      version: -1
-      name: Manually add event to the created case (largest ID)
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
   "9":
     id: "9"
     taskid: 782f40da-cf5a-46bb-8f00-8e8f899c6556
@@ -220,7 +199,7 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "10"
+      - "16"
     scriptarguments:
       field1: ""
       field2: ""
@@ -236,54 +215,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 2120
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 19f68852-56ef-4d72-884c-0a429c936036
-    type: regular
-    task:
-      id: 19f68852-56ef-4d72-884c-0a429c936036
-      version: -1
-      name: Check if the event list is updated
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      additional: ""
-      all: ""
-      contextKey: ""
-      data: ""
-      date: ""
-      dateFormat: ""
-      expectedValue: ""
-      field1: ""
-      field2: ""
-      field3: ""
-      field4: ""
-      fields: id, message
-      filter: ""
-      filterType: ""
-      hoursAgo: ""
-      key: Case.EventList
-      minutesAgo: ""
-      monthsAgo: ""
-      out: ""
-      path: Case.EventList
-      value: ""
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
         }
       }
   "11":
@@ -314,30 +245,6 @@ tasks:
           "y": 1595
         }
       }
-  "12":
-    id: "12"
-    taskid: 2170994c-248f-4d36-8e3e-6ad2b4f11138
-    type: regular
-    task:
-      id: 2170994c-248f-4d36-8e3e-6ad2b4f11138
-      version: -1
-      name: Make sure user "JKRolling" and organization "LuthorCorp" exists
-      description: |-
-        adding a new user is via the content packs.
-        adding a new organization can be done via the creation of cases
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
   "13":
     id: "13"
     taskid: 65569abb-562b-49d0-80f7-fa4ba6a5232c
@@ -352,7 +259,7 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "8"
+      - "9"
     scriptarguments:
       assignee: me
       id: ${Case.ID}
