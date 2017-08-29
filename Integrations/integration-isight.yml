@@ -269,22 +269,22 @@ script:
         var query = '/submit/data';
         var requestUrl = baseUrl + query;
         var headers = getHeaders(query);
-          var res = httpMultipart(
-                  requestUrl, // URL
-                  entryID, // Optional - FilePath / EntryID
-                  { // HTTP Request Headers
-                      Method: 'POST',
-                      Headers: headers
-                  },
-                  { // Multipart Contents
-                      type: type,
-                      description: description
-                  },
-                  insecure,
-                  proxy
-              );
+        var res = httpMultipart(
+                requestUrl, // URL
+                entryID, // Optional - FilePath / EntryID
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    Headers: headers
+                },
+                { // Multipart Contents
+                    type: type,
+                    description: description
+                },
+                insecure,
+                proxy
+            );
 
-          var statusCode = res && res.StatusCode;
+        var statusCode = res && res.StatusCode;
 
         switch (statusCode) {
             case 200:
