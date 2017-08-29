@@ -32,6 +32,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: 'Fetch Types: cases, alarms, both (relevant for fetch incident mode)'
+  name: fetchTypes
+  defaultvalue: alarms
+  type: 0
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -263,10 +268,10 @@ script:
 
             query = ''
             if (assigned_user == 'ME'):
-                user = self.get_user()
+                user = self.get_user_obj(self.user)
                 query = json.dumps({ 'assignedUser' : user})
             elif assigned_user:
-                query = json.dumps({ 'assignedUser' : json.loads(assigned_user)})
+                query = json.dumps({ 'assignedUser' : self.get_user_obj(assigned_user)})
 
             res = self.cmdquery(cmd, query)
 
@@ -352,6 +357,17 @@ script:
             cmd = 'userGetUserList'
             query = json.dumps({"authPW": {"value": self.passwd}})
             return self.cmdquery(cmd, query)
+
+        def get_user_obj(self, user_name):
+            '''get user object'''
+            if user_name.lower() == 'me':
+                user_name = self.user
+            res = self.get_users()
+            matches = [user for user in res if user['username'] == user_name]
+            self_matches = [user['id']['value'] for user in res if user['username'] == self.user]
+
+            # the login user must appear in the user list
+            return matches[0] if matches else self_matches[0]
 
         def user_name_to_id(self, user_name):
             '''convert user name to id'''
@@ -554,6 +570,22 @@ script:
             'EntryContext': context
         }
 
+    def cases_to_incidents(esm, cases):
+        incidents = []
+        for case in cases:
+            demisto.log(esm.case_status_id_to_name(case['statusId']['value']))
+            incident = {
+                'name' : case['summary'],
+                'details' : 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
+                'severity' : severity_to_level(case['severity']),
+                # 'status' : esm.case_status_id_to_name(case['statusId']['value']),
+                'rawJSON' : json.dumps(case),
+            }
+            # if case.has_key('assignedTo'):
+            #     incident['owner'] = esm.user_id_to_name(case['assignedTo'])
+            incidents.append(incident)
+        return incidents
+
     def case_statuses_to_entry(case_statuses):
         if not case_statuses:
             return 'No case statuses were found'
@@ -655,26 +687,52 @@ script:
 
     if demisto.command() == 'fetch-incidents':
         last_run = demisto.getLastRun()
-        start = last_run and last_run['value']
+        # for backward compatibility uses
+        if last_run.has_key('value') and not last_run.has_key('alarms'):
+            last_run['alarms'] = last_run['value']
 
-        if (not start):
-            start = (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat()
+        start_alarms = last_run.get('alarms', (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat())
+        start_cases = last_run.get('cases')
 
-        end = datetime.datetime.now().isoformat()
-        demisto.setLastRun({ 'value': end })
-        res = esm.fetch_alarms(
-            'CUSTOM',
-            start,
-            end,
-            ''
-        )
+        incidents = []
+        mode = demisto.params()['fetchTypes'].lower()
 
-        incidents = alarms_to_incidents(res)
+        if mode in ('alarms', 'both'):
+            end = datetime.datetime.now().isoformat()
+            last_run['value'] = end
+            last_run['alarms'] = end
+
+            res = esm.fetch_alarms(
+                'CUSTOM',
+                start_alarms,
+                end,
+                ''
+            )
+            incidents.extend(alarms_to_incidents(res))
+
+        if mode in ('cases', 'both'):
+            cases = esm.fetch_cases()
+            cases.sort(cmp=lambda case1,case2: case1['id']['value'].__cmp__(case2['id']['value']))
+
+            if start_cases:
+                cases = [case for case in cases if case['id']['value'] > start_cases]
+            else:
+                # first time bring last 100 cases only
+                cases = cases[-100:]
+
+            # update last run info if necessary
+            if cases:
+                last_id = cases[-1]['id']['value']
+                last_run['cases'] = last_id
+
+            incidents.extend(cases_to_incidents(esm, cases))
+
+        demisto.setLastRun(last_run)
         demisto.incidents(incidents)
         sys.exit(0)
 
 
-    if demisto.command() == 'test-module':
+    elif demisto.command() == 'test-module':
         esm.fetchAllFields()
         final_result = 'ok'
 
