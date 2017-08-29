@@ -107,19 +107,21 @@ def main():
 
         skip_test = True if nightly_test and not is_nightly else False
 
-        if not skip_test:
+        if skip_test:
+            print 'Skip test'
+        else:
             # run test
             succeed = test_integration(c, integration_name, integration_params, playbook_id, is_byoi, test_options)
 
-        # use results
-        if succeed:
-            print 'PASS: %s succeed' % (test_message, )
-            succeed_playbooks.append(playbook_id)
-        else:
-            print 'Failed: %s failed' % (test_message,)
-            failed_playbooks.append(playbook_id)
+            # use results
+            if succeed:
+                print 'PASS: %s succeed' % (test_message,)
+                succeed_playbooks.append(playbook_id)
+            else:
+                print 'Failed: %s failed' % (test_message,)
+                failed_playbooks.append(playbook_id)
 
-        print '------ Test %s end ------' % (test_message, )
+        print '------ Test %s end ------' % (test_message,)
 
     print_test_summary(succeed_playbooks, failed_playbooks)
     if len(failed_playbooks):
