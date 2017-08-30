@@ -32,9 +32,14 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: 'Fetch Types: cases, alarms, both (relevant for fetch incident mode)'
+- display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
   name: fetchTypes
   defaultvalue: alarms
+  type: 0
+  required: false
+- display: 'Start fetch with Case ID: (relevant only for fetch incident mode)'
+  name: startingCaseID
+  defaultvalue: "0"
   type: 0
   required: false
 - display: Do not validate server certificate (insecure)
@@ -58,13 +63,20 @@ script:
     import datetime
     from distutils.util import strtobool
 
+    # global for ignoring errors in fetch incident
+    should_stop_on_error = True
+    max_cases_per_fetch = 30
+
+    # by default filters only "Closed" cases
+    filtered_out_statuses = [2, ]
     verify =  demisto.params()['insecure'] == False
     isZeroVersion =  demisto.params()['isZeroVersion']
     requests.packages.urllib3.disable_warnings()
 
     def throw_error(error_str):
-        demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
-        sys.exit(0)
+        if should_stop_on_error:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
+            sys.exit(0)
 
     def search_result_to_md(res):
         columns = res['columns']
@@ -104,6 +116,7 @@ script:
             self._build_login_urls()
             self._encode_login()
             self._build_params()
+            self.is_logged_in = False
 
         def _build_login_urls(self):
             """ Concatenate URLs """
@@ -144,8 +157,23 @@ script:
                 self.session_headers = {'Cookie' : self.jwttoken,
                                         'X-Xsrf-Token' : self.xsrf_token,
                                         'Content-Type': 'application/json'}
+                self.is_logged_in = True
             except KeyError as e:
                 throw_error("Failed login\n error: {}".format(e))
+
+        def logout(self):
+            if self.is_logged_in:
+                try:
+                    headers = {'Cookie' : self.cookie}
+                    requests.post(self.url + 'userLogout',
+                        headers=self.session_headers,
+                        # headers=headers,
+                        data=json.dumps(''),
+                        verify=verify
+                        )
+                    self.is_logged_in = False
+                except Exception as e:
+                    demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e), ))
 
         def cmdquery(self, cmd, query=None, no_answer=False):
             """ Send query to ESM, return JSON result """
@@ -413,15 +441,15 @@ script:
             return matches[0] if matches else 'None'
 
         # cases commands
-        def fetch_cases(self, ):
-            '''get all cases'''
+        def get_cases(self):
+            '''get all cases associated with current user'''
             self.login()
             cmd = 'caseGetCaseList'
             res = self.cmdquery(cmd)
 
             return res
 
-        def get_case_detail(self, case_id, should_login = False):
+        def get_case_detail(self, case_id, should_login=False):
             if should_login:
                 self.login()
 
@@ -584,6 +612,7 @@ script:
             # if case.has_key('assignedTo'):
             #     incident['owner'] = esm.user_id_to_name(case['assignedTo'])
             incidents.append(incident)
+
         return incidents
 
     def case_statuses_to_entry(case_statuses):
@@ -599,7 +628,6 @@ script:
                 'Is Default' : status['default'],
                 'Show In Case Pane' : status['showInCasePane']
             })
-
 
         return {
             'ContentsFormat': formats['json'],
@@ -621,7 +649,6 @@ script:
                 'ID' : organization['id'],
                 'Name' : organization['name'],
             })
-
 
         return {
             'ContentsFormat': formats['json'],
@@ -692,7 +719,7 @@ script:
             last_run['alarms'] = last_run['value']
 
         start_alarms = last_run.get('alarms', (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat())
-        start_cases = last_run.get('cases')
+        start_cases = last_run.get('cases', int(demisto.params()['startingCaseID']))
 
         incidents = []
         mode = demisto.params()['fetchTypes'].lower()
@@ -711,24 +738,30 @@ script:
             incidents.extend(alarms_to_incidents(res))
 
         if mode in ('cases', 'both'):
-            cases = esm.fetch_cases()
-            cases.sort(cmp=lambda case1,case2: case1['id']['value'].__cmp__(case2['id']['value']))
+            esm.login()
+            cases = []
 
-            if start_cases:
-                cases = [case for case in cases if case['id']['value'] > start_cases]
-            else:
-                # first time bring last 100 cases only
-                cases = cases[-100:]
+            should_stop_on_error = False
+            while len(cases) < max_cases_per_fetch:
+                case = esm.get_case_detail(start_cases)
+                if case is None:
+                    break
+                start_cases += 1
 
-            # update last run info if necessary
+                #filter_closed cases
+                if case['statusId']['value'] not in filtered_out_statuses:
+                    cases.append(case)
+
+            # update last run info
+            last_run['cases'] = start_cases
+
+            demisto.info('adding %d more cases, last id is: %d' % (len(cases), last_run['cases'], ))
             if cases:
-                last_id = cases[-1]['id']['value']
-                last_run['cases'] = last_id
-
-            incidents.extend(cases_to_incidents(esm, cases))
+                incidents.extend(cases_to_incidents(esm, cases))
 
         demisto.setLastRun(last_run)
         demisto.incidents(incidents)
+        esm.logout()
         sys.exit(0)
 
 
@@ -753,7 +786,7 @@ script:
         final_result = res
 
     elif demisto.command() == 'esm-get-case-list':
-        res = esm.fetch_cases()
+        res = esm.get_cases()
         final_result = cases_to_entry(esm, 'All cases:', res)
 
     elif demisto.command() == 'esm-get-case-detail':
@@ -844,6 +877,7 @@ script:
 
         final_result = alarms_to_entry(res)
 
+    esm.logout()
     demisto.results(final_result)
     sys.exit(0)
   type: python
@@ -1148,4 +1182,4 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
-releaseNotes: "Added Support for case management"
+releaseNotes: "Added Support for case management and fetch incidents of cases"
