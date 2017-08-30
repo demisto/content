@@ -13,79 +13,80 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  hidden: false
 - display: API key
   name: api
   defaultvalue: ""
   type: 0
   required: true
+  hidden: false
 - display: Name of the Zendesk site (no need the full address)
   name: name
   defaultvalue: ""
   type: 0
   required: true
+  hidden: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
   required: false
+  hidden: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  hidden: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
   required: false
+  hidden: false
 - display: Incident type
   name: incidentType
   defaultvalue: ""
   type: 13
   required: false
+  hidden: false
+- display: Oldest incidents to fetch (in minutes)
+  name: fetch_interval
+  defaultvalue: "10"
+  type: 0
+  required: false
+  hidden: false
 script:
   script: |
-    var sendRequest = function(method, url, body, attr, file_id) {
+    var sendRequest = function(method, url, body, attr) {
         var requestUrl = "https://" + params.name + ".zendesk.com/api/v2/" + url + encodeToURLQuery(attr);
         var res;
         var headers = {
             'Content-Type': ['application/json']
         };
 
-        if (url === 'uploads.json') {
-            headers = {
-                    'Content-Type': ['image/jpeg']
-                };
-            res = httpMultipart(
-                requestUrl,
-                file_id,
-                {
-                    Headers: headers,
-                    Username: params.username + '/token',
-                    Password: params.api
-                },
-                {},
-                params.insecure,
-                params.proxy
-                );
-        } else {
-            res = http(
-                requestUrl,
-                {
-                    Method: method,
-                    Headers: headers,
-                    Username: params.username + '/token',
-                    Password: params.api,
-                    Body: body
-                }
+        res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: headers,
+                Username: params.username + '/token',
+                Password: params.api,
+                Body: body
+            },
+            params.insecure,
+            params.proxy
             );
-        }
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
         }
 
-        return JSON.parse(res.Body);
+        try {
+            return JSON.parse(res.Body);
+        } catch (ex) {
+            throw 'Error in parsing reply - ' + res.Body + ' - ' + ex;
+        }
     };
 
 
@@ -126,10 +127,8 @@ script:
 
 
     var listTickets = function() {
-        var att = {sort_by: "updated_at",
-            sort_order: "desc"
-        };
-        res = sendRequest('GET', 'tickets.json', '', att);
+        var att = {query: 'type:ticket status:open'};
+        res = sendRequest('GET', 'search.json', '', att);
 
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
@@ -137,14 +136,14 @@ script:
         md += 'Id|Subject\n';
         md += '---|---\n';
 
-        for (var i = 0; i <  res.tickets.length; i++) {
+        for (var i = 0; i <  res.results.length; i++) {
             ec.Ticket.push({
-                id: res.tickets[i].id,
-                description: res.tickets[i].description,
-                subject: res.tickets[i].subject,
+                id: res.results[i].id,
+                description: res.results[i].description,
+                subject: res.results[i].subject,
                 vendor: 'Zendesk'
             });
-            md += res.tickets[i].id + '|' + res.tickets[i].subject + '\n';
+            md += res.results[i].id + '|' + res.results[i].subject + '\n';
         }
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
@@ -230,8 +229,40 @@ script:
             md += resComments.comments[i].body + '.\n\  ';
         }
 
+        var ec = {
+            TicketDetails: resDetails,
+            TicketComments: resComments
+        }
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": {}} );
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': ec, "HumanReadable": md, "EntryContext": {}} );
+    };
+
+
+    var listAgents = function() {
+        res = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
+        var md = '## Zendesk user details\n';
+        var ec = {ZendeskUsers: []};
+
+        md += 'Id|Name|Email|Role|Time Zone\n';
+        md += '---|---|---|---|---\n';
+
+        for (var i = 0; i < res.users.length; i++) {
+            md += res.users[i].id + '|';
+            md += res.users[i].name + '|';
+            md += res.users[i].email + '|';
+            md += res.users[i].role + '|';
+            md += res.users[i].time_zone + '\n';
+
+            ec.ZendeskUsers.push({
+                id: res.users[i].id,
+                name: res.users[i].name,
+                email: res.users[i].email,
+                role: res.users[i].role,
+                timeZone: res.users[i].time_zone
+            });
+        }
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
 
 
@@ -241,8 +272,12 @@ script:
         var incidents = [];
         var labels = [];
 
+        if (!params.fetch_interval) {
+            params.fetch_interval = 10;
+        }
+
         if (!now.time) {
-            sertime = getNowTime(-10);
+            sertime = getNowTime((-1) * parseInt(params.fetch_interval));
         } else {
             sertime = now.time;
         }
@@ -291,6 +326,9 @@ script:
 
         case 'zendesk-ticket-details':
             return getTicketDetails();
+
+        case 'zendesk-list-agents':
+            return listAgents();
 
         case 'fetch-incidents':
             return fetchIncidents();
@@ -381,7 +419,13 @@ script:
       description: Ticket subject
     - contextPath: Ticket.vendor
       description: Zendesk
-    description: 'List all Zendesk tickets '
+    description: 'List all Zendesk open tickets '
+  - name: zendesk-ticket-details
+    arguments:
+    - name: id
+      required: true
+      default: true
+    description: Show Zendesk ticket details
   - name: zendesk-update-ticket
     arguments:
     - name: subject
@@ -453,10 +497,18 @@ script:
       - closed
       description: Allowed values are open, pending, hold, solved or closed
     description: Update Zendesk ticket
-  - name: zendesk-ticket-details
-    arguments:
-    - name: id
-      required: true
-      default: true
-    description: Show Zendesk ticket details
+  - name: zendesk-list-agents
+    arguments: []
+    outputs:
+    - contextPath: ZendeskUsers.id
+      description: Id of the Zendesk user
+    - contextPath: ZendeskUsers.name
+      description: Name of the Zendesk user
+    - contextPath: ZendeskUsers.email
+      description: Email of the Zendesk user
+    - contextPath: ZendeskUsers.role
+      description: Role of the Zendesk user
+    - contextPath: ZendeskUsers.timeZone
+      description: 'Time zone in which Zendesk user '
+    description: List all the Zendesk users
   isfetch: true
