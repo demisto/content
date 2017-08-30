@@ -64,7 +64,8 @@
         },
         {
             "name": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest"
+            "playbookID": "McAfeeESMTest",
+            "timeout": 200
         }
     ]
 }
