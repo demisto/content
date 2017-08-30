@@ -1,0 +1,390 @@
+commonfields:
+  id: HPE Service Manager
+  version: -1
+name: HPE Service Manager
+display: HPE Service Manager
+category: IT Services
+image: data:image/png;base64,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
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:13080)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  script: |
+    var url = params.url + '/SM/9/rest';
+
+    // handle '/' at the end of the url
+    if (url[url.length - 1] === '/') {
+        url = url.substring(0, url.length - 1);
+    }
+
+    // var token = 'U3lzdGVtLkFkbWluOg==';
+    var token = Base64.encode(params.username.identifier + ':' + params.username.password);
+    // throw Base64.encode(params.username.identifier + ':' + params.username.password);
+
+    var result;
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            result = 'ok';
+            break;
+        case 'hpsm-create-incident':
+            result = createIncident();
+            break;
+        case 'hpsm-list-incidents':
+            result = listIncidents();
+            break;
+        case 'hpsm-get-incident-by-id':
+            result = getIncidentById();
+            break;
+        case 'hpsm-list-devices':
+            result = listDevices();
+            break;
+        case 'hpsm-get-device':
+            result = getDeviceById();
+            break;
+        default:
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
+    }
+    return result;
+
+    function createIncident() {
+        var newIncident = {
+            Incident: {
+                Category: args.category,
+                Description: [
+                    args.description
+                ],
+                Service: args.service,
+                Title: args.title,
+            }
+        };
+        if (args.impact) {
+            newIncident.Incident.Impact = args.impact;
+        }
+        if (args.urgency) {
+            newIncident.Incident.Urgency = args.urgency;
+        }
+        if (args.alertStatus) {
+            newIncident.Incident.AlertStatus = args.alertStatus;
+        }
+        if (args.area) {
+            newIncident.Incident.Area = args.area;
+        }
+        if (args.assignmentGroup) {
+            newIncident.Incident.AssignmentGroup = args.assignmentGroup;
+        }
+        if (args.affectedCI) {
+            newIncident.Incident.AffectedCI = args.affectedCI;
+        }
+        if (args.company) {
+            newIncident.Incident.Company = args.company;
+        }
+        if (args.category) {
+            newIncident.Incident.Category = args.category;
+        }
+
+        if (args.phase) {
+            newIncident.Incident.Phase = args.phase;
+        }
+        if (args.status) {
+            newIncident.Incident.Status = args.status;
+        }
+        if (args.subarea) {
+            newIncident.Incident.Subarea = args.subarea;
+        }
+
+        var res = doPost('/incidents', newIncident);
+        var parsedRes = JSON.parse(res);
+        if (parsedRes.ReturnCode !== 0) {
+            throw 'Failed to create incident. Error Response: ' + res.Messages;
+        }
+
+        hrIncident = parsedRes.Incident;
+
+        var entryContext = {
+            'HPSM.Incidents': [parsedRes.Incident],
+            Ticket: [
+                {
+                    ID: parsedRes.Incident.IncidentID,
+                    Creator: parsedRes.Incident.OpenedBy,
+                    Assignee: parsedRes.Incident.Assignee,
+                    State: parsedRes.Incident.Status
+                }
+            ]
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: parsedRes,
+
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Created Incident ' + parsedRes.Incident.IncidentID, hrIncident),
+            // context
+            EntryContext: entryContext
+        };
+    }
+
+    // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
+    function queryToObject(query) {
+        if (!query) {
+            return null;
+        }
+
+        var queryObj = {};
+        var queryArr = query.split('&');
+        queryArr.forEach(function(keyValuePair) {
+            var a = keyValuePair.split('=');
+            var key = a[0];
+            var value = a[1];
+            queryObj[key] = value;
+        });
+
+        return queryObj;
+    }
+
+    function listIncidents() {
+        var incidents = doGet('/incidents', args.query);
+        incidents = JSON.parse(incidents);
+
+        var hrIncidents = [];
+        var incidentIds = [];
+        incidents.content.forEach(function(inc) {
+            hrIncidents.push(inc.Incident);
+            incidentIds.push(inc.Incident.IncidentID);
+        });
+
+        var entryContext = {
+            'HPSM.IncidentIDs': incidentIds
+        };
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: incidents,
+
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Incidents List', hrIncidents),
+            // context
+            EntryContext: entryContext
+        };
+    }
+
+    function getIncidentById() {
+        var incident = doGet('/incidents/' + args.incidentId);
+        incident = JSON.parse(incident);
+
+        hrIncident = incident.Incident;
+        var entryContext = {
+            'HPSM.Incidents': [incident.Incident],
+            Ticket: [
+                {
+                    ID: incident.Incident.IncidentID,
+                    Creator: incident.Incident.OpenedBy,
+                    Assignee: incident.Incident.Assignee,
+                    State: incident.Incident.Status
+                }
+            ]
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: incident,
+
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Incident ' + args.incidentId, hrIncident),
+            // context
+            EntryContext: entryContext
+        };
+    }
+
+    function listDevices() {
+        var devices = doGet('/devices', args.query);
+        devices = JSON.parse(devices);
+
+        var hrDevices = [];
+        devices.content.forEach(function(dev) {
+            hrDevices.push(dev.Device);
+        });
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: devices,
+
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Devices List', hrDevices),
+            // context
+            // EntryContext: 'TODO'
+        };
+    }
+
+    function getDeviceById() {
+        var device = doGet('/devices/' + args.configurationItem);
+        device = JSON.parse(device);
+
+        hrDevice = device.Device;
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: device,
+
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Device ' + args.configurationItem, hrDevice),
+            // context
+            // EntryContext: 'TODO'
+        };
+    }
+
+    function doPost(queryPath, body) {
+        return doRequest('POST', queryPath, body);
+    }
+
+    function doPut(queryPath, body) {
+        return doRequest('PUT', queryPath, body);
+    }
+
+    function doRequest(method, queryPath, body) {
+        var requestUrl = url + queryPath;
+        var res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: {
+                    Authorization: ['Basic ' + token],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            var parsedRes;
+            try {
+                parsedRes = JSON.parse(res.Body);
+            } catch (err) {}
+
+            if (res.Body && parsedRes && parsedRes.ReturnCode !== 0 && parsedRes.Messages) {
+                throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nError from HP Service Manager: ' + parsedRes.Messages;
+            }
+
+            throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        }
+
+        return res.Body;
+    }
+
+    function doGet(queryPath, queryParams) {
+        var requestUrl = url + queryPath;
+        if (queryParams && typeof queryParams === 'string') {
+            // in case query is a string, then we convert it obj and then encode it to URL query
+            queryObj = queryToObject(queryParams);
+            requestUrl += encodeToURLQuery(queryObj);
+        } else if (queryParams) {
+            // if the query is object then we encode it
+            requestUrl += encodeToURLQuery(queryParams);
+        }
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Authorization: ['Basic ' + token],
+                    'Content-Type': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'GET Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res.Body;
+    }
+  type: javascript
+  commands:
+  - name: hpsm-create-incident
+    arguments:
+    - name: title
+      required: true
+    - name: description
+      required: true
+    - name: service
+      required: true
+      description: 'Examples: CI1001060, CI1001030'
+    - name: impact
+      description: Default is 4. Should be number like 3 or 4
+    - name: urgency
+      description: Default is 4. Should be number like 3 or 4
+    - name: alertStatus
+    - name: area
+    - name: assignmentGroup
+      description: 'Example: "Office Supplies (North America)"'
+    - name: affectedCI
+      description: 'Examples: CI1000783'
+    - name: category
+      required: true
+      description: 'Category of incident. Example: (incident, complaint)'
+    - name: company
+    - name: phase
+      description: 'Example: "Categorization"'
+    - name: status
+      description: 'Example: "Categorize"'
+    - name: subarea
+    outputs:
+    - contextPath: HPSM.Incidents
+      description: Contains full incident objects
+    - contextPath: Ticket
+      description: General place where all the tickets stored (basic ticket data)
+    description: 'Creating new incident '
+  - name: hpsm-list-incidents
+    arguments:
+    - name: query
+      description: 'OPTIONAL example: field1=value1&field2=value2. Also look https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
+    outputs:
+    - contextPath: HPSM.IncidentIDs
+      description: Result of incident query. Contains array of incident ids
+    description: Returns all incidents
+  - name: hpsm-get-incident-by-id
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+      description: The id of incident (example IM10013)
+    outputs:
+    - contextPath: HPSM.Incidents
+      description: Contains full incident objects
+    - contextPath: Ticket
+      description: General place where all the tickets stored (basic ticket data)
+  - name: hpsm-list-devices
+    arguments:
+    - name: query
+      description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
+        https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
+    description: Returns list of devices ids
+  - name: hpsm-get-device
+    arguments:
+    - name: configurationItem
+      required: true
+      description: 'Id of device, configuration item of device. Example: CI1000011'
+releaseNotes: 'HP Service Manager added. Basic commands added like create incident, query incidents, etc.'
