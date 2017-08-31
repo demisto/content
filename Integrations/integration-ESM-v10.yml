@@ -717,7 +717,7 @@ script:
         last_case = last_run.get('cases')
 
         incidents = []
-        mode = demisto.params()('fetchTypes', 'alarms').lower() # alarms is default for backward compatability
+        mode = demisto.params().get('fetchTypes', 'alarms').lower() # alarms is default for backward compatability
 
         if mode in ('alarms', 'both'):
             end = datetime.datetime.now().isoformat()
