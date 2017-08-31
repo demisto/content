@@ -20,8 +20,8 @@ configuration:
   type: 0
   required: true
   hidden: false
-- display: Name of the Zendesk site (no need the full address)
-  name: name
+- display: Zendesk address (e.g. https://demisto.zendesk.com)
+  name: url
   defaultvalue: ""
   type: 0
   required: true
@@ -59,7 +59,7 @@ configuration:
 script:
   script: |
     var sendRequest = function(method, url, body, attr) {
-        var requestUrl = "https://" + params.name + ".zendesk.com/api/v2/" + url + encodeToURLQuery(attr);
+        var requestUrl = params.url + "/api/v2/" + url + encodeToURLQuery(attr);
         var res;
         var headers = {
             'Content-Type': ['application/json']
@@ -94,20 +94,48 @@ script:
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
 
+        if (args.private) {
+            args.private = false;
+        } else {
+            args.private = true;
+        }
+
         var body = {
                 ticket: {
                     comment: {
                         body: args.body,
-                        'public': args.public
+                        'public': args.private
                     }
                 }
             };
+
+        if (args.requester_email) {
+            var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
+
+            if (reqRequester.users.length > 0) {
+                body.ticket['requester_id'] = reqRequester.users[0].id;
+            } else {
+                throw 'There is no such requester email';
+            }
+        }
+
+        if (args.assignee_email) {
+            var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
+
+            if (reqAssignee.users.length > 0) {
+                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+            } else {
+                throw 'There is no such assignee email';
+            }
+        }
 
         var ticket = {};
 
         for (var key in args) {
             if (key !== 'body' &&
-                key !== 'public') {
+                key !== 'private' &&
+                key !== 'requester_email' &&
+                key !== 'assignee_email') {
                 body.ticket[key] = args[key];
                 ticket[key] = args[key];
             }
@@ -127,7 +155,11 @@ script:
 
 
     var listTickets = function() {
-        var att = {query: 'type:ticket status:open'};
+        if (!args.query) {
+            args.query = 'type:ticket status:open';
+        }
+
+        var att = {query: args.query};
         res = sendRequest('GET', 'search.json', '', att);
 
         var ec = {Ticket: []};
@@ -154,19 +186,47 @@ script:
         var ec = {};
         var md = '## Zendesk tickets\n';
 
+        if (args.private) {
+            args.private = false;
+        } else {
+            args.private = true;
+        }
+
         var body = {
                 ticket: {
                     comment: {
                         body: args.body,
-                        'public': args.public
+                        'public': args.private
                     }
                 }
             };
 
+        if (args.requester_email) {
+            var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
+
+            if (reqRequester.users.length > 0) {
+                body.ticket['requester_id'] = reqRequester.users[0].id;
+            } else {
+                throw 'There is no such requester email';
+            }
+        }
+
+        if (args.assignee_email) {
+            var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
+
+            if (reqAssignee.users.length > 0) {
+                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+            } else {
+                throw 'There is no such assignee email';
+            }
+        }
+
         for (var key in args) {
             if (key !== 'body' &&
-                key !== 'public' &&
-                key !== 'id') {
+                key !== 'private' &&
+                key !== 'id' &&
+                key !== 'requester_email' &&
+                key !== 'assignee_email') {
                 body.ticket[key] = args[key];
                 ec['Ticket(val.id == ' + args.id + ').' + key] = args[key];
             }
@@ -207,6 +267,7 @@ script:
     var getTicketDetails = function() {
         var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
         var md = '## Zendesk ticket details\n';
+        var ec = {}
 
         md += 'Id|Subject|Created at|Description|Priority|Recipients|Status\n';
         md += '---|---|---|---|---|---|---\n';
@@ -217,6 +278,13 @@ script:
         md += resDetails.ticket.priority + '|';
         md += resDetails.ticket.recipient + '|';
         md += resDetails.ticket.status + '\n';
+
+
+        ec['Ticket(val.id == ' + args.id + ').subject'] = resDetails.ticket.subject;
+        ec['Ticket(val.id == ' + args.id + ').created_at'] = resDetails.ticket.created_at;
+        ec['Ticket(val.id == ' + args.id + ').description'] = resDetails.ticket.description;
+        ec['Ticket(val.id == ' + args.id + ').priority'] = resDetails.ticket.priority;
+        ec['Ticket(val.id == ' + args.id + ').status'] = resDetails.ticket.status;
 
         resComments = sendRequest('GET', 'tickets/' + args.id + '/comments.json');
 
@@ -229,12 +297,12 @@ script:
             md += resComments.comments[i].body + '.\n\  ';
         }
 
-        var ec = {
+        var res = {
             TicketDetails: resDetails,
             TicketComments: resComments
         }
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': ec, "HumanReadable": md, "EntryContext": {}} );
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
     };
 
 
@@ -340,24 +408,20 @@ script:
     arguments:
     - name: subject
       description: The subject of the ticket
-    - name: requester_id
-      description: The numeric ID of the user asking for support through the ticket
-    - name: submitter_id
-      description: The numeric ID of the user submitting the ticket
-    - name: assignee_id
-      description: The numeric ID of the agent to assign the ticket to
-    - name: group_id
-      description: The numeric ID of the group to assign the ticket to
+    - name: requester_email
+      description: The email of the user asking for support through the ticket
+    - name: assignee_email
+      description: The email of the agent to assign the ticket to
     - name: body
       required: true
       description: Comment body
-    - name: public
+    - name: private
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Does the body public comment
-      defaultValue: "true"
+      description: Does the body private comment
+      defaultValue: "false"
     - name: type
       auto: PREDEFINED
       predefined:
@@ -389,10 +453,6 @@ script:
         ISO 8601 date format (yyyy-mm-dd)
     - name: via_followup_source_id
       description: The id of a closed ticket for a follow-up ticket.
-    - name: collaborator_ids
-      description: An array of the numeric IDs of agents or end-users to CC on the
-        ticket. An email notification is sent to them when the ticket is created
-      isArray: true
     - name: collaborators
       description: An array of numeric IDs, emails, or objects containing name and
         email properties. See Setting Collaborators. An email notification is sent
@@ -409,7 +469,10 @@ script:
       description: Ticket subject
     description: Create new ticket in the Zendesk
   - name: zendesk-list-tickets
-    arguments: []
+    arguments:
+    - name: query
+      description: 'Query to search. Please look at this tutorial for syntax: https://developer.zendesk.com/rest_api/docs/core/search'
+      defaultValue: type:ticket status:open
     outputs:
     - contextPath: Ticket.id
       description: Ticked id
@@ -425,26 +488,35 @@ script:
     - name: id
       required: true
       default: true
+    outputs:
+    - contextPath: Ticket.subject
+      description: Subject of the Zendesk ticket
+    - contextPath: Ticket.created_at
+      description: The time the Zendesk ticket was created
+    - contextPath: Ticket.description
+      description: Description of the Zendesk ticket
+    - contextPath: Ticket.priority
+      description: Priority of the Zendesk ticket
+    - contextPath: Ticket.status
+      description: Status of the Zendesk ticket
     description: Show Zendesk ticket details
   - name: zendesk-update-ticket
     arguments:
     - name: subject
       description: The subject of the ticket
-    - name: requester_id
-      description: The numeric ID of the user asking for support through the ticket
-    - name: assignee_id
-      description: The numeric ID of the agent to assign the ticket to
-    - name: group_id
-      description: The numeric ID of the group to assign the ticket to
+    - name: requester_email
+      description: The email of the user asking for support through the ticket
+    - name: assignee_email
+      description: The email of the agent to assign the ticket to
     - name: body
       description: Comment body
-    - name: public
+    - name: private
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Does the body public comment
-      defaultValue: "true"
+      description: Does the body private comment
+      defaultValue: "false"
     - name: type
       auto: PREDEFINED
       predefined:
@@ -472,10 +544,6 @@ script:
     - name: due_at
       description: For tickets of type "task", the due date of the task. Accepts the
         ISO 8601 date format (yyyy-mm-dd)
-    - name: collaborator_ids
-      description: An array of the numeric IDs of agents or end-users to CC on the
-        ticket. An email notification is sent to them when the ticket is created
-      isArray: true
     - name: collaborators
       description: An array of numeric IDs, emails, or objects containing name and
         email properties. See Setting Collaborators. An email notification is sent
