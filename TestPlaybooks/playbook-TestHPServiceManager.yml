@@ -1,5 +1,5 @@
 id: 392e3b8d-63e3-4592-82f6-ee00484c4737
-version: 9
+version: 12
 name: TestHPServiceManager
 starttaskid: "0"
 tasks:
@@ -224,12 +224,12 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 0fe9f790-04b0-410d-894e-5b5cae60bd49
+    taskid: a16b7448-9d05-4f55-8c38-713bdd6c0246
     type: regular
     task:
-      id: 0fe9f790-04b0-410d-894e-5b5cae60bd49
+      id: a16b7448-9d05-4f55-8c38-713bdd6c0246
       version: -1
-      name: VerifyContext HPSM.Ticket
+      name: VerifyContext Ticket
       description: Verify that get-incident-by-id exports and converts ticket in Demisto
         general format
       scriptName: VerifyContext
@@ -326,6 +326,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     scriptarguments:
       expectedValue: '["IM10316"]'
       fields: ""
@@ -339,10 +342,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 8bdb0eab-d808-4253-8802-d54c6cd4a1f3
+    taskid: 5e466429-1b4d-472b-8345-bcf9185c00c4
     type: regular
     task:
-      id: 8bdb0eab-d808-4253-8802-d54c6cd4a1f3
+      id: 5e466429-1b4d-472b-8345-bcf9185c00c4
       version: -1
       name: VerifyContextFields Tickets fields correct
       scriptName: VerifyContextFields
@@ -365,7 +368,54 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1596
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 9432fc74-24dc-4e81-8a64-c192689e3e4a
+    type: regular
+    task:
+      id: 9432fc74-24dc-4e81-8a64-c192689e3e4a
+      version: -1
+      name: hpsm-get-device
+      script: HPE Service Manager|||hpsm-get-device
+      type: regular
+      iscommand: true
+      brand: HPE Service Manager
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      configurationItem: CI1000001
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2326
+        }
+      }
+  "14":
+    id: "14"
+    taskid: f2adcf2d-8cb6-4104-80ee-6f00b6887c82
+    type: regular
+    task:
+      id: f2adcf2d-8cb6-4104-80ee-6f00b6887c82
+      version: -1
+      name: Verify Context Fields HPSM.Devices
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ConfigurationItem,DisplayName,Status
+      path: HPSM.Devices
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2541
         }
       }
 view: |-
@@ -373,7 +423,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2165,
+        "height": 2586,
         "width": 380,
         "x": 50,
         "y": 50

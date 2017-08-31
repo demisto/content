@@ -4,7 +4,6 @@ commonfields:
 name: HPE Service Manager
 display: HPE Service Manager
 category: IT Services
-releaseNotes: Added logo image, insecure and proxy options
 image: data:image/png;base64,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
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:13080)
@@ -171,10 +170,12 @@ script:
 
         var hrIncidents = [];
         var incidentIds = [];
-        incidents.content.forEach(function(inc) {
-            hrIncidents.push(inc.Incident);
-            incidentIds.push(inc.Incident.IncidentID);
-        });
+        if (incidents.content && incidents.content.length > 0) {
+            incidents.content.forEach(function(inc) {
+                hrIncidents.push(inc.Incident);
+                incidentIds.push(inc.Incident.IncidentID);
+            });
+        }
 
         var entryContext = {
             'HPSM.IncidentIDs': incidentIds
@@ -227,9 +228,18 @@ script:
         devices = JSON.parse(devices);
 
         var hrDevices = [];
-        devices.content.forEach(function(dev) {
-            hrDevices.push(dev.Device);
-        });
+        var deviceIds = [];
+        if (devices.content && devices.content.length > 0) {
+            devices.content.forEach(function(dev) {
+                hrDevices.push(dev.Device);
+                deviceIds.push(dev.Device.ConfigurationItem);
+            });
+        }
+
+        var entryContext = {
+            'HPSM.DeviceIDs': deviceIds
+        };
+
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
@@ -239,7 +249,7 @@ script:
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Devices List', hrDevices),
             // context
-            // EntryContext: 'TODO'
+            EntryContext: entryContext
         };
     }
 
@@ -248,7 +258,9 @@ script:
         device = JSON.parse(device);
 
         hrDevice = device.Device;
-
+        var entryContext = {
+            'HPSM.Devices': [device.Device],
+        };
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
@@ -258,7 +270,7 @@ script:
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Device ' + args.configurationItem, hrDevice),
             // context
-            // EntryContext: 'TODO'
+            EntryContext: entryContext
         };
     }
 
@@ -306,8 +318,8 @@ script:
         var requestUrl = url + queryPath;
         if (queryParams && typeof queryParams === 'string') {
             // in case query is a string, then we convert it obj and then encode it to URL query
-            queryObj = queryToObject(queryParams);
-            requestUrl += encodeToURLQuery(queryObj);
+            // we also convert every \" to " and after encoding URI, the encodeURI encodes " to %22. We decode it to its original form
+            requestUrl += '?' + encodeURI(queryParams.replace(/\\"/g,'"')).replace(/%22/g,"\"");
         } else if (queryParams) {
             // if the query is object then we encode it
             requestUrl += encodeToURLQuery(queryParams);
@@ -363,10 +375,40 @@ script:
       description: 'Example: "Categorize"'
     - name: subarea
     outputs:
-    - contextPath: HPSM.Incidents
-      description: Contains full incident objects
-    - contextPath: Ticket
-      description: General place where all the tickets stored (basic ticket data)
+    - contextPath: Ticket.ID
+      description: The id of the ticket
+    - contextPath: Ticket.Creator
+      description: Who created/opened the ticket
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket assigned
+    - contextPath: Ticket.State
+      description: The state of the ticket (e.g open, closed, on hold)
+    - contextPath: HPSM.Incidents.IncidentID
+      description: The id of incident
+    - contextPath: HPSM.Incidents.Service
+      description: Service/device number (e.g CI1001030)
+    - contextPath: HPSM.Incidents.Area
+    - contextPath: HPSM.Incidents.Assignee
+    - contextPath: HPSM.Incidents.AssignmentGroup
+    - contextPath: HPSM.Incidents.Category
+    - contextPath: HPSM.Incidents.ClosedBy
+    - contextPath: HPSM.Incidents.ClosedTime
+    - contextPath: HPSM.Incidents.ClosureCode
+    - contextPath: HPSM.Incidents.Company
+    - contextPath: HPSM.Incidents.Contact
+    - contextPath: HPSM.Incidents.Description
+    - contextPath: HPSM.Incidents.Impact
+    - contextPath: HPSM.Incidents.JournalUpdates
+    - contextPath: HPSM.Incidents.OpenTime
+    - contextPath: HPSM.Incidents.OpenedBy
+    - contextPath: HPSM.Incidents.Phase
+    - contextPath: HPSM.Incidents.Solution
+    - contextPath: HPSM.Incidents.Status
+    - contextPath: HPSM.Incidents.Subarea
+    - contextPath: HPSM.Incidents.Title
+    - contextPath: HPSM.Incidents.UpdatedBy
+    - contextPath: HPSM.Incidents.UpdatedTime
+    - contextPath: HPSM.Incidents.Urgency
     description: 'Creating new incident '
   - name: hpsm-list-incidents
     arguments:
@@ -383,18 +425,65 @@ script:
       default: true
       description: The id of incident (example IM10013)
     outputs:
-    - contextPath: HPSM.Incidents
-      description: Contains full incident objects
-    - contextPath: Ticket
-      description: General place where all the tickets stored (basic ticket data)
+    - contextPath: Ticket.ID
+      description: The id of the ticket
+    - contextPath: Ticket.Creator
+      description: Who created/opened the ticket
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket assigned
+    - contextPath: Ticket.State
+      description: The state of the ticket (e.g open, closed, on hold)
+    - contextPath: HPSM.Incidents.IncidentID
+      description: The id of incident
+    - contextPath: HPSM.Incidents.Service
+      description: Service/device number (e.g CI1001030)
+    - contextPath: HPSM.Incidents.Area
+    - contextPath: HPSM.Incidents.Assignee
+    - contextPath: HPSM.Incidents.AssignmentGroup
+    - contextPath: HPSM.Incidents.Category
+    - contextPath: HPSM.Incidents.ClosedBy
+    - contextPath: HPSM.Incidents.ClosedTime
+    - contextPath: HPSM.Incidents.ClosureCode
+    - contextPath: HPSM.Incidents.Company
+    - contextPath: HPSM.Incidents.Contact
+    - contextPath: HPSM.Incidents.Description
+    - contextPath: HPSM.Incidents.Impact
+    - contextPath: HPSM.Incidents.JournalUpdates
+    - contextPath: HPSM.Incidents.OpenTime
+    - contextPath: HPSM.Incidents.OpenedBy
+    - contextPath: HPSM.Incidents.Phase
+    - contextPath: HPSM.Incidents.Solution
+    - contextPath: HPSM.Incidents.Status
+    - contextPath: HPSM.Incidents.Subarea
+    - contextPath: HPSM.Incidents.Title
+    - contextPath: HPSM.Incidents.UpdatedBy
+    - contextPath: HPSM.Incidents.UpdatedTime
+    - contextPath: HPSM.Incidents.Urgency
   - name: hpsm-list-devices
     arguments:
     - name: query
       description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
         https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
+    outputs:
+    - contextPath: HPSM.DeviceIDs
     description: Returns list of devices ids
   - name: hpsm-get-device
     arguments:
     - name: configurationItem
       required: true
       description: 'Id of device, configuration item of device. Example: CI1000011'
+    outputs:
+    - contextPath: HPSM.Devices.AssignmentGroup
+    - contextPath: HPSM.Devices.Company
+    - contextPath: HPSM.Devices.ConfigurationItem
+    - contextPath: HPSM.Devices.ConfigurationItemSubType
+    - contextPath: HPSM.Devices.ConfigurationItemType
+    - contextPath: HPSM.Devices.Department
+    - contextPath: HPSM.Devices.DisplayName
+    - contextPath: HPSM.Devices.Location
+    - contextPath: HPSM.Devices.LocationCode
+    - contextPath: HPSM.Devices.Model
+    - contextPath: HPSM.Devices.PartNumber
+    - contextPath: HPSM.Devices.Status
+    - contextPath: HPSM.Devices.UpdatedBy
+releaseNotes: 'Added proper outputs for all the commands'
