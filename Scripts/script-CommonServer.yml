@@ -336,7 +336,7 @@ script: |-
   }
 
   var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, map: 15};
-  var formats = {table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -1539,4 +1539,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Update escape characters: remove dot from MARKDOWN_CHARS"
+releaseNotes: "added html option to formats"
