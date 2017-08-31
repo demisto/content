@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: 1
 name: CommonServerPython
+releaseNotes: "Update escape characters: remove dot from MARKDOWN_CHARS"
 script: |-
   # Common functions script
   # =======================
@@ -293,7 +294,7 @@ script: |-
   def flattenTable(tableDict):
       return [flattenRow(row) for row in tableDict]
  
-  MARKDOWN_CHARS = "\`*_{}[]()#+-.!"
+  MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
   def stringEscapeMD(st):
