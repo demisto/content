@@ -372,8 +372,6 @@ script:
             var taskDescriptions = get('/api/v1/task-descriptions/').data;
             var iocTaskId = '35b6f686-dece-545f-8314-56936abec6ba';
             for(var i=0; i<taskDescriptions.length; i++){
-                log(taskDescriptions[i]['name']);
-                log(taskDescriptions[i]['sensor_type']);
                 if(taskDescriptions[i]['name'] === 'iocSearchRequest' && taskDescriptions[i]['sensor_type'] === 'windows'){
                     log('found it!');
                     iocTaskId = taskDescriptions[i]['id'];
