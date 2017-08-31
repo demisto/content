@@ -12,25 +12,21 @@ configuration:
   defaultvalue: https://localhost:2443
   type: 0
   required: true
-  hidden: false
 - display: Username
   name: username
   defaultvalue: ""
   type: 9
   required: true
-  hidden: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-  hidden: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
-  hidden: false
 script:
   script: |-
     var host = params.url;
@@ -373,7 +369,17 @@ script:
     }
 
     var createInvestigation = function(name, assignee, sensors, endpoints, args){
-            iocTaskId = '35b6f686-dece-545f-8314-56936abec6ba';
+            var taskDescriptions = get('/api/v1/task-descriptions/').data;
+            var iocTaskId = '35b6f686-dece-545f-8314-56936abec6ba';
+            for(var i=0; i<taskDescriptions.length; i++){
+                log(taskDescriptions[i]['name']);
+                log(taskDescriptions[i]['sensor_type']);
+                if(taskDescriptions[i]['name'] === 'iocSearchRequest' && taskDescriptions[i]['sensor_type'] === 'windows'){
+                    log('found it!');
+                    iocTaskId = taskDescriptions[i]['id'];
+                    break;
+                }
+            }
             url = '/api/v1/investigations';
             reqBody = {
                 'name' : name,
@@ -394,11 +400,14 @@ script:
             'password' : password,
             'domain' : domain,
             'api_key' : api_key,
-            'deployment_order' : deployment_order,
-            'transaction_id' : endpoint_transaction
+            'deployment_order' : deployment_order
         };
 
-        if(endpoint_ips && endpoint_ids){
+        if(endpoint_transaction){
+          requestBody['endpoint_transaction'] = endpoint_transaction;
+        }
+
+        else if(endpoint_ips && endpoint_ids){
             if(endpoint_ips.length !== endpoint_ids.length){
                 throw 'IP addresses don\'t match Endpoint IDs'
             }
@@ -556,7 +565,6 @@ script:
       required: true
       description: Sensor profile to be deployed
     - name: endpoints_transaction_id
-      required: true
       description: Last transaction id
     - name: endpoint_ids
       description: ID's of endpoints to be deployed. Must provide IP's as well
