@@ -37,11 +37,6 @@ configuration:
   defaultvalue: alarms
   type: 0
   required: false
-- display: 'Start fetch with Case ID: (relevant only for fetch incident mode)'
-  name: startingCaseID
-  defaultvalue: "0"
-  type: 0
-  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -355,7 +350,7 @@ script:
 
             return 'Deleted case status with ID: %d' % (status_id['value'], )
 
-        def get_case_statuses(self, should_login = False): # TODO: consider using cache for the mapping id<->name
+        def get_case_statuses(self, should_login = False):
             '''get all case statuses'''
             if should_login:
                 self.login()
@@ -719,10 +714,10 @@ script:
             last_run['alarms'] = last_run['value']
 
         start_alarms = last_run.get('alarms', (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat())
-        start_cases = last_run.get('cases', int(demisto.params()['startingCaseID']))
+        last_case = last_run.get('cases')
 
         incidents = []
-        mode = demisto.params()['fetchTypes'].lower()
+        mode = demisto.params()('fetchTypes', 'alarms').lower() # alarms is default for backward compatability
 
         if mode in ('alarms', 'both'):
             end = datetime.datetime.now().isoformat()
@@ -739,25 +734,24 @@ script:
 
         if mode in ('cases', 'both'):
             esm.login()
-            cases = []
-
             should_stop_on_error = False
-            while len(cases) < max_cases_per_fetch:
-                case = esm.get_case_detail(start_cases)
-                if case is None:
-                    break
-                start_cases += 1
 
-                #filter_closed cases
-                if case['statusId']['value'] not in filtered_out_statuses:
-                    cases.append(case)
+            new_cases = []
+            all_cases = sorted(esm.get_cases(), key=lambda case: case['id']['value'])
+            all_cases = all_cases[-max_cases_per_fetch:]
+
+            for case in all_cases:
+                case_id = case['id']['value']
+                if (int(case_id) > int(last_case)):
+                    new_cases.append(case)
+                    last_case = case_id
 
             # update last run info
-            last_run['cases'] = start_cases
+            last_run['cases'] = last_case
 
-            demisto.info('adding %d more cases, last id is: %d' % (len(cases), last_run['cases'], ))
-            if cases:
-                incidents.extend(cases_to_incidents(esm, cases))
+            demisto.info('adding %d more cases, last id is: %d' % (len(new_cases), last_run['cases'], ))
+            if new_cases:
+                incidents.extend(cases_to_incidents(esm, new_cases))
 
         demisto.setLastRun(last_run)
         demisto.incidents(incidents)
@@ -1182,4 +1176,3 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
-releaseNotes: "Added Support for case management and fetch incidents of cases"
