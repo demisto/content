@@ -63,8 +63,8 @@
             "byoi": false
         },
         {
-            "name": "hpsm",
-            "playbookID": "HPE Service Manager"
+            "name": "HPE Service Manager",
+            "playbookID": "TestHPServiceManager"
         }
     ]
 }
