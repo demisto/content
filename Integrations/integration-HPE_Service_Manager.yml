@@ -35,14 +35,11 @@ script:
         url = url.substring(0, url.length - 1);
     }
 
-    // var token = 'U3lzdGVtLkFkbWluOg==';
     var token = Base64.encode(params.username.identifier + ':' + params.username.password);
-    // throw Base64.encode(params.username.identifier + ':' + params.username.password);
 
     var result;
     // The command input arg holds the command sent from the user.
     switch (command) {
-        // This is the call made when pressing the integration test button.
         case 'test-module':
             result = 'ok';
             break;
@@ -62,9 +59,6 @@ script:
             result = getDeviceById();
             break;
         default:
-            // You can use args[argName] or args.argName to get a specific arg. args are strings.
-            // You can use params[paramName] or params.paramName to get a specific params.
-            // Params are of the type given in the integration page creation.
     }
     return result;
 
@@ -138,10 +132,9 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
 
-            // human-readable
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Created Incident ' + parsedRes.Incident.IncidentID, hrIncident),
-            // context
+
             EntryContext: entryContext
         };
     }
@@ -186,10 +179,9 @@ script:
             ContentsFormat: formats.json,
             Contents: incidents,
 
-            // human-readable
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Incidents List', hrIncidents),
-            // context
+
             EntryContext: entryContext
         };
     }
@@ -215,10 +207,9 @@ script:
             ContentsFormat: formats.json,
             Contents: incident,
 
-            // human-readable
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Incident ' + args.incidentId, hrIncident),
-            // context
+
             EntryContext: entryContext
         };
     }
@@ -245,10 +236,9 @@ script:
             ContentsFormat: formats.json,
             Contents: devices,
 
-            // human-readable
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Devices List', hrDevices),
-            // context
+
             EntryContext: entryContext
         };
     }
@@ -266,10 +256,9 @@ script:
             ContentsFormat: formats.json,
             Contents: device,
 
-            // human-readable
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Device ' + args.configurationItem, hrDevice),
-            // context
+
             EntryContext: entryContext
         };
     }
