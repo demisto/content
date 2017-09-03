@@ -532,17 +532,6 @@ script:
         };
     }
 
-    var mapTypeToXML = {
-        default : '<Field id="%fieldID%" value="%fieldValue%" />',
-        multiValue : '<Field id="123" value="2">\
-                        <MultiValue value="3" />\
-                        <MultiValue value="4" />\
-                    </Field>',   //4
-        multiValueWith
-
-
-    };
-
     function inputToXML(fieldsToValue, mapping){
         var fields = ''
         for (var key in fieldsToValue) {
