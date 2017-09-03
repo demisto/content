@@ -877,7 +877,7 @@ script:
          fetchArgs['target-folder'] = replaceInTemplates(defaultTargetTargetFolderTmpl,fetchArgs);
         }
         fetchArgs.version = params.defaultServerVersion
-        raw = sendRequest(fetchTmpl, fetchArgs.'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass');
+        raw = sendRequest(fetchTmpl, fetchArgs, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass');
 
         //Now iterate on email ids, and do get items one by one
         var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
