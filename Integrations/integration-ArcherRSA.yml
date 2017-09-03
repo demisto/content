@@ -484,7 +484,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: nameToValue,
+            Contents: response,
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, nameToValue),
             ReadableContentsFormat: formats.markdown,
@@ -547,7 +547,7 @@ script:
                     case 9:
                     case 18:
                         //fieldsToValue[key] is of the form [value1, value2,...]
-                        fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] + '" >';
+                        fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
                         for(var i=1; i<fieldsToValue[key].length; i++){
                             fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
                         }
@@ -631,7 +631,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: md,
+            Contents: response,
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
@@ -671,7 +671,10 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: 'content id = ' + contentId + ' was updated successfully'
+            ContentsFormat: formats.json,
+            Contents: response,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: 'content id = ' + contentId + ' was updated successfully'
         }
     }
 
