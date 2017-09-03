@@ -569,15 +569,15 @@ script:
                         users = fieldsToValue[key].users;
                         if(groups && Array.isArray(groups) && groups.length > 0){
                             fields += '<Groups>';
-                            for(var group in groups){
-                                fields += '<Group id="' + group + '" />';
+                            for(var i=0; i<groups.length; i++){
+                                fields += '<Group id="' + groups[i] + '" />';
                             }
                             fields += '</Groups>'
                         }
                         if(users && Array.isArray(users) && users.length > 0){
                             fields += '<Users>';
-                            for(var user in users){
-                                fields += '<User id="' + user + '" />';
+                            for(var i=0; i<users.length; i++){
+                                fields += '<User id="' + users[i] + '" />';
                             }
                             fields += '</Users>'
                         }
