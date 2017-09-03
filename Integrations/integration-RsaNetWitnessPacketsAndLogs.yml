@@ -193,33 +193,33 @@ script:
             return parseResponse(res);
         };
 
-       var handleTimeFilter = function (args) {
-           if(LAST_HOURS in args || LAST_MINUTES in args) {
-               var now = new Date();
-               var dt = new Date();
-               if (args[LAST_HOURS]) {
-                   dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
-               }
-               if (args[LAST_MINUTES]) {
-                   dt.setMinutes(dt.getMinutes() - parseInt(args[LAST_MINUTES]))
-               }
-               var buildDateFormat = function () {
-                   return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
-               };
-               //if query is empry string
-               if(!args || !args[QUERY]) {
-                   args[QUERY] = 'select * where time = "' + buildDateFormat();
-               }
-               //if query has select and where statements
-               else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
-                   args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
-               }
-               //id query contains just select
-               else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
-                   args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
-               }
-           }
-       }
+        var handleTimeFilter = function (args) {
+            if(LAST_HOURS in args || LAST_MINUTES in args) {
+                var now = new Date();
+                var dt = new Date();
+                if (args[LAST_HOURS]) {
+                dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
+                }
+                if (args[LAST_MINUTES]) {
+                    dt.setMinutes(dt.getMinutes() - parseInt(args[LAST_MINUTES]))
+                }
+                var buildDateFormat = function () {
+                    return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
+                };
+                //if query is empry string
+                if(!args || !args[QUERY]) {
+                    args[QUERY] = 'select * where time = "' + buildDateFormat();
+                }
+                //if query has select and where statements
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
+                    args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
+                }
+                //id query contains just select
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
+                    args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
+                }
+            }
+        }
 
         var encodeParams = function(p) {
             var q = '';
