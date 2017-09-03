@@ -73,6 +73,7 @@ script:
                 Title: args.title,
             }
         };
+
         if (args.impact) {
             newIncident.Incident.Impact = args.impact;
         }
@@ -475,4 +476,4 @@ script:
     - contextPath: HPSM.Devices.PartNumber
     - contextPath: HPSM.Devices.Status
     - contextPath: HPSM.Devices.UpdatedBy
-releaseNotes: 'Added proper outputs for all the commands'
+releaseNotes: 'removed unnecessary comments'
