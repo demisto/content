@@ -294,9 +294,8 @@ script: |-
       return createContextSingle(data);
   }
 
-  function isFunction(functionToCheck) {
-   var getType = {};
-   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+  var isFunction = function(functionToCheck) {
+      return functionToCheck && typeof functionToCheck === 'function';
   }
 
   /**
