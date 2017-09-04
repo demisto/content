@@ -31,9 +31,9 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ""
+- display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: true
   type: 8
   required: false
 script:
@@ -118,7 +118,7 @@ script:
 
     var checkCookies = function() {
         var contextData = getIntegrationContext();
-        var cookies = contextData.cookies;
+        var cookies = contextData ? contextData.cookies : {};
         var shouldRequestCookies = true;
         if (cookies && (cookies.length == 2)) {
             var currentTime = new Date();
@@ -392,7 +392,7 @@ script:
     var res;
     switch (command) {
         case 'test-module':
-            login();
+            res = login();
             if (res.Cookies) {
                 return 'ok';
             }
@@ -540,3 +540,4 @@ script:
       description: End time of the connection
     description: Searches for connections.
 hidden: false
+releaseNotes: Fixed Test button logic
