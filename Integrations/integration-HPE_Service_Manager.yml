@@ -477,4 +477,4 @@ script:
     - contextPath: HPSM.Devices.PartNumber
     - contextPath: HPSM.Devices.Status
     - contextPath: HPSM.Devices.UpdatedBy
-releaseNotes: 'removed unnecessary comments'
+releaseNotes: 'changed logo to Micron'
