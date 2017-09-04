@@ -63,6 +63,11 @@
             "byoi": false
         },
         {
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 200
+        },
+        {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 200
