@@ -85,6 +85,16 @@ script:
     var server = params.server.replace(/[\/]+$/, '') + '/';
     var defaultPageSize = 100;
     var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
+
+    // map of argument that can contain distinguished item as values
+    var distinguishedArgs = {
+        'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
+            template: '<t:DistinguishedFolderId Id="%id%"/>',
+            items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
+                                'root', 'junkemail', 'searchfolders', 'voicemail']
+        }
+    }
+
     var commandsDictionary = {
         'ews-find-folders': {
             template:
@@ -552,7 +562,7 @@ script:
         var currentCommand = commandsDictionary[command];
         var hrTitle = command;
         if (currentCommand.tableTitle) {
-            hrTitle = replaceInTemplates(currentCommand.tableTitle,args);
+            hrTitle = replaceInTemplates(currentCommand.tableTitle, args);
         }
         if (currentCommand.defaultArgs) {
             var keys = Object.keys(currentCommand.defaultArgs);
@@ -659,7 +669,16 @@ script:
             }
             var itemsStr = '';
             for (var i in items) {
-                itemsStr += replaceInTemplates(commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template, {id: items[i], 'target-mailbox': args['target-mailbox']});
+                var itemId = items[i];
+                var template;
+                var distinguished = distinguishedArgs[currentCommand.arrayArgName];
+                log(distinguished)
+                if(distinguished && distinguished.items.indexOf(itemId) > -1) {
+                    template = distinguished.template;
+                } else {
+                    template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;
+                }
+                itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
             }
             args[currentCommand.arrayArgName] = itemsStr;
         }
