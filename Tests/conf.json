@@ -64,7 +64,13 @@
         },
         {
             "name": "HPE Service Manager",
-            "playbookID": "TestHPServiceManager"
+            "playbookID": "TestHPServiceManager",
+            "timeout": 200
+        },
+        {
+            "name": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 200
         }
     ]
 }
