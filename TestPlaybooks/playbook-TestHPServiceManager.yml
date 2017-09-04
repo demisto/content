@@ -118,10 +118,10 @@ tasks:
       version: -1
       name: hpsm-create-incident
       description: 'Creating new incident '
-      script: HPE Service Manager|||hpsm-create-incident
+      script: Service Manager|||hpsm-create-incident
       type: regular
       iscommand: true
-      brand: HPE Service Manager
+      brand: Service Manager
     nexttasks:
       '#none#':
       - "2"
@@ -156,10 +156,10 @@ tasks:
       version: -1
       name: hpsm-list-incidents
       description: Returns all incidents
-      script: HPE Service Manager|||hpsm-list-incidents
+      script: Service Manager|||hpsm-list-incidents
       type: regular
       iscommand: true
-      brand: HPE Service Manager
+      brand: Service Manager
     nexttasks:
       '#none#':
       - "11"
@@ -180,10 +180,10 @@ tasks:
       id: 4f34fba9-8047-4201-8701-4139b20d1683
       version: -1
       name: hpsm-get-incident-by-id
-      script: HPE Service Manager|||hpsm-get-incident-by-id
+      script: Service Manager|||hpsm-get-incident-by-id
       type: regular
       iscommand: true
-      brand: HPE Service Manager
+      brand: Service Manager
     nexttasks:
       '#none#':
       - "9"
@@ -379,10 +379,10 @@ tasks:
       id: 9432fc74-24dc-4e81-8a64-c192689e3e4a
       version: -1
       name: hpsm-get-device
-      script: HPE Service Manager|||hpsm-get-device
+      script: Service Manager|||hpsm-get-device
       type: regular
       iscommand: true
-      brand: HPE Service Manager
+      brand: Service Manager
     nexttasks:
       '#none#':
       - "14"
