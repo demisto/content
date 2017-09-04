@@ -685,7 +685,7 @@ script:
         return replaceInTemplates(currentCommand.template, args);
     }
 
-    function sendRequest(tmpl, reqArgs, resStatus) {
+    function sendRequest(tmpl, reqArgs, resStatusPath) {
         var readyBody = replaceInTemplates(tmpl, reqArgs);
         var httpParams = {
                 Method: 'POST',
@@ -702,15 +702,17 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
-        resStatus = dq(raw, currentCommand.resStatus);
+        var bdy = res.Body.replace(/&#x.*?;/g, "");
+        var raw = JSON.parse(x2j(bdy));
+
+        var resStatus = dq(raw, resStatusPath);
         if (!Array.isArray(resStatus)) {
             resStatus = [resStatus];
         }
         if (resStatus[0] !== 'Success') {
             throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
-        var bdy = res.Body.replace(/&#x.*?;/g, "");
-        var raw = JSON.parse(x2j(bdy));
+
         return raw;
     }
 
@@ -1187,6 +1189,8 @@ script:
     - name: max-entries-returned
       description: Stop querying after specified number is reached
     outputs:
+    - contextPath: EWS.SearchItems.ID
+      description: Mail ID
     - contextPath: EWS.SearchItems.Created
       description: Time where the element was created
     - contextPath: EWS.SearchItems.Sent
@@ -1237,6 +1241,7 @@ script:
       description: Searchable mail display name
     - contextPath: EWS.Mailboxes.ReferenceId
       description: Reference ID of the mail box, for further use on other ews queries
+    description: Retrieve a list of mailboxes that could be searched
   - name: ews-search-mailboxes
     arguments:
     - name: filter
@@ -1286,6 +1291,21 @@ script:
   - name: ews-find-folders
     arguments:
     - name: target-mailbox
+      description: The mailbox to search in
+    outputs:
+    - contextPath: EWS.Folders.ChildFolderCount
+      description: Folder child folder count
+    - contextPath: EWS.Folders.DisplayName
+      description: Folder display name
+    - contextPath: EWS.Folders.TotalCount
+      description: Folder total count
+    - contextPath: EWS.Folders.UnreadCount
+      description: Folder unread count
+    - contextPath: EWS.Folders.FolderID.ID
+      description: Folder id
+    - contextPath: EWS.Folders.FolderID.ChangeKey
+      description: Folder change key
+    description: Get all folder from a mailbox located under the root folder
   - name: ews-get-attachment-item
     arguments:
     - name: attachment-id
