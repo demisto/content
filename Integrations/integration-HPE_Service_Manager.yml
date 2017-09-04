@@ -296,7 +296,7 @@ script:
             } catch (err) {}
 
             if (res.Body && parsedRes && parsedRes.ReturnCode !== 0 && parsedRes.Messages) {
-                throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nError from HP Service Manager: ' + parsedRes.Messages;
+                throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nError from Service Manager: ' + parsedRes.Messages;
             }
 
             throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
