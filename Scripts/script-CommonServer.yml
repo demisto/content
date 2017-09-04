@@ -338,7 +338,7 @@ script: |-
    * @returns {Object} - the value returned from the dq function
   */
   easyDQ = function(data, path, filter, returnValue){
-      dq(data, dqQueryBuilder(path, filter, returnValue));
+      return dq(data, dqQueryBuilder(path, filter, returnValue));
   };
 
   /* creates array from obj, if obj is not already an array */
