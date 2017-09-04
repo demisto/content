@@ -63,7 +63,7 @@
             "byoi": false
         },
         {
-            "name": "HPE Service Manager",
+            "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 200
         },
