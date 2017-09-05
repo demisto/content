@@ -1,0 +1,209 @@
+id: TestFileCreateAndUpload
+version: -1
+name: TestFileCreateAndUpload
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac9ec59c-823b-4602-84e7-a627f9360649
+    type: start
+    task:
+      id: ac9ec59c-823b-4602-84e7-a627f9360649
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 09ce7f0b-83e6-4a23-890a-eb8f3f3d15be
+    type: regular
+    task:
+      id: 09ce7f0b-83e6-4a23-890a-eb8f3f3d15be
+      version: -1
+      name: Print Something
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value: Something
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b3f8194e-47ca-4915-8d94-5df133afd4db
+    type: regular
+    task:
+      id: b3f8194e-47ca-4915-8d94-5df133afd4db
+      version: -1
+      name: FileCreateAndUpload from entry
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data: ""
+      entryId: ${lastCompletedTaskEntries}
+      filename: testPlaybookForFileCreateAndUpload-FileFromEntry.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 5f543e2d-7c3a-4360-8f2b-f4e7a4ba658f
+    type: regular
+    task:
+      id: 5f543e2d-7c3a-4360-8f2b-f4e7a4ba658f
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5f1d3c3b-b430-48f6-8ec4-bf964edd8cf3
+    type: regular
+    task:
+      id: 5f1d3c3b-b430-48f6-8ec4-bf964edd8cf3
+      version: -1
+      name: Verify we got the right filename
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value: ${File.Name(val=="testPlaybookForFileCreateAndUpload-FileFromEntry.txt")}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 714
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 90a5bcb2-d01f-446c-8e73-0adfd348c74c
+    type: regular
+    task:
+      id: 90a5bcb2-d01f-446c-8e73-0adfd348c74c
+      version: -1
+      name: FileCreateAndUpload from data
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      data: This is data to be stored
+      entryId: ""
+      filename: testPlaybookForFileCreateAndUpload-FileFromData.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 906
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 460e3fe4-8673-4527-84a1-8178c034fb28
+    type: regular
+    task:
+      id: 460e3fe4-8673-4527-84a1-8178c034fb28
+      version: -1
+      name: Verify we got the right filename
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value: ${File.Name(val=="testPlaybookForFileCreateAndUpload-FileFromData.txt")}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1105
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 14df48ad-edd2-47e6-88e5-81f2f630073e
+    type: regular
+    task:
+      id: 14df48ad-edd2-47e6-88e5-81f2f630073e
+      version: -1
+      name: Close incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1310
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1355,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
