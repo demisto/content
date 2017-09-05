@@ -1287,6 +1287,27 @@ script:
       description: The ID of the attachment as received via get-items
     - name: target-mailbox
       description: The mailbox where this attachment was found
+    outputs:
+    - contextPath: File.SHA256
+      description: Attachment's SHA256
+    - contextPath: File.SHA1
+      description: Attachment's SHA1
+    - contextPath: File.MD5
+      description: Attachment's MD5
+    - contextPath: File.Name
+      description: Attachment's Name
+    - contextPath: File.Info
+      description: Attachment's Info
+    - contextPath: File.Size
+      description: Attachment's Size (In Bytes)
+    - contextPath: File.Extension
+      description: Attachment's Extension
+    - contextPath: File.Type
+      description: Attachment's Type
+    - contextPath: File.EntryID
+      description: Attachment's EntryID
+    - contextPath: File.SSDeep
+      description: Attachment's SSDeep hash
     description: Get actual attachment file from email
   - name: ews-find-folders
     arguments:
