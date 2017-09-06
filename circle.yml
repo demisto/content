@@ -18,6 +18,7 @@ test:
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
     - cp content-descriptor.json bundle/
+    - cp release-notes.txt bundle/
     - cp $(find Scripts -type f -print) bundle/
 
     - cd bundle/ && zip ../content.zip *
