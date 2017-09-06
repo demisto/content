@@ -70,7 +70,7 @@ script: |-
       }
   }
 
-  MARKDOWN_CHARS = "\\`*_{}[]()#+-.!|"
+  MARKDOWN_CHARS = "\\`*_{}[]()#+-!|"
 
   /**
    * Escapes markdown characters in a string
@@ -206,8 +206,7 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  var colData = dq(entry, h);
-                  vals.push((!!colData || colData===0) ? stringEscapeMD(formatCell(colData, cellDelimiter), true) : ' ');
+                    vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
               });
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
@@ -230,6 +229,168 @@ script: |-
   var underscoreToCamelCase = function(string){
       var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  };
+  
+  /**
+   * Converts dots into spaces and capitalizes
+  */
+  var dotToSpace = function(string){
+      var ret_string = '.'+string;
+      return ret_string.replace(/\.([a-z,A-Z])/g, function (g) { return ' '+g[1].toUpperCase(); });
+  };
+  
+  function mapObjFunction(mapFields, filter) {
+      var transformSingleObj= function(obj) {
+          var res = {};
+          mapFields.forEach(function(f) {
+              if(!filter || filter(f)){
+                  res[f.to] = dq(obj, f.from);
+              }
+          });
+          return res;
+      };
+      return function(obj) {
+          if (obj instanceof Array) {
+              var res = [];
+              for (var j=0; j < obj.length; j++) {
+                  var current = transformSingleObj(obj[j]);
+                  if (current) {
+                      res.push(current);
+                  }
+              }
+              return res;
+          }
+          return transformSingleObj(obj);
+      };
+  }
+
+  function createContext(data, id) {
+      var createContextSingle = function(obj) {
+          var res = {};
+          var keys = Object.keys(obj);
+          keys.forEach(function(k) {
+              var values = k.split('.');
+              var current = res;
+              for (var j = 0; j<values.length - 1; j++) {
+                  if (!current[values[j]]) {
+                      current[values[j]] = {};
+                  }
+                  current = current[values[j]];
+              }
+              current[values[j]] = obj[k];
+          });
+          if (!res.ID && id) {
+              res.ID = id;
+          }
+          return res;
+      };
+      if (data instanceof Array) {
+          var res = [];
+          for (var j=0; j < data.length; j++) {
+              res.push(createContextSingle(data[j]));
+          }
+          return res;
+      }
+      return createContextSingle(data);
+  }
+
+  var isFunction = function(functionToCheck) {
+      return functionToCheck && typeof functionToCheck === 'function';
+  }
+
+  /**
+   * Creates a dq query string
+   * @param {string} path - the path to be parsed
+   * @param {function or string} filter - filter string (e.g. 'val.id===<some id>'') or filter function (e.g. function(obj){return obj.name === 'name';} )
+   * @param {function or string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
+   * @returns {string} - the query string to pass to dq function
+  */
+  var dqQueryBuilder = function(path, filter, returnValue){
+      var query = path;
+      if(!filter){
+          filter = 'true';
+      }
+      if(isFunction(filter)){
+          filter = filter.toString() + '(val)';
+      }
+      if(typeof filter !== 'string'){
+          throw 'dqQueryBuilder: Filter type is neither a function nor a string';
+      }
+      query += '('+filter+')';
+      if(returnValue){
+          if(isFunction(returnValue)){
+              returnValue = returnValue.toString() + '(val)';
+          }
+          if(typeof returnValue !== 'string'){
+              throw 'dqQueryBuilder: return value for DQ is neither a function nor a string';
+          }
+          query += '='+returnValue;
+      }
+      return query;
+  };
+
+  /**
+   * Creates a dq query from arguments and calls dq
+   * @param {Object} raw - the raw data
+   * @param {string} path - the path to be parsed
+   * @param {function or string} filter - filter string (e.g. 'val.id===<some id>'') or filter function (e.g. function(obj){return obj.name === 'name';} )
+   * @param {function or string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
+   * @returns {Object} - the value returned from the dq function
+  */
+  easyDQ = function(data, path, filter, returnValue){
+      return dq(data, dqQueryBuilder(path, filter, returnValue));
+  };
+
+  /* creates array from obj, if obj is not already an array */
+  var toArray = function(obj){
+      if(obj && !Array.isArray(obj))
+          return [obj];
+      return obj;
+  };
+
+  /**
+   * Creates war room entry
+   * @param {Object} result - the raw result to be parsed
+   * @param {Object} translator - maps raw data to war room output. Should be of the following format:
+   * {
+          contextPath: <context-path>,
+          title: <war-room-title>,
+          data: [
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              ...
+          ]
+      }
+   * * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
+   * * dest-key is also used for war room table headers
+   * * humanReadable states whether field should appear in war room table. Default is true.
+   * @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+   * @returns {Object} - the war room entry
+  */
+  var createEntry = function(result , translator, MDfilter){
+      /* filters out all fields where humanReadable is false */
+      var filter = function(obj){
+          if(obj.humanReadable !== false){
+              return true;
+          }
+          return false;
+      };
+
+      var entry = {
+          Type: entryTypes.note,
+          Contents: result,
+          ContentsFormat: formats.json,
+          ReadableContentsFormat: formats.markdown
+      };
+
+      var content = translator.innerPath ? dq(result, translator.innerPath) : result;
+      var translatedContext = mapObjFunction(translator.data) (content);
+      var translatedMD = mapObjFunction(translator.data, filter) (content);
+      entry.HumanReadable = tableToMarkdown(translator.title,translatedMD, undefined, undefined, dotToSpace);
+      entry.EntryContext = {};
+      var context = createContext(translatedContext);
+      entry.EntryContext[translator.contextPath] = context;
+      return entry;
   };
 
   /**
@@ -337,7 +498,7 @@ script: |-
   }
 
   var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, map: 15};
-  var formats = {table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -1555,4 +1716,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "fix convertKeysToPascalCase utility. Add capability to chose columns with dot notation."
+releaseNotes: "Added createdEntry function and dqQueryBuilder"
