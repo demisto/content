@@ -277,10 +277,11 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
+    release_notes = "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),
-        "releaseNotes": "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res,
+        "releaseNotes": release_notes,
         "modified": date,
         "ignoreGit": False,
         "releaseDate": date,
@@ -290,6 +291,9 @@ def createContentDescriptor(version, assetId, res):
     }
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(contentDescriptor, outfile)
+
+    with open('release-notes.txt', 'w') as outfile:
+        outfile.write(release_notes)
 
 
 def main(argv):

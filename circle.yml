@@ -22,6 +22,7 @@ test:
 
     - cd bundle/ && zip ../content.zip *
     - cp content.zip $CIRCLE_ARTIFACTS/content.zip
+    - cp release-notes.txt $CIRCLE_ARTIFACTS/
   override:
     - chmod +x ./Tests/scripts/*
 
