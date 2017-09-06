@@ -1106,13 +1106,13 @@ script: |-
 
   // Converts score (in number format) to human readable reputation format
   function scoreToReputation(score) {
-      if (score == 3){
+      if (score === 3){
           return 'Bad';
       }
-      if (score == 2){
+      if (score === 2){
           return 'Suspicious';
       }
-      if (score == 1){
+      if (score === 1){
           return 'Good';
       }
       return 'None';
