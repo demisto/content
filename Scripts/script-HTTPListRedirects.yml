@@ -5,7 +5,10 @@ name: HTTPListRedirects
 script: |-
   import requests
 
-  response = requests.head(demisto.args()['url'], allow_redirects=True) if demisto.args()['useHead'] == 'true' else requests.get(demisto.args()['url'])
+  u = demisto.args()['url']
+  if not u.lower().startswith('http'):
+      u = 'http://' + u
+  response = requests.head(u, allow_redirects=True) if demisto.args()['useHead'] == 'true' else requests.get(u)
   urls = []
   if response.history:
       for resp in response.history:
@@ -37,3 +40,4 @@ outputs:
 - contextPath: URL.Data
   description: The URL redirects from the given URL
 scripttarget: 0
+releaseNotes: Make sure we have an http prefix for URLs
