@@ -185,7 +185,8 @@ script:
             indJson = escapeNewLines(indicator.json)
             indicatorsArr.append(json.loads(indJson))
         if len(indicators) == 0:
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+ip,"EntryContext": ec})
+            md = "## ThreatConnect IP Report for: " + ip + "\nNo results found!"
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect IP Reputation for: "+ip, indicatorsArr, ""),"Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
@@ -204,7 +205,8 @@ script:
             indJson = escapeNewLines(indicator.json)
             indicatorsArr.append(json.loads(indJson))
         if len(indicators) == 0:
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+url,"EntryContext": ec})
+            md = "## ThreatConnect URL Report for: " + url + "\nNo results found!"
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect URL Reputation for: "+url, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
@@ -223,7 +225,8 @@ script:
             indJson = escapeNewLines(indicator.json)
             indicatorsArr.append(json.loads(indJson))
         if len(indicators) == 0:
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+file,"EntryContext": ec})
+            md = "## ThreatConnect File Report for: " + file + "\nNo results found!"
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect File Reputation for: "+file, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
@@ -242,7 +245,8 @@ script:
             indJson = escapeNewLines(indicator.json)
             indicatorsArr.append(json.loads(indJson))
         if len(indicators) == 0:
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+domain,"EntryContext": ec})
+            md = "## ThreatConnect Domain Report for: " + domain + "\nNo results found!"
+            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
         else:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect Domain Reputation for: "+domain, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
@@ -388,6 +392,20 @@ script:
         for incident in incidents:
             incidentsJsonArr.append(json.loads(incident.json))
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(incidentsJsonArr), "EntryContext": {"ThreatConnect.incidents": incidentsJsonArr}})
+        sys.exit(0)
+    if demisto.command() == 'tc-get-incident-associate-indicators':
+        tc = getClient()
+        incidents = tc.incidents()
+        filter1 = incidents.add_filter()
+        filter1.add_id(int(demisto.args()['incidentId']))
+        if demisto.get(demisto.args(), 'owner'):
+            filter1.add_owner(demisto.args()['owner'])
+        incidents.retrieve()
+        indicatorsArr = []
+        for incident in incidents:
+            for indicator in incident.indicator_associations:
+                indicatorsArr.append(indicator.indicator)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
         sys.exit(0)
     if demisto.command() == 'tc-incident-associate-indicator':
         tc = getClient()
@@ -661,5 +679,11 @@ script:
       description: Malicious Domains
       related: ""
     description: Check domain reputation
+  - name: tc-get-incident-associate-indicators
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+    - name: owner
   dockerimage: demisto/threatconnect-sdk
-releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update"
+releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update, change no results outputs"

@@ -97,7 +97,9 @@ script:
             id = Math.max(id, detection.id);
             incidents.push(createIncidentFromDetection(res[i]));
         }
-        setLastRun({'id': id !== 0 ? id + 1 : 0});
+        if (incidents.length > 0) {
+          setLastRun({'id': id !== 0 ? id + 1 : 0});
+        }
         return JSON.stringify(incidents);
     };
 

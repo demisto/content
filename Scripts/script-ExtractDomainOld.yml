@@ -2,7 +2,7 @@ commonfields:
   id: ExtractDomain
   version: -1
 name: ExtractDomain
-fromversion: 3.0.1
+toversion: 3.0.0
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -39,6 +39,19 @@ script: |-
           domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
       }
       return domain;
+  };
+
+  var scoreToReputation = function(score) {
+      if (score == 3){
+          return 'Bad';
+      }
+      if (score == 2){
+          return 'Suspicious';
+      }
+      if (score == 1){
+          return 'Good';
+      }
+      return 'None';
   };
 
   var text = args.text;
@@ -86,19 +99,14 @@ script: |-
       var domains = [];
       if (allDomains.indexOf(rootDomain) < 0){
           domains.push(rootDomain);
-          allDomains.push(rootDomain);
+          if (allDomains.indexOf(hostname) < 0) {
+              domains.push(hostname);
+          }
       }
-      if (allDomains.indexOf(hostname) < 0) {
-          domains.push(hostname);
-          allDomains.push(hostname);
-      }
+      allDomains = allDomains.concat(domains);
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
-          knownTldList = "Known Tld";
-          if ((args.tldList)&&(args.tldList.length > 0)){
-              knownTldList = args.tldList;
-          }
-          var knownTld = executeCommand("getList", {"listName": knownTldList});
+          var knownTld = executeCommand("getList", {"listName":"Known Tld"});
           if ((knownTld) && (knownTld[0]) && (knownTld[0].Contents.indexOf(domain) > 0)) {
               continue;
           }
@@ -118,9 +126,6 @@ script: |-
                   } else {
                       executeCommand("createNewIndicator", {type:'Domain',value:domain, source:'DBot', relatedIncidents:investigation.id});
                   }
-              } else{
-                  var indicator = res[0].Contents[0];
-                  executeCommand("associateIndicatorToIncident", {id:indicator.id,incidentId:investigation.id});
               }
           }
           ec[outputPaths.domain].push({Name: domain});
@@ -154,9 +159,6 @@ args:
   - "false"
   description: If to calculate reputation for new indicator created or not, default
     is true
-- name: tldList
-  description: Name of Demisto list to hold known TLD list, so will be ignored when
-    looking for domains
 outputs:
 - contextPath: Domain.Name
   description: Extracted domains
