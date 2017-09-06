@@ -40,19 +40,6 @@ script: |-
       return domain;
   };
 
-  var scoreToReputation = function(score) {
-      if (score == 3){
-          return 'Bad';
-      }
-      if (score == 2){
-          return 'Suspicious';
-      }
-      if (score == 1){
-          return 'Good';
-      }
-      return 'None';
-  };
-
   var text = args.text;
   if (typeof text !== 'string') {
       text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
