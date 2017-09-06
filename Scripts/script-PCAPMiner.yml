@@ -25,7 +25,7 @@ script: |
 
   def saveFileResult(filename, data):
       temp = demisto.uniqueFile()
-      with open('/var/lib/demisto/' + demisto.investigation()['id'] + '_' + temp,'wb') as f:
+      with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
 
@@ -35,11 +35,10 @@ script: |
   readyPath = filePath[0]["Contents"]["path"]
   ret = []
   filename = filePath[0]["Contents"]["name"]
-  rPath = '/var/lib/demisto/' + readyPath
-  miner = pcap_miner(rPath)
+  miner = pcap_miner(readyPath)
   jsonResults = miner.summary2json()
   pyResults = json.loads(jsonResults)
-  dispatcher = Dispatcher(rPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
+  dispatcher = Dispatcher(readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
   results = dispatcher.run()
   pyResults['files_found'] = results.filenamelist
   listdir = os.listdir('./output')
@@ -95,5 +94,5 @@ args:
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-releaseNotes: "Initial add of PCAPMiner a simple pcap parsing tool which uses a docker image to handle threading and parsing pcap files"
+releaseNotes: "-"
 system: true
