@@ -71,7 +71,7 @@
         {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 200
+            "timeout":300
         },
         {
             "playbookID": "TestFileCreateAndUpload"            
