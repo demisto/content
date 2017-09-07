@@ -58,8 +58,7 @@
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
-            "playbookID": "ExtractURL Test",
-            "name": "ExtractURL Test"
+            "playbookID": "ExtractURL Test"
         },
         {
             "name": "carbonblack",
@@ -75,7 +74,7 @@
         {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "playbookID": "TestFileCreateAndUpload"            
