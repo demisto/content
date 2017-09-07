@@ -58,6 +58,10 @@
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
+            "playbookID": "ExtractURL Test",
+            "name": "ExtractURL Test"
+        },
+        {
             "name": "carbonblack",
             "playbookID": "CB-Response-Test",
             "byoi": false,
