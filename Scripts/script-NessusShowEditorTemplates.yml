@@ -31,3 +31,5 @@ dependson:
   must:
   - nessus-get-scans-editors
 timeout: 0s
+deprecated: true
+releaseNotes: "deprecated. Use integration command"
