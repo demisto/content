@@ -60,7 +60,8 @@
         {
             "name": "carbonblack",
             "playbookID": "CB-Response-Test",
-            "byoi": false
+            "byoi": false,
+            "nightly": true
         },
         {
             "name": "Service Manager",
