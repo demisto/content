@@ -184,7 +184,7 @@ script:
               return JSON.parse(res.Body).message;
             }
             catch {
-              throw 'Logout failed. Answer from Checkpoint is: '+ JSON.stringify(res.Body);
+              throw 'Logout failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
             }
         }
         return 'Already logged out';
