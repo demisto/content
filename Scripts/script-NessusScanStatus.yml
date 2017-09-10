@@ -34,4 +34,3 @@ dependson:
   - Nessus|||scan-details
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated. Use integration command"

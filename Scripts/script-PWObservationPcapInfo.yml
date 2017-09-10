@@ -53,4 +53,3 @@ dependson:
   - ProtectWise|||observation-pcap-info
 timeout: 0s
 deprecated: true
-releaseNotes: "-"

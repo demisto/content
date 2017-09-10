@@ -627,4 +627,3 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: Adding support for mixed CR/LF in fileType. Support utf-8 chars.

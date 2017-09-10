@@ -1,5 +1,4 @@
 versionedfields: {}
-releaseNotes: "Added Demisto side filtering of results"
 commonfields:
   id: Cisco CloudLock
   version: -1
