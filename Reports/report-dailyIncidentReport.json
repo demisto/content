@@ -8,7 +8,6 @@
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],
-  "releaseNotes": "-",
   "system": true,
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },

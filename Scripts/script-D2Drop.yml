@@ -39,4 +39,3 @@ args:
   required: true
   description: Source file name
 scripttarget: 1
-releaseNotes: "-"

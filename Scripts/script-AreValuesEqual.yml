@@ -36,4 +36,3 @@ scripttarget: 0
 comment: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
 dependson: {}
 timeout: 0s
-releaseNotes: Arguments are not mandatory anymore. If either of the arguments are missing, no is returned.

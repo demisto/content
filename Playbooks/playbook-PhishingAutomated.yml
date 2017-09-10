@@ -3,7 +3,6 @@ version: -1
 system: true
 fromversion: 2.5.0
 name: Phishing Playbook - Automated
-releaseNotes: "Fix default display name in email message"
 description: |-
   This is an automated playbook to investigate suspected Phishing attempts.
   It picks up the required information from the incident metadata as created by the mail listener.
