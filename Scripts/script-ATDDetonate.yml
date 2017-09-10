@@ -185,4 +185,3 @@ outputs:
 important:
 - contextPath: File(val.Malicious)
   description: Malicious files
-releaseNotes: "-"

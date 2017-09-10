@@ -189,4 +189,3 @@ script:
     description: 'fetch splunk search results '
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: "First fetch to bring last 10 minutes notable events"
