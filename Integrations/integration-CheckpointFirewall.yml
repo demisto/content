@@ -167,15 +167,25 @@ script:
 
     var login = function(){
         var res = sendRequest('login', JSON.stringify({'user':params.credentials.identifier,'password':params.credentials.password}), {'content-type': ['application/json']});
-        sid = JSON.parse(res.Body).sid;
-        return sid;
+        try {
+          sid = JSON.parse(res.Body).sid;
+          return sid;
+        }
+        catch{
+            throw 'Login failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
+        }
     };
 
     var logout = function(){
         if(sid){
             var res = sendRequest('logout', '{}');
             sid = undefined;
-            return JSON.parse(res.Body).message;
+            try{
+              return JSON.parse(res.Body).message;
+            }
+            catch {
+              throw 'Logout failed. Answer from Checkpoint is: '+ JSON.stringify(res.Body);
+            }
         }
         return 'Already logged out';
     };
