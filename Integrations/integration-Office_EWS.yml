@@ -89,7 +89,11 @@ script:
     // map of argument that can contain distinguished item as values
     var distinguishedArgs = {
         'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
-            template: '<t:DistinguishedFolderId Id="%id%"/>',
+            template: '<t:DistinguishedFolderId Id="%id%">' +
+                        '<t:Mailbox>' +
+                           '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
+                       '</t:Mailbox>' +
+                      '</t:DistinguishedFolderId>',
             items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
                                 'root', 'junkemail', 'searchfolders', 'voicemail']
         }
