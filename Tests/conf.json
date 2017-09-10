@@ -3,10 +3,6 @@
     "testInterval": 30,
     "integrations": [
         {
-            "name": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
             "name": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
@@ -69,7 +65,7 @@
         {
             "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
-            "timeout": 200
+            "timeout": 400
         },
         {
             "name": "McAfee ESM-v10",
@@ -81,6 +77,12 @@
         },
         {
             "playbookID": "TestIsValueInArray"
+        }
+    ],
+    "skipped": [
+        {
+            "name": "Cisco Umbrella Investigate",
+            "playbookID": "Cisco-Umbrella-Test"
         }
     ]
 }
