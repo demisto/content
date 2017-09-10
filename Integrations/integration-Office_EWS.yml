@@ -1251,4 +1251,3 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
-releaseNotes: "Support get attachment of an item(mail)"
