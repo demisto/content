@@ -254,7 +254,12 @@ script:
         var context = {};
         var body = {limit: args.limit, offset: args.offset, order: args.order};
         var result = sendRequest('show-hosts', JSON.stringify(body));
-        var res = JSON.parse(result.Body);
+        try{
+            var res = JSON.parse(result.Body);
+        }
+        catch(err){
+            return result.Body;
+        }
         var md = tblToMd('Hosts table', res.objects);
         context.Endpoint = jsonToEntity(res.objects, entityDict.Endpoint);
 
