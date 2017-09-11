@@ -169,7 +169,7 @@ script:
 
     var encodeBody = function(args) {
         if (args) {
-            return JSON.stringify(args);
+            return JSON.stringify(args); // bla2
         }
         return undefined;
     }
@@ -408,3 +408,4 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
+releaseNotes: "-"

@@ -46,43 +46,54 @@ class Content:
     def generateRN(self):
         res = ""
         missingReleaseNotes = False
+
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
-            res = "### " + self.getHeader() +"\n"
+            section_body = ""
             if len(self.addedStore) > 0:
                 newStr = ""
+                new_count = 0
                 for rawContent in self.addedStore:
                     cnt = self.loadData(rawContent)
+                    new_content_rn = self.addedReleaseNotes(cnt)
+                    if new_content_rn:
+                        new_count += 1
                     newStr += self.addedReleaseNotes(cnt)
+
                 if len(newStr) > 0:
-                    new_count = len(self.addedStore)
                     if new_count > 1:
-                        res += "#### + " + str(new_count) + " New " + self.getHeader() + "\n"
+                        section_body += "#### + " + str(new_count) + " New " + self.getHeader() + "\n"
                     else:
-                        res += "#### + " + " New " + self.getHeader() + "\n"
-                    res += newStr
+                        section_body += "#### + " + " New " + self.getHeader() + "\n"
+                        section_body += newStr
             if len(self.modifiedStore) > 0:
                 modifiedStr = ""
+                modified_count = 0
                 for rawContent in self.modifiedStore:
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
                         print_error(cnt["name"] + " is missing releaseNotes entry")
                         missingReleaseNotes = True
-                    else:
+                    elif ans is not "":
                         modifiedStr += ans
+                        modified_count += 1
                 if len(modifiedStr) > 0:
-                    modified_count = len(self.modifiedStore)
                     if modified_count > 1:
-                        res += "##### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                        section_body += "##### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        res += "##### + " + " Improved " + self.getHeader() + "\n"
-                    res += modifiedStr
+                        section_body += "##### + " + " Improved " + self.getHeader() + "\n"
+                        section_body += modifiedStr
             if len(self.deletedStore) > 0:
-                res += "##### Removed " + self.getHeader() + "\n"
+                section_body += "##### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
-                    res += "- " + rawContent + "\n"
-        if missingReleaseNotes == True:
-            return None
+                    section_body += "- " + rawContent + "\n"
+
+            if missingReleaseNotes:
+                return None
+            if len(section_body) > 0:
+                res = "### " + self.getHeader() + "\n"
+                res += section_body
+
         return res
 
 
