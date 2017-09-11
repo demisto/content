@@ -171,8 +171,7 @@ script:
         try {
           sid = JSON.parse(res.Body).sid;
           return sid;
-        }
-        catch(err){
+        } catch(err){
             throw 'Login failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
         }
     };
@@ -183,8 +182,7 @@ script:
             sid = undefined;
             try{
               return JSON.parse(res.Body).message;
-            }
-            catch(err){
+            } catch(err){
               throw 'Logout failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
             }
         }
@@ -203,8 +201,7 @@ script:
         var res;
         try{
             sendRequest('add-host', JSON.stringify({name:args.ip, 'ip-address':args.ip}));
-        }
-        catch(err){
+        } catch(err){
 
         }
         sendRequest('publish', '{}');
@@ -257,8 +254,7 @@ script:
         var result = sendRequest('show-hosts', JSON.stringify(body));
         try{
             var res = JSON.parse(result.Body);
-        }
-        catch(err){
+        } catch(err){
             return result.Body;
         }
         var md = tblToMd('Hosts table', res.objects);
