@@ -1,0 +1,135 @@
+id: af2f5a99-d70b-48c1-8c25-519732b733f2
+version: 1
+name: nmap-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0adcccad-7dea-4779-814a-ae5a49ee8a87
+    type: start
+    task:
+      id: 0adcccad-7dea-4779-814a-ae5a49ee8a87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: bfaa79f3-b5b3-4442-8fb0-a7d4b8baf613
+    type: regular
+    task:
+      id: bfaa79f3-b5b3-4442-8fb0-a7d4b8baf613
+      version: -1
+      name: nmap-scan
+      description: Scan targets with the given parameters
+      script: nmap|||nmap-scan
+      type: regular
+      iscommand: true
+      brand: nmap
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      options: -sV
+      targets: scanme.nmap.org
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ab16a6d9-8841-4682-871c-4ab26488514e
+    type: condition
+    task:
+      id: ab16a6d9-8841-4682-871c-4ab26488514e
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "3"
+    scriptarguments:
+      value: ${NMAP.Scan.Hosts.Services.Port(val==22)}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: cd018324-9ab4-448c-8a62-e8fc66621456
+    type: regular
+    task:
+      id: cd018324-9ab4-448c-8a62-e8fc66621456
+      version: -1
+      name: Close investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: Found the service
+      reason: All good
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ab149f17-3ed3-4265-81b4-2383ba8f1e90
+    type: regular
+    task:
+      id: ab149f17-3ed3-4265-81b4-2383ba8f1e90
+      version: -1
+      name: Oops, problem
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Service not found
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
