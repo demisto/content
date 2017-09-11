@@ -2,7 +2,6 @@ commonfields:
   id: UnzipFile
   version: -1
 name: UnzipFile
-releaseNotes: "-"
 script: |-
   import zipfile
   import os

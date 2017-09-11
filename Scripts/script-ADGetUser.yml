@@ -214,4 +214,3 @@ outputs:
   description: The Account display name
 - contextPath: Account.Manager
   description: The Account's manager
-releaseNotes: "Added limit param and set default size limit"

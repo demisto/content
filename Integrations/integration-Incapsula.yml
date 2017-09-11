@@ -671,4 +671,3 @@ script:
     description: Use this operation to configure Login Protect on wordpress | joomla
       | phpbb admin areas
 system: true
-releaseNotes: "Added proxy setting support"

@@ -412,4 +412,3 @@ script:
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
   isfetch: true
 hidden: false
-releaseNotes: "-"
