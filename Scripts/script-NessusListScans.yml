@@ -42,4 +42,3 @@ dependson:
   - Nessus|||scans-list
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated. Use integration command"
