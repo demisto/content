@@ -61,10 +61,10 @@ class Content:
 
                 if len(newStr) > 0:
                     if new_count > 1:
-                        section_body += "#### + " + str(new_count) + " New " + self.getHeader() + "\n"
+                        section_body += "#### " + str(new_count) + " New " + self.getHeader() + "\n"
                     else:
-                        section_body += "#### + " + " New " + self.getHeader() + "\n"
-                        section_body += newStr
+                        section_body += "#### New " + self.getHeader() + "\n"
+                    section_body += newStr
             if len(self.modifiedStore) > 0:
                 modifiedStr = ""
                 modified_count = 0
@@ -79,10 +79,10 @@ class Content:
                         modified_count += 1
                 if len(modifiedStr) > 0:
                     if modified_count > 1:
-                        section_body += "##### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                        section_body += "##### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        section_body += "##### + " + " Improved " + self.getHeader() + "\n"
-                        section_body += modifiedStr
+                        section_body += "##### Improved " + self.getHeader() + "\n"
+                    section_body += modifiedStr
             if len(self.deletedStore) > 0:
                 section_body += "##### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
