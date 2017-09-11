@@ -5,7 +5,7 @@ name: AddEvidence
 fromversion: 2.5.0
 script: |-
   if (!args.entryIDs) {
-      throw 'Missing argument values for command AddEvidenceJS are : entryIDs'; //bla
+      throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
   }
   var entryIDs = args.entryIDs;
   var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
@@ -47,4 +47,3 @@ args:
 - name: description
   description: Description to add to Evidence Board
 scripttarget: 0
-releaseNotes: "-"
