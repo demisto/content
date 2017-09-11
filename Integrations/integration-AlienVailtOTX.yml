@@ -273,7 +273,7 @@ script:
     if (currentCommand.contextKey) {
         ec = {};
         contextKey = currentCommand.getContextKey instanceof Function ? currentCommand.contextKey(args) : currentCommand.contextKey;
-        dbotScore = 0;
+        dbotScore = 0; // change
         outputPath = outputPaths.file;
         dbotScoreType = argName;
         malInfo = {
@@ -508,3 +508,4 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
 hidden: false
+releaseNotes: "changed something small"

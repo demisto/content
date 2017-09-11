@@ -48,17 +48,23 @@ class Content:
         missingReleaseNotes = False
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
             res = "### " + self.getHeader() +"\n"
-            if len(self.addedStore) > 0 :
+            if len(self.addedStore) > 0:
                 newStr = ""
+                i = 0
                 for rawContent in self.addedStore:
+                    print ("new integration - " + str(i))
+                    i = i + 1
                     cnt = self.loadData(rawContent)
                     newStr += self.addedReleaseNotes(cnt)
                 if len(newStr) > 0:
-                    res += "#### New " + self.getHeader() + "\n"
+                    res += "#### + " + str(len(self.addedStore)) + " New " + self.getHeader() + "\n"
                     res += newStr
-            if len(self.modifiedStore) > 0 :
+            if len(self.modifiedStore) > 0:
                 modifiedStr = ""
+                i = 0
                 for rawContent in self.modifiedStore:
+                    print ("modified integration - " + str(i))
+                    i = i + 1
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
@@ -67,10 +73,10 @@ class Content:
                     else:
                         modifiedStr += ans
                 if len(modifiedStr) > 0:
-                    res += "#### Modified " + self.getHeader() + "\n"
+                    res += "##### " + str(len(self.modifiedStore)) + " Improved " + self.getHeader() + "\n"
                     res += modifiedStr
-            if len(self.deletedStore) > 0 :
-                res += "#### Removed " +  self.getHeader() +  "\n"
+            if len(self.deletedStore) > 0:
+                res += "##### Removed " +  self.getHeader() +  "\n"
                 for rawContent in self.deletedStore:
                     res += "- " + rawContent + "\n"
         if missingReleaseNotes == True:
