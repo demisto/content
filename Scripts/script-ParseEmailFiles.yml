@@ -32,6 +32,10 @@ script: |-
   from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
+  
+  reload(sys)
+  sys.setdefaultencoding('utf8')
+
   # This property information was sourced from
   # http://www.fileformat.info/format/outlookmsg/index.htm
   # on 2013-07-22.
@@ -559,7 +563,7 @@ script: |-
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType:
+  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:

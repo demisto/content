@@ -308,6 +308,9 @@ script:
             args,
             filename
         );
+        if (filename){
+            return rawResponse;
+        }
     }
 
     var contextData = contextDictionary[command];

@@ -393,6 +393,20 @@ script:
             incidentsJsonArr.append(json.loads(incident.json))
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(incidentsJsonArr), "EntryContext": {"ThreatConnect.incidents": incidentsJsonArr}})
         sys.exit(0)
+    if demisto.command() == 'tc-get-incident-associate-indicators':
+        tc = getClient()
+        incidents = tc.incidents()
+        filter1 = incidents.add_filter()
+        filter1.add_id(int(demisto.args()['incidentId']))
+        if demisto.get(demisto.args(), 'owner'):
+            filter1.add_owner(demisto.args()['owner'])
+        incidents.retrieve()
+        indicatorsArr = []
+        for incident in incidents:
+            for indicator in incident.indicator_associations:
+                indicatorsArr.append(indicator.indicator)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
+        sys.exit(0)
     if demisto.command() == 'tc-incident-associate-indicator':
         tc = getClient()
         incidents = tc.incidents()
@@ -665,5 +679,10 @@ script:
       description: Malicious Domains
       related: ""
     description: Check domain reputation
+  - name: tc-get-incident-associate-indicators
+    arguments:
+    - name: incidentId
+      required: true
+      default: true
+    - name: owner
   dockerimage: demisto/threatconnect-sdk
-releaseNotes: "Fix proxy condition in TC, add threshold, and fix various issues, support Dbot score and context update, change no results outputs"  

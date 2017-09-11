@@ -44,5 +44,4 @@ args:
   description: Group GUID to be modified
 - name: fileName
   description: Name of output file
-releaseNotes: "Added script to create Dynamic address group file for Panorama"
 scripttarget: 0

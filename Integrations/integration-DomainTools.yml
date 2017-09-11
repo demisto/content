@@ -556,4 +556,3 @@ script:
   - name: domainProfile
     arguments:
     - name: domain
-releaseNotes: "Added BYOI integration"
