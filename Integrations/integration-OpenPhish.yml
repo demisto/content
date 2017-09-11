@@ -161,4 +161,3 @@ script:
     arguments: []
     description: Show OpenPhish database status
 hidden: false
-releaseNotes: "-"
