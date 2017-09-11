@@ -93,18 +93,19 @@ script:
     var createTicket = function() {
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
+        var isPublic = true;
 
-        if (args.private) {
-            args.private = false;
+        if (args.private === 'false') {
+            isPublic = true;
         } else {
-            args.private = true;
+            isPublic = false;
         }
 
         var body = {
                 ticket: {
                     comment: {
                         body: args.body,
-                        'public': args.private
+                        'public': isPublic
                     }
                 }
             };
@@ -185,18 +186,19 @@ script:
     var updateTicket = function() {
         var ec = {};
         var md = '## Zendesk tickets\n';
+        var isPublic = true;
 
-        if (args.private) {
-            args.private = false;
+        if (args.private === 'false') {
+            isPublic = true;
         } else {
-            args.private = true;
+            isPublic = false;
         }
 
         var body = {
                 ticket: {
                     comment: {
                         body: args.body,
-                        'public': args.private
+                        'public': isPublic
                     }
                 }
             };
