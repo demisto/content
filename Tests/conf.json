@@ -73,7 +73,6 @@
             "timeout": 200
         },
         {
-            "name": "",
             "playbookID": "TestCommonPython"
         }
     ]
