@@ -793,4 +793,3 @@ script:
         DestPort, DestCidr & Comment
     description: update rule to L3 firewall rules of an SSID
 hidden: false
-releaseNotes: "-"

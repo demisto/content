@@ -72,4 +72,3 @@ dependson:
   - Nessus|||scan-report-download
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated. Use integration command"
