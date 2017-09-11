@@ -47,7 +47,6 @@ class Content:
         res = ""
         missingReleaseNotes = False
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
-            print ("### write " + self.getHeader())
             res = "### " + self.getHeader() +"\n"
             if len(self.addedStore) > 0:
                 newStr = ""
@@ -56,7 +55,7 @@ class Content:
                     newStr += self.addedReleaseNotes(cnt)
                 if len(newStr) > 0:
                     new_count = len(self.addedStore)
-                    if new_count > 0:
+                    if new_count > 1:
                         res += "#### + " + str(new_count) + " New " + self.getHeader() + "\n"
                     else:
                         res += "#### + " + " New " + self.getHeader() + "\n"
@@ -73,10 +72,10 @@ class Content:
                         modifiedStr += ans
                 if len(modifiedStr) > 0:
                     modified_count = len(self.modifiedStore)
-                    if new_count > 0:
-                        res += "#### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                    if new_count > 1:
+                        res += "##### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        res += "#### + " + " Improved " + self.getHeader() + "\n"
+                        res += "##### + " + " Improved " + self.getHeader() + "\n"
                     res += modifiedStr
             if len(self.deletedStore) > 0:
                 res += "##### Removed " + self.getHeader() + "\n"
