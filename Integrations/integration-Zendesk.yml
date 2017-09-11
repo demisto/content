@@ -268,6 +268,7 @@ script:
         var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
         var md = '## Zendesk ticket details\n';
         var ec = {}
+        var warResults = [];
 
         md += 'Id|Subject|Created at|Description|Priority|Recipients|Status\n';
         md += '---|---|---|---|---|---|---\n';
@@ -295,6 +296,14 @@ script:
             md += '__Created at__: ' + resComments.comments[i].created_at + '\n';
             md += '__Comment body__\n';
             md += resComments.comments[i].body + '.\n\  ';
+
+            for (var j = 0; j < resComments.comments[i].attachments.length; j++) {
+                attach = resComments.comments[i].attachments[j];
+                var attachBin = http(attach.content_url,{Method: 'GET'},params.insecure,params.proxy);
+
+                var createdFileID = saveFile(attachBin.Body);
+                warResults.push({Type: 3, FileID: createdFileID, File: attach.file_name, Contents: attach.file_name});
+            }
         }
 
         var res = {
@@ -302,7 +311,8 @@ script:
             TicketComments: resComments
         }
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        warResults.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec})
+        return (warResults);
     };
 
 
