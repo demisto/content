@@ -50,21 +50,19 @@ class Content:
             res = "### " + self.getHeader() +"\n"
             if len(self.addedStore) > 0:
                 newStr = ""
-                i = 0
                 for rawContent in self.addedStore:
-                    print ("new integration - " + str(i))
-                    i = i + 1
                     cnt = self.loadData(rawContent)
                     newStr += self.addedReleaseNotes(cnt)
                 if len(newStr) > 0:
-                    res += "#### + " + str(len(self.addedStore)) + " New " + self.getHeader() + "\n"
+                    new_count = len(self.addedStore)
+                    if new_count > 0:
+                        res += "#### + " + str(new_count) + " New " + self.getHeader() + "\n"
+                    else:
+                        res += "#### + " + " New " + self.getHeader() + "\n"
                     res += newStr
             if len(self.modifiedStore) > 0:
                 modifiedStr = ""
-                i = 0
                 for rawContent in self.modifiedStore:
-                    print ("modified integration - " + str(i))
-                    i = i + 1
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
@@ -73,10 +71,14 @@ class Content:
                     else:
                         modifiedStr += ans
                 if len(modifiedStr) > 0:
-                    res += "##### " + str(len(self.modifiedStore)) + " Improved " + self.getHeader() + "\n"
+                    modified_count = len(self.modifiedStr)
+                    if new_count > 0:
+                        res += "#### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                    else:
+                        res += "#### + " + " Improved " + self.getHeader() + "\n"
                     res += modifiedStr
             if len(self.deletedStore) > 0:
-                res += "##### Removed " +  self.getHeader() +  "\n"
+                res += "##### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
                     res += "- " + rawContent + "\n"
         if missingReleaseNotes == True:
