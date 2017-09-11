@@ -5,7 +5,6 @@ description: A playbook to use the latest Threat Intelligence to hunt across you
   infrastructure and look for malicious C&C communications.
 system: true
 fromversion: 2.5.0
-releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":

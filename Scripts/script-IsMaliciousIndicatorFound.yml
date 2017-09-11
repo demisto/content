@@ -50,4 +50,3 @@ outputs:
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP in the investigation
 scripttarget: 0
-releaseNotes: Added the ability to check suspicious indicators as well

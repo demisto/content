@@ -75,4 +75,3 @@ dependson:
   - Nessus|||scan-create
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated. Use integration command"

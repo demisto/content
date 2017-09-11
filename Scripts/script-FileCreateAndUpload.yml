@@ -39,4 +39,3 @@ args:
 - name: entryId
   description: Entry ID contents to write into file
 scripttarget: 0
-releaseNotes: Converted to JS. Added the ability to take entry ID for storing its content to file.

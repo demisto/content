@@ -42,4 +42,3 @@ dependson:
   - url
   - pt-malware
 timeout: 0s
-releaseNotes: Manually set value of indicator reputation will now superceed threat intel sites

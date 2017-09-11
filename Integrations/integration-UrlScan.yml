@@ -455,4 +455,3 @@ script:
       description: The actual score
     description: Submit an url to scan
 hidden: false
-releaseNotes: "Some bug fixes in the submit_url command."
