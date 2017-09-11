@@ -163,7 +163,7 @@ script:
     args.sessionId = sendAndParse('ConnectRequest', {username: username, password: password}, 'AFA');
     res = JSON.parse(x2j(sendAndParse(commandToMethod[command], args)));
     sendAndParse('DisconnectRequest', {sessionId: args.sessionId}, 'AFA');
-    return res; // bla
+    return res;
   type: javascript
   commands:
   - name: algosec-get-ticket
@@ -261,4 +261,3 @@ script:
     - name: application
       description: application for the query
     description: Performs a batch traffic simulation query using Firewall Analyzer
-releaseNotes: "one modfied"

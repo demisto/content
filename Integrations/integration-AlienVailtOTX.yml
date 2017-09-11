@@ -310,7 +310,7 @@ script:
             ec[contextKey] = createContext(translated);
         }
         ec.DBotScore = {Indicator: args[argName], Type: dbotScoreType, Vendor: 'AlienVault OTX', Score: dbotScore};
-        entry.EntryContext = ec; // bla2
+        entry.EntryContext = ec;
         if (ec && ec[contextKey] && ec[contextKey].Geo && ec[contextKey].Geo.Latitude && ec[contextKey].Geo.Longitude) {
             entry = [
                 entry,
@@ -508,4 +508,3 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
 hidden: false
-releaseNotes: "second modfied"
