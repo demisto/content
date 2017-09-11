@@ -749,7 +749,7 @@ script:
             # get new cases
             cases = [case for case in esm.get_cases() if case['id']['value'] > last_case]
             cases.sort(cmp=lambda case1,case2: case1['id']['value'].__cmp__(case2['id']['value']))
-            cases = cases[-max_cases_per_fetch:]
+            cases = cases[:max_cases_per_fetch]
 
             if cases:
                 last_case = cases[-1]['id']['value']
