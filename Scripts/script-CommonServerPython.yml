@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: 1
 name: CommonServerPython
-releaseNotes: "added html to formats"
 script: |-
   # Common functions script
   # =======================

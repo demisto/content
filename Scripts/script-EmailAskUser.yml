@@ -126,4 +126,3 @@ args:
 - name: replyAddress
   description: Address of reply for html links
 scripttarget: 0
-releaseNotes: Options in HTML email are clickable links that open a new email with the selected option
