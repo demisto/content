@@ -72,7 +72,7 @@ class Content:
                         modifiedStr += ans
                 if len(modifiedStr) > 0:
                     modified_count = len(self.modifiedStore)
-                    if new_count > 1:
+                    if modified_count > 1:
                         res += "##### + " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
                         res += "##### + " + " Improved " + self.getHeader() + "\n"
