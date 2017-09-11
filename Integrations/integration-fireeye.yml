@@ -62,7 +62,7 @@ script:
             translator: [
                 {
                     contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye submission',
+                    title: 'FireEye Submission',
                     data: [
                         {to: 'Key', from: 'submission_Key'},
                         {to: 'Status', from: 'submissionStatus'},
@@ -83,7 +83,7 @@ script:
             translator: [
                 {
                     contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye submission result',
+                    title: 'FireEye Submission Result',
                     data: [
                         {to: 'Key', from: 'submission_Key'},
                         {to: 'Severity', from: 'alerts.alert.-severity'},
@@ -94,13 +94,28 @@ script:
         'fe-config': {
             url: 'config',
             method: 'GET',
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Sensors(val.ID==obj.ID)',
+                    title: 'FireEye Configuration',
+                    data: [
+                        {to: 'Address', from: 'sysconfig.sensors.sensor.-address'},
+                        {to: 'ID', from: 'sysconfig.sensors.sensor.-id'},
+                        {to: 'SensorName', from: 'sysconfig.sensors.sensor.-sensor_name'},
+                        {to: 'Profiles-ID', from: 'sysconfig.sensors.sensor.profiles.profile.-id'},
+                        {to: 'Profiles-Name', from: 'sysconfig.sensors.sensor.profiles.profile.-name'},
+                        {to: 'Profile-Applications', from: 'sysconfig.sensors.sensor.profiles.profile.applications.application'}
+                    ]
+                }
+            ],
         },
         'fe-submit': {
             extended: true,
             translator: [
                 {
                     contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye submission',
+                    title: 'FireEye Submission',
                     data: [
                         {to: 'Key', from: 'ID'},
                     ]
@@ -438,4 +453,18 @@ script:
   - name: fe-config
     arguments: []
     description: commands.server.feConfig.description
-releaseNotes: "Added outputs"
+    outputs:
+    - contextPath: FireEyeAX.Sensors.Address
+      description: Sensor IP address
+    - contextPath: FireEyeAX.Sensors.ID
+      description: Sensor FireEye id
+    - contextPath: FireEyeAX.Sensors.Name
+      description: Sensor name
+    - contextPath: FireEyeAX.Sensors.Profiles.ID
+      description: ID of FireEye sensor profile
+    - contextPath: FireEyeAX.Sensors.Profiles.Name
+      description: Name of FireEye sensor name
+    - contextPath: FireEyeAX.Sensors.Profiles.Applications.-id
+      description: FireEye application ID
+    - contextPath: FFireEyeAX.Sensors.Profiles.Applications.-name
+      description: FireEye application name

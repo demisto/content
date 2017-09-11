@@ -134,4 +134,3 @@ script:
     description: Rasterize an email body into an image
   dockerimage: demisto/rasterize
 hidden: false
-releaseNotes: "Added proxy settings"

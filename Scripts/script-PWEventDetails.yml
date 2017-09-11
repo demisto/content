@@ -51,4 +51,3 @@ dependson:
   - pw-event-get
 timeout: 0s
 deprecated: true
-releaseNotes: "-"

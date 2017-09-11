@@ -36,4 +36,5 @@ outputs:
   description: The containing object for the lists which will contain the list names
 scripttarget: 0
 dependson: {}
+deprecated: true
 timeout: 0s
