@@ -171,7 +171,7 @@ script:
           sid = JSON.parse(res.Body).sid;
           return sid;
         }
-        catch{
+        catch(err){
             throw 'Login failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
         }
     };
@@ -183,7 +183,7 @@ script:
             try{
               return JSON.parse(res.Body).message;
             }
-            catch {
+            catch(err){
               throw 'Logout failed. Answer from Checkpoint is: ' + JSON.stringify(res.Body);
             }
         }
