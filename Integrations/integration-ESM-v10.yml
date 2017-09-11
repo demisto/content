@@ -37,6 +37,11 @@ configuration:
   defaultvalue: alarms
   type: 0
   required: false
+- display: 'Start fetch after Case ID: (relevant only for fetch incident mode)'
+  name: startingCaseID
+  defaultvalue: "0"
+  type: 0
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -72,6 +77,8 @@ script:
         if should_stop_on_error:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
             sys.exit(0)
+        else:
+            demisto.error(error_str)
 
     def search_result_to_md(res):
         columns = res['columns']
@@ -712,9 +719,12 @@ script:
         # for backward compatibility uses
         if last_run.has_key('value') and not last_run.has_key('alarms'):
             last_run['alarms'] = last_run['value']
+        configuration_last_case = int(demisto.params()['startingCaseID'])
 
         start_alarms = last_run.get('alarms', (datetime.datetime.now() - datetime.timedelta(minutes=1)).isoformat())
-        last_case = last_run.get('cases')
+        last_case = last_run.get('cases', 0)
+        # if last_case < configuration_last_case:
+        last_case = max(last_case, configuration_last_case)
 
         incidents = []
         mode = demisto.params().get('fetchTypes', 'alarms').lower() # alarms is default for backward compatability
@@ -730,32 +740,30 @@ script:
                 end,
                 ''
             )
+            esm.logout()
             incidents.extend(alarms_to_incidents(res))
 
         if mode in ('cases', 'both'):
             esm.login()
-            should_stop_on_error = False
 
-            new_cases = []
-            all_cases = sorted(esm.get_cases(), key=lambda case: case['id']['value'])
-            all_cases = all_cases[-max_cases_per_fetch:]
+            # get new cases
+            cases = [case for case in esm.get_cases() if case['id']['value'] > last_case]
+            cases.sort(cmp=lambda case1,case2: case1['id']['value'].__cmp__(case2['id']['value']))
+            cases = cases[:max_cases_per_fetch]
 
-            for case in all_cases:
-                case_id = case['id']['value']
-                if (int(case_id) > int(last_case)):
-                    new_cases.append(case)
-                    last_case = case_id
+            if cases:
+                last_case = cases[-1]['id']['value']
 
+            esm.logout()
             # update last run info
             last_run['cases'] = last_case
 
-            demisto.info('adding %d more cases, last id is: %d' % (len(new_cases), last_run['cases'], ))
-            if new_cases:
-                incidents.extend(cases_to_incidents(esm, new_cases))
+            demisto.info('adding %d more cases, last id is: %d' % (len(cases), last_run['cases'], ))
+            if cases:
+                incidents.extend(cases_to_incidents(esm, cases))
 
         demisto.setLastRun(last_run)
         demisto.incidents(incidents)
-        esm.logout()
         sys.exit(0)
 
 
@@ -849,7 +857,6 @@ script:
         args = demisto.args()
         event_ids = demisto.get(args, 'ids').split(',')
         res = esm.get_case_event_list(event_ids)
-
         final_result = events_to_entry(res)
 
     elif demisto.command() == 'esm-get-organization-list':
@@ -861,14 +868,13 @@ script:
         final_result = users_to_entry(res)
 
     elif demisto.command() == 'esm-fetch-alarms':
-        args= demisto.args()
+        args = demisto.args()
         res = esm.fetch_alarms(
             demisto.get(args, 'timeRange'),
             demisto.get(args, 'customStart'),
             demisto.get(args, 'customEnd'),
             demisto.get(args, 'assignedUser')
         )
-
         final_result = alarms_to_entry(res)
 
     esm.logout()
@@ -1176,4 +1182,4 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
-releaseNotes: "Added Support for case management and fetch incidents of cases"
+releaseNotes: "Fixed fetch incidents of cases: get all new cases associated with integration user with ID over integration parameter"

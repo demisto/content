@@ -42,3 +42,4 @@ dependson:
   must:
   - Nessus|||scan-details
 timeout: 0s
+deprecated: true
