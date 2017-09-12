@@ -153,6 +153,7 @@ script:
                 ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types\">' +
                 '<soap:Header>' +
                 '<t:RequestServerVersion Version="%version%" />' +
+                '%impersonation%'+
                 '</soap:Header>' +
                 '<soap:Body>' +
                 '<GetFolder xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' +
