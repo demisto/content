@@ -1,0 +1,90 @@
+commonfields:
+  id: http
+  version: -1
+name: http
+script: |+
+  var requestObj = {
+      Method: args.method,
+  };
+
+  if (args.username) {
+      requestObj.Username =args.username;
+  }
+
+  if (args.username) {
+      requestObj.Password =args.password;
+  }
+
+  if (args.body) {
+      var body = (typeof args.body) === 'string' ? args.body : JSON.stringify(args.body);
+      requestObj.Body = body;
+  }
+
+  if (args.headers) {
+      var headersJs = {};
+      var headersArr = args.headers.split(',');
+      for ( i = 0 ; i < headersArr.length ; i++) {
+          var keyValue = headersArr[i].split(':');
+          if (keyValue.length != 2 ){
+              throw "Invalid headers. Please make sure you have entered \'headers\' in correct format.";
+          } else {
+              headersJs[keyValue[0]] = [keyValue[1]];
+          }
+      }
+      requestObj.Headers = headersJs;
+  }
+  var res = http(args.url, requestObj, args.insecure, args.proxy);
+
+  return {
+      Type: entryTypes.note,
+      Contents: res,
+      ContentsFormat: formats.json,
+      EntryContext: {
+          'HttpRequest.Response': res
+      }
+  };
+
+
+
+type: javascript
+tags: []
+enabled: true
+args:
+- name: method
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  description: The method for the http request
+- name: body
+  description: The body for the http request
+- name: url
+  required: true
+  description: The url for the http request
+- name: headers
+  description: The headers for the http request, in the format of 'key:value, key:value,
+    ...'
+- name: insecure
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
+- name: proxy
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
+- name: username
+  description: Base authentication
+- name: password
+  secret: true
+  description: Base authentication
+outputs:
+- contextPath: HttpRequest.Response
+  description: if The response for the http request
+scripttarget: 0
