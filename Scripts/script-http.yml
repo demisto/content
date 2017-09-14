@@ -34,7 +34,10 @@ script: |+
       }
       requestObj.Headers = headersJs;
   }
-  var res = http(args.url, requestObj, args.insecure, args.proxy);
+
+  var insecure = (args.insecure === 'true');
+  var proxy = (args.proxy == 'true');
+  var res = http(args.url, requestObj, insecure, proxy);
 
   return {
       Type: entryTypes.note,
