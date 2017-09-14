@@ -1,0 +1,384 @@
+commonfields:
+  id: VxStream
+  version: -1
+name: VxStream
+display: VxStream
+category: Authentication
+image: data:image/png;base64,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
+description: Fully automated malware analysis with unique Hybrid Analysis
+configuration:
+- display: Server URL (e.g. https://216.3.128.82)
+  name: serverUrl
+  defaultvalue: https://www.hybrid-analysis.com
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Secret Key
+  name: secretKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    var apiKey = params.apiKey;
+    var secretKey = params.secretKey;
+    var serverUrl = params.serverUrl;
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+    var auth = 'Basic ' + Base64.encode(apiKey + ':' + secretKey);
+
+    // handle '/' at the end of serverUrl
+    if (serverUrl[serverUrl.length - 1] === '/') {
+        serverUrl = serverUrl.substring(0, serverUrl.length - 1);
+    }
+
+    function entryError(errorCode, text) {
+        var error = 'VXStream returned an error (' + errorCode + ') - ' + text;
+        return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
+    }
+
+    // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
+    function mapObject(mapper) {
+        return function(obj) {
+            var res = {};
+            Object.keys(obj).forEach(function(key) {
+                // map key or capitalize if exists
+                var newKey = mapper[key] || key;
+                res[newKey] = obj[key];
+            });
+            return res;
+        }
+    }
+
+    function createTableEntry(name, rawResponse, table, context, headers) {
+        return {
+            Type: entryTypes.note,
+             // raw-response
+            ContentsFormat: formats.json,
+            Contents: rawResponse,
+            // war-room results
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, table, headers),
+            // context
+            EntryContext: context
+        };
+    }
+
+    var sendRequest = function(uri) {
+        var requestUrl = serverUrl + uri
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET', // Can be GET, POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: {
+                    'Authorization': [auth],
+                    'User-Agent': ['VxStream']
+                }
+            },
+            insecure,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    };
+
+    function scan(hash) {
+        var res = sendRequest('/api/scan/' + hash);
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var response = res.response;
+
+        // create table from response
+        var tableMapper = {
+           threatlevel: 'threat level',
+           total_network_connections: 'total network connections',
+           targeturl: 'target url',
+           classification_tags: 'classification tags',
+           threatscore: 'threat score',
+           total_processes: 'total processes',
+           submitname: 'submit name',
+           environmentDescription: 'environment description',
+           isinteresting: 'interesting',
+           environmentId: 'environment id',
+           isurlanalysis: 'url analysis',
+           analysis_start_time: 'analysis start time',
+           total_signatures: 'total signatures'
+        };
+
+        var table = response.map(mapObject(tableMapper));
+
+        // create context from response
+        var context = {};
+
+        var contextMapper = {
+            sha1: 'SHA1',
+            sha256: 'SHA256',
+            md5: 'MD5',
+        };
+        context[outputPaths.file] = response.map(mapObject(contextMapper));
+        return createTableEntry('Scan Results:', response, table, context);
+    }
+
+    function getEnvironments() {
+        var res = sendRequest('/system/state');
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var response = res.response;
+        var environments = response.backend.global_environment;
+        // create table from environments
+        var tableMapper = {
+           VMs_busy: 'busy VMS',
+           VMs_total: 'total VMS',
+           analysisMode: 'analysis mode',
+           groupicon: 'group icon'
+        };
+
+        var table = environments.map(mapObject(tableMapper));
+
+        // create context from environments
+        var context = {
+            'VX.Environment(val.ID && val.ID == obj.ID)': environments
+        };
+
+        return createTableEntry('All Environments:', response, table, context, ['ID', 'description', 'architecture', 'total VMS', 'busy VMS', 'analysis mode', 'group icon']);
+    }
+
+    function submitFile (entryId, environmentId) {
+        var requestUrl = serverUrl + '/api/submit';
+        // submit file
+        var res = httpMultipart(
+                    requestUrl, // URL
+                    entryId, // Optional - FilePath / EntryID
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            'Authorization': [auth],
+                            'User-Agent': ['VxStream']
+                        }
+                    },
+                    { // Multipart Contents
+                        environmentId: environmentId
+                    },
+                    insecure,
+                    proxy
+                );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Multipart Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var body = JSON.parse(res.Body);
+
+        if (body.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var resMessage = "File submitted successfully";
+        var response = body.response;
+
+        if (response.sha256) {
+            resMessage = resMessage + '\nsha256 - ' + response.sha256;
+        }
+        if (response.sha1) {
+            resMessage = resMessage + '\nsha1 - ' + response.sha1;
+        }
+        if (response.md5) {
+            resMessage = resMessage + '\nmd5 - ' + response.md5;
+        }
+
+        return resMessage;
+    }
+
+    function searchQuery(query) {
+        var res = sendRequest('/api/search?query=' + args.query);
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var result = res.response.result;
+
+        // create table from search result
+        var tableMapper = {
+           environmentDescription: 'environment description',
+           start_time: 'start time',
+           submitname: 'submit name',
+           threatscore: 'threat score',
+           type_short: 'type short',
+        };
+
+        var table = result.map(mapObject(tableMapper));
+
+        // create context from search result
+        var contextMapper = {
+            sha1: 'SHA1',
+            sha256: 'SHA256',
+            md5: 'MD5',
+        };
+
+        var context = {
+            'VX.Search(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
+        };
+
+        return createTableEntry('All Environments:', result, table, context);
+    }
+
+    function vxResult(hash, environmentId) {
+        var res = sendRequest('/api/result/' + hash + '?type=json&environmentId=' + args.environmentId);
+        if (res.response_code !== undefined && res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+        return res;
+    }
+
+    switch (command) {
+        case 'test-module':
+            getEnvironments();
+            return 'ok';
+        case 'vx-scan':
+            return scan(args.file);
+        case 'vx-get-environments':
+            return getEnvironments();
+        case 'vx-submit-sample':
+            return submitFile(args.entryId, args.environmentID);
+        case 'vx-search':
+            return searchQuery(args.query);
+        case 'vx-result':
+            return vxResult(args.file, args.environmentId);
+    }
+
+  type: javascript
+  commands:
+  - name: vx-scan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+    - contextPath: File.MD5
+      description: MD5 of the file
+    - contextPath: File.environmentId
+      description: 'Environment id of the file '
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+    - contextPath: File.submitname
+      description: Submission name of the file
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: vx-get-environments
+    arguments: []
+    outputs:
+    - contextPath: VX.Environment.ID
+      description: Environment id
+    - contextPath: VX.Environment.description
+      description: Environment description
+    - contextPath: VX.Environment.architecture
+      description: Environment architecture
+    - contextPath: VX.Environment.VMs_total
+      description: Total virtual machines in environment
+    - contextPath: VX.Environment.VMs_busy
+      description: Busy virtual machines in environment
+    - contextPath: VX.Environment.analysisMode
+      description: 'Analysis mode of environment '
+    - contextPath: VX.Environment.groupicon
+      description: Icon of environment
+    description: 'Get a list of all available environments '
+  - name: vx-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: 'environment ID to submit file to(get all via vx-get-environments) '
+    description: Submit a file from investigation to analysis server
+  - name: vx-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: VXStream query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
+    outputs:
+    - contextPath: VX.Search.SHA256
+      description: SHA256 of search result
+    - contextPath: VX.Search.SHA1
+      description: SHA1of search result
+    - contextPath: VX.Search.MD5
+      description: MD5 of search result
+    - contextPath: VX.Search.environmentId
+      description: Environment Id of search result
+    - contextPath: VX.Search.start_time
+      description: Start time of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result by server
+    - contextPath: VX.Search.verdict
+      description: Verdict of search result
+    - contextPath: VX.Search.environmentDescription
+      description: Environment description of search result
+    - contextPath: VX.Search.submitname
+      description: Submission name of search result
+    - contextPath: VX.Search.vxfamily
+      description: Family of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result
+    - contextPath: VX.Search.type_short
+      description: type of search result (url, host, etc.)
+    - contextPath: VX.Search.size
+      description: Size of search result
+    description: Search the database using the VXStream search syntax
+  - name: vx-result
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    - name: environmentId
+      required: true
+      description: 'environment ID to submit file to(get all via vx-get-environments) '
+    description: Retrieve result data upon a file. NOTE - This command returns a file

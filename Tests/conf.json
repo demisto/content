@@ -72,6 +72,10 @@
         },
         {
             "playbookID": "TestIsValueInArray"
+        },
+        {
+            "name": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ],
     "skipped": [
