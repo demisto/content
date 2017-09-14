@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: http
 description: Sends http request. Returns the response as json.
+releaseNotes: add description to headers argument
 script: |+
   var requestObj = {
       Method: args.method,
@@ -29,7 +30,7 @@ script: |+
           if (keyValue.length != 2 ){
               throw 'Invalid headers. Please make sure you have entered "headers" in correct format.';
           } else {
-              headersJs[keyValue[0].trim()] = [keyValue[1].trim()];
+              headersJs[keyValue[0]] = [keyValue[1]];
           }
       }
       requestObj.Headers = headersJs;
@@ -70,8 +71,7 @@ args:
   required: true
   description: The url for the http request
 - name: headers
-  description: The headers for the http request, in the format of 'key: value, key: value,
-    ...'
+  description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
   predefined:
