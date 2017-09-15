@@ -111,6 +111,8 @@ script:
     - contextPath: MXToolbox.Passed
       description: Successful results
     - contextPath: MXToolbox.Failed
+      description: Query failures
+    - contextPath: MXToolbox.Errors
       description: Query errors
     - contextPath: MXToolbox.Warnings
       description: Warning for query
