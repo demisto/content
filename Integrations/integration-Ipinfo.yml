@@ -76,4 +76,3 @@ script:
       - "hostname"
       - "phone"
     description: Retrieve value for a specific field from the IP address information
-releaseNotes: "-"

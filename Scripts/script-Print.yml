@@ -3,11 +3,16 @@ commonfields:
   version: -1
 name: Print
 script: |
-  return args.value;
+  return {
+      HumanReadableFormat: formats.markdown,
+      Type: entryTypes.note,
+      Contents: args.value,
+      HumanReadable: args.value
+  };
 type: javascript
 tags:
 - Utility
-comment: Prints text to war room
+comment: Prints text to war room (Markdown supprted)
 enabled: true
 args:
 - name: value
@@ -19,3 +24,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Added Markdown support

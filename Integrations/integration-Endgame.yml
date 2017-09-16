@@ -2,7 +2,6 @@ commonfields:
   id: Endgame
   version: -1
 name: Endgame
-releaseNotes: "Added endgame integration"
 display: Endgame
 category: Endpoint
 description: Endpoint protection built to stop advanced attacks before damage and loss occurs

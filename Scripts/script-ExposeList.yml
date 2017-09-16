@@ -37,5 +37,4 @@ outputs:
 scripttarget: 0
 dependson: {}
 deprecated: true
-releaseNotes: "Deprecated"
 timeout: 0s

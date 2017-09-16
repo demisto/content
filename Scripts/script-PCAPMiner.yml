@@ -23,23 +23,15 @@ script: |
   from minepcaps import pcap_miner
   from shutil import copyfile
 
-  def saveFileResult(filename, data):
-      temp = demisto.uniqueFile()
-      with open('/var/lib/demisto/' + demisto.investigation()['id'] + '_' + temp,'wb') as f:
-          f.write(data)
-      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
-
-
   os.popen('rm -f ./output/*')
   filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId'] })
   readyPath = filePath[0]["Contents"]["path"]
   ret = []
   filename = filePath[0]["Contents"]["name"]
-  rPath = '/var/lib/demisto/' + readyPath
-  miner = pcap_miner(rPath)
+  miner = pcap_miner(readyPath)
   jsonResults = miner.summary2json()
   pyResults = json.loads(jsonResults)
-  dispatcher = Dispatcher(rPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
+  dispatcher = Dispatcher(demisto.args()['demistoLibLocation'] + readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
   results = dispatcher.run()
   pyResults['files_found'] = results.filenamelist
   listdir = os.listdir('./output')
@@ -72,7 +64,7 @@ script: |
       filename = file.replace("./output/","")
       fileNameCount = "file_" + str(fileCounter)
       fileCounter += 1
-      demisto.results(saveFileResult(filename,"".join(tmpLines)))
+      demisto.results(fileResult(filename,"".join(tmpLines)))
       f.close()
 
   demisto.results({'Type': entryTypes['note'], 'Contents': pyResults, 'EntryContext': {'pcap_results': pyResults}, 'ContentsFormat': formats['json'], 'HumanReadable': displayData})
@@ -92,8 +84,10 @@ args:
   required: true
   default: true
   description: Enter the EntryID of the file
+- name: demistoLibLocation
+  description: Demisto lib location, default is "/var/lib/demisto/"
+  defaultValue: /var/lib/demisto/
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-releaseNotes: "Initial add of PCAPMiner a simple pcap parsing tool which uses a docker image to handle threading and parsing pcap files"
-system: true
+releaseNotes: "The ability to provide Demisto lib location"

@@ -3,10 +3,6 @@
     "testInterval": 30,
     "integrations": [
         {
-            "name": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
             "name": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
@@ -58,19 +54,38 @@
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
-            "name": "carbonblack",
-            "playbookID": "CB-Response-Test",
-            "byoi": false
+            "playbookID": "ExtractURL Test"
         },
         {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 200
+            "name": "carbonblack",
+            "playbookID": "CB-Response-Test",
+            "byoi": false,
+            "nightly": true
         },
         {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 200
+            "timeout": 500
+        },
+        {
+            "playbookID": "TestFileCreateAndUpload"            
+        },
+        {
+            "playbookID": "TestIsValueInArray"
+        },
+        {
+            "playbookID": "TestHttpPlaybook"
+        }
+    ],
+    "skipped": [
+        {
+            "name": "Cisco Umbrella Investigate",
+            "playbookID": "Cisco-Umbrella-Test"
+        },
+        {
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
         }
     ]
 }

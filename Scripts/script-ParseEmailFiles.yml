@@ -32,6 +32,10 @@ script: |-
   from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
+  
+  reload(sys)
+  sys.setdefaultencoding('utf8')
+
   # This property information was sourced from
   # http://www.fileformat.info/format/outlookmsg/index.htm
   # on 2013-07-22.
@@ -623,4 +627,3 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: Adding support for mixed CR/LF in fileType
