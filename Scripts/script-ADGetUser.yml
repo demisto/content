@@ -16,6 +16,7 @@ script: |-
           account['Email'] = demisto.get(l,'mail')
           account['Username'] = demisto.get(l,'samAccountName')
           account['DisplayName'] = demisto.get(l,'displayName')
+          account['Manager'] = demisto.get(l,'manager')
           account['Groups'] = demisto.get(l,'memberOf').split('<br>')
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
               account[attr.title()] = demisto.get(l,attr)
@@ -104,7 +105,7 @@ script: |-
           pass # Could not get nested groups - return as is
       return resAD
 
-  attrs = 'name,displayName,memberOf,mail,samAccountName'
+  attrs = 'name,displayName,memberOf,mail,samAccountName,manager'
   queryValue, queryType = "",""
   headers = argToList(demisto.get(demisto.args(), 'headers'))
 
@@ -122,6 +123,9 @@ script: |-
   elif demisto.get(demisto.args(), 'username'):
       queryValue = demisto.args()['username']
       queryType = "samAccountName"
+  elif demisto.get(demisto.args(), 'email'):
+      queryValue = demisto.args()['email']
+      queryType = "mail"
   elif demisto.get(demisto.args(), 'customFieldType'):
       if not demisto.get(demisto.args(), 'customFieldData'):
           demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search, both "customFieldType" and "customFieldData" should be provided' })
@@ -186,6 +190,8 @@ args:
   description: samAccountName of the desire user
 - name: limit
   description: Maximum number of objects to return (default is 20)
+- name: email
+  description: mail attribute of desire user
 scripttarget: 0
 dependson:
   must:
@@ -206,4 +212,5 @@ outputs:
   description: The groups the Account is part of
 - contextPath: Account.DisplayName
   description: The Account display name
-releaseNotes: "Added limit param and set default size limit"
+- contextPath: Account.Manager
+  description: The Account's manager

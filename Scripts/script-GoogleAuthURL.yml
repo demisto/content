@@ -1,0 +1,46 @@
+commonfields:
+  id: GoogleAuthURL
+  version: -1
+name: GoogleAuthURL
+script: |
+  var scopes = argToList(args.scopes);
+  var res = http('https://demistobot.demisto.com/google-oauth' + encodeToURLQuery({scopes: scopes.join(',')}),
+      {
+          Headers: {'Accept': ['application/json']},
+          Method: 'GET'
+      }, false, args.proxy == 'true');
+  if (res.StatusCode < 200 || res.StatusCode > 299) {
+      throw 'Failed to perform request. Request status code: ' + res.StatusCode + ' (' + res.Body + ')';
+  }
+  if (res.Body === '') {
+      throw 'No content received.';
+  }
+  var obj;
+  try {
+      obj = JSON.parse(res.Body);
+  } catch (ex) {
+      throw 'Error parsing reply - ' + res.Body + ' - ' + ex;
+  }
+  var md = 'To authenticate, please follow this [link](' + obj.url + ')';
+  return {Type: entryTypes.note, Contents: res.Body, ContentsFormat: formats.json, HumanReadable: md,
+      EntryContext: {'GoogleAuth.URL': obj.url}};
+type: javascript
+tags:
+- google apps
+comment: Generate a Google auth URL to authenticate for a given list of scopes
+enabled: true
+args:
+- name: scopes
+  required: true
+  description: The comma-separated list of scopes we will use with the token
+- name: proxy
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Should we use system proxy settings
+  defaultValue: "true"
+outputs:
+- contextPath: GoogleAuth.URL
+  description: The newly generated URL for authentication
+scripttarget: 0

@@ -1264,6 +1264,21 @@ script: |-
       email: 'Account.Email(val.Address && val.Address == obj.Address)'
   };
 
+
+  // Converts score (in number format) to human readable reputation format
+  function scoreToReputation(score) {
+      if (score === 3){
+          return 'Bad';
+      }
+      if (score === 2){
+          return 'Suspicious';
+      }
+      if (score === 1){
+          return 'Good';
+      }
+      return 'None';
+  };
+
   //Check if ip is in subnet
   function isIPInSubnet(ip, subnet) {
       function IPnumber(IPaddress) {
@@ -1701,4 +1716,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added createdEntry function and dqQueryBuilder"

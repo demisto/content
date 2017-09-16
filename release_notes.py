@@ -46,35 +46,54 @@ class Content:
     def generateRN(self):
         res = ""
         missingReleaseNotes = False
+
         if len(self.modifiedStore) + len(self.deletedStore) + len(self.addedStore) > 0:
-            res = "### " + self.getHeader() +"\n"
-            if len(self.addedStore) > 0 :
+            section_body = ""
+            if len(self.addedStore) > 0:
                 newStr = ""
+                new_count = 0
                 for rawContent in self.addedStore:
                     cnt = self.loadData(rawContent)
+                    new_content_rn = self.addedReleaseNotes(cnt)
+                    if new_content_rn:
+                        new_count += 1
                     newStr += self.addedReleaseNotes(cnt)
+
                 if len(newStr) > 0:
-                    res += "#### New " + self.getHeader() + "\n"
-                    res += newStr
-            if len(self.modifiedStore) > 0 :
+                    if new_count > 1:
+                        section_body += "#### " + str(new_count) + " New " + self.getHeader() + "\n"
+                    else:
+                        section_body += "#### New " + self.getHeader() + "\n"
+                    section_body += newStr
+            if len(self.modifiedStore) > 0:
                 modifiedStr = ""
+                modified_count = 0
                 for rawContent in self.modifiedStore:
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
                         print_error(cnt["name"] + " is missing releaseNotes entry")
                         missingReleaseNotes = True
-                    else:
+                    elif ans is not "":
                         modifiedStr += ans
+                        modified_count += 1
                 if len(modifiedStr) > 0:
-                    res += "#### Modified " + self.getHeader() + "\n"
-                    res += modifiedStr
-            if len(self.deletedStore) > 0 :
-                res += "#### Removed " +  self.getHeader() +  "\n"
+                    if modified_count > 1:
+                        section_body += "##### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                    else:
+                        section_body += "##### Improved " + self.getHeader() + "\n"
+                    section_body += modifiedStr
+            if len(self.deletedStore) > 0:
+                section_body += "##### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
-                    res += "- " + rawContent + "\n"
-        if missingReleaseNotes == True:
-            return None
+                    section_body += "- " + rawContent + "\n"
+
+            if missingReleaseNotes:
+                return None
+            if len(section_body) > 0:
+                res = "### " + self.getHeader() + "\n"
+                res += section_body
+
         return res
 
 
@@ -277,10 +296,11 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
+    release_notes = "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),
-        "releaseNotes": "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res,
+        "releaseNotes": release_notes,
         "modified": date,
         "ignoreGit": False,
         "releaseDate": date,
@@ -290,6 +310,9 @@ def createContentDescriptor(version, assetId, res):
     }
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(contentDescriptor, outfile)
+
+    with open('release-notes.txt', 'w') as outfile:
+        outfile.write(release_notes)
 
 
 def main(argv):
