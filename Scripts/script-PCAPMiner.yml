@@ -31,7 +31,7 @@ script: |
   miner = pcap_miner(readyPath)
   jsonResults = miner.summary2json()
   pyResults = json.loads(jsonResults)
-  dispatcher = Dispatcher(readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
+  dispatcher = Dispatcher(demisto.args()['demistoLibLocation'] + readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
   results = dispatcher.run()
   pyResults['files_found'] = results.filenamelist
   listdir = os.listdir('./output')
@@ -84,7 +84,10 @@ args:
   required: true
   default: true
   description: Enter the EntryID of the file
+- name: demistoLibLocation
+  description: Demisto lib location, default is "/var/lib/demisto/"
+  defaultValue: /var/lib/demisto/
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-system: true
+releaseNotes: "The ability to provide Demisto lib location"
