@@ -42,7 +42,8 @@ script:
         );
 
         if (result.StatusCode < 200 || result.StatusCode > 299) {
-            throw 'Failed to perform command "' + cmd + '", request status code: ' + result.StatusCode;
+            throw 'Failed to perform command "' + cmd + '", request status code: ' + result.StatusCode +
+                ' body is: ' + result.Body;
         }
         if (result.Body === '') {
             throw 'No content received for command "' + cmd + '", request status code: ' + result.StatusCode;
