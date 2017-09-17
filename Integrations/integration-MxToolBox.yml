@@ -1,0 +1,126 @@
+commonfields:
+  id: MxToolBox
+  version: -1
+name: MxToolBox
+display: MxToolBox
+category: Threat Intelligence
+image: data:image/png;base64,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
+description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated
+  tool
+detaileddescription: Query MxToolBox for threat intelligence information as seen [here](https://mxtoolbox.com/User/Api/Lookup.aspx)
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Allow self-signed SSL certificates
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    var doReq = function(cmd, data, p) {
+        var url = 'https://api.mxtoolbox.com/api/v1/lookup/' + cmd + '/' + data;
+        if (p) {
+            url += '?' + p;
+        }
+        var result = http(
+            url,
+            {
+                Headers: {'Accept': ['application/json'], 'Authorization': [params.apiKey]},
+                Method: 'GET'
+            },
+            params.insecure,
+            params.useproxy
+        );
+
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            throw 'Failed to perform command "' + cmd + '", request status code: ' + result.StatusCode +
+                ' body is: ' + result.Body;
+        }
+        if (result.Body === '') {
+            throw 'No content received for command "' + cmd + '", request status code: ' + result.StatusCode;
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+    };
+
+    switch (command) {
+        case 'test-module':
+            doReq('mx', 'example.com');
+            return 'ok';
+        case 'mxtoolbox':
+            var res = doReq(args.command, args.data, args.additionalParams);
+            var ec = {};
+            var md = 'MxToolbox command - **' + args.command + '**\n';
+            var arrays = ['Passed', 'Failed', 'Errors', 'Warnings', 'Information', 'MultiInformation', 'Transcript'];
+            for (var i=0; i<arrays.length; i++) {
+                if (res.obj[arrays[i]] && res.obj[arrays[i]].length > 0) {
+                    md += tableToMarkdown(arrays[i], res.obj[arrays[i]]) + '\n';
+                    ec['MXToolbox.' + arrays[i]] = res.obj[arrays[i]];
+                }
+                delete res.obj[arrays[i]];
+            }
+            delete res.obj.RelatedLookups;
+            md += tableToMarkdown('Result Data', res.obj);
+            ec['MXToolbox.Data'] = res.obj;
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        default:
+            throw 'Unknown command ' + command + ' requested';
+    }
+  type: javascript
+  commands:
+  - name: mxtoolbox
+    arguments:
+    - name: command
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - mx
+      - a
+      - dns
+      - spf
+      - txt
+      - soa
+      - ptr
+      - blacklist
+      - smtp
+      - tcp
+      - http
+      - https
+      - ping
+      - trace
+      description: The command you want to execute
+    - name: data
+      required: true
+      description: The data to query
+    - name: additionalParams
+      description: Any additional query parameters you want to add
+    outputs:
+    - contextPath: MXToolbox.Passed
+      description: Successful results
+    - contextPath: MXToolbox.Failed
+      description: Query failures
+    - contextPath: MXToolbox.Errors
+      description: Query errors
+    - contextPath: MXToolbox.Warnings
+      description: Warning for query
+    - contextPath: MXToolbox.Information
+      description: Additional information regarding the query
+    - contextPath: MXToolbox.MultiInformation
+      description: Additional multi-information
+    - contextPath: MXToolbox.Transcript
+      description: Query transcript
+    description: Run any supported command on the mxtoolbox API
