@@ -63,11 +63,6 @@
             "nightly": true
         },
         {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
-        },
-        {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
@@ -80,6 +75,14 @@
         },
         {
             "playbookID": "TestIsValueInArray"
+        },
+        {
+            "playbookID": "TestHttpPlaybook"
+        },
+        {
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
         }
     ],
     "skipped": [

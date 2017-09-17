@@ -1,0 +1,90 @@
+commonfields:
+  id: nmap
+  version: -1
+name: nmap
+display: nmap
+category: Network Security
+image: data:image/png;base64,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
+description: Run nmap scans with the given parameters
+configuration: []
+script:
+  script: |
+    from libnmap.process import NmapProcess
+    from libnmap.parser import NmapParser
+    from libnmap.reportjson import ReportEncoder
+
+    if demisto.command() == 'test-module':
+        demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'nmap-scan':
+        nm = NmapProcess(argToList(demisto.args()['targets']), options=demisto.args()['options'])
+        rc = nm.run()
+        if rc != 0:
+            demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to execute - ' + nm.stderr})
+            sys.exit(0)
+        r = NmapParser.parse(nm.stdout)
+        md = '## ' + r.summary + '\n'
+        hosts = []
+        for host in r.hosts:
+            h = {}
+            if len(host.hostnames):
+                tmp_host = host.hostnames.pop()
+                h['Hostname'] = tmp_host
+            else:
+                tmp_host = host.address
+
+            h['Address'] = host.address
+            h['Status'] = host.status
+            svc = []
+            md += "### Nmap scan report for {0}".format(tmp_host) + (" ({0})\n".format(host.address) if tmp_host != host.address else "\n")
+            md += "#### Host is {0}.\n".format(host.status)
+            for serv in host.services:
+                svc.append({'Port': serv.port, 'Protocol': serv.protocol, 'State': serv.state, 'Service': serv.service, 'Banner': serv.banner})
+            md += tableToMarkdown('Services', svc, ['Port', 'Protocol', 'State', 'Service', 'Banner'])
+            h['Services'] = svc
+            hosts.append(h)
+        scan = {'Summary': r.summary, 'Version': r.version, 'Started': r.started, 'Ended': r.endtime, 'CommandLine': r.commandline, 'ScanType': r.scan_type, 'Hosts': hosts}
+        demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json.dumps(r, cls=ReportEncoder),
+            'HumanReadable': md, 'EntryContext': {'NMAP.Scan': scan}})
+  type: python
+  commands:
+  - name: nmap-scan
+    arguments:
+    - name: targets
+      required: true
+      description: The targets to scan. Accepts comma-separated list.
+    - name: options
+      required: true
+      description: The nmap options to use as documented by nmap
+    outputs:
+    - contextPath: NMAP.Scan.Summary
+      description: Scan summary
+    - contextPath: NMAP.Scan.Version
+      description: nmap version
+    - contextPath: NMAP.Scan.Started
+      description: Start time epoch
+    - contextPath: NMAP.Scan.Ended
+      description: End time epoch
+    - contextPath: NMAP.Scan.CommandLine
+      description: The command line being used
+    - contextPath: NMAP.Scan.ScanType
+      description: The type of discovery scan
+    - contextPath: NMAP.Scan.Hosts.Hostname
+      description: DNS hostname of scanned host
+    - contextPath: NMAP.Scan.Hosts.Address
+      description: Scanned host address
+    - contextPath: NMAP.Scan.Hosts.Status
+      description: Is the host up or down
+    - contextPath: NMAP.Scan.Hosts.Services.Port
+      description: The port of the service
+    - contextPath: NMAP.Scan.Hosts.Services.Protocol
+      description: The protocol of the service
+    - contextPath: NMAP.Scan.Hosts.Services.State
+      description: The state of the service
+    - contextPath: NMAP.Scan.Hosts.Services.Banner
+      description: Any captured banner from the service
+    - contextPath: NMAP.Scan.Hosts.Services.Service
+      description: The service name
+    description: Scan targets with the given parameters
+    execution: true
+  dockerimage: demisto/nmap
