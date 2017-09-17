@@ -74,6 +74,9 @@
             "playbookID": "TestIsValueInArray"
         },
         {
+            "playbookID": "TestHttpPlaybook"
+        },
+        {
             "name": "VxStream",
             "playbookID": "VxStream Test"
         }
