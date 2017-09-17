@@ -75,17 +75,17 @@
         },
         {
             "playbookID": "TestHttpPlaybook"
+        },
+        {
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
         }
     ],
     "skipped": [
         {
             "name": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
         }
     ]
 }
