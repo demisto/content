@@ -104,7 +104,7 @@ script:
         var body = {
                 ticket: {
                     comment: {
-                        body: args.body,
+                        body: args.comment,
                         'public': isPublic
                     }
                 }
@@ -130,13 +130,43 @@ script:
             }
         }
 
+        if (args.custom_fields) {
+            var arrCust = args.custom_fields.split(',');
+            var dicCustStr = {};
+
+            for (var i = 0; i < arrCust.length; i++) {
+                var tmpKey = arrCust[i].split('=');
+                dicCustStr[tmpKey[0]] = tmpKey[1];
+            }
+
+            resCusFields = sendRequest('GET', 'ticket_fields.json');
+            var dicFields = {};
+
+            for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
+                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
+                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+            }
+
+            var arrRes = [];
+
+            for (strKey in dicCustStr) {
+                arrRes.push({
+                    id: dicFields[strKey],
+                    value: dicCustStr[strKey]
+                })
+            }
+
+            body.ticket.custom_fields = arrRes;
+        }
+
         var ticket = {};
 
         for (var key in args) {
-            if (key !== 'body' &&
+            if (key !== 'comment' &&
                 key !== 'private' &&
                 key !== 'requester_email' &&
-                key !== 'assignee_email') {
+                key !== 'assignee_email' &&
+                key !== 'custom_fields') {
                 body.ticket[key] = args[key];
                 ticket[key] = args[key];
             }
@@ -197,7 +227,7 @@ script:
         var body = {
                 ticket: {
                     comment: {
-                        body: args.body,
+                        body: args.comment,
                         'public': isPublic
                     }
                 }
@@ -224,7 +254,7 @@ script:
         }
 
         for (var key in args) {
-            if (key !== 'body' &&
+            if (key !== 'comment' &&
                 key !== 'private' &&
                 key !== 'id' &&
                 key !== 'requester_email' &&
@@ -271,6 +301,7 @@ script:
         var md = '## Zendesk ticket details\n';
         var ec = {}
         var warResults = [];
+        var arrAttch = [];
 
         md += 'Id|Subject|Created at|Description|Priority|Recipients|Status\n';
         md += '---|---|---|---|---|---|---\n';
@@ -294,8 +325,21 @@ script:
         md += '### Ticket comments\n';
 
         for (var i = 0; i < resComments.comments.length; i++) {
+            var userName = '';
+
+            resUsers = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
+
+            for (var j = 0; j < resUsers.users.length; j++) {
+                if (resUsers.users[j].id === resComments.comments[i].author_id) {
+                    userName = resUsers.users[j].name;
+                    break;
+                }
+            }
+
             md += '##### Comment number: ' + (i+1) + '\n';
             md += '__Created at__: ' + resComments.comments[i].created_at + '\n';
+            md += '__Does the comment private__: ' + !resComments.comments[i].public + '\n';
+            md += '__User__: ' + userName + '\n';
             md += '__Comment body__\n';
             md += resComments.comments[i].body + '.\n\  ';
 
@@ -304,7 +348,7 @@ script:
                 var attachBin = http(attach.content_url,{Method: 'GET'},params.insecure,params.proxy);
 
                 var createdFileID = saveFile(attachBin.Body);
-                warResults.push({Type: 3, FileID: createdFileID, File: attach.file_name, Contents: attach.file_name});
+                arrAttch.push({Type: 3, FileID: createdFileID, File: attach.file_name, Contents: attach.file_name});
             }
         }
 
@@ -314,11 +358,11 @@ script:
         }
 
         warResults.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec})
-        return (warResults);
+        return (warResults.concat(arrAttch));
     };
 
 
-    var listAgents = function() {
+    var listUsers = function() {
         res = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
         var md = '## Zendesk user details\n';
         var ec = {ZendeskUsers: []};
@@ -362,11 +406,17 @@ script:
             sertime = now.time;
         }
 
-        var att = {query: 'created>' + sertime};
+        var att = {query: 'type:ticket created>' + sertime};
         res = sendRequest('GET', 'search.json', '', att);
 
         if (res.results.length > 0) {
             for (var i = 0; i < res.results.length; i++) {
+
+                var resComments = sendRequest('GET', 'tickets/' + res.results[i].id + '/comments.json');
+                if (resComments.comments.length > 0) {
+                    labels.push({type: 'isTicketAttach', value: 'true'})
+                }
+
                 incidents.push({
                     name: res.results[i].subject,
                     details: res.results[i]['description'],
@@ -374,6 +424,8 @@ script:
                     rawJSON: JSON.stringify(res.results[i]),
                     severity: parseInt(res.results[i].priority)
                 });
+
+                labels = [];
             }
 
             setLastRun({'time': res.results[0].created_at});
@@ -407,8 +459,8 @@ script:
         case 'zendesk-ticket-details':
             return getTicketDetails();
 
-        case 'zendesk-list-agents':
-            return listAgents();
+        case 'zendesk-list-users':
+            return listUsers();
 
         case 'fetch-incidents':
             return fetchIncidents();
@@ -424,7 +476,7 @@ script:
       description: The email of the user asking for support through the ticket
     - name: assignee_email
       description: The email of the agent to assign the ticket to
-    - name: body
+    - name: comment
       required: true
       description: Comment body
     - name: private
@@ -470,6 +522,8 @@ script:
         email properties. See Setting Collaborators. An email notification is sent
         to them when the ticket is created
       isArray: true
+    - name: custom_fields
+      description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
     outputs:
     - contextPath: Ticket.id
       description: Ticket id
@@ -520,7 +574,7 @@ script:
       description: The email of the user asking for support through the ticket
     - name: assignee_email
       description: The email of the agent to assign the ticket to
-    - name: body
+    - name: comment
       description: Comment body
     - name: private
       auto: PREDEFINED
@@ -577,7 +631,7 @@ script:
       - closed
       description: Allowed values are open, pending, hold, solved or closed
     description: Update Zendesk ticket
-  - name: zendesk-list-agents
+  - name: zendesk-list-users
     arguments: []
     outputs:
     - contextPath: ZendeskUsers.id
