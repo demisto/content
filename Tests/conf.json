@@ -65,7 +65,7 @@
         {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500
+            "timeout": 600
         },
         {
             "playbookID": "TestCommonPython"            
