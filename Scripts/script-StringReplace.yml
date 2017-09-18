@@ -10,6 +10,7 @@ script: |-
           Contents: 'Invalid input - please make sure \'data\' is of type string'
       }
   }
+
   var arr = [];
   if (args.replaceAll === 'true') {
       arr.push('g');
@@ -20,22 +21,17 @@ script: |-
   if (args.multiLine === 'true') {
       arr.push('m');
   }
+
   var newValue = args.newValue === "''" ? "" : args.newValue;
   var r = new RegExp(args.regex, arr.join(''));
-  if (r.test(args.data)) {
-      var val = args.data.replace(r, newValue);
-      setContext('StringReplace.Result', val);
-      return {
-          Type: entryTypes.note,
-          Contents: val,
-          ContentsFormat: formats.text
-      };
-  }
+  var val = args.data.replace(r, newValue);
+
+  //if no match found - return the original string
+  setContext('StringReplace.Result', val);
   return {
       Type: entryTypes.note,
-      Contents: 'No regex match to replace',
+      Contents: val,
       ContentsFormat: formats.text
-
   };
 type: javascript
 tags:

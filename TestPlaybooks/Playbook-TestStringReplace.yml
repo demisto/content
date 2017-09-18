@@ -223,6 +223,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
     scriptarguments:
       field1: StringReplace.Result
       field2: ""
@@ -239,12 +242,73 @@ tasks:
           "y": 1238
         }
       }
+  "11":
+    id: "11"
+    taskid: 931b498f-2afa-4bf8-8d59-0e94d9aeb9e5
+    type: regular
+    task:
+      id: 931b498f-2afa-4bf8-8d59-0e94d9aeb9e5
+      version: -1
+      name: StringReplace- no match
+      description: "case-Insensitive :true (default)\nreplace-All: true (default)
+        \nmulti-line: true (default)"
+      scriptName: StringReplace
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      caseInsensitive: ""
+      contextKey: string
+      data: Hello World
+      multiLine: ""
+      newValue: AA
+      regex: earth
+      replaceAll: ""
+      str: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1401
+        }
+      }
+  "12":
+    id: "12"
+    taskid: ebebb846-0ac9-4295-852e-6735b9558ed9
+    type: regular
+    task:
+      id: ebebb846-0ac9-4295-852e-6735b9558ed9
+      version: -1
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: StringReplace.Result
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: Hello World
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1563
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1283,
+        "height": 1608,
         "width": 380,
         "x": 50,
         "y": 50
