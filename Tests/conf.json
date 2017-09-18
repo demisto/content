@@ -72,6 +72,9 @@
         },
         {
             "playbookID": "TestIsValueInArray"
+        },
+        {
+            "playbookID": "TestStringReplace"  
         }
     ],
     "skipped": [
