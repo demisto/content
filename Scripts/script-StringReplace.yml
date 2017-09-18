@@ -35,7 +35,7 @@ script: |-
   };
 type: javascript
 tags:
-- Utilities
+- Utilitiy
 comment: |-
   Replaces regex match/es in string.
   Returns the string after replace was preformed.
@@ -56,21 +56,22 @@ args:
   predefined:
   - "true"
   - "false"
-  description: The boolean value to indicate if 'g' flag is passed to regex constructor
+  description: Pass true to replace all matches, false to replace only the first occurrence.
   defaultValue: "true"
 - name: caseInsensitive
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: The boolean value to indicate if 'i' flag is passed to regex constructor
+  description: Pass True to preform case-insensitive search and replace, false for
+    case-sensitive.
   defaultValue: "true"
 - name: multiLine
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: The boolean value to indicate if 'm' flag is passed to regex constructor
+  description: Pass true to indicate 'data'  is a multi-line string, false otherwise.
   defaultValue: "true"
 outputs:
 - contextPath: StringReplace.Result
