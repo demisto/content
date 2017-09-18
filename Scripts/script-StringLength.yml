@@ -1,0 +1,28 @@
+commonfields:
+  id: StringLength
+  version: -1
+name: StringLength
+script: |+
+  if (typeof args.str !== 'string') {
+      return {
+          Type: entryTypes.error,
+          Contents: 'Argument must be of type \'string\'. Not {0} type'.format(typeof args.str)
+      };
+  } else {
+      return {
+          Type: entryTypes.note,
+          Contents: args.str.length,
+          ContentsFormat: formats.txt
+      };
+  }
+
+type: javascript
+tags:
+- Utilities
+comment: Returns the length of  the string passed as argument
+enabled: true
+args:
+- name: str
+  required: true
+  description: The string to evaluate
+scripttarget: 0
