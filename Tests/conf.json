@@ -77,6 +77,11 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
+        },
+        {
             "name": "VxStream",
             "playbookID": "VxStream Test"
         }
@@ -85,11 +90,6 @@
         {
             "name": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
         }
     ]
 }
