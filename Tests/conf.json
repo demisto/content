@@ -68,6 +68,9 @@
             "timeout": 500
         },
         {
+            "playbookID": "TestCommonPython"            
+        },
+        {
             "playbookID": "TestFileCreateAndUpload"            
         },
         {
