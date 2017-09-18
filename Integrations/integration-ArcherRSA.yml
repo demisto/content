@@ -65,7 +65,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     var server = params.server.replace(/[\/]+$/, '');
 
     var commands = {
@@ -75,7 +75,8 @@ script:
       searchApps:       'archer-search-applications',
       searchRecords:    'archer-search-records',
       getAppFields:     'archer-get-application-fields',
-      deleteRecord:     'archer-delete-record'
+      deleteRecord:     'archer-delete-record',
+      valueListForField: 'archer-value-list-for-field'
     };
 
     var urlDictionary = {};
@@ -89,6 +90,7 @@ script:
     urlDictionary[commands.searchApps] = '/api/core/system/application';
     urlDictionary[commands.searchRecords] = '/ws/search.asmx';
     urlDictionary[commands.deleteRecord] = '/ws/record.asmx';
+    urlDictionary[commands.valueListForField] = '/ws/field.asmx';
 
     var methodDictionary = {};
     methodDictionary.login = 'POST';
@@ -101,6 +103,7 @@ script:
     methodDictionary[commands.searchApps] = 'POST';
     methodDictionary[commands.searchRecords] = 'POST';
     methodDictionary[commands.deleteRecord] = 'POST';
+    methodDictionary[commands.valueListForField] = 'POST';
 
 
     function extractObjectFromXML(xml, path) {
@@ -344,6 +347,20 @@ script:
         );
     }
 
+    function getValueListForFieldSoapRequest(token, fieldID){
+        return (
+        '<?xml version="1.0" encoding="utf-8"?>'+
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">'+
+            '<soap:Body>'+
+                '<GetValueListForField xmlns="http://archer-tech.com/webservices/">'+
+                    '<sessionToken>'+token+'</sessionToken>'+
+                    '<fieldId>'+fieldID+'</fieldId>'+
+                '</GetValueListForField>'+
+            '</soap:Body>'+
+        '</soap:Envelope>'
+        );
+    }
+
     function getLevelsByApplicationId(token) {
         var lvlResponse = sendRestRequest('levelIdByModuleId', '', token, true);
         return dq(lvlResponse, 'RequestedObject.Id');
@@ -483,7 +500,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: nameToValue,
+            Contents: response,
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, nameToValue),
             ReadableContentsFormat: formats.markdown,
@@ -531,6 +548,71 @@ script:
         };
     }
 
+    function inputToXML(fieldsToValue, mapping, token){
+        var fields = '';
+        for (var key in fieldsToValue) {
+            if (mapping[key] !== undefined) {
+                switch(mapping[key].Type){
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 19:
+                        fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
+                        break;
+                    case 9:
+                    case 18:
+                        fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
+                        for(var i=1; i<fieldsToValue[key].length; i++){
+                            fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
+                        }
+                        fields+= '</Field>';
+                        break;
+                    case 4:
+                        //fieldsToValue[key] is of the form [value1, value2,...]
+                        listValueIdtoName = getValueListForField(commands.valueListForField, token ,{fieldID : mapping[key].Id});
+                        fields += '<Field id="' + mapping[key].Id +'" value="' + listValueIdtoName[fieldsToValue[key][0]] +'">';
+                        for(var i=1; i<fieldsToValue[key].length; i++){
+                            fields+= '<MultiValue value="'+listValueIdtoName[fieldsToValue[key][i]]+'" />';
+                        }
+                        fields+= '</Field>';
+                        break;
+                    case 7:
+                        //fieldsToValue[key] is of the form [{value: ___ , link: ___}, {value: ___ , link: ___}, ...]
+                        fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0].value + '" link="'+fieldsToValue[key][0].link+'">';
+                        for(var i=1; i<fieldsToValue[key].length; i++){
+                            fields+= '<MultiValue value="'+fieldsToValue[key][i].value+'" link="'+fieldsToValue[key][i].link+'" />';
+                        }
+                        fields+= '</Field>';
+                        break;
+                    case 8:
+                    case 15:
+                        //fieldsToValue[key] is of the form {groups: [group1, group2,...], users : [user1, user2,...]}
+                        fields+= '<Field id="' + mapping[key].Id + '" >';
+                        groups = fieldsToValue[key].groups;
+                        users = fieldsToValue[key].users;
+                        if(groups && Array.isArray(groups) && groups.length > 0){
+                            fields += '<Groups>';
+                            for(var i=0; i<groups.length; i++){
+                                fields += '<Group id="' + groups[i] + '" />';
+                            }
+                            fields += '</Groups>'
+                        }
+                        if(users && Array.isArray(users) && users.length > 0){
+                            fields += '<Users>';
+                            for(var i=0; i<users.length; i++){
+                                fields += '<User id="' + users[i] + '" />';
+                            }
+                            fields += '</Users>'
+                        }
+                        fields+='</Field>';
+                        break;
+                    //case 14, 16 : not supported yet
+                }
+            }
+        }
+        return fields;
+    }
+
     function createRecord(command, token, arguments) {
         var appId = arguments.applicationId;
         var fieldsToValue = JSON.parse(arguments.fieldsToValues);
@@ -540,12 +622,7 @@ script:
 
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
-        var fields = ''
-        for (var key in fieldsToValue) {
-            if (mapping[key] !== undefined) {
-                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
-            }
-        }
+        var fields = inputToXML(fieldsToValue, mapping, token);
 
         var soap = createContentSoapRequest(token, appId, fields);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
@@ -569,7 +646,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: md,
+            Contents: response,
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
@@ -588,13 +665,7 @@ script:
 
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
-        var fields = ''
-
-        for (var key in fieldsToValue) {
-            if (mapping[key] !== undefined) {
-                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
-            }
-        }
+        var fields = inputToXML(fieldsToValue, mapping, token);
 
         var soap = updateContentSoapRequest(token,appId,contentId,fields);
         var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
@@ -615,8 +686,25 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: 'content id = ' + contentId + ' was updated successfully'
+            ContentsFormat: formats.json,
+            Contents: response,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: 'content id = ' + contentId + ' was updated successfully'
         }
+    }
+
+    function getValueListForField(command, token, arguments){
+        var SOAPAction = 'http://archer-tech.com/webservices/GetValueListForField';
+        var fieldID = arguments.fieldID;
+        var soap = getValueListForFieldSoapRequest(token, fieldID);
+        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var result = dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
+        result = dq(JSON.parse(x2j(result)), 'SelectDef.SelectDefValues.SelectDefValue(true)={Name: val.Name, Id : val.Id}');
+        var ret = {};
+        for(key in result){
+            ret[result[key]['Name']] = result[key]['Id'];
+        }
+        return ret;
     }
 
     function deleteRecord(command, token, arguments) {
@@ -890,6 +978,8 @@ script:
             return !!token ? 'ok' : 'not-ok';
         case commands.createRecord:
             return createRecord(command, getAuthToken(), args);
+        case commands.valueListForField:
+            return getValueListForField(command, getAuthToken(), args);
         case commands.updateRecord:
             return updateRecord(command, getAuthToken(), args);
         case commands.deleteRecord:
@@ -1027,4 +1117,9 @@ script:
       required: true
       description: The Content (record) ID to delete
     description: Delete existing content record in the given application.
+  - name: archer-value-list-for-field
+    arguments:
+    - name: fieldID
+      description: ID of the field
+    description: Returns mapping from list value name to list value id
   isfetch: true

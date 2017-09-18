@@ -1,0 +1,433 @@
+id: TestHPServiceManager
+version: 12
+name: TestHPServiceManager
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0666c9c-106f-4da4-8f2f-0ca63991c23f
+    type: start
+    task:
+      id: e0666c9c-106f-4da4-8f2f-0ca63991c23f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: a68cf45b-e944-40cb-8d55-8592b592103b
+    type: regular
+    task:
+      id: a68cf45b-e944-40cb-8d55-8592b592103b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3721dbde-c958-4760-8c07-1e8b56ff52bf
+    type: regular
+    task:
+      id: 3721dbde-c958-4760-8c07-1e8b56ff52bf
+      version: -1
+      name: VerifyContext HPSM.Incidents
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: ""
+      fields: IncidentID,Description,Title,Assignee,OpenedBy
+      path: HPSM.Incidents
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 5aca81bb-4da2-4985-80c5-2e35c4c7ffcc
+    type: regular
+    task:
+      id: 5aca81bb-4da2-4985-80c5-2e35c4c7ffcc
+      version: -1
+      name: VerifyContext HPSM.Ticket
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto
+        general format
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: ""
+      fields: ID,Creator,Assignee,State
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8fd733b2-b206-4feb-87cb-22230a899f40
+    type: regular
+    task:
+      id: 8fd733b2-b206-4feb-87cb-22230a899f40
+      version: -1
+      name: hpsm-create-incident
+      description: 'Creating new incident '
+      script: Service Manager|||hpsm-create-incident
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      affectedCI: ""
+      alertStatus: ""
+      area: ""
+      assignmentGroup: ""
+      category: incident
+      company: ""
+      description: This is description
+      impact: ""
+      phase: ""
+      service: CI1001030
+      status: ""
+      subarea: ""
+      title: TestPlaybookTitleCreated
+      urgency: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 374f31f9-5b48-474e-86dc-90720214838e
+    type: regular
+    task:
+      id: 374f31f9-5b48-474e-86dc-90720214838e
+      version: -1
+      name: hpsm-list-incidents
+      description: Returns all incidents
+      script: Service Manager|||hpsm-list-incidents
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      query: Title=TestPlaybookListIncidents
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4f34fba9-8047-4201-8701-4139b20d1683
+    type: regular
+    task:
+      id: 4f34fba9-8047-4201-8701-4139b20d1683
+      version: -1
+      name: hpsm-get-incident-by-id
+      script: Service Manager|||hpsm-get-incident-by-id
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      incidentId: IM10258
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a1d2b6bb-4398-48f3-8954-d84613b4009d
+    type: regular
+    task:
+      id: a1d2b6bb-4398-48f3-8954-d84613b4009d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: a16b7448-9d05-4f55-8c38-713bdd6c0246
+    type: regular
+    task:
+      id: a16b7448-9d05-4f55-8c38-713bdd6c0246
+      version: -1
+      name: VerifyContext Ticket
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto
+        general format
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      expectedValue: ""
+      fields: ID,Creator,Assignee,State
+      path: Ticket
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    taskid: accefebe-2c7d-4238-8821-72ba278605ea
+    type: regular
+    task:
+      id: accefebe-2c7d-4238-8821-72ba278605ea
+      version: -1
+      name: VerifyContext HPSM.Incidents
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: ""
+      fields: IncidentID,Description,Title,Assignee,OpenedBy
+      path: HPSM.Incidents
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    taskid: b29cb06c-8eb2-4618-8e40-5890813ec954
+    type: regular
+    task:
+      id: b29cb06c-8eb2-4618-8e40-5890813ec954
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 4c117414-49cf-43b0-84b4-d5e974e85cd7
+    type: regular
+    task:
+      id: 4c117414-49cf-43b0-84b4-d5e974e85cd7
+      version: -1
+      name: VerifyContext HPSM.IncidentIDs
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      expectedValue: '["IM10259"]'
+      fields: ""
+      path: HPSM.IncidentIDs
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 5e466429-1b4d-472b-8345-bcf9185c00c4
+    type: regular
+    task:
+      id: 5e466429-1b4d-472b-8345-bcf9185c00c4
+      version: -1
+      name: VerifyContextFields Tickets fields correct
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      field1: Ticket.ID
+      field2: Ticket.Creator
+      field3: Ticket.Assignee
+      field4: Ticket.State
+      value1: IM10258
+      value2: System.Admin
+      value3: Incident.Manager
+      value4: Categorize
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1596
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 9432fc74-24dc-4e81-8a64-c192689e3e4a
+    type: regular
+    task:
+      id: 9432fc74-24dc-4e81-8a64-c192689e3e4a
+      version: -1
+      name: hpsm-get-device
+      script: Service Manager|||hpsm-get-device
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      configurationItem: CI1000001
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2326
+        }
+      }
+  "14":
+    id: "14"
+    taskid: f2adcf2d-8cb6-4104-80ee-6f00b6887c82
+    type: regular
+    task:
+      id: f2adcf2d-8cb6-4104-80ee-6f00b6887c82
+      version: -1
+      name: Verify Context Fields HPSM.Devices
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ConfigurationItem,DisplayName,Status
+      path: HPSM.Devices
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2541
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2586,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

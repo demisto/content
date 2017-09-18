@@ -14,7 +14,7 @@ script: |-
       }
 
       return false;
-  }
+  };
 
   var text = args.text;
   if (typeof text !== 'string') {
@@ -42,14 +42,40 @@ script: |-
           }
       }
   }
+
   var uniqueMatches = Object.keys(matches);
+
+  // check URLs in query params
+  uniqueMatches.forEach(function(url) {
+      var parts = url.split('?');
+      if (parts.length > 1) {
+          var params = parts[1].split('&');
+          params.forEach(function(param) {
+              var pair = param.split('=');
+              while (found = reg.exec(pair[1])) {
+                  matches[found[0]] = true;
+                  for (var i = 0 ; i < whitelist.length; i++) {
+                      if (checkMatch(whitelist[i],found[0])) {
+                            delete matches[found[0]];
+                            break;
+                      }
+                  }
+              }
+          });
+      }
+  });
+
+  uniqueMatches = Object.keys(matches);
+
   var ec = {};
-  ec[outputPaths.url] = []
+  ec[outputPaths.url] = [];
+
   var md = '### Extract URL\n';
   for (var i=0; i < uniqueMatches.length; i++) {
       ec[outputPaths.url].push({Data: uniqueMatches[i]});
       md += '- ' + uniqueMatches[i] + '\n';
   }
+
   return { Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
 tags:
