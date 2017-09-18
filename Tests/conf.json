@@ -74,18 +74,21 @@
             "playbookID": "TestIsValueInArray"
         },
         {
-            "playbookID": "TestStringReplace"  
+            "name": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
+        },
+        {
+            "playbookID": "TestStringReplace"
+        },
+        {
+            "playbookID": "TestHttpPlaybook"
         }
     ],
     "skipped": [
         {
             "name": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
         }
     ]
 }

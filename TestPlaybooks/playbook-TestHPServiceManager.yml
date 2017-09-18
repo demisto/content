@@ -188,7 +188,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      incidentId: IM10315
+      incidentId: IM10258
     view: |-
       {
         "position": {
@@ -330,7 +330,7 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      expectedValue: '["IM10316"]'
+      expectedValue: '["IM10259"]'
       fields: ""
       path: HPSM.IncidentIDs
     view: |-
@@ -360,7 +360,7 @@ tasks:
       field2: Ticket.Creator
       field3: Ticket.Assignee
       field4: Ticket.State
-      value1: IM10315
+      value1: IM10258
       value2: System.Admin
       value3: Incident.Manager
       value4: Categorize
