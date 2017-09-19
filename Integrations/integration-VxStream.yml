@@ -272,7 +272,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            var entry = searchQuery(url.google);
+            var entry = searchQuery('url.google');
             if (entry && entry.Type === entryTypes.note) {
                return 'ok';
             }
