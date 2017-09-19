@@ -280,7 +280,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
-            if changeType == "R093" or changeType == "R098":
+            if changeType == "R093" or changeType == "R098" or changeType == "R078":
                 # handle the same as modified
                 fullFileName = names[2]
                 changeType = 'M'
