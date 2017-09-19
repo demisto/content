@@ -272,8 +272,11 @@ script:
 
     switch (command) {
         case 'test-module':
-            getEnvironments();
-            return 'ok';
+            var entry = searchQuery(url.google);
+            if (entry && entry.Type === entryTypes.note) {
+               return 'ok';
+            }
+            return entry && entry.Contents;
         case 'vx-scan':
             return scan(args.file);
         case 'vx-get-environments':
@@ -348,7 +351,8 @@ script:
       description: 'Analysis mode of environment '
     - contextPath: VX.Environment.groupicon
       description: Icon of environment
-    description: 'Get a list of all available environments '
+    description: Get a list of all available environments  (NOTE - minimum required
+      authorization is `default`)
   - name: vx-submit-sample
     arguments:
     - name: entryId
@@ -358,7 +362,8 @@ script:
     - name: environmentID
       required: true
       description: 'environment ID to submit file to(get all via vx-get-environments) '
-    description: Submit a file from investigation to analysis server
+    description: Submit a file from investigation to analysis server  (NOTE - minimum
+      required authorization is `default`)
   - name: vx-search
     arguments:
     - name: query
@@ -408,3 +413,4 @@ script:
       required: true
       description: 'environment ID to submit file to(get all via vx-get-environments) '
     description: Retrieve result data upon a file. NOTE - This command returns a file
+      (also - minimum required authorization is `default`)
