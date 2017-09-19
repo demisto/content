@@ -4,8 +4,17 @@ commonfields:
   version: -1
 name: ToTable
 script: |-
+  var data = args.data;
   var headers = args.columns ? args.columns.split(',') : null;
-  return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, args.data, headers), ContentsFormat: formats.markdown};
+  if(!Array.isArray(data)) {
+      data = [data]
+  }
+  var flatData = [];
+  data.forEach(function(element) {
+    var flattenObject = treeToFlattenObject(element);
+    flatData.push(flattenObject);
+  });
+  return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, flatData, headers), ContentsFormat: formats.markdown};
 type: javascript
 tags:
 - Utility
