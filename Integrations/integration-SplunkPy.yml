@@ -161,7 +161,9 @@ script:
             elif isinstance(item, dict):
                 # Normal events are returned as dicts
                 res.append(item)
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        ec = {};
+        ec['Splunk.Result'] = res
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'splunk-results':
         jobs = service.jobs
@@ -220,16 +222,21 @@ script:
       description: The splunk search language string to execute, example :"* | head
         3"
     - name: earliest_time
-      description: Specifies the earliest time in the time range to search. The time
+      description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
-        (to now), or a formatted time string. Default is 1 week ago
+        (to now), or a formatted time string. Default is 1 week ago, in this format
+        "-7d", also possible to do time as: 2014-06-19T12:00:00.000-07:00"'
     - name: latest_time
       description: Specifies the latest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
-        (to now), or a formatted time string.
+        (to now), or a formatted time string, example "2014-06-19T12:00:00.000-07:00"
+        or "-3d" (for time 3 days before now)
     - name: event_limit
       description: Limit the amount of events to return, Default is 100, put 0 for
         unlimited
+    outputs:
+    - contextPath: Splunk.Result
+      description: The splunk search result
     description: Search Splunk for events
   dockerimage: demisto/splunksdk
   isfetch: true
