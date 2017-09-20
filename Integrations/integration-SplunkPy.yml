@@ -157,7 +157,7 @@ script:
         res = []
         for item in reader:
             if isinstance(item, results.Message):
-                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(item.message)})
             elif isinstance(item, dict):
                 # Normal events are returned as dicts
                 res.append(item)
