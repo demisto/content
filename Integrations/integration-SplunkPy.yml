@@ -236,7 +236,7 @@ script:
         unlimited
     outputs:
     - contextPath: Splunk.Result
-      description: The splunk search result
+      description: The splunk search result, json array where each item is a splunk event
     description: Search Splunk for events
   dockerimage: demisto/splunksdk
   isfetch: true
