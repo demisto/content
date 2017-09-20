@@ -233,3 +233,4 @@ script:
     description: Search Splunk for events
   dockerimage: demisto/splunksdk
   isfetch: true
+releaseNotes: Adding Search capability to SplunkPy intergration
