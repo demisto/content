@@ -138,6 +138,31 @@ script:
         if len(service.jobs) >= 0:
             demisto.results('ok')
         sys.exit(0)
+    if demisto.command() == 'splunk-search':
+        t = datetime.utcnow() - timedelta(days=7)
+        time = t.strftime("%Y-%m-%dT%H:%M:%S")
+        kwargs_oneshot = {"earliest_time":time}
+        if demisto.get(demisto.args(), 'earliest_time'):
+            kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
+        if demisto.get(demisto.args(), 'latest_time'):
+            kwargs_oneshot['latest_time'] = demisto.args()['latest_time']
+        if demisto.get(demisto.args(), 'event_limit'):
+            kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
+        searchquery_oneshot = demisto.args()['query']
+        if not searchquery_oneshot.startswith('search'):
+            searchquery_oneshot = 'search '+searchquery_oneshot
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+
+        reader = results.ResultsReader(oneshotsearch_results)
+        res = []
+        for item in reader:
+            if isinstance(item, results.Message):
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+            elif isinstance(item, dict):
+                # Normal events are returned as dicts
+                res.append(item)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
+        sys.exit(0)
     if demisto.command() == 'splunk-results':
         jobs = service.jobs
         found = False
@@ -187,5 +212,24 @@ script:
       default: true
       description: search id
     description: 'fetch splunk search results '
+  - name: splunk-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The splunk search language string to execute, example :"* | head
+        3"
+    - name: earliest_time
+      description: Specifies the earliest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string. Default is 1 week ago
+    - name: latest_time
+      description: Specifies the latest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string.
+    - name: event_limit
+      description: Limit the amount of events to return, Default is 100, put 0 for
+        unlimited
+    description: Search Splunk for events
   dockerimage: demisto/splunksdk
   isfetch: true
