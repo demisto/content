@@ -85,7 +85,7 @@
             "timeout": 400
         },
         {
-            "name": "Splunk",
+            "name": "SplunkPy",
             "playbookID": "Splunk-Test"
         }
     ],
