@@ -1,0 +1,89 @@
+id: Splunk-Test
+version: -1
+name: Splunk-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e27eeada-da08-478e-8325-52d9c07a3a56
+    type: start
+    task:
+      id: e27eeada-da08-478e-8325-52d9c07a3a56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: d3bd5f51-3ba0-4b14-8fc6-6f3b8019c61d
+    type: regular
+    task:
+      id: d3bd5f51-3ba0-4b14-8fc6-6f3b8019c61d
+      version: -1
+      name: splunk-search
+      description: Search Splunk for events
+      script: SplunkPy_copy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy_copy
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      earliest_time: ""
+      event_limit: ""
+      latest_time: ""
+      query: '* | head 3'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 7c61c6cf-c68a-4e56-854f-9e0ac1268ba5
+    type: regular
+    task:
+      id: 7c61c6cf-c68a-4e56-854f-9e0ac1268ba5
+      version: -1
+      name: Verify Context result of Splunk Search
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: ${Splunk.Result}
+    view: |-
+      {
+        "position": {
+          "x": 455,
+          "y": 570
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 385,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
