@@ -32,10 +32,10 @@ tasks:
       version: -1
       name: splunk-search
       description: Search Splunk for events
-      script: SplunkPy_copy|||splunk-search
+      script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy_copy
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "2"
