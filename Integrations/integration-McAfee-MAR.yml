@@ -8,7 +8,12 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALUAAAAyCAYAAAAa5prJAAAgAEl
 description: Connect to MAR using its DXL client
 detaileddescription: |+
   ### Prerequisites - Connect to McAfee Active Response (MAR) using the DXL MAR client.
-   - [Create certificates & configure dxl]https://opendxl.github.io/opendxl-client-python/pydoc/index.html)
+   - [Create certificates & configure dxl](https://opendxl.github.io/opendxl-client-python/pydoc/index.html). After this phase you must have:
+       * Broker CA certificates (`brokercerts.crt` file)
+       * Client certificate (`client.crt` file)
+       * Client private key (`client.key` file)
+       * Broker list properties file (`brokerlist.properties` file)
+
    - [Enable MAR Search API](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html)
 
   ### API Documentation:
@@ -19,22 +24,24 @@ detaileddescription: |+
   dxlmarclient [docs](https://opendxl.github.io/opendxl-mar-client-python/pydoc/)
 
 configuration:
-- display: Broker CA certificates path (e.g. /usr/config/brokercerts.crt)
+- display: Broker CA certificates content (see `brokercerts.crt` in instructions)
   name: broker_ca_bundle
   defaultvalue: ""
   type: 12
   required: true
-- display: Client certificate path (e.g. /usr/config/client.crt)
+- display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
   defaultvalue: ""
   type: 12
   required: true
-- display: Client private key path (e.g. /usr/config/client.key)
+- display: Client private key content (see `client.key` in instructions)
   name: private_key
   defaultvalue: ""
   type: 12
   required: true
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
+    - get hostname & port from `brokerlist.properties` file in instructions. Note
+    that the broker should be reachable from demisto server
   name: broker_urls
   defaultvalue: ""
   type: 0
@@ -119,31 +126,6 @@ script:
             'HumanReadable': tableToMarkdown(header, table, headers) if table else 'No result were found',
             'EntryContext': context
         }
-
-    # will move to common later
-    def get_hash_type(hash_file):
-        hash_len = len(hash_file)
-        if (hash_len == 32):
-            return 'md5'
-        elif (hash_len == 40):
-            return 'sha1'
-        elif (hash_len == 64):
-            return 'sha256'
-        else:
-            return 'Unknown'
-
-    # will move to common later
-    def is_ip_valid(s):
-        a = s.split('.')
-        if len(a) != 4:
-            return False
-        for x in a:
-            if not x.isdigit():
-                return False
-            i = int(x)
-            if i < 0 or i > 255:
-                return False
-        return True
 
     def translate_dict(d, translator):
         res = {}
