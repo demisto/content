@@ -50,7 +50,6 @@ script:
 
     var doReq = function(path, data) {
         data.apiKey = params.apiKey;
-        data.apiKey = params.apiKey;
         var result = http(
             server + path,
             {
