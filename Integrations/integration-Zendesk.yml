@@ -1,0 +1,648 @@
+commonfields:
+  id: Zendesk
+  version: -1
+name: Zendesk
+display: Zendesk
+category: IT Services
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAYAAAAhKqlXAAAAAXNSR0IArs4c6QAADN1JREFUaAXtmnlwVdUZwL9z78tCAsiqWFRUrLiPEPJeSfLCE3FBRYY/UnGpggtOWxXLqDPUdqydVsfWZaxVqqiDjgstTq11FKVYs7EkIRXtBDujRVRUKBpESMhL3r2nv3PufRt5wXS6OFbPcO8795zv+863n++coOSr1GpqRkqfUxmI7HwmLfUbvnDxKxJjJOJPsXz4ape0NbQNhqfIYID+b2CSzsniyMuiHBHf34RcRmH6C5VP9UVFRV4QpWDDW8urZjD8fLUMp5QW7aMXa6vUYBT0P4CBp9B3tAyaJ1zv6/Zl1MDXhvsyWg2evzbcl9RwwR5XUVH0L/Hf3u4BbzaL/q26epj4ReNFe2Uiap/0OB/JpvpP+wMOOKIklhgPdVNteaJSO2Tdun8MCF1oIpEolaQzWlIpR5KlnfLG6q5CYJ8zpqSy9jB8ezQ8aAqIT6hCPwBncMXMKWeWy5DekRRBSpzkbmlp+exz1jvwdF2dK1u2ONJztJLh21wlpyZGSLH3HJXW6GDjPjC+rchScq20N7yaBxmtOZa56xBrFuPjkQ9nUH30d/C8iiHulY2Nr+Xh5H4Y53HLLxWl54tWJ4E/jGkUJp3QbWUDXyotjS/movTrT62dTA5ZCE4C+HHMm4yyUxxVz/fd4jvlovxWK4PWG6W1Mcp8viGyfCywfCg9NIBQe6DbAZ3l4nU/Ju3tRrb+7VvxKcBfw1OL/GMgr8DbRX8T3cekteHZPKSp1bPEdV+0VaXvN0hrUyJv3nxMrUmI69zF2iXAUX7qWyLiClGnEdgZZtYo2GwlFs4EZetBeXDRmjp0dD8KGWsD0cJYWiUsdgTjl6GwuVIZXyRtTcvzcM3HtGmjxCtajoJnI6D9F75gTR8MxHk850o0fqdMGLdEVq40EZ/fovEbQb2FtcqtA5qSPxBnOMJOxPPnwNsTIJnKrXA1HYsdIlLyKPDn5PFh6GgZAb1q5njKzpOamgXS3IxBclosPg8dPgQPw+zawfoGdzivCUDOQYbHxCtZJO1rdudgDtyNVk+F3grWPQQbcWLw7pYy9w8IEMFzvPUINkDEmajRJ0O53FIPmMl6W2XN2RB+nLlSlGyY3I3izHlkJ4/x+mkoDMZh3lEPSmz6B9LS8Ce+g2ZSwNbtD0jEmQ1T6Mtq6S/QeROAEh6iQh0BbVKOe6O8u/19xu4LkMN3tGYxQv1CfBM8ZHBt62sTHR9CZwxKPIX5MfSvD+byg8xSMalN73sKuBnoIjC61q+B2wHJIktD1PHgCxEyR5LeA1JXd0nGiSqqJkJ/KXAEgOXhFYy4Rhz41pJgjTOt4h0XJ+5p5PtRu+6BXlNqj4feSpjBoWiet5SIvJGeHwktf7ad6P/SUolnOc6vLcPG4r6/UiK9TRa0YuZBopL30i8NJPWbMc5C2dBklB60yuoTRbnGsFMwSrF4/h2SSDRJfX2PBXh3x3RwLgiN1ss6i0hFj2RS0eT4WCnW9+EcF4Sp/Ca8/YmMt8fiJ6Cgn1qjBUb/K+vcIJ+UN8jbq5Io15X3dk6D73tYZyr003EQMhj+lHZfI04EoxnnkW6UvUi6Oh+Xjo5eC2EMW9pzA7RvgVecSM2TrR89xdzzdj4SMQ48wupJ9CppPZ0s8RMsaNvtOOxCCF8kKX2X7Bq2Ohwf+Gdy1QTc5RnWO9IC+f6T6GURfUsznTIKuCAglfH5MPgbesXWW3y9Uryu+Si12xJze+cwfqxlVusd4hbNk/V/Nht4trWt7ZDKqitQyjqUNwR6k2WfjgMQRJ32z2cOmWDB18/gUWa9bHutaadUVV0nqUgChR6CIIdJUlcAsMYCaYF2mB5Fv41Y50pbo4nKoAVptVkq4ucTiq+CPyk9lfk1BVUfDmciJXDOn8PHw5l50wkKnFslWlNB5JPSaUpdwTswnPaHYjjGGPGlR+o6bKwYMNtaGh7idxlPYV0HUMG7qupg5F0J/RPsgNZ/xGgLM87MYNpwuWhBP0akCalNTJqAG1//Tty++dLavi8DrPUZllMzr/2NpIAIEXp0Zj7b+QzjvgWdU6xwXmoGU4HhlAAfyqJ1NoVmccVWldH4JnDPssPK+Yb9DdJswirc8OB5t0lbc9ZouTTamz6SaO3t8LA8iIqcyb4IxZB/VOiASWTaUFAO5cCoNtlmdkgjSvSPDKJfr7N8BLcgc+XdHU1UpS9SHrViyDdDZ/o8o6UkFhuO0Vbg4JUhP6vZEy+V9sYgWEK2CxsuVnM5rmc8PzCa9n8rbmqBrF+fNZoh4MhhVudB8XKGpJzN1sgh8Zwfw7ApVNAJjyPHZuZ0jvM4sicz3q+jcstprER7a+cwqI6zfd/fR0Q32v5AL8dpIBV2BRGao0Plj8cpFPgGsxgjPl9YDouThjOwY4h+40S7pHVtM4XHbeAt4TH8sberaUEU610Sq+VuVK2Q1N4nMhnLUEg3oxvN/iglyzHaaZYXE/2m+i1QyDCzX4vWEv55RsP6BYxm0DS+FKjQfBUjfBlMF3oow1XoJCBolV+VGuygZamlRzK/uv9cWW8xPHDsME1RQhT3rzaDyeCd7OulY6rK/OZZ90uPsU5BGdJyDQkADTuKI4waGiJq0uvNKPwclP17MtT2YL805NyRyH8az4MSKXtBYqcHxUZ6RfNrnVoq0edcaBgP6QvG1GKif2YuqOnnR1w0fiWIDzAepkf/aUrPy6W+qWd/xPA7SEsmt/t+PeLfDHNuQVjlGZfCWw2sm19GF0QYxKDWJkLN4X4sfJejqFPpb+Up3IojJ8LDcKuQXIiI3hYqy1gDhakFaPu9XJBsH7vby2oi1DRXb87O0Wtrfon3S2KLKncSdFnTr2bMHHVGUJEmJJX8Md/X8OzfOPNBVssSJpDL1Be6lAyxlBRawyHenIltyxquMn4VSMZoEYvs66cw2hWZ6i9EyPtR+hW+LzMrgXOcaGeLtNZvz4P5b36Y1B2tWU+kfzOMmcVyzKxVtprcf117O+TfRDaxmsmbNsr31TvIcDRPkXj6cA7KT+bBDPYjWnsUB/t3xBRVwZGomd8HKfROZ5tYRSQSFDKdyjqCbvOjP9in78f4d4CjkG0GhdC36R8jfvE9/F7MY6KR3cYAxGoWIk9gNNyDvLyMxS8+oNEMdjLyPB71luki8DhR3gqpmDHRfue+KhLHkeNXwAgH9f9wU1RqWqfCAiUuo7oekcrEuLxVzMHaLV+GuDMtXN4kH2vX7iHKluEAJnMYjfwInXyHGaOfbDNHglj8evay5SieI1CmoWQOyrH442C0UwSx3ezXlN+LjsJBlZT6sdYAGSgbafp16d61OBzjzz2RRfDz9yBlOhfC01Vp+IhUJU6UlMetB5EWVEQ9GNWBufsQJp9xg8UtGfeQT0tLc7O9g5xavQiveBZv4jrGmU4RQ0UWXwMkVST3MiImVSSYM/va+eTrHjwqKKEZ+Leb4cPw6ro/sGdBx7mYlFnL2Mswug1lcW8qZ+GY5hA/8HLdnFXLvLNsKtM+h3EuFWLxq8FtgY4pjA4V2RfHlidYHXR5pRhvvnXuujqHKvKH4kbmimdSKREWJcK0egH8PRzCJzH2fWgU2YD3FPLvd/sTGLUzc240nLaRvWK136MHvGY/d+6Apw3S0vRGRPxUOcykjWbAyzAEHpP2DjOU01xsmfI2M2JSgMjGtasgdgnwHJJN1FFpCYfTDD7KyurrY2BMgZDbnIwn+gUKkDSkxpnSHqu5uM1tnUOXyOiucvYCzmJMKHU4z5UZHgy07+Hx8iy9OuYcPDnfKTvq97KPzCMlPQyd8wL2zfUWT6aFgpjiwdw/JpMBH+asGEtw1kyN407RHPZdaFwI2oUhP+gAXFMletxSFetfZUgaJo1c5vG97NaVBmhpXE2m+iUmon7Q5oC/TKqrZzp4iQdVooxDY/rx/R6IFH48xrWFT5MWPOAZmK0mDd3J3Jv0Kc0hax+/G/qbGb8dzquovIiE3KY+Ze5j+zg6mTuT31dcpYVw2vKanTY3JC2NV7PeRay1AWUlgQ2U5fv0/SYUMxtvN3tHJ/Mfk9I6swTCntn8y1yiRl8Czhr2o0+g6YeypPjeAd3nkO8c5Phu3vGopX6beMWzuBm6FfpbgAmIBqaFF4oN31tG6TMnc+tjIJRjeA3kV/yfk0KtLPIzcF+yfAsXHn3Otcrm6r19EwrBFxwr4ZjThQAD/alm2rQh4rl4vB6FssjTTqcMcd4fcL80f50ocUvsWkO83QPCmeu1CBWWaQeCs1dc2yehkSNRiLmZfwfH+htYvpgCJRIZJUIF73T3ofj+xgMw0yrih5LcDqUShj+vm9uVD8OiIwNSsGMO0X7JSeL4E9lbhrD0Do4Er8uG+q394I+ZVSKje0fY8aJkb55Rc4HNnrrPNdsNba/8E2sdDMFGnh4EAAAAAElFTkSuQmCC
+description: 'A ticketing platform '
+detaileddescription: Zendesk integration requires the API key and a username.
+configuration:
+- display: Username (email)
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+  hidden: false
+- display: API key
+  name: api
+  defaultvalue: ""
+  type: 0
+  required: true
+  hidden: false
+- display: Zendesk address (e.g. https://demisto.zendesk.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+  hidden: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+  hidden: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+  hidden: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+  hidden: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+  hidden: false
+- display: Oldest incidents to fetch (in minutes)
+  name: fetch_interval
+  defaultvalue: "10"
+  type: 0
+  required: false
+  hidden: false
+script:
+  script: |
+    var sendRequest = function(method, url, body, attr) {
+        var requestUrl = params.url + "/api/v2/" + url + encodeToURLQuery(attr);
+        var res;
+        var headers = {
+            'Content-Type': ['application/json']
+        };
+
+        res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: headers,
+                Username: params.username + '/token',
+                Password: params.api,
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+            );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        } catch (ex) {
+            throw 'Error in parsing reply - ' + res.Body + ' - ' + ex;
+        }
+    };
+
+
+    var createTicket = function() {
+        var ec = {Ticket: []};
+        var md = '## Zendesk tickets\n';
+        var isPublic = true;
+
+        if (args.private === 'false') {
+            isPublic = true;
+        } else {
+            isPublic = false;
+        }
+
+        var body = {
+                ticket: {
+                    comment: {
+                        body: args.comment,
+                        'public': isPublic
+                    }
+                }
+            };
+
+        if (args.requester_email) {
+            var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
+
+            if (reqRequester.users.length > 0) {
+                body.ticket['requester_id'] = reqRequester.users[0].id;
+            } else {
+                throw 'There is no such requester email';
+            }
+        }
+
+        if (args.assignee_email) {
+            var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
+
+            if (reqAssignee.users.length > 0) {
+                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+            } else {
+                throw 'There is no such assignee email';
+            }
+        }
+
+        if (args.custom_fields) {
+            var arrCust = args.custom_fields.split(',');
+            var dicCustStr = {};
+
+            for (var i = 0; i < arrCust.length; i++) {
+                var tmpKey = arrCust[i].split('=');
+                dicCustStr[tmpKey[0]] = tmpKey[1];
+            }
+
+            resCusFields = sendRequest('GET', 'ticket_fields.json');
+            var dicFields = {};
+
+            for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
+                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
+                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+            }
+
+            var arrRes = [];
+
+            for (strKey in dicCustStr) {
+                arrRes.push({
+                    id: dicFields[strKey],
+                    value: dicCustStr[strKey]
+                })
+            }
+
+            body.ticket.custom_fields = arrRes;
+        }
+
+        var ticket = {};
+
+        for (var key in args) {
+            if (key !== 'comment' &&
+                key !== 'private' &&
+                key !== 'requester_email' &&
+                key !== 'assignee_email' &&
+                key !== 'custom_fields') {
+                body.ticket[key] = args[key];
+                ticket[key] = args[key];
+            }
+        }
+
+        res = sendRequest('POST', 'tickets.json', JSON.stringify(body));
+
+        md += 'The ticket has been successfully created with id ' + res.ticket.id + '.\n';
+        ticket.id = res.ticket.id;
+        ticket.vendor = 'Zendesk';
+        ticket.description = args.body;
+        ticket.subject = args.subject;
+        ec.Ticket.push(ticket);
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    };
+
+
+    var listTickets = function() {
+        if (!args.query) {
+            args.query = 'type:ticket status:open';
+        }
+
+        var att = {query: args.query};
+        res = sendRequest('GET', 'search.json', '', att);
+
+        var ec = {Ticket: []};
+        var md = '## Zendesk tickets\n';
+
+        md += 'Id|Subject\n';
+        md += '---|---\n';
+
+        for (var i = 0; i <  res.results.length; i++) {
+            ec.Ticket.push({
+                id: res.results[i].id,
+                description: res.results[i].description,
+                subject: res.results[i].subject,
+                vendor: 'Zendesk'
+            });
+            md += res.results[i].id + '|' + res.results[i].subject + '\n';
+        }
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    };
+
+
+    var updateTicket = function() {
+        var ec = {};
+        var md = '## Zendesk tickets\n';
+        var isPublic = true;
+
+        if (args.private === 'false') {
+            isPublic = true;
+        } else {
+            isPublic = false;
+        }
+
+        var body = {
+                ticket: {
+                    comment: {
+                        body: args.comment,
+                        'public': isPublic
+                    }
+                }
+            };
+
+        if (args.requester_email) {
+            var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
+
+            if (reqRequester.users.length > 0) {
+                body.ticket['requester_id'] = reqRequester.users[0].id;
+            } else {
+                throw 'There is no such requester email';
+            }
+        }
+
+        if (args.assignee_email) {
+            var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
+
+            if (reqAssignee.users.length > 0) {
+                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+            } else {
+                throw 'There is no such assignee email';
+            }
+        }
+
+        for (var key in args) {
+            if (key !== 'comment' &&
+                key !== 'private' &&
+                key !== 'id' &&
+                key !== 'requester_email' &&
+                key !== 'assignee_email') {
+                body.ticket[key] = args[key];
+                ec['Ticket(val.id == ' + args.id + ').' + key] = args[key];
+            }
+        }
+
+        ec['Ticket(val.id == ' + args.id + ').description'] = args.body;
+
+        res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
+
+        md += 'Ticket number ' + args.id + ' has been updates successfully.\n';
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    };
+
+
+    var addMinutes = function(date, minutes) {
+            return new Date(date.getTime() + minutes*60000);
+    };
+
+
+    var getNowTime = function(minutesOffset) {
+            var time = new Date();
+            time = addMinutes(time,time.getTimezoneOffset());
+            time = (minutesOffset) ? addMinutes(time,minutesOffset) : time;
+
+            var month = "0" + (time.getMonth()+1);
+            var day = "0" + time.getDate();
+            var hours = "0" + time.getHours();
+            var minutes = "0" + time.getMinutes();
+            var seconds = "0" + time.getSeconds();
+            var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
+            var timeOld = hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+            sertime = dateOld + "T" + timeOld + 'Z';
+            return sertime;
+    };
+
+
+    var getTicketDetails = function() {
+        var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
+        var md = '## Zendesk ticket details\n';
+        var ec = {}
+        var warResults = [];
+        var arrAttch = [];
+
+        md += 'Id|Subject|Created at|Description|Priority|Recipients|Status\n';
+        md += '---|---|---|---|---|---|---\n';
+        md += resDetails.ticket.id + '|';
+        md += resDetails.ticket.subject + '|';
+        md += resDetails.ticket.created_at + '|';
+        md += resDetails.ticket.description + '|';
+        md += resDetails.ticket.priority + '|';
+        md += resDetails.ticket.recipient + '|';
+        md += resDetails.ticket.status + '\n';
+
+
+        ec['Ticket(val.id == ' + args.id + ').subject'] = resDetails.ticket.subject;
+        ec['Ticket(val.id == ' + args.id + ').created_at'] = resDetails.ticket.created_at;
+        ec['Ticket(val.id == ' + args.id + ').description'] = resDetails.ticket.description;
+        ec['Ticket(val.id == ' + args.id + ').priority'] = resDetails.ticket.priority;
+        ec['Ticket(val.id == ' + args.id + ').status'] = resDetails.ticket.status;
+
+        resComments = sendRequest('GET', 'tickets/' + args.id + '/comments.json');
+
+        md += '### Ticket comments\n';
+
+        for (var i = 0; i < resComments.comments.length; i++) {
+            var userName = '';
+
+            resUsers = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
+
+            for (var j = 0; j < resUsers.users.length; j++) {
+                if (resUsers.users[j].id === resComments.comments[i].author_id) {
+                    userName = resUsers.users[j].name;
+                    break;
+                }
+            }
+
+            md += '##### Comment number: ' + (i+1) + '\n';
+            md += '__Created at__: ' + resComments.comments[i].created_at + '\n';
+            md += '__Does the comment private__: ' + !resComments.comments[i].public + '\n';
+            md += '__User__: ' + userName + '\n';
+            md += '__Comment body__\n';
+            md += resComments.comments[i].body + '.\n\  ';
+
+            for (var j = 0; j < resComments.comments[i].attachments.length; j++) {
+                attach = resComments.comments[i].attachments[j];
+                var attachBin = http(attach.content_url,{Method: 'GET'},params.insecure,params.proxy);
+
+                var createdFileID = saveFile(attachBin.Body);
+                arrAttch.push({Type: 3, FileID: createdFileID, File: attach.file_name, Contents: attach.file_name});
+            }
+        }
+
+        var res = {
+            TicketDetails: resDetails,
+            TicketComments: resComments
+        }
+
+        warResults.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec})
+        return (warResults.concat(arrAttch));
+    };
+
+
+    var listUsers = function() {
+        res = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
+        var md = '## Zendesk user details\n';
+        var ec = {ZendeskUsers: []};
+
+        md += 'Id|Name|Email|Role|Time Zone\n';
+        md += '---|---|---|---|---\n';
+
+        for (var i = 0; i < res.users.length; i++) {
+            md += res.users[i].id + '|';
+            md += res.users[i].name + '|';
+            md += res.users[i].email + '|';
+            md += res.users[i].role + '|';
+            md += res.users[i].time_zone + '\n';
+
+            ec.ZendeskUsers.push({
+                id: res.users[i].id,
+                name: res.users[i].name,
+                email: res.users[i].email,
+                role: res.users[i].role,
+                timeZone: res.users[i].time_zone
+            });
+        }
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+    };
+
+
+    var fetchIncidents = function() {
+        var now = getLastRun();
+        var sertime;
+        var incidents = [];
+        var labels = [];
+
+        if (!params.fetch_interval) {
+            params.fetch_interval = 10;
+        }
+
+        if (!now.time) {
+            sertime = getNowTime((-1) * parseInt(params.fetch_interval));
+        } else {
+            sertime = now.time;
+        }
+
+        var att = {query: 'type:ticket created>' + sertime};
+        res = sendRequest('GET', 'search.json', '', att);
+
+        if (res.results.length > 0) {
+            for (var i = 0; i < res.results.length; i++) {
+
+                var resComments = sendRequest('GET', 'tickets/' + res.results[i].id + '/comments.json');
+                if (resComments.comments.length > 0) {
+                    labels.push({type: 'isTicketAttach', value: 'true'})
+                }
+
+                incidents.push({
+                    name: res.results[i].subject,
+                    details: res.results[i]['description'],
+                    labels: labels,
+                    rawJSON: JSON.stringify(res.results[i]),
+                    severity: parseInt(res.results[i].priority)
+                });
+
+                labels = [];
+            }
+
+            setLastRun({'time': res.results[0].created_at});
+        }
+
+        return JSON.stringify(incidents);
+    }
+
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var res = sendRequest('GET', 'users/me.json');
+
+            if (res.user.name !== 'Anonymous user' &&
+                res.user.id) {
+                return 'ok';
+            }
+
+            return JSON.stringify(res);
+
+        case 'zendesk-create-ticket':
+            return createTicket();
+
+        case 'zendesk-list-tickets':
+            return listTickets();
+
+        case 'zendesk-update-ticket':
+            return updateTicket();
+
+        case 'zendesk-ticket-details':
+            return getTicketDetails();
+
+        case 'zendesk-list-users':
+            return listUsers();
+
+        case 'fetch-incidents':
+            return fetchIncidents();
+        default:
+    }
+  type: javascript
+  commands:
+  - name: zendesk-create-ticket
+    arguments:
+    - name: subject
+      description: The subject of the ticket
+    - name: requester_email
+      description: The email of the user asking for support through the ticket
+    - name: assignee_email
+      description: The email of the agent to assign the ticket to
+    - name: comment
+      required: true
+      description: Comment body
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the body private comment
+      defaultValue: "false"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: Allowed values are problem, incident, question, or task
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      description: Allowed values are urgent, high, normal, or low
+    - name: tags
+      description: An array of tags to add to the ticket
+      isArray: true
+    - name: external_id
+      description: An ID to link Zendesk Support tickets to local records
+    - name: forum_topic_id
+      description: The numeric ID of the topic the ticket originated from, if any
+    - name: problem_id
+      description: For tickets of type "incident", the numeric ID of the problem the
+        incident is linked to, if any
+    - name: due_at
+      description: For tickets of type "task", the due date of the task. Accepts the
+        ISO 8601 date format (yyyy-mm-dd)
+    - name: via_followup_source_id
+      description: The id of a closed ticket for a follow-up ticket.
+    - name: collaborators
+      description: An array of numeric IDs, emails, or objects containing name and
+        email properties. See Setting Collaborators. An email notification is sent
+        to them when the ticket is created
+      isArray: true
+    - name: custom_fields
+      description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
+    outputs:
+    - contextPath: Ticket.id
+      description: Ticket id
+    - contextPath: Ticket.vendor
+      description: Zendesk
+    - contextPath: Ticket.description
+      description: Ticket description
+    - contextPath: Ticket.subject
+      description: Ticket subject
+    description: Create new ticket in the Zendesk
+  - name: zendesk-list-tickets
+    arguments:
+    - name: query
+      description: 'Query to search. Please look at this tutorial for syntax: https://developer.zendesk.com/rest_api/docs/core/search'
+      defaultValue: type:ticket status:open
+    outputs:
+    - contextPath: Ticket.id
+      description: Ticked id
+    - contextPath: Ticket.description
+      description: Ticket description
+    - contextPath: Ticket.subject
+      description: Ticket subject
+    - contextPath: Ticket.vendor
+      description: Zendesk
+    description: 'List all Zendesk open tickets '
+  - name: zendesk-ticket-details
+    arguments:
+    - name: id
+      required: true
+      default: true
+    outputs:
+    - contextPath: Ticket.subject
+      description: Subject of the Zendesk ticket
+    - contextPath: Ticket.created_at
+      description: The time the Zendesk ticket was created
+    - contextPath: Ticket.description
+      description: Description of the Zendesk ticket
+    - contextPath: Ticket.priority
+      description: Priority of the Zendesk ticket
+    - contextPath: Ticket.status
+      description: Status of the Zendesk ticket
+    description: Show Zendesk ticket details
+  - name: zendesk-update-ticket
+    arguments:
+    - name: subject
+      description: The subject of the ticket
+    - name: requester_email
+      description: The email of the user asking for support through the ticket
+    - name: assignee_email
+      description: The email of the agent to assign the ticket to
+    - name: comment
+      description: Comment body
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the body private comment
+      defaultValue: "false"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: Allowed values are problem, incident, question, or task
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      description: Allowed values are urgent, high, normal, or low
+    - name: tags
+      description: An array of tags to add to the ticket
+      isArray: true
+    - name: external_id
+      description: An ID to link Zendesk Support tickets to local records
+    - name: problem_id
+      description: For tickets of type "incident", the numeric ID of the problem the
+        incident is linked to, if any
+    - name: due_at
+      description: For tickets of type "task", the due date of the task. Accepts the
+        ISO 8601 date format (yyyy-mm-dd)
+    - name: collaborators
+      description: An array of numeric IDs, emails, or objects containing name and
+        email properties. See Setting Collaborators. An email notification is sent
+        to them when the ticket is created
+      isArray: true
+    - name: id
+      required: true
+      default: true
+      description: Ticket id to update
+    - name: assignee_email
+      description: The email address of the agent to assign the ticket to
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - pending
+      - hold
+      - solved
+      - closed
+      description: Allowed values are open, pending, hold, solved or closed
+    description: Update Zendesk ticket
+  - name: zendesk-list-users
+    arguments: []
+    outputs:
+    - contextPath: ZendeskUsers.id
+      description: Id of the Zendesk user
+    - contextPath: ZendeskUsers.name
+      description: Name of the Zendesk user
+    - contextPath: ZendeskUsers.email
+      description: Email of the Zendesk user
+    - contextPath: ZendeskUsers.role
+      description: Role of the Zendesk user
+    - contextPath: ZendeskUsers.timeZone
+      description: 'Time zone in which Zendesk user '
+    description: List all the Zendesk users
+  isfetch: true
