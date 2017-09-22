@@ -15,12 +15,12 @@ configuration:
 - display: API Key
   name: apiKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Secret Key
   name: secretKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
@@ -272,7 +272,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            var entry = searchQuery('url.google');
+            var entry = searchQuery('url:google');
             if (entry && entry.Type === entryTypes.note) {
                return 'ok';
             }
