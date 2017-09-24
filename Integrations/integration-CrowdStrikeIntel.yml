@@ -443,9 +443,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
     description: Check file reputation
   - name: url
     deprecated: false
@@ -470,9 +467,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
     description: Check the given URL reputation
   - name: domain
     deprecated: false
@@ -497,9 +491,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Check the given URL reputation
   - name: ip
     deprecated: false
@@ -524,9 +515,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
     description: Check IP reputation
   - name: cs-actors
     deprecated: false
@@ -690,15 +678,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
     description: Search known indicators based on the given parameters
   - name: cs-reports
     deprecated: false
@@ -773,3 +752,4 @@ script:
       publications.
 hidden: false
 fromversion: 2.5.0
+releaseNotes: "-"

@@ -428,11 +428,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Enrich the given query with metadata
   - name: pt-malware
     arguments:
@@ -481,13 +476,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Get malware data
   - name: url
     arguments:
@@ -516,10 +504,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-      related: ""
     description: Get malware data
   - name: pt-osint
     arguments:
@@ -618,3 +602,4 @@ script:
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
 hidden: false
+releaseNotes: "-"
