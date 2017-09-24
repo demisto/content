@@ -539,9 +539,6 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
     deprecated: true
@@ -563,9 +560,6 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: umbrella-domain-co-occurrences
@@ -1027,9 +1021,6 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: This command  shows whether the IP address you’ve entered as input
       has any known malicious domains associated with it. The domains that appear
       when using this endpoint are those that currently exist in the Umbrella block
@@ -1048,9 +1039,6 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: This command  shows whether the IP address you’ve entered as input
       has any known malicious domains associated with it. The domains that appear
       when using this endpoint are those that currently exist in the Umbrella block
@@ -1105,3 +1093,4 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
 hidden: false
+releaseNotes: "-"

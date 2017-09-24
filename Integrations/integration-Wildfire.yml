@@ -248,9 +248,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
     description: Retrieve results for a file hash using WildFire
   - name: file
     description: Retrieve results for a file hash using WildFire
@@ -280,12 +277,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
   - name: wildfire-upload
     arguments:
     - name: upload
       description: ID of the entry containing the file to upload
     description: Upload file to WildFire for analysis.
 hidden: false
+releaseNotes: "-"
