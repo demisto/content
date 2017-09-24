@@ -67,7 +67,7 @@ script:
             );
         if ((allowOtherStatuses && res.StatusCode !== 400) && (res.StatusCode < 200 || res.StatusCode >= 300)) {
             if (res.StatusCode === 404) {
-                return 'no results found';
+                return undefined;
             }
             throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
@@ -92,6 +92,9 @@ script:
 
     var getCredentials = function(humanReadable) {
         var result = sendRequest('GET', 'Accounts', args, true);
+        if (!result) {
+            return 'no results found';
+        }
         var credentials = [];
         if (result.ErrorMsg && result.ErrorMsg.indexOf("Too many password objects matching query") !== -1) {
             credentials = parseACcountsFromErroMessage(result.ErrorMsg)
