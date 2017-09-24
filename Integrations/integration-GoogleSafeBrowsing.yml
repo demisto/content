@@ -171,10 +171,7 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
     description: Check URL Reputation
 hidden: false
 system: true
-
+releaseNotes: "-"
