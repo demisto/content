@@ -2,6 +2,7 @@ commonfields:
   id: CYFileRep
   version: 1
 name: CYFileRep
+releaseNotes: "-"
 script: |-
   # Retrieve file entry reputation using Cylance
   # First, get the file entry, check with Cylance if the file is known and if not, upload the file, wait 5 seconds and check again
@@ -72,10 +73,6 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: DBotScore.Score
   description: The actual score
-important:
-- contextPath: File(val.Malicious)
-  description: Malicious Files
-  related: File
 scripttarget: 0
 dependson:
   must:
