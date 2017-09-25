@@ -32,7 +32,13 @@ script: |-
                   line += ',';
               }
 
-              line += array[i][header];
+              var value = array[i][header] + '';
+              value = value.trim();
+              if (value && value.indexOf(',') > -1) {
+                  line += '"' + value + '"';
+              } else {
+                  line += value;
+              }          
           }
 
           str += line + '\r\n';
@@ -70,3 +76,4 @@ args:
   required: true
   isArray: true
 scripttarget: 0
+releaseNotes: Wrap values that have commas with quotes
