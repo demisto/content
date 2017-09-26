@@ -3,7 +3,20 @@ commonfields:
   version: 1
 name: DataHashReputation
 script: |-
-  return calculateReputation(args.input, args.cacheExpiration, args.forceCalc, 'file', 'file', 'File*');
+  var score = -1;
+  var res = executeCommand("findIndicators", {"query": "type:File* and value:\"" + args.input + "\" and manualScore:T"})
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      score = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('file', {file: args.input});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+            score = scores[i];
+          }
+      }
+  }
+  return score < 0 ? 0 : score;
 type: javascript
 tags:
 - reputation
@@ -15,9 +28,6 @@ args:
   required: true
   default: true
   description: Hash value to look up
-- name: cacheExpiration
-  required: false
-  description: Time in minutes that cache should be valid for
 - name: forceCalc
   auto: PREDEFINED
   predefined:
@@ -30,5 +40,5 @@ dependson:
   must:
   - file
 timeout: 0s
-fromVersion: 3.1.0
-releaseNotes: Use caching to determine whether to run script again or not (from version 3.1.0)
+toversion: 3.0.1
+releaseNotes: "-"

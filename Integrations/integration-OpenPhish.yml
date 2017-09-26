@@ -149,10 +149,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: ""
     description: Check URL Reputation
   - name: openphish-reload
     arguments: []
@@ -161,3 +157,4 @@ script:
     arguments: []
     description: Show OpenPhish database status
 hidden: false
+releaseNotes: "-"

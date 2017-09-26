@@ -66,13 +66,6 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: DBotScore.Score
   description: The actual score
-important:
-- contextPath: File(val.Malicious)
-  description: Malicious Files
-- contextPath: IP(val.Malicious)
-  description: Malicious IPs
-- contextPath: Domain(val.Malicious)
-  description: Malicious Domains
 scripttarget: 0
 dependson:
   must:
@@ -84,3 +77,4 @@ dependson:
   - pt-whois
   - pt-ssl-cert
 timeout: 0s
+releaseNotes: "-"
