@@ -1,14 +1,14 @@
 id: Splunk-Test
-version: -1
+version: 8
 name: Splunk-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e27eeada-da08-478e-8325-52d9c07a3a56
+    taskid: 87785543-db15-4317-8b04-d94a02121189
     type: start
     task:
-      id: e27eeada-da08-478e-8325-52d9c07a3a56
+      id: 87785543-db15-4317-8b04-d94a02121189
       version: -1
       name: ""
       iscommand: false
@@ -19,16 +19,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: d3bd5f51-3ba0-4b14-8fc6-6f3b8019c61d
+    taskid: 78f80c3b-60f9-4b90-8e33-562cef25c6ce
     type: regular
     task:
-      id: d3bd5f51-3ba0-4b14-8fc6-6f3b8019c61d
+      id: 78f80c3b-60f9-4b90-8e33-562cef25c6ce
       version: -1
       name: splunk-search
       description: Search Splunk for events
@@ -47,22 +47,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: 7c61c6cf-c68a-4e56-854f-9e0ac1268ba5
+    taskid: a23f6147-2676-4691-847b-0abfdbc378f5
     type: regular
     task:
-      id: 7c61c6cf-c68a-4e56-854f-9e0ac1268ba5
+      id: a23f6147-2676-4691-847b-0abfdbc378f5
       version: -1
       name: Verify Context result of Splunk Search
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       expectedValue: ""
       fields: ""
@@ -70,8 +73,136 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 455,
-          "y": 570
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 935d8554-4d68-4701-8c01-9f582cba9262
+    type: regular
+    task:
+      id: 935d8554-4d68-4701-8c01-9f582cba9262
+      version: -1
+      name: Get indexes names
+      script: SplunkPy|||splunk-get-indexes
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: indexes=
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6be6bcd6-1262-4042-823e-bb758a886562
+    type: condition
+    task:
+      id: 6be6bcd6-1262-4042-823e-bb758a886562
+      version: -1
+      name: Has main index
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      left: ""
+      right: ""
+      string: ${JsonStr}
+      substring: main
+      substringSeperator: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b7bfa816-b6f3-4b5c-8816-f64cfc011592
+    type: regular
+    task:
+      id: b7bfa816-b6f3-4b5c-8816-f64cfc011592
+      version: -1
+      name: Create new Splunk event
+      script: SplunkPy|||splunk-submit-event
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    scriptarguments:
+      data: test
+      host: localhost
+      index: main
+      sourcetype: demisto-ci
+    view: |-
+      {
+        "position": {
+          "x": 351,
+          "y": 1062
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ceb53bad-937f-4301-8184-b22f0dcfd615
+    type: regular
+    task:
+      id: ceb53bad-937f-4301-8184-b22f0dcfd615
+      version: -1
+      name: DumpJSON
+      description: Dumps a json from context key input, and returns a json object
+        string result
+      scriptName: DumpJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context: ""
+      key: indexes
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a93df2c6-5154-49e1-8fea-486b4dbefc66
+    type: regular
+    task:
+      id: a93df2c6-5154-49e1-8fea-486b4dbefc66
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: non-existent
+    view: |-
+      {
+        "position": {
+          "x": -202,
+          "y": 1062
         }
       }
 view: |-
@@ -79,9 +210,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
-        "width": 385,
-        "x": 450,
+        "height": 1107,
+        "width": 933,
+        "x": -202,
         "y": 50
       }
     }
