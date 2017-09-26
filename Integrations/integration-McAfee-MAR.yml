@@ -37,7 +37,7 @@ configuration:
 - display: Client private key content (see `client.key` in instructions)
   name: private_key
   defaultvalue: ""
-  type: 12
+  type: 14
   required: true
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
     - get hostname & port from `brokerlist.properties` file in instructions. Note
@@ -300,7 +300,6 @@ script:
     - name: outputs
       description: Comma separated fields (outputs) to view - run `mar-collectors-list`
         command for all collectors outputs, shows all outputs if not supplied
-      isArray: true
     - name: filter-by
       description: Field name (output) to filter by (e.g. ip_address) -  - run `mar-collectors-list`
         command for all collectors outputs
