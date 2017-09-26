@@ -344,10 +344,6 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
     description: basic search reports by ip
   - name: domain
     arguments:
@@ -372,10 +368,6 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-      related: ""
     description: basic search reports by domain
   - name: file
     arguments:
@@ -398,10 +390,6 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: ""
     description: basic search file report by md5/sha1. NOTE - specify only one of
       md5/sha1 arguments
   - name: isight-get-report
@@ -449,3 +437,4 @@ script:
       - other
     description: Submission of malware and other files for community sharing
 hidden: false
+releaseNotes: "-"

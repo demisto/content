@@ -1,0 +1,26 @@
+commonfields:
+  id: TestXml2JSON
+  version: 17
+name: TestXml2JSON
+script: |-
+  import json
+
+  xml = "<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name></employee></work>"
+  jsonExpected = '{"work": {"employee": [{"id": "100", "name": "foo"}, {"id": "200", "name": "goo"}]}}'
+
+  jsonActual = xml2json(xml)
+  assert jsonActual == jsonExpected, "expected\n" + jsonExpected + "\n to equal \n" + jsonActual
+
+  jsonDict = json.loads(jsonActual)
+  assert jsonDict['work']['employee'][0]['id'] == "100", 'id of first employee must be 100'
+  assert jsonDict['work']['employee'][1]['name'] == "goo", 'name of second employee must be goo'
+
+  xmlActual = json2xml(jsonActual)
+  assert xmlActual == xml, "expected\n" + xml + "\n to equal \n" + xmlActual
+
+  demisto.results('Tests PASS')
+type: python
+tags: []
+comment: 'Tests for common functions xml2json and json2xml '
+enabled: true
+scripttarget: 0
