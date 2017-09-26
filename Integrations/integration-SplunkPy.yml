@@ -277,3 +277,4 @@ script:
     description: Print all Splunk index names
   dockerimage: demisto/splunksdk
   isfetch: true
+releaseNotes: Add SplunkPy the capability to create events back into splunk
