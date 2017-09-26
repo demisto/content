@@ -205,7 +205,7 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
         sys.exit(0)
-    if demisto.command() == 'splunk-print-indexes':
+    if demisto.command() == 'splunk-get-indexes':
         indexes = service.indexes
         indexesNames = []
         for index in indexes:
@@ -260,21 +260,21 @@ script:
     arguments:
     - name: index
       required: true
-      description: Splunk index to push data to
+      description: Splunk index to push data to, run splunk-print-indexes to get all indexes
     - name: data
       required: true
       default: true
-      description: The new event data to push
+      description: The new event data to push, can be any string
     - name: sourcetype
       required: true
       description: Event sourcetype
     - name: host
       required: true
-      description: Event host
+      description: Event host, can be 'Local' or '120.0.0.1' for example
     description: Create new event in splunk
-  - name: splunk-print-indexes
+  - name: splunk-get-indexes
     arguments: []
     description: Print all Splunk index names
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: Add SplunkPy the capability to create events back into splunk
+releaseNotes: Add capabilities to search events and create events back into splunk
