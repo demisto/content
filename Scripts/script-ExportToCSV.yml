@@ -33,7 +33,7 @@ script: |-
               }
 
               var value = array[i][header] + '';
-              value = value.trim();
+              value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
               if (value && value.indexOf(',') > -1) {
                   line += '"' + value + '"';
               } else {
