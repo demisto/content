@@ -65,7 +65,8 @@
         {
             "name": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "playbookID": "TestCommonPython"            
@@ -83,6 +84,14 @@
             "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "name": "VxStream",
+            "playbookID": "VxStream Test"
+        },
+        {
+            "name": "SplunkPy",
+            "playbookID": "Splunk-Test"
         }
     ],
     "skipped": [
