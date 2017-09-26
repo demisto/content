@@ -41,7 +41,7 @@ script: |-
               }          
           }
 
-          str += line + '\r\n';
+          str += line + '\n';
       }
 
       return str;
