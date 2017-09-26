@@ -66,7 +66,7 @@ script:
         'pt-osint': 'v2/enrichment/osint',
         'pt-whois': 'v2/whois',
         'pt-whois-keyword': 'v2/whois/search/keyword',
-        'pt-whois-search': 'v2/whois/search/keyword',
+        'pt-whois-search': 'v2/whois/search',
         'pt-get-components': 'v2/host-attributes/components',
         'pt-get-pairs': 'v2/host-attributes/pairs',
         'pt-ssl-cert': 'v2/ssl-certificate',
@@ -602,4 +602,4 @@ script:
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
 hidden: false
-releaseNotes: "-"
+releaseNotes: "fixed search command"
