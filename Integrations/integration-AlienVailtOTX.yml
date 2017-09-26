@@ -288,6 +288,7 @@ script:
                 case 'domain':
                     malInfo['Name'] = args[argName];
                     outputPath = outputPaths.domain;
+                    dbotScoreType = 'domain';
                     break;
                 case 'url':
                     malInfo['Data'] = args[argName];
@@ -367,7 +368,7 @@ script:
     - contextPath: Domain.AlienVaultOTX.Whois
       description: Whois URL for domain data
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator checked
     - contextPath: DBotScore.Score
       description: The score from AlienVault
     - contextPath: DBotScore.Type
@@ -508,3 +509,4 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
 hidden: false
+releaseNotes: "-"
