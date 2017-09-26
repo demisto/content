@@ -88,6 +88,10 @@
         {
             "name": "VxStream",
             "playbookID": "VxStream Test"
+        },
+        {
+            "name": "SplunkPy",
+            "playbookID": "Splunk-Test"
         }
     ],
     "skipped": [
