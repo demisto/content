@@ -1,5 +1,5 @@
 id: Splunk-Test
-version: 8
+version: -1
 name: Splunk-Test
 starttaskid: "0"
 tasks:
