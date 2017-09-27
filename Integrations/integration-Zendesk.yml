@@ -89,6 +89,23 @@ script:
         }
     };
 
+    var cachedInfo = getIntegrationContext();
+    if (cachedInfo) {
+        cachedInfo = {users: {}};
+        resCusFields = sendRequest('GET', 'ticket_fields.json');
+        var dicFields = {};
+        var arrUsers = [];
+
+        for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
+            dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
+            dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+        }
+
+        cachedInfo.cus_fields = dicFields;
+
+        setIntegrationContext(cachedInfo);
+    }
+
 
     var createTicket = function() {
         var ec = {Ticket: []};
@@ -139,13 +156,7 @@ script:
                 dicCustStr[tmpKey[0]] = tmpKey[1];
             }
 
-            resCusFields = sendRequest('GET', 'ticket_fields.json');
-            var dicFields = {};
-
-            for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
-                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
-                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
-            }
+            dicFields = cachedInfo.cus_fields;
 
             var arrRes = [];
 
@@ -189,7 +200,7 @@ script:
         var searchQ;
 
         if (!args.query) {
-            searchQ = 'type:ticket status:open';
+            searchQ = 'type:ticket -status:close';
         } else {
             searchQ = 'type:ticket ' + args.query;
         }
@@ -266,13 +277,7 @@ script:
                 dicCustStr[tmpKey[0]] = tmpKey[1];
             }
 
-            resCusFields = sendRequest('GET', 'ticket_fields.json');
-            var dicFields = {};
-
-            for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
-                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
-                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
-            }
+            dicFields = cachedInfo.cus_fields;
 
             var arrRes = [];
 
@@ -331,13 +336,7 @@ script:
 
 
     var convertCustomField = function(id, name) {
-        resCusFields = sendRequest('GET', 'ticket_fields.json');
-        var dicFields = {};
-
-        for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
-            dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
-            dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
-        }
+        dicFields = cachedInfo.cus_fields;
 
         if (id) {
             return dicFields[id]
@@ -345,6 +344,22 @@ script:
             dicFields[name]
         }
     };
+
+
+    var getUserInfo = function(id) {
+        var catchData = getIntegrationContext();
+
+        if (catchData.users[id]) {
+            return catchData.users[id];
+        } else {
+            var res = sendRequest('GET', 'users/' + id + '.json');
+
+            catchData.users[id] = res.user;
+            setIntegrationContext(catchData);
+
+            return res.user;
+        }
+    }
 
 
     var getTicketDetails = function() {
@@ -400,15 +415,9 @@ script:
 
         for (var i = 0; i < resComments.comments.length; i++) {
             var userName = '';
+            resUsers = getUserInfo(resComments.comments[i].author_id)
 
-            resUsers = sendRequest('GET', 'users.json?role[]=admin&role[]=end-user');
-
-            for (var j = 0; j < resUsers.users.length; j++) {
-                if (resUsers.users[j].id === resComments.comments[i].author_id) {
-                    userName = resUsers.users[j].name;
-                    break;
-                }
-            }
+            userName = resUsers.name;
 
             if (resComments.comments[i].public) {
                 md += '##### Public comment #' + (i+1) + ' ' + resComments.comments[i].created_at + ' by ' + userName + '\n';
@@ -645,7 +654,6 @@ script:
     arguments:
     - name: query
       description: 'Query to search. Please look at this tutorial for syntax: https://developer.zendesk.com/rest_api/docs/core/search'
-      defaultValue: type:ticket status:open
     outputs:
     - contextPath: Ticket.id
       description: Ticked id
