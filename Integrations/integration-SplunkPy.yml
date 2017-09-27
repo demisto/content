@@ -138,6 +138,33 @@ script:
         if len(service.jobs) >= 0:
             demisto.results('ok')
         sys.exit(0)
+    if demisto.command() == 'splunk-search':
+        t = datetime.utcnow() - timedelta(days=7)
+        time = t.strftime("%Y-%m-%dT%H:%M:%S")
+        kwargs_oneshot = {"earliest_time":time}
+        if demisto.get(demisto.args(), 'earliest_time'):
+            kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
+        if demisto.get(demisto.args(), 'latest_time'):
+            kwargs_oneshot['latest_time'] = demisto.args()['latest_time']
+        if demisto.get(demisto.args(), 'event_limit'):
+            kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
+        searchquery_oneshot = demisto.args()['query']
+        if not searchquery_oneshot.startswith('search'):
+            searchquery_oneshot = 'search '+searchquery_oneshot
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+
+        reader = results.ResultsReader(oneshotsearch_results)
+        res = []
+        for item in reader:
+            if isinstance(item, results.Message):
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(item.message)})
+            elif isinstance(item, dict):
+                # Normal events are returned as dicts
+                res.append(item)
+        ec = {};
+        ec['Splunk.Result'] = res
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
+        sys.exit(0)
     if demisto.command() == 'splunk-results':
         jobs = service.jobs
         found = False
@@ -178,6 +205,24 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
         sys.exit(0)
+    if demisto.command() == 'splunk-get-indexes':
+        indexes = service.indexes
+        indexesNames = []
+        for index in indexes:
+            index_json = {'name':index.name, 'count': index["totalEventCount"]}
+            indexesNames.append(index_json)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames), 'HumanReadable':tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+        sys.exit(0)
+    if demisto.command() == 'splunk-submit-event':
+        try:
+            index = service.indexes[demisto.args()['index']]
+        except KeyError:
+            demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
+            sys.exit(0)
+        else:
+            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            demisto.results('Event was created in Splunk index: '+r.name)
+        sys.exit(0)
   type: python
   commands:
   - name: splunk-results
@@ -187,5 +232,49 @@ script:
       default: true
       description: search id
     description: 'fetch splunk search results '
+  - name: splunk-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The splunk search language string to execute, example :"* | head
+        3"
+    - name: earliest_time
+      description: 'Specifies the earliest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string. Default is 1 week ago, in this format
+        "-7d", also possible to do time as: 2014-06-19T12:00:00.000-07:00"'
+    - name: latest_time
+      description: Specifies the latest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string, example "2014-06-19T12:00:00.000-07:00"
+        or "-3d" (for time 3 days before now)
+    - name: event_limit
+      description: Limit the amount of events to return, Default is 100, put 0 for
+        unlimited
+    outputs:
+    - contextPath: Splunk.Result
+      description: The splunk search result, json array where each item is a splunk event
+    description: Search Splunk for events
+  - name: splunk-submit-event
+    arguments:
+    - name: index
+      required: true
+      description: Splunk index to push data to, run splunk-print-indexes to get all indexes
+    - name: data
+      required: true
+      default: true
+      description: The new event data to push, can be any string
+    - name: sourcetype
+      required: true
+      description: Event sourcetype
+    - name: host
+      required: true
+      description: Event host, can be 'Local' or '120.0.0.1' for example
+    description: Create new event in splunk
+  - name: splunk-get-indexes
+    arguments: []
+    description: Print all Splunk index names
   dockerimage: demisto/splunksdk
   isfetch: true
+releaseNotes: Add capabilities to search events and create events back into splunk
