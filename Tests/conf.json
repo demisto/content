@@ -80,10 +80,6 @@
             "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
-        },
-        {
-            "name": "EWS",
-            "playbookID": "EWS test"
         }
     ],
     "skipped": [
