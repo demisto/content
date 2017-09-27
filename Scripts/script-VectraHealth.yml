@@ -30,3 +30,5 @@ timeout: 0s
 dependson:
   must:
   - vec-health
+deperecated: true
+releaseNotes: Depercated, use vectra-health command instead
