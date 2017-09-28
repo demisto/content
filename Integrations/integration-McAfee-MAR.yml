@@ -184,7 +184,7 @@ script:
     def search(collector, outputs, filter_by, filter_operator, filter_value):
         config = get_client_config()
         with DxlClient(config) as client:
-            x = client.connect()
+            client.connect()
             mar_client = MarClient(client)
 
             if (not filter_by and not filter_operator and not filter_value):
