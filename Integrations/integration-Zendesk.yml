@@ -17,7 +17,7 @@ configuration:
 - display: API key
   name: api
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
   hidden: false
 - display: Zendesk address (e.g. https://demisto.zendesk.com)
@@ -131,7 +131,7 @@ script:
             var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
 
             if (reqRequester.users.length > 0) {
-                body.ticket['requester_id'] = reqRequester.users[0].id;
+                body.ticket.requester_id = reqRequester.users[0].id;
             } else {
                 throw 'There is no such requester email';
             }
@@ -141,7 +141,7 @@ script:
             var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
 
             if (reqAssignee.users.length > 0) {
-                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+                body.ticket.assignee_id = reqAssignee.users[0].id;
             } else {
                 throw 'There is no such assignee email';
             }
@@ -160,11 +160,11 @@ script:
 
             var arrRes = [];
 
-            for (strKey in dicCustStr) {
+            for (var strKey in dicCustStr) {
                 arrRes.push({
                     id: dicFields[strKey],
                     value: dicCustStr[strKey]
-                })
+                });
             }
 
             body.ticket.custom_fields = arrRes;
@@ -252,7 +252,7 @@ script:
             var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
 
             if (reqRequester.users.length > 0) {
-                body.ticket['requester_id'] = reqRequester.users[0].id;
+                body.ticket.requester_id = reqRequester.users[0].id;
             } else {
                 throw 'There is no such requester email';
             }
@@ -262,7 +262,7 @@ script:
             var reqAssignee = sendRequest('GET', 'users/search.json', '', {query: args.assignee_email});
 
             if (reqAssignee.users.length > 0) {
-                body.ticket['assignee_id'] = reqAssignee.users[0].id;
+                body.ticket.assignee_id = reqAssignee.users[0].id;
             } else {
                 throw 'There is no such assignee email';
             }
@@ -449,7 +449,7 @@ script:
         if (context) {
             ec['Ticket(val.id == ' + args.id + ')'] = newContext;
         } else {
-            ec['Ticket'] = newContext;
+            ec.Ticket = newContext;
         }
 
 
