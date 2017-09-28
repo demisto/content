@@ -263,3 +263,4 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
 scripttarget: 0
+releaseNotes: added UserAccountControl flags parsing
