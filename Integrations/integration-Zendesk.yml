@@ -90,15 +90,17 @@ script:
     };
 
     var cachedInfo = getIntegrationContext();
-    if (cachedInfo) {
+    if (!cachedInfo) {
         cachedInfo = {users: {}};
         resCusFields = sendRequest('GET', 'ticket_fields.json');
         var dicFields = {};
         var arrUsers = [];
 
         for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
-            dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
-            dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+            if (resCusFields.ticket_fields[i].active) {
+                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
+                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+            }
         }
 
         cachedInfo.cus_fields = dicFields;
