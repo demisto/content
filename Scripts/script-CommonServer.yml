@@ -1715,7 +1715,7 @@ script: |-
               score = scores[i];
             }
         }
-        return score;
+        return score < 0 ? 0 : score;
       }
 
       function calculateReputation(value, cacheExpiration, forceCalc, command, argName, typeName) {
