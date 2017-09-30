@@ -55,6 +55,12 @@ script:
     if (!cachedInfo) {
         cachedInfo = {users: {}, customFields: {}};
     }
+    if (!cachedInfo.user) {
+        cachedInfo.users = {};
+    }
+    if (!cachedInfo.customFields) {
+        cachedInfo.customFields = {};
+    }
 
 
     var loadCustomFields = function() {
@@ -75,7 +81,7 @@ script:
     };
 
     var getUserDetails = function(id) {
-        if (!cachedInfo.users[id]) {
+        if (!cachedInfo.users || !cachedInfo.users[id]) {
             var res = sendRequest('GET', 'users/' + id + '.json');
             cachedInfo.users[id] = res.user;
             setIntegrationContext(cachedInfo);
@@ -98,14 +104,14 @@ script:
     };
 
     var getCustomFieldName = function(id) {
-        if (!cachedInfo.customFields[id]) {
+        if (!cachedInfo.customFields || !cachedInfo.customFields[id]) {
             loadCustomFields();
         }
         return cachedInfo.customFields[id];
     };
 
     var getCustomFieldId = function(name) {
-        if (!cachedInfo.customFields[name]) {
+        if (!cachedInfo.customFields || !cachedInfo.customFields[name]) {
             loadCustomFields();
         }
         return cachedInfo.customFields[name];
@@ -265,24 +271,9 @@ script:
 
 
     var updateTicket = function() {
-        var ec = {};
         var md = '## Zendesk tickets\n';
-        var isPublic = true;
 
-        if (args.private === 'no') {
-            isPublic = true;
-        } else {
-            isPublic = false;
-        }
-
-        var body = {
-                ticket: {
-                    comment: {
-                        body: args.comment,
-                        'public': isPublic
-                    }
-                }
-            };
+        var body = {ticket: {}};
 
         if (args.requester_email) {
             var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
@@ -328,9 +319,7 @@ script:
         }
 
         for (var key in args) {
-            if (key !== 'comment' &&
-                key !== 'private' &&
-                key !== 'id' &&
+            if (key !== 'id' &&
                 key !== 'requester_email' &&
                 key !== 'assignee_email' &&
                 key !== 'custom_fields') {
@@ -339,15 +328,33 @@ script:
             }
         }
 
-        ec['Ticket(val.id == ' + args.id + ').description'] = args.body;
+        res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
+
+        md += 'Ticket number ' + args.id + ' has been updated successfully.\n';
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
+    };
+
+
+    var addComment = function() {
+        var md = '## Zendesk tickets\n';
+        var isPublic = (args.private === 'no') ? true : false;
+
+        var body = {
+                ticket: {
+                    comment: {
+                        body: args.comment,
+                        'public': isPublic
+                    }
+                }
+            };
 
         res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
 
-        md += 'Ticket number ' + args.id + ' has been updates successfully.\n';
+        md += 'Comment added successfully.\n';
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
-
 
     var addMinutes = function(date, minutes) {
             return new Date(date.getTime() + minutes*60000);
@@ -384,20 +391,18 @@ script:
             md += 'Recipients: __' + resDetails.ticket.recipient + '__\n';
         }
 
-
         md += "#### Description\n";
         md += resDetails.ticket.description + "\n";
-
 
         var fieldsMd='';
         for (var i = 0; i < resDetails.ticket.custom_fields.length; i++) {
             if (resDetails.ticket.custom_fields[i].value) {
-                md += "- __" + getCustomFieldName(resDetails.ticket.custom_fields[i].id) + "__: " + resDetails.ticket.custom_fields[i].value + "\n";
+                fieldsMd += "- __" + getCustomFieldName(resDetails.ticket.custom_fields[i].id) + "__: " + resDetails.ticket.custom_fields[i].value + "\n";
             }
         }
         if (fieldsMd) {
             md += "#### Custom fields\n";
-            md += fieldMd;
+            md += fieldsMd;
         }
 
         newContext.subject = resDetails.ticket.id;
@@ -563,6 +568,9 @@ script:
         case 'zendesk-update-ticket':
             return updateTicket();
 
+        case 'zendesk-add-comment':
+            return addComment();
+
         case 'zendesk-ticket-details':
             return getTicketDetails();
 
@@ -684,15 +692,6 @@ script:
       description: The email of the user asking for support through the ticket
     - name: assignee_email
       description: The email of the agent to assign the ticket to
-    - name: comment
-      description: Comment body
-    - name: private
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Does the body private comment
-      defaultValue: "no"
     - name: type
       auto: PREDEFINED
       predefined:
@@ -743,6 +742,22 @@ script:
     - name: custom_fields
       description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
     description: Update Zendesk ticket
+  - name: zendesk-add-comment
+    arguments:
+    - name: comment
+      description: Comment text to add
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Add as private comment
+      defaultValue: "no"
+    - name: id
+      required: true
+      default: true
+      description: Ticket ID to update
+    description: Add comment to existing Zendesk ticket
   - name: zendesk-list-agents
     arguments: []
     outputs:
@@ -764,3 +779,4 @@ script:
       description: Attachment id
     description: Return the attachment from Zendesk
   isfetch: true
+releaseNotes: -
