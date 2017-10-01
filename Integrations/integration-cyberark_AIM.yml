@@ -72,11 +72,11 @@ script:
             if (res.StatusCode === 404) {
                 return undefined;
             }
+            // if timeout, throw.
+            if (res.StatusCode === -1) {
+                throw 'Request credentials from CyberArk returned Timeout. Error: ' + res.Status;
+            }
             throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        // if timeout, throw.
-        if (res.StatusCode === -1) {
-            throw 'Request credentials from CyberArk returned Timeout. Error:' + res.Status;
         }
         return JSON.parse(res.Body);
     }
