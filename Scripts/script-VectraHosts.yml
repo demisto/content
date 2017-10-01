@@ -67,4 +67,3 @@ dependson:
   must:
   - vec-hosts
 deperecated: true
-releaseNotes: Depercated, use vectra-hosts command instead

@@ -96,4 +96,3 @@ dependson:
   must:
   - vec-detections
 deperecated: true
-releaseNotes: Depercated, use vectra-detections command instead

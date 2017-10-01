@@ -277,4 +277,3 @@ script:
     description: Print all Splunk index names
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: Add capabilities to search events and create events back into splunk
