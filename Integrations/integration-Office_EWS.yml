@@ -1404,4 +1404,3 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
-releaseNotes: Added find folders command, support fetching mails from a predefined folder and different fixes to command outputs

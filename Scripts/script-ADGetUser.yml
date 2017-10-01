@@ -266,4 +266,3 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
-releaseNotes: added UserAccountControl flags parsing
