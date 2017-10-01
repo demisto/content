@@ -3,6 +3,31 @@ commonfields:
   version: -1
 name: ADGetUser
 script: |-
+  UserAccountControlFlags = {
+      'SCRIPT': 0x0001,
+      'ACCOUNTDISABLE': 0x0002,
+      'HOMEDIR_REQUIRED': 0x0008,
+      'LOCKOUT': 0x0010,
+      'PASSWD_NOTREQD': 0x0020,
+      'PASSWD_CANT_CHANGE': 0x0040,
+      'ENCRYPTED_TEXT_PWD_ALLOWED': 0x0080,
+      'TEMP_DUPLICATE_ACCOUNT': 0x0100,
+      'NORMAL_ACCOUNT': 0x0200,
+      'INTERDOMAIN_TRUST_ACCOUNT': 0x0800,
+      'WORKSTATION_TRUST_ACCOUNT': 0x1000,
+      'SERVER_TRUST_ACCOUNT': 0x2000,
+      'DONT_EXPIRE_PASSWORD': 0x10000,
+      'MNS_LOGON_ACCOUNT': 0x20000,
+      'SMARTCARD_REQUIRED': 0x40000,
+      'TRUSTED_FOR_DELEGATION': 0x80000,
+      'NOT_DELEGATED': 0x100000,
+      'USE_DES_KEY_ONLY': 0x200000,
+      'DONT_REQ_PREAUTH': 0x400000,
+      'PASSWORD_EXPIRED': 0x800000,
+      'TRUSTED_TO_AUTH_FOR_DELEGATION': 0x1000000,
+      'PARTIAL_SECRETS_ACCOUNT': 0x04000000
+  }
+
   limit = 20
   if demisto.get(demisto.args(), 'limit'):
       limit = demisto.args()['limit']
@@ -50,7 +75,23 @@ script: |-
       except Exception as ex:
           return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
 
-  def listAll(attrs, using):
+  def translateUserAccountControl(resAD, userAccountControlOut):
+      try:
+          for m in resAD:
+              if isError(m) or not demisto.get(m, 'Contents') or not isinstance(m['Contents'], list):
+                  continue
+              if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
+                  continue
+              if userAccountControlOut:
+                  for flag, mask in UserAccountControlFlags.iteritems():
+                      m['Contents'][0][flag] = int(m['Contents'][0]['UserAccountControl'],10) & mask != 0
+              else:
+                  m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10) & 2 != 0
+          return resAD
+      except Exception as ex:
+          return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
+
+  def listAll(attrs, using, userAccountControlOut):
       args = {}
       args['filter'] = "(objectClass=User)"
       args['attributes'] = attrs
@@ -62,9 +103,10 @@ script: |-
           return resAD
       else:
           resAD = prettifyDateTimeADFields(resAD)
+          resAD = translateUserAccountControl(resAD, userAccountControlOut)
           return resAD
 
-  def queryBuilder(queryType,queryValue,attrs,nested,using):
+  def queryBuilder(queryType,queryValue,attrs,nested,using, userAccountControlOut):
       args = {}
       args['size-limit'] = limit
       if using:
@@ -99,20 +141,24 @@ script: |-
               data = data if isinstance(data, list) else [data]
               memberOf = ",".join([demisto.get(k,'dn') for k in data])
       resAD = prettifyDateTimeADFields(resAD)
+      resAD = translateUserAccountControl(resAD, userAccountControlOut)
       try:
           resAD[0]['Contents']['memberOf'] = memberOf
       except:
           pass # Could not get nested groups - return as is
       return resAD
 
-  attrs = 'name,displayName,memberOf,mail,samAccountName,manager'
+  attrs = 'name,displayName,memberOf,mail,samAccountName,manager,UserAccountControl'
   queryValue, queryType = "",""
   headers = argToList(demisto.get(demisto.args(), 'headers'))
+  userAccountControlOut = False
 
   nestedSearch = True if demisto.get(demisto.args(), 'nestedSearch') == 'true' else False
 
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
+  if demisto.get(demisto.args(), 'userAccountControlOut'):
+      userAccountControlOut = demisto.args()['userAccountControlOut'] == 'true'
 
   if demisto.get(demisto.args(), 'dn'):
       queryValue = demisto.args()['dn']
@@ -134,9 +180,9 @@ script: |-
           queryType = demisto.args()['customFieldType']
   resp = None
   if queryValue and queryType:
-      resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'))
+      resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'), userAccountControlOut)
   else:
-      resp = listAll(attrs, demisto.get(demisto.args(),'using'))
+      resp = listAll(attrs, demisto.get(demisto.args(),'using'), userAccountControlOut)
 
   if isError(resp):
       demisto.results(resp)
@@ -162,6 +208,7 @@ tags:
 comment: |-
   Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filter is provided, the result will show all users.
+enabled: true
 system: true
 args:
 - name: dn
@@ -192,11 +239,12 @@ args:
   description: Maximum number of objects to return (default is 20)
 - name: email
   description: mail attribute of desire user
-scripttarget: 0
-dependson:
-  must:
-  - ad-search
-timeout: 0s
+- name: userAccountControlOut
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: Include verbose translation for UserAccountControl flags
 outputs:
 - contextPath: Account
   description: Active Directory Account
@@ -214,3 +262,8 @@ outputs:
   description: The Account display name
 - contextPath: Account.Manager
   description: The Account's manager
+scripttarget: 0
+dependson:
+  must:
+  - ad-search
+releaseNotes: added UserAccountControl flags parsing
