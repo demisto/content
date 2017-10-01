@@ -497,4 +497,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: Added methods like json2xml and xml2json

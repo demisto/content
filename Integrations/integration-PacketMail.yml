@@ -119,4 +119,3 @@ script:
     - contextPath: IP.Malicious
     description: Get intel from PacketMail.net on IPs
 hidden: false
-releaseNotes: "-"

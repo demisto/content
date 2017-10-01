@@ -38,4 +38,3 @@ args:
   defaultValue: "no"
 scripttarget: 0
 fromversion: 3.1.0
-releaseNotes: Use caching to determine whether to run script again or not (from version 3.1.0)
