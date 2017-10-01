@@ -1182,4 +1182,3 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
-releaseNotes: "Fixed fetch incidents of cases: get all new cases associated with integration user with ID over integration parameter"

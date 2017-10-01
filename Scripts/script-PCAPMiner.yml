@@ -88,4 +88,3 @@ args:
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-releaseNotes: "The ability to provide Demisto lib location"
