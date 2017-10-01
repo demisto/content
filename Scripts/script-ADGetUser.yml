@@ -1,7 +1,7 @@
 commonfields:
-  id: _ADGetUser
+  id: ADGetUser
   version: -1
-name: _ADGetUser
+name: ADGetUser
 script: |-
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
