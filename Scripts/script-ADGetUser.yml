@@ -1,7 +1,7 @@
 commonfields:
-  id: ADGetUser
+  id: _ADGetUser
   version: -1
-name: ADGetUser
+name: _ADGetUser
 script: |-
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
@@ -78,7 +78,7 @@ script: |-
   def translateUserAccountControl(resAD, userAccountControlOut):
       try:
           for m in resAD:
-              if isError(m):
+              if isError(m) or not demisto.get(m, 'Contents') or not isinstance(m['Contents'], list):
                   continue
               if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
                   continue
@@ -263,4 +263,7 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
 scripttarget: 0
+dependson:
+  must:
+  - ad-search
 releaseNotes: added UserAccountControl flags parsing
