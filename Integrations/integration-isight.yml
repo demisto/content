@@ -430,6 +430,7 @@ script:
       required: true
       description: file description
     - name: type
+      description: "-"
       required: true
       auto: PREDEFINED
       predefined:

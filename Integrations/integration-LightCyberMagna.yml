@@ -527,6 +527,7 @@ script:
   - name: lcm-host-suspicious-artifacts
     arguments:
     - name: sort
+      description: "-"
       defaultValue: final_score
     - name: host_id
       required: true
@@ -536,7 +537,9 @@ script:
   - name: lcm-host-processes
     arguments:
     - name: time
+      description: "-"
     - name: sort
+      description: "-"
       defaultValue: -score_e
     - name: host_id
       required: true
@@ -546,6 +549,7 @@ script:
   - name: lcm-host-loaded-modules
     arguments:
     - name: sort
+      description: "-"
       defaultValue: final_score
     - name: host_id
       required: true
@@ -555,7 +559,9 @@ script:
   - name: lcm-host-processes-internet-connections
     arguments:
     - name: time
+      description: "-"
     - name: sort
+      description: "-"
       defaultValue: process_sig
     - name: src_host_id
       required: true
@@ -566,6 +572,7 @@ script:
   - name: lcm-host-autoruns
     arguments:
     - name: sort
+      description: "-"
       defaultValue: final_score
     - name: host_id
       required: true

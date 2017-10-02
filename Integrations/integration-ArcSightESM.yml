@@ -392,21 +392,28 @@ script:
       description: commands.server.arcsight.arguments.queryid.description
     description: commands.server.arcsight.query.description
   - name: as-add-entries
+    description: "-"
     arguments:
     - name: resourceId
       required: true
+      description: "-"
     - name: entries
       required: true
+      description: "-"
       isArray: true
     execution: true
   - name: as-clear-entries
+    description: "-"
     arguments:
     - name: resourceId
+      description: "-"
       required: true
     execution: true
   - name: as-get-entries
+    description: "-"
     arguments:
     - name: resourceId
+      description: "-"
       required: true
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'

@@ -116,6 +116,8 @@ script:
       description: The ip to check on
     outputs:
     - contextPath: IP
+      description: "-"
     - contextPath: IP.Malicious
+      description: "-"
     description: Get intel from PacketMail.net on IPs
 hidden: false

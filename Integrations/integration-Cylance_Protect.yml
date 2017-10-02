@@ -692,6 +692,7 @@ script:
       description: A list or single value of hash/es
     - name: category
       required: true
+      description: Category
       auto: PREDEFINED
       predefined:
       - Admin Tool
@@ -1009,6 +1010,7 @@ script:
       required: true
       description: A list or single value of hash/es
     - name: category
+      description: Category
       required: true
       auto: PREDEFINED
       predefined:

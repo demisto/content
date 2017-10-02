@@ -479,8 +479,10 @@ script:
       description: Pulse description
     description: Search for pulses in AlienVault OTX
   - name: alienvault-get-pulse-details
+    description: "-"
     arguments:
     - name: pulse-id
+      description: "-"
       required: true
     outputs:
     - contextPath: AlienVault.Pulses.Description

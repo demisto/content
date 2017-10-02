@@ -887,8 +887,10 @@ script:
     description: Get all fields that can be used in query filters, with type information
       for each field
   - name: esm-search
+    description: Search query against ESM database
     arguments:
     - name: timeRange
+      description: Time range of data to fetch
       required: true
       auto: PREDEFINED
       predefined:
@@ -933,6 +935,7 @@ script:
     arguments:
     - name: timeRange
       required: true
+      description: Time range of alarms to fetch
       auto: PREDEFINED
       predefined:
       - LAST_3_DAYS

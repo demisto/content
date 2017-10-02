@@ -116,6 +116,7 @@ script:
       required: true
       description: The attribute you're searching for, JSON format
     - name: index
+      description: "-"
       required: true
       auto: PREDEFINED
       predefined:

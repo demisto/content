@@ -1,4 +1,5 @@
 type: map
+allowempty: yes
 mapping:
   commonfields:
     type: map
@@ -18,24 +19,13 @@ mapping:
       required: yes
   category:
     type: str
-    enum: [
-    'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
-    'Vulnerability Management', 'Case Management',
-    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
-     'Authentication', 'Database']
     required: yes
-  fromversion:
-    type: str
-  toversion:
-    type: str
   image:
     type: str
     required: yes
   description:
     type: str
     required: yes
-  detaileddescription:
-    type: str
   configuration:
     type: seq
     required: yes
@@ -50,7 +40,6 @@ mapping:
         required: yes
       type:
         type: str
-        enum: ['javascript', 'python']
         required: yes
       dockerimage:
         type: str
@@ -62,14 +51,6 @@ mapping:
         - include: command_schema
   system:
     type: bool
-  hidden:
-    type: bool
-  versionedfields:
-    type: any
-  defaultEnabled:
-    type: bool
-  releaseNotes:
-    type: str
 
 schema;commonfields_schema:
 
@@ -82,7 +63,7 @@ schema;configuration_schema:
       type: str
       required: yes
     defaultvalue:
-      type: any
+      type: text
     name:
       type: str
       required: yes
@@ -104,53 +85,19 @@ schema;command_schema:
     description:
       type: str
       required: yes
-    deprecated:
-      type: bool
-    system:
-      type: bool
     arguments:
       type: seq
+      required: yes
       sequence:
-        - include: argument_schema
+        - type: any
     outputs:
       type: seq
       sequence:
       - include: output_schema
     important:
       type: seq
-      sequence:
       - include: important_schema
 
-# int
-schema;argument_schema:
-  type: map
-  mapping:
-    name:
-      type: str
-      required: yes
-    required:
-      type: bool
-    default:
-      type: bool
-    description:
-      type: str
-      required: yes
-    auto:
-      type: str
-      enum: ['PREDEFINED']
-    predefined:
-      type: seq
-      sequence:
-      - type: str
-    isArray:
-      type: bool
-    defaultValue:
-      type: any
-    deprecated:
-      type: bool
-
-
-# integration->script->command->outputs
 schema;output_schema:
   type: map
   mapping:
@@ -161,12 +108,7 @@ schema;output_schema:
     description:
       type: str
       required: yes
-    important:
-      type: bool
-    importantDescription:
-      type: str
 
-# integration->script->command->important
 schema;important_schema:
   type: map
   mapping:

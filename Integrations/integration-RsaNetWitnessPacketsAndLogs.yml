@@ -1903,11 +1903,15 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
+      description: "-"
     - name: startMeta
       required: true
+      description: "-"
     - name: maxSessions
       required: true
+      description: "-"
     - name: query
+      description: "-"
     description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
   - name: nw-concentrator-status
     arguments:
@@ -2072,11 +2076,15 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
+      description: "-"
     - name: startMeta
       required: true
+      description: "-"
     - name: maxSessions
       required: true
+      description: "-"
     - name: query
+      description: "-"
     description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
   - name: nw-broker-status
     arguments:

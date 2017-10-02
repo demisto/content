@@ -304,9 +304,13 @@ script:
       - UNKNOWN
       description: Ticket priority
     - name: customerMiscellaneous1
+      description: "-"
     - name: customerMiscellaneous2
+      description: "-"
     - name: customerMiscellaneous3
+      description: "-"
     - name: customerMiscellaneous4
+      description: "-"
     - name: categorizationClass
       description: Ticket categorization class
     - name: categorizationCategory
@@ -338,9 +342,13 @@ script:
     - name: watchers
       description: ticket watchers
     - name: customerMiscellaneous1
+      description: "-"
     - name: customerMiscellaneous2
+      description: "-"
     - name: customerMiscellaneous3
+      description: "-"
     - name: customerMiscellaneous4
+      description: "-"
     outputs:
     - contextPath: SecureWorks.Ticket.ID
       description: Ticket ID in secure works

@@ -371,6 +371,7 @@ script:
     - name: since
       description: ' Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: "-"
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -404,6 +405,7 @@ script:
     - name: since
       description: ' Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: "-"
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
@@ -437,6 +439,7 @@ script:
     - name: since
       description: ' Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: "-"
     description: ' Searching for subjective opinions on indicators of compromise stored
       in ThreatExchange'
   - name: threatexchange-members

@@ -1459,7 +1459,9 @@ script:
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
+      description: "-"
     - name: mid2
+      description: "-"
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
@@ -1610,8 +1612,10 @@ script:
     description: Updates incident
     execution: true
   - name: fetch-incidents
+    description: "-"
     arguments: []
   - name: nw-get-alerts
+    description: "-"
     deprecated: true
     arguments:
     - name: page
@@ -1627,9 +1631,11 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
+    description: "-"
     deprecated: true
     arguments:
     - name: alertId
+      description: "-"
       required: true
   - name: nw-get-event-details
     deprecated: true
@@ -1788,7 +1794,9 @@ script:
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
+      description: "-"
     - name: mid2
+      description: "-"
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
@@ -1946,8 +1954,10 @@ script:
     description: Updates incident
     execution: true
   - name: fetch-incidents
+    description: "-"
     arguments: []
   - name: netwitness-im-get-alerts
+    description: "-"
     arguments:
     - name: page
       description: The default is 1. Indicates the page number of incidents
@@ -1962,8 +1972,10 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: netwitness-im-get-alert-details
+    description: "-"
     arguments:
     - name: alertId
+      description: "-"
       required: true
     outputs:
     - contextPath: Netwitness.Alert.Id

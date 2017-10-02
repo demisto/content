@@ -466,4 +466,4 @@ script:
       the root folder of a Box account (Currently only moving of the root folder (0)
       is supported)
 hidden: false
-systen: true
+system: true
