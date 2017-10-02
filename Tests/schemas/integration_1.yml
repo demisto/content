@@ -1,0 +1,89 @@
+type:       map
+mapping:
+ "commonfields":
+    type:      map
+    required:  yes
+    mapping:
+      "id":
+          type:      str
+          required:  yes
+      "version":
+          type:      int
+          required:  yes
+ "name":
+    type:      str
+    required:  yes
+ "display":
+    type:      str
+    required:  yes
+ "category":
+    type:      str
+    required:  yes
+ "image":
+    type:      str
+    required:  yes
+ "description":
+    type:      str
+    required:  yes
+ "configuration":
+    type:      seq
+    required:  yes
+    sequence:
+    - include:   configuration_schema
+ "script":
+    type:      any
+    required:  yes
+    mapping:
+      type:   script_schema
+ "system":
+    type:      bool
+
+# configuration schema
+schema;configuration_schema:
+  type: map
+  mapping:
+    display:
+      type: str
+      required:  yes
+    defaultvalue:
+      type: text
+    name:
+      type: str
+      required:  yes
+    type:
+      type: int
+      required:  yes
+    required:
+      type: bool
+
+# script schema
+schema;script_schema:
+  type: map
+  mapping:
+    script:
+      type: str
+      required:  yes
+    type:
+      type: str
+      required:  yes
+    commands:
+      type: seq
+      sequence:
+      - include:   command_schema
+
+
+# command schema
+schema;command_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required:  yes
+    arguments:
+      type: seq
+      required:  yes
+      sequence:
+        - type: any
+    description:
+      type: str
+      required:  yes
