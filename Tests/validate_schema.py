@@ -10,14 +10,14 @@ def main(argv):
     file_path = argv[0]
     schema_path = argv[1]
     print ('starting ...')
-    print ('file_path - ' + file_path)
-    print ('schema_path - ' + schema_path)
+    # print ('schema_path - ' + schema_path)
     c = Core(source_file=file_path, schema_files=[schema_path])
     try:
         c.validate(raise_exception=True)
     except Exception as err:
-        print("error!")
-        print(err)
+        print 'Failed: %s failed' % (file_path,)
+        print err
+        sys.exit(1)
     print ('finished')
     sys.exit(0)
 

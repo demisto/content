@@ -705,17 +705,29 @@ script:
       description: An identifier to fetch the next page in the result set
     outputs:
     - contextPath: Protectwise.Observation.id
+      description: "-"
     - contextPath: Protectwise.Observation.killChainStage
+      description: "-"
     - contextPath: Protectwise.Observation.source
+      description: "-"
     - contextPath: Protectwise.Observation.sensorId
+      description: "-"
     - contextPath: Protectwise.Observation.threatScore
+      description: "-"
     - contextPath: Protectwise.Observation.severity
+      description: "-"
     - contextPath: Protectwise.Observation.confidence
+      description: "-"
     - contextPath: Protectwise.Observation.occurredAt
+      description: "-"
     - contextPath: Protectwise.Observation.observedAt
+      description: "-"
     - contextPath: Protectwise.Observation.endedAt
+      description: "-"
     - contextPath: Protectwise.Observation.netflowId
+      description: "-"
     - contextPath: Protectwise.Observation.observedStage
+      description: "-"
     description: search observations in ProtectWise
   - name: pw-observation-get
     deprecated: true
@@ -737,17 +749,29 @@ script:
       description: the sensor id or comma-separated list of ids
     outputs:
     - contextPath: Protectwise.Observation.id
+      description: "-"
     - contextPath: Protectwise.Observation.killChainStage
+      description: "-"
     - contextPath: Protectwise.Observation.source
+      description: "-"
     - contextPath: Protectwise.Observation.sensorId
+      description: "-"
     - contextPath: Protectwise.Observation.threatScore
+      description: "-"
     - contextPath: Protectwise.Observation.severity
+      description: "-"
     - contextPath: Protectwise.Observation.confidence
+      description: "-"
     - contextPath: Protectwise.Observation.occurredAt
+      description: "-"
     - contextPath: Protectwise.Observation.observedAt
+      description: "-"
     - contextPath: Protectwise.Observation.endedAt
+      description: "-"
     - contextPath: Protectwise.Observation.netflowId
+      description: "-"
     - contextPath: Protectwise.Observation.observedStage
+      description: "-"
     description: Lookup a single observation for ProtectWise
   - name: event-pcap-download
     deprecated: true

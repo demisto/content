@@ -662,6 +662,7 @@ script:
   - name: zendesk-ticket-details
     arguments:
     - name: id
+      description: "-"
       required: true
       default: true
     outputs:

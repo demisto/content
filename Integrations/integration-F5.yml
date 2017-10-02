@@ -189,7 +189,9 @@ script:
       description: The policy name to delete
     description: Delete a policy
   - name: f5-list-all-user-sessions
+    description: "-"
     arguments:
     - name: resource-ip
+      description: "-"
       required: true
     description: Lists all the sessions with client ip for the given username

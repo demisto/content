@@ -259,6 +259,7 @@ script:
   type: javascript
   commands:
   - name: remedy-incident-create
+    description: Create new ticket incident
     arguments:
     - name: first-name
       required: true

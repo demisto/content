@@ -224,6 +224,7 @@ script:
   type: javascript
   commands:
   - name: jamf-get-computers
+    description: "-"
     arguments: []
     outputs:
     - contextPath: Jamf.Computers.ID
@@ -231,9 +232,11 @@ script:
     - contextPath: Jamf.Computers.Name
       description: Computer name
   - name: jamf-get-computers-match
+    description: "-"
     arguments:
     - name: match
       required: true
+      description: "-"
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID

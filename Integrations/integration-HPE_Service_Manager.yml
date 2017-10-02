@@ -338,12 +338,16 @@ script:
   type: javascript
   commands:
   - name: hpsm-create-incident
+    description: "-"
     arguments:
-    - name: title
+    - name: title\
+      description: "-"
       required: true
     - name: description
+      description: "-"
       required: true
     - name: service
+      description: "-"
       required: true
       description: 'Examples: CI1001060, CI1001030'
     - name: impact
@@ -351,7 +355,9 @@ script:
     - name: urgency
       description: Default is 4. Should be number like 3 or 4
     - name: alertStatus
+      description: "-"
     - name: area
+      description: "-"
     - name: assignmentGroup
       description: 'Example: "Office Supplies (North America)"'
     - name: affectedCI
@@ -360,11 +366,13 @@ script:
       required: true
       description: 'Category of incident. Example: (incident, complaint)'
     - name: company
+      description: "-"
     - name: phase
       description: 'Example: "Categorization"'
     - name: status
       description: 'Example: "Categorize"'
     - name: subarea
+      description: "-"
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -379,27 +387,49 @@ script:
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
+      description: "-"
     - contextPath: HPSM.Incidents.Assignee
+      description: "-"
     - contextPath: HPSM.Incidents.AssignmentGroup
+      description: "-"
     - contextPath: HPSM.Incidents.Category
+      description: "-"
     - contextPath: HPSM.Incidents.ClosedBy
+      description: "-"
     - contextPath: HPSM.Incidents.ClosedTime
+      description: "-"
     - contextPath: HPSM.Incidents.ClosureCode
+      description: "-"
     - contextPath: HPSM.Incidents.Company
+      description: "-"
     - contextPath: HPSM.Incidents.Contact
+      description: "-"
     - contextPath: HPSM.Incidents.Description
+      description: "-"
     - contextPath: HPSM.Incidents.Impact
+      description: "-"
     - contextPath: HPSM.Incidents.JournalUpdates
+      description: "-"
     - contextPath: HPSM.Incidents.OpenTime
+      description: "-"
     - contextPath: HPSM.Incidents.OpenedBy
+      description: "-"
     - contextPath: HPSM.Incidents.Phase
+      description: "-"
     - contextPath: HPSM.Incidents.Solution
+      description: "-"
     - contextPath: HPSM.Incidents.Status
+      description: "-"
     - contextPath: HPSM.Incidents.Subarea
+      description: "-"
     - contextPath: HPSM.Incidents.Title
+      description: "-"
     - contextPath: HPSM.Incidents.UpdatedBy
+      description: "-"
     - contextPath: HPSM.Incidents.UpdatedTime
+      description: "-"
     - contextPath: HPSM.Incidents.Urgency
+      description: "-"
     description: 'Creating new incident '
   - name: hpsm-list-incidents
     arguments:
@@ -410,6 +440,7 @@ script:
       description: Result of incident query. Contains array of incident ids
     description: Returns all incidents
   - name: hpsm-get-incident-by-id
+    description: "-"
     arguments:
     - name: incidentId
       required: true
@@ -429,27 +460,49 @@ script:
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
+      description: "-"
     - contextPath: HPSM.Incidents.Assignee
+      description: "-"
     - contextPath: HPSM.Incidents.AssignmentGroup
+      description: "-"
     - contextPath: HPSM.Incidents.Category
+      description: "-"
     - contextPath: HPSM.Incidents.ClosedBy
+      description: "-"
     - contextPath: HPSM.Incidents.ClosedTime
+      description: "-"
     - contextPath: HPSM.Incidents.ClosureCode
+      description: "-"
     - contextPath: HPSM.Incidents.Company
+      description: "-"
     - contextPath: HPSM.Incidents.Contact
+      description: "-"
     - contextPath: HPSM.Incidents.Description
+      description: "-"
     - contextPath: HPSM.Incidents.Impact
+      description: "-"
     - contextPath: HPSM.Incidents.JournalUpdates
+      description: "-"
     - contextPath: HPSM.Incidents.OpenTime
+      description: "-"
     - contextPath: HPSM.Incidents.OpenedBy
+      description: "-"
     - contextPath: HPSM.Incidents.Phase
+      description: "-"
     - contextPath: HPSM.Incidents.Solution
+      description: "-"
     - contextPath: HPSM.Incidents.Status
+      description: "-"
     - contextPath: HPSM.Incidents.Subarea
+      description: "-"
     - contextPath: HPSM.Incidents.Title
+      description: "-"
     - contextPath: HPSM.Incidents.UpdatedBy
+      description: "-"
     - contextPath: HPSM.Incidents.UpdatedTime
+      description: "-"
     - contextPath: HPSM.Incidents.Urgency
+      description: "-"
   - name: hpsm-list-devices
     arguments:
     - name: query
@@ -457,23 +510,38 @@ script:
         https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
     outputs:
     - contextPath: HPSM.DeviceIDs
+      description: "-"
     description: Returns list of devices ids
   - name: hpsm-get-device
+    description: "-"
     arguments:
     - name: configurationItem
       required: true
       description: 'Id of device, configuration item of device. Example: CI1000011'
     outputs:
     - contextPath: HPSM.Devices.AssignmentGroup
+      description: "-"
     - contextPath: HPSM.Devices.Company
+      description: "-"
     - contextPath: HPSM.Devices.ConfigurationItem
+      description: "-"
     - contextPath: HPSM.Devices.ConfigurationItemSubType
+      description: "-"
     - contextPath: HPSM.Devices.ConfigurationItemType
+      description: "-"
     - contextPath: HPSM.Devices.Department
+      description: "-"
     - contextPath: HPSM.Devices.DisplayName
+      description: "-"
     - contextPath: HPSM.Devices.Location
+      description: "-"
     - contextPath: HPSM.Devices.LocationCode
+      description: "-"
     - contextPath: HPSM.Devices.Model
+      description: "-"
     - contextPath: HPSM.Devices.PartNumber
+      description: "-"
     - contextPath: HPSM.Devices.Status
+      description: "-"
     - contextPath: HPSM.Devices.UpdatedBy
+      description: "-"

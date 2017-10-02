@@ -815,6 +815,7 @@ script:
       description: IOCs details
     description: Get all the IOCs
   - name: intsights-fetch-test
+    description: "-"
     arguments: []
   isfetch: true
 hidden: false

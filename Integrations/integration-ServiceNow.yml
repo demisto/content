@@ -670,6 +670,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
+      description: "-"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -715,12 +716,15 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
+      description: "-"
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
+      description: "-"
     - name: order
+      description: "-"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -728,7 +732,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
+      description: "-"
     - name: reopen_count
+      description: "-"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -738,12 +744,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
+      description: "-"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
+      description: "-"
     - name: watch_list
+      description: "-"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -751,6 +760,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
+      description: "-"
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -758,6 +768,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
+      description: "-"
     - name: template
       description: Template name to use as a base to create new incidents.
     - name: custom_fields
@@ -820,6 +831,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
+      description: "-"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -847,6 +859,7 @@ script:
     - name: delivery_plan
       description: UID Format
     - name: display
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -865,12 +878,15 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
+      description: "-"
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
+      description: "-"
     - name: order
+      description: "-"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -878,7 +894,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
+      description: "-"
     - name: reopen_count
+      description: "-"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -888,12 +906,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
+      description: "-"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
+      description: "-"
     - name: watch_list
+      description: "-"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -901,6 +922,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
+      description: "-"
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -908,6 +930,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
+      description: "-"
     - name: template
       description: Template name to use as a base to create new incidents.
     outputs:
@@ -935,6 +958,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
+      description: "-"
     - name: severity
       description: Ticket severity
     - name: impact
@@ -952,6 +976,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
+      description: "-"
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -965,6 +990,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
+      description: "-"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1010,12 +1036,15 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
+      description: "-"
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
+      description: "-"
     - name: order
+      description: "-"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1023,7 +1052,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
+      description: "-"
     - name: reopen_count
+      description: "-"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1033,12 +1064,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
+      description: "-"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
+      description: "-"
     - name: watch_list
+      description: "-"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1046,6 +1080,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
+      description: "-"
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1053,6 +1088,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
+      description: "-"
     - name: id
       required: true
       description: Id(UID) of the ticket to update
@@ -1073,6 +1109,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
+      description: "-"
     - name: severity
       description: Ticket severity
     - name: impact
@@ -1090,6 +1127,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
+      description: "-"
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1103,6 +1141,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
+      description: "-"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1148,12 +1187,15 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
+      description: "-"
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
+      description: "-"
     - name: order
+      description: "-"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1161,7 +1203,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
+      description: "-"
     - name: reopen_count
+      description: "-"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1171,12 +1215,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
+      description: "-"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
+      description: "-"
     - name: watch_list
+      description: "-"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1184,6 +1231,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
+      description: "-"
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1191,6 +1239,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
+      description: "-"
     - name: id
       required: true
       description: Id(UID) of the ticket to update

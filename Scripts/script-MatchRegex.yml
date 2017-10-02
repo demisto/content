@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: MatchRegex
   version: -1
