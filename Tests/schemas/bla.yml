@@ -1,0 +1,20 @@
+type: seq
+sequence:
+  - include: fooone
+
+schema;fooone:
+  type: map
+  mapping:
+    foo:
+      include: footwo
+
+schema;footwo:
+  type: seq
+  sequence:
+    - include: foothree
+
+schema;foothree:
+  type: map
+  mapping:
+    bar:
+      type: str
