@@ -10,6 +10,7 @@
   "recipients": [],
   "system": true,
   "reportType": "investigation",
+  "releaseNotes": "Add the ability to format queries for indicators and incidents. Add indicators table section with bad and suspicious indicators related to investigation.",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
     "incident.status.1": { "type": "string", "value": "Assigned" },
@@ -630,7 +631,7 @@
       "query": {
         "type": "indicators",
         "filter": {
-          "query": "investigationIDs:{{.invID}}"
+          "query": "investigationIDs:{{.investigationID}} and (reputation:Bad or reputation:Suspicious)"
         }
       },
       "layout": {
