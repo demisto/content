@@ -30,4 +30,3 @@ dependson:
   must:
   - vec-get-detetctions-by-id
 deperecated: true
-releaseNotes: Depercated, use vectra-detections command instead

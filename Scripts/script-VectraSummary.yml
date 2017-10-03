@@ -47,4 +47,3 @@ dependson:
   - vec-health
 timeout: 0s
 deperecated: true
-releaseNotes: Depercated
