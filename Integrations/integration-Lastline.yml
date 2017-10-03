@@ -580,4 +580,3 @@ script:
     description: Upload file for analysis
 hidden: false
 system: true
-releaseNotes: "-"

@@ -112,4 +112,3 @@ outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
-releaseNotes: "updated unzip files to war room"

@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: http
 description: Sends http request. Returns the response as json.
-releaseNotes: add description to headers argument
 script: |+
   var requestObj = {
       Method: args.method,

@@ -625,4 +625,3 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "remove pip install for olefile dependency, not needed"

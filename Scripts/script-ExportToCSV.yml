@@ -76,4 +76,3 @@ args:
   required: true
   isArray: true
 scripttarget: 0
-releaseNotes: Wrap values that have commas with quotes

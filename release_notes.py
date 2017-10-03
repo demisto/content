@@ -4,7 +4,7 @@ import json
 import sys
 import yaml
 
-from Tests.test_utils import print_color, print_error, LOG_COLORS
+from Tests.test_utils import print_error
 
 contentLibPath = "./"
 limitedVersion = False
@@ -79,12 +79,12 @@ class Content:
                         modified_count += 1
                 if len(modifiedStr) > 0:
                     if modified_count > 1:
-                        section_body += "##### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                        section_body += "#### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        section_body += "##### Improved " + self.getHeader() + "\n"
+                        section_body += "#### Improved " + self.getHeader() + "\n"
                     section_body += modifiedStr
             if len(self.deletedStore) > 0:
-                section_body += "##### Removed " + self.getHeader() + "\n"
+                section_body += "#### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
                     section_body += "- " + rawContent + "\n"
 
