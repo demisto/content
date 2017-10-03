@@ -84,6 +84,9 @@ script: |-
       if (args.attachIds) {
           emailArgs.attachIDs = args.attachIds;
       }
+      if (reply) {
+          emailArgs.replyTo = reply;
+      }
       return executeCommand('send-mail', emailArgs);
   } else {
       return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
