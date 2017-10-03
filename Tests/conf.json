@@ -88,6 +88,7 @@
         {
             "playbookID": "TestHttpPlaybook"
         },
+        {
             "name": "VxStream",
             "playbookID": "VxStream Test"
         },
