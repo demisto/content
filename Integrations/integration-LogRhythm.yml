@@ -411,7 +411,7 @@ script:
             dataObj.IncludeRawLog = args['include-raw-log'] === 'true';
             var envelope = fixTemplate(tmplGetAlarmEventsByID, dataObj);
             var jsResponse = parseResponse(sendRequest(envelope, soapActionURIGetAlarmsEventsByID));
-            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmEventsByIDResult.Events')
+            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmEventsByIDResponse.GetAlarmEventsByIDResult.Events')
             var md = tableToMarkdown('LogRyhthem alarm events for ID: ' + args['alarm-id'],  mdRaw);
             return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
         case 'lr-get-alarm-history-by-id':
@@ -591,4 +591,3 @@ script:
     description: Retrieve alarms in a given time period, optionally filtered by the
       alarm status or entity
   isfetch: true
-hidden: false

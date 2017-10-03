@@ -1,0 +1,205 @@
+id: VxStream Test
+version: 11
+name: VxStream Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+    type: start
+    task:
+      id: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e625028b-1e53-4229-80f6-bf00c7c9ea10
+    type: regular
+    task:
+      id: e625028b-1e53-4229-80f6-bf00c7c9ea10
+      version: -1
+      name: vx-get-environments
+      description: 'Get a list of all available environments '
+      script: VxStream|||vx-get-environments
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4968dff5-e289-4588-81d3-32ba018c29b6
+    type: regular
+    task:
+      id: 4968dff5-e289-4588-81d3-32ba018c29b6
+      version: -1
+      name: 'Verify Context get-environments '
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: ""
+      fields: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
+      path: VX.Environment
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 52037816-aedb-408d-8ead-b90942f991fb
+    type: regular
+    task:
+      id: 52037816-aedb-408d-8ead-b90942f991fb
+      version: -1
+      name: vx-search
+      description: Search the database using the VXStream search syntax
+      script: VxStream|||vx-search
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query: url:google
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 96042103-dc37-4f07-871c-6dd406cdfd5b
+    type: regular
+    task:
+      id: 96042103-dc37-4f07-871c-6dd406cdfd5b
+      version: -1
+      name: Verify Context search
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: ""
+      fields: SHA256,environmentId,start_time,threatscore,verdict,environmentDescription,submitname,type_short,size
+      path: VX.Search
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 0bbe7af7-634a-40d8-8221-a86532112442
+    type: regular
+    task:
+      id: 0bbe7af7-634a-40d8-8221-a86532112442
+      version: -1
+      name: vx-scan
+      description: Get summary information for a given MD5, SHA1 or SHA256 and all
+        the reports generated for any environment ID
+      script: VxStream|||vx-scan
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file: ${VX.Search.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8074d29c-91b7-4f32-8697-fa8626b904df
+    type: regular
+    task:
+      id: 8074d29c-91b7-4f32-8697-fa8626b904df
+      version: -1
+      name: Verify Context scan
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: SHA256,environmentId,analysis_start_time,submitname,total_network_connections,total_processes,total_signatures,hosts,isinteresting,domains,isurlanalysis
+      path: File
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

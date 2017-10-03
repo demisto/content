@@ -523,9 +523,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
     description: Check file reputation of the given hash
   - name: ip
     deprecated: false
@@ -574,9 +571,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
     description: Check IP Reputation
   - name: url
     deprecated: false
@@ -623,9 +617,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
     description: Check URL Reputation
   - name: domain
     deprecated: false
@@ -670,9 +661,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Check domain reputation
   - name: file-scan
     deprecated: false

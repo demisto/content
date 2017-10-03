@@ -31,3 +31,4 @@ timeout: 0s
 dependson:
   must:
   - vec-get-host-by-id
+deperecated: true

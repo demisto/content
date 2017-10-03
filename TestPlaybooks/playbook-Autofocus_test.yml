@@ -1,0 +1,238 @@
+id: 2e7770c4-8b78-4ee5-84c7-22a9e481b166
+version: 2
+name: Autofocus_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa3f84d2-e604-4246-85c7-b2346a0f9548
+    type: start
+    task:
+      id: fa3f84d2-e604-4246-85c7-b2346a0f9548
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b3172dee-abda-48d1-86e7-05349cfd470c
+    type: regular
+    task:
+      id: b3172dee-abda-48d1-86e7-05349cfd470c
+      version: -1
+      name: autofocus-search-samples
+      description: Search for samples on Autofocus
+      script: Autofocus|||autofocus-search-samples
+      type: regular
+      iscommand: true
+      brand: Autofocus
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      checks: ""
+      cookie: ""
+      from: ""
+      order: desc
+      query: '{"operator": "all", "children": [{"field": "sample.malware", "operator":
+        "is", "value": 1}]}'
+      scope: public
+      size: "10"
+      sleep: ""
+      sort: create_date
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ae6615db-3dec-4922-8097-63900cd93490
+    type: condition
+    task:
+      id: ae6615db-3dec-4922-8097-63900cd93490
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left: ${Autofocus=val.Samples.length}
+      right: "10"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 25e4b9d0-6d1c-46e7-81a4-9b3dbb83263e
+    type: regular
+    task:
+      id: 25e4b9d0-6d1c-46e7-81a4-9b3dbb83263e
+      version: -1
+      name: autofocus-search-sessions
+      description: Search for sessions on Autofocus
+      script: Autofocus|||autofocus-search-sessions
+      type: regular
+      iscommand: true
+      brand: Autofocus
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      checks: ""
+      cookie: ""
+      from: ""
+      order: desc
+      query: '{"operator": "all", "children": [{"field": "session.region", "operator":
+        "is", "value": "us"}]}'
+      size: "10"
+      sleep: ""
+      sort: tstamp
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ae729bd5-cde5-417e-8f6d-a12873734fa0
+    type: condition
+    task:
+      id: ae729bd5-cde5-417e-8f6d-a12873734fa0
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left: ${Autofocus=val.Sessions.length}
+      right: "10"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: caa47552-a479-4c23-80ff-8fddb1dc9919
+    type: regular
+    task:
+      id: caa47552-a479-4c23-80ff-8fddb1dc9919
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: Autofocus|||file
+      type: regular
+      iscommand: true
+      brand: Autofocus
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file: 75779e62f9790bd4c2ed449bd20be741f78811fb5ce848a2c5a516af17cdeccf
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 6f71cc66-3c8c-40ff-8eda-6031a7df4eb0
+    type: condition
+    task:
+      id: 6f71cc66-3c8c-40ff-8eda-6031a7df4eb0
+      version: -1
+      name: IsMaliciousIndicatorFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      includeSuspicious: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1080
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 3bd631ad-dd45-487a-87c8-f40904e544fc
+    type: regular
+    task:
+      id: 3bd631ad-dd45-487a-87c8-f40904e544fc
+      version: -1
+      name: CloseInvestigation
+      description: Close an investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      extend-context: ""
+      notes: All good
+      reason: Done
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1305,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

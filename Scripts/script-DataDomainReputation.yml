@@ -3,36 +3,12 @@ commonfields:
   version: -1
 name: DataDomainReputation
 script: |-
-  var score = -1;
-  var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"});
-  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
-      score = res[0].Contents[0].score;
-  } else {
-      var rep = executeCommand('url', {url: args.input});
-      var scores = dq(rep, 'EntryContext.DBotScore.Score');
-      for (var i = 0; scores && i < scores.length; i++) {
-          if (scores[i] && score < scores[i]) {
-            score = scores[i];
-          }
-      }
-  }
+  var score = calculateReputation(args.input, args.cacheExpiration, args.forceCalc, 'url', 'url', 'URL');
   score = score < 0 ? 0 : score;
-  var domainScore = -1;
   var domainRes = executeCommand('ExtractDomain', {text: args.input});
   var domain = domainRes[0].Contents[0].Name;
 
-  var res = executeCommand("findIndicators", {"query": "type:Domain and value:\"" + domain + "\" and manualScore:T"});
-  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
-      domainScore = res[0].Contents[0].score;
-  } else {
-      var rep = executeCommand('domain', {domain: domain});
-      var scores = dq(rep, 'EntryContext.DBotScore.Score');
-      for (var i = 0; scores && i < scores.length; i++) {
-          if (scores[i] && score < scores[i]) {
-              domainScore = scores[i];
-          }
-      }
-  }
+  var domainScore = calculateReputation(domain, args.cacheExpiration, args.forceCalc, 'domain', 'domain', 'Domain');
 
   if (domainScore > score) {
       score = domainScore;
@@ -50,6 +26,9 @@ args:
   required: true
   default: true
   description: URL to look up
+- name: cacheExpiration
+  required: false
+  description: Time in minutes that cache should be valid for
 - name: forceCalc
   auto: PREDEFINED
   predefined:
@@ -58,3 +37,4 @@ args:
   description: Whether to calculate reputation even if it is manual set - yes/no
   defaultValue: "no"
 scripttarget: 0
+fromversion: 3.1.0

@@ -117,9 +117,5 @@ script:
     outputs:
     - contextPath: IP
     - contextPath: IP.Malicious
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
     description: Get intel from PacketMail.net on IPs
 hidden: false

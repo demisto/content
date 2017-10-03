@@ -97,7 +97,8 @@ script:
             incident = {
                 'Name': names[i],
                 'Labels': all_labels[i],
-                'Details': all_details[i]
+                'Details': all_details[i],
+                'RawJSON': xml2json(all_details[i])
             }
 
             incidents.append(incident)
