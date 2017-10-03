@@ -478,13 +478,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: URL
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: File
     description: Get analysis report
   - name: url
     arguments:
@@ -526,10 +519,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: URL
     description: Submit URL for analysis
   - name: file
     arguments:
@@ -561,10 +550,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: File
     description: Submit a file for analysis
   - name: lastline-upload
     arguments:

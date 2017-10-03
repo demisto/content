@@ -13,8 +13,6 @@ script: |
   import glob
   import os
 
-  os.chdir('/app/pcapminey')
-  dir_path = os.path.dirname(os.path.realpath(__file__))
   path = "/app/pcapminey/"
   if path not in sys.path:
       sys.path.append(path)
@@ -31,7 +29,7 @@ script: |
   miner = pcap_miner(readyPath)
   jsonResults = miner.summary2json()
   pyResults = json.loads(jsonResults)
-  dispatcher = Dispatcher(demisto.args()['demistoLibLocation'] + readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
+  dispatcher = Dispatcher(readyPath, 'output', entropy=True,verifyChecksums=True,udpTimeout=500,)
   results = dispatcher.run()
   pyResults['files_found'] = results.filenamelist
   listdir = os.listdir('./output')
@@ -90,4 +88,3 @@ args:
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-releaseNotes: "The ability to provide Demisto lib location"

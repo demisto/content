@@ -1,0 +1,58 @@
+id: TestCommonPython
+version: 3
+name: TestCommonPython
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83976a03-17b3-4637-83a2-dc8a789944e8
+    type: start
+    task:
+      id: 83976a03-17b3-4637-83a2-dc8a789944e8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+    type: regular
+    task:
+      id: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+      version: -1
+      name: TestXml2JSON
+      description: 'Tests for common functions xml2json and json2xml '
+      scriptName: TestXml2JSON
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []

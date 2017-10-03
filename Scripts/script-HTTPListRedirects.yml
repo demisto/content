@@ -40,4 +40,3 @@ outputs:
 - contextPath: URL.Data
   description: The URL redirects from the given URL
 scripttarget: 0
-releaseNotes: Make sure we have an http prefix for URLs

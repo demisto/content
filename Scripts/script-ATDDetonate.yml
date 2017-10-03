@@ -182,6 +182,3 @@ outputs:
   description: Vendor used to calculate the score (only in case of report type=json)
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
-important:
-- contextPath: File(val.Malicious)
-  description: Malicious files
