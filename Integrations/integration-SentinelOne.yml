@@ -615,7 +615,13 @@ script:
             if(commandName === 'so-update-group' && !args.ad_query){
                 args.ad_query = '';
             }
-            var res = sendRequest(full, method, headers, JSON.stringify(args));
+            try {
+                var res = sendRequest(full, method, headers, JSON.stringify(args));
+            }
+            catch(err) {
+                logout();
+                throw err;
+            }
             if(res.statusCode === 204){
                 return 'Command executed successfully';
             }
