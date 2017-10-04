@@ -129,3 +129,4 @@ args:
 - name: replyAddress
   description: Address of reply for html links
 scripttarget: 0
+releaseNotes: "Added replyTo to the send-mail command"
