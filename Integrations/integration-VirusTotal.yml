@@ -350,6 +350,26 @@ script:
                 }
             }
         }
+        if (o.resolutions && o.resolutions.length > 0) {
+            md += tableToMarkdown("Passive DNS replication", o.resolutions, Object.keys(o.resolutions[0]), undefined, function (header) { return underscoreToCamelCase(header); });
+        }
+        if (o.domain_siblings && o.domain_siblings.length > 0) {
+            md += "### Observed subdomains\n";
+            for (var i = 0; i < o.domain_siblings.length; i++) {
+                md += "- " + o.domain_siblings[i] + "\n";
+            }
+        }
+        if (o.whois) {
+            var whoIs = o.whois.trim();
+            var lines = whoIs ? whoIs.split("\n") : [];
+            md += '### Whois Lookup\n';
+            for (var i = 0; i < lines.length; i++) {
+                var parts = lines[i].split(': ');
+                if (parts[0] && parts[1]) {
+                    md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
+                }
+            }
+        }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
@@ -730,3 +750,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
+releaseNotes: "Added sub domains, whois lookup and DNS ip addresses to response entry"
