@@ -355,7 +355,7 @@ script:
         }
         if (o.domain_siblings && o.domain_siblings.length > 0) {
             md += "### Observed subdomains\n";
-            for(var i = 0; i < o.domain_siblings.length; i++) {
+            for (var i = 0; i < o.domain_siblings.length; i++) {
                 md += "- " + o.domain_siblings[i] + "\n";
             }
         }
@@ -363,7 +363,7 @@ script:
             var whoIs = o.whois.trim();
             var lines = whoIs ? whoIs.split("\n") : [];
             md += '### Whois Lookup\n';
-            for(var i = 0; i < lines.length; i++) {
+            for (var i = 0; i < lines.length; i++) {
                 var parts = lines[i].split(': ');
                 if (parts[0] && parts[1]) {
                     md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
