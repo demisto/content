@@ -4,7 +4,28 @@ commonfields:
 name: AssignAnalystToIncident
 system: true
 script: |
+  if (args.email && args.username) {
+      throw 'Please provide either username or email';
+  }
+
+  var emailToAssign = args.email;
   var userToAssign = args.username;
+
+  if (emailToAssign) {
+      userToAssign='';
+      var res = executeCommand('getUsers',{});
+      if (res && res[0] && res[0].Contents) {
+          res[0].Contents.forEach(function(user){
+              if (user.email === args.email) {
+                  userToAssign = user.id;
+              }
+          });
+      }
+      if (!userToAssign) {
+          throw 'Cannot find user with email ' + args.email;
+      }
+  }
+
   assignBy = args.assignBy || 'random';
 
   if (!userToAssign) {
@@ -67,4 +88,7 @@ args:
     machine-learning, top-user or less-busy-user.'
 - name: username
   description: If specify, the provided user will be set as an owner (optional).
+- name: email
+  description: If specify, the provided email user will be set as an owner (optional)
 scripttarget: 0
+releaseNotes: "Added the ability to assign owner by email"
