@@ -87,8 +87,8 @@ args:
   description: '(default: random) You can pick how to assign the owner - by random,
     machine-learning, top-user or less-busy-user.'
 - name: username
-  description: When specified, the provided user will be set as an owner (optional).
+  description: When specified, the provided user will be assigned as the incident owner (optional).
 - name: email
-  description: When specified, the user of provided email will be set as an owner (optional)
+  description: When specified, the user of provided email will be assigned as the incident owner (optional)
 scripttarget: 0
 releaseNotes: "Added the ability to assign owner by email"
