@@ -1,0 +1,139 @@
+commonfields:
+  id: OpsGenie
+  version: -1
+name: OpsGenie
+display: OpsGenie
+category: IT Services
+image: data:image/png;base64,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
+description: Get current on-call assignments and users info
+detaileddescription: OpsGenie integration allows querying for the current on-call
+  participant for a given Schedule. The integration requires an API key, that can
+  be acquired from the OpsGenie interface, under Integrations / API.
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: User system proxy configuration
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Base URL
+  name: baseURL
+  defaultvalue: https://api.opsgenie.com/v2
+  type: 0
+  required: true
+script:
+  script: |
+    var baseURL = params.baseURL;
+    if (baseURL[baseURL.length - 1] != '/') {
+        baseURL += '/';
+    }
+
+    var serviceURLs = {
+        schedules: 'schedules',
+        account:'account',
+        users: 'users'
+    };
+
+    var sendRequest = function(url, param) {
+        var requestUrl = baseURL + url + encodeToURLQuery(param);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Accept: ['application/json'],
+                    Authorization: ['GenieKey ' + params.apiKey]
+                }
+            },
+            false,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            logError('OpsGenie error: Request failed for ' + requestUrl + '. Returned body is ' + JSON.stringify(res));
+            throw 'OpsGenie: Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        var jsonBody = '';
+        try {
+            jsonBody = JSON.parse(res.Body);
+        } catch (err) {
+            logInfo('OpsGenie error: Could not parse respons for ' + requestUrl + '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
+            throw 'OpsGenie error\n Could not parse respons for ' + requestUrl + '\n Error is ' + err;
+        }
+        return jsonBody;
+    };
+
+    var getOnCall = function() {
+        var url = serviceURLs.schedules + '/' + encodeURIComponent(args.schedule) + '/on-calls?scheduleIdentifierType=name';
+        var res = sendRequest(url);
+        var md = '### OpsGenie On Call Schedule __' + args.schedule + '__\n';
+        var ec = {};
+        if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length > 0) {
+            var onCall = dq(res.data.onCallParticipants,'name')
+            md += 'Currently on call for __' + args.schedule + '__ schedule:\n';
+            ec.OpsGenie = {OnCall: []};
+            onCall.forEach(function(name) {
+                var user = getUser(name);
+                md += '- ' + user.Contents.fullName + ' ('+name+')\n';
+                ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName})
+            });
+        } else {
+            md += 'Cannot find on call for __' + args.schedule + '__\n';
+        }
+        return {Type: entryTypes.note, Contents: res.data.onCallParticipants, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var getUser = function(userID) {
+        var url = serviceURLs.users + '/' + encodeURIComponent(userID);
+        var res = sendRequest(url);
+        var md = '### OpsGenie User Info\n';
+        var ec = {};
+        if (res && res.data && res.data) {
+            var user = res.data;
+            md += objToMd(user);
+        } else {
+            md = 'Cannot find user ' + userID + '\n';
+        }
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    switch (command) {
+        case 'test-module':
+            var url = serviceURLs.account;
+            sendRequest(url);
+            return 'ok';
+
+        case 'opsgenie-get-on-call':
+            return getOnCall();
+
+        case 'opsgenie-get-user':
+            return getUser(args.userID);
+
+        default:
+            throw 'OpsGenie error\n unknown command ' + command;
+    }
+  type: javascript
+  commands:
+  - name: opsgenie-get-on-call
+    arguments:
+    - name: schedule
+      required: true
+      description: Schedule Name
+    outputs:
+    - contextPath: OpsGenie.OnCall.email
+      description: Email of current on call user
+    - contextPath: OpsGenie.OnCall.name
+      description: Name of current on call user
+    description: Get current on-call participants for a given Schedule
+  - name: opsgenie-get-user
+    arguments:
+    - name: userID
+      required: true
+      default: true
+      description: User identified (i.e. email)
+    description: Get user information
