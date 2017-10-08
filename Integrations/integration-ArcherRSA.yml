@@ -434,16 +434,32 @@ script:
         var output = [];
         if (fields) {
             fields.forEach(function (field) {
-                output.push({
+                var groupValue
+                if (field.Groups) {
+                    var group = field.Groups.Group;
+                    if (group) {
+                        if (!Array.isArray(group)) {
+                            group = [group]
+                        }
+                        group.forEach(function (gr) {
+                            groupValue = groupValue ? groupValue + ',' + gr['-name'] : gr['-name']
+                        })
+                    }
+                }
+                var toPush = {
                     FieldId: field['-id'],
                     FieldName: mapping[field['-id']].Name,
                     FieldType: field['-type'],
-                    Value: field['-value'],
                     LevelId: field['-id']
-                });
+                }
+                if (groupValue) {
+                    toPush['Value'] = groupValue
+                } else {
+                    toPush['Value'] = field['-value']
+                }
+                output.push(toPush);
             });
         }
-
         return output;
     }
 
