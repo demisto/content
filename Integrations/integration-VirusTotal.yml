@@ -106,8 +106,11 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+        var o = res.obj;
+        var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'file', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
         var r = [];
@@ -117,7 +120,6 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {};
         ec.DBotScore = [];
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
@@ -184,12 +186,13 @@ script:
             sampleSize = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
-        }
         var o = res.obj;
         var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+        }
         // Calculate score based on recently found downloads
         var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
         var dbotScore = 0;
@@ -246,13 +249,14 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+        var o = res.obj;
+        var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
         }
 
-        var o = res.obj;
-        var ec = {};
         var md = '## VirusTotal URL Reputation for: ' + url + '\n';
 
         if (!o.scans && submitWait>0) {
@@ -304,12 +308,13 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
-        }
         var o = res.obj;
         var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
+        }
 
         // Calculate score based on recently found downloads
         var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
