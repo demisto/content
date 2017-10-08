@@ -1139,4 +1139,4 @@ script:
       description: ID of the field
     description: Returns mapping from list value name to list value id
   isfetch: true
-  releaseNotes: Add parser to Group type fields (type 8)
+releaseNotes: Add parser to Group type fields (type 8)
