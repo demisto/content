@@ -34,7 +34,7 @@ script:
 
     var serviceURLs = {
         schedules: 'schedules',
-        account:'account',
+        account: 'account',
         users: 'users'
     };
 
