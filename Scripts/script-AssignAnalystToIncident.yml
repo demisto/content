@@ -12,10 +12,10 @@ script: |
   var userToAssign = args.username;
 
   if (emailToAssign) {
-      userToAssign='';
+      userToAssign = '';
       var res = executeCommand('getUsers',{});
       if (res && res[0] && res[0].Contents) {
-          res[0].Contents.forEach(function(user){
+          res[0].Contents.forEach(function(user) {
               if (user.email === args.email) {
                   userToAssign = user.id;
               }
@@ -30,6 +30,11 @@ script: |
 
   if (!userToAssign) {
     switch(assignBy) {
+        case 'online':
+            var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
+            var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+            userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+            break;        
         case 'random':
             var usersRes = executeCommand('getUsers', { roles: args.roles });
             var usersList = usersRes[0].Contents.map(function (u) { return u.username });
@@ -71,6 +76,7 @@ comment: |-
   machine-learning: DBot will calculated and decide who is the best analyst for the job.
   top-user: The user that is most commonly owns this type of incident
   less-busy-user: The less busy analyst will be picked to be the incident owner.
+  online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
 enabled: true
 args:
 - name: roles
@@ -84,11 +90,12 @@ args:
   - machine-learning
   - top-user
   - less-busy-user
-  description: '(default: random) You can pick how to assign the owner - by random,
+  - online
+  description: '(default: random) You can pick how to assign the owner - by random, online, 
     machine-learning, top-user or less-busy-user.'
 - name: username
   description: When specified, the provided user will be assigned as the incident owner (optional).
 - name: email
   description: When specified, the user of provided email will be assigned as the incident owner (optional)
 scripttarget: 0
-releaseNotes: "Added the ability to assign owner by email"
+releaseNotes: "Added the ability to assign owner by email. Added the ability to assign randomly from all online analysts"
