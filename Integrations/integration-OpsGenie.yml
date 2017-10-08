@@ -71,11 +71,11 @@ script:
     var getOnCall = function() {
         var url = serviceURLs.schedules + '/' + encodeURIComponent(args.schedule) + '/on-calls?scheduleIdentifierType=name';
         var res = sendRequest(url);
-        var md = '### OpsGenie On Call Schedule __' + args.schedule + '__\n';
+        var md = '### OpsGenie On-Call Schedule __' + args.schedule + '__\n';
         var ec = {};
         if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length > 0) {
             var onCall = dq(res.data.onCallParticipants,'name')
-            md += 'Currently on call for __' + args.schedule + '__ schedule:\n';
+            md += 'Currently on-call for __' + args.schedule + '__ schedule:\n';
             ec.OpsGenie = {OnCall: []};
             onCall.forEach(function(name) {
                 var user = getUser(name);
@@ -83,7 +83,7 @@ script:
                 ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName})
             });
         } else {
-            md += 'Cannot find on call for __' + args.schedule + '__\n';
+            md += 'Cannot find on-call for __' + args.schedule + '__\n';
         }
         return {Type: entryTypes.note, Contents: res.data.onCallParticipants, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
     };
@@ -126,9 +126,9 @@ script:
       description: Schedule Name
     outputs:
     - contextPath: OpsGenie.OnCall.email
-      description: Email of current on call user
+      description: Email of current on-call user
     - contextPath: OpsGenie.OnCall.name
-      description: Name of current on call user
+      description: Name of current on-call user
     description: Get current on-call participants for a given Schedule
   - name: opsgenie-get-user
     arguments:
