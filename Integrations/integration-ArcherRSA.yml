@@ -446,18 +446,13 @@ script:
                         })
                     }
                 }
-                var toPush = {
+                output.push({
                     FieldId: field['-id'],
                     FieldName: mapping[field['-id']].Name,
                     FieldType: field['-type'],
+                    Value: groupValue || field['-value'],
                     LevelId: field['-id']
-                }
-                if (groupValue) {
-                    toPush['Value'] = groupValue
-                } else {
-                    toPush['Value'] = field['-value']
-                }
-                output.push(toPush);
+                });
             });
         }
         return output;
