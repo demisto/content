@@ -66,6 +66,16 @@ script:
     if (!cachedInfo.customFields) {
         cachedInfo.customFields = {};
     }
+    if (!cachedInfo.timestamp) {
+        cachedInfo.timestamp = new Date().getTime();
+    } else {
+        if (cachedInfo.timestamp + (1000 * 3600 * 24) < new Date().getTime()) {
+            logInfo('Clearing Zendesk cache');
+            cachedInfo.timestamp = new Date().getTime();
+            cachedInfo.users = {};
+            cachedInfo.customFields = {};
+        }
+    }
 
     var quoteMd = function(text) {
         var res = '';
