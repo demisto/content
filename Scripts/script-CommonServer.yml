@@ -2,7 +2,7 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
-releaseNotes: "Fixed display of false values in TblToMD"
+releaseNotes: "Fixed display of false values in tableToMarkdown"
 script: |-
   // Common functions script
   // =======================
@@ -207,10 +207,9 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                  if(entry[h] === null || entry[h] === undefined){
+                  if(entry[h] === null || entry[h] === undefined) {
                       vals.push(' ');
-                  }
-                  else {
+                  } else {
                       vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter),true) || ' ');
                   }
               });
