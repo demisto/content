@@ -54,8 +54,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |2
-
+  script: |
     var cachedInfo = getIntegrationContext();
     if (!cachedInfo) {
         cachedInfo = {users: {}, customFields: {}};
@@ -604,6 +603,10 @@ script:
         case 'zendesk-get-attachment':
             return getAttachment(args.id);
 
+        case 'zendesk-clear-cache':
+            setIntegrationContext({});
+            return 'Cache cleared';
+
         case 'fetch-incidents':
             return fetchIncidents();
 
@@ -809,5 +812,8 @@ script:
       required: true
       description: Attachment id
     description: Return the attachment from Zendesk
+  - name: zendesk-clear-cache
+    arguments: []
+    description: Clear the Zendesk integration cache
   isfetch: true
 releaseNotes: "Added zendesk-add-comment command. Improved incident fetching mechanism. Improved zendesk-list-tickets output."
