@@ -247,7 +247,7 @@ script: |-
   /**
    * Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score")
   */
-  var PascalToSpace = function(string) {
+  var pascalToSpace = function(string) {
       return string.replace(/([a-z][A-Z])/g, function (g) { return g[0] + ' ' + g.slice(1); });
   };
   
@@ -1794,3 +1794,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Added pascalToSpace function and header formating interface to createEntry
