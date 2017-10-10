@@ -468,3 +468,4 @@ script:
       description: FireEye application ID
     - contextPath: FFireEyeAX.Sensors.Profiles.Applications.-name
       description: FireEye application name
+releaseNotes: "-"

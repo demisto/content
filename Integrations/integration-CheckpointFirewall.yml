@@ -715,3 +715,4 @@ script:
       default: true 
       description: e.g. Network
 hidden: false
+releaseNotes: "-"

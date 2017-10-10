@@ -61,6 +61,8 @@ mapping:
     required: yes
     sequence:
       - include: section_schema
+  releaseNotes:
+    type: str
 
 
 schema;section_schema:

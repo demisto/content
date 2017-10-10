@@ -445,3 +445,4 @@ script:
       description: Number of threats
     description: Check if sender address is malicious
 hidden: false
+releaseNotes: "-"

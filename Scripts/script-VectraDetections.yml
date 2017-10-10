@@ -96,3 +96,4 @@ dependson:
   must:
   - vec-detections
 deprecated: true
+releaseNotes: "-"

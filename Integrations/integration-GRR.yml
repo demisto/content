@@ -560,3 +560,4 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
+releaseNotes: "-"

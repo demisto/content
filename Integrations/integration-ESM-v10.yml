@@ -1175,7 +1175,7 @@ script:
       description: the ID of the user
     - contextPath: EsmUser.Name
       description: the esm user name
-    - contextPath: EsmUser.Email
+    - contextPath: EsmUser.Emailf
       description: the e-mail of the user
     - contextPath: EsmUser.SMS
       description: the SMS details of the user
@@ -1185,3 +1185,4 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
+releaseNotes: "-"

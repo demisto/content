@@ -104,6 +104,8 @@ mapping:
     type: text
   toVersion:
     type: text
+  releaseNotes:
+    type: str
 
 
 # playbook->tasks

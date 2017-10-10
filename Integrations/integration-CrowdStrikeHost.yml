@@ -659,3 +659,4 @@ script:
     execution: true
 hidden: false
 fromVersion: 2.5.0
+releaseNotes: "-"
