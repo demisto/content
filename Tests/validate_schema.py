@@ -9,8 +9,6 @@ def main(argv):
 
     file_path = argv[0]
     schema_path = argv[1]
-    # print ('starting ...')
-    # print ('file_path - ' + file_path)
     c = Core(source_file=file_path, schema_files=[schema_path])
     try:
         c.validate(raise_exception=True)
@@ -18,7 +16,6 @@ def main(argv):
         print 'Failed: %s failed' % (file_path,)
         print err
         sys.exit(1)
-    # print ('finished')
     sys.exit(0)
 
 
