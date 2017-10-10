@@ -26,6 +26,7 @@ script: |-
   }
   return entries;
 type: javascript
+comment: "-"
 tags:
 - firewall
 - checkpoint

@@ -27,6 +27,7 @@ script: |-
 type: python
 tags:
 - file
+comment: "-"
 enabled: true
 args:
 - name: entry_id

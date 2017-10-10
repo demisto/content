@@ -33,6 +33,7 @@ script: |-
 type: python
 tags:
 - Utility
+comment: "-"
 enabled: true
 args:
 - name: url

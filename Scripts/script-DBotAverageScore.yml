@@ -18,6 +18,7 @@ script: |
   });
   return {Type: entryTypes.note, Contents: avg, ContentsFormat: formats.json, HumanReadable: 'Scores average calculated', EntryContext: {DBotAvgScore: avg}};
 type: javascript
+comment: "-"
 tags:
 - Utility
 outputs:

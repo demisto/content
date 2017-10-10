@@ -4,7 +4,7 @@ name: Hunting C&C Communication Playbook
 description: A playbook to use the latest Threat Intelligence to hunt across your
   infrastructure and look for malicious C&C communications.
 system: true
-fromversion: 2.5.0
+fromVersion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":

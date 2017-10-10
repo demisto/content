@@ -31,6 +31,7 @@ ensureFilename() {
             python Tests/validate_schema.py "$dir/$filename" "Tests/schemas/$validate_file.yml" d
             if [[ $? -ne 0 ]]
             then
+                # done=true
                 echo "################### STOP"
                 foundMissingField=true
             fi
@@ -42,7 +43,7 @@ echo "start ensureFilenames"
 ensureFilename Integrations integration- .yml "integration"
 ensureFilename Playbooks playbook- .yml
 ensureFilename Reports report- .json
-ensureFilename Scripts script- .yml
+ensureFilename Scripts script- .yml "script"
 ensureFilename Misc reputations .json
 
 if [ "$foundWrongName" = true ] || [ "$foundMissingField" = true ]

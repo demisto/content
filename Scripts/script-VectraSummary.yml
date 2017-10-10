@@ -46,4 +46,4 @@ dependson:
   must:
   - vec-health
 timeout: 0s
-deperecated: true
+deprecated: true

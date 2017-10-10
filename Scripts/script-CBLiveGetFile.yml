@@ -123,6 +123,7 @@ script: |-
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Command timed out after %d seconds' % secTimeout } )
       sys.exit(0)
 type: python
+comment: "-"
 tags:
 - carbon-black
 - endpoint

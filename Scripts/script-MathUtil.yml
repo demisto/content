@@ -1,5 +1,6 @@
 commonfields:
   id: MathUtil
+  version: -1
 name: MathUtil
 script: |-
   var lh = args.lh;

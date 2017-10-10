@@ -67,6 +67,7 @@ script: |
 type: python
 tags:
 - QRadar
+comment: "-"
 system: true
 deprecated: true
 args:

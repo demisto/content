@@ -63,6 +63,7 @@ args:
   - EQUAL
   description: event ID operator
 - name: includeNonHostEvents
+  description: "-"
   required: true
   auto: PREDEFINED
   predefined:

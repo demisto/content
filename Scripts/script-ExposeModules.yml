@@ -7,6 +7,7 @@ script: |
   var allArr = Object.keys(all).map(function(m) {return {instance: m, brand: all[m].brand, category: all[m].category, state: all[m].state};});
   return {Type: entryTypes.note, Contents: allArr, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('Modules', allArr, ['brand', 'instance', 'category', 'state']), EntryContext: {ConfiguredModules: allArr}};
 type: javascript
+comment: "-"
 tags:
 - Utility
 system: true

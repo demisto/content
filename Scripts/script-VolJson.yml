@@ -22,6 +22,7 @@ args:
   description: Path of file to pass as argument to Volatility
 - name: system
   required: true
+  description: "-"
 scripttarget: 0
 dependson: {}
 timeout: 0s

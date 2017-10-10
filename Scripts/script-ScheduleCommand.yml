@@ -6,6 +6,7 @@ script: return executeCommand("scheduleEntry", args);
 type: javascript
 tags:
 - Utility
+comment: "-"
 system: true
 args:
 - name: command

@@ -2,7 +2,7 @@ commonfields:
   id: SandboxDetonateFile
   version: -1
 name: SandboxDetonateFile
-fromversion: 2.5.0
+fromVersion: 2.5.0
 script: |-
   from time import sleep
   res = []

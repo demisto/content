@@ -4,6 +4,7 @@ commonfields:
 name: IsIPInSubnet
 script: 'return isIPInSubnet(args.ip, args.subnet) ? ''yes'' : ''no'''
 type: javascript
+comment: "-"
 tags:
 - Condition
 enabled: true

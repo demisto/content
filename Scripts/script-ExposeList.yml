@@ -18,6 +18,7 @@ script: |
   }
   return {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat: formats.text};
 type: javascript
+comment: "-"
 tags:
 - Utility
 system: true

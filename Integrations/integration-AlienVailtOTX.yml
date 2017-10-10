@@ -511,4 +511,4 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
 hidden: false
-toversion: 3.0.1
+toVersion: 3.0.1

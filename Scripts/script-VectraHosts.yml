@@ -66,4 +66,4 @@ timeout: 0s
 dependson:
   must:
   - vec-hosts
-deperecated: true
+deprecated: true

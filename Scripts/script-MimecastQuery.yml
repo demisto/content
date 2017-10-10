@@ -28,6 +28,7 @@ args:
     will override other query arguments
   name: queryXml
 - auto: PREDEFINED
+  description: "-"
   name: text
   predefined:
   - search for this text in api messages

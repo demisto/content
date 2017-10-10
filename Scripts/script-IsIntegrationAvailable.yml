@@ -15,9 +15,11 @@ type: python
 tags:
 - infra
 - Condition
+comment: "-"
 system: true
 args:
 - name: brandname
+  description: "-"
   required: true
   default: true
 scripttarget: 0

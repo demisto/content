@@ -67,6 +67,7 @@ type: python
 tags:
 - stix
 - ioc
+comment: "-"
 enabled: true
 args:
 - name: iocXml

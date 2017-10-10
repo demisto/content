@@ -2,7 +2,7 @@ id: Detonate files
 version: -1
 name: Detonate files
 system: true
-fromversion: 2.5.0
+fromVersion: 2.5.0
 description: Detonate files found under File context if they are PDFs or executables
 starttaskid: "0"
 tasks:

@@ -1,7 +1,7 @@
 id: Hunt for bad IOCs
 version: -1
 name: Hunt for bad IOCs
-fromversion: 2.5.0
+fromVersion: 2.5.0
 system: true
 description: Assume that malicious IOCs are in the right place in the context and
   start hunting using available tools

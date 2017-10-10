@@ -20,6 +20,7 @@ script: |-
 type: javascript
 tags: []
 enabled: true
+comment: Verify given entry contains a string
 args:
 - name: humanReadableEntryId
   required: true

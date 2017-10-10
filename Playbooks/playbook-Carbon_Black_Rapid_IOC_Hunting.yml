@@ -1,5 +1,5 @@
 id: Carbon Black Rapid IOC Hunting
-fromversion: 2.5.0
+fromVersion: 2.5.0
 system: true
 version: -1
 name: Carbon Black Rapid IOC Hunting

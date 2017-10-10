@@ -1,7 +1,7 @@
 id: playbook2
 version: -1
 system: true
-fromversion: 2.5.0
+fromVersion: 2.5.0
 name: Phishing Playbook - Manual
 description: Master playbook for phishing incidents. This playbook is a manual playbook.
 starttaskid: "0"

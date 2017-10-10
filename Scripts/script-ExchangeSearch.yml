@@ -85,6 +85,7 @@ script: |-
   else:
       demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mailbox specified. Cannot continue.' } )
 type: python
+comment: "-"
 tags:
 - ews
 - exchange

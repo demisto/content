@@ -1,5 +1,5 @@
 id: playbook10
-fromversion: 2.5.0
+fromVersion: 2.5.0
 system: true
 version: -1
 name: Rapid IOC Hunting Playbook
