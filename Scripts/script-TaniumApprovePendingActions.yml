@@ -139,6 +139,7 @@ comment: Send a request for a formatted result of a saved question. To receive 
   for more information
 args:
 - name: approvedpackages
+  description: "-"
   required: true
   default: true
 outputs:

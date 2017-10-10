@@ -26,6 +26,7 @@ script: |
 type: javascript
 tags:
 - Utility
+comment: "-"
 enabled: true
 system: true
 args:

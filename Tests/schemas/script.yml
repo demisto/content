@@ -1,0 +1,118 @@
+type: map
+mapping:
+  commonfields:
+    type: map
+    required: yes
+    mapping:
+      id:
+        type: str
+        required: yes
+      version:
+        type: int
+        required: yes
+  name:
+    type: str
+    required: yes
+  script:
+    type: str
+    required: yes
+  type:
+    type: str
+    required: yes
+    enum: ['javascript', 'python']
+  tags:
+    type: seq
+    required: yes
+    sequence:
+      - type: str
+  comment:
+    type: str
+    required: yes
+  enabled:
+    type: bool
+  system:
+    type: bool
+  deprecated:
+    type: bool
+  args:
+    type: seq
+    sequence:
+      - include: argument_schema
+  scripttarget:
+    type: int
+  timeout:
+    type: text
+  dependson:
+    type: map
+    allowempty: True
+  outputs:
+    type: seq
+    sequence:
+      - include: output_schema
+  important:
+    type: seq
+    sequence:
+      - include: important_schema
+  fromVersion:
+    type: text
+  toVersion:
+    type: text
+  dockerimage:
+    type: str
+  releaseNotes:
+    type: str
+
+# script->args
+schema;argument_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required: yes
+    description:
+      type: str
+      required: yes
+    defaultValue:
+      type: str
+    required:
+      type: bool
+    default:
+      type: bool
+    auto:
+      type: str
+      enum: ['PREDEFINED']
+    predefined:
+      type: seq
+      sequence:
+      - type: str
+    isArray:
+      type: bool
+    secret:
+      type: bool
+    deprecated:
+      type: bool
+
+# script->outputs
+schema;output_schema:
+  type: map
+  mapping:
+    contentPath:
+      type: str
+    contextPath:
+      type: scalar
+    description:
+      type: str
+      required: yes
+
+# script->important
+schema;important_schema:
+  type: map
+  mapping:
+    contextPath:
+      type: str
+      required: yes
+    description:
+      type: str
+      required: yes
+    related:
+      type: str

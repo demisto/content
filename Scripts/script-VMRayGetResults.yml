@@ -35,6 +35,7 @@ comment: Helper script to get the results of an analysed file
 enabled: true
 args:
 - name: sample_id
+  description: "-"
   required: true
   default: true
 scripttarget: 0

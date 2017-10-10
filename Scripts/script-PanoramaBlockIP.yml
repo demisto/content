@@ -52,6 +52,7 @@ type: javascript
 tags:
 - firewall
 - panorama
+comment: "-"
 system: true
 args:
 - name: ip

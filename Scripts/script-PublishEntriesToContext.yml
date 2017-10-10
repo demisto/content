@@ -30,6 +30,7 @@ script: |-
 type: javascript
 tags:
 - Utility
+comment: "-"
 enabled: true
 args:
 - name: ids

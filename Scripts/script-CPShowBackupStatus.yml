@@ -63,6 +63,7 @@ enabled: true
 deprecated: true
 args:
 - name: devices
+  description: "-"
   required: true
   default: true
 - name: waittimeout

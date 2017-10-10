@@ -2,7 +2,7 @@ commonfields:
   id: AddEvidence
   version: -1
 name: AddEvidence
-fromversion: 2.5.0
+fromVersion: 2.5.0
 script: |-
   if (!args.entryIDs) {
       throw 'Missing argument values for command AddEvidenceJS are : entryIDs';

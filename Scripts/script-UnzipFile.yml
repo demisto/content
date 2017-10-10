@@ -100,6 +100,7 @@ comment: Unzip a file using fileName or entryID to specify a file. Files unzippe
 args:
 - name: fileName
   default: true
+  description: "-"
   deprecated: true
 - name: password
   secret: true
@@ -107,6 +108,7 @@ args:
 - name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
+  description: "-"
   deprecated: true
 outputs:
 - contextPath: ExtractedFiles

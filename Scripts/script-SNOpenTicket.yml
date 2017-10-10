@@ -31,15 +31,21 @@ script: |-
 type: python
 tags:
 - servicenow
+comment: "-"
 system: true
 deprecated: true
 args:
 - name: category
   default: true
+  description: "-"
 - name: subcategory
+  description: "-"
 - name: shortdescription
+  description: "-"
 - name: comments
+  description: "-"
 - name: assignmentgroup
+  description: "-"
 scripttarget: 0
 dependson:
   must:

@@ -17,6 +17,7 @@ system: true
 args:
 - name: fieldName
   required: true
+  description: "-"
   default: true
 scripttarget: 0
 dependson: {}

@@ -47,6 +47,7 @@ tags:
 - url
 - ip
 - hash
+comment: "-"
 system: true
 args:
 - name: bad_url_weight

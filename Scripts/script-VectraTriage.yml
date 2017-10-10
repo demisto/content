@@ -24,7 +24,7 @@ system: true
 args: []
 scripttarget: 0
 timeout: 0s
-deperecated: true
+deprecated: true
 dependson:
   must:
   - vec-triage

@@ -65,14 +65,17 @@ script: |-
       Contents: args.fileName
   };
 type: javascript
+comment: "-"
 tags:
 - Utility
 - csv
 args:
 - name: fileName
+  description: "-"
   required: true
   default: true
 - name: csvArray
+  description: "-"
   required: true
   isArray: true
 scripttarget: 0

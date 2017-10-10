@@ -6,6 +6,7 @@ script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 tags:
 - Utility
+comment: "-"
 system: true
 deprecated: true
 args:

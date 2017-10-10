@@ -36,6 +36,7 @@ script: |-
   }
   return res;
 type: javascript
+comment: "-"
 tags:
 - Elasticsearch
 system: true

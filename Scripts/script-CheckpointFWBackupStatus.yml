@@ -65,6 +65,7 @@ enabled: true
 args:
 - name: devices
   required: true
+  description: "-"
   default: true
 - name: waittimeout
   description: In seconds. If not provided, does not wait.

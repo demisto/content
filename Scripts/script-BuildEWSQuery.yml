@@ -12,13 +12,18 @@ script: |-
   }
   return str || ' ';
 type: javascript
+comment: "-"
 tags:
 - ews
 enabled: true
 args:
 - name: from
   default: true
+  description: "-"
 - name: subject
+  description: "-"
 - name: attachmentName
+  description: "-"
 - name: body
+  description: "-"
 scripttarget: 0

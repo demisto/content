@@ -39,6 +39,7 @@ type: javascript
 tags:
 - sep
 - symantec
+comment: "-"
 enabled: true
 args:
 - name: scanType

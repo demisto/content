@@ -12,6 +12,7 @@ script: |
   }
   return res;
 type: javascript
+comment: "-"
 tags:
 - Utility
 system: true

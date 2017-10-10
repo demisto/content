@@ -241,6 +241,7 @@ args:
   description: mail attribute of desire user
 - name: userAccountControlOut
   auto: PREDEFINED
+  description: "-"
   predefined:
   - "true"
   - "false"

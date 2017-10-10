@@ -26,6 +26,7 @@ script: |-
 type: python
 tags:
 - servicenow
+comment: "-"
 system: true
 deprecated: true
 args:
