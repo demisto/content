@@ -1,7 +1,8 @@
 test:
   pre:
-    # install python client
+    # install dependencies
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
+    - pip install pykwalify
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator

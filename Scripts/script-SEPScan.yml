@@ -40,6 +40,7 @@ tags:
 - sep
 - symantec
 comment: "-"
+releaseNotes: "-"
 enabled: true
 args:
 - name: scanType

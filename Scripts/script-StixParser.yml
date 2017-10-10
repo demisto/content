@@ -79,3 +79,5 @@ dependson: {}
 timeout: 0s
 dockerimage: demisto/stix
 system: true
+releaseNotes: "-"
+

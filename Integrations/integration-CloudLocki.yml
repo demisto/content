@@ -349,3 +349,4 @@ script:
     - contextPath: CloudLock.Activities.User.FullName
       description: Activity user full name
 hidden: false
+releaseNotes: "-"

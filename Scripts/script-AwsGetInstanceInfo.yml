@@ -120,3 +120,4 @@ dependson:
   - get-sg-info
   - get-ebs-volume-info
 timeout: 0s
+releaseNotes: "-"

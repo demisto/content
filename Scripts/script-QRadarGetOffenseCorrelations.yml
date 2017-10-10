@@ -91,3 +91,4 @@ outputs:
   description: The correlation username
 - contextPath: Correlation.StartTime
   description: The correlation start time
+releaseNotes: "-"

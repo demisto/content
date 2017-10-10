@@ -27,3 +27,5 @@ args:
 - name: body
   description: "-"
 scripttarget: 0
+releaseNotes: "-"
+

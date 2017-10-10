@@ -545,3 +545,4 @@ script:
       description: "-"
     - contextPath: HPSM.Devices.UpdatedBy
       description: "-"
+releaseNotes: "-"

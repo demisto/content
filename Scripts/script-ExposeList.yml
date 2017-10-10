@@ -39,3 +39,4 @@ scripttarget: 0
 dependson: {}
 deprecated: true
 timeout: 0s
+releaseNotes: "-"

@@ -121,3 +121,4 @@ script:
       description: "-"
     description: Get intel from PacketMail.net on IPs
 hidden: false
+releaseNotes: "-"
