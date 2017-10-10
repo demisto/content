@@ -41,3 +41,4 @@ dependson:
   - file
 timeout: 0s
 toVersion: 3.0.1
+releaseNotes: "-"
