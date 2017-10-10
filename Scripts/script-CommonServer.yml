@@ -376,14 +376,14 @@ script: |-
    * * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
    * * dest-key is also used for war room table headers
    * * humanReadable states whether field should appear in war room table. Default is true.
-   * @param {function} headerTransform - transform mark down headers to readable format.
    * @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+   * @param {function} headerTransform - transform mark down headers to readable format.
    * @returns {Object} - the war room entry
   */
-  var createEntry = function(result, translator, headerTransform, MDfilter) {
+  var createEntry = function(result, translator, MDfilter, headerTransform) {
       /* filters out all fields where humanReadable is false */
-      var filter = function(obj){
-          if(obj.humanReadable !== false){
+      var filter = function(obj) {
+          if(obj.humanReadable !== false) {
               return true;
           }
           return false;
@@ -402,7 +402,7 @@ script: |-
       var content = translator.innerPath ? dq(result, translator.innerPath) : result;
       var translatedContext = mapObjFunction(translator.data) (content);
       var translatedMD = mapObjFunction(translator.data, filter) (content);
-      entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform);
+      entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform || dotToSpace);
       entry.EntryContext = {};
       var context = createContext(translatedContext);
       entry.EntryContext[translator.contextPath] = context;
