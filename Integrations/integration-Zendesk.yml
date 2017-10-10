@@ -118,7 +118,7 @@ script:
     var getUserName = function(id) {
         var user = getUserDetails(id);
         if (user) {
-            return cachedInfo.users[id].name;
+            return cachedInfo.users[id].name + ' (' + cachedInfo.users[id].email + ')';
         } else {
             return 'N/A';
         }
@@ -405,11 +405,13 @@ script:
         var ec = {}
         var newContext = {};
 
+        md += 'Requester: __' + getUserName(resDetails.ticket.requester_id) + '__\n';
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
         md += 'Priority: __' + resDetails.ticket.priority + '__\n';
         md += 'Status: __' + resDetails.ticket.status + '__\n';
-        if (resDetails.ticket.recipient) {
-            md += 'Recipients: __' + resDetails.ticket.recipient + '__\n';
+
+        if (resDetails.ticket.assignee_id) {
+            md += 'Assignee: __' + getUserName(resDetails.ticket.assignee_id) + '__\n';
         }
 
         md += "#### Description\n";
