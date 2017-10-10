@@ -1,5 +1,6 @@
 id: ATD-playbook
 version: -1
+description: "-"
 name: ATD-playbook
 starttaskid: "0"
 tasks:
@@ -11,6 +12,7 @@ tasks:
       id: 46b565a4-9fa9-45b6-86a5-62cc458967a8
       version: 1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -89,6 +91,7 @@ tasks:
     type: regular
     task:
       id: ce1aed16-1d6d-413a-86be-0ca723d4e446
+      description: "-"
       version: 1
       name: Wait for ATD results
       scriptName: WhileLoop

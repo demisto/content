@@ -12,6 +12,7 @@ tasks:
     task:
       id: ccd00127-175c-4a93-8edb-14e71f7d47ea
       version: -1
+      description: "-"
       name: ""
       iscommand: false
       brand: ""
@@ -63,6 +64,7 @@ tasks:
     task:
       id: 3ad45b93-5373-4303-8a74-fcaeba4c3344
       version: -1
+      description: "-"
       name: Add original email details to context
       scriptName: Set
       type: regular
@@ -87,6 +89,7 @@ tasks:
     task:
       id: b7f50774-0497-4821-8910-02df73f2c91d
       version: -1
+      description: "-"
       name: Add original email attachments to context
       scriptName: ParseEmailFiles
       type: regular

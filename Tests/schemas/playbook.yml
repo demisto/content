@@ -1,0 +1,125 @@
+type: map
+mapping:
+  id:
+    type: str
+    required: yes
+  version:
+    type: int
+    required: yes
+  name:
+    type: str
+    required: yes
+  description:
+    type: str
+    required: yes
+  starttaskid:
+    type: str
+    required: yes
+  view:
+    type: str
+    required: yes
+  inputs:
+    type: seq
+    sequence:
+      - include: input_schema
+  tags:
+    type: seq
+    sequence:
+      - type: str
+  tasks:
+    type: map
+    required: yes
+    matching-rule: 'all'
+    mapping:
+      regex;(^[0-9]+$):
+        type: map
+        mapping:
+          id:
+            type: text
+            required: yes
+          taskid:
+            type: str
+            required: yes
+          type:
+            type: str
+            required: yes
+            enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
+          scriptarguments:
+            type: map
+            allowempty: True
+          task:
+            type: map
+            required: yes
+            mapping:
+              id:
+                type: text
+                required: yes
+              version:
+                type: int
+                required: true
+              name:
+                type: str
+                required: true
+              playbookName:
+                type: str
+              description:
+                type: str
+                required: true
+              scriptName:
+                type: str
+              script:
+                type: str
+              type:
+                type: str
+                enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
+              iscommand:
+                type: bool
+                required: yes
+              brand:
+                type: text
+                required: yes
+              issystemtask:
+                type: bool
+              clonedfrom:
+                type: str
+          nexttasks:
+            type: map
+            mapping:
+              regex;(.+):
+                type: seq
+                sequence:
+                  - type: str
+          view:
+            type: str
+            required: yes
+          results:
+            type: seq
+            sequence:
+              - type: str
+          continueonerror:
+            type: bool
+  system:
+    type: bool
+  fromVersion:
+    type: text
+  toVersion:
+    type: text
+
+
+# playbook->tasks
+schema;task_schema:
+  type: map
+  allowempty: True
+
+# playbook->inputs
+schema;input_schema:
+  type: map
+  mapping:
+    key:
+      type: str
+      required: yes
+    value:
+      type: text
+    description:
+      type: str
+      required: yes

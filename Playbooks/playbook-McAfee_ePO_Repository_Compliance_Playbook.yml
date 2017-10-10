@@ -14,6 +14,7 @@ tasks:
     task:
       id: ee018e04-2610-4998-87d0-f5217127bbad
       version: -1
+      description: "-"
       name: start_task
       issystemtask: true
       type: start
@@ -37,6 +38,7 @@ tasks:
     task:
       id: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
       version: -1
+      description: "-"
       name: Retrieve DAT version and date from McAfee
       script: epo|||epo-get-latest-dat
       issystemtask: true
@@ -61,6 +63,7 @@ tasks:
     task:
       id: b7e28ac8-487e-4946-8316-7361f08ac1c5
       version: -1
+      description: "-"
       name: Initiate update task in each local repository
       script: epo|||epo-update-repository
       issystemtask: true
@@ -86,6 +89,7 @@ tasks:
     task:
       id: 620023d1-63b0-4834-81a2-74dd20437dda
       version: -1
+      description: "-"
       name: Send report to admin with update results
       scriptName: SendEmail
       issystemtask: true
@@ -118,6 +122,7 @@ tasks:
     task:
       id: dccfaaf4-cca5-44d3-8818-6a5131b502ed
       version: -1
+      description: "-"
       name: Send email alert with list of faulty repositories to admin
       scriptName: SendEmail
       issystemtask: true
@@ -151,6 +156,7 @@ tasks:
     task:
       id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
       version: -1
+      description: "-"
       name: Close the investigation
       scriptName: CloseInvestigation
       issystemtask: true
