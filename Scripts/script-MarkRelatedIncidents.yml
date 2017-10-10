@@ -36,3 +36,5 @@ args:
   description: The list of related incidents we want to mark
   isArray: true
 scripttarget: 0
+releaseNotes: "-"
+

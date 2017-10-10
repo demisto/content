@@ -53,3 +53,5 @@ outputs:
 - contextPath: URL.AdsCount
   description: The ads count on the URL
 scripttarget: 0
+releaseNotes: "-"
+

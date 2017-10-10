@@ -28,3 +28,4 @@ outputs:
   description: The average score per indicator
 enabled: true
 scripttarget: 0
+releaseNotes: "-"

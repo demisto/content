@@ -27,6 +27,7 @@ script: |-
   return entries;
 type: javascript
 comment: "-"
+releaseNotes: "-"
 tags:
 - firewall
 - checkpoint

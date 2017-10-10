@@ -125,3 +125,4 @@ script:
       - certificates
     description: Attribute search
   dockerimage: aviadlich/python-requests
+releaseNotes: "-"

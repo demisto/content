@@ -40,3 +40,5 @@ dependson:
   must:
   - servicenow-incidents-query
 timeout: 0s
+releaseNotes: "-"
+

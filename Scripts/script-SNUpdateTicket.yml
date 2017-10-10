@@ -54,3 +54,5 @@ dependson:
   must:
   - servicenow-incident-update
 timeout: 0s
+releaseNotes: "-"
+
