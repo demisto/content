@@ -380,6 +380,9 @@ script: |-
           }
           return false;
       };
+      if (MDfilter) {
+          filter = MDfilter;
+      }
 
       var entry = {
           Type: entryTypes.note,
