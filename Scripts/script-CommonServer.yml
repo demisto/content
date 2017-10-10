@@ -45,7 +45,7 @@ script: |-
           }
           return res;
       }
-      cleanSingleObject(obj);
+      return cleanSingleObject(obj);
   }
 
   /**
