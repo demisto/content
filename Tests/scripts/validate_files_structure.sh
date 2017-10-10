@@ -5,7 +5,8 @@
 foundWrongName=false
 
 # ensures all files in dir starting/ending with prefix/suffix
-ensureFilename() {
+# if schema file path provided - validate all files in dir match the schema file
+validateFilesStructure() {
     dir="$1"
     prefix="$2"
     suffix="$3"
@@ -40,15 +41,15 @@ ensureFilename() {
     echo "Finished validate $dir"
 }
 
-ensureFilename Integrations integration- .yml "integration"
-ensureFilename Playbooks playbook- .yml "playbook"
-ensureFilename Reports report- .json "report"
-ensureFilename Scripts script- .yml "script"
-ensureFilename Misc reputations .json
+validateFilesStructure Integrations integration- .yml "" "integration"
+validateFilesStructure Playbooks playbook- .yml "playbook"
+validateFilesStructure Reports report- .json "" "report"
+validateFilesStructure Scripts script- .yml "" "script"
+validateFilesStructure Misc reputations .json
 
 if [ "$foundWrongName" = true ] || [ "$foundMissingField" = true ]
 then
-    echo "ensurefilenames.sh exiting with error"
+    echo "validate_files_structure.sh exiting with error"
     exit 1
 fi
 
