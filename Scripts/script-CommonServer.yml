@@ -231,7 +231,7 @@ script: |-
    * @param {String} string - string to be converted - i.e. hello_world
    * @returns {String} - converted string - i.e. HelloWorld
   */
-  var underscoreToCamelCase = function(string){
+  var underscoreToCamelCase = function(string) {
       var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
@@ -239,9 +239,16 @@ script: |-
   /**
    * Converts dots into spaces and capitalizes
   */
-  var dotToSpace = function(string){
+  var dotToSpace = function(string) {
       var ret_string = '.'+string;
       return ret_string.replace(/\.([a-z,A-Z])/g, function (g) { return ' '+g[1].toUpperCase(); });
+  };
+
+  /**
+   * Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score")
+  */
+  var PascalToSpace = function(string) {
+      return string.replace(/([a-z][A-Z])/g, function (g) { return g[0] + ' ' + g.slice(1); });
   };
   
   function mapObjFunction(mapFields, filter) {
@@ -369,10 +376,11 @@ script: |-
    * * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
    * * dest-key is also used for war room table headers
    * * humanReadable states whether field should appear in war room table. Default is true.
+   * @param {function} headerTransform - transform mark down headers to readable format.
    * @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
    * @returns {Object} - the war room entry
   */
-  var createEntry = function(result , translator, MDfilter){
+  var createEntry = function(result, translator, headerTransform, MDfilter) {
       /* filters out all fields where humanReadable is false */
       var filter = function(obj){
           if(obj.humanReadable !== false){
@@ -394,7 +402,7 @@ script: |-
       var content = translator.innerPath ? dq(result, translator.innerPath) : result;
       var translatedContext = mapObjFunction(translator.data) (content);
       var translatedMD = mapObjFunction(translator.data, filter) (content);
-      entry.HumanReadable = tableToMarkdown(translator.title,translatedMD, undefined, undefined, dotToSpace);
+      entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform);
       entry.EntryContext = {};
       var context = createContext(translatedContext);
       entry.EntryContext[translator.contextPath] = context;
