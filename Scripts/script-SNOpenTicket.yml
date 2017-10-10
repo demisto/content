@@ -51,3 +51,4 @@ dependson:
   must:
   - servicenow-incident-create
 timeout: 0s
+releaseNotes: "-"

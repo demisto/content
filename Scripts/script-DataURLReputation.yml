@@ -34,3 +34,4 @@ dependson:
   - pt-malware
 timeout: 0s
 fromVersion: 3.1.0
+releaseNotes: "-"

@@ -28,3 +28,4 @@ deprecated: true
 dependson:
   must:
   - vec-triage
+releaseNotes: "-"

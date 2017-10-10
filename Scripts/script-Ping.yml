@@ -44,3 +44,4 @@ args:
 scripttarget: 0
 dependson: {}
 dockerimage: demisto/pyping
+releaseNotes: "-"

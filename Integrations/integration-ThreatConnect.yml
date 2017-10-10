@@ -673,3 +673,4 @@ script:
     - name: owner
       description: "-"
   dockerimage: demisto/threatconnect-sdk
+releaseNotes: "-"

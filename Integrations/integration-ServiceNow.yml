@@ -1436,3 +1436,4 @@ script:
     description: Upload new file
   isfetch: true
 hidden: false
+releaseNotes: "-"

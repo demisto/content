@@ -38,3 +38,4 @@ args:
   defaultValue: "no"
 scripttarget: 0
 fromVersion: 3.1.0
+releaseNotes: "-"

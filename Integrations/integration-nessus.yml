@@ -1230,3 +1230,4 @@ script:
     - contextPath: NessusScan.Status
       description: The status of the scan report.
 hidden: false
+releaseNotes: "-"
