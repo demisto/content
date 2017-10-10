@@ -95,6 +95,11 @@
         {
             "name": "SplunkPy",
             "playbookID": "Splunk-Test"
+        },
+        {
+            "name" : "McAfee NSM",
+            "playbookID" : "McAfeeNSMTest",
+            "timeout" : 300
         }
     ],
     "skipped": [

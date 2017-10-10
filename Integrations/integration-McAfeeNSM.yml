@@ -1,0 +1,679 @@
+commonfields:
+  id: McAfee NSM
+  version: -1
+name: McAfee NSM
+display: McAfee NSM
+category: Network Security
+image: data:image/png;base64,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
+description: McAfee Network Security Manager
+configuration:
+- display: URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    var session_credentials = '';
+    var insecure = params.insecure;
+    var base_url = params.url;
+    // handle '/' at the end of the url
+    if (base_url[base_url.length - 1] === '/') {
+        base_url += "sdkapi/";
+    } else {
+        base_url += "/sdkapi/";
+    }
+
+    function request(method, url_suffix, headers, body) {
+        logInfo('url: ' + url_suffix);
+        // add default headers
+        if (!("Accept" in headers)) {
+            headers["Accept"] = ['application/vnd.nsm.v1.0+json', 'application/vnd.nsm.v2.0+json'];
+        }
+        if (!("Content-Type" in headers)) {
+            headers['Content-Type'] = ['application/json'];
+        }
+        if (session_credentials !== '') {
+            headers['NSM-SDK-API'] = [session_credentials];
+        }
+
+        var res = http(
+            base_url + url_suffix,
+            {
+                Method: method, // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: headers,
+                Body: body,
+            },
+            insecure
+        );
+
+        logError(JSON.stringify(res));
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    }
+
+    function attacks_to_entry(title, attacks) {
+        return createEntry(attacks, {
+            contextPath : 'NSM.Attacks(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'attackId'},
+                {to : 'Name', from : 'name'},
+                {to : 'Direction', from : 'DosDirection'},
+                {to : 'Severity', from : 'Severity'},
+                {to : 'Category', from : 'UiCategory'},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function IPS_policies_to_entry(title, ips_policies) {
+        return createEntry(ips_policies, {
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'policyId'},
+                {to : 'Name', from : 'name'},
+                {to : 'DomainID', from : 'DomainId'},
+                {to : 'IsEditable', from : 'IsEditable'},
+                {to : 'VisibleToChildren', from : 'VisibleToChild'},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function IPS_policy_to_entry(title, ips_policy, policy_id) {
+        ips_policy.ID = policy_id;
+        return createEntry([ips_policy], {
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'ID'},
+                {to : 'Name', from : 'PolicyName'},
+                {to : 'Description', from : 'Description'},
+                {to : 'CreatedTime', from : 'Timestamp'},
+                {to : 'IsEditable', from : 'IsEditable'},
+                {to : 'VisibleToChildren', from : 'IsVisibleToChildren'},
+                {to : 'Version', from : 'VersionNum'},
+                {to : 'InboundRuleSet', from : 'InboundRuleSet'},
+                {to : 'OutboundRuleSet', from : 'OutboundRuleSet'},
+
+                {to : 'ExploitAttacks', from : 'AttackCategory.ExpolitAttackList', humanReadable : false},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function alerts_to_entry(title, alerts) {
+        return createEntry(alerts, {
+            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'uniqueAlertId'},
+                {to : 'Name', from : 'name'},
+                {to : 'State', from : 'alertState'},
+                {to : 'CreatedTime', from : 'event.time'},
+                {to : 'Assignee', from : 'assignTo'},
+                {to : 'AttackSeverity', from : 'attackSeverity'},
+                {to : 'Application', from : 'application'},
+                {to : 'EventResult', from : 'event.result'},
+
+                {to : 'Event', from : 'event', humanReadable : false},
+                {to : 'Event.domain', from : 'detection.domain', humanReadable : false},
+                {to : 'Event.interface', from : 'detection.interface', humanReadable : false},
+                {to : 'Event.device', from : 'detection.device', humanReadable : false},
+                {to : 'Attack', from : 'attack', humanReadable : false},
+                {to : 'Attacker', from : 'attacker', humanReadable : false},
+                {to : 'Target', from : 'target', humanReadable : false},
+                {to : 'MalwareFile', from : 'malwareFile', humanReadable : false},
+
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function alert_to_entry(title, alert) {
+        /// single alert object has different structure than the alerts of alerts_to_entry.
+        return createEntry([alert], {
+            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'uniqueAlertId'},
+                {to : 'Name', from : 'name'},
+                {to : 'State', from : 'alertState'},
+                {to : 'CreatedTime', from : 'summary.event.time'},
+                {to : 'Assignee', from : 'assignTo'},
+                {to : 'Description', from : 'description.definition'},
+                {to : 'EventResult', from : 'summary.event.result'},
+
+                {to : 'Event', from : 'summary.event', humanReadable : false},
+                {to : 'Attack.nspId', from : 'description.referance.nspId', humanReadable : false},
+                {to : 'Attack.attackCategory', from : 'description.attackCategory', humanReadable : false},
+                {to : 'Attacker', from : 'summary.attacker', humanReadable : false},
+                {to : 'Target', from : 'summary.target', humanReadable : false},
+                {to : 'MalwareFile', from : 'details.malwareFile', humanReadable : false},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function domains_to_entry(title, domains) {
+        return createEntry(domains, {
+            contextPath : 'NSM.Domains(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'DomainDescriptor.id'},
+                {to : 'Name', from : 'DomainDescriptor.name'},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function sensors_to_entry(title, sensors) {
+        return createEntry(sensors, {
+            contextPath : 'NSM.Sensors(val.ID && val.ID == obj.ID)',
+            title : title,
+            data : [
+                {to : 'ID', from : 'sensorId'},
+                {to : 'Name', from : 'name'},
+                {to : 'Description', from : 'Description'},
+                {to : 'DomainID', from : 'DomainID'},
+                {to : 'IPSPolicyID', from : 'IPSPolicyID'},
+                {to : 'IP Address', from : 'sensorIPAddress'},
+            ],
+        },
+        undefined, pascalToSpace);
+    }
+
+    function login() {
+        var cmd_url = "session";
+        var credentials = Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
+        var headers = {'NSM-SDK-API' : [credentials]};
+        var res = request("GET", cmd_url, headers, '');
+
+        // store current credentials
+        session_credentials = Base64.encode(res.session + ':' + res.userId);
+
+        return res;
+    }
+
+    function get_attacks(attack_id) {
+        var cmd_url, res;
+        if (attack_id) {
+            if (attack_id.match('^0x[0-9A-Fa-f]{8}$') === null) {
+                return 'Error! Attack ID must be formated as 32-bit hexadecimal number. for example: 0x1234BEEF';
+            }
+
+            cmd_url = 'attack/{0}'.format(attack_id);
+        } else {
+            cmd_url = 'attacks';
+        }
+
+        res = request('GET', cmd_url, {}, '');
+        if (attack_id) {
+            return attacks_to_entry('Attack {0}'.format(attack_id), [res.AttackDescriptor]);
+        } else {
+            return attacks_to_entry('{0} Attacks'.format(res.AttackDescriptorDetailsList.length), res.AttackDescriptorDetailsList);
+        }
+    }
+
+    function get_IPS_policies(domain_id) {
+        var cmd_url = 'domain/{0}/ipspolicies'.format(domain_id);
+        var res = request('GET', cmd_url, {}, '');
+
+        return IPS_policies_to_entry('{0} IPS Policies:'.format(res.PolicyDescriptorDetailsList.length), res.PolicyDescriptorDetailsList);
+    }
+
+    function get_IPS_policy_details(policy_id) {
+        var cmd_url = 'ipspolicy/{0}'.format(policy_id);
+        var res = request('GET', cmd_url, {}, '');
+
+        return IPS_policy_to_entry('IPS Policy {0}'.format(policy_id), res.PolicyDescriptor, policy_id);
+    }
+
+    function get_sensors(domain_id) {
+        var cmd_url = 'sensors';
+        if (domain_id !== undefined) {
+            cmd_url += '?domain={0}'.format(domain_id);
+        }
+        var res = request('GET', cmd_url, {}, '');
+
+        return sensors_to_entry('Sensors', res.SensorDescriptor);
+    }
+
+    function get_domains(domain_id) {
+        var cmd_url = 'domain';
+        if (domain_id) {
+            cmd_url += '/{0}'.format(domain_id);
+        }
+        // var res = request('GET', cmd_url, {}, JSON.stringify({'domain_id' : domain_id}));
+        //log(JSON.stringify(res));
+        var res = request('GET', cmd_url, {}, '');
+
+        if (domain_id) {
+            return domains_to_entry('Domain {0}:'.format(domain_id), [res]);
+        } else {
+            return domains_to_entry('{0} Domains:'.format(res.length || ''), [res]);
+        }
+    }
+
+    function all_alerts_url(state, time_period, start_time, end_time, search, filter) {
+        var cmd_url = 'alerts';
+        var cmd_args = {};
+
+        if (state) {
+            cmd_args.alertstate = state;
+        }
+
+        if (time_period) {
+            cmd_args.timeperiod = time_period;
+            if (time_period === 'CUSTOM') {
+                if ((start_time === undefined) || (end_time === undefined)) {
+                    return 'Error! In CUSTOM mode, You must specify both start time and end time';
+                }
+                cmd_args.starttime = start_time;
+                cmd_args.endtime = end_time;
+            }
+        }
+
+        if (search) {
+            cmd_args.search = search;
+        }
+
+        if (filter) {
+            cmd_args.filter = filter;
+        }
+
+        return cmd_url + encodeToURLQuery(cmd_args);
+    }
+
+    function get_alerts(state, time_period, start_time, end_time, search, filter) {
+        var cmd_url = all_alerts_url(state, time_period, start_time, end_time, search, filter);
+        var res = request('GET', cmd_url, {}, '');
+        log('Showing {0}/{1} Alerts:'.format(res.retrievedAlertsCount, res.totalAlertsCount));
+        return alerts_to_entry('Showing {0}/{1} Alerts:'.format(res.retrievedAlertsCount, res.totalAlertsCount), res.alertsList);
+    }
+
+    function update_alerts(state, time_period, start_time, end_time, search, filter, new_state, new_assignee) {
+        var cmd_url = all_alerts_url(state, time_period, start_time, end_time, search, filter);
+        if ((new_state === undefined) && (new_assignee === undefined)) {
+            return 'Error! You must specify a new alert state or a new assignee';
+        }
+
+        var query = {};
+        if (new_state !== undefined) {
+            query.alertState = new_state;
+        }
+        if (new_assignee !== undefined) {
+            query.assignTo = new_assignee;
+        }
+        query = JSON.stringify(query);
+
+        var res = request('PUT', cmd_url, {}, query);
+        if (res.status === -1) {
+            return 'Error! Failed to update alerts.';
+        }
+
+        return get_alerts(state, time_period, start_time, end_time);
+    }
+
+    function get_alert_details(alert_id) {
+        var cmd_url = 'alerts/{0}'.format(alert_id);
+        var res = request('GET', cmd_url, {}, '');
+        return alert_to_entry('Alert: {0}'.format(res.name), res)
+    }
+
+    function get_ntba_monitors() {
+        var cmd_url = 'ntbamonitors';
+        var res = request('GET', cmd_url, {}, '');
+
+        return res;
+    }
+    function get_events(nba_id, hash, duration) {
+        var cmd_url = '{0}/endpointintelligence/{1}/events?duration={2}'.format(nba_id, hash, duration);
+        var res = request('GET', cmd_url, {}, '');
+
+        return res.eventList;
+    }
+
+    login();
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        case 'nsm-get-pcap':
+            return get_pcap_by_sensor(args.sensorID);
+        case 'nsm-get-sensors':
+            return get_sensors(args.domainID);
+
+        case 'nsm-get-domains':
+            return get_domains(args.domain);
+
+        case 'nsm-get-alerts':
+            return get_alerts(args.state, args.time_period, args.start_time, args.end_time, args.search, args.filter);
+        case 'nsm-get-alert-details':
+            return get_alert_details(args.alert_id);
+        case 'nsm-update-alerts':
+            return update_alerts(args.state, args.time_period, args.start_time, args.end_time, args.search, args.filter, args.new_state, args.new_assignee);
+
+        case 'nsm-get-attacks':
+            return get_attacks(args.attack_id);
+
+        case 'nsm-get-ips-policies':
+            return get_IPS_policies(args.domain_id);
+        case 'nsm-get-ips-policy-details':
+            return get_IPS_policy_details(args.policy_id);
+
+
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            return 'ok';
+        case 'fetch-incidents':
+            // JSON of the incident type created by this integration
+            // You can store the last run as a string using set last run.
+            setLastRun({'time': 'now'});
+            // And you can retrieve it in any other call...
+            var now = getLastRun();
+            // now is an object with field time, that has value 'now'.
+            return JSON.stringify([{"Name":"Incident #1"},{"Name":"Incident #2"}]);
+        default:
+            // You can use args[argName] or args.argName to get a specific arg. args are strings.
+            // You can use params[paramName] or params.paramName to get a specific params.
+            // Params are of the type given in the integration page creation.
+    }
+
+    /*
+     * Sample function for http GET request with query string
+     */
+    var sendRequest = function(url, param) {
+
+        // handle '/' at the end of the url
+        if (url[url.length - 1] === '/') {
+            url = url.substring(0, url.length - 1);
+        }
+
+        // prepare the request url (make sure to encode the query parameter value)
+        var requestUrl = url + '?sample_param=' + encodeURIComponent(param);
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Headers: {
+                    Accept: ['application/json']
+                }
+            }
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    };
+  type: javascript
+  commands:
+  - name: nsm-get-pcap
+    arguments:
+    - name: sensorID
+      required: true
+      default: true
+      description: the sensor ID related to the pcap
+    description: Get a pcap file of given event
+  - name: nsm-get-sensors
+    arguments:
+    - name: domainID
+      default: true
+      description: the domain of the sensors. If blank, returns all sensors.
+    outputs:
+    - contextPath: NSM.Sensors.ID
+      description: Sensor ID
+    - contextPath: NSM.Sensors.Description
+      description: Sensor Description
+    - contextPath: NSM.Sensors.DomainID
+      description: Sensor's Domain ID
+    description: get a sensor list of a given domain
+  - name: nsm-get-domains
+    arguments:
+    - name: domain
+      default: true
+      description: Specific domain details. Leave blank for all domains.
+    outputs:
+    - contextPath: NSM.Domains.ID
+      description: Domain ID
+    - contextPath: NSM.Domains.Name
+      description: Domain Name
+    description: Get all domains
+  - name: nsm-get-alerts
+    arguments:
+    - name: time_period
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_1_HOUR
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - LAST_14_DAYS
+      - CUSTOM
+      description: Time Period
+    - name: start_time
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: end_time
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+        only
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - Acknowledged
+      - Unacknowledged
+      description: Alert State
+      defaultValue: ANY
+    - name: search
+      description: Search
+    - name: filter
+      description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4".'
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert Assignee
+    - contextPath: NSM.Alerts.AttackSeverity
+      description: Alert Severity
+    - contextPath: NSM.Alerts.Application
+      description: The Application assosiated to the alert
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+    - contextPath: NSM.Alerts.Event
+      description: The Event who triggered the alert
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's Target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+    description: Get alerts
+  - name: nsm-update-alerts
+    arguments:
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - Acknowledged
+      - Unacknowledged
+      description: Alert State
+      defaultValue: ANY
+    - name: time_period
+      auto: PREDEFINED
+      predefined:
+      - LAST_5_MINUTES
+      - LAST_1_HOUR
+      - LAST_6_HOURS
+      - LAST_12_HOURS
+      - LAST_24_HOURS
+      - LAST_7_DAYS
+      - LAST_14_DAYS
+      - CUSTOM
+      description: Time Period
+    - name: start_time
+      description: Start Time. used for custom time only.
+    - name: end_time
+      description: End Time. used for custom time only.
+    - name: new_state
+      auto: PREDEFINED
+      predefined:
+      - Acknowledged
+      - Unacknowledged
+      description: The new alert state
+    - name: new_assignee
+      description: The new assignee
+    - name: search
+      description: Search
+    - name: filter
+      description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"'
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert Assignee
+    - contextPath: NSM.Alerts.AttackSeverity
+      description: Alert Severity
+    - contextPath: NSM.Alerts.Application
+      description: The Application assosiated to the alert
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+    - contextPath: NSM.Alerts.Event
+      description: The Event who triggered the alert
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's Target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+    description: Update state or assignee of alerts
+  - name: nsm-get-alert-details
+    arguments:
+    - name: alert_id
+      required: true
+      default: true
+      description: Alert ID
+    outputs:
+    - contextPath: NSM.Alerts.ID
+      description: Alert ID
+    - contextPath: NSM.Alerts.Name
+      description: Alert Name
+    - contextPath: NSM.Alerts.State
+      description: Alert State (Acknowledged,Unacknowledged)
+    - contextPath: NSM.Alerts.CreatedTime
+      description: Alert Creation Time
+    - contextPath: NSM.Alerts.Assignee
+      description: Alert assignee
+    - contextPath: NSM.Alerts.Description
+      description: Alert details
+    - contextPath: NSM.Alerts.EventResult
+      description: Event Result
+    - contextPath: NSM.Alerts.Event
+      description: Alert Event
+    - contextPath: NSM.Alerts.Attack
+      description: Alert's Attack
+    - contextPath: NSM.Alerts.Attacker
+      description: The Attacker who committed the attack
+    - contextPath: NSM.Alerts.Target
+      description: The Attack's target
+    - contextPath: NSM.Alerts.MalwareFile
+      description: Malware File used in the attack
+    description: Get a single alert details
+  - name: nsm-get-ips-policies
+    arguments:
+    - name: domain_id
+      required: true
+      default: true
+      description: Domain ID
+    outputs:
+    - contextPath: NSM.IPSPolicies.ID
+      description: IPS Policy ID
+    - contextPath: NSM.IPSPolicies.Name
+      description: IPS Policy Name
+    - contextPath: NSM.IPSPolicies.DomainID
+      description: IPS Policy Domain ID
+    - contextPath: NSM.IPSPolicies.IsEditable
+      description: whether the IPS policy is editable
+    - contextPath: NSM.IPSPolicies.VisibleToChildren
+      description: whether the IPS Policy is visible to domain's children
+    description: Get IPS Policies in a domain
+  - name: nsm-get-ips-policy-details
+    arguments:
+    - name: policy_id
+      required: true
+      default: true
+      description: IPS Policy ID
+    outputs:
+    - contextPath: NSM.IPSPolicies.ID
+      description: IPS Policy ID
+    - contextPath: NSM.IPSPolicies.Name
+      description: IPS Policy Name
+    - contextPath: NSM.IPSPolicies.Description
+      description: IPS Policy information
+    - contextPath: NSM.IPSPolicies.CreatedTime
+      description: Policy creation time
+    - contextPath: NSM.IPSPolicies.IsEditable
+      description: whether the IPS policy is editable
+    - contextPath: NSM.IPSPolicies.VisibleToChildren
+      description: whether the IPS Policy is visible to domain's children
+    - contextPath: NSM.IPSPolicies.Version
+      description: IPS Policy Version
+    - contextPath: NSM.IPSPolicies.InboundRuleSet
+      description: Inbound Rule Set
+    - contextPath: NSM.IPSPolicies.OutboundRuleSet
+      description: Outbound Rule Set
+    - contextPath: NSM.IPSPolicies.ExploitAttacks
+      description: A list of exploit attacks related to the IPS Policy
+    description: Get the policy details for the specific IPS policy
+  - name: nsm-get-attacks
+    arguments:
+    - name: attack_id
+      default: true
+      description: Particular Attack ID
+    outputs:
+    - contextPath: NSM.Attacks.ID
+      description: Attack ID
+    - contextPath: NSM.Attacks.Name
+      description: Attack Name
+    - contextPath: NSM.Attacks.Severity
+      description: Attack Severity
+    - contextPath: NSM.Attacks.Direction
+      description: Attack Direction
+    - contextPath: NSM.Attacks.Category
+      description: Attack Category
+    description: Get all available attack definitions in NSM
+releaseNotes: Add new integration, supports: alerts querying and updating, IPS policies querying
