@@ -56,8 +56,11 @@ args:
     both.
 - name: noteEntryID
   description: Send the textual contents of an entry
+- name: replyTo
+  description: The address to reply to
 scripttarget: 0
 dependson:
   must:
   - send-mail
 timeout: 0s
+releaseNotes: "Added replyTo option"
