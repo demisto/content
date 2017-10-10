@@ -10,6 +10,11 @@ detaileddescription: OpsGenie integration allows querying for the current on-cal
   users for a given Schedule. The integration requires an API key, that can
   be acquired from the OpsGenie interface, under Integrations / API.
 configuration:
+- display: Base URL
+  name: baseURL
+  defaultvalue: https://api.opsgenie.com/v2
+  type: 0
+  required: true
 - display: API Key
   name: apiKey
   defaultvalue: ""
@@ -20,11 +25,6 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Base URL
-  name: baseURL
-  defaultvalue: https://api.opsgenie.com/v2
-  type: 0
-  required: true
 script:
   script: |
     var baseURL = params.baseURL;
@@ -38,8 +38,8 @@ script:
         users: 'users'
     };
 
-    var sendRequest = function(url, param) {
-        var requestUrl = baseURL + url + encodeToURLQuery(param);
+    var sendRequest = function(url) {
+        var requestUrl = baseURL + url;
         var res = http(
             requestUrl,
             {
@@ -58,14 +58,14 @@ script:
             throw 'OpsGenie: Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
 
-        var jsonBody = '';
         try {
+            var jsonBody = '';
             jsonBody = JSON.parse(res.Body);
+            return jsonBody;
         } catch (err) {
             logInfo('OpsGenie error: Could not parse respons for ' + requestUrl + '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
             throw 'OpsGenie error\n Could not parse respons for ' + requestUrl + '\n Error is ' + err;
         }
-        return jsonBody;
     };
 
     var getOnCall = function(schedule) {
