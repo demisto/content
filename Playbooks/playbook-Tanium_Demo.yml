@@ -13,6 +13,7 @@ tasks:
     task:
       id: 5cb45209-143e-48db-8c6c-50d7bbf35ac4
       version: -1
+      description: "-"
       name: start_task
       type: start
       iscommand: false
@@ -34,6 +35,7 @@ tasks:
     task:
       id: 130cbbb8-b90a-4e4c-8027-35139c982f9c
       version: -1
+      description: "-"
       name: Querying Tanium
       type: section
       iscommand: false
@@ -55,6 +57,7 @@ tasks:
     task:
       id: db37ccb1-1420-4fe2-8d30-b4ff9a75068d
       version: -1
+      description: "-"
       name: Query Tanium for a summary of Tanium client versions currently deployed
         in our network
       scriptName: TaniumAskQuestion
@@ -83,6 +86,7 @@ tasks:
     task:
       id: 702c2a70-1d8d-4efb-8feb-1c0d7f25df5e
       version: -1
+      description: "-"
       name: Ask Tanium to show us all running applications
       scriptName: TaniumAskQuestion
       type: standard
@@ -110,6 +114,7 @@ tasks:
     task:
       id: 5d3927fb-d5d7-440c-8265-ce5779c75790
       version: -1
+      description: "-"
       name: Run a complex Tanium query to find all machines with processes starting
         with "EC"
       scriptName: TaniumFindRunningProcesses
@@ -136,6 +141,7 @@ tasks:
     task:
       id: 8d9f43c9-e4f9-452a-8519-e8a85867f295
       version: -1
+      description: "-"
       name: Deploying Actions
       type: section
       iscommand: false
@@ -157,6 +163,7 @@ tasks:
     task:
       id: a572c5ab-274d-4f90-8b9e-916a7da59a56
       version: -1
+      description: "-"
       name: Deploy a Tanium action to enable USB write protect for all hosts
       scriptName: TaniumDeployAction
       type: standard
@@ -184,6 +191,7 @@ tasks:
     task:
       id: 68e7ad73-0b6d-4311-8155-8893b06fe849
       version: -1
+      description: "-"
       name: Actions pending approval - Viewing and approving
       type: section
       iscommand: false
@@ -205,6 +213,7 @@ tasks:
     task:
       id: 95001a71-2758-4667-8b59-e162c3c42893
       version: -1
+      description: "-"
       name: Show Tanium actions that are currently pending approval
       scriptName: TaniumShowPendingActions
       type: standard
@@ -227,6 +236,7 @@ tasks:
     task:
       id: 6fb88307-6cc9-4ae7-880b-9c92a5d4ff5f
       version: -1
+      description: "-"
       name: Approve all pending "USB Write On" Tanium actions
       scriptName: TaniumApprovePendingActions
       type: standard

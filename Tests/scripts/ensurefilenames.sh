@@ -41,7 +41,7 @@ ensureFilename() {
 
 echo "start ensureFilenames"
 ensureFilename Integrations integration- .yml "integration"
-ensureFilename Playbooks playbook- .yml
+ensureFilename Playbooks playbook- .yml "playbook"
 ensureFilename Reports report- .json
 ensureFilename Scripts script- .yml "script"
 ensureFilename Misc reputations .json

@@ -14,6 +14,7 @@ tasks:
     task:
       id: a68f66e4-9f00-4be5-82d5-66a604a8e127
       version: -1
+      description: "-"
       name: start_task
       type: start
       iscommand: false
@@ -35,6 +36,7 @@ tasks:
     task:
       id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
       version: -1
+      description: "-"
       name: Search observed hashes in the Bit9 file catalog
       scriptName: CBPCatalogFindHash
       type: regular
@@ -59,6 +61,7 @@ tasks:
     task:
       id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
       version: -1
+      description: "-"
       name: Check if the hashes are included in any Bit9 rules
       scriptName: CBPFindRule
       type: regular
@@ -111,6 +114,7 @@ tasks:
     task:
       id: b403c310-7926-4e04-8c81-ce7a9defb5c4
       version: -1
+      description: "-"
       name: Done
       type: title
       iscommand: false

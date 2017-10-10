@@ -13,6 +13,7 @@ tasks:
     task:
       id: 6976d00a-5e1b-4a32-8f85-9c79656f82bc
       version: -1
+      description: "-"
       name: start_task
       type: start
       iscommand: false
@@ -34,6 +35,7 @@ tasks:
     task:
       id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
       version: -1
+      description: "-"
       name: Engage
       type: title
       iscommand: false
@@ -144,6 +146,7 @@ tasks:
     task:
       id: 744fdee2-aae7-4a50-8197-9e871d0661da
       version: -1
+      description: "-"
       name: 'Investigation Step 1: Details for this incident'
       iscommand: false
       brand: ""
@@ -186,6 +189,7 @@ tasks:
     task:
       id: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
       version: -1
+      description: "-"
       name: Is the incident reported by end user or an alert from SIEM (or another
         security product)?
       iscommand: false
@@ -234,6 +238,7 @@ tasks:
     task:
       id: 1fe0d3b3-bd1e-415f-84a3-fd57071bf1cd
       version: -1
+      description: "-"
       name: Mark the incident as false positive in SIEM
       iscommand: false
       brand: ""
@@ -416,6 +421,7 @@ tasks:
     task:
       id: efecb59f-31c6-4416-8e3a-a00e9deafc0f
       version: -1
+      description: "-"
       name: 'Investigation Step 2: Identify Source of Infection'
       iscommand: false
       brand: ""
@@ -436,6 +442,7 @@ tasks:
     task:
       id: 478d2a8f-2138-4b64-8555-54b3d1acfd75
       version: -1
+      description: "-"
       name: 'Option 1: Investigate whether the ransomeware has been delivered by email'
       iscommand: false
       brand: ""
@@ -535,6 +542,7 @@ tasks:
     task:
       id: 71148252-7dfa-442c-8d28-20cb54927a29
       version: -1
+      description: "-"
       name: 'Option 2: Investigate whether the victim’s PC has been infected by an
         exploit kit/drive-by download'
       iscommand: false
@@ -683,6 +691,7 @@ tasks:
     task:
       id: 207c8a2d-2ec5-418c-86cf-22fa818c8cb9
       version: -1
+      description: "-"
       name: Generating IoCs for URLs and Hashes
       iscommand: false
       brand: ""
@@ -808,6 +817,7 @@ tasks:
     task:
       id: dcccd78c-a7c6-4a21-8024-24ec6870c979
       version: -1
+      description: "-"
       name: Identify other affected devices
       iscommand: false
       brand: ""
@@ -873,6 +883,7 @@ tasks:
     task:
       id: 08e01fbf-47af-4926-8cd1-c359cfc94410
       version: -1
+      description: "-"
       name: Respond
       iscommand: false
       brand: ""
@@ -957,6 +968,7 @@ tasks:
     task:
       id: 35c0d3b2-d9cd-460c-88be-6d7a229e9906
       version: -1
+      description: "-"
       name: Provide end-user remediation guidance and link to training
       iscommand: false
       brand: ""
@@ -977,6 +989,7 @@ tasks:
     task:
       id: f68ec944-041d-4288-80fd-d4593bceb52b
       version: -1
+      description: "-"
       name: Is the identified malware known? (with automated remediation steps)
       iscommand: false
       brand: ""
@@ -999,6 +1012,7 @@ tasks:
     task:
       id: f13d62e8-15a2-4240-8245-9537c0c7aa83
       version: -1
+      description: "-"
       name: Document manual remediation steps
       iscommand: false
       brand: ""
@@ -1019,6 +1033,7 @@ tasks:
     task:
       id: 91223da8-3e5b-432e-85d6-b05a8e614f83
       version: -1
+      description: "-"
       name: Trigger remediation scripts
       iscommand: false
       brand: ""
@@ -1039,6 +1054,7 @@ tasks:
     task:
       id: 36ba1145-5eb5-4bc4-85f6-d5c9f4495cca
       version: -1
+      description: "-"
       name: Was remediation successful?
       iscommand: false
       brand: ""
@@ -1059,6 +1075,7 @@ tasks:
     task:
       id: c56d39eb-e583-4183-8b18-12e9d0547c17
       version: -1
+      description: "-"
       name: Reimage the entire system and restore from backup
       iscommand: false
       brand: ""
