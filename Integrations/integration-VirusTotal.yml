@@ -136,7 +136,7 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
-                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + r[i].positives + '/' + r[i].total}
+                    Malicious: {Vendor: 'VirusTotal', Detections: r[i].positives, TotalEngines: r[i].total}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else if (r[i].positives >= threshold / 2) {
@@ -538,8 +538,10 @@ script:
       description: Bad hash SHA256
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
     - contextPath: DBotScore.Type
