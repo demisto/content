@@ -189,8 +189,8 @@ script:
       description: Account device type
     description: Query CyberArk AIM
   - name: fetch-credentials
-    description: "-"
+    description: "Fetches credentials from cyberark vault"
     arguments:
     - name: identifier
-      description: "-"
+      description: "Identifier to fetch single credentials object by"
 releaseNotes: "fixed timeout issue when no connections"
