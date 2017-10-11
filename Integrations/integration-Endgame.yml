@@ -780,7 +780,7 @@ script:
     - contextPath: EndGame.InvestigationResults.Registries
       description: Registries investigation results
     - contextPath: EndGame.InvestigationResults.Networks
-      description: "-"
+      description: Networks investigation results
   - name: endgame-investigation-status
     arguments:
     - name: investigation_id
@@ -792,4 +792,4 @@ script:
     - contextPath: EndGame.Investigations.Status
       description: Endgame investigation status
     description: Returns the current investigation status
-releaseNotes: "-"
+releaseNotes: Added missing descriptions

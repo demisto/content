@@ -1221,7 +1221,7 @@ script:
       description: The status of the scan report.
     description: Check the file status of an exported scan
   - name: nessus-scan-status
-    description: "-"
+    description: Get scan status by scan id
     arguments:
     - name: scanId
       required: true
@@ -1230,4 +1230,4 @@ script:
     - contextPath: NessusScan.Status
       description: The status of the scan report.
 hidden: false
-releaseNotes: "-"
+releaseNotes: Added missing descriptions

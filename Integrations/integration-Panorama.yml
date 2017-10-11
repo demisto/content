@@ -105,7 +105,7 @@ script:
   type: javascript
   commands:
   - name: panorama
-    description: "-"
+    description: Run any panorama command supported in api.
     arguments:
     - name: action
       description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
@@ -148,10 +148,10 @@ script:
     - name: search-time
       description: Used for threat PCAPs, the time that the PCAP was received on the firewall.
   - name: panorama-dynamic-block-list
-    description: "-"
+    description: Create a dynamic block list
     arguments:
     - name: file
       required: true
       description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
 hidden: false
-releaseNotes: "-"
+releaseNotes: Added missing descriptions
