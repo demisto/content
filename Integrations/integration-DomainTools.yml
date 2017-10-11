@@ -558,4 +558,4 @@ script:
     arguments:
     - name: domain
       description: Specify domain e.g. mycompany.com
-releaseNotes: Added missing descriptions
+releaseNotes: "-"
