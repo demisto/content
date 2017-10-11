@@ -1175,7 +1175,7 @@ script:
       description: the ID of the user
     - contextPath: EsmUser.Name
       description: the esm user name
-    - contextPath: EsmUser.Emailf
+    - contextPath: EsmUser.Email
       description: the e-mail of the user
     - contextPath: EsmUser.SMS
       description: the SMS details of the user
