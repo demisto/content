@@ -49,7 +49,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Fetch incidents
