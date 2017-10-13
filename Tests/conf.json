@@ -95,8 +95,7 @@
         },
         {
             "name": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test",
-            "timeout": 200
+            "playbookID": "McAfee-TIE Test"
         }
     ],
     "skipped": [
