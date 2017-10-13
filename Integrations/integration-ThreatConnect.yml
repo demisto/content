@@ -664,7 +664,7 @@ script:
       description: The actual score
     description: Check domain reputation
   - name: tc-get-incident-associate-indicators
-    description: "-"
+    description: Get incidents that are related to a specific indicator
     arguments:
     - name: incidentId
       description: "-"
