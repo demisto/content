@@ -68,6 +68,7 @@ script:
     if (!cachedInfo.timestamp) {
         cachedInfo.timestamp = new Date().getTime();
     } else {
+        logDebug('cachedInfo.timestamp==' + cachedInfo.timestamp + '. now== ' + new Date().getTime());
         if (cachedInfo.timestamp + (1000 * 3600 * 24) < new Date().getTime()) {
             logInfo('Clearing Zendesk cache');
             cachedInfo.timestamp = new Date().getTime();
@@ -84,6 +85,10 @@ script:
         return res;
     };
 
+    var escapeMd = function(text) {
+        return text.split('|').join('\\|');
+
+    }
     var loadCustomFields = function() {
         resCusFields = sendRequest('GET', 'ticket_fields.json');
         var dicFields = {};
@@ -261,7 +266,7 @@ script:
         var searchQ;
 
         if (!args.query) {
-            searchQ = 'type:ticket -status:close';
+            searchQ = 'type:ticket -status:solved -status:closed';
         } else {
             searchQ = 'type:ticket ' + args.query;
         }
@@ -273,7 +278,7 @@ script:
         var md = '## Zendesk tickets\n';
 
         md += 'Id|Created|Subject|Status\n';
-        md += '-|-|-|-\n';
+        md += '-|-|-|-|-\n';
 
         for (var i = 0; i <  res.results.length; i++) {
             ec.Ticket.push({
@@ -282,7 +287,7 @@ script:
                 subject: res.results[i].subject,
                 vendor: 'Zendesk'
             });
-            md += res.results[i].id + '|' + res.results[i].created_at + '|' + res.results[i].subject + '|' + res.results[i].status + '\n';
+            md += res.results[i].id + '|' + res.results[i].created_at + '|' + escapeMd(res.results[i].subject) + '|' + res.results[i].status + '\n';
         }
 
         return ( {ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec} );
@@ -403,24 +408,33 @@ script:
         var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
         var md = '### Zendesk ticket #' + resDetails.ticket.id + " - " + resDetails.ticket.subject + "\n";
         var ec = {}
+        var usersEc = {}
         var newContext = {};
 
         md += 'Requester: __' + getUserName(resDetails.ticket.requester_id) + '__\n';
+        usersEc[resDetails.ticket.requester_id]=getUserName(resDetails.ticket.requester_id);
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
         md += 'Priority: __' + resDetails.ticket.priority + '__\n';
         md += 'Status: __' + resDetails.ticket.status + '__\n';
 
         if (resDetails.ticket.assignee_id) {
             md += 'Assignee: __' + getUserName(resDetails.ticket.assignee_id) + '__\n';
+            usersEc[resDetails.ticket.assignee_id]=getUserName(resDetails.ticket.assignee_id);
+        }
+
+        if (resDetails.ticket.recipient) {
+            md += 'Recipients: __' + resDetails.ticket.recipient + '__\n';
         }
 
         md += "#### Description\n";
         md += quoteMd(resDetails.ticket.description) + "\n";
 
-        var fieldsMd='';
+        var fieldsMd = '';
+        var fieldsEc = {};
         for (var i = 0; i < resDetails.ticket.custom_fields.length; i++) {
             if (resDetails.ticket.custom_fields[i].value) {
                 fieldsMd += "- __" + getCustomFieldName(resDetails.ticket.custom_fields[i].id) + "__: " + resDetails.ticket.custom_fields[i].value + "\n";
+                fieldsEc[resDetails.ticket.custom_fields[i].id] = getCustomFieldName(resDetails.ticket.custom_fields[i].id)
             }
         }
         if (fieldsMd) {
@@ -479,7 +493,9 @@ script:
 
         var res = {
             TicketDetails: resDetails,
-            TicketComments: resComments
+            TicketComments: resComments,
+            Users: usersEc,
+            CustomFields: fieldsEc
         }
 
         return({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
@@ -818,4 +834,3 @@ script:
     arguments: []
     description: Clear the Zendesk integration cache
   isfetch: true
-releaseNotes: "Added zendesk-add-comment command. Improved incident fetching mechanism. Improved zendesk-list-tickets output."
