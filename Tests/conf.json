@@ -78,16 +78,23 @@
             "playbookID": "TestIsValueInArray"
         },
         {
-            "playbookID": "TestHttpPlaybook"
-        },
-        {
             "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
         },
         {
+            "playbookID": "TestStringReplace"
+        },
+        {
+            "playbookID": "TestHttpPlaybook"
+        },
+        {
             "name": "VxStream",
             "playbookID": "VxStream Test"
+        },
+        {
+            "name": "SplunkPy",
+            "playbookID": "Splunk-Test"
         }
     ],
     "skipped": [

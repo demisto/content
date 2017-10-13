@@ -25,7 +25,6 @@ args: []
 scripttarget: 0
 timeout: 0s
 deperecated: true
-releaseNotes: Depercated, use vectra-triage command instead
 dependson:
   must:
   - vec-triage

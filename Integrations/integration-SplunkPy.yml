@@ -205,6 +205,24 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
         sys.exit(0)
+    if demisto.command() == 'splunk-get-indexes':
+        indexes = service.indexes
+        indexesNames = []
+        for index in indexes:
+            index_json = {'name':index.name, 'count': index["totalEventCount"]}
+            indexesNames.append(index_json)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames), 'HumanReadable':tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+        sys.exit(0)
+    if demisto.command() == 'splunk-submit-event':
+        try:
+            index = service.indexes[demisto.args()['index']]
+        except KeyError:
+            demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
+            sys.exit(0)
+        else:
+            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            demisto.results('Event was created in Splunk index: '+r.name)
+        sys.exit(0)
   type: python
   commands:
   - name: splunk-results
@@ -238,6 +256,24 @@ script:
     - contextPath: Splunk.Result
       description: The splunk search result, json array where each item is a splunk event
     description: Search Splunk for events
+  - name: splunk-submit-event
+    arguments:
+    - name: index
+      required: true
+      description: Splunk index to push data to, run splunk-print-indexes to get all indexes
+    - name: data
+      required: true
+      default: true
+      description: The new event data to push, can be any string
+    - name: sourcetype
+      required: true
+      description: Event sourcetype
+    - name: host
+      required: true
+      description: Event host, can be 'Local' or '120.0.0.1' for example
+    description: Create new event in splunk
+  - name: splunk-get-indexes
+    arguments: []
+    description: Print all Splunk index names
   dockerimage: demisto/splunksdk
   isfetch: true
-releaseNotes: Adding Search capability to SplunkPy intergration

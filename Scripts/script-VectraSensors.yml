@@ -29,4 +29,3 @@ dependson:
   must:
   - vec-sensors
 deperecated: true
-releaseNotes: Depercated, use vectra-sensors command instead

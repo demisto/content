@@ -106,8 +106,11 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+        var o = res.obj;
+        var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'file', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
         var r = [];
@@ -117,7 +120,6 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {};
         ec.DBotScore = [];
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
@@ -134,7 +136,7 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
-                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + r[i].positives + '/' + r[i].total}
+                    Malicious: {Vendor: 'VirusTotal', Detections: r[i].positives, TotalEngines: r[i].total}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else if (r[i].positives >= threshold / 2) {
@@ -184,12 +186,13 @@ script:
             sampleSize = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
-        }
         var o = res.obj;
         var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+        }
         // Calculate score based on recently found downloads
         var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
         var dbotScore = 0;
@@ -246,13 +249,14 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+        var o = res.obj;
+        var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
         }
 
-        var o = res.obj;
-        var ec = {};
         var md = '## VirusTotal URL Reputation for: ' + url + '\n';
 
         if (!o.scans && submitWait>0) {
@@ -304,12 +308,13 @@ script:
             threshold = 10;
         }
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
-        if (res.obj.response_code === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
-        }
         var o = res.obj;
         var ec = {};
+        if (o.response_code === 0) {
+            ec.DBotScore = {Indicator: ip, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
+        }
 
         // Calculate score based on recently found downloads
         var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
@@ -347,6 +352,26 @@ script:
                         curr.push(arrTitle[j].a[k]);
                     }
                     md += arrToMd(curr) + '\n';
+                }
+            }
+        }
+        if (o.resolutions && o.resolutions.length > 0) {
+            md += tableToMarkdown("Passive DNS replication", o.resolutions, Object.keys(o.resolutions[0]), undefined, function (header) { return underscoreToCamelCase(header); });
+        }
+        if (o.domain_siblings && o.domain_siblings.length > 0) {
+            md += "### Observed subdomains\n";
+            for (var i = 0; i < o.domain_siblings.length; i++) {
+                md += "- " + o.domain_siblings[i] + "\n";
+            }
+        }
+        if (o.whois) {
+            var whoIs = o.whois.trim();
+            var lines = whoIs ? whoIs.split("\n") : [];
+            md += '### Whois Lookup\n';
+            for (var i = 0; i < lines.length; i++) {
+                var parts = lines[i].split(': ');
+                if (parts[0] && parts[1]) {
+                    md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
                 }
             }
         }
@@ -513,8 +538,10 @@ script:
       description: Bad hash SHA256
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
     - contextPath: DBotScore.Type
@@ -730,4 +757,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "-"
+releaseNotes: "Added sub domains, whois lookup and DNS ip addresses to response entry"

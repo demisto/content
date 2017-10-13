@@ -174,4 +174,3 @@ script:
     description: Check URL Reputation
 hidden: false
 system: true
-releaseNotes: "-"

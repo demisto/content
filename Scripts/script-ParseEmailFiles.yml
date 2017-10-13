@@ -7,8 +7,6 @@ script: |-
   from email.header import decode_header
   from base64 import b64decode
   from re import match
-  import pip
-  pip.main(['-q', 'install', 'olefile'])
   # --- LICENSE -----------------------------------------------------------------
   #
   #    Copyright 2013 Matthew Walker

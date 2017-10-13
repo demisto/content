@@ -1,0 +1,61 @@
+commonfields:
+  id: DataDomainReputation
+  version: -1
+name: DataDomainReputation
+script: |-
+  var score = -1;
+  var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"});
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      score = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('url', {url: args.input});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+            score = scores[i];
+          }
+      }
+  }
+  score = score < 0 ? 0 : score;
+  var domainScore = -1;
+  var domainRes = executeCommand('ExtractDomain', {text: args.input});
+  var domain = domainRes[0].Contents[0].Name;
+
+  var res = executeCommand("findIndicators", {"query": "type:Domain and value:\"" + domain + "\" and manualScore:T"});
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      domainScore = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('domain', {domain: domain});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+              domainScore = scores[i];
+          }
+      }
+  }
+
+  if (domainScore > score) {
+      score = domainScore;
+  }
+  return score;
+type: javascript
+tags:
+- reputation
+comment: Evaluate reputation of a URL and Domain and return a score between 0 and
+  3 (0 - unknown, 1 - known good, 2 - suspicious, 3 - known bad). If the indicator
+  reputation was manually set, the manual value will be returned.
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: URL to look up
+- name: forceCalc
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Whether to calculate reputation even if it is manual set - yes/no
+  defaultValue: "no"
+scripttarget: 0
+toversion: 3.0.1
