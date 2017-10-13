@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 76b337ff-028a-4354-8a31-f85fdb5ac929
+    taskid: e77800cc-02ad-46ca-83b6-ee794627b9c3
     type: start
     task:
-      id: 76b337ff-028a-4354-8a31-f85fdb5ac929
+      id: e77800cc-02ad-46ca-83b6-ee794627b9c3
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     view: |-
       {
         "position": {
@@ -25,10 +25,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 829d8f87-f5db-4ba5-885b-0a940491e01e
+    taskid: 10b6fb19-2aeb-4a21-884f-003b10727430
     type: regular
     task:
-      id: 829d8f87-f5db-4ba5-885b-0a940491e01e
+      id: 10b6fb19-2aeb-4a21-884f-003b10727430
       version: -1
       name: Verify Context File Reputation
       description: |-
@@ -57,10 +57,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: b6f1bafc-68a1-495d-8287-39f3c89ba56f
+    taskid: 29e9c569-921d-431a-8769-fc1dd246b276
     type: regular
     task:
-      id: b6f1bafc-68a1-495d-8287-39f3c89ba56f
+      id: 29e9c569-921d-431a-8769-fc1dd246b276
       version: -1
       name: Verify Context DBot Score
       description: |-
@@ -84,14 +84,16 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: 73263d6a-7ce2-4e11-8b52-bb425d96b014
+  "5":
+    id: "5"
+    taskid: 5193413b-8fee-4858-8445-96d6f7bb5a46
     type: regular
     task:
-      id: 73263d6a-7ce2-4e11-8b52-bb425d96b014
+      id: 5193413b-8fee-4858-8445-96d6f7bb5a46
       version: -1
       name: TIE file reputation
+      description: Retrieves the reputations for the specified hash ( Supports MD5
+        SHA1 & SHA256)
       script: McAfee Threat Intelligence Exchange|||file
       type: regular
       iscommand: true
@@ -100,14 +102,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      extend-context: ""
       file: 6EAE26DB8C13182A7947982991B4321732CC3DE2
-      using: McAfee Threat Intelligence Exchange_instance_1
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 192
+          "y": 195
         }
       }
 view: |-
