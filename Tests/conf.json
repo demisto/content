@@ -92,6 +92,10 @@
         {
             "name": "SplunkPy",
             "playbookID": "Splunk-Test"
+        },
+        {
+            "name": "McAfee Threat Intelligence Exchange",
+            "playbookID": "McAfee-TIE Test"
         }
     ],
     "skipped": [

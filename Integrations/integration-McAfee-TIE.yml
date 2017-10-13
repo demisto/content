@@ -234,6 +234,7 @@ script:
 
             context_file[hash_type_uppercase] = hash
             context_file['TrustLevel'] = tl_score['trust_level']
+            context_file['Vendor'] = tl_score['vendor']
 
             dbot_score = {'Indicator': hash, 'Type': 'hash', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']};
             if tl_score['score'] >= 2:
@@ -252,7 +253,7 @@ script:
                 'ContentsFormat': formats['json'],
                 'Contents': reputations,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Reputations', table),
+                'HumanReadable': tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (hash,), table),
                 'EntryContext': context
             }
 
@@ -282,14 +283,18 @@ script:
       description: file's hash SHA1 (if supplied)
     - contextPath: File.SHA256
       description: file's hash MD5 (if supplied)
-    - contextPath: DBotScore.Indicator
-      description: The given file's hash
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
+    - contextPath: File.TrustLevel
+      description: File lowest trust level
+    - contextPath: File.Vendor
+      description: File lowest trust level's vendor
     - contextPath: DBotScore.Score
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Vendor
       description: The actual score
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Indicator
+      description: The given file's hash
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
