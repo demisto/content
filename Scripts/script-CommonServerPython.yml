@@ -293,7 +293,14 @@ script: |-
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
       
+
+  def file_result_existing_file(filename):
+      """ Create a file result from an existing file by moving it into the right file name """
+      temp = demisto.uniqueFile()
+      os.rename(filename, demisto.investigation()['id'] + '_' + temp)
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
       
+
   def flattenRow(rowDict):
       return {k: formatCell(rowDict[k]) for k in rowDict}
 
@@ -532,4 +539,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
+releaseNotes: "Add function to create file result from existing file"
