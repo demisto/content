@@ -219,6 +219,17 @@ script:
         ec['Splunk.Result'] = res
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
         sys.exit(0)
+    if demisto.command() == 'splunk-job-create':
+        searchquery_normal = demisto.args()['query']
+        if not searchquery_normal.startswith('search'):
+            searchquery_normal = 'search '+searchquery_normal
+        kwargs_normalsearch = {"exec_mode": "normal"}
+        job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
+
+        ec = {};
+        ec['Splunk.Job'] = job.sid
+        demisto.results({"Type": 1, "ContentsFormat": formats['text'], "Contents": "Splunk Job created with SID: "+job.sid, "EntryContext": ec})
+        sys.exit(0)
     if demisto.command() == 'splunk-results':
         jobs = service.jobs
         found = False
@@ -356,6 +367,7 @@ script:
   - name: splunk-notable-event-edit
     arguments:
     - name: eventIDs
+      required: true
       description: 'The notable events event_id, comma separated for a list '
     - name: owner
       description: Splunk user to assign to notable event
@@ -376,5 +388,15 @@ script:
         Progress, 3 for pending, 4 for Resolved, 5 for Closed
     description: Update an existing Notable event in Splunk ES
     execution: true
+  - name: splunk-job-create
+    arguments:
+    - name: query
+      required: true
+      description: The splunk search language string to execute, example :"* | head
+        3"
+    outputs:
+    - contextPath: Splunk.Job
+      description: The created jon SID
+    description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
