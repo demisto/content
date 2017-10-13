@@ -2,6 +2,7 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
+releaseNotes: "Fixed display of false values in tableToMarkdown"
 script: |-
   // Common functions script
   // =======================
@@ -45,7 +46,7 @@ script: |-
           }
           return res;
       }
-      cleanSingleObject(obj);
+      return cleanSingleObject(obj);
   }
 
   /**
@@ -206,7 +207,11 @@ script: |-
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
-                    vals.push((!!entry[h] || entry[h]===0) ? stringEscapeMD(formatCell(entry[h], cellDelimiter), true) : ' ');
+                  if(entry[h] === null || entry[h] === undefined) {
+                      vals.push(' ');
+                  } else {
+                      vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter),true) || ' ');
+                  }
               });
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
@@ -226,7 +231,7 @@ script: |-
    * @param {String} string - string to be converted - i.e. hello_world
    * @returns {String} - converted string - i.e. HelloWorld
   */
-  var underscoreToCamelCase = function(string){
+  var underscoreToCamelCase = function(string) {
       var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
@@ -234,9 +239,16 @@ script: |-
   /**
    * Converts dots into spaces and capitalizes
   */
-  var dotToSpace = function(string){
+  var dotToSpace = function(string) {
       var ret_string = '.'+string;
       return ret_string.replace(/\.([a-z,A-Z])/g, function (g) { return ' '+g[1].toUpperCase(); });
+  };
+
+  /**
+   * Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score")
+  */
+  var pascalToSpace = function(string) {
+      return string.replace(/([a-z][A-Z])/g, function (g) { return g[0] + ' ' + g.slice(1); });
   };
   
   function mapObjFunction(mapFields, filter) {
@@ -365,16 +377,20 @@ script: |-
    * * dest-key is also used for war room table headers
    * * humanReadable states whether field should appear in war room table. Default is true.
    * @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+   * @param {function} headerTransform - transform mark down headers to readable format.
    * @returns {Object} - the war room entry
   */
-  var createEntry = function(result , translator, MDfilter){
+  var createEntry = function(result, translator, MDfilter, headerTransform) {
       /* filters out all fields where humanReadable is false */
-      var filter = function(obj){
-          if(obj.humanReadable !== false){
+      var filter = function(obj) {
+          if(obj.humanReadable !== false) {
               return true;
           }
           return false;
       };
+      if (MDfilter) {
+          filter = MDfilter;
+      }
 
       var entry = {
           Type: entryTypes.note,
@@ -386,7 +402,7 @@ script: |-
       var content = translator.innerPath ? dq(result, translator.innerPath) : result;
       var translatedContext = mapObjFunction(translator.data) (content);
       var translatedMD = mapObjFunction(translator.data, filter) (content);
-      entry.HumanReadable = tableToMarkdown(translator.title,translatedMD, undefined, undefined, dotToSpace);
+      entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform || dotToSpace);
       entry.EntryContext = {};
       var context = createContext(translatedContext);
       entry.EntryContext[translator.contextPath] = context;
@@ -1706,6 +1722,68 @@ script: |-
 
       /**************************** HMAC_SHA256 end *******************************/
 
+      /**************************** Calculate hyper search with cache hit start works from version 3.1.0 **********/
+
+      function calculateScore(scores) {
+        var score = -1;
+        for (var i = 0; scores && i < scores.length; i++) {
+            if (scores[i] && score < scores[i]) {
+              score = scores[i];
+            }
+        }
+        return score < 0 ? 0 : score;
+      }
+
+      function calculateReputation(value, cacheExpiration, forceCalc, command, argName, typeName) {
+        var cachedBrands = [];
+        var scores = [];
+        var res = executeCommand("findIndicators", {"query": "type:" + typeName + " and value:\"" + value + "\" and manualScore:T"});
+        if (forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+            return res[0].Contents[0].score;
+        }
+        // Get all indicator cached data
+        var cache = executeCommand("getIndicatorScoreCache", {value: value});
+        if (cache && cache.length > 0 && cache[0].Contents) {
+            var latestCacheTime = new Date().getTime() - (cacheExpiration * 60 * 1000);
+            var cachedScores = cache[0].Contents[0].scores;
+            if (cachedScores) {
+                // Iterate on cache according to different vendors
+                var scoreKeys = Object.keys(cachedScores);
+                scoreKeys.forEach(function (key) {
+                    cachedTime = cachedScores[key].timestamp;
+                    if (cachedTime && (new Date(cachedTime)).getTime() > latestCacheTime) {
+                        //We have a valid cache hit, we should capture the score and not query it again
+                        scores.push(cachedScores[key].score);
+                        cachedBrands.push(key);
+                    }
+                });
+            }
+        }
+        var brands = {};
+        // Get all brands that were not in the cache
+        var allModules = getModulesForCommand(command);
+        if (allModules) {
+            var instanceKeys = Object.keys(allModules);
+            instanceKeys.forEach(function (key) {
+                if (allModules[key].state === 'active' && cachedBrands.indexOf(allModules[key].brand) === -1) {
+                    brands[allModules[key].brand] = true;
+                }
+            });
+        }
+        var brandArr = Object.keys(brands);
+        if (brandArr.length > 0) {
+            // Run the other reputation scripts only if there are new brands that were not used
+            var brandStr = brandArr.join(',');
+            var cmdArgs = { 'using-brand': brandStr };
+            cmdArgs[argName] = value;
+            var rep = executeCommand(command, cmdArgs);
+            var newScores = dq(rep, 'EntryContext.DBotScore.Score');
+            scores = scores.concat(newScores);
+        }
+        return calculateScore(scores);
+      }
+      /**************************** Calculate hyper search with cache hit end ************/
+
 
 type: javascript
 tags:
@@ -1716,3 +1794,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Added pascalToSpace function and header formating interface to createEntry

@@ -84,6 +84,9 @@ script: |-
       if (args.attachIds) {
           emailArgs.attachIDs = args.attachIds;
       }
+      if (reply) {
+          emailArgs.replyTo = reply;
+      }
       return executeCommand('send-mail', emailArgs);
   } else {
       return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
@@ -126,3 +129,4 @@ args:
 - name: replyAddress
   description: Address of reply for html links
 scripttarget: 0
+releaseNotes: "Added replyTo to the send-mail command"

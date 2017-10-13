@@ -5,7 +5,6 @@ name: UnzipFile
 script: |-
   import zipfile
   import os
-  import subprocess
 
   filePath = None
   fileEntryID = ''
@@ -75,9 +74,11 @@ script: |-
 
   results = []
   for filename in filenames:
-      uniqueName = demisto.uniqueFile()
-      subprocess.call(['mv', filename, demisto.investigation()['id'] + '_' + uniqueName])
-      results.append({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': filename, 'FileID': uniqueName, 'Contents': ''})
+      ## Open extracted filename read and copy to warroom.
+      with open(filename, 'r') as f:
+          data = f.read()
+      if data:
+          demisto.results(fileResult(filename,  data))
 
   results.append(
       {
@@ -94,6 +95,8 @@ type: python
 tags:
 - Utility
 - file
+comment: Unzip a file using fileName or entryID to specify a file. Files unzipped
+  will be pushed to the war room and names will be pushed to the context.
 args:
 - name: fileName
   default: true
@@ -109,4 +112,3 @@ outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
-
