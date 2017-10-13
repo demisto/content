@@ -1,6 +1,6 @@
 id: ATD-playbook
 version: -1
-description: "-"
+description: "Playbook run an ATD sandbox report on incident files"
 name: ATD-playbook
 starttaskid: "0"
 tasks:
