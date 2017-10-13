@@ -1,0 +1,125 @@
+id: McAfee-TIE Test
+version: -1
+name: McAfee-TIE Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 76b337ff-028a-4354-8a31-f85fdb5ac929
+    type: start
+    task:
+      id: 76b337ff-028a-4354-8a31-f85fdb5ac929
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 829d8f87-f5db-4ba5-885b-0a940491e01e
+    type: regular
+    task:
+      id: 829d8f87-f5db-4ba5-885b-0a940491e01e
+      version: -1
+      name: Verify Context File Reputation
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: ""
+      fields: TrustLevel,Vendor,SHA1
+      path: File
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b6f1bafc-68a1-495d-8287-39f3c89ba56f
+    type: regular
+    task:
+      id: b6f1bafc-68a1-495d-8287-39f3c89ba56f
+      version: -1
+      name: Verify Context DBot Score
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: Vendor,Indicator,Score,Type
+      path: DBotScore
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 73263d6a-7ce2-4e11-8b52-bb425d96b014
+    type: regular
+    task:
+      id: 73263d6a-7ce2-4e11-8b52-bb425d96b014
+      version: -1
+      name: TIE file reputation
+      script: McAfee Threat Intelligence Exchange|||file
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context: ""
+      file: 6EAE26DB8C13182A7947982991B4321732CC3DE2
+      using: McAfee Threat Intelligence Exchange_instance_1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 192
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
