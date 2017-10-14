@@ -36,8 +36,6 @@ script: |
           map[path] = getLabel(incidents[0], path);
       } else if (path.indexOf('incident.') === 0) {
           map[path] = dq({'incident': incidents[0]}, path);
-      } else if (path.indexOf('args.') === 0) {
-          map[path] = dq({'args': args}, path);
       } else if (path.indexOf('object.') === 0) {
           var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : object;
           map[path] = dq({'object': obj}, path);
@@ -69,7 +67,7 @@ comment: |-
   Available placeholders for example:
   - ${incident.labels.Email/from}
   - ${incident.name}
-  - ${args.subject}
+  - ${object.value}
   See incident Context Data menu for available placeholders
 
   Note: Sending emails require an active  Mail Sender integration instance.
