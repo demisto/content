@@ -83,5 +83,8 @@ args:
 - name: object
   description: Values object
   isArray: true
+outputs:
+- contextPath: htmlBody
+  description: HTML Body
 scripttarget: 0
 releaseNotes: "Added the ability to provide values in object as argument. Returning the HTML body as an object for non-incident usage (i.e. pre-processing scripts)."
