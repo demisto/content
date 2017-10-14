@@ -49,8 +49,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 0
+  defaultvalue: "false"
+  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -523,7 +523,7 @@ script:
                 Body: body
             },
             params.insecure,
-            params.useproxy
+            params.proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -628,4 +628,4 @@ script:
       required: true
   isfetch: true
 hidden: false
-releaseNotes: "Added as-get-security-events command. Fixed some bugs in parsing of SOAP response"
+releaseNotes: fix proxy param type
