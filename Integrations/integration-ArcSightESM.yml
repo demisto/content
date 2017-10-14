@@ -82,12 +82,95 @@ script:
             }
             throw 'Request to ArcSight ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         return res.Body;
+    };
+
+    var sendAndParse = function(command, url, args) {
+
+      var json = parseSOAPResponse(sendRequest(url, args));
+      if (!json) {
+          return 'No Data in response';
+      }
+
+      var result = json;
+      if (command === 'as-get-all-cases') {
+          result = {
+              Type: entryTypes.note,
+              ContentsFormat: formats.json,
+              Contents: json,
+              ReadableContensFormat: formats.markdown,
+              HumanReadable: arrayToMarkdownTable(json, 'Case ID')
+          };
+      } else if (translateTable[command]) {
+          result = {
+              Type: entryTypes.note,
+              ContentsFormat: formats.json,
+              Contents: json,
+              ReadableContensFormat: formats.markdown,
+              HumanReadable: tableToMarkdown('Something', convertByMap(json.return, translateTable[command]))
+          };
+      }
+
+      return result;
+    };
+
+    function convertByMap(arrSrc, translationMap) {
+        var arrDest = [];
+
+        if (!arrSrc) {
+            throw 'arrSrc can\'t be undefined or null';
+        }
+
+        if (!Array.isArray(arrSrc)) {
+            arrSrc = [arrSrc];
+        }
+
+        if (!translationMap) {
+            throw 'translationMap must contain map';
+        }
+
+        /*
+        [
+            {
+                "name": "Anar",
+                "age": 19
+            }
+        ]
+
+        ==> { "NAME": "name" }
+        [
+            {
+                "NAME": "Anar"
+            }
+        ]
+
+        */
+        arrSrc.forEach(function(objSrc) {
+            var objDest = {};
+            Object.keys(translationMap).forEach(function(destKey) {
+                var srcKey = translationMap[destKey];
+                objDest[destKey] = dq(objSrc, srcKey);
+            });
+            arrDest.push(objDest);
+        });
+
+        return arrDest;
     }
 
-    var sendAndParse = function(url, args) {
-      return JSON.parse(x2j(sendRequest(url, args)));
-    }
+
+
+    var translateTable = {
+        'as-get-case': {
+            'Event ID': 'eventIDs',
+            'name': 'name',
+            'action': 'action'
+
+        },
+        'as-get-all-cases': {
+            'Case ID': 'return'
+        }
+    };
 
     var pathDictionary = {
         login: 'www/core-service/rest/LoginService/login',
@@ -137,7 +220,7 @@ script:
           newIncidents.push({
             name: data.Name || ('New event from arcsight at ' + Date.now()),
             labels: labels,
-            rawJSON: JSON.stringify(data[i]).replace(/\\"/g, '"'),
+            rawJSON: JSON.stringify(data[i]).replace(/\\"/g, '"')
           });
           delete(args.resourceId);
         }
@@ -190,8 +273,8 @@ script:
           }
           newIncidents.push({
             name: data[i].Name || ('New event from arcsight at ' + Date.now()),
-            labels: labels,
             rawJSON: JSON.stringify(data[i]).replace(/\\"/g, '"'),
+            labels: labels
           });
         }
       }
@@ -238,12 +321,15 @@ script:
         var columns = entryList.return.columns;
         var entries = entryList.return.entryList;
 
+        if (!Array.isArray(entries)) {
+            entries = [entries];
+        }
+
         var entriesArray = [];
         for (var i = 0; i < entries.length; i++) {
             var newEntry = {};
             for (var columnIdx = 0; columnIdx < columns.length; columnIdx++) {
                 var column = columns[columnIdx];
-                // log(column)
                 var innerEntry = entries[i].entry[columnIdx];
                 newEntry[column] = innerEntry;
             }
@@ -282,7 +368,15 @@ script:
         return 'Success';
     }
 
-    var getEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/"><soapenv:Header/><soapenv:Body><act:getEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId></act:getEntries></soapenv:Body></soapenv:Envelope>';
+    var getEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/">'+
+                             '<soapenv:Header/>'+
+                                 '<soapenv:Body>'+
+                                    '<act:getEntries>'+
+                                        '<act:authToken>%authToken%</act:authToken>'+
+                                        '<act:resourceId>%resourceId%</act:resourceId>'+
+                                    '</act:getEntries>'+
+                                 '</soapenv:Body>'+
+                             '</soapenv:Envelope>';
     function getEntries() {
         var soapReq = replaceInTemplates(getEntriesTemplate, { authToken: args.authToken, resourceId: args.resourceId });
         var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
@@ -311,13 +405,117 @@ script:
           HumanReadable: tableToMarkdown('Active List ' + args.resourceId, entryArray)
         };
     }
+
+    var getMonitorDataTemplate = '<ns2:getDataMonitorIfNewer>'+
+                                    '<ns2:authToken>%authToken%</ns2:authToken>'+
+                                    '<ns2:id>%monitorID%</ns2:id>'+
+                                    '<ns2:currentSignature>'+
+                                        '<ns5:id>%monitorID%</ns5:id>'+
+                                        '<ns5:modificationCount>%modificationCount%</ns5:modificationCount>'+
+                                    '</ns2:currentSignature>'+
+                                  '</ns2:getDataMonitorIfNewer>';
+
+    var monitorDataTemplateWithEnv ='<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dataMonitorService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>'+
+                                        '<soapenv:Header/>'+
+                                        '<soapenv:Body>' +
+                                            getMonitorDataTemplate +
+                                        '</soapenv:Body>' +
+                                    '</soapenv:Envelope>';
+
+    function getDataMonitor(authToken, modCount, monitorID){
+      var soapReq = replaceInTemplates(monitorDataTemplateWithEnv, { authToken:authToken, modificationCount : modCount, monitorID : monitorID});
+      var res = sendSOAPRequest('www/manager-service/services/DataMonitorService/', null, soapReq);
+      return res.Body;
+    }
+
+    var getSecurityEventsTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"  xmlns:ns2="http://ws.v1.service.resource.manager.product.arcsight.com/securityEventService/">'+
+                             '<soapenv:Header/>'+
+                                 '<soapenv:Body>'+
+                                    '<ns2:getSecurityEvents>'+
+                                        '<ns2:authToken>%authToken%</ns2:authToken>'+
+                                        '<ns2:ids>%ids%</ns2:ids>'+
+                                        '<ns2:startMillis>%startMillis%</ns2:startMillis>'+
+                                        '<ns2:endMillis>%endMillis%</ns2:endMillis>'+
+                                    '</ns2:getSecurityEvents>'+
+                                 '</soapenv:Body>'+
+                             '</soapenv:Envelope>';
+
+    var intToIpDT = ';function intToIP(int){' +
+        'var part1 = int & 255;'+
+        'var part2 = ((int >> 8) & 255);'+
+        'var part3 = ((int >> 16) & 255);'+
+        'var part4 = ((int >> 24) & 255);'+
+        'return part4 + "." + part3 + "." + part2 + "." + part1;'+
+    '};';
+
+    // table from JSON to human readable table
+    var eventTranslateMap = {
+        'Time' : 'endTime=new Date(Number(val)).toLocaleString()'
+        'Source Address': 'source.address=intToIP(val)' + intToIpDT,
+        'Destination Address': 'destination.address=intToIP(val)' + intToIpDT,
+        'Name': 'name',
+        'source Port': 'source.port'
+
+    };
+
+    function getSecurityEvents(){
+        var startMillis = args.startMillis || '0';
+        var endMillis = args.endMillis || ((new Date().getTime()) + 100000) + '';
+
+        var soapReq = replaceInTemplates(getSecurityEventsTemplate, { authToken: args.authToken, ids: args.ids, startMillis: startMillis, endMillis: endMillis });
+        var res = sendSOAPRequest('www/manager-service/services/SecurityEventService/', null, soapReq);
+
+        // creating human readable table
+        var parsedEvents = parseSOAPResponse(res.Body)
+        if (!parsedEvents || !parsedEvents.return) {
+          return 'No events found';
+        }
+
+        var events = parsedEvents.return;
+        if (!Array.isArray(events)) {
+            events = [events];
+        }
+
+        return {
+          Type: entryTypes.note,
+          ContentsFormat: formats.json,
+          Contents: { result: events },
+          ReadableContentsFormat: formats.markdown,
+          HumanReadable: tableToMarkdown('Security Event', convertByMap(events, eventTranslateMap))
+        };
+    }
+
+    var getDashboardDataTemplate = '<ns2:getDashboardIfNewer>'+
+                                    '<ns2:authToken>%authToken%</ns2:authToken>'+
+                                    '<ns2:id>%monitorID%</ns2:id>'+
+                                    '<ns2:currentSignature>'+
+                                        '<ns5:id>%monitorID%</ns5:id>'+
+                                        '<ns5:modificationCount>%modificationCount%</ns5:modificationCount>'+
+                                    '</ns2:currentSignature>'+
+                                  '</ns2:getDashboardIfNewer>';
+
+    var dashboardDataTemplateWithEnv ='<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dashboardService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>'+
+                                        '<soapenv:Header/>'+
+                                        '<soapenv:Body>' +
+                                            getDashboardDataTemplate +
+                                        '</soapenv:Body>' +
+                                    '</soapenv:Envelope>';
+
+    // currently this function is not works
+    function getDashboardData(authToken, modCount, monitorID){
+      var soapReq = replaceInTemplates(dashboardDataTemplateWithEnv, { authToken:authToken, modificationCount : modCount, monitorID : monitorID});
+      //return soapReq;
+      var res = sendSOAPRequest('www/manager-service/services/DashboardService/', null, soapReq);
+      return res.Body;
+    }
+
     function sendSOAPRequest(queryPath, param, body) {
         // prepare the request url (make sure to encode the query parameter value)
         var requestUrl = server + queryPath;
         if (param) {
             requestUrl += encodeToURLQuery(param);
         }
-        //throw body;
+
         var res = http(
             requestUrl,
             {
@@ -336,14 +534,24 @@ script:
     }
 
     function parseSOAPResponse(resBody) {
-      var matches = resBody.match('<ns.:return>(.|[\r\n])*<\/ns.:return>');
+      var matches = resBody.match(/<ns\d{1,3}:return>(.|[\r\n])*<\/ns\d{1,3}:return>/);
       if (!matches) {
-        return null;
+          return null;
       }
 
-      var match = matches[0];
-      var json = JSON.parse(x2j(match));
-      return json;
+      var match = matches[0].replace(/:return><ns/gi, ':return>##==##==#<ns').split('##==##==#');
+      if (match.length === 1) {
+        match = match[0];
+        var json = JSON.parse(x2j(match));
+        return json;
+      } else {
+        var arr = [];
+        for (var i = 0; i < match.length; i++) {
+            arr.push(JSON.parse(x2j(match[i])).return);
+        }
+
+        return arr;
+      }
     }
 
     switch (command) {
@@ -369,8 +577,10 @@ script:
           return clearEntries();
       case 'as-get-entries':
           return getEntries();
+      case 'as-get-security-events':
+          return getSecurityEvents(args.authToken, args.ids, args.startTime, args.endTime);
       default:
-        return sendAndParse(pathDictionary[command], args);
+        return sendAndParse(command, pathDictionary[command], args);
     }
   type: javascript
   commands:
@@ -410,5 +620,12 @@ script:
       required: true
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
+  - name: as-get-security-events
+    arguments:
+    - name: startTime
+    - name: endTime
+    - name: ids
+      required: true
   isfetch: true
 hidden: false
+releaseNotes: "Added as-get-security-events command. Fixed some bugs in parsing of SOAP response"
