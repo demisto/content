@@ -757,4 +757,3 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "Added sub domains, whois lookup and DNS ip addresses to response entry"
