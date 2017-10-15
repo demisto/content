@@ -61,9 +61,9 @@ class Content:
 
                 if len(newStr) > 0:
                     if new_count > 1:
-                        section_body += "#### " + str(new_count) + " New " + self.getHeader() + "\n"
+                        section_body += "\n#### " + str(new_count) + " New " + self.getHeader() + "\n"
                     else:
-                        section_body += "#### New " + self.getHeader() + "\n"
+                        section_body += "\n#### New " + self.getHeader() + "\n"
                     section_body += newStr
             if len(self.modifiedStore) > 0:
                 modifiedStr = ""
