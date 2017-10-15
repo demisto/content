@@ -30,7 +30,7 @@ validateFilesStructure() {
         fi
         if ! [ -z "$validate_schema_file" ]
         then
-            python Tests/validate_schema.py "$dir/$filename" "Tests/schemas/$validate_schema_file.yml" d
+            python Tests/validate_schema.py "$dir/$filename" "Tests/schemas/$validate_schema_file.yml"
             if [[ $? -ne 0 ]]
             then
                 foundMissingField=true
