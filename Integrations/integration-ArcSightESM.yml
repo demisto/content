@@ -392,32 +392,31 @@ script:
       description: commands.server.arcsight.arguments.queryid.description
     description: commands.server.arcsight.query.description
   - name: as-add-entries
-    description: "-"
+    description: Import/add new entries to Active List. 
     arguments:
     - name: resourceId
       required: true
-      description: "-"
+      description: Resource id of specific Active List
     - name: entries
       required: true
-      description: "-"
+      description: 'Entries must be a json, array that contains objects. Every object must have fields with the exact names as the Active List columns. For example: Active list - Black List IPs has 2 columns (count, ip_addr), then the entries can like following: [{"count":0,"ip_addr":"1.1.1.1"},{"count":4,"ip_addr":"2.2.2.2"}]'
       isArray: true
     execution: true
   - name: as-clear-entries
-    description: "-"
+    description: Deletes all the entries in the Active List
     arguments:
     - name: resourceId
-      description: "-"
+      description: Resource id of specific Active List
       required: true
     execution: true
   - name: as-get-entries
-    description: "-"
+    description: Returns the entries which the Active List contains
     arguments:
     - name: resourceId
-      description: "-"
+      description: Resource id of specific Active List
       required: true
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
   isfetch: true
 hidden: false
-releaseNotes: "-"
-
+releaseNotes: added description to missing commands

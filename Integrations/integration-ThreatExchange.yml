@@ -369,9 +369,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
-      description: "-"
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found

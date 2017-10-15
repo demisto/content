@@ -338,16 +338,15 @@ script:
   type: javascript
   commands:
   - name: hpsm-create-incident
-    description: "-"
+    description: Creates new incident in the system
     arguments:
     - name: title\
-      description: "-"
+      description: The title of incident
       required: true
     - name: description
-      description: "-"
+      description: The description of the incident
       required: true
     - name: service
-      description: "-"
       required: true
       description: 'Examples: CI1001060, CI1001030'
     - name: impact
@@ -440,7 +439,7 @@ script:
       description: Result of incident query. Contains array of incident ids
     description: Returns all incidents
   - name: hpsm-get-incident-by-id
-    description: "-"
+    description: Returns single incident by id. If incident not exists with such id, then error will returned
     arguments:
     - name: incidentId
       required: true
@@ -504,6 +503,7 @@ script:
     - contextPath: HPSM.Incidents.Urgency
       description: "-"
   - name: hpsm-list-devices
+    description: Returns list of devices filtered according to query.
     arguments:
     - name: query
       description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
@@ -545,4 +545,4 @@ script:
       description: "-"
     - contextPath: HPSM.Devices.UpdatedBy
       description: "-"
-releaseNotes: "-"
+releaseNotes: added description to commands
