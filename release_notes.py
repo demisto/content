@@ -81,10 +81,10 @@ class Content:
                     if modified_count > 1:
                         section_body += "#### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        section_body += "#### Improved " + self.getHeader() + "\n"
+                        section_body += "\n#### Improved " + self.getHeader() + "\n"
                     section_body += modifiedStr
             if len(self.deletedStore) > 0:
-                section_body += "#### Removed " + self.getHeader() + "\n"
+                section_body += "\n#### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
                     section_body += "- " + rawContent + "\n"
 
