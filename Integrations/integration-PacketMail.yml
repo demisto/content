@@ -115,10 +115,12 @@ script:
       required: true
       description: The ip to check on
     outputs:
-    - contextPath: IP
-      description: "-"
-    - contextPath: IP.Malicious
-      description: "-"
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
     description: Get intel from PacketMail.net on IPs
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Fixed context path"
