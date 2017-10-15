@@ -79,7 +79,7 @@ class Content:
                         modified_count += 1
                 if len(modifiedStr) > 0:
                     if modified_count > 1:
-                        section_body += "#### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                        section_body += "\n#### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
                         section_body += "\n#### Improved " + self.getHeader() + "\n"
                     section_body += modifiedStr
