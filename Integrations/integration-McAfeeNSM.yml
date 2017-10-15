@@ -676,4 +676,4 @@ script:
     - contextPath: NSM.Attacks.Category
       description: Attack Category
     description: Get all available attack definitions in NSM
-releaseNotes: Add new integration, supports: alerts querying and updating, IPS policies querying
+releaseNotes: Add new integration, supporting alerts querying and updating, IPS policies querying
