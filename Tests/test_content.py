@@ -95,6 +95,8 @@ def main():
             else:
                 integration_params = {}
 
+        if integration_name != 'McAfeeNSMTest': continue
+        from pprint import pprint; pprint(integration_params)
         if integration_name:
             test_message = 'integration: ' + integration_name + ' with playbook: ' + playbook_id
         else:
