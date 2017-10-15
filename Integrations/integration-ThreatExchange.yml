@@ -95,7 +95,9 @@ script:
         var data = res.obj.data;
         if (data.length === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n'};
+                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
+                EntryContext: {DBotScore: [{Indicator: hash, Type: 'hash', Vendor: 'ThreatExchange', Score: 0}]}
+            };
         }
         var ec = {};
         ec.DBotScore = [];
@@ -137,7 +139,9 @@ script:
         var data = res.obj.data;
         if (data.length === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n'};
+                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n',
+                EntryContext: {DBotScore: [{Indicator: ip, Type: 'ip', Vendor: 'ThreatExchange', Score: 0}]}
+            };
         }
         var ec = {};
         ec.DBotScore = [];
@@ -175,7 +179,9 @@ script:
         var data = res.obj.data;
         if (data.length === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n'};
+                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n',
+                EntryContext: {DBotScore: [{Indicator: url, Type: 'url', Vendor: 'ThreatExchange', Score: 0}]}
+            };
         }
         var ec = {};
         ec.DBotScore = [];
@@ -213,7 +219,9 @@ script:
         var data = res.obj.data;
         if (data.length === 0) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n'};
+                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n',
+                EntryContext: {DBotScore: [{Indicator: domain, Type: 'domain', Vendor: 'ThreatExchange', Score: 0}]}
+            };
         }
         var ec = {};
         ec.DBotScore = [];
