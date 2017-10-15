@@ -400,4 +400,3 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: Add capability to edit notable event in splunk ES and create Job in splunk
