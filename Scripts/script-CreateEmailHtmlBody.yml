@@ -81,7 +81,7 @@ args:
   required: true
   description: Context key to store the HTML body
 - name: object
-  description: Values object
+  description: Values object provided as stringified JSON
   isArray: true
 outputs:
 - contextPath: htmlBody
