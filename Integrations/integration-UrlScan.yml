@@ -271,7 +271,7 @@ script:
             return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
         }
 
-        if (isPublic === 'yes') {
+        if (isPublic === 'public') {
             body = JSON.stringify({"url": scanUrl, "public": 'on'});
         } else {
             body = JSON.stringify({"url": scanUrl});
@@ -288,7 +288,7 @@ script:
             timeout = 30;
         }
 
-        if (isPublic === 'no') {
+        if (isPublic === 'private') {
             wait(parseInt(timeout));
         } else {
 
@@ -318,7 +318,7 @@ script:
             var scanResults;
             var resStats;
 
-            if (isPublic === 'no') {
+            if (isPublic === 'private') {
                 var res = http(resScan.api,{Method: 'GET',},params.insecure,params.proxy);
                 resStats = JSON.parse(res.Body).stats
 
@@ -342,7 +342,7 @@ script:
 
             ec.DBotScore = {Indicator: scanUrl, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
 
-            if (isPublic === 'no') {
+            if (isPublic === 'private') {
                 resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
                 resDis.push(getScreenshot(resScan.uuid));
             } else {
@@ -470,10 +470,10 @@ script:
     - name: public
       auto: PREDEFINED
       predefined:
-      - "yes"
-      - "no"
+      - public
+      - private
       description: Does the submit will be public or private
-      defaultValue: "yes"
+      defaultValue: public
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -490,4 +490,4 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
-releaseNotes: "urlscan-submit now supports private submit."
+releaseNotes: "urlscan-submit now supports private submits"
