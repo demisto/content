@@ -2,7 +2,6 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
-releaseNotes: "Fixed display of false values in tableToMarkdown"
 script: |-
   // Common functions script
   // =======================
@@ -1826,4 +1825,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: Added pascalToSpace function and header formating interface to createEntry

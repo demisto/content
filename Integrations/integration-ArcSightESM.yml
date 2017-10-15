@@ -628,4 +628,3 @@ script:
       required: true
   isfetch: true
 hidden: false
-releaseNotes: fix proxy param type
