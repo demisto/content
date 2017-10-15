@@ -278,12 +278,13 @@ script: |-
 
   def sectionsToMarkdown(root):
       mdResult = ''
-      for section in root:
-          data = demisto.get(entry, 'Contents.'+section)
-          if isinstance(data, dict):
-              data = [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          mdResult += tblToMd(section, data)
+      if isinstance(root, dict):
+          for section in root:
+              data = root[section]
+              if isinstance(data, dict):
+                  data = [data]
+              data = [{k: formatCell(row[k]) for k in row} for row in data]
+              mdResult += tblToMd(section, data)
       return mdResult
 
 

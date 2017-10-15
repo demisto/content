@@ -2,7 +2,6 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
-releaseNotes: "Fixed display of false values in tableToMarkdown"
 script: |-
   // Common functions script
   // =======================
@@ -225,6 +224,38 @@ script: |-
   }
 
   var tblToMd = tableToMarkdown;
+
+  /**
+   * Converts a array of stings to markdown table
+   * @param {Array} arr - from stings
+   * @param {String} header - optinal, the output markdown table will show only these headers (by order)
+   * @returns {String} markdown string of table. Can be also 'No results' string if there are no items in arr
+   */
+  function arrayToMarkdownTable(arr, header) {
+    if (!arr) {
+        return 'No results';
+    }
+    if (!Array.isArray(arr)) {
+        throw arr + ' is not an array';
+    }
+    if (arr.length === 0) {
+        return 'No results';
+    }
+    
+    if (typeof arr[0] === 'object') {
+        throw 'arrayToMarkdownTable should receive arr which contain objects but simple types like string, int, bool'
+    }
+    if (!header) {
+        throw 'header is required for arrayToMarkdownTable';
+    }
+    
+    var md = '|' + header + '|\n-';
+    arr.forEach(function(item) {
+        md += '\n|' + item + '|';
+    });
+    
+    return md;
+  }
 
   /**
    * Converts underscore case strings to camel case
@@ -1794,4 +1825,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: Added pascalToSpace function and header formating interface to createEntry

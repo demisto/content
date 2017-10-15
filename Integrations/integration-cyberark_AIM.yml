@@ -191,4 +191,3 @@ script:
   - name: fetch-credentials
     arguments:
     - name: identifier
-releaseNotes: "fixed timeout issue when no connections"
