@@ -159,8 +159,17 @@ script:
 
         return res
 
-    def res_to_table(reputations):
+    def parse_reference(reference):
+        return {
+            'Date': str(datetime.fromtimestamp(reference.get('date'))),
+            'AgentGuid': reference.get('agentGuid')
+        }
+
+    def reputations_to_table(reputations):
         return [parse_reputation(rep) for rep in reputations]
+
+    def references_to_table(references):
+        return [parse_reference(ref) for ref in references]
 
     def trust_level_to_score(trust_level):
         if (trust_level >= 70):
@@ -172,7 +181,7 @@ script:
         else:
             return 0
 
-    def  get_thrust_level_and_score(reputations):
+    def get_thrust_level_and_score(reputations):
         trust_level = 101 # more than the highst possible trust level
         vendor = VENDOR_NAME
 
@@ -224,7 +233,7 @@ script:
             res = tie_client.get_file_reputation(hash_param)
             reputations = res.values()
 
-            table = res_to_table(reputations)
+            table = reputations_to_table(reputations)
 
             # creaet context
             context_file = {}
@@ -256,6 +265,75 @@ script:
                 'EntryContext': context
             }
 
+    def file_references(hash):
+        config = get_client_config()
+        with DxlClient(config) as client:
+            x = client.connect()
+            # Create the McAfee Threat Intelligence Exchange (TIE) client
+            tie_client = TieClient(client)
+
+            hash_type = get_hash_type(hash)
+            hash_type_key = HASH_TYPE_KEYS.get(hash_type)
+            if not hash_type_key:
+                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+
+            hash_param = {}
+            hash_param[hash_type_key] = hash
+
+            references = tie_client.get_file_first_references(hash_param)
+
+            table = references_to_table(references)
+
+            # creaet context
+            context_file = {}
+            hash_type_uppercase = hash_type.upper()
+
+            context_file[hash_type_uppercase] = hash
+            context_file['References'] = table
+            context[outputPaths['file']] = context_file
+
+            return {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': references,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('References for hash %s' % (hash,), table),
+                'EntryContext': context
+            }
+
+            return res
+
+    def set_file_reputation(hash, trust_level, filename, comment):
+        config = get_client_config()
+
+        # find trust_level key
+        trust_level_key = None
+        for k, v in TRUST_LEVELS.iteritems():
+            if v == trust_level:
+                trust_level_key = k
+
+        if not trust_level_key:
+            return create_error_entry('illigale argument trust_level %s. Choose value from predefined values' % (trust_level, ))
+
+
+        with DxlClient(config) as client:
+            x = client.connect()
+            tie_client = TieClient(client)
+
+            hash_type = get_hash_type(hash)
+            hash_type_key = HASH_TYPE_KEYS.get(hash_type)
+            if not hash_type_key:
+                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+
+            hash_param = {}
+            hash_param[hash_type_key] = hash
+
+            try:
+                tie_client.set_file_reputation(trust_level_key, hash_param, filename, comment)
+                return 'Successfully set file repuation'
+            except Exception as ex:
+                return create_error_entry(str(ex))
+
     if __name__ == '__main__':
 
         args = demisto.args()
@@ -265,6 +343,19 @@ script:
             sys.exit(0)
         elif demisto.command() == 'file':
             results = file(args.get('file'))
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'tie-file-references':
+            results = file_references(args.get('file'))
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'tie-set-file-reputation':
+            results = set_file_reputation(
+                args.get('file'),
+                args.get('trust_level'),
+                args.get('filename'),
+                args.get('comment')
+            )
             demisto.results(results)
             sys.exit(0)
   type: python
@@ -300,4 +391,46 @@ script:
       related: ""
     description: Retrieves the reputations for the specified hash ( Supports MD5 SHA1
       & SHA256)
+  - name: tie-set-file-reputation
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: '  Hash of the file to set. Supports MD5 SHA1 & SHA256'
+    - name: trust_level
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - NOT_SET
+      - KNOWN_MALICIOUS
+      - MOST_LIKELY_MALICIOUS
+      - MIGHT_BE_MALICIOUS
+      - UNKNOWN
+      - MIGHT_BE_TRUSTED
+      - MOST_LIKELY_TRUSTED
+      - KNOWN_TRUSTED
+      - KNOWN_TRUSTED_INSTALLER
+      description: The new trust level for the file
+    - name: filename
+      description: A file name to associate with the file
+    - name: comment
+      description: A comment to associate with the file
+    description: Sets the “Enterprise” reputation (trust level) of a specified file
+  - name: tie-file-references
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: '  Hash of the file to search on. Supports MD5 SHA1 & SHA256'
+    outputs:
+    - contextPath: File.MD5
+      description: file's hash MD5 (if supplied)
+    - contextPath: File.SHA1
+      description: file's hash SHA1 (if supplied)
+    - contextPath: File.SHA256
+      description: file's hash SHA256 (if supplied)
+    - contextPath: File.References.AgentGuid
+      description: The GUID of the system that referenced the file
+    - contextPath: File.References.Date
+      description: The time the system first referenced the file
   dockerimage: demisto/dxl
