@@ -7,3 +7,6 @@ PyPDF2
 splunk-sdk
 PyYAML
 python-libnmap
+dxlclient
+dxlmarclient
+dxltieclient

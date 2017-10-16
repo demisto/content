@@ -18,12 +18,9 @@ script: |
   outputStream = file(outputName, "wb")
   output.write(outputStream)
   outputStream.close()
+  
+  demisto.results(file_result_existing_file(outputName))
 
-  with open(outputName, 'r') as f:
-      data = f.read()
-
-  if data:
-      demisto.results(fileResult(outputName,  data))
 type: python
 tags: []
 comment: Removing the password protection from a PDF file and adding a new file entry
@@ -40,3 +37,4 @@ args:
   description: Password of PDF file
 scripttarget: 0
 dockerimage: demisto/pypdf2
+releaseNotes: "Do not re-read pdf file"
