@@ -2,7 +2,7 @@
   "id": "investigationSummaryReport",
   "name": "Investigation Summary",
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
-  "fromVersion": "2.5.0",
+  "fromVersion": "3.1.0",
   "tags": [],
   "createdBy": "DBot",
   "type": "pdf",
@@ -10,7 +10,6 @@
   "recipients": [],
   "system": true,
   "reportType": "investigation",
-  "releaseNotes": "Add the ability to format queries for indicators and incidents. Add indicators table section with bad and suspicious indicators related to investigation.",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
     "incident.status.1": { "type": "string", "value": "Assigned" },
