@@ -4,6 +4,9 @@ commonfields:
 name: ConvertXmlToJson
 script: |-
   var xmlJson = x2j(args.xml);
+  try {
+    xmlJson = JSON.parse(xmlJson);
+  } catch(err) {}
 
   if (args.contextKey && args.contextKey.length > 0) {
       setContext(args.contextKey,xmlJson);
