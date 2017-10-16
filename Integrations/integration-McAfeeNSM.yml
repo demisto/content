@@ -26,13 +26,8 @@ script:
   script: |-
     var session_credentials = '';
     var insecure = params.insecure;
-    var base_url = params.url;
     // handle '/' at the end of the url
-    if (params.url.match('/+$') !== null) {
-        base_url = params.url.replace(params.url.match('/+$'), '/sdkapi/');
-    } else {
-        base_url += '/sdkapi/';
-    }
+    var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
 
     function sendRequest(method, url_suffix, headers, body) {
         // add default headers
