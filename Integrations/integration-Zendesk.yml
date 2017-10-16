@@ -88,7 +88,28 @@ script:
     var escapeMd = function(text) {
         return text.split('|').join('\\|');
 
-    }
+    };
+
+    var getTicketId = function() {
+        var ticketId = args.id;
+        if (!ticketId) {
+            labels = dq(incidents[0],'labels');
+            labels.forEach(function(label) {
+                if (label.type == 'TicketId') {
+                    ticketId = label.value;
+                }
+            });
+        }
+        if (!ticketId) {
+            throw 'Missing Zendesk ticket ID';
+        }
+        return ticketId;
+    };
+
+    var getAttachmentId = function() {
+        return (args.id.indexOf(':') > -1) ? args.id.split(':')[0] : args.id;
+    };
+
     var loadCustomFields = function() {
         resCusFields = sendRequest('GET', 'ticket_fields.json');
         var dicFields = {};
@@ -178,13 +199,7 @@ script:
     var createTicket = function() {
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
-        var isPublic = true;
-
-        if (args.private === 'no') {
-            isPublic = true;
-        } else {
-            isPublic = false;
-        }
+        var isPublic = (args.private === 'no');
 
         var body = {
                 ticket: {
@@ -295,6 +310,8 @@ script:
 
 
     var updateTicket = function() {
+        var ticketId = getTicketId();
+
         var md = '## Zendesk tickets\n';
         var ec = {};
 
@@ -347,19 +364,21 @@ script:
                 key !== 'assignee_email' &&
                 key !== 'custom_fields') {
                 body.ticket[key] = args[key];
-                ec['Ticket(val.id == ' + args.id + ').' + key] = args[key];
+                ec['Ticket(val.id == ' + ticketId + ').' + key] = args[key];
             }
         }
 
-        res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
+        res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
 
-        md += 'Ticket number ' + args.id + ' has been updated successfully.\n';
+        md += 'Ticket number ' + ticketId + ' has been updated successfully.\n';
 
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
 
     var addComment = function() {
+        var ticketId = getTicketId();
+
         var md = '## Zendesk tickets\n';
         var isPublic = (args.private === 'no') ? true : false;
         var comment = args.comment;
@@ -376,7 +395,7 @@ script:
                 }
             };
 
-        res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
+        res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
 
         md += 'Comment added successfully.\n';
 
@@ -405,7 +424,9 @@ script:
     };
 
     var getTicketDetails = function() {
-        var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
+        var ticketId = getTicketId();
+
+        var resDetails = sendRequest('GET', 'tickets/' + ticketId + '.json');
         var md = '### Zendesk ticket #' + resDetails.ticket.id + " - " + resDetails.ticket.subject + "\n";
         var ec = {}
         var usersEc = {}
@@ -450,7 +471,7 @@ script:
         newContext.status = resDetails.ticket.status;
         newContext.attachments = [];
 
-        resComments = sendRequest('GET', 'tickets/' + args.id + '/comments.json');
+        resComments = sendRequest('GET', 'tickets/' + ticketId + '/comments.json');
 
         if (resComments.comments[0].attachments.length>0) {
             md += '#### Attachments\n';
@@ -483,9 +504,9 @@ script:
             }
         }
 
-        context = dq(invContext, 'Ticket(val.id == ' + args.id + ').id');
+        context = dq(invContext, 'Ticket(val.id == ' + ticketId + ').id');
         if (context) {
-            ec['Ticket(val.id == ' + args.id + ')'] = newContext;
+            ec['Ticket(val.id == ' + ticketId + ')'] = newContext;
         } else {
             ec.Ticket = newContext;
         }
@@ -502,9 +523,17 @@ script:
     };
 
 
-    var getAttachment = function(id) {
-        var res = sendRequest('GET', 'attachments/' + id + '.json');
-        var attachBin = http(res.attachment.content_url,{Method: 'GET', Username: params.username + '/token', Password: params.api},params.insecure,params.proxy);
+    var getAttachment = function() {
+        var attachmentId = getAttachmentId();
+
+        var res = sendRequest('GET', 'attachments/' + attachmentId + '.json');
+        var attachBin = http(res.attachment.content_url,{
+                    Method: 'GET',
+                    Username: params.username + '/token',
+                    Password: params.api
+                },
+                params.insecure,
+                params.proxy);
 
         var createdFileID = saveFile(attachBin.Body);
         return ({Type: 3, FileID: createdFileID, File: res.attachment.file_name, Contents: res.attachment.file_name});
@@ -619,7 +648,7 @@ script:
             return listAgents();
 
         case 'zendesk-get-attachment':
-            return getAttachment(args.id);
+            return getAttachment();
 
         case 'zendesk-clear-cache':
             setIntegrationContext({});
@@ -715,8 +744,9 @@ script:
   - name: zendesk-ticket-details
     arguments:
     - name: id
-      required: true
       default: true
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
     outputs:
     - contextPath: Ticket.subject
       description: Subject of the Zendesk ticket
@@ -770,9 +800,9 @@ script:
         to them when the ticket is created
       isArray: true
     - name: id
-      required: true
       default: true
-      description: Ticket ID to update
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
     - name: assignee_email
       description: The email address of the agent to assign the ticket to
     - name: status
@@ -799,9 +829,9 @@ script:
       description: Add as private comment
       defaultValue: "no"
     - name: id
-      required: true
       default: true
-      description: Ticket ID to update
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
     - name: addFooter
       auto: PREDEFINED
       predefined:
@@ -834,3 +864,4 @@ script:
     arguments: []
     description: Clear the Zendesk integration cache
   isfetch: true
+releaseNotes: "Added zendesk-add-comment command. Improved incident fetching mechanism. Improved zendesk-list-tickets output."
