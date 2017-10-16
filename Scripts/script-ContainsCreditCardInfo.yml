@@ -14,7 +14,7 @@ script: |
   var ccRegex = [americanExpress, dinersClub, discover, jcb, maestro, mastercard, visa];
 
   for (var i=0; i<ccRegex.length; i++){
-      var r = new RegExp('(?:^'+ccRegex[i]+')');
+      var r = new RegExp(ccRegex[i]);
       var m = r.exec(args.data);
       if (m && m.length > 0) {
           return 'yes';
@@ -39,3 +39,4 @@ outputs:
 - contextPath: "no"
   description: if  value is not True (either has object or string True/true)
 scripttarget: 0
+releaseNotes: "Fix regex"
