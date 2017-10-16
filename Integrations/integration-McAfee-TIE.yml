@@ -90,31 +90,6 @@ script:
         '7': 'Web Gateway (MWG)'
     }
 
-    # WILL MOVE TO COMMON LATER
-    outputPaths = {
-          'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
-          'ip': 'IP(val.Address && val.Address == obj.Address)',
-          'url': 'URL(val.Data && val.Data == obj.Data)',
-          'domain': 'Domain(val.Name && val.Name == obj.Name)',
-          'cve': 'CVE(val.ID && val.ID == obj.ID)'
-      }
-
-    # WILL MOVE TO COMMON LATER
-    def addMalicious(context, path, obj):
-        context[path] = obj
-
-    # WILL MOVE TO COMMON LATER
-    def get_hash_type(hash_file):
-        hash_len = len(hash_file)
-        if (hash_len == 32):
-            return 'md5'
-        elif (hash_len == 40):
-            return 'sha1'
-        elif (hash_len == 64):
-            return 'sha256'
-        else:
-            return 'Unknown'
-
     def create_error_entry(contents):
         return { 'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': contents };
 
