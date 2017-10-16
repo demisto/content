@@ -25,10 +25,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 3203c732-9d89-486e-80b7-c98646411577
+    taskid: 369f2840-45e6-417e-8db3-df70751d625c
     type: regular
     task:
-      id: 3203c732-9d89-486e-80b7-c98646411577
+      id: 369f2840-45e6-417e-8db3-df70751d625c
       version: -1
       name: mar-collectors-list
       description: Returns a list of all collectors and their outputs
@@ -48,10 +48,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: abacf63a-3464-4e7b-8159-773af8a4d99f
+    taskid: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
     type: regular
     task:
-      id: abacf63a-3464-4e7b-8159-773af8a4d99f
+      id: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
       version: -1
       name: mar-search
       description: Search endpoint data
@@ -104,15 +104,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 550
+          "y": 545
         }
       }
   "4":
     id: "4"
-    taskid: d86fa58a-2a71-408f-8d12-1ff6c9541e7e
+    taskid: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
     type: regular
     task:
-      id: d86fa58a-2a71-408f-8d12-1ff6c9541e7e
+      id: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
       version: -1
       name: mar-search with filter
       description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
@@ -134,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 727
+          "y": 720
         }
       }
   "5":
@@ -155,6 +155,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       expectedValue: ""
       fields: user_id,name,uptime
@@ -163,7 +166,66 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 901
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+    type: regular
+    task:
+      id: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+      version: -1
+      name: mar-search-multiple
+      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
+        filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      collectors: HostInfo
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ADMIN-PC
+      filter_collector: HostInfo
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 183420b9-734d-4136-8f07-4c860072099d
+    type: regular
+    task:
+      id: 183420b9-734d-4136-8f07-4c860072099d
+      version: -1
+      name: VerifyContext mar-search-multiple
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: MAR.SearchMultiple
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
 view: |-
@@ -171,7 +233,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 946,
+        "height": 1290,
         "width": 380,
         "x": 50,
         "y": 50
