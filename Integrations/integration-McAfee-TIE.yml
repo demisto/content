@@ -14,6 +14,8 @@ detaileddescription: |-
    * Client private key ('client.key' file)
    * Broker list properties file ('brokerlist.properties' file)
 
+   To use 'tie-set-file-reputation' - you must have an appropriate permission. Follow [this insructions](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html), and ** with the exception of swapping the 'Active Response Server API' in 'TIE Server Set Enterprise Reputation'**
+
   ### Dependencies (Python packages) - No need to install, already installed in docker image :
   dxlclient [docs](https://opendxl.github.io/opendxl-client-python/pydoc/index.html)
   dxltieclient [docs](https://opendxl.github.io/opendxl-tie-client-python/pydoc/)
@@ -265,15 +267,15 @@ script:
 
             context_file[hash_type_uppercase] = hash
             context_file['References'] = table
-            context[outputPaths['file']] = context_file
-
+            ec = {}
+            ec[outputPaths['file']] = context_file
             return {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
                 'Contents': references,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown('References for hash %s' % (hash,), table),
-                'EntryContext': context
+                'EntryContext': ec
             }
 
             return res
@@ -390,7 +392,8 @@ script:
       description: A file name to associate with the file
     - name: comment
       description: A comment to associate with the file
-    description: Sets the “Enterprise” reputation (trust level) of a specified file
+    description: Sets the “Enterprise” reputation (trust level) of a specified file.
+      NOTE - invoking this method must have permissions - 'How-to' in instance instruction)
   - name: tie-file-references
     arguments:
     - name: file
@@ -408,4 +411,6 @@ script:
       description: The GUID of the system that referenced the file
     - contextPath: File.References.Date
       description: The time the system first referenced the file
+    description: Retrieves the set of systems which have referenced (typically executed)
+      the specified file
   dockerimage: demisto/dxl
