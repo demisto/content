@@ -47,17 +47,33 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Password
+  name: password
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     var port = params.port;
-    var base = params.server.replace(/[\/]+$/, '') + (port ? (':' + port) : '') + '/AIMWebService/api/';
+    var base = params.server.replace(/[\/]+$/, '') + (port ? (':' + port) : '');
+    var accountsUrl = base + '/AIMWebService/api/Accounts';
+    var authUrl = base + '/PasswordVault/WebServices/auth/Cyberark/CyberArkAuthenticationService.svc/';
+    var credentialsUrl = base + '/PasswordVault/WebServices/PIMServices.svc/Accounts';
     var insecure = params.insecure;
     var proxy = params.proxy;
     var appid = params.appid;
+    var username = params.username;
+    var password = params.password;
+    var token;
 
     var sendRequest = function(method, url, args, allowOtherStatuses) {
         var res = http(
-            base + url + (method === 'GET' ? encodeToURLQuery(args) : ''),
+            url + (method === 'GET' ? encodeToURLQuery(args) : ''),
             {
                 Method: method,
                 Body: method !== 'GET' ? JSON.stringify(args) : ''
@@ -81,6 +97,59 @@ script:
         return JSON.parse(res.Body);
     }
 
+    var sendRequestWithToken = function(method, url, args, returnPlainResponse) {
+        var headers = {}
+        headers["Content-Type"] = ["application/json"]
+        if (!token) {
+            var data = {
+              username: username,
+              password: password,
+              useRadiusAuthentication: false,
+              connectionNumber: 1
+            };
+            var tokenRes = http(
+                authUrl + 'Logon',
+                {
+                    Method: 'POST',
+                    Headers: headers,
+                    Body: JSON.stringify(data)
+                },
+                insecure,
+                proxy
+            );
+            if (tokenRes.StatusCode !== 200) {
+                throw 'Could not authenticate user ' + tokenRes.Body;
+            }
+
+            var tokenResObject = JSON.parse(tokenRes.Body);
+            token = tokenResObject.CyberArkLogonResult;
+        }
+
+        headers["Authorization"] = [token];
+        if (args.ImmediateChangeByCPM) {
+            headers["ImmediateChangeByCPM"] = [args.ImmediateChangeByCPM];
+        }
+
+        var res = http(
+                url + (method === 'GET' ? encodeToURLQuery(args) : ''),
+                {
+                    Method: method,
+                    Headers: headers,
+                    Body: method !== 'GET' ? JSON.stringify(args) : ''
+                },
+                insecure,
+                proxy,
+                false,
+                false,
+                30000
+        );
+        if (res.StatusCode !== 200) {
+            throw 'failed receieve valid answer: ' + res.Status;
+        }
+
+        return returnPlainResponse ? res : JSON.parse(res.Body);
+    };
+
     var parseACcountsFromErroMessage = function(message) {
         var credentials = [];
         // format: Too many password objects matching query [Folder=...;Safe=...] were found: (Safe=...;Folder=...;Object=... and Safe=...;Folder=...;Object=...) (Diagnostic Info: 41)
@@ -97,8 +166,35 @@ script:
         return credentials;
     }
 
+    var resetCredentials = function(args) {
+        var result = sendRequestWithToken('PUT', credentialsUrl + '/' + args.accountId + '/ChangeCredentials', args, true);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: "Operation succeeded.",
+            ReadableContentsFormat: formats.markdown
+        };
+    };
+
+    var getAccountDetails = function(args) {
+        var result = sendRequestWithToken('GET', credentialsUrl, args, true);
+        if (!result) {
+            return 'no results found';
+        }
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: result,
+            EntryContext: {'CyberArk.AIM(val.Name==obj.Name).Accounts': result.accounts},
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Found ' + result.Count + ' accounts. Displaying only the first:', result.accounts)
+        };
+    };
+
     var getCredentials = function(humanReadable) {
-        var result = sendRequest('GET', 'Accounts', args, true);
+        var result = sendRequest('GET', accountsUrl, args);
         if (!result) {
             return 'no results found';
         }
@@ -132,21 +228,32 @@ script:
         return JSON.stringify(credentials);
     }
 
-    args.AppID = appid;
-    args.Folder = params.folder
-    args.Safe = params.safe
-
     switch (command) {
         case 'test-module':
+            args.AppID = appid;
+            args.Folder = params.folder;
+            args.Safe = params.safe;
             args.username = 'root';
-            sendRequest('GET', 'Accounts', args);
+            sendRequest('GET', accountsUrl, args);
             return 'ok';
         case 'fetch-credentials':
+            args.AppID = appid;
+            args.Folder = params.folder;
+            args.Safe = params.safe;
             if (args.identifier) {
                 args.Object = args.identifier;
                 delete args.identifier;
             }
             return getCredentials(false);
+        case 'reset-credentials':
+            args.ImmediateChangeByCPM = args.immediateChangeByCPM;
+            return resetCredentials(args);
+        case 'account-details':
+            args.Safe = args.safe || params.safe;
+            delete args.safe;
+            args.Keywords = args.keywords;
+            delete args.keywords;
+            return getAccountDetails(args);
         default:
             return getCredentials(true);
     }
@@ -191,3 +298,28 @@ script:
   - name: fetch-credentials
     arguments:
     - name: identifier
+  - name: reset-credentials
+    arguments:
+    - name: immediateChangeByCPM
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      defaultValue: "Yes"
+    - name: accountId
+      required: true
+      default: true
+      description: Account Id to reset password
+    description: 'This method marks the account for an immediate password change by
+      the CPM to a new random password. '
+  - name: account-details
+    arguments:
+    - name: keywords
+      required: true
+      default: true
+      description: keywords matching the account
+    - name: safe
+      description: specify a safe rather then using instance specific.
+    description: This method returns information about an account. If more than one
+      account meets the search criteria, only the first account will be returned.
+  releaseNotes: "added reset credentials and account details commands"
