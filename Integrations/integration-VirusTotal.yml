@@ -109,7 +109,7 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: ip, Type: 'file', Vendor: 'VirusTotal', Score: 0};
+            ec.DBotScore = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
@@ -252,7 +252,7 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: ip, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
         }
@@ -311,7 +311,7 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: ip, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+            ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
         }
@@ -757,3 +757,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
+releaseNotes: "Fixed wrong indicator when no response"
