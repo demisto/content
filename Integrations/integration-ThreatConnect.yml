@@ -667,10 +667,10 @@ script:
     description: Get incidents that are related to a specific indicator
     arguments:
     - name: incidentId
-      description: "-"
+      description: incident ID
       required: true
       default: true
     - name: owner
-      description: "-"
+      description: filter by owner too
   dockerimage: demisto/threatconnect-sdk
 releaseNotes: "-"
