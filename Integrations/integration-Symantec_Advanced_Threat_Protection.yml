@@ -535,7 +535,7 @@ script:
       supports search conditions (such as logical operators and special characters)
       to narrow the events to be retrieved. See examples at https://help.symantec.com/api-doc/atp_2.2/EN_US/#_events_query_api_example.
   - name: satp-files
-    description: "-"
+    description: Retrieve details about file based on given hash
     arguments:
     - name: hash
       required: true

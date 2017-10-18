@@ -670,7 +670,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "-"
+      description: Category of ticket
     - name: caused_by
       description: UID Format
     - name: close_code

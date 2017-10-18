@@ -424,7 +424,7 @@ script:
       default: true
       description: String to search
     - name: limit
-      description: "-"
+      description: Maximum returned search results
       defaultValue: "10"
     outputs:
     - contextPath: PhishMe.NumOfThreats
