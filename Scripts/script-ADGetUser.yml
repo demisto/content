@@ -42,7 +42,7 @@ script: |-
           account['Username'] = demisto.get(l,'samAccountName')
           account['DisplayName'] = demisto.get(l,'displayName')
           account['Manager'] = demisto.get(l,'manager')
-          account['Groups'] = demisto.get(l,'memberOf').split('<br>')
+          account['Groups'] = demisto.get(l,'memberOf').split('<br>') if demisto.get(l,'memberOf') else ''
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
               account[attr.title()] = demisto.get(l,attr)
           accounts.append(account)
@@ -187,21 +187,34 @@ script: |-
   if isError(resp):
       demisto.results(resp)
   else:
-      context = {}
-      data = demisto.get(resp[0],'Contents')
-      if isinstance(data, str) or isinstance(data, unicode) :
-          md = data
-      else:
-          data = data if isinstance(data, list) else [data]
-          md = tableToMarkdown("Active Directory User", data, headers)
-          context['Account(val.Email && val.Email === obj.Email || val.ID && val.ID === obj.ID || val.Username && val.Username === obj.Username)'] = createAccountEntities(data,attrs)
+      found = False
+      for response in resp:
+          context = {}
+          data = demisto.get(response,'Contents')
+          if isinstance(data, str) or isinstance(data, unicode) :
+              if data == 'No results':
+                  continue
+              found = True
+              md = data
+          else:
+              data = data if isinstance(data, list) else [data]
+              found = True
+              md = tableToMarkdown("Active Directory User", data, headers)
+              context['Account(val.Email && val.Email === obj.Email || val.ID && val.ID === obj.ID || val.Username && val.Username === obj.Username)'] = createAccountEntities(data,attrs)
 
-      demisto.results({'Type' : entryTypes['note'],
-                      'Contents': data,
-                      'ContentsFormat' : formats['json'],
-                      'HumanReadable': md,
-                      'ReadableContentsFormat' : formats['markdown'],
-                      'EntryContext' : context})
+          demisto.results({'Type' : entryTypes['note'],
+                          'Contents': data,
+                          'ContentsFormat' : formats['json'],
+                          'HumanReadable': md,
+                          'ReadableContentsFormat' : formats['markdown'],
+                          'EntryContext' : context})
+      if not found:
+          demisto.results({'Type' : entryTypes['note'],
+                          'Contents': resp,
+                          'ContentsFormat' : formats['json'],
+                          'HumanReadable': 'No results found for user',
+                          'ReadableContentsFormat' : formats['markdown'],
+                          'EntryContext' : {}})
 type: python
 tags:
 - active directory
@@ -267,4 +280,4 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
-releaseNotes: "-"
+releaseNotes: "Support query from multiple ad instances"

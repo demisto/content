@@ -434,16 +434,27 @@ script:
         var output = [];
         if (fields) {
             fields.forEach(function (field) {
+                var groupValue
+                if (field.Groups) {
+                    var group = field.Groups.Group;
+                    if (group) {
+                        if (!Array.isArray(group)) {
+                            group = [group]
+                        }
+                        group.forEach(function (gr) {
+                            groupValue = groupValue ? groupValue + ',' + gr['-name'] : gr['-name']
+                        })
+                    }
+                }
                 output.push({
                     FieldId: field['-id'],
                     FieldName: mapping[field['-id']].Name,
                     FieldType: field['-type'],
-                    Value: field['-value'],
+                    Value: groupValue || field['-value'],
                     LevelId: field['-id']
                 });
             });
         }
-
         return output;
     }
 

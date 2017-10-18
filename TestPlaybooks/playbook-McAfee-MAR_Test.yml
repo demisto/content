@@ -1,0 +1,243 @@
+id: McAfee-MAR_Test
+version: -1
+name: McAfee-MAR_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 38d3a420-d501-4afe-8da4-e47626d3bd3c
+    type: start
+    task:
+      id: 38d3a420-d501-4afe-8da4-e47626d3bd3c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 369f2840-45e6-417e-8db3-df70751d625c
+    type: regular
+    task:
+      id: 369f2840-45e6-417e-8db3-df70751d625c
+      version: -1
+      name: mar-collectors-list
+      description: Returns a list of all collectors and their outputs
+      script: McAfee Active Response|||mar-collectors-list
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
+    type: regular
+    task:
+      id: 5ac8dc77-a237-4539-8eaa-6cf9812a53b7
+      version: -1
+      name: mar-search
+      description: Search endpoint data
+      script: McAfee Active Response|||mar-search
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      collector: HostInfo
+      filter-by: ""
+      filter-operator: ""
+      filter-value: ""
+      outputs: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 2c8251e8-bdf3-4342-8a34-2a3203aec867
+    type: regular
+    task:
+      id: 2c8251e8-bdf3-4342-8a34-2a3203aec867
+      version: -1
+      name: VerifyContext mar-search
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: ""
+      fields: os,created_at,hostname,ip_address
+      path: MAR.HostInfo
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
+    type: regular
+    task:
+      id: dcc1497c-1bc2-4f3e-84ab-49c93aad67d8
+      version: -1
+      name: mar-search with filter
+      description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
+        filter-value=SYSTEM outputs=user_id,name,uptime'
+      script: McAfee Active Response|||mar-search
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      collector: Processes
+      filter-by: name
+      filter-operator: Equals
+      filter-value: SYSTEM
+      outputs: user_id,name,uptime
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: e1c37161-0e74-4211-8cda-4939ca486df3
+    type: regular
+    task:
+      id: e1c37161-0e74-4211-8cda-4939ca486df3
+      version: -1
+      name: VerifyContext mar-search with filter
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: ""
+      fields: user_id,name,uptime
+      path: MAR.Processes
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+    type: regular
+    task:
+      id: b386cdf3-cd6e-45a6-80ce-28bafa69d029
+      version: -1
+      name: mar-search-multiple
+      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
+        filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      iscommand: true
+      brand: McAfee Active Response
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      collectors: HostInfo
+      filter-by: hostname
+      filter-operator: Equals
+      filter-value: ADMIN-PC
+      filter_collector: HostInfo
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 183420b9-734d-4136-8f07-4c860072099d
+    type: regular
+    task:
+      id: 183420b9-734d-4136-8f07-4c860072099d
+      version: -1
+      name: VerifyContext mar-search-multiple
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: MAR.SearchMultiple
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
