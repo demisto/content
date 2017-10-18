@@ -53,4 +53,3 @@ timeout: 0s
 dependson:
   must:
   - jira-create-issue
-releaseNotes: Fixed issueJson argument to accept any object
