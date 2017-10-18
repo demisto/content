@@ -18,7 +18,7 @@ script: |
   }
   return {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat: formats.text};
 type: javascript
-comment: "-"
+comment: Retruns Demisto list
 tags:
 - Utility
 system: true
