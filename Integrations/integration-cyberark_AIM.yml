@@ -128,6 +128,7 @@ script:
         headers["Authorization"] = [token];
         if (args.ImmediateChangeByCPM) {
             headers["ImmediateChangeByCPM"] = [args.ImmediateChangeByCPM];
+            delete args.ImmediateChangeByCPM;
         }
 
         var res = http(
@@ -144,7 +145,7 @@ script:
                 30000
         );
         if (res.StatusCode !== 200) {
-            throw 'failed receieve valid answer: ' + res.Status;
+            throw 'Failed to receieve valid answer: ' + res.Status;
         }
 
         return returnPlainResponse ? res : JSON.parse(res.Body);
@@ -167,7 +168,7 @@ script:
     }
 
     var resetCredentials = function(args) {
-        var result = sendRequestWithToken('PUT', credentialsUrl + '/' + args.accountId + '/ChangeCredentials', args, true);
+        sendRequestWithToken('PUT', credentialsUrl + '/' + args.accountId + '/ChangeCredentials', args, true);
 
         return {
             Type: entryTypes.note,
@@ -180,7 +181,7 @@ script:
     var getAccountDetails = function(args) {
         var result = sendRequestWithToken('GET', credentialsUrl, args, true);
         if (!result) {
-            return 'no results found';
+            return 'No results found';
         }
 
         return {
@@ -189,12 +190,12 @@ script:
             Contents: result,
             EntryContext: {'CyberArk.AIM(val.Name==obj.Name).Accounts': result.accounts},
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Found ' + result.Count + ' accounts. Displaying only the first:', result.accounts)
+            HumanReadable: tableToMarkdown('Found ' + result.Count + ' accounts matching "' + args.Keywords + '". Displaying only the first:', result.accounts)
         };
     };
 
     var getCredentials = function(humanReadable) {
-        var result = sendRequest('GET', accountsUrl, args);
+        var result = sendRequest('GET', accountsUrl, args, true);
         if (!result) {
             return 'no results found';
         }
@@ -317,9 +318,9 @@ script:
     - name: keywords
       required: true
       default: true
-      description: keywords matching the account
+      description: Keywords matching the account
     - name: safe
-      description: specify a safe rather then using instance specific.
+      description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
   releaseNotes: "added reset credentials and account details commands"
