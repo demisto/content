@@ -91,6 +91,8 @@ schema;configuration_schema:
       required: yes
     required:
       type: bool
+    hidden:
+      type: bool
 
 # integration->script->command
 schema;command_schema:

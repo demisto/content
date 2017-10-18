@@ -304,6 +304,7 @@ script:
   - name: reset-credentials
     arguments:
     - name: immediateChangeByCPM
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "Yes"

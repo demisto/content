@@ -35,7 +35,7 @@ tags:
 - office365
 - email
 - response
-comment: comment: Search mails in office-365
+comment: Search mails in office-365
 system: true
 args:
 - name: username
