@@ -74,18 +74,14 @@ script: |-
 
   results = []
   for filename in filenames:
-      ## Open extracted filename read and copy to warroom.
-      with open(filename, 'r') as f:
-          data = f.read()
-      if data:
-          demisto.results(fileResult(filename,  data))
+      demisto.results(file_result_existing_file(filename))
 
   results.append(
       {
           'Type': entryTypes['note'],
           'ContentsFormat': formats['json'],
           'Contents': { 'extractedFiles': filenames },
-          'EntryContext': { 'ExtractedFiles': filenames },
+          'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unzipped': True },
           'ReadableContentsFormat' : formats['markdown'],
           'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
       })
@@ -114,4 +110,4 @@ outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
-releaseNotes: "-"
+releaseNotes: "Do not read / copy unzipped files"

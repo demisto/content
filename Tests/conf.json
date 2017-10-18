@@ -78,12 +78,15 @@
             "playbookID": "TestIsValueInArray"
         },
         {
-            "playbookID": "TestHttpPlaybook"
-        },
-        {
             "name": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "playbookID": "TestStringReplace"
+        },
+        {
+            "playbookID": "TestHttpPlaybook"
         },
         {
             "name": "VxStream",
@@ -92,6 +95,10 @@
         {
             "name": "SplunkPy",
             "playbookID": "Splunk-Test"
+        },
+        {
+            "name": "McAfee Active Response",
+            "playbookID": "McAfee-MAR_Test"
         }
     ],
     "skipped": [

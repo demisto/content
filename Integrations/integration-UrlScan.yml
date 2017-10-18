@@ -9,28 +9,31 @@ description: Urlscan.io reputation
 detaileddescription: |-
   This integration checks domain information from the urlscan.io Database.
   This is a free service with an API key required. contact urlscan.io to obtain one.
-defaultEnabled: true
 configuration:
 - display: Server URL (e.g. https://urlscan.io/api/v1/)
   name: url
   defaultvalue: https://urlscan.io/api/v1/
   type: 0
   required: true
+  hidden: false
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
+  hidden: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  hidden: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
   required: false
+  hidden: false
 script:
   script: |
     var sendRequest = function(method, arg, body, headers, img) {
@@ -251,16 +254,16 @@ script:
         return resDis;
     };
 
-    var submitUrl = function(scanUrl, timeout) {
+    var submitUrl = function(scanUrl, timeout, isPublic) {
         if (params.apikey === undefined) {
             throw "Urlscan.io: No API key provided.";
         }
-
 
         var md = "";
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
+        var body;
 
         if (scanUrl.indexOf('#') !== -1) {
             md += "## Urlscan.io Reputation for " + scanUrl + "\n";
@@ -268,11 +271,15 @@ script:
             return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
         }
 
-        var body = JSON.stringify({"url": scanUrl, "public": "on"});
+        if (isPublic === 'public') {
+            body = JSON.stringify({"url": scanUrl, "public": 'on'});
+        } else {
+            body = JSON.stringify({"url": scanUrl});
+        }
+
         var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
         var resScan = sendRequest('POST', '/scan', body, headers);
 
-        var res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
         var tWait = 0;
 
         md += "## Urlscan.io Reputation for " + scanUrl + "\n";
@@ -281,28 +288,44 @@ script:
             timeout = 30;
         }
 
+        if (isPublic === 'private') {
+            wait(parseInt(timeout));
+        } else {
 
-        if (res.results.length >= 1) {
-            while (tWait < timeout &&
-                    res.results[0]._id !== resScan.uuid) {
+            var res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+
+            if (res.results.length >= 1) {
+                while (tWait < timeout &&
+                        res.results[0]._id !== resScan.uuid) {
+                            wait(5);
+                            tWait += 5;
+                            res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+                        }
+            } else {
+                while (tWait < timeout &&
+                    res.results.length < 1) {
                         wait(5);
                         tWait += 5;
                         res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
                     }
-        } else {
-            while (tWait < timeout &&
-                res.results.length < 1) {
-                    wait(5);
-                    tWait += 5;
-                    res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
-                }
+            }
         }
 
-        if (res.results.length >= 1 &&
-            res.results[0]._id === resScan.uuid) {
-            var scanResults = res.results[0];
+        if ((resScan.api) ||
+            (res.results.length >= 1 &&
+            res.results[0]._id === resScan.uuid)) {
 
-            var resStats = searchResults(scanResults._id).stats;
+            var scanResults;
+            var resStats;
+
+            if (isPublic === 'private') {
+                var res = http(resScan.api,{Method: 'GET',},params.insecure,params.proxy);
+                resStats = JSON.parse(res.Body).stats
+
+            } else {
+                scanResults = res.results[0];
+                resStats = searchResults(scanResults._id).stats;
+            }
 
             md += addMD(resStats);
 
@@ -318,8 +341,14 @@ script:
             }
 
             ec.DBotScore = {Indicator: scanUrl, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
-            resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-            resDis.push(getScreenshot(res.results[0]._id));
+
+            if (isPublic === 'private') {
+                resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
+                resDis.push(getScreenshot(resScan.uuid));
+            } else {
+                resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
+                resDis.push(getScreenshot(res.results[0]._id));
+            }
 
             return resDis;
 
@@ -356,7 +385,7 @@ script:
             return searchHash(args.file);
 
         case "urlscan-submit":
-            return submitUrl(args.url, args.timeout);
+            return submitUrl(args.url, args.timeout, args.public);
 
         default:
              throw 'Unknown command - ' + command;
@@ -437,7 +466,14 @@ script:
       description: Url to scan
     - name: timeout
       description: How much seconds to wait to the scan id result
-      defaultValue: "10"
+      defaultValue: "30"
+    - name: public
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Does the submit will be public or private
+      defaultValue: public
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -454,4 +490,4 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
-hidden: false
+releaseNotes: "urlscan-submit now supports private submits"
