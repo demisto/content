@@ -12,7 +12,7 @@ script: |-
   }
   return str || ' ';
 type: javascript
-comment: "-"
+comment: Returns an EWS query that includes the given arguments
 tags:
 - ews
 enabled: true

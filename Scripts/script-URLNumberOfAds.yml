@@ -33,7 +33,7 @@ script: |-
 type: python
 tags:
 - Utility
-comment: "-"
+comment: Fetches the numbers of ads in the given url
 enabled: true
 args:
 - name: url

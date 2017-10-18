@@ -100,7 +100,7 @@ comment: Unzip a file using fileName or entryID to specify a file. Files unzippe
 args:
 - name: fileName
   default: true
-  description: "-"
+  description: output filename
   deprecated: true
 - name: password
   secret: true
@@ -108,7 +108,7 @@ args:
 - name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
-  description: "-"
+  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
   deprecated: true
 outputs:
 - contextPath: ExtractedFiles

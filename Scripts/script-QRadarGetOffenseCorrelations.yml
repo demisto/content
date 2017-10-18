@@ -66,8 +66,6 @@ args:
   description: Interval to poll for results. Default is 10 seconds.
 - name: timeout
   description: Timeout in seconds. Default is 10 minutes.
-- name: fields
-  description: "-"
 scripttarget: 0
 dependson:
   must:

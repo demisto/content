@@ -25,7 +25,7 @@ script: |-
   };
 type: javascript
 tags: []
-comment: "-"
+comment: Register/Unregister to address group with Panorama
 enabled: true
 args:
 - name: type

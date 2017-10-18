@@ -6,7 +6,7 @@ script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
 type: python
 tags:
 - Utility
-comment: "-"
+comment: Sets key/value pair in incident's context
 system: true
 deprecated: true
 args:
