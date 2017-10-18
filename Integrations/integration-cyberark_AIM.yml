@@ -323,4 +323,4 @@ script:
       description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
-  releaseNotes: "added reset credentials and account details commands"
+releaseNotes: "added reset credentials and account details commands"
