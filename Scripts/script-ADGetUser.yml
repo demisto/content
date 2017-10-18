@@ -279,3 +279,4 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
+releaseNotes: "Support query from multiple ad instances"
