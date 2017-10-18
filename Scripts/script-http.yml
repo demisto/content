@@ -74,14 +74,14 @@ args:
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
-  description: "-"
+  description: Do not validate server certificate
   predefined:
   - "true"
   - "false"
   defaultValue: "true"
 - name: proxy
   auto: PREDEFINED
-  description: "-"
+  description: Use system proxy settings
   predefined:
   - "true"
   - "false"

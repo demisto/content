@@ -18,7 +18,7 @@ script: |
   });
   return {Type: entryTypes.note, Contents: avg, ContentsFormat: formats.json, HumanReadable: 'Scores average calculated', EntryContext: {DBotAvgScore: avg}};
 type: javascript
-comment: "-"
+comment: Calculates average score for each indicator from context
 tags:
 - Utility
 outputs:

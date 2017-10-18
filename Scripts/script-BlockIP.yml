@@ -26,7 +26,7 @@ script: |-
   }
   return entries;
 type: javascript
-comment: "-"
+comment: Blocks IP in configured firewall
 releaseNotes: "-"
 tags:
 - firewall

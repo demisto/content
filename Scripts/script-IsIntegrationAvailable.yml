@@ -15,7 +15,7 @@ type: python
 tags:
 - infra
 - Condition
-comment: "-"
+comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'
 system: true
 args:
 - name: brandname

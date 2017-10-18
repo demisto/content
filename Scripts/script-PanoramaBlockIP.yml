@@ -52,7 +52,7 @@ type: javascript
 tags:
 - firewall
 - panorama
-comment: "-"
+comment: Blocks IP with Panorama
 system: true
 args:
 - name: ip
