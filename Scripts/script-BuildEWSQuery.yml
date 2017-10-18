@@ -19,13 +19,13 @@ enabled: true
 args:
 - name: from
   default: true
-  description: "-"
+  description: Parameter 'from' of the query
 - name: subject
-  description: "-"
+  description: Parameter 'subject' of the query
 - name: attachmentName
-  description: "-"
+  description: Parameter 'attachmentName' of the query
 - name: body
-  description: "-"
+  description: Parameter 'body' of the query
 scripttarget: 0
 releaseNotes: "-"
 
