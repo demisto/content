@@ -628,11 +628,15 @@ script:
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
   - name: as-get-security-events
+    description: "-"
     arguments:
     - name: startTime
+      description: "-"
     - name: endTime
+      description: "-"
     - name: ids
+      description: "-"
       required: true
   isfetch: true
 hidden: false
-releaseNotes: added description to missing commands
+releaseNotes: "-"

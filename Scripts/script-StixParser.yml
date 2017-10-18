@@ -67,7 +67,7 @@ type: python
 tags:
 - stix
 - ioc
-comment: "-"
+comment: Parse Stix files to Demisto indicators
 enabled: true
 args:
 - name: iocXml

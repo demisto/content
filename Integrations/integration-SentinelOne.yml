@@ -2484,6 +2484,7 @@ script:
       description: Share data with SentinelOne.
     - name: show_suspicious_on
       required: true
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -2599,6 +2600,7 @@ script:
     - contextPath: SentinelOne.Threats.GetThreat.QuarantineStatus
       description: Threat quarantine report status.
     - contextPath: SentinelOne.Threats.GetThreat.
+      description: "-"
     - contextPath: SentinelOne.Threats.GetThreat.RemediateStatus
       description: Threat remediate report status.
     - contextPath: SentinelOne.Threats.GetThreat.RollbackStatus
@@ -2692,6 +2694,7 @@ script:
   - name: so-mitigate-threat
     arguments:
     - name: threat_id
+      description: "-"
       required: true
       default: true
     - name: action
