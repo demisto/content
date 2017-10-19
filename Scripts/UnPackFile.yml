@@ -1,12 +1,13 @@
 commonfields:
-  id: 611c3259-b47f-4ceb-830d-f031731a3c3a
-  version: 68
+  id: UnPackFile
+  version: -1
 name: UnPackFile
 script: |-
   from pyunpack import Archive
   import os
   import tempfile
   from os.path import isfile, join
+  import subprocess
 
   filePath = None
   fileEntryID = ''
@@ -64,35 +65,40 @@ script: |-
 
   filePath = res[0]['Contents']['path']
 
-  password = demisto.args().get('password', None)
-
   filenames = []
   tempdir = tempfile.mkdtemp(prefix='demisto_rar_')
-  Archive(filePath).extractall(tempdir)
+  Archive(filePath).extractall_patool(tempdir, None)
   for root, directories, files in os.walk(tempdir):
       for name in files:
           if isfile(join(tempdir, name)):
               filenames.append(name)
 
-  results = []
-  for filename in filenames:
-      ## Open extracted filename read and copy to warroom.
-      with open(join(tempdir, filename), 'r') as f:
-          data = f.read()
-      if data:
-          demisto.results(fileResult(filename,  data))
-
-  results.append(
-      {
-          'Type': entryTypes['note'],
-          'ContentsFormat': formats['json'],
-          'Contents': { 'extractedFiles': filenames },
-          'EntryContext': { 'ExtractedFiles': filenames },
-          'ReadableContentsFormat' : formats['markdown'],
-          'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
+  if len(filenames) == 0:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'Could not find files in archive' + ','.join(os.listdir(tempdir))
       })
+  else:
+      results = []
+      for filename in filenames:
+          ## Open extracted filename read and copy to warroom.
+          with open(join(tempdir, filename), 'r') as f:
+              data = f.read()
+          if data:
+              demisto.results(fileResult(filename,  data))
 
-  demisto.results(results)
+      results.append(
+          {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': { 'extractedFiles': filenames },
+              'EntryContext': { 'ExtractedFiles': filenames },
+              'ReadableContentsFormat' : formats['markdown'],
+              'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
+          })
+
+      demisto.results(results)
 type: python
 tags:
 - Utility
@@ -104,20 +110,14 @@ comment: |-
 enabled: true
 args:
 - name: fileName
-  deprecated: true
   default: true
   description: Name of the file to unpack
-- name: password
-  secret: true
-  description: optional password which packed file protected by
 - name: entryID
   description: entry id of the attached packed file in the warroom
 - name: lastPackedFileInWarroom
-  deprecated: true
-  description: Set to package file extension to look for the last of its kind in the
-    war room
+  description: Set to package file extension to look for the last of its kind in the war room
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from package
 scripttarget: 0
-dockerimage: demisto/unrar:1.3
+dockerimage: demisto/unrar:1.4
