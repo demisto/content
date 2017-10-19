@@ -1794,9 +1794,9 @@ script:
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
-      description: "-"
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
     - name: mid2
-      description: "-"
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
