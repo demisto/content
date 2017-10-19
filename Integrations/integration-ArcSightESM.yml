@@ -628,7 +628,7 @@ script:
     - name: entryFilter
       description: 'OPTIONAL. Filters the entries. Example: entryFilter="moo:moo1"'
   - name: as-get-security-events
-    description: "-"
+    description: Returns security event object by providing id
     arguments:
     - name: startTime
       description: "-"
