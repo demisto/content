@@ -28,7 +28,7 @@ script:
         var incident = {
             severity: getSeverity(),
             type: incidentType,
-            phase: getPhase(),
+            phase: '1. Triage',
             labels: [{'type': 'sample', 'value': 'sample value'}],
             details: "Issue Details",
         };
@@ -108,23 +108,6 @@ script:
             default:
                 return '';
         }
-    }
-
-    function getPhase (number) {
-        var num = number || Math.floor(Math.random() * 4) + 1;
-        switch (num) {
-            case 1:
-                return '1. Triage';
-            case 2:
-                return '2. Containment';
-            case 3:
-                return '3. Investigation';
-            case 4:
-                return '4. Response';
-            default:
-                return '';
-        }
-
     }
 
     function getSeverity (number) {
