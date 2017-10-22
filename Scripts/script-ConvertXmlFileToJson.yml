@@ -33,4 +33,5 @@ args:
   - "True"
   - "False"
   description: Print json result to warrom
+  defaultValue: "True"
 scripttarget: 0
