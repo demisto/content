@@ -13,7 +13,7 @@ tasks:
     type: start
     task:
       id: b0106ff2-1f84-4336-811c-501b301327a3
-      description: "-"
+      description: ""
       version: -1
       name: start_task
       type: start
