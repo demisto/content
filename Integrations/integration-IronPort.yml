@@ -14,6 +14,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Credentials
   name: credentials
   defaultvalue: ""
@@ -29,11 +34,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Port
-  name: port
-  defaultvalue: ""
-  type: 0
-  required: true
 script:
   script: |-
     var host = params.server.replace(/[\/]+$/, '') + ':'+params.port;
@@ -101,22 +101,19 @@ script:
     };
 
     var sendRequest = function(url, method) {
-        //var auth = basicAuth(params.username,params.password);
-        log('this is sendRequest');
         var res = http(
             url,
             {
-                Method: method, // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+                Method: method,
                 Headers: {
                     Accept: ['application/json'],
-                    Host: ['147.75.81.91:30009']
+                    Host: [host]
                 },
-                Username: params.credentials.identifier, //maybe unecessary
-                Password: params.credentials.password  //maybe unecessary
+                Username: params.credentials.identifier,
+                Password: params.credentials.password
             },
             params.insecure,
             params.proxy
-
         );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -173,7 +170,10 @@ script:
 
     switch (command) {
         case 'test-module':
-            getReport('mail_authentication_summary', {time_range: '1d'});
+            res = getReport('mail_authentication_summary', {time_range: '1d'});
+            if(!res.Contents){
+                return res;
+            }
             return 'ok';
         default:
             return getReport(args.report_type, args);
@@ -184,7 +184,6 @@ script:
     description: Retrieve email security appliance statistical reports
     arguments:
     - name: time_range
-      default: true
       auto: PREDEFINED
       predefined:
       - 1d
