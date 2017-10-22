@@ -114,6 +114,12 @@ script:
         return sendRequest('POST', server + 'api/ariel/searches' + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'searches');
     }
 
+    var getClosingReasons = function(args) {
+        var range = args.Range;
+        delete(args.Range);
+        return sendRequest('GET', server + 'api/siem/offense_closing_reasons' + encodeToURLQuery(args), {'Content-Type': ['application/json'], 'Range': range ? range : undefined});
+    }
+
     var getSearch = function(search_id, fields) {
         var urlArgs = {};
         if (fields) {
@@ -156,6 +162,9 @@ script:
     }
 
     var updateOffense = function(offense_id, args) {
+        if (!args['closing_reason_id'] && args['status'] === 'CLOSED') {
+            throw 'Invalid input - must provide closing reason id (may use "qradar-get-closing-reasons" command to get them) to close offense';
+        }
         var booleanFields = ['protected', 'follow_up'];
         var keys = Object.keys(args);
         for (var i = 0; i < keys.length; i++) {
@@ -215,6 +224,8 @@ script:
         case 'qr-get-search-results':
         case 'qradar-get-search-results':
             return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
+        case 'qradar-get-closing-reasons':
+            return addHumanRedable(getClosingReasons(args), 'QRadar get closing reasons', headers);
     }
   type: javascript
   commands:
@@ -408,5 +419,28 @@ script:
     - name: headers
       description: Table headers
     description: List all assets found in the model
+  - name: qradar-get-closing-reasons
+    arguments:
+    - name: include_reserved
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, reserved closing reasons are included in the response
+    - name: include_deleted
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, deleted closing reasons are included in the response
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get
+        back in the response
+    - name: filter
+      description: This parameter is used to restrict the elements in a list base
+        on the contents of various fields
+    - name: Range
+      description: Use this parameter to restrict the number of elements that are
+        returned in the list to a specified range
+    description: Get closing reasons
   isfetch: true
-hidden: false
