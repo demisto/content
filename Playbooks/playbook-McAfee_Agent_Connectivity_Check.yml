@@ -14,7 +14,7 @@ tasks:
     task:
       id: 0e3fe5d5-d93f-4ce9-8b62-685427fb9e5a
       version: -1
-      description: "-"
+      description: ""
       name: start_task
       issystemtask: true
       type: start

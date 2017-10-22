@@ -27,7 +27,7 @@ tasks:
     task:
       id: ea4fb28a-8a76-4708-80c2-28f936d8bf94
       version: -1
-      description: "-"
+      description: ""
       name: start_task
       type: start
       iscommand: false

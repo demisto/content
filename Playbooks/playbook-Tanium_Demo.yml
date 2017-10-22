@@ -13,7 +13,7 @@ tasks:
     task:
       id: 5cb45209-143e-48db-8c6c-50d7bbf35ac4
       version: -1
-      description: "-"
+      description: ""
       name: start_task
       type: start
       iscommand: false
