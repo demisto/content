@@ -5,8 +5,7 @@ name: UnPackFile
 script: |-
   from pyunpack import Archive
   import os
-  import tempfile
-  from os.path import isfile, join
+  from os.path import isfile
   import subprocess
 
   filePath = None
@@ -66,34 +65,30 @@ script: |-
   filePath = res[0]['Contents']['path']
 
   filenames = []
-  tempdir = tempfile.mkdtemp(prefix='demisto_rar_')
-  Archive(filePath).extractall_patool(tempdir, None)
-  for root, directories, files in os.walk(tempdir):
+  excludedFiles = [f for f in os.listdir('.') if isfile(f)]
+  Archive(filePath).extractall_patool('.', None)
+  for root, directories, files in os.walk('.'):
       for name in files:
-          if isfile(join(tempdir, name)):
+          if not name in str(excludedFiles) and isfile(name):
               filenames.append(name)
 
   if len(filenames) == 0:
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
-          'Contents': 'Could not find files in archive' + ','.join(os.listdir(tempdir))
+          'Contents': 'Could not find files in archive'
       })
   else:
       results = []
       for filename in filenames:
-          ## Open extracted filename read and copy to warroom.
-          with open(join(tempdir, filename), 'r') as f:
-              data = f.read()
-          if data:
-              demisto.results(fileResult(filename,  data))
+          demisto.results(file_result_existing_file(filename))
 
       results.append(
           {
               'Type': entryTypes['note'],
               'ContentsFormat': formats['json'],
               'Contents': { 'extractedFiles': filenames },
-              'EntryContext': { 'ExtractedFiles': filenames },
+              'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True },
               'ReadableContentsFormat' : formats['markdown'],
               'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
           })
