@@ -99,6 +99,10 @@
         {
             "name": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test"
+        },
+        {
+            "name": "PhishTank",
+            "playbookID": "PhishTank Testing"
         }
     ],
     "skipped": [
