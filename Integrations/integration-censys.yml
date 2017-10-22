@@ -123,4 +123,4 @@ script:
       - websites
       - certificates
     description: Attribute search
-  dockerimage: aviadlich/python-requests
+releaseNotes: Set docker dependency to default docker image

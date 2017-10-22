@@ -93,12 +93,15 @@ script:
         }
         var res = doReq('GET', 'malware_analyses', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.file] = [];
         var md = tblToMd('ThreatExchange Hash Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -135,12 +138,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: ip, Type: 'ip', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.ip] = [];
         var md = tblToMd('ThreatExchange IP Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -173,12 +179,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: url, Type: 'url', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.url] = [];
         var md = tblToMd('ThreatExchange URL Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -211,12 +220,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: domain, Type: 'domain', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.domain] = [];
         var md = tblToMd('ThreatExchange Domain Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -446,3 +458,4 @@ script:
       address. You can set this address, if desired, under the settings panel for
       your application
 hidden: false
+releaseNotes: "will now add DBotScore 0 when no results are returned"
