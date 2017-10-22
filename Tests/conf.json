@@ -97,6 +97,11 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "name" : "McAfee NSM",
+            "playbookID" : "McAfeeNSMTest",
+            "timeout" : 300
+        },
+        {
             "name": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test"
         }
