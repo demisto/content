@@ -176,3 +176,4 @@ script:
   - name: phishtank-status
     arguments: []
     description: Show PhishTank database status
+releaseNotes: "-"
