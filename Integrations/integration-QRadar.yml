@@ -116,7 +116,7 @@ script:
     }
 
     var getClosingReasons = function(args) {
-        var range = args.Range;
+        var range = args.range;
         delete(args.Range);
         return sendRequest('GET', server + 'api/siem/offense_closing_reasons' + encodeToURLQuery(args), {'Content-Type': ['application/json'], 'Range': range ? range : undefined});
     }
@@ -439,8 +439,7 @@ script:
     - name: filter
       description: This parameter is used to restrict the elements in a list base
         on the contents of various fields
-    - name: Range
-      description: Use this parameter to restrict the number of elements that are
-        returned in the list to a specified range
+    - name: range
+      description: Number of results in return
     description: Get closing reasons
   isfetch: true
