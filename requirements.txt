@@ -10,3 +10,4 @@ python-libnmap
 dxlclient
 dxlmarclient
 dxltieclient
+lxml

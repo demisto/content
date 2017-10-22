@@ -59,7 +59,7 @@ script:
             return true;
         }
         now = new Date().getTime();
-        if (data.timestamp < now-(3600*listUpdateIntervalHours)) {
+        if (data.timestamp < now - (1000 * 3600 * listUpdateIntervalHours)) {
             return true;
         }
         return false;
@@ -157,3 +157,4 @@ script:
     arguments: []
     description: Show OpenPhish database status
 hidden: false
+releaseNotes: "Fixed reload mechanism"

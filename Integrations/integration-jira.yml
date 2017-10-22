@@ -370,7 +370,7 @@ script:
         case 'jira-create-issue':
             var url = 'rest/api/2/issue/';
             var issue = {};
-            if (args.issueJson && args.issueJson.length > 0 ){
+            if (args.issueJson){
                 issue = JSON.parse(args.issueJson);
             }
             if (!issue.fields) {
@@ -615,3 +615,4 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
+releaseNotes: Changed issueJson argument to accept any object
