@@ -36,3 +36,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Changed verbose to be True by default"
