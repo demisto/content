@@ -13,7 +13,7 @@ configuration:
   type: 0
   required: true
 - display: API Token
-  name: credentials
+  name: api_token
   defaultvalue: ""
   type: 0
   required: true
@@ -48,7 +48,7 @@ script:
         if (!("Content-Type" in headers)) {
             headers['Content-Type'] = ['application/json'];
         }
-        headers['Auth-Token'] = [params.credentials];
+        headers['Auth-Token'] = [params.api_token];
 
         var res = http(
             base_url + url_suffix,
