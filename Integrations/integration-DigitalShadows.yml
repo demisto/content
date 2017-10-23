@@ -141,7 +141,7 @@ script:
             ]
         },
         //done
-        'ds-find-specific-breach-records': {
+        'ds-get-breach-records': {
             url: '/data-breach/%breach_id%/records',
             method: 'POST',
             extended: true,
@@ -976,7 +976,7 @@ script:
     - contextPath: DigitalShadows.Breaches.Title
       description: The title assigned to this data breach
     description: Retrieve a data breach by its id
-  - name: ds-find-specific-breach-records
+  - name: ds-get-breach-records
     arguments:
     - name: breach_id
       required: true
