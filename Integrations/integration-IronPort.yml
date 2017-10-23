@@ -37,69 +37,7 @@ configuration:
 script:
   script: |-
     var host = params.server.replace(/[\/]+$/, '') + ':'+params.port;
-    var commandDict = {
-        'mail_authentication_summary' : {type: 'simple'},
-        'mail_dlp_outgoing_traffic_summary' : {type: 'simple'},
-        'mail_incoming_malware_threat_file_detail_summary' : {type: 'simple'},
-        'mail_incoming_traffic_summary' : {type: 'simple'},
-        'mail_mailbox_auto_remediation' : {type: 'simple'},
-        'mail_outgoing_traffic_summary' : {type: 'simple'},
-        'mail_security_summary' : {type: 'simple'},
-        'mail_sender_group_summary' : {type: 'simple'},
-        'mail_system_capacity' : {type: 'simple'},
-
-        'mail_authentication_incoming_domain_ip' : {type: 'topN'},
-        'mail_content_filter_incoming' : {type: 'topN'},
-        'mail_dmarc_incoming_traffic_summary' : {type: 'topN'},
-        'mail_env_sender_rate_limit' : {type: 'topN'},
-        'mail_env_sender_stats' : {type: 'topN'},
-        'mail_fed_content_filter_incoming' : {type: 'topN'},
-        'mail_hvm_msg_filter_stats' : {type: 'topN'},
-        'mail_incoming_hat_connections' : {type: 'topN'},
-        'mail_incoming_malware_threat_file_detail' : {type: 'topN'},
-        'mail_incoming_web_interaction_track_malicious_users' : {type: 'topN'},
-        'mail_incoming_web_interaction_track_urls' : {type: 'topN'},
-        'mail_md_attachment_incoming_file_type' : {type: 'topN'},
-        'mail_md_attachment_outgoing_file_type' : {type: 'topN'},
-        'mail_outgoing_web_interaction_track_malicious_users' : {type: 'topN'},
-        'mail_outgoing_web_interaction_track_urls' : {type: 'topN'},
-        'mail_msg_filter_stats' : {type: 'topN'},
-        'mail_sender_group_detail' : {type: 'topN'},
-        'mail_subject_stats' : {type: 'topN'},
-        'mail_url_category_summary' : {type: 'topN'},
-        'mail_url_domain_summary' : {type: 'topN'},
-        'mail_url_reputation_summary' : {type: 'topN'},
-        'mail_vof_threat_summary' : {type: 'topN'},
-        'mail_vof_threats_by_level' : {type: 'topN'},
-        'mail_vof_threats_by_threat_type' : {type: 'topN'},
-        'mail_vof_threats_by_time_threshold' : {type: 'topN'},
-        'mail_vof_threats_by_type' : {type: 'topN'},
-        'mail_vof_threats_rewritten_url' : {type: 'topN'},
-
-        'mail_authentication_incoming_domain' : {type: 'query'},
-        //'Entity Value: Domain name, for example, abc.com.'
-        'mail_content_filter_outgoing' : {type: 'query'},
-        //'Entity Value: Name of the outgoing Content Filter.'
-        'mail_destination_domain_detail' : {type: 'query'},
-        //'Entity Value: Domain name, for example, abc.com.'
-        'mail_dlp_outgoing_policy_detail' : {type: 'query'},
-        //'Entity Value: Name of the DLP policy.'
-        'mail_incoming_domain_detail' : {type: 'query'},
-        //'Entity Value: Domain name, for example, abc.com.'
-        'mail_incoming_ip_hostname_detail' : {type: 'query'},
-        //'Entity Value: IPv4 or IPv6 address.'
-        'mail_incoming_network_detail' : {type: 'query'},
-        //'Entity Value: Name of the network owner, for example Xyz Corporation.'
-        'mail_sender_domain_detail' : {type: 'query'},
-        //'Entity Value: Domain name, for example, abc.com.'
-        'mail_sender_ip_hostname_detail' : {type: 'query'},
-        //'Entity Value: IPv4 or IPv6 address.'
-        'mail_users_detail' : {type: 'query'},
-        //'Entity Value: Email ID of the internal user, for example, user@example.com.'
-        'mail_virus_type_detail' : {type: 'query'},
-        //'Entity Value: Name of viruses.'
-    };
-
+    
     var sendRequest = function(url, method) {
         var res = http(
             url,
