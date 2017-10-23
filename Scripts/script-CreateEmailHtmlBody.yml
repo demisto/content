@@ -37,7 +37,7 @@ script: |
       } else if (path.indexOf('incident.') === 0) {
           map[path] = dq({'incident': incidents[0]}, path);
       } else if (path.indexOf('object.') === 0) {
-          var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : object;
+          var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
           map[path] = dq({'object': obj}, path);
       } else {
           map[path] = dq(invContext, path);
