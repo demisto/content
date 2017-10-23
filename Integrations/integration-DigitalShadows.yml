@@ -21,7 +21,7 @@ configuration:
 - display: Secret
   name: secret
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
@@ -665,12 +665,14 @@ script:
     };
 
     arrayArgs = {
-        filter_domainNames : true,
-        filter_reviewStatuses: true,
-        filter_statuses: true,
-        filter_domainNamesOnRecords: true,
-        filter_repostedCredentials: true,
-        filter_severities: true
+        domainNames : true,
+        reviewStatuses: true,
+        statuses: true,
+        domainNamesOnRecords: true,
+        repostedCredentials: true,
+        severities: true,
+        types: true,
+        subTypes: true
     };
 
     var createBody = function(args, arrayArgs) {
@@ -682,14 +684,22 @@ script:
             for(var i=0; i<sub_keys.length - 1; i++){
                 if (!cur[sub_keys[i]]){
                     cur[sub_keys[i]] = {};
+                    if(arrayArgs[sub_keys[i]]){
+                        cur[sub_keys[i]] = [{}];
+                    }
                 }
                 cur = cur[sub_keys[i]];
+                if(Array.isArray(cur)){
+                    cur = cur[0];
+                }
             }
-            cur[sub_keys[sub_keys.length - 1]] = arrayArgs[key] && !Array.isArray(args[key]) ? args[key].split(',') : args[key];
+            last_sub_key = sub_keys[sub_keys.length - 1];
+            cur[last_sub_key] = arrayArgs[last_sub_key] && !Array.isArray(args[key]) ? args[key].split(',') : args[key];
             cur = Body;
         });
         return Body;
     };
+
 
     var encodeToURLQueryByFilter = function(filter, args){
         if (!filter){
@@ -1307,6 +1317,12 @@ script:
         all are considered. VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE
     - name: filter_statuses
       description: UNREAD, READ, CLOSED
+    - name: filter_types_type
+      description: The category of incident that has been raised.
+    - name: filter_types_subTypes
+      description: The sub-category of incident that has been raised, if available.
+    - name: filter_types_content_severity
+      description: Analyst defined severity based on potential risk to the client.
     - name: filter_tagOperator
       auto: PREDEFINED
       predefined:
