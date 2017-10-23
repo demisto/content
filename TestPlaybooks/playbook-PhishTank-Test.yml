@@ -226,7 +226,7 @@ view: |-
   }
 inputs:
 - key: badUrl
-  value: http://en-calstatela-edu.webnode.com/contact/
+  value: http://intranet.saintdizier.com/images/2.html
   description: ""
 - key: goodUrl
   value: https://www.phishtank.com/
