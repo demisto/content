@@ -33,6 +33,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     var url = params.server.replace(/[\/]+$/, '') +'/api';
@@ -736,11 +746,46 @@ script:
         return res.Body;
     };
 
+    var fetchIncident = function(comnd, bodyArgs, name, incidents){
+        cmd = commandDictionary[comnd];
+        res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
+        parsed_res = JSON.parse(res);
+        if (parsed_res && parsed_res.content && parsed_res.content.length > 0){
+            incidents.push({name: name, rawJSON: JSON.stringify(res).replace(/\\"/g, '"')});
+        }
+        return incidents;
+    };
+
+    var fetchIncidents = function(){
+        var lastRun = getLastRun();
+        var now = (new Date()).toISOString();
+        if (!lastRun || !lastRun.value) {
+            lastRun = {value: (new Date(0)).toISOString()};
+        }
+        var incidents = [];
+
+        bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
+        incidents = fetchIncident('ds-find-incidents-filtered', bodyArgs, 'BRAND_PROTECTION:PHISHING_ATTEMPT', incidents);
+
+        bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
+        incidents = fetchIncident('ds-find-incidents-filtered', bodyArgs, 'Client Incident', incidents);
+
+        incidents = fetchIncident('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident', incidents);
+
+        bodyArgs = {filter_published: lastRun.value + '/' + now};
+        incidents = fetchIncident('ds-find-data-breaches', bodyArgs, 'Data Breach', incidents);
+
+        setLastRun({value: now});
+        return JSON.stringify(incidents);
+    };
+
     switch (command) {
         case 'test-module':
             cmd = commandDictionary['ds-get-breach-summary'];
             sendRequest(url+cmd.url, cmd.method);
             return 'ok';
+        case 'fetch-incidents':
+            return fetchIncidents();
         default:
             cmd = commandDictionary[command];
             res = sendRequest(url+replaceInTemplatesAndRemove(cmd.url, args)+encodeToURLQueryByFilter(cmd.urlQueryArgs, args), cmd.method, createBody(args, arrayArgs));
@@ -2806,3 +2851,4 @@ script:
       - "false"
       description: Determines whether the tag descriptions will be included.
     description: Batch retrieve specic tags by their ids
+  isfetch: true
