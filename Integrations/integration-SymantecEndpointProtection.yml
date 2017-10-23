@@ -32,8 +32,8 @@ configuration:
   required: false
 - display: Use proxy system settings
   name: proxy
-  defaultvalue: ""
-  type: 0
+  defaultvalue: "true"
+  type: 8
   required: false
 script:
   script: |-
@@ -593,3 +593,4 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
+releaseNotes: "-"
