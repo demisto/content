@@ -1,9 +1,10 @@
 commonfields:
-  id: ConvertXmlToJson
+  id: ConvertXmlFileToJson
   version: -1
-name: ConvertXmlToJson
+name: ConvertXmlFileToJson
 script: |-
-  var xmlJson = x2j(args.xml);
+  var xml = getFileByEntryID(args.entryID);
+  var xmlJson = x2j(xml);
   try {
     xmlJson = JSON.parse(xmlJson);
   } catch(err) {}
@@ -17,13 +18,13 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Converts XML string to JSON format
+comment: Converts XML file entry to JSON format
 enabled: true
 args:
-- name: xml
+- name: entryID
   required: true
   default: true
-  description: valid xml to convert to json format
+  description: Entry ID of a valid xml file to convert to json format
 - name: contextKey
   description: context Key to push json result to
 - name: verbose
@@ -34,6 +35,3 @@ args:
   description: Print json result to warrom
   defaultValue: "True"
 scripttarget: 0
-dependson: {}
-timeout: 0s
-releaseNotes: "Changed verbose to be True by default"
