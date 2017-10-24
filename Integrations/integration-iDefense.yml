@@ -261,6 +261,8 @@ script:
             return get_uuid(args.uuid);
         // This is the call made when pressing the integration test button.
         case 'test-module':
+            //check api_token is valid
+            get_threats(1);
             return 'ok';
         default:
             break;
