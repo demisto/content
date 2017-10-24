@@ -177,6 +177,22 @@ script:
     switch (command) {
         case 'test-module':
             command = 'amp_get_version';
+            var method = 'methodDict[command]';
+            var url = getURL(command, args);
+            var query = '';
+            var body = '';
+            if (method === 'GET') {
+                query = encodeToURLQuery(fixArgs(command, args));
+            } else {
+                body = encodeBody(args);
+            }
+            return sendRequest(
+                method,
+                server + url + query,
+                urlDict[command],
+                body
+            );
+            return 'ok';
         default:
             var method = methodDict[command];
             var url = getURL(command, args);
@@ -408,3 +424,4 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
+releaseNotes: "fixing Test button"
