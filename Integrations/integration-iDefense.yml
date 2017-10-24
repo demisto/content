@@ -27,16 +27,6 @@ script:
     // handle '/' at the end of the url
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/rest/';
 
-    function mergeObjects(objs) {
-        var merged = {};
-        for (var i in objs) {
-            for (var j in objs[i]) {
-                merged[j] = objs[i][j];
-            }
-        }
-        return merged;
-    }
-
     function sendRequest(method, url_suffix, headers, body) {
         headers = headers || {};
         body = body || {};
@@ -197,7 +187,7 @@ script:
             Contents : results,
             ContentsFormat : formats.json,
             HumanReadable : tableToMarkdown('iDefense Reputations', merged_md),
-            EntryContext : mergeObjects([domain_threats.context, ip_threats.context, url_threats.context, {DBotScore : merged_scores}])
+            EntryContext : mergeForeignObjects([domain_threats.context, ip_threats.context, url_threats.context, {DBotScore : merged_scores}])
         };
 
     }
@@ -216,7 +206,7 @@ script:
             Contents : threats_info.results,
             ContentsFormat : formats.json,
             HumanReadable : tableToMarkdown('iDefense Domain Reputation', threats_info.md),
-            EntryContext : mergeObjects([threats_info.context, {DBotScore : threats_info.scores}])
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
         };
     }
 
@@ -231,7 +221,7 @@ script:
             Contents : threats_info.results,
             ContentsFormat : formats.json,
             HumanReadable : tableToMarkdown('iDefense IP Reputation', threats_info.md),
-            EntryContext : mergeObjects([threats_info.context, {DBotScore : threats_info.scores}])
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
 
         };
     }
@@ -243,7 +233,7 @@ script:
             Contents : threats_info.results,
             ContentsFormat : formats.json,
             HumanReadable : tableToMarkdown('iDefense URL Reputation', threats_info.md),
-            EntryContext : mergeObjects([threats_info.context, {DBotScore : threats_info.scores}])
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
 
         };
     }
