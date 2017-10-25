@@ -73,7 +73,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The IP country
     - contextPath: IP.Geo.Description
-      description: The IP location as: City, Region, Postal Code, Country
+      description: The IP location as <City, Region, Postal Code, Country>
     description: Check IP reputation (when information is available, returns a JSON
       with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
