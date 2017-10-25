@@ -669,7 +669,9 @@
         "type": "entries",
         "filter": {
           "pageSize": 10000,
-          "note": true
+          "categories": [
+            "notes"
+          ]
         }
       },
       "layout": {
