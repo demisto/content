@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: RSA NetWitness Security Analytics
 system: true
-releaseNotes: Added missing description
+releaseNotes: "-"
 fromversion: 2.0.0
 display: RSA NetWitness Security Analytics
 category: Analytics & SIEM
