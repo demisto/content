@@ -10,6 +10,7 @@
   "recipients": [],
   "system": true,
   "reportType": "investigation",
+  "releaseNotes": "-",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
     "incident.status.1": { "type": "string", "value": "Assigned" },
@@ -668,9 +669,7 @@
         "type": "entries",
         "filter": {
           "pageSize": 10000,
-          "categories": [
-            "notes"
-          ]
+          "note": true
         }
       },
       "layout": {
