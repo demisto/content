@@ -304,7 +304,7 @@ script:
       - EQUAL
       description: event ID operator
     - name: includeNonHostEvents
-      description: "-"
+      description: Include non-host hevents in filter 
       required: true
       auto: PREDEFINED
       predefined:
@@ -336,9 +336,9 @@ script:
       required: true
       description: list of host IDs, separated by commas
     execution: true
-    description: "-"
+    description: Assign security profile to host
   - name: trendmicro-anti-malware-event-retrieve
-    description: "-"
+    description: Retrive anti malware event
     arguments:
     - name: rangeFrom
       description: Time interval start
