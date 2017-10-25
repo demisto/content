@@ -22,6 +22,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     // handle '/' at the end of the url
@@ -47,7 +52,8 @@ script:
                 Headers: headers,
                 Body: JSON.stringify(body),
             },
-            params.insecure
+            params.insecure,
+            params.useproxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
