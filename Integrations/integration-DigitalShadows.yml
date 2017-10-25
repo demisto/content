@@ -751,21 +751,25 @@ script:
         cmd = commandDictionary[comnd];
         res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
         parsed_res = JSON.parse(res);
-        if (parsed_res && parsed_res.content && parsed_res.content.length > 0){
-            incidents.push({name: name, rawJSON: JSON.stringify(res).replace(/\\"/g, '"')});
+        if (parsed_res && parsed_res.content){
+            parsed_res.content.forEach(function(inc){
+                inc['origin'] = name;
+                incidents.push({name: name, rawJSON: JSON.stringify(inc).replace(/\\"/g, '"')});
+            });
         }
         return incidents;
     };
 
     var fetchIncidents = function(){
         var lastRun = getLastRun();
-        var now = (new Date()).toISOString();
+        nowDate = new Date();
+        var now = nowDate.toISOString();
         if (!lastRun || !lastRun.value) {
-            lastRun = {value: (new Date(0)).toISOString()};
+            lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
         }
 
         bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
-        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'BRAND_PROTECTION:PHISHING_ATTEMPT');
+        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'PHISHING_ATTEMPT');
 
         bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
         incidents = incidents.concat(fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident'));
