@@ -746,7 +746,8 @@ script:
         return res.Body;
     };
 
-    var fetchIncident = function(comnd, bodyArgs, name, incidents){
+    var fetchCommandIncidents = function(comnd, bodyArgs, name){
+        incidents = [];
         cmd = commandDictionary[comnd];
         res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
         parsed_res = JSON.parse(res);
@@ -762,18 +763,17 @@ script:
         if (!lastRun || !lastRun.value) {
             lastRun = {value: (new Date(0)).toISOString()};
         }
-        var incidents = [];
 
         bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
-        incidents = fetchIncident('ds-find-incidents-filtered', bodyArgs, 'BRAND_PROTECTION:PHISHING_ATTEMPT', incidents);
+        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'BRAND_PROTECTION:PHISHING_ATTEMPT');
 
         bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
-        incidents = fetchIncident('ds-find-incidents-filtered', bodyArgs, 'Client Incident', incidents);
+        incidents = incidents.concat(fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident'));
 
-        incidents = fetchIncident('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident', incidents);
+        incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident'));
 
         bodyArgs = {filter_published: lastRun.value + '/' + now};
-        incidents = fetchIncident('ds-find-data-breaches', bodyArgs, 'Data Breach', incidents);
+        incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches', bodyArgs, 'Data Breach'));
 
         setLastRun({value: now});
         return JSON.stringify(incidents);
