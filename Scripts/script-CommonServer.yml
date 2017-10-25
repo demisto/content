@@ -48,6 +48,20 @@ script: |-
       return cleanSingleObject(obj);
   }
 
+  /*
+  Merge a list of objects into a single object.
+  Note: to avoid loss of data, use only on objects with foreign properties.
+  */
+  function mergeForeignObjects(objs) {
+      var merged = {};
+      for (var i in objs) {
+          for (var j in objs[i]) {
+              merged[j] = objs[i][j];
+          }
+      }
+      return merged;
+  }
+
   /**
    * Creates a string from an object
    * @param {JSON or String} o - the object to create the string from
@@ -1825,4 +1839,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Updated flattenFields to support the case in which path is not given as argument"
+releaseNotes: "Updated flattenFields to support the case in which path is not given as argument, Added mergeForeignObjects function"

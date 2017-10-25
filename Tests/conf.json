@@ -108,6 +108,10 @@
         {
             "name": "PhishTank",
             "playbookID": "PhishTank Testing"
+        },
+        {
+            "name": "iDefense",
+            "playbookID": "iDefenseTest"
         }
     ],
     "skipped": [
