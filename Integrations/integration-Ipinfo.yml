@@ -2,7 +2,7 @@ commonfields:
   id: ipinfo
   version: -1
 name: ipinfo
-releaseNotes: Added ouputs  
+releaseNotes: Added outputs to 'ip' command in order to allow using them in a playbook 
 system: true
 display: ipinfo
 category: Data Enrichment
