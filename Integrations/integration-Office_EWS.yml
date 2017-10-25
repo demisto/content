@@ -1046,6 +1046,7 @@ script:
     if (!args['target-mailbox']) {
         args['target-mailbox'] = getDefaultTargetMailbox();
     }
+    args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
 
     setImpersonation(args);
 
@@ -1071,7 +1072,7 @@ script:
                     args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
                 }
             }
-            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.trim(); });
+            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
         default:
             return execute(command, args);
     }
