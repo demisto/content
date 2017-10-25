@@ -775,7 +775,7 @@ script: |-
   /**
    * Flatten the fields into a map of dot notation key and value
    * @param {Object} obj - the object to iterate on
-   * @param {String} path - the path so far in dot notation
+   * @param {String} path - (optional) the path so far in dot notation
    * @param {Object} flat - the collected object result
    * @returns {Object} an object with keys that are dot notation and values
    */
@@ -784,11 +784,11 @@ script: |-
         if (typeof obj === 'object') {
             var keys = Object.keys(obj);
             for (var f=0; f<keys.length; f++) {
-                flattenFields(obj[keys[f]], path !== '' ? path + '.' + keys[f] : keys[f], flat);
+                flattenFields(obj[keys[f]], !!path ? path + '.' + keys[f] : keys[f], flat);
             }
         } else if (Array.isArray(obj)) {
             for (var i=0; i<obj.length; i++) {
-                flattenFields(obj[i], path !== '' ? path + '.' + i : '' + i, flat);
+                flattenFields(obj[i], !!path ? path + '.' + i : '' + i, flat);
             }
         } else {
             flat[path] = obj.toString();
@@ -1839,4 +1839,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added mergeForeignObjects function"
+releaseNotes: "Updated flattenFields to support the case in which path is not given as argument, Added mergeForeignObjects function"
