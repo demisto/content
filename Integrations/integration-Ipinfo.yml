@@ -54,6 +54,19 @@ script:
       required: true
       default: true
       description: IP address to query. E.g. !ip 1.1.1.1
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+    - contextPath: IP.Hostname
+      description: The IP's hostname
+    - contextPath: IP.ASN
+      description: The IP's ASN
+    - contextPath: IP.Geo.Location
+      description: The IP's geographic location in coordinates
+    - contextPath: IP.Geo.Country
+      description: The IP's country
+    - contextPath: IP.Geo.Description
+      description: The IP's location as: <City, Region, Postal Code, Country>
     description: Check IP reputation (when information is available, returns a JSON
       with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
@@ -64,15 +77,15 @@ script:
       description: IP address to query. E.g. !ip 1.1.1.1
     - name: field
       required: true
-      description: Name of the field to retrieve. Can be org, city, geo, etc.
       auto: PREDEFINED
       predefined:
-      - "geo"
-      - "loc"
-      - "city"
-      - "region"
-      - "country"
-      - "org"
-      - "hostname"
-      - "phone"
+      - geo
+      - loc
+      - city
+      - region
+      - country
+      - org
+      - hostname
+      - phone
+      description: Name of the field to retrieve. Can be org, city, geo, etc.
     description: Retrieve value for a specific field from the IP address information
