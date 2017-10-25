@@ -2,6 +2,7 @@ commonfields:
   id: ipinfo
   version: -1
 name: ipinfo
+releaseNotes: Added ouputs  
 system: true
 display: ipinfo
 category: Data Enrichment
