@@ -185,5 +185,7 @@ script:
     arguments:
     - name: schedule
       required: true
+      default: true
       description: Schedule name
+    description: Get schedule timeline information
 
