@@ -181,6 +181,7 @@ script:
     description: Get user information
   - name: opsgenie-get-schedules
     arguments: []
+    description: Get all schedules
   - name: opsgenie-get-schedule-timeline
     arguments:
     - name: schedule
