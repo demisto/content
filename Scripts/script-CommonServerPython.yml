@@ -223,7 +223,7 @@ script: |-
       if type(arg) in [str, unicode]:
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return [s.lstrip().rstrip() for s in arg.split(',')]
+          return [s.strip() for s in arg.split(',')]
       return arg
 
   def appendContext(key, data, dedup=False):
@@ -336,14 +336,7 @@ script: |-
           return item[fieldName]
       else:
           return item
-  def isCommandAvailable(cmd):
-      modules = demisto.getAllSupportedCommands();
-      for m in modules:
-          if modules[m] and isinstance(modules[m], list):
-              for c in modules[m]:
-                  if c['name'] == cmd:
-                      return True
-      return False
+
 
   def epochToTimestamp(epoch):
       return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
