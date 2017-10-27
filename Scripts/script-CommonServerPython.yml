@@ -337,6 +337,14 @@ script: |-
       else:
           return item
 
+  def isCommandAvailable(cmd):
+      modules = demisto.getAllSupportedCommands()
+      for m in modules:
+          if modules[m] and isinstance(modules[m], list):
+              for c in modules[m]:
+                  if c['name'] == cmd:
+                      return True
+      return False
 
   def epochToTimestamp(epoch):
       return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
