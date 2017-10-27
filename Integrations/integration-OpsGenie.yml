@@ -186,4 +186,4 @@ script:
     - name: schedule
       required: true
       description: Schedule name
-releaseNotes: "added opsgenie-get-schedules and opsgenie-get-schedule-timeline commands"
+
