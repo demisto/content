@@ -94,7 +94,7 @@ script:
     };
 
     var uploadIOC = function() {
-        args.expiration_days = Number(args.expiration_days)
+        args.expiration_days = parseInt(args.expiration_days)
         var res = doReq('POST', 'indicators/entities/iocs/v1', {}, [args]);
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: 'IOC [' + args.value + '] uploaded'};
     };
