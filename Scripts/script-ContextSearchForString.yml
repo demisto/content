@@ -11,7 +11,7 @@ script: |+
       flattenFields(obj,undefined,flat);
       keysArr = Object.keys(flat);
       for (i = 0; i < keysArr.length - 1; i++) {
-          if (flat[keysArr[i]] == str) {
+          if (flat[keysArr[i]] === str) {
               return true;
           }
       }
