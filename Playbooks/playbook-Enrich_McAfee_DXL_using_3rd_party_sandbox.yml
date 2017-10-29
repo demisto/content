@@ -110,7 +110,7 @@ tasks:
       id: bfffbaa1-a550-47bd-8e84-e6c941cde205
       version: -1
       name: ""
-      playbookName: 'WildFire - Detonate file '
+      playbookName: WildFire - Detonate file
       type: playbook
       iscommand: false
       brand: ""
