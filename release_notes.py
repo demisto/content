@@ -206,6 +206,7 @@ class ReputationContent(Content):
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
+            res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
