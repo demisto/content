@@ -84,7 +84,7 @@ tasks:
       id: c50351fa-76f1-43ce-852a-de0c66d9535b
       version: -1
       name: ""
-      playbookName: ATD-playbook
+      playbookName: ATD - Detonate File
       type: playbook
       iscommand: false
       brand: ""
