@@ -42,7 +42,7 @@ args:
 - name: str
   required: true
   description: String to search for in context
-  outputs:
+outputs:
 - contextPath: true
   description: if given string exists in context
 - contextPath: false
