@@ -42,9 +42,10 @@ args:
 - name: str
   required: true
   description: String to search for in context
-scripttarget: 0
-outputs:
+  outputs:
 - contextPath: true
   description: if given string exists in context
 - contextPath: false
   description: if given string does not exist in context
+scripttarget: 0
+
