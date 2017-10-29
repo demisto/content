@@ -1,6 +1,6 @@
 commonfields:
-  id: bb2d479b-2bd4-40cb-84ac-9d7b620f060e
-  version: 72
+  id: ContextSearchForString
+  version: -1
 name: ContextSearchForString
 script: |+
   var path = args.path;
