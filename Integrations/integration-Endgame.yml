@@ -766,7 +766,7 @@ script:
       description: Version of given sensor
     description: Get sensor data by id
   - name: endgame-investigation-results
-    description: "-"
+    description: Get investigation results by id
     arguments:
     - name: investigation_id
       description: Id of investigation
