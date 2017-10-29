@@ -3,6 +3,7 @@ version: -1
 name: Hunt for bad IOCs
 description: Assume that malicious IOCs are in the right place in the context and
   start hunting using available tools
+releaseNotes: "McAfee TIE added"
 starttaskid: "0"
 tasks:
   "0":
