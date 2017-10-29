@@ -1,6 +1,6 @@
 commonfields:
   id: IncidentAddSystem
-  version: 3
+  version: -1
 name: IncidentAddSystem
 script: return executeCommand('addSystem',args);
 type: javascript
@@ -8,7 +8,6 @@ tags:
 - management
 comment: |
   Add a remote system (such as a desktop under investigation) to an investigation (this will allow you to install and agent on the system)
-enabled: true
 args:
 - name: name
   default: true
@@ -37,4 +36,4 @@ args:
 - name: arch
   description: Choose amd64 for 64bit systems and i386 for 32bit systems
 scripttarget: 0
-releaseNotes: "Password argument now sensitive."
+releaseNotes: "-"
