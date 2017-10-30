@@ -47,6 +47,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Timezone of Splunk server in minutes e.g. for gmt +3 set +180 (set only
+    if different than Demisto server), relevent for fetch notable events only
+  name: timezone
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     import splunklib.client as client
@@ -254,6 +260,14 @@ script:
 
         incidents = []
         t = datetime.utcnow()
+        if demisto.get(demisto.params(), 'timezone'):
+            timezone = demisto.params()['timezone']
+            sign = timezone[0]
+            min_diff = int(timezone[1:])
+            if sign == '+':
+                t = t + timedelta(minutes=min_diff)
+            if sign == '-':
+                t = t - timedelta(minutes=min_diff)
         now = t.strftime("%Y-%m-%dT%H:%M:%S")
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
@@ -400,3 +414,4 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: 'Support change in time zone - Splunk ES fetch '
