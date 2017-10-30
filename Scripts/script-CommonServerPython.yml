@@ -542,6 +542,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: > 
-  Add function to create file result from existing file
-  Add missing entry types

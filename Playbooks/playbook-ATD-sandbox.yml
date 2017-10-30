@@ -203,4 +203,3 @@ view: |-
     }
   }
 inputs: []
-releaseNotes: Check ATD is available and also get PDF report.
