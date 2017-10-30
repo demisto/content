@@ -123,4 +123,3 @@ script:
       - websites
       - certificates
     description: Attribute search
-releaseNotes: Set docker dependency to default docker image
