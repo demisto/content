@@ -1,5 +1,4 @@
 {
-  "releaseNotes": "Reputation score calculation changed to better use caches for indicators. By default, scores are calculated by assigning the max score received from vendors. To change the behavior, you can specify your own score calculation script under reputationScriptName.",
   "reputations": [
     {
       "id": "fileRep",
