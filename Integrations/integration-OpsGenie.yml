@@ -69,19 +69,25 @@ script:
         }
     };
 
-    var getOnCall = function(schedule) {
-        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls?scheduleIdentifierType=name';
+    var getOnCall = function(schedule, date) {
+        var urlParams = {scheduleIdentifierType:'name'};
+        if (date) {
+            urlParams.date = new Date(date).toISOString();
+        }
+        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls' + encodeToURLQuery(urlParams);
+
+        console.log(url);
         var res = sendRequest(url);
         var md = '### OpsGenie On-Call Schedule __' + schedule + '__\n';
         var ec = {};
         if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length > 0) {
-            var onCall = dq(res.data.onCallParticipants,'name')
+            var onCall = dq(res.data.onCallParticipants,'name');
             md += 'Currently on-call for __' + schedule + '__ schedule:\n';
             ec.OpsGenie = {Schedule: schedule, OnCall: []};
             onCall.forEach(function(name) {
                 var user = getUser(name);
                 md += '- ' + user.Contents.fullName + ' ('+name+')\n';
-                ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName})
+                ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName});
             });
         } else {
             md += 'Cannot find on-call for __' + schedule + '__\n';
@@ -138,12 +144,11 @@ script:
 
     switch (command) {
         case 'test-module':
-            var url = serviceURLs.account;
-            sendRequest(url);
+            getSchedules();
             return 'ok';
 
         case 'opsgenie-get-on-call':
-            return getOnCall(args.schedule);
+            return getOnCall(args.schedule, args.date);
 
         case 'opsgenie-get-user':
             return getUser(args.userID);
@@ -164,6 +169,8 @@ script:
     - name: schedule
       required: true
       description: Schedule Name
+    - name: date
+      description: Date to check the on-call schedule
     outputs:
     - contextPath: OpsGenie.Schedule
       description: Schedule name
@@ -189,4 +196,4 @@ script:
       default: true
       description: Schedule name
     description: Get schedule timeline information
-
+ReleaseNotes: "Added ability to get all schedules, and to get on-call for future time"
