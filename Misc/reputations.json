@@ -1,4 +1,6 @@
 {
+  "releaseNotes": "-",
+  "name": "reputations",
   "reputations": [
     {
       "id": "fileRep",
