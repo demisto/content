@@ -262,12 +262,7 @@ script:
         t = datetime.utcnow()
         if demisto.get(demisto.params(), 'timezone'):
             timezone = demisto.params()['timezone']
-            sign = timezone[0]
-            min_diff = int(timezone[1:])
-            if sign == '+':
-                t = t + timedelta(minutes=min_diff)
-            if sign == '-':
-                t = t - timedelta(minutes=min_diff)
+            t = t - timedelta(minutes=int(timezone))
         now = t.strftime("%Y-%m-%dT%H:%M:%S")
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
