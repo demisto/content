@@ -147,4 +147,3 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
     description: Get latest updated CVEs
-releaseNotes: "-"

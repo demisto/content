@@ -41,4 +41,3 @@ dependson:
   - ip
 timeout: 0s
 deprecated: true
-releaseNotes: "-"

@@ -39,4 +39,3 @@ outputs:
 - contextPath: "no"
   description: if  value is not True (either has object or string True/true)
 scripttarget: 0
-releaseNotes: "Fix regex"

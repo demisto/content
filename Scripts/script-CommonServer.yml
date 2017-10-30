@@ -1776,4 +1776,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Updated flattenFields to support the case in which path is not given as argument, Added mergeForeignObjects function"

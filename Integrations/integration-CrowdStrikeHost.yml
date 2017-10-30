@@ -660,4 +660,3 @@ script:
     execution: true
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "Fixed upload IOC command"

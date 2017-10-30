@@ -865,4 +865,3 @@ script:
     arguments: []
     description: Clear the Zendesk integration cache
   isfetch: true
-releaseNotes: "Added zendesk-add-comment command. Improved incident fetching mechanism. Improved zendesk-list-tickets output."
