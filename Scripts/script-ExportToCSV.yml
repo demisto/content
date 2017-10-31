@@ -35,7 +35,7 @@ script: |-
               var value = array[i][header];
 
               if (typeof value === 'object') {
-                  // use JSONstringify instead toString that convert to [object Object]
+                  // use JSON.stringify instead toString that convert to [object Object]
                   value = JSON.stringify(value);
               } else {
                   value = value + '';
