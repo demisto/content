@@ -32,13 +32,20 @@ script: |-
                   line += ',';
               }
 
-              var value = array[i][header] + '';
+              var value = array[i][header];
+
+              if (typeof value === 'object') {
+                  // use JSON.stringify instead toString that convert to [object Object]
+                  value = JSON.stringify(value);
+              } else {
+                  value = value + '';
+              }
               value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
               if (value && value.indexOf(',') > -1) {
                   line += '"' + value + '"';
               } else {
                   line += value;
-              }          
+              }
           }
 
           str += line + '\n';
@@ -76,3 +83,4 @@ args:
   required: true
   isArray: true
 scripttarget: 0
+releaseNotes: 'Display string representation of inner object fields'
