@@ -112,6 +112,10 @@
         {
             "name": "iDefense",
             "playbookID": "iDefenseTest"
+        },
+        {
+            "name": "McAfee Web Gateway",
+            "playbookID": "McAfeeWebGatewayTest"
         }
     ],
     "skipped": [
