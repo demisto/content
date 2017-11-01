@@ -187,12 +187,17 @@ script:
             } else {
                 body = encodeBody(args);
             }
-            return sendRequest(
+            var res= sendRequest(
                 method,
                 server + url + query,
                 urlDict[command],
                 body
             );
+            if (command === 'test-module') {
+              return 'ok';
+            } else {
+              return res;
+            }
     }
   type: javascript
   commands:

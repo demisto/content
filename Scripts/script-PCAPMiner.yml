@@ -80,4 +80,3 @@ args:
 scripttarget: 0
 timeout: 720ns
 dockerimage: trorabaugh/dempcap:1.0
-releaseNotes: "Do not read / copy extracted files"

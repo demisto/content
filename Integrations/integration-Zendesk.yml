@@ -8,6 +8,11 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAYAAAAhKqlXAAAAAXN
 description: IT service management
 detaileddescription: Zendesk integration requires the API key and a username.
 configuration:
+- display: Zendesk address (e.g. https://demisto.zendesk.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Username (email)
   name: username
   defaultvalue: ""
@@ -15,11 +20,6 @@ configuration:
   required: true
 - display: API key
   name: api
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Zendesk address (e.g. https://demisto.zendesk.com)
-  name: url
   defaultvalue: ""
   type: 4
   required: true
@@ -48,14 +48,67 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+- display: Fetch incident query
+  name: fetchQuery
+  defaultvalue: -status:solved -status:closed
+  type: 0
+  required: false
 script:
-  script: |2
-
+  script: |
     var cachedInfo = getIntegrationContext();
     if (!cachedInfo) {
         cachedInfo = {users: {}, customFields: {}};
     }
+    if (!cachedInfo.user) {
+        cachedInfo.users = {};
+    }
+    if (!cachedInfo.customFields) {
+        cachedInfo.customFields = {};
+    }
+    if (!cachedInfo.timestamp) {
+        cachedInfo.timestamp = new Date().getTime();
+    } else {
+        logDebug('cachedInfo.timestamp==' + cachedInfo.timestamp + '. now== ' + new Date().getTime());
+        if (cachedInfo.timestamp + (1000 * 3600 * 24) < new Date().getTime()) {
+            logInfo('Clearing Zendesk cache');
+            cachedInfo.timestamp = new Date().getTime();
+            cachedInfo.users = {};
+            cachedInfo.customFields = {};
+        }
+    }
 
+    var quoteMd = function(text) {
+        var res = '';
+        text.split('\n').forEach(function(line) {
+            res +=  '>' + line + '\n';
+        });
+        return res;
+    };
+
+    var escapeMd = function(text) {
+        return text.split('|').join('\\|');
+
+    };
+
+    var getTicketId = function() {
+        var ticketId = args.id;
+        if (!ticketId) {
+            labels = dq(incidents[0],'labels');
+            labels.forEach(function(label) {
+                if (label.type == 'TicketId') {
+                    ticketId = label.value;
+                }
+            });
+        }
+        if (!ticketId) {
+            throw 'Missing Zendesk ticket ID';
+        }
+        return ticketId;
+    };
+
+    var getAttachmentId = function() {
+        return (args.id.indexOf(':') > -1) ? args.id.split(':')[0] : args.id;
+    };
 
     var loadCustomFields = function() {
         resCusFields = sendRequest('GET', 'ticket_fields.json');
@@ -64,8 +117,8 @@ script:
 
         for (var i = 0; i < resCusFields.ticket_fields.length; i++) {
             if (resCusFields.ticket_fields[i].active) {
-                dicFields[resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
-                dicFields[resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
+                dicFields['id_' + resCusFields.ticket_fields[i].id] = resCusFields.ticket_fields[i].title;
+                dicFields['name_' + resCusFields.ticket_fields[i].title] = resCusFields.ticket_fields[i].id;
             }
         }
 
@@ -75,7 +128,7 @@ script:
     };
 
     var getUserDetails = function(id) {
-        if (!cachedInfo.users[id]) {
+        if (!cachedInfo.users || !cachedInfo.users[id]) {
             var res = sendRequest('GET', 'users/' + id + '.json');
             cachedInfo.users[id] = res.user;
             setIntegrationContext(cachedInfo);
@@ -91,24 +144,24 @@ script:
     var getUserName = function(id) {
         var user = getUserDetails(id);
         if (user) {
-            return cachedInfo.users[id].name;
+            return cachedInfo.users[id].name + ' (' + cachedInfo.users[id].email + ')';
         } else {
             return 'N/A';
         }
     };
 
     var getCustomFieldName = function(id) {
-        if (!cachedInfo.customFields[id]) {
+        if (!cachedInfo.customFields || !cachedInfo.customFields[id]) {
             loadCustomFields();
         }
-        return cachedInfo.customFields[id];
+        return cachedInfo.customFields['id_' + id];
     };
 
     var getCustomFieldId = function(name) {
-        if (!cachedInfo.customFields[name]) {
+        if (!cachedInfo.customFields || !cachedInfo.customFields[name]) {
             loadCustomFields();
         }
-        return cachedInfo.customFields[name];
+        return cachedInfo.customFields['name_' + name];
     };
 
 
@@ -146,13 +199,7 @@ script:
     var createTicket = function() {
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
-        var isPublic = true;
-
-        if (args.private === 'no') {
-            isPublic = true;
-        } else {
-            isPublic = false;
-        }
+        var isPublic = (args.private === 'no');
 
         var body = {
                 ticket: {
@@ -192,13 +239,11 @@ script:
                 dicCustStr[tmpKey[0]] = tmpKey[1];
             }
 
-            dicFields = cachedInfo.customFields;
-
             var arrRes = [];
 
             for (var strKey in dicCustStr) {
                 arrRes.push({
-                    id: dicFields[strKey],
+                    id: getCustomFieldId(strKey),
                     value: dicCustStr[strKey]
                 });
             }
@@ -236,19 +281,19 @@ script:
         var searchQ;
 
         if (!args.query) {
-            searchQ = 'type:ticket -status:close';
+            searchQ = 'type:ticket -status:solved -status:closed';
         } else {
             searchQ = 'type:ticket ' + args.query;
         }
 
-        var att = {query: searchQ};
+        var att = {query: searchQ, sort_by: 'created_at', sort_order: 'desc'};
         res = sendRequest('GET', 'search.json', '', att);
 
         var ec = {Ticket: []};
         var md = '## Zendesk tickets\n';
 
-        md += 'Id|Subject\n';
-        md += '---|---\n';
+        md += 'Id|Created|Subject|Status\n';
+        md += '-|-|-|-|-\n';
 
         for (var i = 0; i <  res.results.length; i++) {
             ec.Ticket.push({
@@ -257,7 +302,7 @@ script:
                 subject: res.results[i].subject,
                 vendor: 'Zendesk'
             });
-            md += res.results[i].id + '|' + res.results[i].subject + '\n';
+            md += res.results[i].id + '|' + res.results[i].created_at + '|' + escapeMd(res.results[i].subject) + '|' + res.results[i].status + '\n';
         }
 
         return ( {ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec} );
@@ -265,24 +310,12 @@ script:
 
 
     var updateTicket = function() {
-        var ec = {};
+        var ticketId = getTicketId();
+
         var md = '## Zendesk tickets\n';
-        var isPublic = true;
+        var ec = {};
 
-        if (args.private === 'no') {
-            isPublic = true;
-        } else {
-            isPublic = false;
-        }
-
-        var body = {
-                ticket: {
-                    comment: {
-                        body: args.comment,
-                        'public': isPublic
-                    }
-                }
-            };
+        var body = {ticket: {}};
 
         if (args.requester_email) {
             var reqRequester = sendRequest('GET', 'users/search.json', '', {query: args.requester_email});
@@ -313,13 +346,11 @@ script:
                 dicCustStr[tmpKey[0]] = tmpKey[1];
             }
 
-            dicFields = cachedInfo.customFields;
-
             var arrRes = [];
 
             for (strKey in dicCustStr) {
                 arrRes.push({
-                    id: dicFields[strKey],
+                    id: getCustomFieldId(strKey),
                     value: dicCustStr[strKey]
                 })
             }
@@ -328,26 +359,48 @@ script:
         }
 
         for (var key in args) {
-            if (key !== 'comment' &&
-                key !== 'private' &&
-                key !== 'id' &&
+            if (key !== 'id' &&
                 key !== 'requester_email' &&
                 key !== 'assignee_email' &&
                 key !== 'custom_fields') {
                 body.ticket[key] = args[key];
-                ec['Ticket(val.id == ' + args.id + ').' + key] = args[key];
+                ec['Ticket(val.id == ' + ticketId + ').' + key] = args[key];
             }
         }
 
-        ec['Ticket(val.id == ' + args.id + ').description'] = args.body;
+        res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
 
-        res = sendRequest('PUT', 'tickets/' + args.id + '.json', JSON.stringify(body));
+        md += 'Ticket number ' + ticketId + ' has been updated successfully.\n';
 
-        md += 'Ticket number ' + args.id + ' has been updates successfully.\n';
-
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
+
+    var addComment = function() {
+        var ticketId = getTicketId();
+
+        var md = '## Zendesk tickets\n';
+        var isPublic = (args.private === 'no') ? true : false;
+        var comment = args.comment;
+
+        if (args.addFooter == 'yes') {
+            comment += '\n\n---------\nPosted using Demisto-Zendesk integration';
+        }
+        var body = {
+                ticket: {
+                    comment: {
+                        body: comment.split('\\n').join('\n'),
+                        'public': isPublic
+                    }
+                }
+            };
+
+        res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
+
+        md += 'Comment added successfully.\n';
+
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
+    };
 
     var addMinutes = function(date, minutes) {
             return new Date(date.getTime() + minutes*60000);
@@ -371,36 +424,46 @@ script:
     };
 
     var getTicketDetails = function() {
-        var resDetails = sendRequest('GET', 'tickets/' + args.id + '.json');
+        var ticketId = getTicketId();
+
+        var resDetails = sendRequest('GET', 'tickets/' + ticketId + '.json');
         var md = '### Zendesk ticket #' + resDetails.ticket.id + " - " + resDetails.ticket.subject + "\n";
         var ec = {}
-        var warResults = [];
+        var usersEc = {}
         var newContext = {};
 
+        md += 'Requester: __' + getUserName(resDetails.ticket.requester_id) + '__\n';
+        usersEc[resDetails.ticket.requester_id]=getUserName(resDetails.ticket.requester_id);
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
         md += 'Priority: __' + resDetails.ticket.priority + '__\n';
         md += 'Status: __' + resDetails.ticket.status + '__\n';
+
+        if (resDetails.ticket.assignee_id) {
+            md += 'Assignee: __' + getUserName(resDetails.ticket.assignee_id) + '__\n';
+            usersEc[resDetails.ticket.assignee_id]=getUserName(resDetails.ticket.assignee_id);
+        }
+
         if (resDetails.ticket.recipient) {
             md += 'Recipients: __' + resDetails.ticket.recipient + '__\n';
         }
 
-
         md += "#### Description\n";
-        md += resDetails.ticket.description + "\n";
+        md += quoteMd(resDetails.ticket.description) + "\n";
 
-
-        var fieldsMd='';
+        var fieldsMd = '';
+        var fieldsEc = {};
         for (var i = 0; i < resDetails.ticket.custom_fields.length; i++) {
             if (resDetails.ticket.custom_fields[i].value) {
-                md += "- __" + getCustomFieldName(resDetails.ticket.custom_fields[i].id) + "__: " + resDetails.ticket.custom_fields[i].value + "\n";
+                fieldsMd += "- __" + getCustomFieldName(resDetails.ticket.custom_fields[i].id) + "__: " + resDetails.ticket.custom_fields[i].value + "\n";
+                fieldsEc[resDetails.ticket.custom_fields[i].id] = getCustomFieldName(resDetails.ticket.custom_fields[i].id)
             }
         }
         if (fieldsMd) {
             md += "#### Custom fields\n";
-            md += fieldMd;
+            md += fieldsMd;
         }
 
-        newContext.subject = resDetails.ticket.id;
+        newContext.id = resDetails.ticket.id;
         newContext.subject = resDetails.ticket.subject;
         newContext.created_at = resDetails.ticket.created_at;
         newContext.description = resDetails.ticket.description;
@@ -408,10 +471,19 @@ script:
         newContext.status = resDetails.ticket.status;
         newContext.attachments = [];
 
-        resComments = sendRequest('GET', 'tickets/' + args.id + '/comments.json');
+        resComments = sendRequest('GET', 'tickets/' + ticketId + '/comments.json');
+
+        if (resComments.comments[0].attachments.length>0) {
+            md += '#### Attachments\n';
+            resComments.comments[0].attachments.forEach(function(attachment) {
+                md += '- ' +  attachment.id.toString() + ': ' + attachment.file_name + '\n';
+            });
+
+
+        }
 
         // starting at 1, as the first comment is actually the ticket description
-        for (var i = 1; i < resComments.comments.length; i++) {
+        for (var i = resComments.comments.length - 1; i > 0; i--) {
             var userName = getUserName(resComments.comments[i].author_id)
 
             if (resComments.comments[i].public) {
@@ -420,29 +492,21 @@ script:
                 md += '##### Private comment #' + (i+1) + ' ' + resComments.comments[i].created_at + ' by ' + userName + '\n';
             }
 
-            md += resComments.comments[i].body + '\n\n';
+            md += quoteMd(resComments.comments[i].body) + '\n\n';
 
             if (resComments.comments[i].attachments.length > 0) {
-                md += '- __Attachments ids__: ';
+                md += '- Attachments\n';
+                resComments.comments[i].attachments.forEach(function(attachment) {
+                    md += '   - ' +  attachment.id.toString() + ': ' + attachment.file_name + '\n';
+                    newContext.attachments.push({id: attachment.id, filename: attachment.file_name});
+                });
+
             }
-
-
-
-            for (var j = 0; j < resComments.comments[i].attachments.length - 1; j++) {
-                md += resComments.comments[i].attachments[j].id + ", ";
-                newContext.attachments.push({id: resComments.comments[i].attachments[j].id});
-            }
-            if (resComments.comments[i].attachments.length > 0) {
-                md += resComments.comments[i].attachments[resComments.comments[i].attachments.length - 1].id + "\n";
-                newContext.attachments.push({id: resComments.comments[i].attachments[resComments.comments[i].attachments.length - 1].id});
-            }
-
-            md += '\n';
         }
 
-        context = dq(invContext, 'Ticket(val.id == ' + args.id + ').id');
+        context = dq(invContext, 'Ticket(val.id == ' + ticketId + ').id');
         if (context) {
-            ec['Ticket(val.id == ' + args.id + ')'] = newContext;
+            ec['Ticket(val.id == ' + ticketId + ')'] = newContext;
         } else {
             ec.Ticket = newContext;
         }
@@ -450,17 +514,26 @@ script:
 
         var res = {
             TicketDetails: resDetails,
-            TicketComments: resComments
+            TicketComments: resComments,
+            Users: usersEc,
+            CustomFields: fieldsEc
         }
 
-        warResults.push({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
-        return (warResults);
+        return({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
     };
 
 
-    var getAttachment = function(id) {
-        var res = sendRequest('GET', 'attachments/' + id + '.json');
-        var attachBin = http(res.attachment.content_url,{Method: 'GET', Username: params.username + '/token', Password: params.api},params.insecure,params.proxy);
+    var getAttachment = function() {
+        var attachmentId = getAttachmentId();
+
+        var res = sendRequest('GET', 'attachments/' + attachmentId + '.json');
+        var attachBin = http(res.attachment.content_url,{
+                    Method: 'GET',
+                    Username: params.username + '/token',
+                    Password: params.api
+                },
+                params.insecure,
+                params.proxy);
 
         var createdFileID = saveFile(attachBin.Body);
         return ({Type: 3, FileID: createdFileID, File: res.attachment.file_name, Contents: res.attachment.file_name});
@@ -510,19 +583,21 @@ script:
             sertime = now.time;
         }
 
-        var att = {query: 'type:ticket created>' + sertime};
+        var att = {query: 'type:ticket created>' + sertime + ' ' + params.fetchQuery};
         res = sendRequest('GET', 'search.json', '', att);
 
         if (res.results.length > 0) {
             for (var i = 0; i < res.results.length; i++) {
 
                 var resComments = sendRequest('GET', 'tickets/' + res.results[i].id + '/comments.json');
-                if (resComments.comments.length > 0) {
-                    labels.push({type: 'isTicketAttach', value: 'true'});
-                }
+                resComments.comments[0].attachments.forEach(function(attachment) {
+                    labels.push({type: 'TicketAttachment', value: attachment.id.toString() + ':' + attachment.file_name});
+                });
 
                 var ticketId = res.results[i].id + '';
-                labels.push({type: 'TicketId', value: ticketId});
+                labels.push({type: 'TicketId', value: ticketId.toString()});
+                labels.push({type: 'TicketSubject', value: res.results[i].subject});
+                labels.push({type: 'TicketCreated', value: res.results[i].created_at});
 
                 incidents.push({
                     name: parseInt(res.results[i].id) + ' - ' + res.results[i].subject,
@@ -563,6 +638,9 @@ script:
         case 'zendesk-update-ticket':
             return updateTicket();
 
+        case 'zendesk-add-comment':
+            return addComment();
+
         case 'zendesk-ticket-details':
             return getTicketDetails();
 
@@ -570,7 +648,11 @@ script:
             return listAgents();
 
         case 'zendesk-get-attachment':
-            return getAttachment(args.id);
+            return getAttachment();
+
+        case 'zendesk-clear-cache':
+            setIntegrationContext({});
+            return 'Cache cleared';
 
         case 'fetch-incidents':
             return fetchIncidents();
@@ -662,8 +744,9 @@ script:
   - name: zendesk-ticket-details
     arguments:
     - name: id
-      required: true
       default: true
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
     outputs:
     - contextPath: Ticket.subject
       description: Subject of the Zendesk ticket
@@ -684,15 +767,6 @@ script:
       description: The email of the user asking for support through the ticket
     - name: assignee_email
       description: The email of the agent to assign the ticket to
-    - name: comment
-      description: Comment body
-    - name: private
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Does the body private comment
-      defaultValue: "no"
     - name: type
       auto: PREDEFINED
       predefined:
@@ -726,9 +800,9 @@ script:
         to them when the ticket is created
       isArray: true
     - name: id
-      required: true
       default: true
-      description: Ticket ID to update
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
     - name: assignee_email
       description: The email address of the agent to assign the ticket to
     - name: status
@@ -743,6 +817,30 @@ script:
     - name: custom_fields
       description: 'An array of the custom fields of the ticket. For example: fieldid=text,fieldid=text'
     description: Update Zendesk ticket
+  - name: zendesk-add-comment
+    arguments:
+    - name: comment
+      description: Comment text to add
+      required: true
+      default: true
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Add as private comment
+      defaultValue: "no"
+    - name: id
+      description: Ticket ID. If not provided - the command will use the current incident
+        details (for tickets that were created by the zendesk integration)
+    - name: addFooter
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Add Demisto footer to comment
+      defaultValue: "yes"
+    description: Add comment to existing Zendesk ticket
   - name: zendesk-list-agents
     arguments: []
     outputs:
@@ -763,4 +861,7 @@ script:
       required: true
       description: Attachment id
     description: Return the attachment from Zendesk
+  - name: zendesk-clear-cache
+    arguments: []
+    description: Clear the Zendesk integration cache
   isfetch: true

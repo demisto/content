@@ -32,8 +32,8 @@ script:
     };
 
     var cveToMd = function(o) {
-        if (o.id) {
-            var md = '## cicle.lu CVE: ' + o.id + '\n';
+        if (o && o.id) {
+            var md = '### cicle.lu CVE: ' + o.id + '\n';
             md += 'Summary: **' + o.summary + '**\n';
             md += 'Published: **' + o.Published + '**\n';
             md += 'Modified: **' + o.Modified + '**\n';
@@ -54,7 +54,7 @@ script:
                 md += '### Ranking' + '\n';
                 md += objToMd(o.ranking) + '\n';
             }
-            if (o.vulnerable_configuration) {
+            if (o.vulnerable_configuration && o.vulnerable_configuration.length > 0) {
                 md += '### Vulnerable Configurations' + '\n';
                 md += arrToMd(o.vulnerable_configuration) + '\n';
             }
@@ -64,7 +64,7 @@ script:
     };
 
     var cveToContext = function(o) {
-        if (o.id) {
+        if (o && o.id) {
             return {ID: o.id, CVSS: o.cvss, Published: o.Published, Modified: o.Modified, Description: o.summary};
         }
         return null;

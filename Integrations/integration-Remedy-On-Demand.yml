@@ -17,7 +17,7 @@ configuration:
   name: port
   defaultvalue: "8008"
   type: 0
-  required: true
+  required: false
 - display: Username
   name: credentials
   defaultvalue: ""
@@ -38,7 +38,10 @@ script:
     // remove '/' at the end of the url (if exists)
     params.url = params.url.replace(/[\/]+$/, '');
 
-    var baseUrl = params.url + ':' + params.port + '/';
+    var baseUrl = params.url;
+    if (params.port) {
+        baseUrl = baseUrl + ':' + params.port;
+    }
     var insecure = params.insecure;
     var proxy = params.proxy;
 
@@ -46,7 +49,7 @@ script:
     var preperIncId = function (incId) {
         var res = '000000000000000' + incId;
         return res.substr(-15);
-    }
+    };
 
     var createTableEntry = function (name, contents, context, headers) {
         return {
@@ -61,7 +64,7 @@ script:
             // context
             EntryContext: context
         };
-    }
+    };
 
     // mutetor that removes all falsly fields
     var filterEmptyFields = function(obj) {
@@ -70,7 +73,7 @@ script:
                 delete obj[key];
             }
         });
-    }
+    };
 
     var sendRequest = function(url, token, method, body) {
 
@@ -100,7 +103,7 @@ script:
     };
 
     var login = function() {
-        var url = baseUrl + 'api/jwt/login/';
+        var url = baseUrl + '/api/jwt/login/';
 
         var body = {
             username: params.credentials.identifier,
@@ -127,12 +130,12 @@ script:
 
         // retrun the body which is tokenKey
         return res.Body;
-    }
+    };
 
     var logout = function(token) {
-        var url = baseUrl + 'api/jwt/logout/';
+        var url = baseUrl + '/api/jwt/logout/';
         sendRequest(url, token, 'POST');
-    }
+    };
 
     var convertIncidentToTicket = function(incident) {
         return {
@@ -145,10 +148,10 @@ script:
             Urgency: incident.Urgency,
             Type: incident.Service_Type
         };
-    }
+    };
 
     var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency) {
-        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create';
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
         var token = login();
 
         var body = {
@@ -177,10 +180,10 @@ script:
         };
 
         return createTableEntry("Incident created:",incident, context);
-    }
+    };
 
     var getIncident = function(id, title) {
-        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(id);
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(id);
         var token = login();
         var res = sendRequest(url, token);
         logout(token);
@@ -189,12 +192,12 @@ script:
 
         var context = {
             'Ticket(val.ID && val.ID == obj.ID)': convertIncidentToTicket(incident)
-        }
+        };
         return createTableEntry(title || "Incident:",incident, context);
-    }
+    };
 
     var fetchIncidents = function(query) {
-        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/';
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/';
         if(query) {
             url += '?q=' + encodeURIComponent(query);
         }
@@ -209,10 +212,10 @@ script:
             'Ticket(val.ID && val.ID == obj.ID)': incidents.map(convertIncidentToTicket)
         };
         return createTableEntry("Incidents:",incidents, context);
-    }
+    };
 
     var updateIncident = function(incID, updateObject) {
-        var url = baseUrl + 'api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(incID);
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(incID);
         var token = login();
 
         filterEmptyFields(updateObject);
@@ -222,7 +225,7 @@ script:
 
         sendRequest(url, token, "PUT", JSON.stringify(body));
         return getIncident(incID, 'Updated incident:');
-    }
+    };
 
     switch (command) {
         case 'test-module':
@@ -465,3 +468,4 @@ script:
       description: Ticket service type
     description: Update exiting incident
 hidden: false
+releaseNotes: "Port parameter is now optional"
