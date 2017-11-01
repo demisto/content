@@ -181,6 +181,12 @@ script:
         table = [extract_item_output(item) for item in items]
         return table
 
+    def get_projection(collector, outputs):
+        return {
+            ProjectionConstants.NAME: collector,
+            ProjectionConstants.OUTPUTS: outputs or MAR_COLLECTORS.get(collector)
+        }
+
     def search(collector, outputs, filter_by, filter_operator, filter_value):
         config = get_client_config()
         with DxlClient(config) as client:
@@ -196,7 +202,7 @@ script:
                 )
             else:
                 if (not filter_by or not filter_operator or not filter_value):
-                    return create_error_entry('you must specify filter-by, filter-operator & filter-value (or specify none of them)')
+                    raise Exception('you must specify filter-by, filter-operator & filter-value (or specify none of them)')
                 else:
                     result_context = mar_client.search(
                         projections=[{
@@ -206,6 +212,36 @@ script:
                         conditions={ ConditionConstants.OR: [{
                             ConditionConstants.AND: [{
                                 ConditionConstants.COND_NAME: collector,
+                                ConditionConstants.COND_OUTPUT: filter_by,
+                                ConditionConstants.COND_OP: FILTER_OPERATORS[filter_operator],
+                                ConditionConstants.COND_VALUE: filter_value
+                            }]
+                        }]}
+                    )
+
+            if result_context.has_results:
+                return result_context.get_results()
+
+            return None
+
+    def search_multiple(collectors, filter_collector, filter_by, filter_operator, filter_value):
+        config = get_client_config()
+        with DxlClient(config) as client:
+            client.connect()
+            mar_client = MarClient(client)
+            if (not filter_collector):
+                result_context = mar_client.search(
+                    projections=[get_projection(c, None) for c in collectors]
+                )
+            else:
+                if (not filter_by or not filter_operator or not filter_value):
+                    raise Exception('you must specify filter-by, filter-operator & filter-value when you provide filter_collector argument')
+                else:
+                    result_context = mar_client.search(
+                        projections=[get_projection(c, None) for c in collectors],
+                        conditions={ ConditionConstants.OR: [{
+                            ConditionConstants.AND: [{
+                                ConditionConstants.COND_NAME: filter_collector,
                                 ConditionConstants.COND_OUTPUT: filter_by,
                                 ConditionConstants.COND_OP: FILTER_OPERATORS[filter_operator],
                                 ConditionConstants.COND_VALUE: filter_value
@@ -237,7 +273,23 @@ script:
         context = {
             'MAR.' + collector: table
         }
-        return create_entry('Search result for ' + collector, result, table, context)
+        return create_entry('Search Result For ' + collector, result, table, context)
+
+    def search_multiple_wrapper(collectors, filter_collector, filter_by, filter_operator, filter_value):
+        try:
+            result = search_multiple(collectors, filter_collector, filter_by, filter_operator, filter_value)
+        except Exception as ex:
+            return create_error_entry(str(ex))
+
+        if not result:
+            return 'No items were found'
+
+        table = search_result_to_table(result)
+        context = {
+            'MAR.SearchMultiple': table
+        }
+        return create_entry('Search-Multiple Results', result, table, context)
+
 
     def mar_collectors_list():
         collectors_table = [{'Name': c, 'Outputs': ', '.join(MAR_COLLECTORS[c])} for c in MAR_COLLECTORS]
@@ -253,6 +305,16 @@ script:
             results = search_wrapper(
                 args.get('collector'),
                 args.get('outputs'),
+                args.get('filter-by'),
+                args.get('filter-operator'),
+                args.get('filter-value')
+            )
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'mar-search-multiple':
+            results = search_multiple_wrapper(
+                args.get('collectors').split(','),
+                args.get('filter_collector'),
                 args.get('filter-by'),
                 args.get('filter-operator'),
                 args.get('filter-value')
@@ -298,10 +360,10 @@ script:
       - WinRegistry
       description: The collector to query
     - name: outputs
-      description: Comma separated fields (outputs) to view - run `mar-collectors-list`
+      description: Comma separated fields (outputs). Run `mar-collectors-list` to view all collectors & fields
         command for all collectors outputs, shows all outputs if not supplied
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address) -  - run `mar-collectors-list`
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields
         command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
@@ -328,4 +390,90 @@ script:
   - name: mar-collectors-list
     arguments: []
     description: Returns a list of all collectors and their outputs
+  - name: mar-search-multiple
+    arguments:
+    - name: collectors
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - CommandLineHistory
+      - CurrentFlow
+      - DNSCache
+      - EnvironmentVariables
+      - Files
+      - HostEntries
+      - HostInfo
+      - InstalledCertificates
+      - InstalledDrivers
+      - InstalledUpdates
+      - InteractiveSessions
+      - LocalGroups
+      - LoggedInUsers
+      - NetworkFlow
+      - NetworkInterfaces
+      - NetworkSessions
+      - NetworkShares
+      - Processes
+      - ScheduledTasks
+      - Services
+      - Software
+      - Startup
+      - UsbConnectedStorageDevices
+      - UserProfiles
+      - WinRegistry
+      description: The collectors to query
+      isArray: true
+    - name: filter_collector
+      auto: PREDEFINED
+      predefined:
+      - CommandLineHistory
+      - CurrentFlow
+      - DNSCache
+      - EnvironmentVariables
+      - Files
+      - HostEntries
+      - HostInfo
+      - InstalledCertificates
+      - InstalledDrivers
+      - InstalledUpdates
+      - InteractiveSessions
+      - LocalGroups
+      - LoggedInUsers
+      - NetworkFlow
+      - NetworkInterfaces
+      - NetworkSessions
+      - NetworkShares
+      - Processes
+      - ScheduledTasks
+      - Services
+      - Software
+      - Startup
+      - UsbConnectedStorageDevices
+      - UserProfiles
+      - WinRegistry
+      description: The collector to filter by (e.g. HostInfo)
+    - name: filter-by
+      description: Field name (output) of `filter_collector` to filter by (e.g. ip_address)
+        . Run `mar-collectors-list` to view all collectors & fields
+    - name: filter-operator
+      auto: PREDEFINED
+      predefined:
+      - GreaterEqualThan
+      - GreaterThan
+      - LessEqualThan
+      - LessThan
+      - Equals
+      - Contains
+      - StartsWith
+      - EndsWith
+      - Before
+      - After
+      description: Filtering operatior
+    - name: filter-value
+      description: Filtering value of the `filter-by` field
+    outputs:
+    - contextPath: Mar.SearchMultiple
+      description: The result of the search query
+    description: Search endpoint data crossed by multiple collectors
   dockerimage: demisto/dxl

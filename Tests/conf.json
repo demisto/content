@@ -97,8 +97,21 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "name" : "McAfee NSM",
+            "playbookID" : "McAfeeNSMTest",
+            "timeout" : 300
+        },
+        {
             "name": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test"
+        },
+        {
+            "name": "PhishTank",
+            "playbookID": "PhishTank Testing"
+        },
+        {
+            "name": "iDefense",
+            "playbookID": "iDefenseTest"
         },
         {
             "name": "McAfee Threat Intelligence Exchange",

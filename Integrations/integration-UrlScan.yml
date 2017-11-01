@@ -490,4 +490,3 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
-releaseNotes: "urlscan-submit now supports private submits"
