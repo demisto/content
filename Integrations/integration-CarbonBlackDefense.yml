@@ -78,6 +78,13 @@ script:
                 addSiemKeyToHeaders: addSiemKeyToHeaders
             };
         })();
+        var policyData = [
+            {to: 'Id', from: 'id'},
+            {to: 'PriorityLevel', from: 'priorityLevel'},
+            {to: 'SystemPolicy',from: 'systemPolicy'},
+            {to: 'LatestRevision',from: 'latestRevision'},
+            {to: 'Policy',from: 'policy'}
+        ];
         var commands = {
             'cbd-get-devices-status': {
                 path: 'device',
@@ -189,33 +196,6 @@ script:
                 extended: true,
                 translator: [
                     {
-                        contextPath: 'Endpoint(val.Hostname==obj.Hostname)',
-                        innerPath: 'results',
-                        contextOnly: true,
-                        data: [
-                            {to: 'Hostname', from: 'deviceDetails.deviceName'},
-                            {to: 'Domain', from: 'deviceDetails.deviceHostName'},
-                            {to: 'OS', from: 'deviceDetails.deviceType'},
-                            {to: 'IPAddress', from: 'deviceDetails.deviceIpV4Address'},
-                        ]
-                    },
-                    {
-                        contextPath: 'Process(val.PID==obj.PID)',
-                        innerPath: 'results',
-                        contextOnly: true,
-                        data: [
-                            {to: 'PID', from: 'processDetails.processId'},
-                            {to: 'Name', from: 'processDetails.name'},
-                            {to: 'Endpoint', from: 'processDetails.deviceName'},
-                            {to: 'CommandLine', from: 'processDetails.commandLine'},
-                            {to: 'MD5', from: 'processDetails.md5Hash'},
-                            {to: 'SHA1', from: 'processDetails.sha256Hash'},
-                            {to: 'Path', from: 'processDetails.applicationPath'},
-                            {to: 'ParentName', from: 'processDetails.parentName'},
-                            {to: 'ParentID', from: 'processDetails.parentPid'}
-                        ]
-                    },
-                    {
                         contextPath: 'CarbonBlackDefense.FindEvents.Results(val.EventId==obj.EventId)',
                         innerPath: 'results',
                         title: 'Carbon Black Defense Find Events',
@@ -266,11 +246,38 @@ script:
                             { to: 'TargetApp.Sha256Hash', from: 'targetApp.sha256Hash'},
                             { to: 'TargetApp.ApplicationName', from: 'targetApp.applicationName'},
                             { to: 'TargetApp.EffectiveReputationSource', from: 'targetApp.effectiveReputationSource'}
+                        ],
+                        contextTranslator : [
+                            {
+                                contextPath: 'Endpoint(val.Hostname==obj.Hostname)',
+                                innerPath: 'results',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceDetails.deviceName'},
+                                    {to: 'Domain', from: 'deviceDetails.deviceHostName'},
+                                    {to: 'OS', from: 'deviceDetails.deviceType'},
+                                    {to: 'IPAddress', from: 'deviceDetails.deviceIpV4Address'},
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.PID==obj.PID)',
+                                innerPath: 'results',
+                                data: [
+                                    {to: 'PID', from: 'processDetails.processId'},
+                                    {to: 'Name', from: 'processDetails.name'},
+                                    {to: 'Endpoint', from: 'processDetails.deviceName'},
+                                    {to: 'CommandLine', from: 'processDetails.commandLine'},
+                                    {to: 'MD5', from: 'processDetails.md5Hash'},
+                                    {to: 'SHA1', from: 'processDetails.sha256Hash'},
+                                    {to: 'Path', from: 'processDetails.applicationPath'},
+                                    {to: 'ParentName', from: 'processDetails.parentName'},
+                                    {to: 'ParentID', from: 'processDetails.parentPid'}
+                                ]
+                            }
                         ]
                     },
                     {
                         contextPath: 'CarbonBlackDefense.FindEvents.TotalResults(val.TotalResults==obj.TotalResults)',
-                        title: 'Carbon Black Defense Find Events',
+                        title: 'Carbon Black Defense Find Events - Total Results',
                         data: [{to:'TotalResults', from: 'totalResults'}]
                     }
                 ]
@@ -280,33 +287,6 @@ script:
                 method: 'GET',
                 extended: true,
                 translator: [
-                    {
-                        contextPath: 'Endpoint',
-                        contextOnly: true,
-                        innerPath: 'deviceDetails',
-                        data: [
-                            {to: 'Hostname', from: 'deviceName'},
-                            {to: 'Domain', from: 'deviceHostName'},
-                            {to: 'OS', from: 'deviceType'},
-                            {to: 'IPAddress', from: 'deviceIpV4Address'},
-                        ]
-                    },
-                    {
-                        contextPath: 'Process',
-                        contextOnly: true,
-                        innerPath: 'processDetails',
-                        data: [
-                            {to: 'PID', from: 'processId'},
-                            {to: 'Name', from: 'name'},
-                            {to: 'Endpoint', from: 'deviceName'},
-                            {to: 'CommandLine', from: 'commandLine'},
-                            {to: 'MD5', from: 'md5Hash'},
-                            {to: 'SHA1', from: 'sha256Hash'},
-                            {to: 'Path', from: 'applicationPath'},
-                            {to: 'ParentName', from: 'parentName'},
-                            {to: 'ParentID', from: 'parentPid'}
-                        ]
-                    },
                     {
                         contextPath: 'CarbonBlackDefense.FindEvent.EventInfo(val.EventId==obj.EventId)',
                         innerPath: 'eventInfo',
@@ -369,6 +349,33 @@ script:
                           { to: 'ProcessDetails.PrivatePid', from: 'processDetails.privatePid'},
                           { to: 'ProcessDetails.TargetName', from: 'processDetails.targetName'},
                           { to: 'ProcessDetails.TargetPrivatePid', from: 'processDetails.targetPrivatePid'}
+                        ],
+                        contextTranslator: [
+                            {
+                                contextPath: 'Endpoint',
+                                innerPath: 'deviceDetails',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceName'},
+                                    {to: 'Domain', from: 'deviceHostName'},
+                                    {to: 'OS', from: 'deviceType'},
+                                    {to: 'IPAddress', from: 'deviceIpV4Address'},
+                                ]
+                            },
+                            {
+                                contextPath: 'Process',
+                                innerPath: 'processDetails',
+                                data: [
+                                    {to: 'PID', from: 'processId'},
+                                    {to: 'Name', from: 'name'},
+                                    {to: 'Endpoint', from: 'deviceName'},
+                                    {to: 'CommandLine', from: 'commandLine'},
+                                    {to: 'MD5', from: 'md5Hash'},
+                                    {to: 'SHA1', from: 'sha256Hash'},
+                                    {to: 'Path', from: 'applicationPath'},
+                                    {to: 'ParentName', from: 'parentName'},
+                                    {to: 'ParentID', from: 'parentPid'}
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -401,7 +408,7 @@ script:
                         ]
                     },
                     {
-                        title: 'Carbon Black Defense Get Processes.TotalResults',
+                        title: 'Carbon Black Defense Get Processes - Total Results',
                         contextPath:'CarbonBlackDefense.GetProcesses',
                         data: [{to: 'TotalResults',from: 'totalResults'}],
                     }
@@ -412,43 +419,6 @@ script:
                 method: 'GET',
                 extended: true,
                 translator : [
-                    {
-                        contextPath: 'Endpoint(val.deviceName==obj.deviceName)',
-                        innerPath: 'deviceInfo',
-                        contextOnly: true,
-                        data: [
-                            {to: 'Hostname', from: 'deviceName'},
-                            {to: 'OS', from: 'deviceType'}
-                        ]
-                    },
-                    {
-                        contextPath: 'Process(val.processId==obj.processId)',
-                        contextOnly: true,
-                        innerPath: 'events',
-                        data: [
-                            {to: 'PID', from: 'processId'},
-                            {to: 'CommandLine', from: 'commandLine'},
-                            {to: 'MD5', from: 'processMd5Hash'},
-                            {to: 'Path', from: 'applicationPath'},
-                            {to: 'ParentName', from: 'parentName'},
-                            {to: 'ParentID', from: 'parentPid'}
-                        ]
-                    },
-                    {
-                        contextPath: 'Process(val.deviceName==obj.deviceName)',
-                        contextOnly: true,
-                        innerPath: 'deviceInfo',
-                        data: [{to: 'Endpoint', from: 'deviceName'}]
-                    },
-                    {
-                        contextPath: 'Account(val.Email==obj.Email)',
-                        contextOnly: true,
-                        innerPath: 'deviceInfo',
-                        data: [
-                            {to: 'Email', from: 'userName'},
-                            {to: 'Groups', from: 'group'}
-                        ]
-                    },
                     {
                         contextPath: 'CarbonBlackDefense.GetAlertDetails.DeviceInfo(val.DeviceId==obj.DeviceId)',
                         title: 'Carbon Black Defense Get Alert Details',
@@ -492,6 +462,41 @@ script:
                             { to: 'ThreatInfo.ThreatId', from: 'threatInfo.threatId'},
                             { to: 'ThreatInfo.ThreatScore', from: 'threatInfo.threatScore'},
                             { to: 'ThreatInfo.Time', from: 'threatInfo.time'}
+                        ],
+                        contextTranslator: [
+                            {
+                                contextPath: 'Endpoint(val.deviceName==obj.deviceName)',
+                                innerPath: 'deviceInfo',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceName'},
+                                    {to: 'OS', from: 'deviceType'}
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.processId==obj.processId)',
+                                innerPath: 'events',
+                                data: [
+                                    {to: 'PID', from: 'processId'},
+                                    {to: 'CommandLine', from: 'commandLine'},
+                                    {to: 'MD5', from: 'processMd5Hash'},
+                                    {to: 'Path', from: 'applicationPath'},
+                                    {to: 'ParentName', from: 'parentName'},
+                                    {to: 'ParentID', from: 'parentPid'}
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.deviceName==obj.deviceName)',
+                                innerPath: 'deviceInfo',
+                                data: [{to: 'Endpoint', from: 'deviceName'}]
+                            },
+                            {
+                                contextPath: 'Account(val.Email==obj.Email)',
+                                innerPath: 'deviceInfo',
+                                data: [
+                                    {to: 'Email', from: 'userName'},
+                                    {to: 'Groups', from: 'group'}
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -514,13 +519,7 @@ script:
                         title: 'Carbon Black Defense Get Policies',
                         contextPath: 'CarbonBlackDefense.GetPolicies(val.Id==obj.Id)',
                         innerPath: 'results',
-                        data: [
-                            {to: 'Id', from: 'id'},
-                            {to: 'PriorityLevel', from: 'priorityLevel'},
-                            {to: 'SystemPolicy',from: 'systemPolicy'},
-                            {to: 'LatestRevision',from: 'latestRevision'},
-                            {to: 'Policy',from: 'policy'}
-                        ]
+                        data: policyData
                     }
                 ]
 
@@ -534,13 +533,7 @@ script:
                         title: 'Carbon Black Defense Get Policy',
                         contextPath: 'CarbonBlackDefense.GetPolicy(val.Id==obj.Id)',
                         innerPath: 'policyInfo',
-                        data: [
-                            {to: 'Id', from: 'id'},
-                            {to: 'PriorityLevel', from: 'priorityLevel'},
-                            {to: 'SystemPolicy',from: 'systemPolicy'},
-                            {to: 'LatestRevision',from: 'latestRevision'},
-                            {to: 'Policy',from: 'policy'}
-                        ]
+                        data: policyData
                     }
                 ]
             },
@@ -631,24 +624,32 @@ script:
             };
             var entry = {
               Type: entryTypes.note,
-              Contents: '',
-              ContentsType: formats.text
+              Contents: result,
+              ContentsType: formats.json,
+              ReadableContentsFormat: formats.markdown,
+              EntryContext: {}
             };
             var content = translator.innerPath ? dq(result, translator.innerPath) : result;
             var translatedContext = mapObjFunction(translator.data) (content);
             var translatedMD = mapObjFunction(translator.data, filter) (content);
             var context = createContext(translatedContext);
-            entry.EntryContext = {};
             entry.EntryContext[translator.contextPath] = context;
-            if (translator.contextOnly) {
-              return entry;
-            }
-            entry.Contents = result;
-            entry.ContentsFormat = formats.json;
-            entry.ReadableContentsFormat = formats.markdown;
             entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform || dotToSpace);
+            if (translator.contextTranslator) {
+                var conTranslator = translator.contextTranslator;
+                for (var i = 0; i < conTranslator.length; i++ ) {
+                    addContextToEntry(result, entry, conTranslator[i]);
+                }
+            }
             return entry;
         };
+
+        function addContextToEntry(result, entry, translator) {
+            var content = translator.innerPath ? dq(result, translator.innerPath) : result;
+            var translatedContext = mapObjFunction(translator.data) (content);
+            var context = createContext(translatedContext);
+            entry.EntryContext[translator.contextPath] = context;
+        }
         var generateQuery = function(cmd) {
             var seperateQueryParams = (function() {
                 var seperated = {};
