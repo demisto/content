@@ -116,7 +116,7 @@
         {
             "name": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout" : 300
+            "timeout" : 500
         }
     ],
     "skipped": [
