@@ -1,0 +1,157 @@
+commonfields:
+  id: Azure Active Directory
+  version: -1
+name: Azure Active Directory
+display: Azure Active Directory
+category: Data Enrichment
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgCAYAAADbcAZoAAAjN0lEQVR42uzBAQEAAACAkP6v7ggCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIDZgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXYgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV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VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVhDw4EAAAAAID8XxtBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVpDw4JAAAAAAT9f+0JIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACjAN5w9bj2oUGxAAAAAElFTkSuQmCC
+description: Azure Active Directory (Azure AD) is Microsoft's multi-tenant, cloud
+  based directory and identity management service
+detaileddescription: |+
+  1. Go to https://apps.dev.microsoft.com/ and create register an application.
+        1.1 Copy the application ID
+        1.2 Generate an Application Secret and copy it
+        1.3  Choose a redirect URL and copy it
+        1.4  Set up the following delegated permissions: IdentityRiskEvent.Read.All and User.Read.All
+        1.5  Set up the following application permissions: IdentityRiskEvent.Read.All
+  2. Complete the following URL with the values from the previous section and follow it: https://login.microsoftonline.com/{Directory Tenant or ‘Common’}/adminconsent?client_id={Application ID}&redirect_uri={Redirect URL}
+  3. Click 'Accept'
+  4. Fill in the parameters for the integration instance:
+        4.1 Login URL: https://login.microsoftonline.com
+        4.2 Tenant Domain:  The directory tenant that you want to request permission from. This can be in GUID or friendly name format.
+        4.3 Application ID:  The Application ID (from section 1)
+        4.4 Application Secret: the application secret (from section 1)
+
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Login URL (e.g. https://login.microsoftonline.com)
+  name: login_url
+  defaultvalue: https://login.microsoftonline.com
+  type: 0
+  required: true
+- display: Tenant Domain
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Application ID
+  name: client_id
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Application Secret
+  name: secret
+  defaultvalue: ""
+  type: 4
+  required: false
+script:
+  script: |
+    var sendRequest = function(url, method, headers, body) {
+        var res = http(
+            url,
+            {
+                Method:  method,
+                Headers: {
+                    'Content-Type': ['application/x-www-form-urlencoded'],
+                    'Authorization' : token? [token_type + ' ' + token] : undefined
+                }, //TODO add headers
+                Body : body? encodeToURLQuery(body).substr(1) : undefined
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.Body;
+    };
+
+    var client_id = params.client_id;
+    var client_secret = params.secret;
+    var login_url = params.login_url.replace(/[\/]+$/, '');
+    var tenant_domain = params.domain.replace(/[\/]+$/, '');
+
+    var token;
+    var token_type;
+
+    var getToken = function(){
+        request_url = login_url + '/'+tenant_domain + '/oauth2/v2.0/token';
+        bodyvals = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'grant_type': 'client_credentials',
+            'scope': 'https://graph.microsoft.com/.default'
+        };
+        res = sendRequest(request_url, 'POST', {}, bodyvals);
+        try {
+            result = JSON.parse(res);
+        } catch (err) {
+            throw 'Request Failed. \n'+ res;
+        }
+        token = result['access_token'];
+        token_type = result['token_type'];
+        if(!token || !token_type){
+            throw 'Request failed: missing token\n'+ res;
+        }
+    };
+
+    var fetchLoginEvents = function() {
+        var lastRun = getLastRun();
+        var date = new Date();
+        var now = {value : date.toISOString()};
+        if (!lastRun || !lastRun.value) {
+            date.setDate(date.getDate() - 1);
+            lastRun = {value: date.toISOString()};
+        }
+        request_string = 'https://graph.microsoft.com/beta/identityRiskEvents?filter=createdDateTime%20gt%20'+lastRun.value;
+        res = sendRequest(request_string, 'GET');
+        events = JSON.parse(res).value;
+
+        incidents = [];
+        events.forEach(function(event){
+            incidents.push({name: 'Risky Signin', rawJSON: JSON.stringify(event).replace(/\\"/g, '"')});
+        });
+        setLastRun(now);
+        return JSON.stringify(incidents);
+    };
+
+    var getRiskEvent = function(id){
+        request_string = 'https://graph.microsoft.com/beta/identityRiskEvents/'+id;
+        res = JSON.parse(sendRequest(request_string, 'GET'));
+        return {
+            Type: entryTypes.note,
+            HumanReadable: tableToMarkdown('Azure AD Risk Event', res),
+            HumanReadableFormat: formats.markdown,
+            Contents: res,
+            ContentsFormat: formats.json
+        };
+    };
+
+    getToken();
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+        case 'fetch-incidents':
+            return fetchLoginEvents();
+        case 'azure-get-risk-event':
+            return getRiskEvent(args.id);
+    }
+  type: javascript
+  commands:
+  - name: azure-get-risk-event
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Event id
+    description: Retrieve the properties and relationships of an identity risk event
+  isfetch: true
