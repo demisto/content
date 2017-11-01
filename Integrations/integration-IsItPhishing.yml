@@ -8,21 +8,21 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAATCAYAAABbV8lLAAAAAXN
 description: Collaborative web service that provides validation on whether a URL is
   a phishing page or not by analyzing the content of the webpage
 configuration:
-- display: Customer's name
-  name: name
-  defaultvalue: ""
-  type: 12
-  required: true
-- display: Customer's License
-  name: license
-  defaultvalue: ""
-  type: 12
-  required: true
-- display: Server URL
+  - display: Server URL (e.g. https://192.168.0.1)
   name: url
   defaultvalue: https://ws.isitphishing.org
   type: 0
   required: false
+- display: Customer's name
+  name: name
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Customer's License
+  name: license
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
@@ -35,23 +35,20 @@ configuration:
   required: false
 script:
   script: |+
-    var auth = 'Bearer ' + Base64.encode(params.name + ':' + params.license);
+    var auth = 'Bearer ' + btoa(params.name + ':' + params.license);
 
     var sendRequest = function(method, api, body) {
         var url = params.url;
-        if (url[url.length - 1] === '/') {
-            url = url.substring(0, url.length - 1);
-        }
-
-        var requestUrl = url + '/' + api;
+        var requestUrl = url.replace(/[\/]+$/, '') + '/' + api;
         var res = http(
-            requestUrl + encodeToURLQuery(body),
+            requestUrl,
             {
                 Method: method,
                 Headers: {
                     'Authorization': [auth],
                     'Content-Type': ['application/x-www-form-urlencoded']
-                }
+                },
+                Body: encodeToURLQuery(body).substring(1)
             },
             params.insecure,
             params.proxy
@@ -65,6 +62,7 @@ script:
     };
 
     var isPhishing = function(url, force, smart, area, timeout) {
+        var md;
         var body = {
             name: params.name,
             license: params.license,
@@ -81,29 +79,61 @@ script:
             delete body.timeout;
         }
         var res = sendRequest('POST', 'check', body);
+        var ec = {
+            IsItPhishing: {Url: url},
+            DBotScore: {
+                Indicator: url,
+                Score: 0,
+                Type: 'url',
+                Vendor: 'IsItPhishing'
+            }
+        };
         var resBody = res.Body.trim();
+
+        if (resBody.substring(0,17) == 'TOO_MANY_REQUESTS') {
+          md = 'You have reached the maximum number of requests for your license. You must wait for the returned period of time' + resBody.substring(17) + 'before running requests again.';
+          ec.IsItPhishing.Status = 'TOO_MANY_REQUESTS';
+        }
+        if (resBody.substring(0,5) == 'ERROR') {
+          md = 'An error has occurred. Please refer to the description of the error indicated in the' + resBody.substring(0,5) + 'value.';
+          ec.IsItPhishing.Status = 'ERROR';
+        }
+
         switch (resBody){
             case 'SPAM':
-                return 'URL was identified as spam.';
+                md = 'URL was identified as spam.';
+                ec.IsItPhishing.Status = 'SPAM';
+                ec.DBotScore.Score = 2;
+                break;
             case 'PHISHING':
-                return 'URL was identified as phishing.';
+                md = 'URL was identified as phishing.';
+                ec.IsItPhishing.Status = 'PHISHING';
+                ec.DBotScore.Score = 3;
+                break;
             case 'UNKNOWN':
-                return 'URL is clean.';
+                md = 'URL is clean.';
+                ec.IsItPhishing.Status = 'CLEAN';
+                ec.DBotScore.Score = 1;
+                break;
             case 'TIMEOUT':
-                return 'Timeout for the request has been reached. No verdict was returned for the request, and the URL should be considered clean.';
+                md = 'Timeout for the request has been reached. No verdict was returned for the request, and the URL should be considered clean.';
+                ec.IsItPhishing.Status = 'TIMEOUT';
+                break;
             case 'NOT_EXPLORED':
-                return 'The URL was not analyzed as triggering the analysis may cause collateral damage (unsubscribe, order conformation, etc.)';
+                md = 'The URL was not analyzed as triggering the analysis may cause collateral damage (unsubscribe, order conformation, etc.)';
+                ec.IsItPhishing.Status = 'NOT_EXPLORED';
+                break;
             case 'NOT_AUTHORIZED':
-                return 'Authorization has failed for one of the following reasons:\n• Invalid customer name,\n• Invalid customer license.';
+                md = 'Authorization has failed for one of the following reasons:\n• Invalid customer name,\n• Invalid customer license.';
+                ec.IsItPhishing.Status = 'NOT_AUTHORIZED';
+                break;
             case 'REVOKED':
-                return 'The license provided is no longer valid for one of the following reasons:\n• Validity period has expired,\n• License has been revoked.';
+                md = 'The license provided is no longer valid for one of the following reasons:\n• Validity period has expired,\n• License has been revoked.';
+                ec.IsItPhishing.Status = 'REVOKED';
+                break;
         }
-        if (res.substring(0,17) == 'TOO_MANY_REQUESTS') {
-            return 'You have reached the maximum number of requests for your license. You must wait for the returned period of time' + res.substring(17) + 'before running requests again.';
-        }
-        if (res.substring(0,5) == 'ERROR') {
-            return 'An error has occurred. Please refer to the description of the error indicated in the' + res.substring(0,5) + 'value.';
-        }
+
+        return {Type: entryTypes.note, Contents: resBody, ContentsFormat: formats.text, HumanReadable: md, EntryContext: ec, HumanReadableFormat: formats.text};
     };
 
     switch (command) {
@@ -138,29 +168,16 @@ script:
       description: Timeout in milliseconds. Default value set to 10000, with a minimum
         value of 1000. Once timeout is reached, TIMEOUT response is returned
     outputs:
-    - contextPath: URL was identified as spam.
-      description: if URL is spam
-    - contextPath: URL was identified as phishing.
-      description: if URL is phishing
-    - contextPath: URL is clean.
-      description: if URL is clean
-    - contextPath: Timeout for the request has been reached. No verdict was returned
-        for the request, and the URL should be considered clean.
-      description: if timeout for request has been reached
-    - contextPath: The URL was not analyzed as triggering the analysis may cause collateral
-        damage (unsubscribe, order conformation, etc.)
-      description: if URL was not analyzed
-    - contextPath: Authorization has failed for one of the following reasons Invalid
-        customer name or Invalid customer license.
-      description: if authorization has failed
-    - contextPath: The license provided is no longer valid for one of the following
-        reasons Validity period has expired or License has been revoked.
-      description: if license is not valid
-    - contextPath: You have reached the maximum number of requests for your license.
-        You must wait for the returned period of time (indicated by the %dvalue) before
-        running requests again.
-      description: if reached maximum of requests
-    - contextPath: An error has occurred. Please refer to the description of the error
-        indicated in the %s value.
-      description: if error occurred
+    - contextPath: IsItPhishing.Status
+      description: URL identification result
+    - contextPath: IsItPhishing.Url
+      description: The URL that was tested
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
     description: Checks if URL is phishing
