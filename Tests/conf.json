@@ -112,6 +112,10 @@
         {
             "name": "iDefense",
             "playbookID": "iDefenseTest"
+        },
+        {
+            "name": "TCPIPUtils",
+            "playbookID": "TCPUtils-Test"
         }
     ],
     "skipped": [
