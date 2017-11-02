@@ -35,7 +35,7 @@ tasks:
       script: TCPIPUtils|||ip
       type: regular
       iscommand: true
-      brand: TCPIPUTILS
+      brand: TCPIPUtils
     nexttasks:
       '#none#':
       - "2"
