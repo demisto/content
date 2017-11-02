@@ -32,7 +32,7 @@ tasks:
       version: -1
       name: ip
       description: get information for ip
-      script: TCPIPUTILS|||ip
+      script: TCPIPUtils|||ip
       type: regular
       iscommand: true
       brand: TCPIPUTILS
