@@ -6,7 +6,7 @@ script: |
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes')
   if(!shouldDeleteAll && !args.key) {
-      return 'You must specify key or all=yes';
+      throw 'You must specify key or all=yes';
   }
   if(shouldDeleteAll) {
       fieldsToDelete = Object.keys(invContext);
