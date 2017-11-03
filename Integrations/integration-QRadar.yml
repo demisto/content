@@ -116,7 +116,7 @@ script:
     }
 
     var listSearches = function() {
-        return sendRequest('POST', server + 'api/ariel/searches', {'Content-Type': ['application/json']}, 'searches');
+        return sendRequest('GET', server + 'api/ariel/searches', {'Content-Type': ['application/json']}, 'searches');
     }
 
     var getClosingReasons = function(args) {
