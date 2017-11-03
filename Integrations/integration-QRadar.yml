@@ -118,7 +118,7 @@ script:
             uri = encodeToURLQuery(urlArgs)
         }
 
-        return sendRequest('POST', server + 'api/ariel/searches' + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'searches');
+        return sendRequest('POST', server + 'api/ariel/searches' + uri, {'Content-Type': ['application/json']}, 'searches');
     }
 
     var getClosingReasons = function(args) {
