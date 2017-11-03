@@ -108,10 +108,9 @@ script:
     }
 
     var search = function(query_expression, fields) {
-        var urlArgs;
         var uri = '';
         if (query_expression) {
-            urlArgs = {query_expression: query_expression};
+            var urlArgs = {query_expression: query_expression};
             if (fields) {
                 urlArgs.fields = fields;
             }
