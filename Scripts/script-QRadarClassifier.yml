@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: QRadarClassifier
 deprecated: true
-releaseNotes: 'Deprecated, use "Mapping" feture instead'
+releaseNotes: 'Deprecated, use the Demisto "Classification and Mapping" tool instead'
 script: |
   var QRADAR_CATEGORIES = {
       'Recon' : 'Reconnaissance',
