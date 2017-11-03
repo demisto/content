@@ -108,16 +108,15 @@ script:
     }
 
     var search = function(query_expression, fields) {
-        var uri = '';
-        if (query_expression) {
-            var urlArgs = {query_expression: query_expression};
-            if (fields) {
-                urlArgs.fields = fields;
-            }
-            uri = encodeToURLQuery(urlArgs)
+        var urlArgs = {query_expression: query_expression};
+        if (fields) {
+            urlArgs.fields = fields;
         }
+        return sendRequest('POST', server + 'api/ariel/searches' + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'searches');
+    }
 
-        return sendRequest('POST', server + 'api/ariel/searches' + uri, {'Content-Type': ['application/json']}, 'searches');
+    var listSearches = function() {
+        return sendRequest('POST', server + 'api/ariel/searches', {'Content-Type': ['application/json']}, 'searches');
     }
 
     var getClosingReasons = function(args) {
@@ -224,7 +223,7 @@ script:
         case 'qradar-searches':
             return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
         case 'qradar-list-searches':
-            return addHumanRedable(search(), 'QRadar searches', headers);
+            return addHumanRedable(listSearches(), 'QRadar searches', headers);
         case 'qr-get-search':
         case 'qradar-get-search':
             return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
