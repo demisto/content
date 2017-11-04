@@ -112,6 +112,9 @@
         {
             "name": "iDefense",
             "playbookID": "iDefenseTest"
+        },
+        {
+            "playbookID": "ExposeIncidentOwner-Test"
         }
     ],
     "skipped": [
