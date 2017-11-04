@@ -114,7 +114,6 @@
             "playbookID": "iDefenseTest"
         },
         {
-            "name": "ExposeIncidentOwner",
             "playbookID": "ExposeIncidentOwner-Test"
         }
     ],
