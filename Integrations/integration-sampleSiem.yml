@@ -82,7 +82,7 @@ script:
                     var incidentType = getIncidentType();
                     var incident = buildIncident(incidentType);
                     incident.name = 'Sample Incident - ' + incidentType;
-                    incident.rawJSON = JSON.stringify({incident});
+                    incident.rawJSON = JSON.stringify(incident);
                     incidents.push(incident);
                 }
             }
