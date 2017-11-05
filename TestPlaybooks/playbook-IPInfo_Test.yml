@@ -1,14 +1,14 @@
 id: IPInfoTest
-version: 18
+version: -1
 name: IPInfoTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3fcfb95e-64bd-48bc-8b05-51d7d2337ad8
+    taskid: f26b27ab-8ef8-4670-8692-50141359ceec
     type: start
     task:
-      id: 3fcfb95e-64bd-48bc-8b05-51d7d2337ad8
+      id: f26b27ab-8ef8-4670-8692-50141359ceec
       version: -1
       name: ""
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 1da32561-ba3f-47c4-837d-38fdc4f0605d
+    taskid: 5cb15fd6-585d-457a-8cc2-33afa53bc71a
     type: regular
     task:
-      id: 1da32561-ba3f-47c4-837d-38fdc4f0605d
+      id: 5cb15fd6-585d-457a-8cc2-33afa53bc71a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,7 +40,7 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: ""
+      all: "yes"
       key: ""
     view: |-
       {
@@ -51,10 +51,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: bb28330c-772e-4858-8343-02de54eafdf5
+    taskid: 2846e13f-b4b9-4fb0-8268-1d4982b0b790
     type: regular
     task:
-      id: bb28330c-772e-4858-8343-02de54eafdf5
+      id: 2846e13f-b4b9-4fb0-8268-1d4982b0b790
       version: -1
       name: ip
       description: Check IP reputation (when information is available, returns a JSON
@@ -77,10 +77,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 63238b08-836b-4d47-86e5-4b5de8261003
+    taskid: 49ad0b1b-621c-4eb6-8c0f-53420198083f
     type: regular
     task:
-      id: 63238b08-836b-4d47-86e5-4b5de8261003
+      id: 49ad0b1b-621c-4eb6-8c0f-53420198083f
       version: -1
       name: VerifyContext IP
       description: |-
