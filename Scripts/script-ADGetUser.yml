@@ -260,7 +260,7 @@ args:
   - "false"
   description: Include verbose translation for UserAccountControl flags
 - name: using
-  description: Select Instance name
+  description: Select instance name
 outputs:
 - contextPath: Account
   description: Active Directory Account
