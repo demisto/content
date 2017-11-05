@@ -21,7 +21,7 @@ detaileddescription: |+
         4.2 Tenant Domain:  The directory tenant that you want to request permission from. This can be in GUID or friendly name format.
         4.3 Application ID:  The Application ID (from section 1)
         4.4 Application Secret: the application secret (from section 1)
-
+        
 configuration:
 - display: Fetch incidents
   name: isFetch
@@ -55,15 +55,15 @@ configuration:
   required: false
 script:
   script: |
-    var sendRequest = function(url, method, headers, body) {
+    var sendRequest = function(token, url, method, headers, body) {
         var res = http(
             url,
             {
                 Method:  method,
                 Headers: {
                     'Content-Type': ['application/x-www-form-urlencoded'],
-                    'Authorization' : token? [token_type + ' ' + token] : undefined
-                }, //TODO add headers
+                    'Authorization' : token
+                },
                 Body : body? encodeToURLQuery(body).substr(1) : undefined
             },
             params.insecure,
@@ -80,9 +80,6 @@ script:
     var login_url = params.login_url.replace(/[\/]+$/, '');
     var tenant_domain = params.domain.replace(/[\/]+$/, '');
 
-    var token;
-    var token_type;
-
     var getToken = function(){
         request_url = login_url + '/'+tenant_domain + '/oauth2/v2.0/token';
         bodyvals = {
@@ -91,20 +88,19 @@ script:
             'grant_type': 'client_credentials',
             'scope': 'https://graph.microsoft.com/.default'
         };
-        res = sendRequest(request_url, 'POST', {}, bodyvals);
+        res = sendRequest(undefined, request_url, 'POST', {}, bodyvals);
         try {
             result = JSON.parse(res);
         } catch (err) {
-            throw 'Request Failed. \n'+ res;
+            throw 'Token request Failed. \n'+ res;
         }
-        token = result['access_token'];
-        token_type = result['token_type'];
-        if(!token || !token_type){
-            throw 'Request failed: missing token\n'+ res;
+        if(!result.token || !result.token_type){
+            throw 'Failed to get token.\n'+ res;
         }
+        return result;
     };
 
-    var fetchLoginEvents = function() {
+    var fetchLoginEvents = function(token) {
         var lastRun = getLastRun();
         var date = new Date();
         var now = {value : date.toISOString()};
@@ -112,8 +108,8 @@ script:
             date.setDate(date.getDate() - 1);
             lastRun = {value: date.toISOString()};
         }
-        request_string = 'https://graph.microsoft.com/beta/identityRiskEvents?filter=createdDateTime%20gt%20'+lastRun.value;
-        res = sendRequest(request_string, 'GET');
+        request_string = 'https://graph.microsoft.com/beta/identityRiskEvents?filter=createdDateTime gt '+lastRun.value;
+        res = sendRequest(token, encodeURIComponent(request_string), 'GET');
         events = JSON.parse(res).value;
 
         incidents = [];
@@ -124,9 +120,9 @@ script:
         return JSON.stringify(incidents);
     };
 
-    var getRiskEvent = function(id){
+    var getRiskEvent = function(token,id){
         request_string = 'https://graph.microsoft.com/beta/identityRiskEvents/'+id;
-        res = JSON.parse(sendRequest(request_string, 'GET'));
+        res = JSON.parse(sendRequest(token,request_string, 'GET'));
         return {
             Type: entryTypes.note,
             HumanReadable: tableToMarkdown('Azure AD Risk Event', res),
@@ -136,14 +132,15 @@ script:
         };
     };
 
-    getToken();
+    var tokenData = getToken();
+    var token = [tokenData.token_type + ' ' + tokenData.token];
     switch (command) {
         case 'test-module':
             return 'ok';
         case 'fetch-incidents':
-            return fetchLoginEvents();
+            return fetchLoginEvents(token);
         case 'azure-get-risk-event':
-            return getRiskEvent(args.id);
+            return getRiskEvent(token,args.id);
     }
   type: javascript
   commands:
