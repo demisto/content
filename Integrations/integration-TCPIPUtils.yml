@@ -85,12 +85,12 @@ script:
       description: IP address to query. E.g. !ip 1.1.1.1
     outputs:
     - contextPath: IP.Address
-      description: ' The IP address'
+      description: The IP address
     - contextPath: IP.ASN
-      description: ' The IP ASN'
+      description: The IP ASN'
     - contextPath: IP.Geo.Country
-      description: ' The IP country'
+      description: The IP country
     - contextPath: IP.Geo.Description
-      description: ' The IP city'
+      description: The IP city
     description: Get information about IP (ASN, WHOIS, country, city). When information
       is available, returns a JSON with details)
