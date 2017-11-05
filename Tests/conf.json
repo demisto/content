@@ -99,7 +99,8 @@
         {
             "name" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
-            "timeout" : 300
+            "timeout" : 400,
+            "nightly": true
         },
         {
             "name": "McAfee Active Response",
