@@ -949,7 +949,6 @@ script:
     args.authToken = getToken();
     switch (command) {
         case 'test-module':
-            sendRequest(pathDictionary.logout, args);
             result = 'ok';
             break;
         case 'fetch-incidents':
