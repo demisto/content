@@ -192,8 +192,13 @@ script:
         logout(token);
 
         var res = JSON.parse(result.Body);
-        var md = tblToMd('Folders', res.folders, args.foldersHeaders? args.foldersHeaders : Object.keys(res.folders[0]));
-        md += tblToMd('Scans', res.scans, args.scansHeaders? args.scansHeaders : Object.keys(res.scans[0]));
+        var md = '';
+        if(res.folders && res.folders.length > 0){
+            md += tblToMd('Folders', res.folders, args.foldersHeaders? args.foldersHeaders : Object.keys(res.folders[0]));
+        }
+        if(res.scans && res.scans.length > 0){
+            md += tblToMd('Scans', res.scans, args.scansHeaders? args.scansHeaders : Object.keys(res.scans[0]));
+        }
         var context = {
             NessusFolder : jsonToEntity(res.folders, entities.NessusFolder),
             NessusScan : jsonToEntity(res.scans, entities.NessusScan)
@@ -1228,4 +1233,3 @@ script:
     outputs:
     - contextPath: NessusScan.Status
       description: The status of the scan report.
-hidden: false
