@@ -1,0 +1,195 @@
+commonfields:
+  id: IsItPhishing
+  version: -1
+name: IsItPhishing
+display: IsItPhishing
+category: Threat Intelligence
+image: data:image/png;base64,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
+description: Collaborative web service that provides validation on whether a URL is
+  a phishing page or not by analyzing the content of the webpage
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://ws.isitphishing.org
+  type: 0
+  required: false
+- display: Customer's name
+  name: name
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Customer's License
+  name: license
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    var auth = 'Bearer ' + btoa(params.name + ':' + params.license);
+
+    var sendRequest = function(method, api, body) {
+        var url = params.url;
+        var requestUrl = url.replace(/[\/]+$/, '') + '/' + api;
+        var res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: {
+                    'Authorization': [auth],
+                    'Content-Type': ['application/x-www-form-urlencoded']
+                },
+                Body: encodeToURLQuery(body).substring(1)
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    };
+
+    var isPhishing = function(url, force, smart, area, timeout) {
+        var md;
+        var body = {
+            name: params.name,
+            license: params.license,
+            version: '2',
+            force: force,
+            url: url,
+            area: area,
+            timeout: timeout
+        };
+        if (!area) {
+            delete body.area;
+        }
+        if (!timeout) {
+            delete body.timeout;
+        }
+        var res = sendRequest('POST', 'check', body);
+        var ec = {
+            IsItPhishing: {Url: url},
+            DBotScore: {
+                Indicator: url,
+                Score: 0,
+                Type: 'url',
+                Vendor: 'IsItPhishing'
+            }
+        };
+        var resBody = res.Body.trim();
+
+        if (resBody.substring(0,17) == 'TOO_MANY_REQUESTS') {
+          md = 'You have reached the maximum number of requests for your license. You must wait for the returned period of time' + resBody.substring(17) + 'before running requests again.';
+          ec.IsItPhishing.Status = 'TOO_MANY_REQUESTS';
+        }
+        if (resBody.substring(0,5) == 'ERROR') {
+          md = 'An error has occurred. Please refer to the description of the error indicated in the' + resBody.substring(0,5) + 'value.';
+          ec.IsItPhishing.Status = 'ERROR';
+        }
+
+        switch (resBody){
+            case 'SPAM':
+                md = 'URL was identified as spam.';
+                ec.IsItPhishing.Status = 'SPAM';
+                ec.DBotScore.Score = 2;
+                addMalicious(ec, outputPaths.url, {
+                  Data: url,
+                  Malicious: {Vendor: 'IsItPhishing', Description: 'URL found as spam by IsItPhishing'}
+                });
+                break;
+            case 'PHISHING':
+                md = 'URL was identified as phishing.';
+                ec.IsItPhishing.Status = 'PHISHING';
+                ec.DBotScore.Score = 3;
+                addMalicious(ec, outputPaths.url, {
+                  Data: url,
+                  Malicious: {Vendor: 'IsItPhishing', Description: 'URL found as phishing by IsItPhishing'}
+                });
+                break;
+            case 'UNKNOWN':
+                md = 'URL is clean.';
+                ec.IsItPhishing.Status = 'CLEAN';
+                ec.DBotScore.Score = 1;
+                break;
+            case 'TIMEOUT':
+                md = 'Timeout for the request has been reached. No verdict was returned for the request, and the URL should be considered clean.';
+                ec.IsItPhishing.Status = 'TIMEOUT';
+                break;
+            case 'NOT_EXPLORED':
+                md = 'The URL was not analyzed as triggering the analysis may cause collateral damage (unsubscribe, order conformation, etc.)';
+                ec.IsItPhishing.Status = 'NOT_EXPLORED';
+                break;
+            case 'NOT_AUTHORIZED':
+                md = 'Authorization has failed for one of the following reasons:\n• Invalid customer name,\n• Invalid customer license.';
+                ec.IsItPhishing.Status = 'NOT_AUTHORIZED';
+                break;
+            case 'REVOKED':
+                md = 'The license provided is no longer valid for one of the following reasons:\n• Validity period has expired,\n• License has been revoked.';
+                ec.IsItPhishing.Status = 'REVOKED';
+                break;
+        }
+
+        return {Type: entryTypes.note, Contents: resBody, ContentsFormat: formats.text, HumanReadable: md, EntryContext: ec, HumanReadableFormat: formats.text};
+    };
+
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+        case 'url':
+            return isPhishing(args.url, args.force, args.smart, args.area, args.timeout);
+        default:
+    }
+
+
+
+
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked if phishing
+    - name: force
+      description: Set true to analyze URL, or false to check whether URL may cause
+        collateral damage to the end user
+      defaultValue: "false"
+    - name: smart
+      description: Set true to force checks on URLs that may cause collateral damage
+        to the end user, or false to ignore the argument
+      defaultValue: "true"
+    - name: area
+      description: The regional area to force using a proxy
+    - name: timeout
+      description: Timeout in milliseconds. Default value set to 10000, with a minimum
+        value of 1000. Once timeout is reached, TIMEOUT response is returned
+    outputs:
+    - contextPath: URL.Status
+      description: URL identification result
+    - contextPath: URL.Url
+      description: The URL that was tested
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Checks if URL is phishing
