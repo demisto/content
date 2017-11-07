@@ -22,35 +22,17 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Import events as incidents
-  name: importEvents
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Events query viewer ID
+- display: Fetch Events as incidents via Query Viewer ID. Mandatory fields for query
+    are Start Time and Event ID.
   name: viewerId
   defaultvalue: ""
   type: 0
   required: false
-- display: Time field for query
-  name: timeField
+- display: Fetch Cases as incidents via Query Viewer ID. Mandatory fields for query
+    are Create Time and ID.
+  name: casesQueryViewerId
   defaultvalue: ""
   type: 0
-  required: false
-- display: Import cases as incidents
-  name: importCases
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Do not validate server certificate (insecure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -61,6 +43,16 @@ configuration:
   name: incidentType
   defaultvalue: ""
   type: 13
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
   required: false
 script:
   script: |-
@@ -259,71 +251,81 @@ script:
     }
 
     function getCasesIncidents(lastRun) {
+        var timeField = 'Create Time'; // Query must contain Start Time field
         var newIncidents = [];
 
-        var allCaseIDs;
-        var existingCases = (lastRun && lastRun.existingCases) ? lastRun.existingCases : {};
+        var response;
         try {
-            allCaseIDs = getAllCasesRequest(args.authToken);
+            response = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, false);
         } catch (ex) {
-            throw 'allCaseIDs to get all cases is not in the correct format. Error: ' + ex;
+            throw 'Cases response to query is not in the correct format. Error: ' + ex;
         }
-
-        if (!Array.isArray(allCaseIDs)) {
-            allCaseIDs = [allCaseIDs];
+        if (!response) {
+            throw 'Cases response to query is empty';
         }
-        for (var i = 0; i < allCaseIDs.length; i++) {
-            var resourceId = allCaseIDs[i];
-            if (!existingCases[resourceId]) {
-                // we add only cases which not exists in the last run
-                var newCase = getCaseRequest(args.authToken, resourceId);
+        var fieldNames = response.columnHeaders;
+        if (fieldNames.indexOf(timeField) === -1) {
+            throw 'Cases Query must contain ' + timeField + ' fields';
+        }
+        var data = response.data;
 
-                var keys = Object.keys(newCase);
+        var lastEventTime = (lastRun && lastRun.caseLastEventTime) ? lastRun.caseLastEventTime : 0;
+        var maxEventTime = lastEventTime;
+        for (var i = 0; i < data.length; i++) {
+            var eventTimeInMillis = Number(data[i][timeField]);
+            if (lastEventTime < eventTimeInMillis) {
+                if (maxEventTime < eventTimeInMillis) {
+                    maxEventTime = eventTimeInMillis;
+                }
+                var keys = Object.keys(data[i]);
                 var labels = [];
                 for (var j = 0; j < keys.length; j++) {
                     if (keys[j] !== 'Name') {
                         labels.push({
-                            'type': keys[j],
-                            'value': String(newCase[keys[j]])
+                            type: keys[j],
+                            value: String(data[i][keys[j]])
                         });
                     }
                 }
                 newIncidents.push({
-                    name: newCase.Name || ('New event from arcsight at ' + Date.now()),
+                    name: data[i].Name || ('New case from arcsight at ' + Date.now()),
                     labels: labels,
-                    rawJSON: JSON.stringify(newCase)
+                    rawJSON: JSON.stringify(data[i])
                 });
-
-                existingCases[resourceId] = true;
             }
         }
 
-        lastRun.existingCases = existingCases;
+        lastRun.caseLastEventTime = maxEventTime;
         return newIncidents;
     }
 
-
     function getEventsIncidents(lastRun) {
+        var timeField = 'Start Time'; // Query must contain Start Time field
         var newIncidents = [];
-        // args.id = params.viewerId;
+
         var response;
         try {
-            response = getQueryViewerResultsRequest(args.authToken, params.viewerId, true);
+            response = getQueryViewerResultsRequest(args.authToken, params.viewerId, false);
         } catch (ex) {
-            throw 'response to query is not in the correct format. Error: ' + ex;
+            throw 'Events response to query is not in the correct format. Error: ' + ex;
         }
         if (!response) {
-            throw 'response to query is empty';
+            throw 'Events response to query is empty';
         }
         var fieldNames = response.columnHeaders;
-        if (fieldNames.indexOf(params.timeField) === -1) {
-            throw 'time field is missing in query response';
+        if (fieldNames.indexOf(timeField) === -1) {
+            throw 'Events Query must contain ' + timeField + ' fields';
         }
-        var data = convertRowsToStruct(fieldNames, response.rows);
+        var data = response.data;
         var lastEventTime = lastRun && lastRun.lastEventTime ? lastRun.lastEventTime : 0;
+        var maxEventTime = lastEventTime;
         for (var i = 0; i < data.length; i++) {
-            if (lastEventTime < data[i][params.timeField]) {
-                lastRun.lastEventTime = data[i][params.timeField];
+            var eventTimeInMillis = Number(data[i][timeField]);
+            if (lastEventTime < eventTimeInMillis) {
+                if (maxEventTime < eventTimeInMillis) {
+                    maxEventTime = eventTimeInMillis;
+                }
+
                 var keys = Object.keys(data[i]);
                 var labels = [];
                 for (var j = 0; j < keys.length; j++) {
@@ -342,7 +344,7 @@ script:
             }
         }
 
-        delete(args.id);
+        lastRun.lastEventTime = maxEventTime;
         return newIncidents;
     }
 
@@ -397,9 +399,18 @@ script:
         return null;
     }
 
+    function dlog(obj) {
+        try {
+            log(JSON.stringify(obj, null, 2));
+        } catch (err) {
+            log(obj);
+        }
+
+    }
+
     function getMatrixData() {
-        args.onlyHeaders = args.onlyHeaders === 'true' ? true : false;
-        var results = getQueryViewerResultsRequest(args.authToken, args.id, args.onlyHeaders);
+        args.onlyColumns = args.onlyColumns === 'true' ? true : false;
+        var results = getQueryViewerResultsRequest(args.authToken, args.id, args.onlyColumns);
 
         var entries = [{
             Type: entryTypes.note,
@@ -409,14 +420,14 @@ script:
             HumanReadable: arrayToMarkdownTable(results.columnHeaders, 'Column Headers') // will print only query viewer column headers
         }];
 
-        if (!args.onlyHeaders) {
+        if (!args.onlyColumns) {
             entries.push({
                 Type: entryTypes.note,
                 ContentsFormat: formats.json,
                 Contents: results.data,
                 ReadableContensFormat: formats.markdown,
                 HumanReadable: tableToMarkdown('Query Viewer Results: ' + args.id, results.data) // will print all the results table
-            })
+            });
         }
 
         return entries;
@@ -432,6 +443,9 @@ script:
         if (json && json['qvs.getMatrixDataResponse'] && json['qvs.getMatrixDataResponse']['qvs.return']) {
             var returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];
             var columnHeaders = dq(returnObject, 'columnHeaders');
+            if (columnHeaders && !Array.isArray(columnHeaders)) {
+                columnHeaders = [columnHeaders];
+            }
             if (includeOnlyHeaders) {
                 return {
                     columnHeaders: columnHeaders
@@ -956,12 +970,13 @@ script:
             lastRun = lastRun && lastRun.value ? JSON.parse(lastRun.value) : {};
             var casesIncidents = [];
             var eventsIncidents = [];
-            if (params.importCases) {
+            if (params.casesQueryViewerId) {
                 casesIncidents = getCasesIncidents(lastRun);
             }
-            if (params.importEvents) {
+            if (params.viewerId) {
                 eventsIncidents = getEventsIncidents(lastRun);
             }
+
             setLastRun({
                 value: JSON.stringify(lastRun)
             });
@@ -1095,6 +1110,7 @@ script:
       description: Base event ids
     - contextPath: ArcSightESM.SecurityEvents.startTime
       description: Start time in milliseconds
+    description: Returns the security event details
   - name: as-get-case-event-ids
     arguments:
     - name: caseId
@@ -1104,14 +1120,25 @@ script:
       description: Map of caseId => related event ids
     - contextPath: ArcSightESM.CaseEvents.LatestResult
       description: Event ids of the last execution of this command
+    description: Returns all case event IDs
   - name: as-update-case
     arguments:
     - name: caseId
       required: true
+      description: The ID of the case
     - name: stage
+      auto: PREDEFINED
+      predefined:
+      - CLOSED
+      - QUEUED
+      - FINAL
+      - FOLLOW_UP
+      - INITIAL
+      description: The stage of case
     outputs:
     - contextPath: ArcSightESM.Cases
       description: List of cases
+    description: Updates a case
   - name: as-get-all-query-viewers
     arguments: []
     outputs:
@@ -1123,6 +1150,7 @@ script:
     - name: caseId
       required: true
       description: The resource id of the case
+    description: Deletes a case
     execution: true
   isfetch: true
-releaseNotes: 'Added new commands, fixed fetching bugs'
+releaseNotes: '-'
