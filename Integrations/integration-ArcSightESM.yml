@@ -58,6 +58,12 @@ script:
   script: |-
     var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
 
+    // Arcsight field names
+    var eventIdField = 'Event ID';
+    var caseIdField = 'ID';
+    var eventsTimeField = 'Start Time';
+    var casesTimeField = 'Create Time';
+
     var pathDictionary = {
         login: 'www/core-service/rest/LoginService/login',
         logout: 'www/core-service/rest/LoginService/logout',
@@ -959,10 +965,50 @@ script:
         return res.Body;
     }
 
+    function test() {
+        var isFetch = params.isFetch;
+        if (isFetch && !params.viewerId && !params.casesQueryViewerId) {
+            throw 'If Fetch incidents is on, then Events Query Viewer ID or Case Query Viewer ID must be passed';
+        }
+
+        var results;
+        var columnHeaders
+        if (isFetch && params.viewerId) {
+            try {
+                results = getQueryViewerResultsRequest(args.authToken, params.viewerId, true);
+            } catch(ex) {
+                throw 'Make sure Events query viewer id is valid.\nOriginal Error: ' + ex;
+            }
+            columnHeaders = results.columnHeaders;
+            if (columnHeaders.indexOf(eventsTimeField) === -1) {
+                throw 'Event Query in ArcSight must select "' + eventsTimeField + '" field';
+            }
+            if (columnHeaders.indexOf(eventIdField) === -1) {
+                throw 'Event Query in ArcSight  must select "' + eventIdField + '" field';
+            }
+        }
+
+        if (isFetch && params.casesQueryViewerId) {
+            try {
+                results = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, true);
+            } catch(ex) {
+                throw 'Make sure Cases query viewer id is valid.\nOriginal Error: ' + ex;
+            }
+            columnHeaders = results.columnHeaders;
+            if (columnHeaders.indexOf(casesTimeField) === -1) {
+                throw 'Case Query in ArcSight must select "' + casesTimeField + '" field';
+            }
+            if (columnHeaders.indexOf(caseIdField) === -1) {
+                throw 'Case Query in ArcSight must select "' + caseIdField + '" field';
+            }
+        }
+    }
+
     var result;
     args.authToken = getToken();
     switch (command) {
         case 'test-module':
+            test();
             result = 'ok';
             break;
         case 'fetch-incidents':
