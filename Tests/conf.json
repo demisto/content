@@ -99,7 +99,8 @@
         {
             "name" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
-            "timeout" : 300
+            "timeout" : 400,
+            "nightly": true
         },
         {
             "name": "McAfee Active Response",
@@ -112,6 +113,13 @@
         {
             "name": "iDefense",
             "playbookID": "iDefenseTest"
+        },
+        {
+            "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
+            "name": "TCPIPUtils",
+            "playbookID": "TCPUtils-Test"
         },
         {
             "name": "McAfee Threat Intelligence Exchange",
