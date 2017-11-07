@@ -104,11 +104,19 @@ script:
                 md = 'URL was identified as spam.';
                 ec.IsItPhishing.Status = 'SPAM';
                 ec.DBotScore.Score = 2;
+                addMalicious(ec, outputPaths.url, {
+                  Data: url,
+                  Malicious: {Vendor: 'IsItPhishing', Description: 'URL found as spam by IsItPhishing'}
+                });
                 break;
             case 'PHISHING':
                 md = 'URL was identified as phishing.';
                 ec.IsItPhishing.Status = 'PHISHING';
                 ec.DBotScore.Score = 3;
+                addMalicious(ec, outputPaths.url, {
+                  Data: url,
+                  Malicious: {Vendor: 'IsItPhishing', Description: 'URL found as phishing by IsItPhishing'}
+                });
                 break;
             case 'UNKNOWN':
                 md = 'URL is clean.';
@@ -139,7 +147,7 @@ script:
     switch (command) {
         case 'test-module':
             return 'ok';
-        case 'is-it-phishing':
+        case 'url':
             return isPhishing(args.url, args.force, args.smart, args.area, args.timeout);
         default:
     }
@@ -149,7 +157,7 @@ script:
 
   type: javascript
   commands:
-  - name: is-it-phishing
+  - name: url
     arguments:
     - name: url
       required: true
@@ -168,10 +176,14 @@ script:
       description: Timeout in milliseconds. Default value set to 10000, with a minimum
         value of 1000. Once timeout is reached, TIMEOUT response is returned
     outputs:
-    - contextPath: IsItPhishing.Status
+    - contextPath: URL.Status
       description: URL identification result
-    - contextPath: IsItPhishing.Url
+    - contextPath: URL.Url
       description: The URL that was tested
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
     - contextPath: DBotScore.Type
