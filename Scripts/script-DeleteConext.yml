@@ -6,7 +6,9 @@ script: |
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes')
   if(!shouldDeleteAll && !args.key) {
-      return 'You must specify key or all=yes';
+      return {Contents: 'You must specify key or all=yes',
+                      ContentsFormat: formats.text,
+                      Type: entryTypes.error};
   }
   if(shouldDeleteAll) {
       fieldsToDelete = Object.keys(invContext);
@@ -43,3 +45,4 @@ args:
   - "no"
   description: if you choose yes - all context will be deleted
 scripttarget: 0
+releaseNotes: 'Change function to return an error when no arguments supply (rather than return a regular message)'
