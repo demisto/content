@@ -1945,8 +1945,6 @@ script:
         first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
-  - name: fetch-incidents
-    arguments: []
   - name: netwitness-im-get-alerts
     arguments:
     - name: page
