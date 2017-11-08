@@ -23,10 +23,13 @@ script:
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        query = IP2ASN_API_URL % "8.8.8.8"
-        response = json.loads(urllib2.urlopen(query).read())
-        if response['status'] == "succeed":
+        if API_KEY == "trial":
             demisto.results('ok')
+        else:
+            query = IP2ASN_API_URL % "6.6.6.6"
+            response = json.loads(urllib2.urlopen(query).read())
+            if response['status'] == "succeed":
+                demisto.results('ok')
         sys.exit(0)
     if demisto.command() == 'ip':
         ec = {}
