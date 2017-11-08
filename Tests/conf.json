@@ -115,6 +115,11 @@
             "playbookID": "iDefenseTest"
         },
         {
+            "name": "McAfee Web Gateway",
+            "playbookID": "McAfeeWebGatewayTest",
+            "timeout" : 500
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
