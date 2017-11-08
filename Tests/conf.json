@@ -125,6 +125,10 @@
         {
             "name": "TCPIPUtils",
             "playbookID": "TCPUtils-Test"
+        },
+        {
+            "name": "McAfee Threat Intelligence Exchange",
+            "playbookID": "McAfee-TIE Test"
         }
     ],
     "skipped": [
