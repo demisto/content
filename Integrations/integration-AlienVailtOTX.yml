@@ -303,6 +303,9 @@ script:
                     dbotScoreType = 'hash';
                     malInfo[argName.toUpperCase()] = args[argName];
             }
+            if (raw === 'Not found') {
+                return raw;
+            }
             if (dq(raw, 'pulse_info.count') > 0) {
                 dbotScore = dq(raw, 'pulse_info.count');
                 malInfo.Malicious.PulseIDs = dq(raw, 'pulse_info.pulses.id');
