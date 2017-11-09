@@ -7,6 +7,7 @@ script: |-
   from email.header import decode_header
   from base64 import b64decode
   from re import match
+
   # --- LICENSE -----------------------------------------------------------------
   #
   #    Copyright 2013 Matthew Walker
@@ -30,6 +31,8 @@ script: |-
   from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
+  import random
+  import string
   
   reload(sys)
   sys.setdefaultencoding('utf8')
@@ -159,6 +162,10 @@ script: |-
           return str(string, 'utf_16_le')
       else:  # Python 2
           return unicode(string, 'utf_16_le')
+
+  def randomFileName():
+      return 'UnknownFilename ' + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)) + ".bin"
+
   class Attachment:
       def __init__(self, msg, dir_):
           # Get long filename
@@ -175,11 +182,7 @@ script: |-
               filename = self.shortFilename
           # Otherwise just make something up!
           if filename is None:
-              import random
-              import string
-              filename = 'UnknownFilename ' + \
-                  ''.join(random.choice(string.ascii_uppercase + string.digits)
-                          for _ in range(5)) + ".bin"
+              filename = randomFileName()
           f = open(filename, 'wb')
           f.write(self.data)
           f.close()
@@ -467,16 +470,11 @@ script: |-
           for h in msg.header.walk():
               headers.append(str(h))
       for a in msg.attachments:
+          fname = randomFileName()
           if a.longFilename:
               fname = a.longFilename
           elif a.shortFilename:
               fname = a.shortFilename
-          else:
-              import random
-              import string
-              filename = 'UnknownFilename ' + \
-                  ''.join(random.choice(string.ascii_uppercase + string.digits)
-                          for _ in range(5)) + ".bin"
           if fname and a.data:
               fname = fname.encode('utf-8')
               attachments.append(fname)
@@ -625,3 +623,4 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

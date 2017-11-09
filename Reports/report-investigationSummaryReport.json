@@ -603,7 +603,7 @@
         "type": "entries",
         "filter": {
           "pageSize": 10000,
-          "Categories": ["procedural"]
+          "categories": ["incidentInfo"]
         }
       },
       "layout": {
@@ -668,7 +668,9 @@
         "type": "entries",
         "filter": {
           "pageSize": 10000,
-          "note": true
+          "categories": [
+            "notes"
+          ]
         }
       },
       "layout": {

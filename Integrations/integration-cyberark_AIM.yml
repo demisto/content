@@ -55,7 +55,7 @@ configuration:
 - display: API Password
   name: password
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 script:
   script: |-
@@ -98,8 +98,8 @@ script:
     }
 
     var sendRequestWithToken = function(method, url, args, returnPlainResponse) {
-        var headers = {}
-        headers["Content-Type"] = ["application/json"]
+        var headers = {};
+        headers["Content-Type"] = ["application/json"];
         if (!token) {
             var data = {
               username: username,
@@ -179,7 +179,7 @@ script:
     };
 
     var getAccountDetails = function(args) {
-        var result = sendRequestWithToken('GET', credentialsUrl, args, true);
+        var result = sendRequestWithToken('GET', credentialsUrl, args);
         if (!result) {
             return 'No results found';
         }
@@ -201,7 +201,7 @@ script:
         }
         var credentials = [];
         if (result.ErrorMsg && result.ErrorMsg.indexOf("Too many password objects matching query") !== -1) {
-            credentials = parseACcountsFromErroMessage(result.ErrorMsg)
+            credentials = parseACcountsFromErroMessage(result.ErrorMsg);
         } else {
             if (humanReadable) {
                 if (!(result instanceof Array)) {
@@ -256,6 +256,13 @@ script:
             delete args.keywords;
             return getAccountDetails(args);
         default:
+            args.AppID = appid;
+            args.Folder = params.folder;
+            args.Safe = params.safe;
+            if (args.identifier) {
+                args.Object = args.identifier;
+                delete args.identifier;
+            }
             return getCredentials(true);
     }
   type: javascript
@@ -326,4 +333,3 @@ script:
       description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
-releaseNotes: "added reset credentials and account details commands"

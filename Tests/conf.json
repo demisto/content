@@ -97,8 +97,38 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "name" : "McAfee NSM",
+            "playbookID" : "McAfeeNSMTest",
+            "timeout" : 400,
+            "nightly": true
+        },
+        {
             "name": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test"
+        },
+        {
+            "name": "PhishTank",
+            "playbookID": "PhishTank Testing"
+        },
+        {
+            "name": "iDefense",
+            "playbookID": "iDefenseTest"
+        },
+        {
+            "name": "McAfee Web Gateway",
+            "playbookID": "McAfeeWebGatewayTest",
+            "timeout" : 500
+        },
+        {
+            "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
+            "name": "TCPIPUtils",
+            "playbookID": "TCPUtils-Test"
+        },
+        {
+            "name": "McAfee Threat Intelligence Exchange",
+            "playbookID": "McAfee-TIE Test"
         }
     ],
     "skipped": [

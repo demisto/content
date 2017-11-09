@@ -757,4 +757,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromVersion: 2.5.0
-releaseNotes: "Fixed wrong indicator when no response"
+releaseNotes: "-"
