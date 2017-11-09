@@ -32,8 +32,8 @@ configuration:
   required: false
 - display: Use proxy system settings
   name: proxy
-  defaultvalue: ""
-  type: 0
+  defaultvalue: "true"
+  type: 8
   required: false
 script:
   script: |-

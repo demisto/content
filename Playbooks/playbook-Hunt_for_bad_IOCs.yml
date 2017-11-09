@@ -23,10 +23,11 @@ tasks:
       - "1"
       - "2"
       - "3"
+      - "4"
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -66,7 +67,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 195
         }
       }
@@ -86,7 +87,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: e977184e-8358-4c0e-88f5-9a0bb3b41bb6
+    type: playbook
+    task:
+      id: e977184e-8358-4c0e-88f5-9a0bb3b41bb6
+      version: -1
+      name: ""
+      playbookName: TIE - IOC Hunt
+      type: playbook
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
           "y": 195
         }
       }
@@ -96,7 +116,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 240,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

@@ -17,7 +17,7 @@ script: |-
 
   import xml.etree.cElementTree as ET
   
-  entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8}
+  entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
   formats = {'html': 'html', 'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
   brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'WildFire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
@@ -223,7 +223,7 @@ script: |-
       if type(arg) in [str, unicode]:
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return [s.lstrip().rstrip() for s in arg.split(',')]
+          return [s.strip() for s in arg.split(',')]
       return arg
 
   def appendContext(key, data, dedup=False):
@@ -301,7 +301,7 @@ script: |-
       os.rename(filename, demisto.investigation()['id'] + '_' + temp)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
           'File': saveFilename if saveFilename else filename, 'FileID': temp}
-      
+
 
   def flattenRow(rowDict):
       return {k: formatCell(rowDict[k]) for k in rowDict}
@@ -336,8 +336,9 @@ script: |-
           return item[fieldName]
       else:
           return item
+
   def isCommandAvailable(cmd):
-      modules = demisto.getAllSupportedCommands();
+      modules = demisto.getAllSupportedCommands()
       for m in modules:
           if modules[m] and isinstance(modules[m], list):
               for c in modules[m]:
@@ -541,4 +542,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Add function to create file result from existing file"
+releaseNotes: "-"

@@ -9,7 +9,7 @@ test:
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM d9d2de23493ea67fba166ac1b130d412cf1b97ff 3.0.0
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 606050fdb73897821ed2f48d67686fe424e95247 3.1.0
 
     # create content bundle
     - mkdir bundle

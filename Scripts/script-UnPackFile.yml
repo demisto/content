@@ -1,0 +1,118 @@
+commonfields:
+  id: UnPackFile
+  version: -1
+name: UnPackFile
+script: |-
+  from pyunpack import Archive
+  import os
+  from os.path import isfile
+  import subprocess
+
+  filePath = None
+  fileEntryID = ''
+  if demisto.args().has_key('fileName') or demisto.args().has_key('lastPackedFileInWarroom'):
+      entries = demisto.executeCommand('getEntries', {})
+      for entry in entries:
+          fn = demisto.get(entry, 'File')
+
+          is_text = type(fn) in [unicode, str]
+          is_correct_file = demisto.args().get('fileName', '').lower() == fn.lower()
+
+          if is_text:
+              if demisto.args().has_key('fileName') and is_correct_file:
+                  fileEntryID = entry['ID']
+                  break
+              if demisto.args().has_key('lastPackedFileInWarroom') and fn.lower().endswith(demisto.args().get('lastPackedFileInWarroom', '').lower()):
+                  fileEntryID = entry['ID']
+
+      if fileEntryID == '':
+          errorMessage = ''
+          if demisto.args().has_key('fileName'):
+              demisto.results({
+                  'Type': entryTypes['error'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': '"' + demisto.args().get('fileName') + '" no such file in the war room'
+              })
+          if demisto.args().has_key('lastPackedFileInWarroom'):
+              demisto.results({
+                  'Type': entryTypes['error'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': 'Could not find "' + demisto.args().get('lastPackedFileInWarroom', '') + '" file in war room'
+              })
+
+          sys.exit(0)
+
+  if demisto.args().has_key('entryID'):
+      fileEntryID = demisto.args().get('entryID')
+
+  if not fileEntryID:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'You must set entryID or fileName or lastPackedFileInWarroom=i.e.(zip) when executing Unpack script'
+      })
+      sys.exit(0)
+
+  res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+  if res[0]['Type'] == entryTypes['error']:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'Failed to get the file path for entry: ' + fileEntryID
+      })
+      sys.exit(0)
+
+  filePath = res[0]['Contents']['path']
+
+  filenames = []
+  excludedFiles = [f for f in os.listdir('.') if isfile(f)]
+  Archive(filePath).extractall_patool('.', None)
+  for root, directories, files in os.walk('.'):
+      for name in files:
+          if not name in str(excludedFiles) and isfile(name):
+              filenames.append(name)
+
+  if len(filenames) == 0:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'Could not find files in archive'
+      })
+  else:
+      results = []
+      for filename in filenames:
+          demisto.results(file_result_existing_file(filename))
+
+      results.append(
+          {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': { 'extractedFiles': filenames },
+              'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True },
+              'ReadableContentsFormat' : formats['markdown'],
+              'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
+          })
+
+      demisto.results(results)
+type: python
+tags:
+- Utility
+- file
+comment: |-
+  UnPack a file using fileName or entryID to specify a file. Files unpacked will be pushed to the war room and names will be pushed to the context.
+  supported types are:
+  7z (.7z), ACE (.ace), ALZIP (.alz), AR (.a), ARC (.arc), ARJ (.arj), BZIP2 (.bz2), CAB (.cab), compress (.Z), CPIO (.cpio), DEB (.deb), DMS (.dms), GZIP (.gz), LRZIP (.lrz), LZH (.lha, .lzh), LZIP (.lz), LZMA (.lzma), LZOP (.lzo), RPM (.rpm), RAR (.rar), RZIP (.rz), TAR (.tar), XZ (.xz), ZIP (.zip, .jar) and ZOO (.zoo)
+enabled: true
+args:
+- name: fileName
+  default: true
+  description: Name of the file to unpack
+- name: entryID
+  description: entry id of the attached packed file in the warroom
+- name: lastPackedFileInWarroom
+  description: Set to package file extension to look for the last of its kind in the war room
+outputs:
+- contextPath: ExtractedFiles
+  description: list of file names which extracted from package
+scripttarget: 0
+dockerimage: demisto/unrar:1.4
