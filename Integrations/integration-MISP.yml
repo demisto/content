@@ -443,11 +443,11 @@ script:
   type: javascript
   commands:
   - name: internal-misp-upload-sample
-    description: "-"
+    description: Internal function, do not use it directly
     arguments:
     - name: filename
       required: true
-      description: "-"
+      description: File name
     - name: fileContent
       required: true
       description: File Content in Base64
@@ -563,10 +563,10 @@ script:
       description: RelatedEvent
     description: Search for events in misp
   - name: file
-    description: "-"
+    description: Check file in misp
     arguments:
     - name: file
-      description: "-"
+      description: file
       required: true
     outputs:
     - contextPath: File.MD5
@@ -590,7 +590,7 @@ script:
   - name: url
     arguments:
     - name: url
-      description: "-"
+      description: Check URL in misp
       required: true
     outputs:
     - contextPath: URL.Data
@@ -609,7 +609,7 @@ script:
       description: The actual score
     description: Check if IP is in MISP events
   - name: ip
-    description: "-"
+    description: Check ip in misp
     arguments:
     - name: ip
       required: true
