@@ -126,6 +126,7 @@ tasks:
     task:
       id: ade8898b-5f2e-4ba1-8989-2977e4a58003
       version: -1
+      description: "-"
       name: Is ATD Available?
       scriptName: Exists
       type: condition
@@ -156,6 +157,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "-"
     view: |-
       {
         "position": {
