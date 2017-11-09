@@ -879,13 +879,15 @@ script:
         }
 
         var arrIDs = [];
-        var split = ids.split(',');
-        for (var i = 0; i < split.length; i++) {
-            var id = split[i];
-            if (isNaN(id)) {
-                throw 'id ' + id + ' must be numeric';
-            }
-            arrIDs.push(parseInt(id));
+        if (typeof ids === 'string') {
+          var split = ids.split(',');
+          for (var i = 0; i < split.length; i++) {
+              var id = split[i];
+              if (isNaN(id)) {
+                  throw 'id ' + id + ' must be numeric';
+              }
+              arrIDs.push(parseInt(id));
+          }
         }
 
         var soapReq = {
