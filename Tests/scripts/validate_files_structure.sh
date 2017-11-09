@@ -33,6 +33,7 @@ validateFilesStructure() {
             python Tests/validate_schema.py "$dir/$filename" "Tests/schemas/$validate_schema_file.yml"
             if [[ $? -ne 0 ]]
             then
+                # python script validate_schema will log error details
                 foundMissingField=true
             fi
         fi
