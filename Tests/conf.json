@@ -130,9 +130,9 @@
             "name": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
         },
-	{
-	    "ProofpointDecodeURL-Test"
-	}
+        {
+            "playbookID": "ProofpointDecodeURL-Test"
+        }
     ],
     "skipped": [
         {
