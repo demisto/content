@@ -45,6 +45,7 @@ script: |
       sys.exit(e)
 type: python
 tags: []
+comment: Decode ProofPoint URLs to get the actual URLs
 enabled: true
 args:
 - name: url
