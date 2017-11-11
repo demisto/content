@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "7"
@@ -38,6 +39,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#default#':
       - "4"
@@ -66,6 +68,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "-"
     scriptarguments:
       notes: ""
       reason: ""
@@ -114,6 +117,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "2"

@@ -103,6 +103,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "-"
     view: |-
       {
         "position": {
