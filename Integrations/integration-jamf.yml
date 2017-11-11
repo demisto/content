@@ -224,7 +224,7 @@ script:
   type: javascript
   commands:
   - name: jamf-get-computers
-    description: "-"
+    description: Get a list of managed computers
     arguments: []
     outputs:
     - contextPath: Jamf.Computers.ID
@@ -232,11 +232,11 @@ script:
     - contextPath: Jamf.Computers.Name
       description: Computer name
   - name: jamf-get-computers-match
-    description: "-"
+    description: Get a list of managed computers that matches inputs query
     arguments:
     - name: match
       required: true
-      description: "-"
+      description: Match criteria. e.g. to retrieve all computers associated with a user use $UserID
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
