@@ -1195,9 +1195,11 @@ script:
   - name: ds-get-incident
     arguments:
     - name: incident_id
+      description: "-"
       required: true
       default: true
     - name: fulltext
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -1615,6 +1617,7 @@ script:
       description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
     - name: filter_value
+      description: "-"
     - name: filter_types
       description: List of types to filter by. Possible values are IP,MD5,SHA1,SHA256,URL,CVE,EMAIL,HOST,REGISTRY,FILEPATH,FILENAME
     outputs:
@@ -2149,7 +2152,9 @@ script:
       description: Whether multiple tags should be logically applied as AND/OR with
         the resultset
     - name: filter_tags
+      description: "-"
     - name: filter_threatLevels
+      description: "-"
     outputs:
     - contextPath: DigitalShadows.IntelligenceThreatsRegional.ActivityLevel
       description: Level of activity, based on last active
@@ -2428,6 +2433,7 @@ script:
       description: Only include SSL/certificates with associated incidents that have
         been alerted
     - name: filter_detectedClosed
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -2551,9 +2557,13 @@ script:
       description: Only include SSL/certificates with associated incidents that have
         been alerted
     - name: filter_detected
+      description: "-"
     - name: filter_determinedResolved
+      description: "-"
     - name: filter_domain
+      description: "-"
     - name: filter_expiry
+      description: "-"
     - name: filter_grades
       description: List of grades (A,B,C,D,E,F,T)
     - name: filter_incidentTypes
@@ -2589,7 +2599,9 @@ script:
       - "false"
       description: Is incident closed
     - name: filter_published
+      description: "-"
     - name: filter_revoked
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -2681,6 +2693,7 @@ script:
       description: Only include SSL/certificates with associated incidents that have
         been alerted
     - name: filter_cveIdentifiers
+      description: "-"
     - name: filter_detected
       description: Only return vulnerabilities that were detected within this date
         range (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)

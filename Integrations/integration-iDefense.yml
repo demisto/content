@@ -342,6 +342,7 @@ script:
       description: The actual score
     description: Check URL reputation
   - name: idefense-general
+    description: "-"
     arguments:
     - name: max_result
       default: true
@@ -375,6 +376,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
   - name: uuid
+    description: "-"
     arguments:
     - name: uuid
       required: true
