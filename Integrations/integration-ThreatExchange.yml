@@ -461,4 +461,4 @@ script:
       address. You can set this address, if desired, under the settings panel for
       your application
 hidden: false
-releaseNoets: "-"
+releaseNotes: "-"
