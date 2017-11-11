@@ -92,6 +92,8 @@ args:
 - name: timeout
   description: Timeout in seconds. Default is 10 minutes.
 - name: fields
+  description: Property fields to include in results
+  description: Fields
 outputs:
 - contextPath: QRadar.Correlation
   description: The QRadar offense correlations
