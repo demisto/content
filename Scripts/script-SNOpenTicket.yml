@@ -31,7 +31,7 @@ script: |-
 type: python
 tags:
 - servicenow
-comment: "-"
+comment: "Create a ServiceNow ticket."
 system: true
 deprecated: true
 args:

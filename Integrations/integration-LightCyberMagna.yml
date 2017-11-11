@@ -527,7 +527,7 @@ script:
   - name: lcm-host-suspicious-artifacts
     arguments:
     - name: sort
-      description: "-"
+      description: "Sort results by this column"
       defaultValue: final_score
     - name: host_id
       required: true
@@ -537,9 +537,9 @@ script:
   - name: lcm-host-processes
     arguments:
     - name: time
-      description: "-"
+      description: "Timestamp to search"
     - name: sort
-      description: "-"
+      description: "Sort results by this column"
       defaultValue: -score_e
     - name: host_id
       required: true
@@ -549,7 +549,7 @@ script:
   - name: lcm-host-loaded-modules
     arguments:
     - name: sort
-      description: "-"
+      description: "Sort results by this column"
       defaultValue: final_score
     - name: host_id
       required: true
@@ -559,9 +559,9 @@ script:
   - name: lcm-host-processes-internet-connections
     arguments:
     - name: time
-      description: "-"
+      description: "Timestamp to search"
     - name: sort
-      description: "-"
+      description: "Sort results by this column"
       defaultValue: process_sig
     - name: src_host_id
       required: true
@@ -572,7 +572,7 @@ script:
   - name: lcm-host-autoruns
     arguments:
     - name: sort
-      description: "-"
+      description: "Sort results by this column"
       defaultValue: final_score
     - name: host_id
       required: true
@@ -581,4 +581,4 @@ script:
     description: Returns all installed autoruns programs in this host
   isfetch: true
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Added descriptions for some arguments"

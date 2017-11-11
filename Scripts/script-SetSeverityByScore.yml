@@ -47,7 +47,7 @@ tags:
 - url
 - ip
 - hash
-comment: "-"
+comment: "Calculate a weighted score based on number of malicious indicators involved in the incident. Each indicator type can have a different weight. Finally if score exceeds certain thresholds, increase incident severity. Thresholds can also be overriden by providing them in arguments."
 system: true
 args:
 - name: bad_url_weight
@@ -76,5 +76,5 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
+releaseNotes: "Adding description"
 
