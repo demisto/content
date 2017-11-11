@@ -44,8 +44,8 @@ validateFilesStructure() {
 
 validateFilesStructure Integrations integration- .yml integration
 validateFilesStructure Playbooks playbook- .yml playbook
-validateFilesStructure Reports report- .json "" report
-validateFilesStructure Scripts script- .yml "" script
+validateFilesStructure Reports report- .json report
+validateFilesStructure Scripts script- .yml script
 validateFilesStructure Misc reputations .json
 
 if [ "$foundWrongName" = true ] || [ "$foundMissingField" = true ]
