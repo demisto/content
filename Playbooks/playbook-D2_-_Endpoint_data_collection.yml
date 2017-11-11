@@ -21,6 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "7"
@@ -77,6 +78,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "5"
@@ -128,6 +130,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "12"
@@ -178,6 +181,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#default#':
       - "12"
@@ -204,6 +208,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "12"
@@ -228,6 +233,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "-"
     view: |-
       {
         "position": {
@@ -246,6 +252,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "4"
@@ -269,6 +276,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#default#':
       - "12"
