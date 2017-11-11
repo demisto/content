@@ -42,7 +42,7 @@ validateFilesStructure() {
     echo "Finished validate $dir"
 }
 
-validateFilesStructure Integrations integration- .yml "" integration
+validateFilesStructure Integrations integration- .yml integration
 validateFilesStructure Playbooks playbook- .yml playbook
 validateFilesStructure Reports report- .json "" report
 validateFilesStructure Scripts script- .yml "" script
