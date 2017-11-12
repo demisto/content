@@ -131,6 +131,9 @@
             "playbookID": "McAfee-TIE Test"
         },
         {
+            "playbookID": "ProofpointDecodeURL-Test"
+        },
+        {
             "playbookID": "listExecutedCommands-Test"
         }
     ],
