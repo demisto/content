@@ -1201,4 +1201,9 @@ script:
     description: Deletes a case
     execution: true
   isfetch: true
-releaseNotes: '-'
+releaseNotes: 'Added new commands
+- as-case-delete
+- as-get-all-query-viewers
+- as-get-case-event-ids
+
+There is no need for ArcSight XML integration, fetch can be done via ArcSight ESM'
