@@ -131,7 +131,7 @@
             "playbookID": "McAfee-TIE Test"
         },
         {
-            "PlaybookID": "listExecutedCommands-Test"
+            "playbookID": "listExecutedCommands-Test"
         }
     ],
     "skipped": [
