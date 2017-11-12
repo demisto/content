@@ -301,7 +301,7 @@ script: |-
       os.rename(filename, demisto.investigation()['id'] + '_' + temp)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
           'File': saveFilename if saveFilename else filename, 'FileID': temp}
-      
+
 
   def flattenRow(rowDict):
       return {k: formatCell(rowDict[k]) for k in rowDict}
@@ -542,3 +542,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

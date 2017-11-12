@@ -1,0 +1,235 @@
+id: McAfee-TIE Test
+version: -1
+name: McAfee-TIE Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fac305d5-a337-46d3-843e-b5efcaf34df2
+    type: start
+    task:
+      id: fac305d5-a337-46d3-843e-b5efcaf34df2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4b24cf64-3bf3-45f4-8412-349ca326af95
+    type: regular
+    task:
+      id: 4b24cf64-3bf3-45f4-8412-349ca326af95
+      version: -1
+      name: Verify Context File Reputation
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: ""
+      fields: TrustLevel,SHA1
+      path: File
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: fd070dd4-fc67-40b9-8a79-c375f898af48
+    type: regular
+    task:
+      id: fd070dd4-fc67-40b9-8a79-c375f898af48
+      version: -1
+      name: Verify Context DBot Score
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: ""
+      fields: Vendor,Indicator,Score,Type
+      path: DBotScore
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 3b1665f4-cce7-4538-85cb-cc9d54536a90
+    type: regular
+    task:
+      id: 3b1665f4-cce7-4538-85cb-cc9d54536a90
+      version: -1
+      name: TIE file reputation
+      description: Retrieves the reputations for the specified hash ( Supports MD5
+        SHA1 & SHA256)
+      script: McAfee Threat Intelligence Exchange|||file
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file: 6EAE26DB8C13182A7947982991B4321732CC3DE2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: c3864173-436a-44b0-839a-56a014c6a8b1
+    type: regular
+    task:
+      id: c3864173-436a-44b0-839a-56a014c6a8b1
+      version: -1
+      name: tie-file-references
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file: f2c7bb8acc97f92e987a2d4087d021b1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a5a6ca0d-06ff-498c-8228-9a15e512d36b
+    type: regular
+    task:
+      id: a5a6ca0d-06ff-498c-8228-9a15e512d36b
+      version: -1
+      name: tie-set-file-reputation
+      description: Sets the “Enterprise” reputation (trust level) of a specified file
+      script: McAfee Threat Intelligence Exchange|||tie-set-file-reputation
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      comment: ""
+      file: 7eb0139d2175739b3ccb0d1110067820be6abd29
+      filename: ""
+      trust_level: MOST_LIKELY_TRUSTED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 310d0017-0c52-465f-88b5-34b67c9995c9
+    type: regular
+    task:
+      id: 310d0017-0c52-465f-88b5-34b67c9995c9
+      version: -1
+      name: Verify Context tie-file-references
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: MD5,References
+      path: File
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 47b9c744-655f-4084-8418-e4d0c8dffba0
+    type: regular
+    task:
+      id: 47b9c744-655f-4084-8418-e4d0c8dffba0
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
