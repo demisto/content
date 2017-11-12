@@ -888,6 +888,10 @@ script:
               }
               arrIDs.push(parseInt(id));
           }
+        } else if (typeof ids === 'number') {
+          // ids passed as number
+          // so there only single id
+          arrIDs.push(ids);
         }
 
         var soapReq = {
