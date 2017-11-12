@@ -2,16 +2,16 @@ id: Arcsight - Get events related to the Case
 version: -1
 name: Arcsight - Get events related to the Case
 description: |-
-  Get the Case's Arcsight ResourceID from the ArcsightCaseID field, or the "ID" label. If neither is there, ask user for the ID.
+  Get the Case's Arcsight ResourceID from the FetchID field, or the "ID" label. If neither is there, ask user for the ID.
   Use the resource ID to get full data for the case, the correlated/aggregate events underneath it, and all base events underneath them.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 607a5cb3-f71b-4fe2-8ca8-c7799c2ed832
+    taskid: d042890c-556f-415a-8b61-a12119407553
     type: start
     task:
-      id: 607a5cb3-f71b-4fe2-8ca8-c7799c2ed832
+      id: d042890c-556f-415a-8b61-a12119407553
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 99d98b0d-51ee-4819-8bb1-9580ca71c8b8
+    taskid: b5d1bb23-5f5f-47a9-88b2-c61071cf4468
     type: regular
     task:
-      id: 99d98b0d-51ee-4819-8bb1-9580ca71c8b8
+      id: b5d1bb23-5f5f-47a9-88b2-c61071cf4468
       version: -1
       name: Arcsight - Get Case info
       description: Get a specific case from ESM
@@ -39,21 +39,24 @@ tasks:
       type: regular
       iscommand: true
       brand: ArcSight ESM
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
-      resourceId: ${incident.arcsightcaseid}
+      resourceId: ${incident.FetchID}
     view: |-
       {
         "position": {
-          "x": 567,
+          "x": 328,
           "y": 380
         }
       }
   "2":
     id: "2"
-    taskid: 93787e94-68ef-4646-8a86-82c128f9892a
+    taskid: 687fd65f-c25d-448c-8d7b-02dca8a3f7e0
     type: regular
     task:
-      id: 93787e94-68ef-4646-8a86-82c128f9892a
+      id: 687fd65f-c25d-448c-8d7b-02dca8a3f7e0
       version: -1
       name: Arcsight - get Event ID below the Case
       description: Returns all case event IDs
@@ -63,22 +66,22 @@ tasks:
       brand: ArcSight ESM
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
-      caseId: ${incident.arcsightcaseid}
+      caseId: ${incident.FetchID}
     view: |-
       {
         "position": {
-          "x": 89,
+          "x": -140,
           "y": 380
         }
       }
   "3":
     id: "3"
-    taskid: 03be188a-b48c-467c-8879-cf89a3b5ea65
+    taskid: b5fab90a-0f15-40ba-8233-43ed42be978c
     type: regular
     task:
-      id: 03be188a-b48c-467c-8879-cf89a3b5ea65
+      id: b5fab90a-0f15-40ba-8233-43ed42be978c
       version: -1
       name: Get the Events below the Case
       script: ArcSight ESM|||as-get-security-events
@@ -87,7 +90,7 @@ tasks:
       brand: ArcSight ESM
     nexttasks:
       '#none#':
-      - "10"
+      - "13"
     scriptarguments:
       endDate: ""
       ids: ${ArcSightESM.CaseEvents}
@@ -95,18 +98,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 89,
-          "y": 571
+          "x": -372,
+          "y": 763
         }
       }
   "4":
     id: "4"
-    taskid: 7f654da8-0f7a-4007-8f75-36ebd9296cdd
+    taskid: 3371774c-a2ba-4ea3-8acb-aaeeae8195f7
     type: condition
     task:
-      id: 7f654da8-0f7a-4007-8f75-36ebd9296cdd
+      id: 3371774c-a2ba-4ea3-8acb-aaeeae8195f7
       version: -1
-      name: Is ArcsightCaseID set?
+      name: Is FetchID set?
       scriptName: Exists
       type: condition
       iscommand: false
@@ -117,7 +120,7 @@ tasks:
       "yes":
       - "9"
     scriptarguments:
-      value: ${incident.arcsightcaseid}
+      value: ${incident.FetchID}
     view: |-
       {
         "position": {
@@ -127,10 +130,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: f0248d07-ced8-4878-8dce-af05d1c46b4c
+    taskid: a8d523d4-a25e-45a9-8553-fccb9b49d585
     type: condition
     task:
-      id: f0248d07-ced8-4878-8dce-af05d1c46b4c
+      id: a8d523d4-a25e-45a9-8553-fccb9b49d585
       version: -1
       name: Is ID label included?
       scriptName: Exists
@@ -153,12 +156,12 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 9b9c88f9-39da-4e55-8fee-648b67a11e12
+    taskid: 295f3a37-e590-40a5-8093-a71aa5386c74
     type: regular
     task:
-      id: 9b9c88f9-39da-4e55-8fee-648b67a11e12
+      id: 295f3a37-e590-40a5-8093-a71aa5386c74
       version: -1
-      name: Set ArcsightCaseID <-- ID label
+      name: Set FetchID <-- ID label
       scriptName: IncidentSet
       type: regular
       iscommand: false
@@ -168,7 +171,7 @@ tasks:
       - "9"
     scriptarguments:
       addLabels: ""
-      customFieldName: ArcsightCaseID
+      customFieldName: FetchID
       customFieldValue: ${incident.labels.ID}
       details: ""
       labels: ""
@@ -188,10 +191,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 2b6d2ec9-c419-46fe-8a9c-badc467ba746
+    taskid: 00fc9870-1af2-47d1-828b-24dbbd6f02cc
     type: regular
     task:
-      id: 2b6d2ec9-c419-46fe-8a9c-badc467ba746
+      id: 00fc9870-1af2-47d1-828b-24dbbd6f02cc
       version: -1
       name: User - please insert Arcsight Case Resource ID
       scriptName: Set
@@ -203,7 +206,7 @@ tasks:
       - "8"
     scriptarguments:
       append: ""
-      key: UserInput.ArcsightCaseID
+      key: UserInput.FetchID
       value: ""
     view: |-
       {
@@ -214,12 +217,12 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: c9b44c59-36cd-4906-8113-ef2c93553faf
+    taskid: 2b66e9f0-4a63-47d3-80d2-41da31835e0b
     type: regular
     task:
-      id: c9b44c59-36cd-4906-8113-ef2c93553faf
+      id: 2b66e9f0-4a63-47d3-80d2-41da31835e0b
       version: -1
-      name: Set ArcsightCaseID from user input
+      name: Set FetchID from user input
       scriptName: IncidentSet
       type: regular
       iscommand: false
@@ -229,8 +232,8 @@ tasks:
       - "9"
     scriptarguments:
       addLabels: ""
-      customFieldName: ArcsightCaseID
-      customFieldValue: ${UserInput.ArcsightCaseID}
+      customFieldName: FetchID
+      customFieldValue: ${UserInput.FetchID}
       details: ""
       labels: ""
       name: ""
@@ -249,10 +252,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: d722aebc-ddc2-4022-8577-e88f8869585d
+    taskid: c2788a78-f0a8-488e-887b-428e224ceaac
     type: title
     task:
-      id: d722aebc-ddc2-4022-8577-e88f8869585d
+      id: c2788a78-f0a8-488e-887b-428e224ceaac
       version: -1
       name: Get case and event info
       type: title
@@ -271,16 +274,19 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 31770e39-9146-473d-8111-c0af16c1c582
+    taskid: 65602a3e-3b1f-4134-80f1-7f056a937775
     type: regular
     task:
-      id: 31770e39-9146-473d-8111-c0af16c1c582
+      id: 65602a3e-3b1f-4134-80f1-7f056a937775
       version: -1
       name: Get Base Events below the top-level event
       script: ArcSight ESM|||as-get-security-events
       type: regular
       iscommand: true
       brand: ArcSight ESM
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       endDate: ""
       ids: ${ArcSightESM.SecurityEvents.baseEventIds}
@@ -288,21 +294,94 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 89,
-          "y": 766
+          "x": -626,
+          "y": 1110
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 29025200-cf8e-4d69-80f1-166eb6b3a034
+    type: condition
+    task:
+      id: 29025200-cf8e-4d69-80f1-166eb6b3a034
+      version: -1
+      name: Does Case included IDs for related Events?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value: ${ArcSightESM.CaseEvents}
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 560
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 5c12898b-66b7-4400-8ff9-f7c3632c007a
+    type: title
+    task:
+      id: 5c12898b-66b7-4400-8ff9-f7c3632c007a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 187,
+          "y": 1299
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 6b37cdf2-9072-49ae-848c-ea00e953a603
+    type: condition
+    task:
+      id: 6b37cdf2-9072-49ae-848c-ea00e953a603
+      version: -1
+      name: Do we have IDs for underlying base events?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    scriptarguments:
+      value: ${ArcSightESM.SecurityEvents.baseEventIds}
+    view: |-
+      {
+        "position": {
+          "x": -372,
+          "y": 924
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "11_12_#default#": 0.1,
+      "13_12_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
-        "height": 1520,
-        "width": 1087,
-        "x": -140,
+        "height": 2023,
+        "width": 1431,
+        "x": -626,
         "y": -659
       }
     }
   }
 inputs: []
-releaseNotes: "First version added"
+releaseNotes: "Added checks for existence of event IDs in Context"
