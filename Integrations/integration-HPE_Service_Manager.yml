@@ -354,9 +354,9 @@ script:
     - name: urgency
       description: Default is 4. Should be number like 3 or 4
     - name: alertStatus
-      description: "-"
+      description: 'The alert status. Example: SLA BREACH'
     - name: area
-      description: "-"
+      description: 'The area. Example: performance, failure, hardware, access, '
     - name: assignmentGroup
       description: 'Example: "Office Supplies (North America)"'
     - name: affectedCI
@@ -365,13 +365,14 @@ script:
       required: true
       description: 'Category of incident. Example: (incident, complaint)'
     - name: company
-      description: "-"
+      description: "Example: advantage"
     - name: phase
       description: 'Example: "Categorization"'
     - name: status
       description: 'Example: "Categorize"'
     - name: subarea
-      description: "-"
+      description: "Example: system or application hangs, function or feature not working,  
+error message, job failed, hardware failure, etc."
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
