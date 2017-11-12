@@ -129,6 +129,9 @@
         {
             "name": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
+        },
+        {
+            "PlaybookID": "listExecutedCommands-Test"
         }
     ],
     "skipped": [
