@@ -39,6 +39,7 @@ script: |+
   var insecure = (args.insecure === 'true');
   var proxy = (args.proxy === 'true');
   var res = http(args.url, requestObj, insecure, proxy);
+  var fileName;
   if (args.filename) {
       fileName = args.filename;
   } else if (res.Headers['Content-disposition']) {
