@@ -1103,6 +1103,7 @@ script:
       default: true
       description: commands.server.arcsight.arguments.queryid.description
     - name: onlyColumns
+      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -1173,6 +1174,7 @@ script:
   - name: as-get-case-event-ids
     arguments:
     - name: caseId
+      description: "-"
       required: true
     outputs:
     - contextPath: ArcSightESM.CaseEvents
