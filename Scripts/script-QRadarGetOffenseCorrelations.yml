@@ -120,3 +120,4 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
+releaseNotes: "-"
