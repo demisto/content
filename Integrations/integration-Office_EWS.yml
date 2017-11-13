@@ -949,7 +949,8 @@ script:
                         }
                         labels = [];
                         //handle  recipients
-                        recipients = message.Items.Message.ToRecipients.Mailbox;
+                        recipients = message.Items.Message.ToRecipients;
+                        recipients = recipients ? recipients.Mailbox : null;
                         if (recipients && !Array.isArray(recipients)) {
                             recipients = [recipients];
                         }
@@ -1404,3 +1405,4 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
+releaseNotes: Fix fetch incidents, when there is no "To" in mail
