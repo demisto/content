@@ -342,7 +342,7 @@ script:
       description: The actual score
     description: Check URL reputation
   - name: idefense-general
-    description: "-"
+    description: Get threats from iDefense database. Returns all records of ip/url/domain
     arguments:
     - name: max_result
       default: true

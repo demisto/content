@@ -2,7 +2,6 @@ commonfields:
   id: ATDDetonate
   version: -1
 name: ATDDetonate
-releaseNotes: 'Returns an error on unsupported files'
 script: |-
   import json
   from time import sleep
