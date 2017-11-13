@@ -2,7 +2,6 @@ commonfields:
   id: QRadarGetOffenseCorrelations
   version: -1
 name: QRadarGetOffenseCorrelations
-releaseNotes: 'Updated context outputs'
 script: |-
   QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
 
