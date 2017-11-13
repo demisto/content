@@ -1103,7 +1103,7 @@ script:
       default: true
       description: commands.server.arcsight.arguments.queryid.description
     - name: onlyColumns
-      description: "-"
+      description: If true will return only the columns of the query. If false will return the column headers and all query results.
       auto: PREDEFINED
       predefined:
       - "true"
@@ -1174,7 +1174,7 @@ script:
   - name: as-get-case-event-ids
     arguments:
     - name: caseId
-      description: "-"
+      description: 'Case ID. Example: 7e6LEbF8BABCfA-dlp1rl1A=='
       required: true
     outputs:
     - contextPath: ArcSightESM.CaseEvents
