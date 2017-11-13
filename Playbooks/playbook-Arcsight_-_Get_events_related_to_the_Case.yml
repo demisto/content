@@ -384,4 +384,3 @@ view: |-
     }
   }
 inputs: []
-releaseNotes: "Added checks for existence of event IDs in Context"

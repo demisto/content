@@ -2,7 +2,6 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
-releaseNotes: 'Bug fix'
 script: |-
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
