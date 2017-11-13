@@ -511,10 +511,10 @@ error message, job failed, hardware failure, etc."
         https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
     outputs:
     - contextPath: HPSM.DeviceIDs
-      description: "-"
+      description: "All the ids(configurationItems) of the devices"
     description: Returns list of devices ids
   - name: hpsm-get-device
-    description: "-"
+    description: Find and return device by id
     arguments:
     - name: configurationItem
       required: true

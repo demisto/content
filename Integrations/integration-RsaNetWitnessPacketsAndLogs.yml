@@ -1903,7 +1903,7 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
-      description: "The number of session to start with."
+      description: "The id of the first session"
     - name: startMeta
       required: true
       description: "-"
@@ -2076,7 +2076,7 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
-      description: "The number of session to start with."
+      description: "The id of the first session"
     - name: startMeta
       required: true
       description: "-"

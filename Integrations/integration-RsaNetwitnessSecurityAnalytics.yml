@@ -1613,7 +1613,7 @@ script:
     description: Updates incident
     execution: true
   - name: fetch-incidents
-    description: "-"
+    description: Simulates fetching incidents. Returns array of incidents from NetWitness.
     arguments: []
   - name: nw-get-alerts
     description: "-"
