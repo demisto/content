@@ -1405,3 +1405,4 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
+releaseNotes: Fix fetch incidents, when there is no "To" in mail
