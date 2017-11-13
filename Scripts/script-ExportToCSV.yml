@@ -83,4 +83,3 @@ args:
   required: true
   isArray: true
 scripttarget: 0
-releaseNotes: 'Display string representation of inner object fields'
