@@ -409,4 +409,3 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Support change in time zone - Splunk ES fetch '
