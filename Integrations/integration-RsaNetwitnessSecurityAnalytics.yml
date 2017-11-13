@@ -1615,7 +1615,7 @@ script:
     description: Simulates fetching incidents. Returns array of incidents from NetWitness.
     arguments: []
   - name: nw-get-alerts
-    description: "-"
+    description: Return all the alerts filtered by filter.
     deprecated: true
     arguments:
     - name: page
@@ -1631,11 +1631,11 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
-    description: "-"
+    description: Return single alert by id
     deprecated: true
     arguments:
     - name: alertId
-      description: "-"
+      description: Alert id
       required: true
   - name: nw-get-event-details
     deprecated: true
@@ -1954,7 +1954,7 @@ script:
     description: Updates incident
     execution: true
   - name: netwitness-im-get-alerts
-    description: "-"
+    description: Return all the alerts filtered by filter.
     arguments:
     - name: page
       description: The default is 1. Indicates the page number of incidents
@@ -1969,10 +1969,10 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: netwitness-im-get-alert-details
-    description: "-"
+    description: Return single alert by id
     arguments:
     - name: alertId
-      description: "-"
+      description: Alert id
       required: true
     outputs:
     - contextPath: Netwitness.Alert.Id
