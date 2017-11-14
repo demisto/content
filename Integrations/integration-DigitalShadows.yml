@@ -1195,7 +1195,7 @@ script:
   - name: ds-get-incident
     arguments:
     - name: incident_id
-      description: "-"
+      description: Identifier of the incident
       required: true
       default: true
     - name: fulltext
