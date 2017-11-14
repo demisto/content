@@ -213,10 +213,6 @@ def test_integration(client, integrations, playbook_id, is_byoi, options={}):
     for integration in integrations:
         integration_name = integration.get('name', None)
         integration_params = integration.get('params', None)
-        if not integration_name or not integration_params:
-            print_error('Did not get name and params for all integrations')
-            __delete_integrations_instances(client, instance_ids)
-            return False
 
         instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
         if not instance_id:
