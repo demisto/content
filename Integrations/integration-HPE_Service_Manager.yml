@@ -387,49 +387,49 @@ error message, job failed, hardware failure, etc."
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
-      description: "-"
+      description: Incident area
     - contextPath: HPSM.Incidents.Assignee
-      description: "-"
+      description: Incident assignee
     - contextPath: HPSM.Incidents.AssignmentGroup
-      description: "-"
+      description: Incident assignment group
     - contextPath: HPSM.Incidents.Category
-      description: "-"
+      description: Incident category
     - contextPath: HPSM.Incidents.ClosedBy
-      description: "-"
+      description: The user that closed the incident
     - contextPath: HPSM.Incidents.ClosedTime
-      description: "-"
+      description: Incident close time
     - contextPath: HPSM.Incidents.ClosureCode
-      description: "-"
+      description: Incident closure code
     - contextPath: HPSM.Incidents.Company
-      description: "-"
+      description: Incident company
     - contextPath: HPSM.Incidents.Contact
-      description: "-"
+      description: Incident contact details
     - contextPath: HPSM.Incidents.Description
-      description: "-"
+      description: Incident description
     - contextPath: HPSM.Incidents.Impact
-      description: "-"
+      description: Incident impact
     - contextPath: HPSM.Incidents.JournalUpdates
-      description: "-"
+      description: Incident journal updates
     - contextPath: HPSM.Incidents.OpenTime
-      description: "-"
+      description: Incident open time
     - contextPath: HPSM.Incidents.OpenedBy
-      description: "-"
+      description: The user that opened the incident
     - contextPath: HPSM.Incidents.Phase
-      description: "-"
+      description: Incident phase
     - contextPath: HPSM.Incidents.Solution
-      description: "-"
+      description: Incident solution
     - contextPath: HPSM.Incidents.Status
-      description: "-"
+      description: Incident status
     - contextPath: HPSM.Incidents.Subarea
-      description: "-"
+      description: Incident sub area
     - contextPath: HPSM.Incidents.Title
-      description: "-"
+      description: Incident title
     - contextPath: HPSM.Incidents.UpdatedBy
-      description: "-"
+      description: The last user that update the incident
     - contextPath: HPSM.Incidents.UpdatedTime
-      description: "-"
+      description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
-      description: "-"
+      description: Incident urgency
     description: 'Creating new incident '
   - name: hpsm-list-incidents
     arguments:
@@ -460,49 +460,49 @@ error message, job failed, hardware failure, etc."
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
-      description: "-"
+      description: Incident area
     - contextPath: HPSM.Incidents.Assignee
-      description: "-"
+      description: Incident Assignee
     - contextPath: HPSM.Incidents.AssignmentGroup
-      description: "-"
+      description: Incident assignment group
     - contextPath: HPSM.Incidents.Category
-      description: "-"
+      description: Incident category
     - contextPath: HPSM.Incidents.ClosedBy
-      description: "-"
+      description: The user that closed the incident
     - contextPath: HPSM.Incidents.ClosedTime
-      description: "-"
+      description: Incident close time
     - contextPath: HPSM.Incidents.ClosureCode
-      description: "-"
+      description: Incident closure code
     - contextPath: HPSM.Incidents.Company
-      description: "-"
+      description: Incident company
     - contextPath: HPSM.Incidents.Contact
-      description: "-"
+      description: Incident contact details
     - contextPath: HPSM.Incidents.Description
-      description: "-"
+      description: Incident description
     - contextPath: HPSM.Incidents.Impact
-      description: "-"
+      description: Incident impact
     - contextPath: HPSM.Incidents.JournalUpdates
-      description: "-"
+      description: Incident journal updates
     - contextPath: HPSM.Incidents.OpenTime
-      description: "-"
+      description: Incident open time
     - contextPath: HPSM.Incidents.OpenedBy
-      description: "-"
+      description: The user that opened the incident
     - contextPath: HPSM.Incidents.Phase
-      description: "-"
+      description: Incident phase
     - contextPath: HPSM.Incidents.Solution
-      description: "-"
+      description: Incident solution
     - contextPath: HPSM.Incidents.Status
-      description: "-"
+      description: Incident status
     - contextPath: HPSM.Incidents.Subarea
-      description: "-"
+      description: Incident sub area
     - contextPath: HPSM.Incidents.Title
-      description: "-"
+      description: Incident title
     - contextPath: HPSM.Incidents.UpdatedBy
-      description: "-"
+      description: The last user that update the incident
     - contextPath: HPSM.Incidents.UpdatedTime
-      description: "-"
+      description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
-      description: "-"
+      description: Incident urgency
   - name: hpsm-list-devices
     description: Returns list of devices filtered according to query.
     arguments:
@@ -521,29 +521,29 @@ error message, job failed, hardware failure, etc."
       description: 'Id of device, configuration item of device. Example: CI1000011'
     outputs:
     - contextPath: HPSM.Devices.AssignmentGroup
-      description: "-"
+      description: Device assignment group
     - contextPath: HPSM.Devices.Company
-      description: "-"
+      description: Device company
     - contextPath: HPSM.Devices.ConfigurationItem
-      description: "-"
+      description: Device configuration item
     - contextPath: HPSM.Devices.ConfigurationItemSubType
-      description: "-"
+      description: Device configurationItem sub type
     - contextPath: HPSM.Devices.ConfigurationItemType
-      description: "-"
+      description: Device configurationItem item type
     - contextPath: HPSM.Devices.Department
-      description: "-"
+      description: Device department
     - contextPath: HPSM.Devices.DisplayName
-      description: "-"
+      description: Device display name
     - contextPath: HPSM.Devices.Location
-      description: "-"
+      description: Device location
     - contextPath: HPSM.Devices.LocationCode
-      description: "-"
+      description: Device location code
     - contextPath: HPSM.Devices.Model
-      description: "-"
+      description: Device model
     - contextPath: HPSM.Devices.PartNumber
-      description: "-"
+      description: Device part number
     - contextPath: HPSM.Devices.Status
-      description: "-"
+      description: Device status
     - contextPath: HPSM.Devices.UpdatedBy
-      description: "-"
+      description: The last user that update the device
 releaseNotes: added description to commands
