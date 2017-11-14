@@ -85,10 +85,9 @@ def main():
 
         playbook_id = t['playbookID']
 
-        integrations_conf = t.get('integrations', None)
-        if integrations_conf is None:
-            integrations_conf = []
-        elif not isinstance(integrations_conf, list):
+        integrations_conf = t.get('integrations', [])
+
+        if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
         integrations = []
