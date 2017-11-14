@@ -376,7 +376,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
   - name: uuid
-    description: "-"
+    description: Get specific indicator reputation
     arguments:
     - name: uuid
       required: true
