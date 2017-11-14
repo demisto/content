@@ -30,6 +30,8 @@ mapping:
     type: str
   toVersion:
     type: str
+  toversion:
+    type: str
   image:
     type: str
     required: yes
