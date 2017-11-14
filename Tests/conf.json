@@ -7,7 +7,7 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-            "integrations": "PostgreSQL",
+            "integrations": ["PostgreSQL", "GoogleSafeBrowsing"],
             "playbookID": "PostgreSQL Test"
         },
         {
@@ -15,9 +15,11 @@
             "playbookID": "Qualys-Test"
         },
         {
-            "integrations": "google",
-            "playbookID": "GsuiteTest",
-            "byoi": false
+            "integrations": {
+                "name": "google",
+                "byoi": false
+            },
+            "playbookID": "GsuiteTest"
         },
         {
             "integrations": "OpenPhish",
@@ -57,9 +59,11 @@
             "playbookID": "ExtractURL Test"
         },
         {
-            "integrations": "carbonblack",
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
             "playbookID": "CB-Response-Test",
-            "byoi": false,
             "nightly": true
         },
         {

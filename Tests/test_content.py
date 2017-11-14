@@ -85,13 +85,28 @@ def main():
 
         playbook_id = t['playbookID']
 
-        integration_names = t.get('integrations', None)
-        if integration_names is None:
-            integration_names = []
-        elif not isinstance(integration_names, list):
-            integration_names = [integration_names]
+        integrations_conf = t.get('integrations', None)
+        if integrations_conf is None:
+            integrations_conf = []
+        elif not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
 
-        integrations = [{'name': name, 'params': {}} for name in integration_names]
+        integrations = [{'name': name, 'params': {}} for name in integrations_conf]
+        for integration in integrations_conf:
+            if type(integration) is dict:
+                # dict description
+                integrations.append({
+                    'name': integration.get('name'),
+                    'byoi': integration.get('byoi',True),
+                    'params': {}
+                })
+            else:
+                # string description
+                integrations.append({
+                    'name': integration,
+                    'byoi': True,
+                    'params': {}
+                })
 
         for integration in integrations:
             integration_params = [item for item in secret_params if item["name"] == integration['name']]
@@ -100,13 +115,11 @@ def main():
 
         test_message = 'playbook: ' + playbook_id
         if integrations:
-            test_message = test_message + ' with integration(s): ' + ','.join(integration_names)
+            test_message = test_message + ' with integration(s): ' + ','.join(integrations_conf)
 
         print '------ Test %s start ------' % (test_message, )
 
         nightly_test = t.get('nightly', False)
-
-        is_byoi = t.get('byoi', True)
 
         skip_test = True if nightly_test and not is_nightly else False
 
@@ -114,7 +127,7 @@ def main():
             print 'Skip test'
         else:
             # run test
-            succeed = test_integration(c, integrations, playbook_id, is_byoi, test_options)
+            succeed = test_integration(c, integrations, playbook_id, test_options)
 
             # use results
             if succeed:
