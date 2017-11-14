@@ -83,7 +83,6 @@ def __create_integration_instance(client, integration_name, integration_params, 
     for param_conf in module_configuration:
         if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
             # param defined in conf
-            print str(param_conf['display'])
             key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
             if key == 'credentials':
                 credentials = integration_params[key]
