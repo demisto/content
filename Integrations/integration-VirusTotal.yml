@@ -756,5 +756,5 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
 hidden: false
-fromVersion: 2.5.0
+fromversion: 2.5.0
 releaseNotes: "-"

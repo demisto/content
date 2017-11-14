@@ -797,5 +797,5 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
 hidden: false
-fromVersion: 2.5.0
+fromversion: 2.5.0
 releaseNotes: "-"

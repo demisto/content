@@ -24,11 +24,7 @@ mapping:
     'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
      'Authentication', 'Database']
     required: yes
-  fromVersion:
-    type: str
   fromversion:
-    type: str
-  toVersion:
     type: str
   toversion:
     type: str
