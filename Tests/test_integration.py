@@ -83,7 +83,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     for param_conf in module_configuration:
         if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
             # param defined in conf
-
+            print str(param_conf['display'])
             key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
             if key == 'credentials':
                 credentials = integration_params[key]
@@ -182,6 +182,14 @@ def __delete_integration_instance(client, instance_id):
     return True
 
 
+# delete all integration instances, return True if all succeed delete all
+def __delete_integrations_instances(client, instance_ids):
+    succeed = True
+    for instance_id in instance_ids:
+        succeed = __delete_integration_instance(client, instance_id) and succeed
+    return succeed
+
+
 def __print_investigation_error(client, playbook_id, investigation_id):
     res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
     if res.status_code == 200:
@@ -194,22 +202,32 @@ def __print_investigation_error(client, playbook_id, investigation_id):
                 print_error('\t- Body: ' + str(entry['contents']))
 
 
-# 1. create integration instance
+# 1. create integrations instances
 # 2. create incident with playbook
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integration_name, integration_params, playbook_id, is_byoi, options={}):
-    # create integration instance
-    if integration_name:
+def test_integration(client, integrations, playbook_id, is_byoi, options={}):
+    # create integrations instances
+    instance_ids = []
+    for integration in integrations:
+        integration_name = integration.get('name', None)
+        integration_params = integration.get('params', None)
+        if not integration_name or not integration_params:
+            print_error('Did not get name and params for all integrations')
+            __delete_integrations_instances(client, instance_ids)
+            return False
+
         instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
         if not instance_id:
             print_error('Failed to create instance')
+            __delete_integrations_instances(client, instance_ids)
             return False
 
-    print('Create integration succeed')
-    # create incident with playbook
+        instance_ids.append(instance_id)
+        print('Create integration %s succeed' % (integration_name, ))
 
+    # create incident with playbook
     incident = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
 
     if not incident:
@@ -251,8 +269,7 @@ def test_integration(client, integration_name, integration_params, playbook_id, 
         # delete incident
         __delete_incident(client, incident)
 
-        if integration_name:
-            # delete integration instance
-            __delete_integration_instance(client, instance_id)
+        # delete integration instance
+        __delete_integrations_instances(client, instance_ids)
 
     return test_pass
