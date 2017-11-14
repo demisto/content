@@ -26,6 +26,8 @@ mapping:
     required: yes
   fromVersion:
     type: str
+  fromversion:
+    type: str
   toVersion:
     type: str
   image:
