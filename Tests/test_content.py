@@ -67,43 +67,45 @@ def main():
         with open(secret_conf_path) as data_file:
             secret_conf = json.load(data_file)
 
-    integrations = conf['integrations']
+    tests = conf['tests']
 
-    secret_integrations = secret_conf['integrations'] if secret_conf else []
+    secret_params = secret_conf['integrations'] if secret_conf else []
 
-    if not integrations or len(integrations) is 0:
+    if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
 
     succeed_playbooks = []
     failed_playbooks = []
-    for integration in integrations:
+    for t in tests:
         test_options = {
-            'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout', 30),
+            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
             'interval': conf.get('testInterval', 10)
         }
 
-        integration_name = integration.get('name', None)
-        playbook_id = integration['playbookID']
-        if 'params' in integration:
-            integration_params = integration['params']
-        else:
-            # get from secret conf
-            secret_integration_match = [item for item in secret_integrations if item["name"] == integration_name]
-            if len(secret_integration_match) > 0:
-                integration_params = secret_integration_match[0].get('params')
-            else:
-                integration_params = {}
+        playbook_id = t['playbookID']
 
-        if integration_name:
-            test_message = 'integration: ' + integration_name + ' with playbook: ' + playbook_id
-        else:
-            test_message = 'playbook: ' + playbook_id
+        integration_names = t.get('integrations', None)
+        if integration_names is None:
+            integration_names = []
+        elif not isinstance(integration_names, list):
+            integration_names = [integration_names]
+
+        integrations = [{'name': name} for name in integration_names]
+
+        for integration in integrations:
+            integration_params = (item for item in secret_params if item["name"] == integration['name']).next()
+            integration['params'] = integration_params and integration_params.get('params', {}) or {}
+
+        test_message = 'playbook: ' + playbook_id
+        if integrations:
+            test_message = test_message + ' with integration(s): ' + ','.join(integration_names)
+
         print '------ Test %s start ------' % (test_message, )
 
-        nightly_test = integration.get('nightly', False)
+        nightly_test = t.get('nightly', False)
 
-        is_byoi = integration.get('byoi', True)
+        is_byoi = t.get('byoi', True)
 
         skip_test = True if nightly_test and not is_nightly else False
 
@@ -111,7 +113,7 @@ def main():
             print 'Skip test'
         else:
             # run test
-            succeed = test_integration(c, integration_name, integration_params, playbook_id, is_byoi, test_options)
+            succeed = test_integration(c, integrations, playbook_id, is_byoi, test_options)
 
             # use results
             if succeed:
