@@ -49,7 +49,7 @@ tasks:
     task:
       id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
       version: -1
-      description: "-"
+      description: ""
       name: Triage and Engage
       type: title
       iscommand: false
@@ -103,7 +103,7 @@ tasks:
     task:
       id: b2b1f385-7cff-427a-8882-2c18875c9a2e
       version: -1
-      description: "-"
+      description: ""
       name: Extract IP Addresses from email
       scriptName: ExtractIP
       type: regular
@@ -128,7 +128,7 @@ tasks:
     task:
       id: a846334e-5ccc-4d95-8244-d57ec36d6e2f
       version: -1
-      description: "-"
+      description: ""
       name: Extract URLs from email
       scriptName: ExtractURL
       type: regular
@@ -153,7 +153,7 @@ tasks:
     task:
       id: c752c128-ee8f-4f94-877a-39bdb10a7d40
       version: -1
-      description: "-"
+      description: ""
       name: Is the attachment malicious according to Sandbox report?
       type: condition
       iscommand: false
@@ -179,7 +179,7 @@ tasks:
     task:
       id: 4440a41f-7d53-4a52-86bb-85b49b6722b4
       version: -1
-      description: "-"
+      description: ""
       name: 'Manual Investigation Step 1: Initial Inspection'
       type: title
       iscommand: false
@@ -300,7 +300,7 @@ tasks:
     task:
       id: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
       version: -1
-      description: "-"
+      description: ""
       name: 'Manual Investigation Step 2: Deeper Inspection'
       type: title
       iscommand: false
@@ -349,7 +349,7 @@ tasks:
     task:
       id: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
       version: -1
-      description: "-"
+      description: ""
       name: Response
       type: title
       iscommand: false
@@ -374,7 +374,7 @@ tasks:
     task:
       id: aafb8c0f-765a-4bbb-81c9-b1435b795f2e
       version: -1
-      description: "-"
+      description: ""
       name: Send email to user notifying them this email is safe
       scriptName: SendEmail
       type: regular
@@ -411,7 +411,7 @@ tasks:
     task:
       id: abf517ab-27b6-49a9-853d-41e56650a92a
       version: -1
-      description: "-"
+      description: ""
       name: Close the phishing investigation
       scriptName: CloseInvestigation
       type: regular
@@ -435,7 +435,7 @@ tasks:
     task:
       id: 8a9ba010-09e1-4aa6-810f-859ae66768e6
       version: -1
-      description: "-"
+      description: ""
       name: Send email to user notifying them it's a malicious email
       scriptName: SendEmail
       type: regular
@@ -472,7 +472,7 @@ tasks:
     task:
       id: 9892f321-ad3e-45ed-8abe-a4f29f29068a
       version: -1
-      description: "-"
+      description: ""
       name: Did we find an attachment inside the email and extract its hash?
       scriptName: Exists
       type: condition
@@ -525,7 +525,7 @@ tasks:
     task:
       id: 75e0739e-4f37-4859-8ae2-857be0d57d6c
       version: -1
-      description: "-"
+      description: ""
       name: Extract indicators
       type: title
       iscommand: false
@@ -547,7 +547,7 @@ tasks:
     task:
       id: 03606952-f504-44b2-8371-5a548e395048
       version: -1
-      description: "-"
+      description: ""
       name: Check indicators
       type: title
       iscommand: false
@@ -569,7 +569,7 @@ tasks:
     task:
       id: 5359d876-c7b6-495c-8249-fd87d30d5663
       version: -1
-      description: "-"
+      description: ""
       name: Was any malicious indicator found?
       scriptName: IsMaliciousIndicatorFound
       type: condition
@@ -594,7 +594,7 @@ tasks:
     task:
       id: a2f77d09-4dc1-431a-8d7f-538f3b285e56
       version: -1
-      description: "-"
+      description: ""
       name: Is the distance really small
       scriptName: Exists
       type: condition
@@ -621,7 +621,7 @@ tasks:
     task:
       id: 2e785868-8ecb-47b8-8123-66e817a31f57
       version: -1
-      description: "-"
+      description: ""
       name: Review all results and decide should we close investigation
       type: regular
       iscommand: false
@@ -640,7 +640,7 @@ tasks:
     task:
       id: bff69be5-924f-4eda-8264-83e9c2246ab6
       version: -1
-      description: "-"
+      description: ""
       name: Store the sending account
       scriptName: Set
       type: regular
@@ -667,7 +667,7 @@ tasks:
     task:
       id: 286c067d-78e0-4d90-8107-eec5625b4b82
       version: -1
-      description: "-"
+      description: ""
       name: ""
       playbookName: Enrichment Playbook
       type: playbook
@@ -690,7 +690,7 @@ tasks:
     task:
       id: 6104b475-bee7-42aa-87c4-07c6e433a350
       version: -1
-      description: "-"
+      description: ""
       name: ""
       playbookName: Account Enrichment
       type: playbook
@@ -713,7 +713,7 @@ tasks:
     task:
       id: abdcdddf-7b08-4c4a-8f29-842890ee1351
       version: -1
-      description: "-"
+      description: ""
       name: ""
       playbookName: Process Email
       type: playbook
@@ -736,7 +736,7 @@ tasks:
     task:
       id: 27922299-5a0b-4525-8465-7c2efd9503b5
       version: -1
-      description: "-"
+      description: ""
       name: ""
       playbookName: Detonate files
       type: playbook
@@ -759,7 +759,7 @@ tasks:
     task:
       id: 16dd2965-30b6-47dc-80bf-48f322e21e9c
       version: -1
-      description: "-"
+      description: ""
       name: ""
       playbookName: Hunt for bad IOCs
       type: playbook

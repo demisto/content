@@ -35,7 +35,7 @@ tasks:
     task:
       id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
       version: -1
-      description: "-"
+      description: ""
       name: Engage
       type: title
       iscommand: false
@@ -100,7 +100,7 @@ tasks:
     task:
       id: b7f2e51f-a39f-4cba-881d-e7efbef2553e
       version: -1
-      description: "-"
+      description: ""
       name: 'Investigation Step 1: Initial Inspection'
       iscommand: false
       brand: ""
@@ -300,7 +300,7 @@ tasks:
     task:
       id: eb2b0d5a-cc72-4640-8116-85750701ae1d
       version: -1
-      description: "-"
+      description: ""
       name: 'Investigation Step 2: Deeper Analysis'
       iscommand: false
       brand: ""
@@ -321,7 +321,7 @@ tasks:
     task:
       id: 92ae3779-12c5-4a24-827e-56e413088b80
       version: -1
-      description: "-"
+      description: ""
       name: Get all the URLs from the email
       iscommand: false
       brand: ""
@@ -342,7 +342,7 @@ tasks:
     task:
       id: 13e0228e-ad6a-4148-8aa6-55e8143a4620
       version: -1
-      description: "-"
+      description: ""
       name: Get all the hostnames inside the email
       iscommand: false
       brand: ""
@@ -455,7 +455,7 @@ tasks:
     task:
       id: 9c572188-54b5-4d56-8e62-95ee93e3a157
       version: -1
-      description: "-"
+      description: ""
       name: Consider this email as phishing and move to "Response Section"
       iscommand: false
       brand: ""
@@ -476,7 +476,7 @@ tasks:
     task:
       id: email_phishing
       version: -1
-      description: "-"
+      description: ""
       name: Consider this email as phishing and move to "Response Section"
       iscommand: false
       brand: ""
@@ -497,7 +497,7 @@ tasks:
     task:
       id: ff551c65-6d74-460d-8e4d-4a5a84517e9b
       version: -1
-      description: "-"
+      description: ""
       name: Consider this email as phishing and move to "Response Section"
       iscommand: false
       brand: ""
@@ -518,7 +518,7 @@ tasks:
     task:
       id: 3b29ac0a-190d-46bf-80cf-dbc1197d2f80
       version: -1
-      description: "-"
+      description: ""
       name: 'Investigation Step 3: Is it a Campaign?'
       iscommand: false
       brand: ""
@@ -563,7 +563,7 @@ tasks:
     task:
       id: ec15c113-29a0-4ab5-85fc-3fc1fbe85a70
       version: -1
-      description: "-"
+      description: ""
       name: Mark this as a campaign rather than isolated incident.
       iscommand: false
       brand: ""
@@ -606,7 +606,7 @@ tasks:
     task:
       id: 0386fa2c-a246-4dd9-8592-976b630148fc
       version: -1
-      description: "-"
+      description: ""
       name: Respond
       iscommand: false
       brand: ""

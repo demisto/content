@@ -13,7 +13,7 @@ tasks:
     type: start
     task:
       id: 065b25dc-7aad-4356-8bee-261b189251b3
-      description: "-"
+      description: ""
       version: -1
       name: ""
       iscommand: false
@@ -62,7 +62,7 @@ tasks:
     type: regular
     task:
       id: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
-      description: "-"
+      description: ""
       version: -1
       name: Query AD to get user details
       scriptName: ADGetUser
@@ -93,7 +93,7 @@ tasks:
     type: title
     task:
       id: 561f7e3c-e8cf-4f68-8bbe-64c7cb608995
-      description: "-"
+      description: ""
       version: -1
       name: User Enrichment Done
       type: title

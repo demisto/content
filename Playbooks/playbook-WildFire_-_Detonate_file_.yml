@@ -2,7 +2,7 @@ id: WildFire - Detonate file
 version: -1
 name: WildFire - Detonate file
 starttaskid: "0"
-description: "-"
+description: ""
 tasks:
   "0":
     id: "0"
@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -90,7 +90,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       "no":
       - "4"
@@ -116,7 +116,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     view: |-
       {
         "position": {

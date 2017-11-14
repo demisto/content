@@ -37,7 +37,7 @@ tasks:
     task:
       id: cdd9fe08-f2d7-4b2f-8e62-ec21ed9e3715
       version: -1
-      description: "-"
+      description: ""
       name: Retrieve ePO's current DAT version
       script: epo|||epo-get-current-dat
       issystemtask: true
@@ -119,7 +119,7 @@ tasks:
     task:
       id: 64ae7dd1-592c-4f0a-8b57-3107a6e4040a
       version: -1
-      description: "-"
+      description: ""
       name: Isolate dangerous systems from network
       issystemtask: true
       type: regular
@@ -142,7 +142,7 @@ tasks:
     task:
       id: 05cac450-0b26-47b5-82ab-23e64849c2c3
       version: -1
-      description: "-"
+      description: ""
       name: Open ServiceNow ticket with list of problematic endpoints to be handled
         by the appropriate team
       script: ServiceNow|||servicenow-incident-create
@@ -233,7 +233,7 @@ tasks:
     task:
       id: 6d0b0842-0873-4629-8e39-9b4b873f46cb
       version: -1
-      description: "-"
+      description: ""
       name: Trigger signature update on outdated endpoints
       script: epo|||epo-update-client-dat
       issystemtask: true
@@ -266,7 +266,7 @@ tasks:
     task:
       id: 99679543-7b3b-4f76-8cc7-fec535710df0
       version: -1
-      description: "-"
+      description: ""
       name: Display list of AV related tickets from ServiceNow
       script: ServiceNow|||servicenow-incidents-query
       issystemtask: true
@@ -295,7 +295,7 @@ tasks:
     task:
       id: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
       version: -1
-      description: "-"
+      description: ""
       name: Close the investigation
       scriptName: CloseInvestigation
       issystemtask: true

@@ -15,7 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -38,7 +38,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -68,7 +68,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -90,7 +90,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -114,7 +114,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -136,7 +136,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     view: |-
       {
         "position": {
@@ -156,7 +156,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "8"

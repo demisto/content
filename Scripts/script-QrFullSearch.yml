@@ -67,7 +67,7 @@ script: |
 type: python
 tags:
 - QRadar
-comment: "-"
+comment: Full search through QRadar advance query languages
 system: true
 deprecated: true
 args:

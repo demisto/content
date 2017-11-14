@@ -37,15 +37,15 @@ deprecated: true
 args:
 - name: category
   default: true
-  description: "-"
+  description: New ticket category
 - name: subcategory
-  description: "-"
+  description: New ticket sub category
 - name: shortdescription
-  description: "-"
+  description: New ticket short desciption category
 - name: comments
-  description: "-"
+  description: New ticket comments
 - name: assignmentgroup
-  description: "-"
+  description: New ticket assignment group
 scripttarget: 0
 dependson:
   must:

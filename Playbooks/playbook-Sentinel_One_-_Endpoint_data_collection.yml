@@ -18,7 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -41,7 +41,7 @@ tasks:
       type: regular
       iscommand: true
       brand: sentinelOne
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -101,7 +101,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       "no":
       - "3"
@@ -128,7 +128,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -152,7 +152,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     view: |-
       {
         "position": {
@@ -171,7 +171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "6"
