@@ -1,5 +1,5 @@
 id: playbook16
-fromVersion: 2.5.0
+fromversion: 2.5.0
 system: true
 version: -1
 name: CrowdStrike Rapid IOC Hunting

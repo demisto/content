@@ -1,5 +1,5 @@
 id: playbook17
-fromVersion: 2.5.0
+fromversion: 2.5.0
 system: true
 version: -1
 name: Carbon black Protection Rapid IOC Hunting

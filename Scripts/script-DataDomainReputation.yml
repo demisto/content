@@ -97,5 +97,5 @@ args:
   description: Whether to calculate reputation even if it is manual set - yes/no
   defaultValue: "no"
 scripttarget: 0
-fromVersion: 3.1.0
+fromversion: 3.1.0
 releaseNotes: "-"

@@ -5,7 +5,7 @@ description: Following a failed login event happening more than 3 times, ask use
   on Slack if she attempted a login. If no, raise the incident level to high. If yes,
   ask user if she needs a password reset and reset the password in AD.
 system: true
-fromVersion: 2.5.0
+fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":
