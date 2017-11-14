@@ -22,7 +22,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "7"
@@ -45,7 +45,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -74,7 +74,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -103,7 +103,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -127,7 +127,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     view: |-
       {
         "position": {
@@ -147,7 +147,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -174,7 +174,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -199,7 +199,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -221,7 +221,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "2"

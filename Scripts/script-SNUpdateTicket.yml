@@ -37,15 +37,15 @@ deprecated: true
 args:
 - name: category
   default: true
-  description: "-"
+  description: Ticket new category
 - name: subcategory
-  description: "-"
+  description: Ticket new sub category
 - name: shortdescription
-  description: "-"
+  description: Ticket new short description
 - name: comments
-  description: "-"
+  description: Ticket new comments
 - name: assignmentgroup
-  description: "-"
+  description: Ticket new assignment group
 - name: id
   required: true
   description: ID of the Ticket/Incident in ServiceNow

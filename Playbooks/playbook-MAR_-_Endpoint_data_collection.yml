@@ -18,7 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -42,7 +42,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -69,7 +69,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -93,7 +93,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     view: |-
       {
         "position": {
@@ -113,7 +113,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -140,7 +140,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -171,7 +171,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -202,7 +202,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "11"
@@ -233,7 +233,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "23"
@@ -264,7 +264,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "13"
@@ -295,7 +295,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "18"
@@ -326,7 +326,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "21"
@@ -357,7 +357,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "17"
@@ -388,7 +388,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "22"
@@ -419,7 +419,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "19"
@@ -450,7 +450,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "20"
@@ -481,7 +481,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "24"
@@ -512,7 +512,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -543,7 +543,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -574,7 +574,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "25"
@@ -605,7 +605,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -636,7 +636,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -666,7 +666,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "27"
@@ -691,7 +691,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "15"
@@ -713,7 +713,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -735,7 +735,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "12"
@@ -757,7 +757,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "-"
+      description: ""
     nexttasks:
       '#none#':
       - "14"

@@ -13,7 +13,7 @@ tasks:
     task:
       id: e4894164-409a-4adc-87bc-96a530ba8a27
       version: -1
-      description: "-"
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -259,7 +259,7 @@ tasks:
     task:
       id: fee08a36-3893-425d-8329-77cea06d0d53
       version: -1
-      description: "-"
+      description: ""
       name: Get device details and email
       type: title
       iscommand: false
@@ -280,7 +280,7 @@ tasks:
     type: regular
     task:
       id: ee1c2ef3-3993-4227-8e33-cd0baedeff6a
-      description: "-"
+      description: ""
       version: -1
       name: Get device details
       script: FalconHost|||cs-device-search
@@ -310,7 +310,7 @@ tasks:
     task:
       id: ef5f10f1-f006-47d8-84b7-fed029b29add
       version: -1
-      description: "-"
+      description: ""
       name: Notify analyst to review information
       scriptName: SendEmail
       type: regular
@@ -343,7 +343,7 @@ tasks:
     task:
       id: 4fde6e6e-c916-4a95-83e0-d716d9e58435
       version: -1
-      description: "-"
+      description: ""
       name: Analyst - review information
       type: regular
       iscommand: false
@@ -365,7 +365,7 @@ tasks:
     task:
       id: 6275c1bc-a359-444b-89aa-c6baf47db456
       version: -1
-      description: "-"
+      description: ""
       name: Found any devices?
       scriptName: Exists
       type: condition
@@ -392,7 +392,7 @@ tasks:
     task:
       id: 063c114f-096a-476d-894c-18f3d802fc0f
       version: -1
-      description: "-"
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -439,7 +439,7 @@ tasks:
     task:
       id: 06bbd1d4-24bf-4daa-8a57-b1925c9426ae
       version: -1
-      description: "-"
+      description: ""
       name: Hunt for indicators
       type: title
       iscommand: false
