@@ -91,11 +91,12 @@ def main():
         elif not isinstance(integration_names, list):
             integration_names = [integration_names]
 
-        integrations = [{'name': name} for name in integration_names]
+        integrations = [{'name': name, 'params': {}} for name in integration_names]
 
         for integration in integrations:
-            integration_params = (item for item in secret_params if item["name"] == integration['name']).next()
-            integration['params'] = integration_params and integration_params.get('params', {}) or {}
+            integration_params = [item for item in secret_params if item["name"] == integration['name']]
+            if integration_params:
+                integration['params'] = integration_params[0].get('params', {})
 
         test_message = 'playbook: ' + playbook_id
         if integrations:
