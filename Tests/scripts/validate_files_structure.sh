@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ### this script ensure all files starts/ends with the right prefix/suffix
+### and validate files by schema
 
 foundWrongName=false
 
