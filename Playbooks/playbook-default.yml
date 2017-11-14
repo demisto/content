@@ -3,7 +3,7 @@ version: -1
 name: Default
 description: Default playbook to help classify incoming incidents
 system: true
-fromVersion: 2.5.0
+fromversion: 2.5.0
 starttaskid: "0"
 tasks:
   "0":
