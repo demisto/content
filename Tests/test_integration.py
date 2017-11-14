@@ -207,12 +207,13 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integrations, playbook_id, is_byoi, options={}):
+def test_integration(client, integrations, playbook_id, options={}):
     # create integrations instances
     instance_ids = []
     for integration in integrations:
         integration_name = integration.get('name', None)
         integration_params = integration.get('params', None)
+        is_byoi = integration.get('byoi', True)
 
         instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
         if not instance_id:
