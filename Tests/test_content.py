@@ -91,7 +91,7 @@ def main():
         elif not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
-        integrations = [{'name': name, 'params': {}} for name in integrations_conf]
+        integrations = []
         for integration in integrations_conf:
             if type(integration) is dict:
                 # dict description
