@@ -335,6 +335,7 @@ script:
     arguments:
     - name: ip
       required: true
+      description: ip to query
     outputs:
     - contextPath: IP.Address
       description: IP Address
@@ -377,6 +378,7 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
+    description: Query domain in AlienVault OTX
   - name: ipv6
     arguments:
     - name: ip
