@@ -7,7 +7,7 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-            "integrations": ["PostgreSQL", "GoogleSafeBrowsing"],
+            "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
         {
