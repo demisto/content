@@ -115,7 +115,8 @@ def main():
 
         test_message = 'playbook: ' + playbook_id
         if integrations:
-            test_message = test_message + ' with integration(s): ' + ','.join(integrations_conf)
+            integrations_names = [integration['name'] for integration in integrations]
+            test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
 
         print '------ Test %s start ------' % (test_message, )
 
