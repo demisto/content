@@ -2,7 +2,7 @@ commonfields:
   id: ExtractDomain
   version: -1
 name: ExtractDomain
-toversion 3.0.0
+toversion: 3.0.0
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {
