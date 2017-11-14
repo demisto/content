@@ -100,9 +100,9 @@ mapping:
             type: bool
   system:
     type: bool
-  fromVersion:
+  fromversion:
     type: text
-  toVersion:
+  toversion:
     type: text
   releaseNotes:
     type: str
