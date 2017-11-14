@@ -2079,7 +2079,7 @@ For regular expressions, change “keyword” to “regex”
       description: "The id of the first session"
     - name: startMeta
       required: true
-      description: "-"
+      description: ""
     - name: maxSessions
       required: true
       description: "Count of sessions to return"

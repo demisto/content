@@ -716,15 +716,23 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
-      description: "-"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "-"
+      description: "Notify about this incident"
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
     - name: order
-      description: "-"
+      description: "Order number"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -732,9 +740,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "-"
+      description: "How many users included in this ticket before"
     - name: reopen_count
-      description: "-"
+      description: "How many time the ticket has been reopened"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -744,15 +752,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "-"
+      description: "Subcategory"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "-"
+      description: "Input from the end user"
     - name: watch_list
-      description: "-"
+      description: "A list of watched tickets"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -760,7 +768,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "-"
+      description: "Date when started to work on the ticket"
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -768,7 +776,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "-"
+      description: "Priority of the ticket (number)"
     - name: template
       description: Template name to use as a base to create new incidents.
     - name: custom_fields
@@ -831,7 +839,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "-"
+      description: "Category name"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -859,7 +867,6 @@ script:
     - name: delivery_plan
       description: UID Format
     - name: display
-      description: "-"
       auto: PREDEFINED
       predefined:
       - "true"
@@ -878,15 +885,23 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
-      description: "-"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "-"
+      description: "Notify about this incident"
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
     - name: order
-      description: "-"
+      description: "Order number"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -894,9 +909,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "-"
+      description: "How many users included in this ticket before"
     - name: reopen_count
-      description: "-"
+      description: "How many time the ticket has been reopened"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -906,15 +921,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "-"
+      description: "Subcategory"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "-"
+      description: "Input from the end user"
     - name: watch_list
-      description: "-"
+      description: "A list of watched tickets"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -922,7 +937,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "-"
+      description: "Date when started to work on the ticket"
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -930,7 +945,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "-"
+      description: "Priority of the ticket (number)"
     - name: template
       description: Template name to use as a base to create new incidents.
     outputs:
@@ -958,7 +973,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
-      description: "-"
+      description: "Ticket urgency"
     - name: severity
       description: Ticket severity
     - name: impact
@@ -976,7 +991,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: "-"
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -990,7 +1005,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "-"
+      description: "Category name"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1036,15 +1051,23 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
-      description: "-"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "-"
+      description: "Notify about this incident"
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
     - name: order
-      description: "-"
+      description: "Order number"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1052,9 +1075,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "-"
+      description: "How many users included in this ticket before"
     - name: reopen_count
-      description: "-"
+      description: "How many time the ticket has been reopened"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1064,15 +1087,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "-"
+      description: "Subcategory"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "-"
+      description: "Input from the end user"
     - name: watch_list
-      description: "-"
+      description: "A list of watched tickets"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1080,7 +1103,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "-"
+      description: "Date when started to work on the ticket"
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1088,7 +1111,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "-"
+      description: "Priority of the ticket (number)"
     - name: id
       required: true
       description: Id(UID) of the ticket to update
@@ -1109,7 +1132,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
-      description: "-"
+      description: "Ticket urgency"
     - name: severity
       description: Ticket severity
     - name: impact
@@ -1127,7 +1150,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: "-"
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1141,7 +1164,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "-"
+      description: "Category name"
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1187,15 +1210,23 @@ script:
     - name: group_list
       description: UID format list
     - name: knowledge
-      description: "-"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
     - name: location
       description: Location of the ticket
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "-"
+      description: "Notify about this incident"
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
     - name: order
-      description: "-"
+      description: "Order number"
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1203,9 +1234,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "-"
+      description: "How many users included in this ticket before"
     - name: reopen_count
-      description: "-"
+      description: "How many time the ticket has been reopened"
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1215,15 +1246,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "-"
+      description: "Subcategory"
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "-"
+      description: "Input from the end user"
     - name: watch_list
-      description: "-"
+      description: "A list of watched tickets"
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1231,7 +1262,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "-"
+      description: "Date when started to work on the ticket"
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1239,7 +1270,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "-"
+      description: "Priority of the ticket (number)"
     - name: id
       required: true
       description: Id(UID) of the ticket to update
