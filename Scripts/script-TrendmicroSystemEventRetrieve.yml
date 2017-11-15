@@ -63,6 +63,7 @@ args:
   - EQUAL
   description: event ID operator
 - name: includeNonHostEvents
+  description: Include non host event
   required: true
   auto: PREDEFINED
   predefined:
@@ -73,3 +74,4 @@ dependson:
   must:
   - trendmicro-system-event-retrieve
 timeout: 0s
+releaseNotes: "-"

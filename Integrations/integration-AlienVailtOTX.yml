@@ -303,6 +303,9 @@ script:
                     dbotScoreType = 'hash';
                     malInfo[argName.toUpperCase()] = args[argName];
             }
+            if (raw === 'Not found') {
+                return raw;
+            }
             if (dq(raw, 'pulse_info.count') > 0) {
                 dbotScore = dq(raw, 'pulse_info.count');
                 malInfo.Malicious.PulseIDs = dq(raw, 'pulse_info.pulses.id');
@@ -479,8 +482,10 @@ script:
       description: Pulse description
     description: Search for pulses in AlienVault OTX
   - name: alienvault-get-pulse-details
+    description: Get pulse details (pulse are alian vault's entities)
     arguments:
     - name: pulse-id
+      description: ID of desired pules
       required: true
     outputs:
     - contextPath: AlienVault.Pulses.Description
@@ -510,3 +515,4 @@ script:
     description: Query url in AlienVault OTX
 hidden: false
 toversion: 3.0.1
+releaseNotes: "-"
