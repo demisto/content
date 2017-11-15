@@ -37,7 +37,7 @@ script:
     sys.dont_write_bytecode = True
 
     # change me to the path of pytan
-    pytan_loc =  "/pythan" # ~/tanium/pytan-2.2.2/
+    pytan_loc =  "/pytan-2.2.2"
     pytan_static_path = os.path.join(os.path.expanduser(pytan_loc), 'lib')
 
     # Determine our script name, script dir
@@ -472,7 +472,7 @@ script:
     - name: action_id
       required: true
       description: Id of saved action to approve
-    outputs: 
+    outputs:
     - contextPath: Tanium.ActionApproval.ApprovedFlag
       description: Approval status
     - contextPath: Tanium.ActionApproval.Id
@@ -480,4 +480,4 @@ script:
     - contextPath: Tanium.ActionApproval.Name
       description: Saved action name
     description: Approve saved actions
-  dockerimage: asafshen/demisto-pytan
+  dockerimage: demisto/pytan
