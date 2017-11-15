@@ -37,13 +37,11 @@ args:
   required: true
   default: true
   description: Address to ping
-  isarray: false
 - name: contextKey
   description: context key to place result in
-  isarray: false
 - name: verbose
   description: prettify result in table
-  isarray: false
 scripttarget: 0
 dependson: {}
 dockerimage: demisto/pyping
+releaseNotes: "-"
