@@ -35,6 +35,7 @@ comment: Helper script to get the results of an analysed file
 enabled: true
 args:
 - name: sample_id
+  description: Job sample id
   required: true
   default: true
 scripttarget: 0
@@ -42,3 +43,4 @@ dependson:
   must:
   - VMRay|||get_job_sample
 timeout: 0s
+releaseNotes: "-"

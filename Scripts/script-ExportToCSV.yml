@@ -72,14 +72,18 @@ script: |-
       Contents: args.fileName
   };
 type: javascript
+comment: Export given array to csv file
 tags:
 - Utility
 - csv
 args:
 - name: fileName
+  description: output filename
   required: true
   default: true
 - name: csvArray
+  description: Array to export
   required: true
   isArray: true
 scripttarget: 0
+releaseNotes: "-"

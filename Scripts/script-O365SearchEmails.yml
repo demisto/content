@@ -35,6 +35,7 @@ tags:
 - office365
 - email
 - response
+comment: Search mails in office-365
 system: true
 args:
 - name: username
@@ -59,3 +60,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

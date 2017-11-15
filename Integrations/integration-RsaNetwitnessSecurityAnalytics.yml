@@ -1459,7 +1459,9 @@ script:
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
     - name: mid2
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
@@ -1610,8 +1612,10 @@ script:
     description: Updates incident
     execution: true
   - name: fetch-incidents
+    description: Simulates fetching incidents. Returns array of incidents from NetWitness.
     arguments: []
   - name: nw-get-alerts
+    description: Return all the alerts filtered by filter.
     deprecated: true
     arguments:
     - name: page
@@ -1627,9 +1631,11 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
+    description: Return single alert by id
     deprecated: true
     arguments:
     - name: alertId
+      description: Alert id
       required: true
   - name: nw-get-event-details
     deprecated: true
@@ -1788,7 +1794,9 @@ script:
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
     - name: mid2
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
       description: '[optional guid] Investigation id token'
     - name: page
@@ -1946,6 +1954,7 @@ script:
     description: Updates incident
     execution: true
   - name: netwitness-im-get-alerts
+    description: Return all the alerts filtered by filter.
     arguments:
     - name: page
       description: The default is 1. Indicates the page number of incidents
@@ -1960,8 +1969,10 @@ script:
       description: 'By default filters by "alert.timestamp" from 1996 to this date.
         Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: netwitness-im-get-alert-details
+    description: Return single alert by id
     arguments:
     - name: alertId
+      description: Alert id
       required: true
     outputs:
     - contextPath: Netwitness.Alert.Id
@@ -2057,4 +2068,4 @@ script:
       description: Id of the alert
     description: Returns the original events which this alert contains
   isfetch: true
-
+releaseNotes: "-"
