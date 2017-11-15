@@ -4,6 +4,7 @@ commonfields:
 name: http
 description: Sends http request. Returns the response as json.
 releaseNotes: 'Added downloading a file to the war room support'
+comment: Sends http request. Returns the response as json.
 script: |+
   var requestObj = {
       Method: args.method,
@@ -91,12 +92,14 @@ args:
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
+  description: Do not validate server certificate
   predefined:
   - "true"
   - "false"
   defaultValue: "true"
 - name: proxy
   auto: PREDEFINED
+  description: Use system proxy settings
   predefined:
   - "true"
   - "false"
