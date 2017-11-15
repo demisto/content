@@ -340,7 +340,7 @@ script:
   - name: hpsm-create-incident
     description: Creates new incident in the system
     arguments:
-    - name: title\
+    - name: title
       description: The title of incident
       required: true
     - name: description
