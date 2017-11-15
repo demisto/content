@@ -84,7 +84,7 @@
         {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
-            "timeout": 400
+            "timeout": 500
         },
         {
             "playbookID": "TestStringReplace"
