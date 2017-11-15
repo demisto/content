@@ -11,6 +11,7 @@ tasks:
     taskid: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
     type: start
     task:
+      description: ""
       id: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
       version: -1
       name: ""
@@ -136,6 +137,7 @@ tasks:
     taskid: 474a6415-eb35-4137-8977-c60db94ac520
     type: title
     task:
+      description: ""
       id: 474a6415-eb35-4137-8977-c60db94ac520
       version: -1
       name: Querying Tanium
@@ -157,6 +159,7 @@ tasks:
     taskid: c6202d75-3923-44df-86e6-a685195739c8
     type: title
     task:
+      description: ""
       id: c6202d75-3923-44df-86e6-a685195739c8
       version: -1
       name: Deploying Actions
@@ -207,6 +210,7 @@ tasks:
     taskid: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
     type: title
     task:
+      description: ""
       id: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
       version: -1
       name: Actions pending approval - Viewing and approving
