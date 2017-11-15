@@ -85,6 +85,7 @@ script: |-
   else:
       demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mailbox specified. Cannot continue.' } )
 type: python
+comment: Search mails in Exchange Web Server
 tags:
 - ews
 - exchange
@@ -110,3 +111,4 @@ dependson:
   - ews-search-mailbox
 timeout: 86.4µs
 deprecated: true
+releaseNotes: "-"
