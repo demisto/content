@@ -225,7 +225,6 @@ script:
                         'password': result.Content,
                         'name': result.Name
                     };
-
                 credentials.push(itemToAdd);
             }
         }
@@ -260,7 +259,6 @@ script:
         args.AppID = appid;
         args.Folder = params.folder;
         args.Safe = params.safe;
-        args.username = 'root';
 
         var paramCredsString = params.credentialNames;
         if (!paramCredsString) {
@@ -268,9 +266,13 @@ script:
         } else {
             var names = paramCredsString.split(',');
             for (var i = 0; i < names.length; i++) {
-                args.Object = names[i];
+                var name = names[i].trim()
+                args.Object = name
                 // exception would be thrown if identifier (Object) does not exists
-                sendRequest('GET', accountsUrl, args);
+                var result = sendRequest('GET', accountsUrl, args);
+                if (!result) {
+                    throw 'Could not find object for: "' + name + '"'
+                }
             }
         }
 
