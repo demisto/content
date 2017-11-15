@@ -28,4 +28,5 @@ timeout: 0s
 dependson:
   must:
   - vec-settings
-deperecated: true
+deprecated: true
+releaseNotes: "-"

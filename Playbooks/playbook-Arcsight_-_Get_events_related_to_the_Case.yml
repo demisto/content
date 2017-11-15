@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -88,6 +89,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ArcSight ESM
+      description: ""
     nexttasks:
       '#none#':
       - "13"
@@ -114,6 +116,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -140,6 +143,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "7"
@@ -166,6 +170,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -201,6 +206,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -227,6 +233,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -261,6 +268,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -284,6 +292,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ArcSight ESM
+      description: ""
     nexttasks:
       '#none#':
       - "12"
@@ -310,6 +319,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -335,6 +345,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     view: |-
       {
         "position": {
@@ -354,6 +365,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -384,3 +396,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"

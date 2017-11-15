@@ -254,6 +254,7 @@ args:
   description: mail attribute of desire user
 - name: userAccountControlOut
   auto: PREDEFINED
+  description: Get translated user acount control flags
   predefined:
   - "true"
   - "false"
@@ -281,3 +282,4 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
+releaseNotes: "-"
