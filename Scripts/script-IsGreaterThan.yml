@@ -28,9 +28,11 @@ comment: |-
 enabled: true
 args:
 - name: first
+  description: first argument to compare
   required: true
   default: true
 - name: second
+  description: second argument to compare
   required: true
 outputs:
 - contextPath: "yes"
@@ -38,3 +40,4 @@ outputs:
 - contextPath: "no"
   description: if first <= second
 scripttarget: 0
+releaseNotes: "-"

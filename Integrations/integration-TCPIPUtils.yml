@@ -23,10 +23,13 @@ script:
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        query = IP2ASN_API_URL % "8.8.8.8"
-        response = json.loads(urllib2.urlopen(query).read())
-        if response['status'] == "succeed":
+        if API_KEY == "trial":
             demisto.results('ok')
+        else:
+            query = IP2ASN_API_URL % "6.6.6.6"
+            response = json.loads(urllib2.urlopen(query).read())
+            if response['status'] == "succeed":
+                demisto.results('ok')
         sys.exit(0)
     if demisto.command() == 'ip':
         ec = {}
@@ -47,25 +50,36 @@ script:
         ip_address = data["question"]
         ip_data = {
             "Address": ip_address,
-            "ASN": "AS" + str(data["asinfo"]["asn"]),
-            "Geo": {
-                "Country": data["geoinfo"]["country_name"],
-                "Description": data["geoinfo"]["capital"]
-            },
-            "WHOIS": parse_whois_data(data["whois"]["whois"])
-        }
-        ec[outputPaths["ip"]] = [];
-        ec[outputPaths["ip"]].append(ip_data)
-        hm = {
-            "Address": ip_address,
-            "ASN": ip_data["ASN"],
-            "Country": ip_data["Geo"]["Country"],
-            "City": ip_data["Geo"]["Description"]
         }
 
-        if ip_data["WHOIS"].has_key("Organization"):
+        if data.get("asinfo"):
+            ip_data["ASN"] = "AS" + str(data["asinfo"]["asn"])
+
+        if data.get("geoinfo"):
+            ip_data.update({
+                "Geo": {
+                    "Country": data["geoinfo"]["country_name"],
+                    "Description": data["geoinfo"]["capital"]
+                }
+            })
+
+        if data.get("whois"):
+            ip_data["WHOIS"] = parse_whois_data(data["whois"]["whois"])
+
+        ec[outputPaths["ip"]] = [];
+        ec[outputPaths["ip"]].append(ip_data)
+
+        hm = {
+            "Address": ip_address
+        }
+        if ip_data.get("ASN"):
+            hm['ASN'] = ip_data["ASN"]
+        if ip_data.get("Geo"):
+            hm["Country"] = ip_data["Geo"]["Country"]
+            hm["City"] = ip_data["Geo"]["Description"]
+        if ip_data["WHOIS"].get("Organization"):
             hm['Organization'] = ip_data["WHOIS"]['Organization']
-        if ip_data["WHOIS"].has_key("NetRange"):
+        if ip_data["WHOIS"].get("NetRange"):
             hm['NetRange'] = ip_data["WHOIS"]['NetRange']
 
         demisto.results({"Type": 1, "Contents": data, "ContentsFormat": "json", "EntryContext": ec,
@@ -85,12 +99,14 @@ script:
       description: IP address to query. E.g. !ip 1.1.1.1
     outputs:
     - contextPath: IP.Address
-      description: The IP address
+      description: ' The IP address'
     - contextPath: IP.ASN
-      description: The IP ASN'
+      description: ' The IP ASN'
     - contextPath: IP.Geo.Country
-      description: The IP country
+      description: ' The IP country'
     - contextPath: IP.Geo.Description
-      description: The IP city
+      description: ' The IP city'
+    - contextPath: IP.WHOIS
+      description: WHOIS result for the IP
     description: Get information about IP (ASN, WHOIS, country, city). When information
       is available, returns a JSON with details)
