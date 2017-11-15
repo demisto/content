@@ -105,3 +105,4 @@ dependson:
   must:
   - tn-deploy-package
 timeout: 0s
+releaseNotes: Deprecated script
