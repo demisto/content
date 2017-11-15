@@ -135,11 +135,10 @@ script: |
 type: javascript
 tags:
 - tanium
-comment: Send a request for a formatted result of a saved question. To receive the
-  most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
-  for more information
+comment: Approve all pending actions using the specified package names.
 args:
 - name: approvedpackages
+  description: "Names of packages to approve"
   required: true
   default: true
 outputs:

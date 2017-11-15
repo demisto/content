@@ -1,7 +1,8 @@
 test:
   pre:
-    # install python client
+    # install dependencies
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
+    - pip install pykwalify
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
@@ -27,7 +28,7 @@ test:
     - chmod +x ./Tests/scripts/*
 
     # ensure file name
-    - ./Tests/scripts/ensurefilenames.sh
+    - ./Tests/scripts/validate_files_structure.sh
 
     # get installer from server
     - ./Tests/scripts/server_get_artifact.sh

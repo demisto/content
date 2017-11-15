@@ -304,11 +304,14 @@ script:
       description: Account device type
     description: Query CyberArk AIM
   - name: fetch-credentials
+    description: "Fetches credentials from cyberark vault"
     arguments:
     - name: identifier
+      description: "Identifier to fetch single credentials object by"
   - name: reset-credentials
     arguments:
     - name: immediateChangeByCPM
+      description: Signle the CPM that the change is effective immediately
       auto: PREDEFINED
       predefined:
       - "Yes"
@@ -330,3 +333,4 @@ script:
       description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
+releaseNotes: "-"
