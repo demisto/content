@@ -1,5 +1,6 @@
 commonfields:
   id: MathUtil
+  version: -1
 name: MathUtil
 script: |-
   var lh = args.lh;
@@ -102,3 +103,4 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

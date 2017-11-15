@@ -376,6 +376,7 @@ script:
       description: The particular group guid
     description: Returns a particular group
   - name: amp_set_group_policy
+    description: Set a security policy to group of endpoints
     arguments:
     - name: group_guid
       required: true
@@ -413,3 +414,5 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
+releaseNotes: "-"
+
