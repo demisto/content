@@ -165,12 +165,22 @@ script:
             kwargs['action_filters'] = demisto.args()['action_filters'].split(",")
         response = handler.deploy_action(**kwargs)
 
-        if response['action_results']:
-            parsed = parseToJson(handler, response['action_results'])
-            return parsed if len(parsed) > 0 else "Done"
-        else:
-            demisto.results(response)
-            sys.exit(0)
+        ec = { 'Tanium.SavedActions' : {'Name': response['saved_action_object'].name, 'Id':response['saved_action_object'].id} }
+
+        return {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': 'Id of saved action is %s' % (response['saved_action_object'].id,),
+            'EntryContext': ec
+        }
+
+    def approveSavedAction(handler):
+        kwargs = {}
+        kwargs['id'] = demisto.args()['action_id']
+        response = handler.approve_saved_action(**kwargs)
+        parsed = {'Id' : response.id, 'Name': response.name, 'ApprovedFlag': response.approved_flag}
+        final_result = create_entry('Action Approval', [parsed], {'Tanium.ActionApproval' : parsed})
+        return final_result
 
     def askQuestion(handler , question):
         kwargs = {
@@ -243,6 +253,8 @@ script:
         final_result = askQuestion(handler, demisto.args()['question'])
     if demisto.command() == 'tn-create-package':
         final_result = createPackage(handler)
+    if demisto.command() == 'tn-approve-saved-action':
+        final_result = approveSavedAction(handler)
 
     restoreSoutAndExit(final_result)
   type: python
@@ -450,4 +462,17 @@ script:
     - contextPath: Tanium.Packages.expire_seconds
       description: Timeout for action expiry in seconds
     description: Create a package object
+  - name: tn-approve-saved-action
+    arguments:
+    - name: action_id
+      required: true
+      description: Id of saved action to approve
+    outputs: 
+    - contextPath: Tanium.ActionApproval.ApprovedFlag
+      description: Approval status
+    - contextPath: Tanium.ActionApproval.Id
+      description: Saved action id
+    - contextPath: Tanium.ActionApproval.Name
+      description: Saved action name
+    description: Approve saved actions
   dockerimage: asafshen/demisto-pytan
