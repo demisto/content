@@ -28,12 +28,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 5c3e4175-c3b9-4d99-83a2-03ac1d9dfff5
+    taskid: 3533d2be-a90d-4f93-8630-c169d790254d
     type: regular
     task:
-      id: 5c3e4175-c3b9-4d99-83a2-03ac1d9dfff5
+      id: 3533d2be-a90d-4f93-8630-c169d790254d
       version: -1
-      name: tn-ask-question
+      name: Ask questions
       description: Ask the server to parse the question text and choose the first
         parsed result as the question to run
       script: Tanium|||tn-ask-question
@@ -54,12 +54,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: dbe92300-227f-4979-8a06-d5dc91deeb78
+    taskid: d7609125-e21f-4871-8d72-518017ea0b93
     type: regular
     task:
-      id: dbe92300-227f-4979-8a06-d5dc91deeb78
+      id: d7609125-e21f-4871-8d72-518017ea0b93
       version: -1
-      name: tn-ask-question
+      name: Run a complex Tanium query to find all machines with processes starting
+        with "EC"
       description: Ask the server to parse the question text and choose the first
         parsed result as the question to run
       script: Tanium|||tn-ask-question
@@ -80,12 +81,12 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 7161586d-f99d-4996-8824-de3e7f852baf
+    taskid: 6553c9ee-e178-4084-8718-5e2fdc549fed
     type: regular
     task:
-      id: 7161586d-f99d-4996-8824-de3e7f852baf
+      id: 6553c9ee-e178-4084-8718-5e2fdc549fed
       version: -1
-      name: tn-get-saved-question
+      name: Get saved question - Tanium Client Versions
       description: Get a saved question by name or id
       script: Tanium|||tn-get-saved-question
       type: regular
@@ -106,12 +107,12 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: e66ed6a5-1d04-459c-82dc-d356008b0f0d
+    taskid: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
     type: regular
     task:
-      id: e66ed6a5-1d04-459c-82dc-d356008b0f0d
+      id: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
       version: -1
-      name: tn-get-saved-question
+      name: Get saved question - Running Applications
       description: Get a saved question by name or id
       script: Tanium|||tn-get-saved-question
       type: regular
@@ -174,12 +175,12 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 12031fc9-491e-43cb-807c-d869400e2f59
+    taskid: b05fd6d0-3e6d-40a9-81b3-58888214b896
     type: regular
     task:
-      id: 12031fc9-491e-43cb-807c-d869400e2f59
+      id: b05fd6d0-3e6d-40a9-81b3-58888214b896
       version: -1
-      name: tn-deploy-package
+      name: Deploy a Tanium action to enable USB write protect for all hosts
       description: Deploy a package and get the results back
       script: Tanium|||tn-deploy-package
       type: regular
@@ -224,12 +225,12 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 602135ba-8444-45c6-8e24-a7e610c19206
+    taskid: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
     type: regular
     task:
-      id: 602135ba-8444-45c6-8e24-a7e610c19206
+      id: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
       version: -1
-      name: tn-approve-saved-action
+      name: Approve pending "USB Write On" Tanium action
       description: Approve saved actions
       script: Tanium|||tn-approve-saved-action
       type: regular
