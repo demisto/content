@@ -3,6 +3,7 @@ version: -1
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
 fromVersion: 2.5.0
+releaseNotes: Updated playbook with new commands
 starttaskid: "0"
 tasks:
   "0":

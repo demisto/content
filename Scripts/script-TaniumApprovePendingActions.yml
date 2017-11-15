@@ -159,3 +159,4 @@ dependson:
   - tn-add-object
   - tn-get-object
 timeout: 0s
+releaseNotes: Deprecated script
