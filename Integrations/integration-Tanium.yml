@@ -379,6 +379,11 @@ script:
     - name: package_args
       description: Comma separated list of arguments neede to execute the package
         command
+    outputs:
+    - contextPath: Tanium.SavedActions.Id
+      description: Saved action id
+    - contextPath: Tanium.SavedActions.Name
+      description: Saved action name
     description: Deploy a package and get the results back
   - name: tn-ask-question
     arguments:
