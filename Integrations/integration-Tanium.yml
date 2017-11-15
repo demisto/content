@@ -89,14 +89,13 @@ script:
             'EntryContext': context
         }
 
-    ## Get handler - AUTHENTICATION
     def getHandler():
         handler_args = {}
 
         handler_args['username'] = demisto.params()['authentication']['identifier']
         handler_args['password'] = demisto.params()['authentication']['password']
         handler_args['host'] = demisto.params()['host']
-        handler_args['port'] = "443"
+        handler_args['port'] = demisto.params()['port']
 
         handler_args['loglevel'] = 1
         handler_args['debugformat'] = False
@@ -155,15 +154,17 @@ script:
             formatted_args = formatted_args[:-1]
             demisto.args()['package'] = package+'{'+formatted_args+'}'
 
-        demisto.log(demisto.args()['package'])
-
         kwargs = {}
         kwargs["run"] = True
         for key, value in demisto.args().items():
             kwargs[key] = value
+
+        if demisto.get(demisto.args(), 'action_options'):
+            kwargs['action_options'] = demisto.args()['action_options'].split(",")
+        if demisto.get(demisto.args(), 'action_filters'):
+            kwargs['action_filters'] = demisto.args()['action_filters'].split(",")
         response = handler.deploy_action(**kwargs)
 
-        demisto.log(response)
         if response['action_results']:
             parsed = parseToJson(handler, response['action_results'])
             return parsed if len(parsed) > 0 else "Done"
@@ -171,27 +172,10 @@ script:
             demisto.results(response)
             sys.exit(0)
 
-    def getResultInfo(handler):
-        kwargs = {}
-        for key, value in demisto.args().items():
-            kwargs[key] = value
-        kwargs["obj"] = obj
-        response = handler.get_result_info(**kwargs)
-        return response
-
-    def getResultData(handler):
-        kwargs = {}
-        for key, value in demisto.args().items():
-            kwargs[key] = value
-        kwargs["obj"] = obj
-        response = handler.get_result_data(**kwargs)
-        demisto.results(response)
-        sys.exit(0)
-
     def askQuestion(handler , question):
         kwargs = {
             'picker': 1,
-            'question_text': question, #u'get computer name and last logged in user from all machines',
+            'question_text': question,
             'qtype': u'parsed',
             'get_results' : True
         }
@@ -269,7 +253,6 @@ script:
       description: Name of package
     - name: id
       description: Tanium id of package (to be used instead of name)
-    description: Get a package object based on name or ID.
     outputs:
     - contextPath: Tanium.Packages.verify_expire_seconds
       description: Timeout for verify action expiry in seconds
@@ -297,9 +280,9 @@ script:
       description: Timeout for action expiry in seconds
     - contextPath: Tanium.Packages.files
       description: Packge files
+    description: Get a package object based on name or ID.
   - name: tn-get-all-packages
     arguments: []
-    description: Get all Tanium package objects
     outputs:
     - contextPath: Tanium.Packages.verify_expire_seconds
       description: Timeout for verify action expiry in seconds
@@ -327,6 +310,7 @@ script:
       description: Timeout for action expiry in seconds
     - contextPath: Tanium.Packages.files
       description: Packge files
+    description: Get all Tanium package objects
   - name: tn-get-object
     arguments:
     - name: name
@@ -392,7 +376,8 @@ script:
     outputs:
     - contextPath: Tanium.QuestionResults
       description: Results of requested question. May be a complex object
-    description: Ask the server to parse the question text and choose the first parsed result as the question to run
+    description: Ask the server to parse the question text and choose the first parsed
+      result as the question to run
   - name: tn-ask-system
     arguments:
     - name: hostname
