@@ -1,0 +1,227 @@
+id: Icebrg Test
+version: -1
+name: Icebrg Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f0b7ed54-d607-4905-8949-d13a479a28ff
+    type: start
+    task:
+      id: f0b7ed54-d607-4905-8949-d13a479a28ff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "1"
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 45
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 659c2ee9-5661-4bd6-8f06-dcba8d9060eb
+    type: regular
+    task:
+      id: 659c2ee9-5661-4bd6-8f06-dcba8d9060eb
+      version: -1
+      name: icebrg-get-history
+      description: Gets history of the events
+      script: icebrg|||icebrg-get-history
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: dcdf88cd-9c7f-4c1a-8587-0dc5046c3cf4
+    type: regular
+    task:
+      id: dcdf88cd-9c7f-4c1a-8587-0dc5046c3cf4
+      version: -1
+      name: icebrg-search-events
+      description: Perform an ICEBRG datastore event search
+      script: icebrg|||icebrg-search-events
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      customer_id: ""
+      end_date: ""
+      history: ""
+      limit: ""
+      order: ""
+      order_by: ""
+      query: ${Icebrg.UserQueryHistory.Query}
+      service_traffic: ""
+      start_date: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 82c817ef-fc5f-444f-82a2-b707d366dda2
+    type: regular
+    task:
+      id: 82c817ef-fc5f-444f-82a2-b707d366dda2
+      version: -1
+      name: icebrg-search-events
+      description: Perform an ICEBRG datastore event search
+      script: icebrg|||icebrg-search-events
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      customer_id: ""
+      end_date: ""
+      history: ""
+      limit: ""
+      order: ""
+      order_by: ""
+      query: ${Icebrg.SavedSearches.Query}
+      service_traffic: ""
+      start_date: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 410
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 1adbfed2-f6b4-42a6-8ed4-a5025a465f7a
+    type: regular
+    task:
+      id: 1adbfed2-f6b4-42a6-8ed4-a5025a465f7a
+      version: -1
+      name: icebrg-get-reports
+      description: Gets a list of reports
+      script: icebrg|||icebrg-get-reports
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - "9"
+      - "8"
+    scriptarguments:
+      account_uuid: ""
+      archived: ""
+      confidence: ""
+      limit: ""
+      offset: ""
+      published_end: ""
+      published_start: ""
+      risk: ""
+      search: ""
+      sort_by: ""
+      sort_order: ""
+      status: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 230
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 9286b709-6eeb-4954-8536-9af2e71e973f
+    type: regular
+    task:
+      id: 9286b709-6eeb-4954-8536-9af2e71e973f
+      version: -1
+      name: icebrg-get-report-indicators
+      description: Gets indicators for a reports
+      script: icebrg|||icebrg-get-report-indicators
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid: ${Icebrg.Reports.Uuid}
+    view: |-
+      {
+        "position": {
+          "x": 855,
+          "y": 410
+        }
+      }
+  "9":
+    id: "9"
+    taskid: b6dab4a6-71c0-4f5c-88c0-b57c0f424217
+    type: regular
+    task:
+      id: b6dab4a6-71c0-4f5c-88c0-b57c0f424217
+      version: -1
+      name: icebrg-get-report-assets
+      description: Gets impacted assets for a report
+      script: icebrg|||icebrg-get-report-assets
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid: ${Icebrg.Reports.Uuid}
+    view: |-
+      {
+        "position": {
+          "x": 1292,
+          "y": 410
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 7d6f741e-d905-4359-8178-18e7feed7143
+    type: regular
+    task:
+      id: 7d6f741e-d905-4359-8178-18e7feed7143
+      version: -1
+      name: icebrg-saved-searches
+      description: Gets user saved searches
+      script: icebrg|||icebrg-saved-searches
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 460,
+        "width": 1642,
+        "x": 30,
+        "y": 45
+      }
+    }
+  }
+inputs: []
