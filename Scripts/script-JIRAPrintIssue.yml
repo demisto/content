@@ -5,7 +5,7 @@ name: JIRAPrintIssue
 script: |-
   var response = executeCommand('jira-get-issue', { issueId: args.issueId });
 
-  if (!response || response.length === 0 || !response[0].Contents) {
+  if (!response || response.length === 0 || !response[0].Contents || isError(response[0])) {
       return 'JIRA issue not found (' + args.issueId + ')';
   }
 
@@ -73,10 +73,13 @@ script: |-
 
   return { Type: entryTypes.note, Contents: issue, ContentsFormat: formats.json, HumanReadable: md };
 type: javascript
-tags: []
+tags:
+- jira
 comment: Pretty print JIRA issue into the incident war room
 enabled: true
 args:
 - name: issueId
+  required: true
+  default: true
   description: JIRA issue ID (e.g. SOC-24)
 scripttarget: 0
