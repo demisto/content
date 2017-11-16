@@ -624,6 +624,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: number
@@ -652,6 +653,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: number
@@ -678,6 +680,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -847,6 +850,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -1013,6 +1017,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -1172,6 +1177,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -1330,6 +1336,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: link
@@ -1355,6 +1362,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: link
@@ -1379,6 +1387,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: comment
@@ -1401,6 +1410,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: comment
@@ -1423,6 +1433,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     outputs:
@@ -1451,6 +1462,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     outputs:
@@ -1477,6 +1489,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: file_id
@@ -1499,6 +1512,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: file_id
@@ -1515,4 +1529,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
-releaseNotes: "Added servicenow-get-groups command."
+releaseNotes: "Added servicenow-get-groups command. Added the support for sc_request ticket type."
