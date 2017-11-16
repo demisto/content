@@ -2,9 +2,8 @@ commonfields:
   id: http
   version: -1
 name: http
-description: Sends http request. Returns the response as json.
-releaseNotes: 'Added downloading a file to the war room support'
 comment: Sends http request. Returns the response as json.
+releaseNotes: 'Added downloading a file to the war room support'
 script: |+
   var requestObj = {
       Method: args.method,
