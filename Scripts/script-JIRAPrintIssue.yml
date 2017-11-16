@@ -40,7 +40,6 @@ script: |-
       url: fields.reporter.self
   };
 
-
   var md = '## JIRA Issue ' + key + ' - ' + summary + ' (' + ticketStatus + ')\n';
   md += 'Opened by ' + creator.name + ' (' + creator.email + ') ![avatar](' + creator.avatarUrl+ '=size=24x24)\n\n';
   md += '#### Status: \n' + ticketStatus + ' (' + ticketStatusDesc + ')\n';
