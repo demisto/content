@@ -18,7 +18,7 @@ configuration:
   type: 0
   required: true
 - display: Credentials
-  name: authentication
+  name: credentials
   defaultvalue: ""
   type: 9
   required: true
@@ -92,8 +92,8 @@ script:
     def getHandler():
         handler_args = {}
 
-        handler_args['username'] = demisto.params()['authentication']['identifier']
-        handler_args['password'] = demisto.params()['authentication']['password']
+        handler_args['username'] = demisto.params()['credentials']['identifier']
+        handler_args['password'] = demisto.params()['credentials']['password']
         handler_args['host'] = demisto.params()['host']
         handler_args['port'] = demisto.params()['port']
 
