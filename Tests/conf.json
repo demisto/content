@@ -121,7 +121,8 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout" : 500
+            "timeout" : 500,
+            "nightly": true
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -142,10 +143,6 @@
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
-            "integrations": "McAfee Web Gateway",
-            "playbookID": "McAfeeWebGatewayTest"
         }
     ]
 }
