@@ -40,13 +40,7 @@ script: |+
   var insecure = (args.insecure === 'true');
   var proxy = (args.proxy === 'true');
   var res = http(args.url, requestObj, insecure, proxy);
-  if (args.filename) {
-      fileName = args.filename;
-  } else if (res.Headers['Content-disposition']) {
-      fileName = res.Headers['Content-disposition'][0];
-  } else {
-      fileName = 'http-file';
-  }
+  var fileName = (res.Headers['Content-disposition']) ? res.Headers['Content-disposition'][0] : args.filename;
 
   if (args.saveAsFile === 'yes') {
       return {
@@ -113,6 +107,7 @@ args:
   defaultValue: "no"
 - name: filename
   description: Using filename from headers if filename is not given. Default is http-file
+  defaultValue: http-file
 outputs:
 - contextPath: HttpRequest.Response
   description: The response for the http request
