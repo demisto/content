@@ -2,7 +2,8 @@ commonfields:
   id: http
   version: -1
 name: http
-description: Sends http request. Returns the response as json.
+releaseNotes: "-"
+comment: Sends http request. Returns the response as json.
 script: |+
   var requestObj = {
       Method: args.method,
