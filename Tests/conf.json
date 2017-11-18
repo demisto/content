@@ -142,6 +142,10 @@
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
+        },
+        {
+            "integrations": "McAfee Web Gateway",
+            "playbookID": "McAfeeWebGatewayTest"
         }
     ]
 }
