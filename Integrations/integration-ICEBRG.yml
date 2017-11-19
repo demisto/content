@@ -223,6 +223,7 @@ script:
     arguments:
     - name: query
       required: true
+      default: true
       description: The query string or entity for which to search.
     - name: start_date
       description: The beginning of the temporal extent by which to restrict filter
@@ -308,17 +309,29 @@ script:
     - name: archived
       description: Archived status to filter by.
     - name: confidence
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
       description: Confidence to filter by (low, moderate, high).
     - name: risk
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
       description: Risk to filter by (low, moderate, high).
     - name: search
       description: Text string to search on title and summary.
     - name: status
       description: Status to filter by.
     - name: published_start
-      description: Published start date to filter by (inclusive), RFC3339 format.
+      description: Published start date to filter by (inclusive). RFC3339 format,
+        i.e. 2017-01-24T10:13:13.418Z
     - name: published_end
-      description: Published end date to filter by (exclusive), RFC3339 format.
+      description: Published end date to filter by (exclusive). RFC3339 format, i.e.
+        2017-01-24T10:13:13.418Z
     outputs:
     - contextPath: Icebrg.Reports.Publishes.UserUuid
       description: User UUID that published the report
@@ -361,6 +374,7 @@ script:
     arguments:
     - name: report_uuid
       required: true
+      default: true
       description: Report UUID to get indicator of
     outputs:
     - contextPath: Icebrg.ReportIndicators.Type
@@ -372,6 +386,7 @@ script:
     arguments:
     - name: report_uuid
       required: true
+      default: true
       description: Report UUID to get asset of
     outputs:
     - contextPath: Icebrg.ReportAssets.Asset
