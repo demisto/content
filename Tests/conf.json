@@ -136,6 +136,11 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
+        },
+        {
+            "integrations": "icebrg",
+            "playbookID": "Icebrg Test",
+            "timeout" : 500
         }
     ],
     "skipped": [
