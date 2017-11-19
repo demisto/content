@@ -704,6 +704,7 @@ script:
     description: Use Check Point's Management API (requires management server R80
       or later). Specifying 'command'=<API command> is mandatory
   - name: checkpoint-delete-rule
+    description: Delete rule from firewall
     arguments:
     - name: uid
       description: uid of the rule
@@ -714,3 +715,4 @@ script:
       default: true 
       description: e.g. Network
 hidden: false
+releaseNotes: "-"

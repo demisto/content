@@ -30,4 +30,5 @@ timeout: 0s
 dependson:
   must:
   - vec-health
-deperecated: true
+deprecated: true
+releaseNotes: "-"
