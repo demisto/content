@@ -110,6 +110,19 @@ script:
         response = handler.get_all(**kwargs)
         return response
 
+    def getAllSavedActions(handler):
+        response = getAllObjects(handler, u'saved_action')
+        parsed = parseToJson(handler, response)['saved_action']
+        final_result = create_entry('Tanium Saved Actions', parsed, {'Tanium.SavedActions' : parsed}, ['id', 'name', 'creation_time', 'action_group_id', 'approved_flag'])
+        return final_result
+
+    def getAllPendingActions(handler):
+        response = getAllObjects(handler, u'saved_action')
+        parsed = parseToJson(handler, response)['saved_action']
+        filterNonPending = filter(lambda x: x['approved_flag'] == 0 ,parsed)
+        final_result = create_entry('Tanium Pending Actions', filterNonPending, {'Tanium.PendingActions' : filterNonPending}, ['id', 'name', 'creation_time', 'action_group_id', 'approved_flag'])
+        return final_result
+
     def getAllPackages(handler):
         response = getAllObjects(handler, u'package')
         parsed = parseToJson(handler, response)['package_spec']
@@ -241,10 +254,16 @@ script:
         final_result = getSavedQuestion(handler)
     if demisto.command() == 'tn-get-object':
         final_result = getObject(handler, unicode(demisto.args()['object_type']))
+    if demisto.command() == 'tn-get-all-objects':
+        final_result = getAllObjects(handler, unicode(demisto.args()['object_type']))
     if demisto.command() == 'tn-get-all-packages':
         final_result = getAllPackages(handler)
     if demisto.command() == 'tn-get-all-saved-questions':
         final_result = getAllSavedQuestions(handler)
+    if demisto.command() == 'tn-get-all-saved-actions':
+        final_result = getAllSavedActions(handler)
+    if demisto.command() == 'tn-get-all-pending-actions':
+        final_result = getAllPendingActions(handler)
     if demisto.command() == 'tn-deploy-package':
         final_result = deployAction(handler)
     if demisto.command() == 'tn-ask-system':
@@ -253,7 +272,7 @@ script:
         final_result = askQuestion(handler, demisto.args()['question'])
     if demisto.command() == 'tn-create-package':
         final_result = createPackage(handler)
-    if demisto.command() == 'tn-approve-saved-action':
+    if demisto.command() == 'tn-approve-pending-action':
         final_result = approveSavedAction(handler)
 
     restoreSoutAndExit(final_result)
@@ -471,7 +490,7 @@ script:
     - contextPath: Tanium.Packages.expire_seconds
       description: Timeout for action expiry in seconds
     description: Create a package object
-  - name: tn-approve-saved-action
+  - name: tn-approve-pending-action
     arguments:
     - name: action_id
       required: true
@@ -485,4 +504,82 @@ script:
     - contextPath: Tanium.ActionApproval.Name
       description: Saved action name
     description: Approve saved actions
+  - name: tn-get-all-objects
+    arguments:
+    - name: object_type
+      required: true
+      default: true
+      auto: PREDEFINED
+      description: Type of object to get
+      predefined:
+      - user
+      - package
+      - saved_question
+      - sensor
+      - saved_action
+    description: Gets all objects of the specified type
+  - name: tn-get-all-saved-actions
+    arguments: []
+    outputs:
+    - contextPath: Tanium.SavedActions.distribute_seconds
+      description: Distribute seconds of action
+    - contextPath: Tanium.SavedActions.public_flag
+      description: Whether action is public or not
+    - contextPath: Tanium.SavedActions.action_group_id
+      description: Group id of action
+    - contextPath: Tanium.SavedActions.approver.id
+      description: Id of user who approved the action
+    - contextPath: Tanium.SavedActions.start_time
+      description: Action start time
+    - contextPath: Tanium.SavedActions.name
+      description: Action name
+    - contextPath: Tanium.SavedActions.user.id
+      description: Id of user who created the action
+    - contextPath: Tanium.SavedActions.creation_time
+      description: Time when action was created
+    - contextPath: Tanium.SavedActions.end_time
+      description: Time when action ended
+    - contextPath: Tanium.SavedActions.status
+      description: Action status
+    - contextPath: Tanium.SavedActions.last_start_time
+      description: Last time action started
+    - contextPath: Tanium.SavedActions.id
+      description: Id of action
+    - contextPath: Tanium.SavedActions.package_spec.id
+      description: The package associated with the action
+    - contextPath: Tanium.SavedActions.approved_flag
+      description: Whether action was approved or not
+    description: Gets all saved actions
+  - name: tn-get-all-pending-actions
+    arguments: []
+    outputs:
+    - contextPath: Tanium.PendingActions.distribute_seconds
+      description: Distribute seconds of action
+    - contextPath: Tanium.PendingActions.public_flag
+      description: Whether action is public or not
+    - contextPath: Tanium.PendingActions.action_group_id
+      description: Group id of action
+    - contextPath: Tanium.PendingActions.approver.id
+      description: Id of user who approved the action
+    - contextPath: Tanium.PendingActions.start_time
+      description: Action start time
+    - contextPath: Tanium.PendingActions.name
+      description: Action name
+    - contextPath: Tanium.PendingActions.user.id
+      description: Id of user who created the action
+    - contextPath: Tanium.PendingActions.creation_time
+      description: Time when action was created
+    - contextPath: Tanium.PendingActions.end_time
+      description: Time when action ended
+    - contextPath: Tanium.PendingActions.status
+      description: Action status
+    - contextPath: Tanium.PendingActions.last_start_time
+      description: Last time action started
+    - contextPath: Tanium.PendingActions.id
+      description: Id of action
+    - contextPath: Tanium.PendingActions.package_spec.id
+      description: The package associated with the action
+    - contextPath: Tanium.PendingActions.approved_flag
+      description: Whether action was approved or not
+    description: Gets all pending actions
   dockerimage: demisto/pytan
