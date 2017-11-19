@@ -469,3 +469,4 @@ script:
       required: true
       description: 'environment ID to submit file to(get all via vx-get-environments) '
     description: Detonate file through VxSteam
+releaseNotes: 'Adding file detonation'
