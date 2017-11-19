@@ -1,0 +1,182 @@
+type: map
+mapping:
+  commonfields:
+    type: map
+    required: yes
+    mapping:
+      id:
+        type: str
+        required: yes
+      version:
+        type: int
+        required: yes
+  name:
+    type: str
+    required: yes
+  display:
+      type: str
+      required: yes
+  category:
+    type: str
+    enum: [
+    'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
+    'Vulnerability Management', 'Case Management',
+    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
+     'Authentication', 'Database']
+    required: yes
+  fromversion:
+    type: str
+  toversion:
+    type: str
+  image:
+    type: str
+    required: yes
+  description:
+    type: str
+    required: yes
+  detaileddescription:
+    type: str
+  configuration:
+    type: seq
+    required: yes
+    sequence:
+    - include: configuration_schema
+  script:
+    type: map
+    required: yes
+    mapping:
+      script:
+        type: str
+        required: yes
+      type:
+        type: str
+        enum: ['javascript', 'python']
+        required: yes
+      dockerimage:
+        type: str
+      isfetch:
+        type: bool
+      commands:
+        type: seq
+        sequence:
+        - include: command_schema
+  system:
+    type: bool
+  hidden:
+    type: bool
+  versionedfields:
+    type: any
+  defaultEnabled:
+    type: bool
+  releaseNotes:
+    type: str
+
+schema;commonfields_schema:
+
+# integration->configuration
+schema;configuration_schema:
+  type: map
+  required: yes
+  mapping:
+    display:
+      type: str
+      required: yes
+    defaultvalue:
+      type: any
+    name:
+      type: str
+      required: yes
+    type:
+      type: int
+      required: yes
+    required:
+      type: bool
+    hidden:
+      type: bool
+
+# integration->script->command
+schema;command_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required: yes
+    execution:
+      type: bool
+    description:
+      type: str
+      required: yes
+    deprecated:
+      type: bool
+    system:
+      type: bool
+    arguments:
+      type: seq
+      sequence:
+        - include: argument_schema
+    outputs:
+      type: seq
+      sequence:
+      - include: output_schema
+    important:
+      type: seq
+      sequence:
+      - include: important_schema
+
+# int
+schema;argument_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required: yes
+    required:
+      type: bool
+    default:
+      type: bool
+    description:
+      type: str
+      required: yes
+    auto:
+      type: str
+      enum: ['PREDEFINED']
+    predefined:
+      type: seq
+      sequence:
+      - type: str
+    isArray:
+      type: bool
+    defaultValue:
+      type: any
+    deprecated:
+      type: bool
+
+
+# integration->script->command->outputs
+schema;output_schema:
+  type: map
+  mapping:
+    contentPath:
+      type: str
+    contextPath:
+      type: str
+    description:
+      type: str
+      required: yes
+    important:
+      type: bool
+    importantDescription:
+      type: str
+
+# integration->script->command->important
+schema;important_schema:
+  type: map
+  mapping:
+    contextPath:
+      type: str
+      required: yes
+    description:
+      type: str
+      required: yes
+    related:
+      type: str

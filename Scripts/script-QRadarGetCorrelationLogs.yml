@@ -2,7 +2,6 @@ commonfields:
   id: QRadarGetCorrelationLogs
   version: -1
 name: QRadarGetCorrelationLogs
-releaseNotes: 'Context outputs added'
 script: |-
   QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
 
