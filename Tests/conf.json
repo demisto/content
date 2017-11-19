@@ -136,6 +136,10 @@
             "playbookID": "McAfee-TIE Test"
         },
         {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook"
+        },
+        {
             "playbookID": "ProofpointDecodeURL-Test"
         }
     ],
