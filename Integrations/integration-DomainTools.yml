@@ -382,7 +382,6 @@ script:
       description: Wait time between tries if we reach the API rate limit in seconds
     - name: retries
       description: Number of retries for API rate limit
-    - name: threshold
     outputs:
     - contextPath: Domain.Name
       description: The tested domain
@@ -530,6 +529,7 @@ script:
       description: ' (mandatory and default) enter domain (do not use full URL). e.g.
         !whois [query=]demisto.com '
     - name: parsed
+      description: Should return parsed or raw response. Default is true
       auto: PREDEFINED
       predefined:
       - "true"
@@ -554,5 +554,8 @@ script:
       description: Domain Whois history data
     description: Display a history of whois for a given domain
   - name: domainProfile
+    description: Display profile for a given domain
     arguments:
     - name: domain
+      description: Specify domain e.g. mycompany.com
+releaseNotes: "-"

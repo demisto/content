@@ -47,3 +47,4 @@ args:
 - name: description
   description: Description to add to Evidence Board
 scripttarget: 0
+releaseNotes: "-"

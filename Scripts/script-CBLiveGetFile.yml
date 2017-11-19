@@ -123,6 +123,7 @@ script: |-
       demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Command timed out after %d seconds' % secTimeout } )
       sys.exit(0)
 type: python
+comment: "Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed."
 tags:
 - carbon-black
 - endpoint
@@ -147,3 +148,4 @@ dependson:
   - cb-command-info
   - cb-file-get
 timeout: 0s
+releaseNotes: "Added description"

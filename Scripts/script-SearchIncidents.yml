@@ -23,6 +23,7 @@ script: |-
 type: javascript
 tags:
 - Utility
+comment: Searches Demisto incidents
 enabled: true
 args:
 - name: id
@@ -98,3 +99,4 @@ outputs:
 - contextPath: foundIncidents.phase
   description: Phases of the found incidents
 scripttarget: 0
+releaseNotes: "-"
