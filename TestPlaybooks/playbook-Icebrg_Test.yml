@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0b7ed54-d607-4905-8949-d13a479a28ff
+    taskid: 2731a525-627d-49d2-88db-d988d6fc75d6
     type: start
     task:
-      id: f0b7ed54-d607-4905-8949-d13a479a28ff
+      id: 2731a525-627d-49d2-88db-d988d6fc75d6
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 659c2ee9-5661-4bd6-8f06-dcba8d9060eb
+    taskid: e53a13f2-f138-40e6-882b-1886cba7e096
     type: regular
     task:
-      id: 659c2ee9-5661-4bd6-8f06-dcba8d9060eb
+      id: e53a13f2-f138-40e6-882b-1886cba7e096
       version: -1
       name: icebrg-get-history
       description: Gets history of the events
@@ -50,10 +50,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: dcdf88cd-9c7f-4c1a-8587-0dc5046c3cf4
+    taskid: 9b1571e9-ba5c-4f9b-8618-5f1714836065
     type: regular
     task:
-      id: dcdf88cd-9c7f-4c1a-8587-0dc5046c3cf4
+      id: 9b1571e9-ba5c-4f9b-8618-5f1714836065
       version: -1
       name: icebrg-search-events
       description: Perform an ICEBRG datastore event search
@@ -78,42 +78,12 @@ tasks:
           "y": 410
         }
       }
-  "4":
-    id: "4"
-    taskid: 82c817ef-fc5f-444f-82a2-b707d366dda2
-    type: regular
-    task:
-      id: 82c817ef-fc5f-444f-82a2-b707d366dda2
-      version: -1
-      name: icebrg-search-events
-      description: Perform an ICEBRG datastore event search
-      script: icebrg|||icebrg-search-events
-      type: regular
-      iscommand: true
-      brand: icebrg
-    scriptarguments:
-      customer_id: ""
-      end_date: ""
-      history: ""
-      limit: ""
-      order: ""
-      order_by: ""
-      query: ${Icebrg.SavedSearches.Query}
-      service_traffic: ""
-      start_date: ""
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 410
-        }
-      }
   "7":
     id: "7"
-    taskid: 1adbfed2-f6b4-42a6-8ed4-a5025a465f7a
+    taskid: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
     type: regular
     task:
-      id: 1adbfed2-f6b4-42a6-8ed4-a5025a465f7a
+      id: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
       version: -1
       name: icebrg-get-reports
       description: Gets a list of reports
@@ -147,10 +117,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 9286b709-6eeb-4954-8536-9af2e71e973f
+    taskid: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
     type: regular
     task:
-      id: 9286b709-6eeb-4954-8536-9af2e71e973f
+      id: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
       version: -1
       name: icebrg-get-report-indicators
       description: Gets indicators for a reports
@@ -169,10 +139,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: b6dab4a6-71c0-4f5c-88c0-b57c0f424217
+    taskid: ab22df59-3c3b-4498-8f17-91e031dbf716
     type: regular
     task:
-      id: b6dab4a6-71c0-4f5c-88c0-b57c0f424217
+      id: ab22df59-3c3b-4498-8f17-91e031dbf716
       version: -1
       name: icebrg-get-report-assets
       description: Gets impacted assets for a report
@@ -191,10 +161,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 7d6f741e-d905-4359-8178-18e7feed7143
+    taskid: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
     type: regular
     task:
-      id: 7d6f741e-d905-4359-8178-18e7feed7143
+      id: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
       version: -1
       name: icebrg-saved-searches
       description: Gets user saved searches
@@ -202,9 +172,6 @@ tasks:
       type: regular
       iscommand: true
       brand: icebrg
-    nexttasks:
-      '#none#':
-      - "4"
     view: |-
       {
         "position": {
