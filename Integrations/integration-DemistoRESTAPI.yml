@@ -1,0 +1,97 @@
+commonfields:
+  id: Demisto REST API
+  version: -1
+name: Demisto REST API
+display: Demisto REST API
+category: IT Services
+image: data:image/png;base64,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
+configuration:
+- display: Demisto Server URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Demisto Server API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: User system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |
+    var serverURL = params.url;
+    if (serverURL.slice(-1) === '/') {
+        serverURL = serverURL.slice(0,-1);
+    }
+
+    var sendRequest = function(method, url, body) {
+        var requestUrl = serverURL;
+        if (url.slice(-1) != '/') {
+            requestUrl += '/';
+        }
+        requestUrl += url;
+
+        var res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: {
+                    'Accept': ['application/json'],
+                    'content-type': ['application/json'],
+                    'authorization': [params.apikey]
+                },
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+            );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        try {
+            var json = JSON.parse(res.Body);
+            return {response:json};
+        } catch (ex) {
+            throw 'Demisto REST APIs - Error parsing response - ' + ex;
+        }
+    };
+
+    switch (command) {
+        case 'test-module':
+            sendRequest('GET','system/config');
+            return 'ok';
+        case 'demisto-api-post':
+            var body = JSON.parse(args.body);
+            return sendRequest('POST',args.url, args.body);
+        case 'demisto-api-get':
+            return sendRequest('GET',args.url);
+
+        default:
+            throw 'Demisto REST APIs - unknown command';
+
+    }
+  type: javascript
+  commands:
+  - name: demisto-api-post
+    arguments:
+    - name: url
+      description: Request URL
+    - name: body
+      description: Body of HTTP POST
+    description: send HTTP POST request
+  - name: demisto-api-get
+    arguments:
+    - name: url
+      description: Request URL
+    description: send HTTP GET requests

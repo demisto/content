@@ -1,0 +1,44 @@
+commonfields:
+  id: DemistoLinkIncidents
+  version: -1
+name: DemistoLinkIncidents
+script: |-
+  var body = {
+      id: args.masterID,
+      otherIncidentsIDs: args.otherIDs.split(','),
+      removeLink: (args.unlink === 'yes')
+  };
+
+  var res = executeCommand('demisto-api-post', {url: 'incident/links', body: body});
+
+  if (res[0].Type == 4) {
+      throw res[0].Contents;
+  }
+
+  var response = res[0].Contents.response;
+  var md = tableToMarkdown('Demisto link incidents', response);
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: response,
+      HumanReadable: md
+  };
+type: javascript
+tags:
+- DemistoAPI
+comment: Link two or more incidents
+enabled: true
+args:
+- name: masterID
+  description: Incident ID to link incidents with
+- name: otherIDs
+  description: Incidet IDs to link
+- name: unlink
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Unlink incidents
+  defaultValue: "no"
+scripttarget: 0

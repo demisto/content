@@ -1,0 +1,35 @@
+commonfields:
+  id: DemistoDeleteIncident
+  version: -1
+name: DemistoDeleteIncident
+script: |-
+  var body = {
+      ids: [args.id],
+      all: false,
+      filter: {}
+  };
+
+  var res = executeCommand('demisto-api-post', {url: 'incident/batchDelete', body: body});
+  if (res[0].Type == 4) {
+      throw res[0].Contents;
+  }
+
+  var response = res[0].Contents.response;
+  var md = tableToMarkdown('Demisto delete incidents', response);
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: response,
+      HumanReadable: md
+  };
+type: javascript
+tags:
+- DemistoAPI
+comment: Deletes incidents from Demisto
+enabled: true
+args:
+- name: id
+  required: true
+  description: Incident ID to delete
+scripttarget: 0
