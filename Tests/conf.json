@@ -121,8 +121,7 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout" : 500,
-            "nightly": true
+            "timeout" : 500
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
