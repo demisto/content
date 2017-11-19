@@ -236,7 +236,7 @@ tasks:
       version: -1
       name: Approve pending "USB Write On" Tanium action
       description: Approve saved actions
-      script: Tanium|||tn-approve-saved-action
+      script: Tanium|||tn-approve-pending-action
       type: regular
       iscommand: true
       brand: Tanium
