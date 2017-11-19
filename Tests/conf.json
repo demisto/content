@@ -140,7 +140,8 @@
         },
         {
             "integrations": "icebrg",
-            "playbookID": "Icebrg Test"
+            "playbookID": "Icebrg Test",
+            "timeout" : 240
         }
     ],
     "skipped": [
