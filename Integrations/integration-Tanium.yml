@@ -364,6 +364,7 @@ script:
     arguments:
     - name: package
       required: true
+      default: true
       description: Name of package to deploy with this action
     - name: action_filters
       description: Comma separated list of strings. Each string must describe a sensor
@@ -375,9 +376,9 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Specifies whether ait for result completion after deploying action
+      description: Specifies whether to wait for result completion after deploying action
     - name: package_args
-      description: Comma separated list of arguments neede to execute the package
+      description: Comma separated list of arguments needed to execute the package
         command
     outputs:
     - contextPath: Tanium.SavedActions.Id
@@ -389,6 +390,7 @@ script:
     arguments:
     - name: question
       required: true
+      default: true
       description: The question text
     outputs:
     - contextPath: Tanium.QuestionResults
@@ -399,6 +401,8 @@ script:
     arguments:
     - name: hostname
       description: Name of host
+      required: true
+      default: true
     outputs:
     - contextPath: Tanium.QuestionResults
       description: Results of requested computer name. May be a complex object
@@ -471,6 +475,7 @@ script:
     arguments:
     - name: action_id
       required: true
+      default: true
       description: Id of saved action to approve
     outputs:
     - contextPath: Tanium.ActionApproval.ApprovedFlag
