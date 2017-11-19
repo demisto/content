@@ -6,6 +6,7 @@ script: return executeCommand("scheduleEntry", args);
 type: javascript
 tags:
 - Utility
+comment: "Schedule a command to run inside the war room at a future time (once or reoccurring)"
 system: true
 args:
 - name: command
@@ -23,3 +24,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added description"

@@ -1523,3 +1523,5 @@ script:
     description: Return information about specific servicenow group
   isfetch: true
   releaseNotes: "Added servicenow-get-groups command."
+hidden: false
+
