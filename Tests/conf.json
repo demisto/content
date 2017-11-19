@@ -139,7 +139,7 @@
             "playbookID": "ProofpointDecodeURL-Test"
         },
         {
-            "integrations": "Icebrg",
+            "integrations": "icebrg",
             "playbookID": "Icebrg Test"
         }
     ],
