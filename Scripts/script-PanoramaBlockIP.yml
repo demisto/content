@@ -52,6 +52,7 @@ type: javascript
 tags:
 - firewall
 - panorama
+comment: Blocks IP with Panorama
 system: true
 args:
 - name: ip
@@ -82,3 +83,4 @@ dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: "-"

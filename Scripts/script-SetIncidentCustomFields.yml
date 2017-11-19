@@ -15,6 +15,7 @@ script: |-
 type: javascript
 tags:
 - Utility
+comment: Sets current incident custom fields
 enabled: true
 args:
 - name: fields
@@ -28,3 +29,5 @@ args:
   description: The list of values to match the fields - can be either array or comma
     separated
 scripttarget: 0
+releaseNotes: "-"
+
