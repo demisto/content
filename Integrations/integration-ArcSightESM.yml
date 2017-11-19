@@ -1104,6 +1104,7 @@ script:
       default: true
       description: commands.server.arcsight.arguments.queryid.description
     - name: onlyColumns
+      description: If true will return only the columns of the query. If false will return the column headers and all query results.
       auto: PREDEFINED
       predefined:
       - "true"
@@ -1111,6 +1112,7 @@ script:
       defaultValue: "true"
     description: commands.server.arcsight.query.description
   - name: as-add-entries
+    description: Import/add new entries to Active List. 
     arguments:
     - name: resourceId
       required: true
@@ -1124,15 +1126,19 @@ script:
     description: Add new entries to Active List
     execution: true
   - name: as-clear-entries
+    description: Deletes all the entries in the Active List
     arguments:
     - name: resourceId
+      description: Resource id of specific Active List
       required: true
       description: resource id of Active list
     description: Clean all entries in the Active List
     execution: true
   - name: as-get-entries
+    description: Returns the entries which the Active List contains
     arguments:
     - name: resourceId
+      description: Resource id of specific Active List
       required: true
       description: resource id of Active list
     - name: entryFilter
@@ -1143,12 +1149,14 @@ script:
         entries
     description: Get all entries from Active List
   - name: as-get-security-events
+    description: Returns security event object by providing id
     arguments:
     - name: startDate
       description: 'Start time filter. Example: 2017-05-22T10:00:00'
     - name: endDate
       description: 'End time filter. Example: 2017-05-22T10:00:00'
     - name: ids
+      description: 'ID or multiple ids separated by comma of security events. Event ID is ArcSight is always a number. Example: 13906590'
       required: true
     outputs:
     - contextPath: ArcSightESM.SecurityEvents
@@ -1167,6 +1175,7 @@ script:
   - name: as-get-case-event-ids
     arguments:
     - name: caseId
+      description: 'Case ID. Example: 7e6LEbF8BABCfA-dlp1rl1A=='
       required: true
     outputs:
     - contextPath: ArcSightESM.CaseEvents
@@ -1206,3 +1215,4 @@ script:
     description: Deletes a case
     execution: true
   isfetch: true
+hidden: false
