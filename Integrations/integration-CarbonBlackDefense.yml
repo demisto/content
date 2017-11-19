@@ -48,6 +48,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     var CBDefence = function() {
@@ -679,7 +689,7 @@ script:
             if (body !== 'undifiend') {
                 req.Body = body;
             }
-            var res = http(fullurl, req);
+            var res = http(fullurl, req, params.insecure, params.proxy);
             return res;
         }
 
@@ -1566,4 +1576,4 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
-releaseNotes: "-"
+releaseNotes: 'Adding proxy and skip certificate options'
