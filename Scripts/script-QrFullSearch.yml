@@ -67,6 +67,7 @@ script: |
 type: python
 tags:
 - QRadar
+comment: Full search through QRadar advance query languages
 system: true
 deprecated: true
 args:
@@ -89,3 +90,4 @@ dependson:
   - qr-searches
   - qr-get-search
   - QrGetSearchResults
+releaseNotes: "-"
