@@ -76,7 +76,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: "Folder ID"
+- display: Folder ID
   name: folder
   defaultvalue: ""
   type: 0
@@ -564,7 +564,7 @@ script:
         return createDisplaySingle(translated);
     }
 
-    var execute = function(command, args) {
+    var execute = function(command, args, returnRaw) {
         var currentCommand = commandsDictionary[command];
         var hrTitle = command;
         if (currentCommand.tableTitle) {
@@ -612,6 +612,13 @@ script:
                 throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
             }
         }
+        if(returnRaw){
+            return raw;
+        }
+        return createEntry(currentCommand, raw, hrTitle);
+    }
+
+    function createEntry(currentCommand, raw, hrTitle){
         var entry = {
             Type: entryTypes.note,
             Contents: raw,
@@ -678,7 +685,6 @@ script:
                 var itemId = items[i];
                 var template;
                 var distinguished = distinguishedArgs[currentCommand.arrayArgName];
-                log(distinguished)
                 if(distinguished && distinguished.items.indexOf(itemId) > -1) {
                     template = distinguished.template;
                 } else {
@@ -1041,6 +1047,45 @@ script:
         return JSON.stringify(incidents);
     }
 
+    function searchMailboxes(args){
+        if (!args['mailbox-search-scope']) {
+            var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
+            args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
+        } else {
+            if (!Array.isArray(args['mailbox-search-scope'])) {
+                args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
+            }
+        }
+        args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
+        var slicedMailboxes = [];
+        for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
+            slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
+        }
+
+        var resArray = [];
+        if(slicedMailboxes.length === 0){
+            return "No mailboxes to search";
+        }
+
+        currentCommand = commandsDictionary[command];
+        var rawData = [];
+        var lastRes;
+        for (var j=0; j< slicedMailboxes.length; j++){
+            args['mailbox-search-scope'] = slicedMailboxes[j];
+            res =  execute(command, args, true);
+            data = dq(res, currentCommand.innerPath);
+            if (data){
+                lastRes = res;
+                rawData = rawData.concat(data);
+            }
+        }
+        if(!lastRes){
+            return "No results";
+        }
+        lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
+        return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
+    }
+
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
@@ -1065,15 +1110,7 @@ script:
             return getAttachment(args, true);
         }
         case 'ews-search-mailboxes':
-            if (!args['mailbox-search-scope']) {
-                var mailboxes = execute('ews-get-searchable-mailboxes', {});
-                args['mailbox-search-scope'] = dq(mailboxes, 'Contents.Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
-            } else {
-                if (!Array.isArray(args['mailbox-search-scope'])) {
-                    args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
-                }
-            }
-            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
+            return searchMailboxes(args);
         default:
             return execute(command, args);
     }
@@ -1406,4 +1443,4 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
-releaseNotes: Fix fetch incidents, when there is no "To" in mail
+releaseNotes: Support searching more than 20000 mailboxes
