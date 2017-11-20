@@ -33,6 +33,7 @@ script: |-
 type: python
 tags:
 - Utility
+comment: Fetches the numbers of ads in the given url
 enabled: true
 args:
 - name: url
@@ -52,3 +53,5 @@ outputs:
 - contextPath: URL.AdsCount
   description: The ads count on the URL
 scripttarget: 0
+releaseNotes: "-"
+

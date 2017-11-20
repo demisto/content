@@ -279,4 +279,3 @@ script:
       description: Scans from threat crowd
     description: Get file report
 hidden: false
-releaseNotes: "-"

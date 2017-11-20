@@ -435,7 +435,6 @@ script:
             break;
 
         case 'fetch-incidents':
-        case 'intsights-fetch-test':
             result = fetchIncidents(loginCookies);
             break;
 
@@ -814,7 +813,5 @@ script:
     - contextPath: IntSights.IOCs
       description: IOCs details
     description: Get all the IOCs
-  - name: intsights-fetch-test
-    arguments: []
-  isfetch: true
 hidden: false
+releaseNotes: "-"

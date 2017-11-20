@@ -798,4 +798,4 @@ script:
     description: Retrieve the Falcon Intel Report PDF
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "Added cs-report-pdf to retrieve report pdf"
+releaseNotes: "-"

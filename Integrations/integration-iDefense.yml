@@ -1,0 +1,412 @@
+commonfields:
+  id: iDefense
+  version: -1
+name: iDefense
+display: iDefense
+category: Authentication
+image: data:image/png;base64,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
+description: Accenture Security
+configuration:
+- display: URL
+  name: url
+  defaultvalue: https://api.intelgraph.verisign.com/
+  type: 0
+  required: true
+- display: API Token
+  name: api_token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    // handle '/' at the end of the url
+    var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/rest/';
+
+    function sendRequest(method, url_suffix, headers, body) {
+        headers = headers || {};
+        body = body || {};
+
+        // add default headers
+        if (!("Accept" in headers)) {
+            headers["Accept"] = ['application/json'];
+        }
+        if (!("Content-Type" in headers)) {
+            headers['Content-Type'] = ['application/json'];
+        }
+        headers['Auth-Token'] = [params.api_token];
+
+        var res = http(
+            base_url + url_suffix,
+            {
+                Method: method,
+                Headers: headers,
+                Body: JSON.stringify(body),
+            },
+            params.insecure,
+            params.useproxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res.Body.length !== 0 ? JSON.parse(res.Body) : {};
+    }
+
+    function calculate_dbot_score(severity) {
+        // Calculate score based on severity
+        // Dbot Score   | severity
+        //  0           | 0
+        //  1           | 1,2
+        //  2           | 3,4
+        //  3           | 5,6,7
+        var dbot_score = 0;
+        if (severity > 4) {
+            dbot_score = 3;
+        } else if (severity > 2) {
+            dbot_score = 2;
+        } else if (severity > 0) {
+            dbot_score = 1;
+        } else {
+            dbot_score = 0;
+        }
+
+        return dbot_score;
+    }
+
+    function get_full_data(cmd_url, query, result_threshold) {
+        result_threshold = result_threshold || 300;
+        query = query || {};
+
+        var results = [];
+        var res;
+
+        query.page = 1;
+        do {
+            res = sendRequest('GET', cmd_url + encodeToURLQuery(query));
+            if (res.total_size === 0) {
+                break;
+            }
+            results = results.concat(res.results);
+            ++query.page;
+        } while ((res.more) && (results.length < result_threshold));
+
+        return results;
+    }
+
+    function check_threats(type, value, uniq_field, results) {
+        if (!results) {
+            var cmd_url = 'threatindicator/v0/' + type.toLowerCase();
+            var query = {'key.query' : value};
+            results = get_full_data(cmd_url, query);
+
+            if (results.length === 0) {
+                return {results:[], md : [], context: {}};
+            }
+        }
+
+        var dbot_context = [];
+        var result_context = [];
+        var md = [];
+        for (var i in results) {
+            var r = results[i];
+            dbot_score = calculate_dbot_score(r.severity);
+
+            md.push({
+                Name : r.key,
+                'Dbot Reputation' : scoreToReputation(dbot_score),
+                confidence : r.confidence,
+                'Threat Types' : r.threat_types
+            });
+
+            dbot_context.push({
+                Indicator : r.key,
+                Type : type.toLowerCase(),
+                Vendor : 'iDefense',
+                Score : dbot_score
+            });
+
+            if (dbot_score >= 2) {
+                var r_context = {
+                    Malicious : {
+                        Vendor : 'iDefense',
+                        Description : 'last seen as ' + r.last_seen_as
+                    }
+                };
+                r_context[uniq_field] = r.key;
+                result_context.push(r_context);
+            }
+        }
+
+        var context_type = type + '(val.' + uniq_field + ' && val.' + uniq_field + ' == obj.' + uniq_field + ')';
+        var context = {};
+        if (result_context.length > 0) {
+            context[context_type] = result_context;
+        }
+
+        return {
+            results : results,
+            md : md,
+            context : context,
+            scores : dbot_context
+
+        };
+    }
+    function sort_threats(results) {
+        var domains = [], urls = [], ips = [], others = [];
+
+        for (var i in results) {
+            switch (results[i].type) {
+            case 'domain':
+                domains.push(results[i]);
+                break;
+            case 'ip':
+                ips.push(results[i]);
+                break;
+            case 'url':
+                urls.push(results[i]);
+                break;
+            default:
+                others.push(results[i]);
+            }
+        }
+
+        var domain_threats = check_threats('Domain', undefined, 'Name', domains),
+            ip_threats = check_threats('IP', undefined, 'Address', ips),
+            url_threats = check_threats('URL', undefined, 'Data', urls);
+
+        var merged_md = domain_threats.md.concat(ip_threats.md).concat(url_threats.md);
+        var merged_scores = domain_threats.scores.concat(ip_threats.scores).concat(url_threats.scores);
+
+        return {
+            Type : entryTypes.note,
+            Contents : results,
+            ContentsFormat : formats.json,
+            HumanReadable : tableToMarkdown('iDefense Reputations', merged_md),
+            EntryContext : mergeForeignObjects([domain_threats.context, ip_threats.context, url_threats.context, {DBotScore : merged_scores}])
+        };
+
+    }
+
+    function get_threats(max_results) {
+        var cmd_url = 'threatindicator/v0/';
+        var results = get_full_data(cmd_url, {}, max_results);
+
+        return sort_threats(results);
+    }
+
+    function get_domain(domain) {
+        var threats_info = check_threats('Domain', domain, 'Name');
+        return {
+            Type : entryTypes.note,
+            Contents : threats_info.results,
+            ContentsFormat : formats.json,
+            HumanReadable : tableToMarkdown('iDefense Domain Reputation', threats_info.md),
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
+        };
+    }
+
+    function get_ip(ip) {
+        if (!isValidIP(ip)) {
+            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
+        }
+
+        var threats_info = check_threats('IP', ip, 'Address');
+        return {
+            Type : entryTypes.note,
+            Contents : threats_info.results,
+            ContentsFormat : formats.json,
+            HumanReadable : tableToMarkdown('iDefense IP Reputation', threats_info.md),
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
+
+        };
+    }
+
+    function get_url(url) {
+        var threats_info = check_threats('URL', url, 'Data');
+        return {
+            Type : entryTypes.note,
+            Contents : threats_info.results,
+            ContentsFormat : formats.json,
+            HumanReadable : tableToMarkdown('iDefense URL Reputation', threats_info.md),
+            EntryContext : mergeForeignObjects([threats_info.context, {DBotScore : threats_info.scores}])
+
+        };
+    }
+
+    function get_uuid(uuid) {
+        var cmd_url = 'threatindicator/v0/' + uuid;
+        var res = sendRequest('GET', cmd_url);
+
+        return sort_threats([res]);
+    }
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        case 'idefense-general':
+            // still having issues with this command.
+            return get_threats(args.max_result);
+        case 'domain':
+            return get_domain(args.domain);
+        case 'ip':
+            return get_ip(args.ip);
+        case 'url':
+            return get_url(args.url);
+        case 'uuid':
+            // still having issues with this command.
+            return get_uuid(args.uuid);
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            //check api_token is valid
+            get_threats(1);
+            return 'ok';
+        default:
+            break;
+    }
+  type: javascript
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP to check
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check IP reputation
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain to check
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check domain reputation
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check URL reputation
+  - name: idefense-general
+    description: Get threats from iDefense database. Returns all records of ip/url/domain
+    arguments:
+    - name: max_result
+      default: true
+      description: Maximum amount of results
+      defaultValue: "300"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domain found
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+  - name: uuid
+    description: Get specific indicator reputation
+    arguments:
+    - name: uuid
+      required: true
+      default: true
+      description: Unique User ID
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domain found
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+releaseNotes: "-"

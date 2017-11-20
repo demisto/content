@@ -615,4 +615,4 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
-releaseNotes: Changed issueJson argument to accept any object
+releaseNotes: "-"

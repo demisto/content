@@ -430,6 +430,7 @@ script:
       required: true
       description: file description
     - name: type
+      description: "Type of the given file"
       required: true
       auto: PREDEFINED
       predefined:
@@ -437,3 +438,4 @@ script:
       - other
     description: Submission of malware and other files for community sharing
 hidden: false
+releaseNotes: "-"
