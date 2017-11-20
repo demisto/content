@@ -33,7 +33,7 @@ args:
 - name: masterID
   required: true
   default: true
-  description: Incident ID to link incidents with
+  description: Incident ID used for linking to other incidents
 - name: otherIDs
   required: true
   description: Incidet IDs to link

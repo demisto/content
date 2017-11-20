@@ -49,7 +49,7 @@ args:
 - name: email
   required: true
   default: true
-  description: Email of user to invite
+  description: Email of user being invited
 - name: roles
   required: true
   description: Roles of invited user
