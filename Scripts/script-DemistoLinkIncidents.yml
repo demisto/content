@@ -9,9 +9,9 @@ script: |-
       removeLink: (args.unlink === 'yes')
   };
 
-  var res = executeCommand('demisto-api-post', {url: 'incident/links', body: body});
+  var res = executeCommand('demisto-api-post', {uri: '/incident/links', body: body});
 
-  if (res[0].Type == 4) {
+  if (isError(res[0])) {
       throw res[0].Contents;
   }
 
@@ -31,14 +31,17 @@ comment: Link two or more incidents
 enabled: true
 args:
 - name: masterID
+  required: true
+  default: true
   description: Incident ID to link incidents with
 - name: otherIDs
+  required: true
   description: Incidet IDs to link
 - name: unlink
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: Unlink incidents
+  description: Unlink incidents (default 'no')
   defaultValue: "no"
 scripttarget: 0

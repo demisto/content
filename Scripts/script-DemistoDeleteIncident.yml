@@ -9,8 +9,8 @@ script: |-
       filter: {}
   };
 
-  var res = executeCommand('demisto-api-post', {url: 'incident/batchDelete', body: body});
-  if (res[0].Type == 4) {
+  var res = executeCommand('demisto-api-post', {uri: '/incident/batchDelete', body: body});
+  if (isError(res[0])) {
       throw res[0].Contents;
   }
 
@@ -26,10 +26,11 @@ script: |-
 type: javascript
 tags:
 - DemistoAPI
-comment: Deletes incidents from Demisto
+comment: Delete an incident from Demisto (note action is irreversible)
 enabled: true
 args:
 - name: id
   required: true
+  default: true
   description: Incident ID to delete
 scripttarget: 0

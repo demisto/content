@@ -8,9 +8,9 @@ script: |-
       data: args.listData,
   };
 
-  var res = executeCommand('demisto-api-post', {url: 'lists/save', body: body});
+  var res = executeCommand('demisto-api-post', {uri: '/lists/save', body: body});
 
-  if (res[0].Type == 4) {
+  if (isError(res[0])) {
       throw res[0].Contents;
   }
 
@@ -26,12 +26,13 @@ script: |-
 type: javascript
 tags:
 - DemistoAPI
-comment: Link two or more incidents
+comment: Create a new list
 enabled: true
 args:
 - name: listName
   required: true
+  default: true
   description: Name of list to create
 - name: listData
-  description: Initial date of list
+  description: Initial data of list
 scripttarget: 0

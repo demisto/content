@@ -3,16 +3,14 @@ commonfields:
   version: -1
 name: DemistoSendInvite
 script: |-
-  var res = executeCommand('demisto-api-get', {url: 'roles'});
-  if (res[0].Type == 4) {
+  var res = executeCommand('demisto-api-get', {uri: '/roles'});
+  if (isError(res[0])) {
       throw res[0].Contents;
   }
 
   var roles = res[0].Contents.response;
-
   var roleIDs = [];
   var roleNames = args.roles.split(',');
-
 
   roleNames.forEach(function(roleName) {
       var roleID = dq({roles:roles},'roles(val.name=="'+roleName+'").id');
@@ -27,8 +25,8 @@ script: |-
       roles: roleIDs
   };
 
-  res = executeCommand('demisto-api-post', {url: 'invite', body: body});
-  if (res[0].Type == 4) {
+  res = executeCommand('demisto-api-post', {uri: '/invite', body: body});
+  if (isError(res[0])) {
       throw res[0].Contents;
   }
 
@@ -50,6 +48,7 @@ enabled: true
 args:
 - name: email
   required: true
+  default: true
   description: Email of user to invite
 - name: roles
   required: true
