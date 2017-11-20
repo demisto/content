@@ -288,20 +288,23 @@ script:
         return res;
     }
 
-    function detonateFile(entryId, environmentId) {
+    function detonateFile(entryId, environmentId, delay, timeout) {
 
         var hash = submitFile(entryId, environmentId).substring(10);
 
-        var delay = 60000;
-        sleep(delay);
+        delayTime = parseInt(delay);
+        timeOut = parseInt(timeout);
+        var waitTime = delayTime;
 
-        while (delay<180000) {
+        sleep(delayTime);
+
+        while (waitTime<timeOut) {
             res = scan(hash);
             if (res.response[0]) {
                 return scanToEntry(res);
             } else {
-                delay = delay + 10000;
-                sleep(delay)
+                waitTime = waitTime + delayTime;
+                sleep(delayTime)
             }
         }
         return 'Timeout';
@@ -332,7 +335,7 @@ script:
         case 'vx-result':
             return vxResult(args.file, args.environmentId);
         case 'vx-detonate-file':
-            return detonateFile(args.entryId, args.environmentID);
+            return detonateFile(args.entryId, args.environmentID, args.delay, args.timeout);
     }
 
   type: javascript
@@ -468,5 +471,11 @@ script:
     - name: environmentID
       required: true
       description: 'environment ID to submit file to(get all via vx-get-environments) '
+    - name: delay
+      description: Delay wait time between calls (in milliseconds)
+      defaultValue: "3000"
+    - name: timeout
+      description: Total wait time (in milliseconds)
+      defaultValue: "60000"
     description: Detonate file through VxSteam
 releaseNotes: 'Adding file detonation'
