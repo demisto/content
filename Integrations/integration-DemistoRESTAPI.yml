@@ -72,7 +72,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            sendRequest('GET','/user');
+            sendRequest('GET','user');
             return 'ok';
         case 'demisto-api-post':
             var body = JSON.parse(args.body);
@@ -98,6 +98,7 @@ script:
     - name: body
       description: Body of HTTP POST
     description: send HTTP POST request
+    execution: true
   - name: demisto-api-get
     arguments:
     - name: uri
@@ -114,6 +115,7 @@ script:
     - name: body
       description: Request body
     description: send HTTP PUT request
+    execution: true
   - name: demisto-api-delete
     arguments:
     - name: uri
@@ -121,3 +123,4 @@ script:
       default: true
       description: Request URI (i.e. /user)
     description: send HTTP DELETE request
+    execution: true
