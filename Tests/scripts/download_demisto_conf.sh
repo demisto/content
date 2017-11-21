@@ -32,4 +32,7 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$CIRCLE_BRANCH" -o "$DEMISTO_LIC_PATH"
 
 fi
+
+ls
+
 echo "Successfully downloaded configuration files"
