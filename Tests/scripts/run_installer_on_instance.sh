@@ -37,7 +37,7 @@ DEMISTO_LIC_PATH=$(cat demisto_lic_path)
 echo "#### 2"
 echo "DEMISTO_LIC_PATH - $DEMISTO_LIC_PATH"
 
-scp DEMISTO_LIC_PATH ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
+scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 
 echo "#### 3"
 
