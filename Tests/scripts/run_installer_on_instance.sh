@@ -27,8 +27,19 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
+echo "### 1"
+ls
+echo "####"
+
+cat demisto_lic_path
+
 DEMISTO_LIC_PATH=$(cat demisto_lic_path)
+echo "#### 2"
+echo "DEMISTO_LIC_PATH - $DEMISTO_LIC_PATH"
+
 scp DEMISTO_LIC_PATH ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
+
+echo "#### 3"
 
 echo "get installer and run installation script"
 INSTALL_COMMAND_Y="cd ~/installer_files \
