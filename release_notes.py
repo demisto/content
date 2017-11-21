@@ -280,7 +280,6 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         if not fileType in ["Scripts", "Playbooks", "Integrations", "Reports"]:
             return
 
-        print "- fullFileName - " + fullFileName + ", changeType - " + changeType
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
