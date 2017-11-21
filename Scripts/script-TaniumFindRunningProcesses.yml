@@ -2,6 +2,7 @@ commonfields:
   id: TaniumFindRunningProcesses
   version: -1
 name: TaniumFindRunningProcesses
+deprecated: true
 script: |-
   var entry = {
       Type: 1,
@@ -166,3 +167,4 @@ dependson:
   - tn-result-data
   - tn-result-info
 timeout: 0s
+releaseNotes: Deprecated. Use tn-ask-question instead
