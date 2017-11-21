@@ -276,6 +276,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+        print "- fullFileName - " + fullFileName + ", changeType - " + changeType
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
