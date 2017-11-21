@@ -36,14 +36,14 @@ test:
     # run demisto instance
     - ./Tests/scripts/create_instance.sh
 
+    # download conf file
+    - ./Tests/scripts/download_demisto_conf.sh
+
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
-
-    # download conf file
-    - ./Tests/scripts/download_demisto_conf.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh
