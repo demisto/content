@@ -19,7 +19,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "True"
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Do not validate server certificate (insecure)
@@ -139,7 +139,7 @@ script:
             };
         }
         body = (body) ? body : '';
-        var api = '/api/now/';
+        var api = 'api/now/';
         if (params.api_version) {
             api += params.api_version + '/';
         }
