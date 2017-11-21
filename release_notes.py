@@ -277,7 +277,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         changeType = names[0]
         fullFileName = names[1]
         fileType = fullFileName.split("/")[0]
-        if not fileType in ["Scripts", "Playbooks", "Integrations", "Reports"]
+        if not fileType in ["Scripts", "Playbooks", "Integrations", "Reports"]:
             return
 
         print "- fullFileName - " + fullFileName + ", changeType - " + changeType
