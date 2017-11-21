@@ -276,6 +276,10 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+        fileType = fullFileName.split("/")[0]
+        if not fileType in ["Scripts", "Playbooks", "Integrations", "Reports"]
+            return
+
         print "- fullFileName - " + fullFileName + ", changeType - " + changeType
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
