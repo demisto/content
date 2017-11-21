@@ -43,7 +43,7 @@ test:
     - ./Tests/scripts/wait_until_server_ready.sh
 
     # download conf file
-    - ./Tests/scripts/download_secret_conf_file.sh
+    - ./Tests/scripts/download_demisto_conf.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh

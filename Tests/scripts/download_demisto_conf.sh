@@ -10,6 +10,9 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
 
+DEMISTO_LIC_PATH="./demisto.lic"
+echo ${DEMISTO_LIC_PATH} > demisto_lic_path
+
 NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
 
 if [ "$NOT_FOUND_MESSAGE" != 'null' ]
@@ -19,6 +22,14 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
 
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o "$SECRET_CONF_PATH"
-fi
 
-echo "Successfully downloaded secret configuration file to $SECRET_CONF_PATH"
+    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic" -o "$DEMISTO_LIC_PATH"
+
+  else
+    echo "Downloading lic..."
+    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$CIRCLE_BRANCH" -o "$DEMISTO_LIC_PATH"
+
+fi
+echo "Successfully downloaded configuration files"
