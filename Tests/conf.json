@@ -137,6 +137,10 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
+        },
+        {
+            "integrations": "ServiceNow",
+            "playbookID": "ServiceNow-Test"
         }
     ],
     "skipped": [
