@@ -638,7 +638,7 @@ script:
     - name: number
       description: Incident number to retrieve
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow incident ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -666,7 +666,7 @@ script:
     - name: number
       description: Incident number to retrieve
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow incident ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -834,7 +834,7 @@ script:
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1001,7 +1001,7 @@ script:
     - name: template
       description: Template name to use as a base to create new incidents.
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1435,7 +1435,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1463,7 +1463,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
