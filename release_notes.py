@@ -276,6 +276,15 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+
+        if not "/" in fullFileName:
+            return
+
+        fileType = fullFileName.split("/")[0]
+        fileTypeMapping = releaseNoteGenerator.get(fileType)
+        if fileTypeMapping is None:
+            return
+
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
@@ -286,11 +295,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
-                if "/" in fullFileName:
-                    fileType = fullFileName.split("/")[0]
-                    fileTypeMapping = releaseNoteGenerator.get(fileType)
-                    if fileTypeMapping is not None:
-                        fileTypeMapping.add(changeType, data)
+                fileTypeMapping.add(changeType, data)
 
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
