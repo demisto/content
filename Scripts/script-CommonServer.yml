@@ -1367,22 +1367,18 @@ script: |-
 
   /**
    * Converts all object (and array) values of a given object to human-readable strings
-   * @param {Object} obj - the object to be altered
+   * @param {Object} obj - the object that is to be converted
+   * @returns {Object} - a new object containing the same fields as formatted strings
    */
   function jsonToHumanReadable(obj) {
 
     /* Helper function that rucurses an object, formatting it's values as strings */
     var jsonToHumanReadableRecursive = function(obj, depth) {
-        var res = "";
+        var res = '';
 
-        /* Default depth is 0 */
-        if (depth === undefined) {
-            depth = 0;
-        }
-
-        /* Return strings as is */
-        if (typeof obj === 'string') {
-            return obj;
+        /* Return non objects (or dates) as strings */
+        if (typeof obj !== 'object' || !Object.keys(obj).length) {
+              return indent(depth || 0) + obj;  // this will always convert to string type
         }
 
         /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
@@ -1392,15 +1388,15 @@ script: |-
             /* Handle object values in a new call */
             if (typeof value === 'object') {
                 if (obj instanceof Array) {
-                    res += jsonToHumanReadableRecursive(value, depth) + "\n";
+                    res += jsonToHumanReadableRecursive(value, (depth || 0)) + '\n';
                 } else {
-                    res += indent(depth) + key + "\n";
-                    res += jsonToHumanReadableRecursive(value, depth + 1);  // no \n here
+                    res += indent(depth) + key + '\n';
+                    res += jsonToHumanReadableRecursive(value, (depth || 0) + 1);  // no \n here
                 }
             } else {
                 /* Format primitives as a string */
                 var keyStr = (obj instanceof Array) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
-                res += indent(depth) + keyStr + ": " + value + "\n";
+                res += indent(depth) + keyStr + ': ' + value + '\n';
             }
         });
 
@@ -1409,23 +1405,21 @@ script: |-
 
     /* Helper function that handles the padding of new lines by depth */
     var indent = function(depth) {
-        var res = "";
-        if (undefined === depth) {
-            depth = 0;
-        }
-
-        for (var i = 0; i < depth; i++) {
-            res += "  ";
+        var res = ''
+        for (var i = 0; i < (depth || 0); i++) {
+            res += '  ';
         }
         return res;
     }
 
     /* Run all object keys and invoke the recursive helper function */
+    var res = {};
     Object.keys(obj).forEach(function(key) {
-        var value = obj[key];
-        var str = jsonToHumanReadableRecursive(value);
-        obj[key] = str;
+        var str = jsonToHumanReadableRecursive(obj[key]);
+        res[key] = str;
     });
+
+    return res;
   }
 
   /********************************** Date Formatting **************************************/
