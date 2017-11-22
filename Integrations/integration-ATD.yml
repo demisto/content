@@ -141,17 +141,19 @@ script:
         if ((args.type) && (args.type === 'json')){
             var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
             var resString = JSON.stringify(res);
+
             var summary = res.Summary;
             summary.VerdictDescription = summary.Verdict.Description;
             summary.VerdictSeverity = summary.Verdict.Severity ;
             var context = buildReportContext(summary);
+            jsonToHumanReadable(summary);
             var md = resToMD(summary,'ATD Sandbox Report');
-            return {Type: entryTypes.note,
+
+            return { Type: entryTypes.note,
             Contents: resString,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: context
-            };
+            EntryContext: context };
         }
         if (args.type === 'pdf'){
             var filename = args.jobId;
@@ -553,4 +555,4 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
-releaseNotes: "-"
+releaseNotes: "!atd-get-report type=json: Some more complex fields are now formatted for better readability."
