@@ -135,7 +135,7 @@ script:
 
     var getReport = function() {
         uriSuffix = jobOrTaskId();
-        if ((args.type) && (args.type === 'table')){
+        if ((args.type) && ( (args.type === 'table') || (args.type === 'json') )){
             var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json','GET', getHeaders());
             var resString = JSON.stringify(res);
             var summary = res.Summary;
