@@ -1365,6 +1365,69 @@ script: |-
       return false;
   }
 
+  /**
+   * Converts all object (and array) values of a given object to human-readable strings
+   * @param {Object} obj - the object to be altered
+   */
+  function jsonToHumanReadable(obj) {
+
+    /* Helper function that rucurses an object, formatting it's values as strings */
+    var jsonToHumanReadableRecursive = function(obj, depth) {
+        var res = "";
+
+        /* Default depth is 0 */
+        if (depth === undefined) {
+            depth = 0;
+        }
+
+        /* Return strings as is */
+        if (typeof obj === 'string') {
+            return obj;
+        }
+
+        /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
+        Object.keys(obj).forEach(function(key) {
+            var value = obj[key];
+
+            /* Handle object values in a new call */
+            if (typeof value === 'object') {
+                if (obj instanceof Array) {
+                    res += jsonToHumanReadableRecursive(value, depth) + "\n";
+                } else {
+                    res += indent(depth) + key + "\n";
+                    res += jsonToHumanReadableRecursive(value, depth + 1);  // no \n here
+                }
+            } else {
+                /* Format primitives as a string */
+                var keyStr = (obj instanceof Array) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
+                res += indent(depth) + keyStr + ": " + value + "\n";
+            }
+        });
+
+        return res;
+    }
+
+    /* Helper function that handles the padding of new lines by depth */
+    var indent = function(depth) {
+        var res = "";
+        if (undefined === depth) {
+            depth = 0;
+        }
+
+        for (var i = 0; i < depth; i++) {
+            res += "  ";
+        }
+        return res;
+    }
+
+    /* Run all object keys and invoke the recursive helper function */
+    Object.keys(obj).forEach(function(key) {
+        var value = obj[key];
+        var str = jsonToHumanReadableRecursive(value);
+        obj[key] = str;
+    });
+  }
+
   /********************************** Date Formatting **************************************/
   /* Date formats
     %d - day 01, 02 ... 31
