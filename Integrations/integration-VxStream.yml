@@ -300,7 +300,7 @@ script:
 
         while (waitTime<timeOut) {
             res = scan(hash);
-            if (res.response[0]) {
+            if (res.response.length > 0 && res.response[0]) {
                 return scanToEntry(res);
             } else {
                 waitTime = waitTime + delayTime;
@@ -406,7 +406,7 @@ script:
       description: War-room entry ID of sample file
     - name: environmentID
       required: true
-      description: 'environment ID to submit file to(get all via vx-get-environments) '
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
     description: Submit a file from investigation to analysis server  (NOTE - minimum
       required authorization is `default`)
   - name: vx-search
