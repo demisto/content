@@ -296,7 +296,7 @@ script:
         timeOut = parseInt(timeout);
         var waitTime = delayTime;
 
-        sleep(delayTime);
+        wait(delayTime);
 
         while (waitTime<timeOut) {
             res = scan(hash);
@@ -304,15 +304,11 @@ script:
                 return scanToEntry(res);
             } else {
                 waitTime = waitTime + delayTime;
-                sleep(delayTime)
+                wait(delayTime);
             }
         }
-        return 'Timeout';
-    }
+        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
 
-    function sleep (delay) {
-        var start = new Date().getTime();
-        while (new Date().getTime() < start + delay);
     }
 
     switch (command) {
@@ -472,10 +468,10 @@ script:
       required: true
       description: 'environment ID to submit file to(get all via vx-get-environments) '
     - name: delay
-      description: Delay wait time between calls (in milliseconds)
+      description: Delay wait time between calls (in seconds)
       defaultValue: "3000"
     - name: timeout
-      description: Total wait time (in milliseconds)
+      description: Total wait time (in seconds)
       defaultValue: "60000"
     description: Detonate file through VxSteam
 releaseNotes: 'Adding file detonation'
