@@ -1,6 +1,6 @@
 commonfields:
-  id: 283b5229-4577-4be4-8a4e-006001543341
-  version: 85
+  id: FetchAnonymousInfo
+  version: -1
 name: FetchAnonymousInfo
 script: |-
   import hashlib, json, datetime
