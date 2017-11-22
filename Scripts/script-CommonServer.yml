@@ -2,6 +2,7 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
+releaseNotes: "-"
 script: |-
   // Common functions script
   // =======================
