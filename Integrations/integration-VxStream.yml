@@ -469,9 +469,9 @@ script:
       description: 'environment ID to submit file to(get all via vx-get-environments) '
     - name: delay
       description: Delay wait time between calls (in seconds)
-      defaultValue: "3000"
+      defaultValue: "3"
     - name: timeout
       description: Total wait time (in seconds)
-      defaultValue: "60000"
+      defaultValue: "60"
     description: Detonate file through VxSteam
 releaseNotes: 'Adding file detonation'
