@@ -1377,8 +1377,8 @@ script: |-
         var res = '';
 
         /* Return non objects (or dates) as strings */
-        if (typeof obj !== 'object' || obj === null || !Object.keys(obj).length) {
-              return indent(depth || 0) + obj;  // this will always convert to string type
+        if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+              return indent(depth || 0) + obj + '\n';  // this will always convert to string type
         }
 
         /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
