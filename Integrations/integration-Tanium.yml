@@ -14,7 +14,7 @@ configuration:
   required: true
 - display: Port
   name: port
-  defaultvalue: ""
+  defaultvalue: "443"
   type: 0
   required: true
 - display: Credentials
@@ -22,6 +22,11 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     import os
@@ -32,6 +37,12 @@ script:
     import json
     import io
     import csv
+
+    if not demisto.params()['proxy']:
+      del os.environ['HTTP_PROXY']
+      del os.environ['HTTPS_PROXY']
+      del os.environ['http_proxy']
+      del os.environ['https_proxy']
 
     # disable python from generating a .pyc file
     sys.dont_write_bytecode = True
