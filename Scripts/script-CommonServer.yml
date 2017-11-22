@@ -1394,6 +1394,7 @@ script: |-
                     res += jsonToHumanReadableRecursive(value, (depth || 0) + 1);  // no \n here
                 }
             } else {
+                /* Format primitives as a string */
                 var keyStr = (obj instanceof Array) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
                 var newDepth = (obj instanceof Array) ? depth + 1 : depth;
                 res += indent(newDepth) + keyStr + ': ' + value + '\n';
