@@ -2,6 +2,7 @@ commonfields:
   id: ADGetGroupMembers
   version: -1
 name: ADGetGroupMembers
+releaseNotes: "fixed script failing on empty fields"
 script: |+
   def createEndpointEntities(t,attrs):
       endpoints = []
