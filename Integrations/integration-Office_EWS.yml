@@ -86,7 +86,6 @@ script:
     var server = params.server.replace(/[\/]+$/, '') + '/';
     var defaultPageSize = 100;
     var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
-
     // map of argument that can contain distinguished item as values
     var distinguishedArgs = {
         'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
@@ -95,6 +94,11 @@ script:
                            '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
                        '</t:Mailbox>' +
                       '</t:DistinguishedFolderId>',
+            items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
+                                'root', 'junkemail', 'searchfolders', 'voicemail']
+        },
+        'folder-identifier': {
+            template: '<t:DistinguishedFolderId Id="%id%" />',
             items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
                                 'root', 'junkemail', 'searchfolders', 'voicemail']
         }
@@ -134,7 +138,7 @@ script:
             ]
         },
         'ews-get-folder': {
-            arrayArgName: 'folders-ids',
+            arrayArgName: ['folders-ids'],
             contextKey: 'EWS.Folders(val.ID == obj.ID)',
             innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',
             resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',
@@ -170,7 +174,7 @@ script:
                 '</soap:Envelope>'
             },
         'ews-delete-items': {
-            arrayArgName: 'item-ids',
+            arrayArgName: ['item-ids'],
             innerPath: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage',
             resStatus: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage.-ResponseClass',
             translator: [
@@ -200,7 +204,7 @@ script:
                 '</soap:Envelope>'
             },
         'ews-get-items': {
-            arrayArgName: 'item-ids',
+            arrayArgName: ['item-ids'],
             innerPath: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.Items.Message',
             resStatus: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.-ResponseClass',
             translator: [
@@ -267,7 +271,7 @@ script:
                 '</soap:Envelope>'
             },
         'ews-search-mailbox': {
-            arrayArgName: 'folders-ids',
+            arrayArgName: ['folders-ids'],
             innerPath: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message',
             resStatus: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass',
             defaultArgs: {
@@ -314,7 +318,7 @@ script:
                 '</soap:Envelope>'
             },
         'ews-get-contacts': {
-            arrayArgName: 'item-ids',
+            arrayArgName: ['item-ids'],
             targetToContext: true,
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
@@ -339,7 +343,7 @@ script:
                 '</soap:Envelope>'
             },
         'ews-delete-attachments': {
-            arrayArgName: 'item-ids',
+            arrayArgName: ['item-ids'],
             fillerName: 'attachments-ids',
             innerPath: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage',
             resStatus: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage.-ResponseClass',
@@ -404,14 +408,14 @@ script:
                 '</soap:Envelope>'
             },
         'ews-search-mailboxes': {
-          arrayArgName: 'mailbox-search-scope',
+          arrayArgName: ['mailbox-search-scope'],
           tableTitle: 'EWS search mail boxes result for filter %filter%',
           template:
             '<?xml version="1.0" encoding="utf-8"?>' +
             '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
                            'xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
                            'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" ' +
-                           'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                           'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">'+
                 '<soap:Header>' +
                     '<t:RequestServerVersion Version="%version%"/>' +
                 '</soap:Header>' +
@@ -451,7 +455,43 @@ script:
             contextArrayName: 'Results',
             argsToContext: ['filter']
         },
+        'ews-move-items' : {
+            arrayArgName: ['item-ids','folder-identifier'],
+            tableTitle: 'EWS move items',
+            template:
+                '<?xml version="1.0" encoding="utf-8"?>'+
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+                               ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
+                               ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"' +
+                               ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                '<soap:Header>'+
+                    '<t:RequestServerVersion Version="%version%" />'+
+                    '%impersonation%'+
+                '</soap:Header>'+
+                '<soap:Body>' +
+                    '<m:MoveItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
+                    'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+                        '<m:ToFolderId>' +
+                            '%folder-identifier%' +
+                        '</m:ToFolderId>' +
+                        '<m:ItemIds>' +
+                            '%item-ids%' +
+                        '</m:ItemIds>' +
+                    '</m:MoveItem>' +
+                '</soap:Body>' +
+            '</soap:Envelope>',
+            innerPath: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.Items.Message',
+            resStatus: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.-ResponseClass',
+            contextKey: 'EWS.MovedItems',
+            translator: [
+                { to: 'New-Item-Id', from: 'ItemId.-Id'}
+            ],
+            targetToContext: true
+        },
         'folders-ids': {
+            template: '<t:FolderId Id="%id%"/>'
+        },
+        'folder-identifier': {
             template: '<t:FolderId Id="%id%"/>'
         },
         'item-ids': {
@@ -471,6 +511,7 @@ script:
                 '</t:MailboxSearchScope>'
         }
     };
+
 
     function getDefaultTargetMailbox() {
         if (params.defaultTargetMailbox) {
@@ -667,26 +708,28 @@ script:
             }
         }
         if (currentCommand.arrayArgName) {
-            var items = [];
-            if (Array.isArray(args[currentCommand.arrayArgName])) {
-                items = args[currentCommand.arrayArgName];
-            } else {
-                items = args[currentCommand.arrayArgName].split(',');
-            }
-            var itemsStr = '';
-            for (var i in items) {
-                var itemId = items[i];
-                var template;
-                var distinguished = distinguishedArgs[currentCommand.arrayArgName];
-                log(distinguished)
-                if(distinguished && distinguished.items.indexOf(itemId) > -1) {
-                    template = distinguished.template;
+            var argArr = currentCommand.arrayArgName;
+            argArr.forEach(function(argName) {
+                var items = [];
+                if (Array.isArray(args[argName])) {
+                    items = args[argName];
                 } else {
-                    template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;
+                    items = args[argName].split(',');
                 }
-                itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
-            }
-            args[currentCommand.arrayArgName] = itemsStr;
+                var itemsStr = '';
+                for (var i in items) {
+                    var itemId = items[i];
+                    var template;
+                    var distinguished = distinguishedArgs[argName];
+                    if(distinguished && distinguished.items.indexOf(itemId) > -1) {
+                        template = distinguished.template;
+                    } else {
+                        template = commandsDictionary[currentCommand.fillerName || argName].template;
+                    }
+                    itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
+                }
+                args[argName] = itemsStr;
+            });
         }
         return replaceInTemplates(currentCommand.template, args);
     }
@@ -949,8 +992,7 @@ script:
                         }
                         labels = [];
                         //handle  recipients
-                        recipients = message.Items.Message.ToRecipients;
-                        recipients = recipients ? recipients.Mailbox : null;
+                        recipients = message.Items.Message.ToRecipients.Mailbox;
                         if (recipients && !Array.isArray(recipients)) {
                             recipients = [recipients];
                         }
@@ -1082,8 +1124,8 @@ script:
     arguments:
     - name: folders-ids
       required: true
-      isArray: true
       description: The Item IDs (result of the ews-search-mailbox command)
+      isArray: true
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1108,8 +1150,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      isArray: true
       description: The item IDs (result of the ews-search-mailbox)
+      isArray: true
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1124,8 +1166,8 @@ script:
     - name: item-ids
       required: true
       default: true
+      description: The attachment IDs  (result of the ews-get-items command)
       isArray: true
-      description: The attachment IDs  (result of the ews-get-items command)
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1140,8 +1182,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      isArray: true
       description: The Item IDs (result of the ews-search-mailbox command)
+      isArray: true
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1241,8 +1283,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      isArray: true
       description: The item IDs (result of the ews-search-mailbox command)
+      isArray: true
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1404,5 +1446,24 @@ script:
     - contextPath: EWS.Items.Headers.#text
       description: Mail attachment text
     description: Get actual attachment item from email
+  - name: ews-move-items
+    arguments:
+    - name: target-mailbox
+      description: The user email address
+    - name: item-ids
+      required: true
+      description: Comma separated list of Item IDs (result of the ews-search-mailbox
+        command)
+    - name: folder-identifier
+      required: true
+      description: The folder id
+    - name: version
+      description: Exchange version (by default 2010, change to 2013 if using 2013).
+        This can also be set in the settings/integrations page
+    outputs:
+    - contextPath: EWS.MovedItems.ItemNewId
+      description: The new item id
+    description: Move one or more item to one destination folder. Note that after
+      an item is moved, a new id will be associated with it.
   isfetch: true
-releaseNotes: Fix fetch incidents, when there is no "To" in mail
+  releaseNotes: "add move-item command"
