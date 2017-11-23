@@ -253,7 +253,7 @@ script:
 
     var parseResult = function(command, result) {
         if (dq(result, 'objects').length == 0) {
-            return 'No records found.';
+            return 'Anomali ThreatStream - No records found.';
         }
 
         var entry;
