@@ -1414,6 +1414,9 @@ script: |-
     }
 
     /* Run all object keys and invoke the recursive helper function */
+    if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+        return obj;
+    }
     var res = {};
     Object.keys(obj).forEach(function(key) {
         var str = jsonToHumanReadableRecursive(obj[key]);
