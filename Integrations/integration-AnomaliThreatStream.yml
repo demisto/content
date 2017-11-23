@@ -210,8 +210,10 @@ script:
                 ipContext.Geo.Organization = output['Organization'];
                 ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
                 ipContext.Hostname = output['Hostname'];
-                ipContext.Malicious = {};
-                ipContext.Malicious.Vendor = output['Source'];
+                if (output['Threat Score'] >= args.threshold) {
+                    ipContext.Malicious = {};
+                    ipContext.Malicious.Vendor = output['Source'];
+                }
                 ipContext.Address = output['IP Address'];
                 ipContext.Score = output['Threat Score'];
                 if (command == 'domain') {
@@ -225,8 +227,10 @@ script:
 
             } else if (command == 'file') {
                 context.MD5 = args.value;
-                context.Malicious = {};
-                context.Malicious.Vendor = output['Source'];
+                if (output['Threat Score'] >= args.threshold) {
+                    context.Malicious = {};
+                    context.Malicious.Vendor = output['Source'];
+                }
                 context.Score = output['Threat Score']
                 entry.EntryContext['File'] = context;
             }
@@ -249,7 +253,7 @@ script:
 
     var parseResult = function(command, result) {
         if (dq(result, 'objects').length == 0) {
-            return 'No records found.';
+            return 'Anomali ThreatStream - No records found.';
         }
 
         var entry;
@@ -404,23 +408,41 @@ script:
     - name: domain
       required: true
       description: The domain name to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then domain
+        will be considered malicious
+      defaultValue: "3"
     description: Checks the reputation of the given IP or domain name
   - name: file
     arguments:
     - name: file
       required: true
       description: The checksum to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then file
+        will be considered malicious
+      defaultValue: "3"
     description: Checks the reputation of the given checksum
   - name: threatstream-email-reputation
     arguments:
     - name: email
       required: true
       description: The email address to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then email
+        will be considered malicious
+      defaultValue: "3"
     description: Checks the reputation of the given email
   - name: ip
     arguments:
     - name: ip
       required: true
       description: The IP to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: "3"
     description: Checks the reputation of the given IP
 hidden: false
+releaseNotes: "Added threshold argument to set if query is malicious"
+
