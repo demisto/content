@@ -108,6 +108,7 @@ args:
   predefined:
   - "yes"
   - "no"
+  description: Hash sensitive values (e.g. indicator values)?
   defaultValue: "yes"
 - name: fromDate
   description: Fetch data from this date. Iso format (e.g. 2017-01-01)
