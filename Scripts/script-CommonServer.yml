@@ -1419,14 +1419,10 @@ script: |-
     }
     var res = {};
     Object.keys(obj).forEach(function(key) {
-        var str = jsonToHumanReadableRecursive(obj[key]);
-
-        /* There's no need for a newline at the end of the entire stirng */
-        if (str[str.length - 1] === '\n') {
-          str = str.substring(0, str.length - 1);
-        }
-        res[key] = str;
-    });
+            var str = jsonToHumanReadableRecursive(obj[key]);
+            str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
+            res[key] = str;
+        });
 
     return res;
   }
