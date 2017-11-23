@@ -990,6 +990,7 @@ script:
                             lastRun.lastTime = incident.occurred.getTime();
                             lastRun.lastId = message.Items.Message.ItemId["-Id"];
                         }
+                        setLastRun(lastRun);
                         labels = [];
                         //handle  recipients
                         recipients = message.Items.Message.ToRecipients.Mailbox;
@@ -1074,10 +1075,6 @@ script:
                         incidents.push(incident);
                     }
                 }
-            }
-            if (incidents.length) {
-                //store last run again
-                setLastRun(lastRun);
             }
         }
         return JSON.stringify(incidents);
