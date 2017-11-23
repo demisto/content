@@ -2,6 +2,7 @@ commonfields:
   id: TaniumDeployAction
   version: -1
 name: TaniumDeployAction
+deprecated: true
 script: |-
   // An example script for deploying Tanium action with filter
   if (!args.packageName && !args.packageID) {
@@ -104,3 +105,4 @@ dependson:
   must:
   - tn-deploy-package
 timeout: 0s
+releaseNotes: Deprecated. Use tn-deploy-package instead
