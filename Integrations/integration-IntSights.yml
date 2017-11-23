@@ -335,10 +335,11 @@ script:
         var entries = [];
         for (var i = 0; i < iocTypes.length; i++) {
             args.Type = iocTypes[i];
+            var res = sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body;
             try {
-              result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
+              result = JSON.parse(res);
             } catch (err) {
-              throw 'JSON parsing failed, body: ' + res.Body;
+              throw 'JSON parsing failed, body: ' + res;
             }
             entries.push(parseResponse('intsights-get-iocs', result))
         }
@@ -402,10 +403,11 @@ script:
     var getAlerts = function(startTime) {
         command = 'intsights-get-alerts';
         args.DateFrom = startTime;
+        var res = sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body;
         try {
-          result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
+          result = JSON.parse(res);
         } catch (err) {
-          throw 'JSON parsing failed, body: ' + res.Body;
+          throw 'JSON parsing failed, body: ' + res;
         }
         return result;
     }
@@ -482,17 +484,16 @@ script:
             args.IsArchived = JSON.parse(args.IsArchived);
 
         default:
+            res = sendRequest(
+                         methodDictionary[command],
+                         getUrl(command, args),
+                         createBody(command, args),
+                         loginCookies
+                     ).Body;
             try {
-              result = JSON.parse(
-                  sendRequest(
-                      methodDictionary[command],
-                      getUrl(command, args),
-                      createBody(command, args),
-                      loginCookies
-                  ).Body
-              );
+              result = JSON.parse(res);
             } catch (err) {
-              throw 'JSON parsing failed, body: ' + res.Body;
+              throw 'JSON parsing failed, body: ' + res;
             }
 
             shouldParseResponse = true;
@@ -825,4 +826,4 @@ script:
       description: IOCs details
     description: Get all the IOCs
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Will throw body when json parsing fails"
