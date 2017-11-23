@@ -1463,4 +1463,4 @@ script:
     description: Move one or more item to one destination folder. Note that after
       an item is moved, a new id will be associated with it.
   isfetch: true
-  - releaseNotes: "add move-item command"
+  releaseNotes: "add move-item command"
