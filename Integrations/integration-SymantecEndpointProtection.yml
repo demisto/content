@@ -593,4 +593,4 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
-releaseNotes: "Change logo to Symantec"
+releaseNotes: "Change logo to Symantec instead of SEP"
