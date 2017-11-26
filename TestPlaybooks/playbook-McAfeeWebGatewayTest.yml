@@ -1,5 +1,5 @@
 id: McAfeeWebGatewayTest
-version: 25
+version: 32
 name: McAfeeWebGatewayTest
 starttaskid: "0"
 tasks:
@@ -98,10 +98,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 4e1d08b2-d3fc-4dc7-8783-56291720cc2d
+    taskid: 54f280cb-b7d0-436d-86a6-f0c75d221f89
     type: regular
     task:
-      id: 4e1d08b2-d3fc-4dc7-8783-56291720cc2d
+      id: 54f280cb-b7d0-436d-86a6-f0c75d221f89
       version: -1
       name: check context
       scriptName: ContextContains
@@ -124,8 +124,8 @@ tasks:
       key: ""
       name: ""
       nestedSearch: ""
-      path: MWG.ListEntries
-      value: ${MWG.ListEntries.[0].ListID}
+      path: MWG.ListEntries.ListID
+      value: ${MWG.Lists.[0].Name}
     view: |-
       {
         "position": {
@@ -183,12 +183,12 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 5a34785b-4501-492f-8123-e6116a8ec816
+    taskid: 5f768160-2263-4a50-887a-072c07a1bbb6
     type: regular
     task:
-      id: 5a34785b-4501-492f-8123-e6116a8ec816
+      id: 5f768160-2263-4a50-887a-072c07a1bbb6
       version: -1
-      name: 'Get entry to pre-defined list: "PlaybookTestList"'
+      name: 'Get entry to pre-defined list: "PlaybookTestList" '
       description: 'list contains two entries: "Zenno" and "Yahoo Mail"'
       script: McAfee Web Gateway|||mwg-get-list-entry
       type: regular
@@ -209,20 +209,21 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: c5fbab27-3724-4b8f-82b2-1f761537f79f
-    type: condition
+    taskid: dde0ac15-c085-46bd-8361-5179fa198d62
+    type: regular
     task:
-      id: c5fbab27-3724-4b8f-82b2-1f761537f79f
+      id: dde0ac15-c085-46bd-8361-5179fa198d62
       version: -1
       name: check context
       scriptName: ContextContains
-      type: condition
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "13"
+      '#none#':
+      - "15"
     scriptarguments:
+      key: ""
       path: MWG.ListEntries.Name
       value: Zenno
     view: |-
@@ -234,10 +235,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 733c3cad-089e-460d-82fc-db04f6cf95f8
+    taskid: d1f9e239-6a8d-4750-80cd-ade48ea64232
     type: regular
     task:
-      id: 733c3cad-089e-460d-82fc-db04f6cf95f8
+      id: d1f9e239-6a8d-4750-80cd-ade48ea64232
       version: -1
       name: Insert a new entry
       script: McAfee Web Gateway|||mwg-insert-entry
@@ -250,21 +251,21 @@ tasks:
     scriptarguments:
       description: ""
       entry_pos: "0"
-      list_id: com.scur.type.applcontrol.261
-      name: DirectIQ
+      list_id: com.scur.type.string.263
+      name: ${incident.created}
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
   "14":
     id: "14"
-    taskid: 379c4730-2125-4dbd-8c92-20e22bed89eb
+    taskid: 99e59d82-d9ea-4694-89af-ff442d255dad
     type: regular
     task:
-      id: 379c4730-2125-4dbd-8c92-20e22bed89eb
+      id: 99e59d82-d9ea-4694-89af-ff442d255dad
       version: -1
       name: Delete the new entry
       script: McAfee Web Gateway|||mwg-delete-entry
@@ -273,7 +274,56 @@ tasks:
       brand: McAfee Web Gateway
     scriptarguments:
       entry_pos: "0"
-      list_id: com.scur.type.applcontrol.261
+      list_id: com.scur.type.string.263
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 04bd808c-7137-42bb-80b0-0bf12458b44b
+    type: regular
+    task:
+      id: 04bd808c-7137-42bb-80b0-0bf12458b44b
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 95ca16b8-5aa0-4f1c-8bed-c80e27ed9121
+    type: regular
+    task:
+      id: 95ca16b8-5aa0-4f1c-8bed-c80e27ed9121
+      version: -1
+      name: 'Get pre-defined list: "PlaybookTestList" '
+      script: McAfee Web Gateway|||mwg-get-list
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      list_id: com.scur.type.string.263
     view: |-
       {
         "position": {
@@ -286,7 +336,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1815,
+        "height": 2165,
         "width": 380,
         "x": 50,
         "y": 50

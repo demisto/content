@@ -25,6 +25,9 @@ script:
     import requests
     import urlparse
     import time
+
+    import sys
+    sys.path.insert(0, '/python-packages')
     from vmray.rest_api import VMRayRESTAPI, VMRayRESTAPIError
 
 
@@ -100,5 +103,6 @@ script:
       required: true
       description: Job sample id
     description: Get all jobs details about a specific sample.
-  dockerimage: vmray
+  dockerimage: demisto/vmray
 hidden: false
+releaseNotes: "Uses public docker image now"

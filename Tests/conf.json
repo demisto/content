@@ -121,8 +121,7 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout" : 500,
-            "nightly": true
+            "timeout" : 500
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -136,11 +135,20 @@
             "playbookID": "McAfee-TIE Test"
         },
         {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook"
+        },
+        {
             "playbookID": "ProofpointDecodeURL-Test"
         },
         {
             "integrations": "ServiceNow",
             "playbookID": "ServiceNow-Test"
+        },
+        {
+            "integrations": "icebrg",
+            "playbookID": "Icebrg Test",
+            "timeout" : 500
         }
     ],
     "skipped": [
