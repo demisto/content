@@ -1,6 +1,6 @@
 commonfields:
   id: 0d88aa9c-a556-4c6a-87e8-7ad97e487b61
-  version: 29
+  version: 34
 name: ParseEmailHeaders
 script: |-
   from email.parser import HeaderParser
@@ -15,8 +15,8 @@ script: |-
           filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId']})[0]['Contents']['path']
 
           # Read the content of the file
-          f = open(filePath, 'rb')
-          fileContents = f.read()
+          with open(filePath, 'rb') as f:
+              fileContents = f.read()
 
           # Parse the headers from the email file
           parser = HeaderParser()
