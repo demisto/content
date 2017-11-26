@@ -1,6 +1,7 @@
 id: DocumantationAutomation Playbook
 version: -1
 name: DocumantationAutomation Playbook
+description: Automates integration documantation.
 starttaskid: "0"
 tasks:
   "0":
@@ -13,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -35,6 +37,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     scriptarguments:
       entryID: ${incident.file.EntryID}
       overview: ""
