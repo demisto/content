@@ -1372,35 +1372,12 @@ script: |-
    */
   function jsonToHumanReadable(obj) {
 
-    /* Helper function that rucurses an object, formatting it's values as strings */
-    var jsonToHumanReadableRecursive = function(obj, depth) {
-        var res = '';
-
-        /* Return non objects (or dates) as strings */
-        if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
-              return indent(depth || 0) + obj + '\n';  // this will always convert to string type
+    /* Helper function to reduces multiples newlines in a string */
+    var reduceNewlines = function(str) {
+        var res = str;
+        while (res.indexOf('\n\n\n') != -1) {
+            res = res.replace('\n\n\n', '\n\n');
         }
-
-        /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
-        Object.keys(obj).forEach(function(key) {
-            var value = obj[key];
-
-            /* Handle object values in a new call */
-            if (typeof value === 'object') {
-                if (obj instanceof Array) {
-                    res += jsonToHumanReadableRecursive(value, (depth || 0)) + '\n';
-                } else {
-                    res += indent(depth) + key + '\n';
-                    res += jsonToHumanReadableRecursive(value, (depth || 0) + 1);  // no \n here
-                }
-            } else {
-                /* Format primitives as a string */
-                var keyStr = (obj instanceof Array) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
-                var newDepth = (obj instanceof Array) ? depth + 1 : depth;
-                res += indent(newDepth) + keyStr + ': ' + value + '\n';
-            }
-        });
-
         return res;
     }
 
@@ -1413,16 +1390,49 @@ script: |-
         return res;
     }
 
+    /* Helper function that rucurses an object, formatting it's values as strings */
+    var jsonToHumanReadableRecursive = function(obj, depth) {
+        var res = '';
+
+        /* Return non objects (or dates) as strings */
+        if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+              return indent(depth || 0) + obj + '\n';  // this will always convert to string type
+        }
+
+        /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
+        Object.keys(obj).forEach(function(key) {
+            var value = obj[key];
+            var isArrayElement = obj instanceof Array;
+
+            /* Handle object values in a new call */
+            if (typeof value === 'object') {
+                if (isArrayElement) {
+                    res += jsonToHumanReadableRecursive(value, (depth || 0)) + '\n';
+                } else {
+                    res += indent(depth) + key + '\n';
+                    res += jsonToHumanReadableRecursive(value, (depth || 0) + 1) + '\n';
+                }
+            } else {
+                /* Format primitives as a string */
+                var keyStr = (isArrayElement) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
+                res += indent(depth) + keyStr + ': ' + value + '\n';
+            }
+        });
+
+        res = reduceNewlines(res);
+        return res;
+    }
+
     /* Run all object keys and invoke the recursive helper function */
     if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
         return obj;
     }
     var res = {};
     Object.keys(obj).forEach(function(key) {
-            var str = jsonToHumanReadableRecursive(obj[key]);
-            str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
-            res[key] = str;
-        });
+        var str = jsonToHumanReadableRecursive(obj[key]);
+        str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
+        res[key] = str;
+    });
 
     return res;
   }
