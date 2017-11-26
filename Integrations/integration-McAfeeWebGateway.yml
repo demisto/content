@@ -158,10 +158,15 @@ script:
 
     function get_lists() {
         var cmd_url = '/list';
+        var res = '';
 
         login();
-        var res = sendRequest('GET', cmd_url);
-        logout();
+        try {
+            res = sendRequest('GET', cmd_url);
+        }
+        finally {
+            logout();
+        }
 
         res = res.split('\n');
         list_names = [];
@@ -186,10 +191,15 @@ script:
 
     function get_list(list_id) {
         var cmd_url = '/list/' + list_id;
+        var res = '';
 
         login();
-        var res = sendRequest('GET', cmd_url);
-        logout();
+        try {
+            res = sendRequest('GET', cmd_url);
+        }
+        finally {
+            logout();
+        }
 
         res = JSON.parse(x2j(res));
         return list_to_demisto_entry(res.list['-name'] + ': ' + res.list.description, res.list, list_id);
@@ -197,10 +207,15 @@ script:
 
     function get_list_entry(list_id, entry_pos) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos;
+        var res = '';
 
         login();
-        var res = sendRequest('GET', cmd_url);
-        logout();
+        try {
+            res = sendRequest('GET', cmd_url);
+        }
+        finally {
+            logout();
+        }
 
         res = JSON.parse(x2j(res));
         return list_entry_to_demisto_entry('entry #' + entry_pos, res.listEntry, [list_id, entry_pos]);
@@ -209,11 +224,16 @@ script:
     function insert_entry(list_id, entry_pos, name, description) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos + '/insert';
         var query = '<listEntry><entry>' + name + '</entry><description>' + (description || '') + '</description></listEntry>';
+        var res = '';
 
         login();
-        var res = sendRequest('POST', cmd_url, {}, query);
-        sendRequest('POST', '/commit');
-        logout();
+        try {
+            res = sendRequest('POST', cmd_url, {}, query);
+            sendRequest('POST', '/commit');
+        }
+        finally {
+            logout();
+        }
 
         res = JSON.parse(x2j(res));
         return list_entry_to_demisto_entry('entry #' + entry_pos, res.listEntry, [list_id, entry_pos]);
@@ -221,11 +241,16 @@ script:
 
     function delete_entry(list_id, entry_pos) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos;
+        var res = '';
 
         login();
-        var res = sendRequest('DELETE', cmd_url);
-        sendRequest('POST', '/commit');
-        logout();
+        try {
+            res = sendRequest('DELETE', cmd_url);
+            sendRequest('POST', '/commit');
+        }
+        finally {
+            logout();
+        }
 
         res = JSON.parse(x2j(res));
         return list_entry_to_demisto_entry('Deleting entry #' + entry_pos, res.listEntry, [list_id, entry_pos], false);
