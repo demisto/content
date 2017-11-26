@@ -2,6 +2,7 @@ commonfields:
   id: TaniumAskQuestion
   version: 1
 name: TaniumAskQuestion
+deprecated: true
 script: |-
   // An example script for asking Tanium a question
   /* name - The name of the Saved-Question in Tanium server (mandatory if no 'id' was specified)
@@ -128,3 +129,4 @@ dependson:
   - tn-result-data
   - tn-result-info
 timeout: 0s
+releaseNotes: Deprecated. Use tn-ask-question instead

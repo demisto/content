@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: PanoramaDynamicAddressGroup
   version: 12
@@ -26,6 +25,7 @@ script: |-
   };
 type: javascript
 tags: []
+comment: Register/Unregister to address group with Panorama
 enabled: true
 args:
 - name: type
@@ -45,3 +45,4 @@ args:
 - name: fileName
   description: Name of output file
 scripttarget: 0
+releaseNotes: "-"

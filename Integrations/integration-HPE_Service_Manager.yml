@@ -338,10 +338,13 @@ script:
   type: javascript
   commands:
   - name: hpsm-create-incident
+    description: Creates new incident in the system
     arguments:
     - name: title
+      description: The title of incident
       required: true
     - name: description
+      description: The description of the incident
       required: true
     - name: service
       required: true
@@ -351,7 +354,9 @@ script:
     - name: urgency
       description: Default is 4. Should be number like 3 or 4
     - name: alertStatus
+      description: 'The alert status. Example: SLA BREACH'
     - name: area
+      description: 'The area. Example: performance, failure, hardware, access, '
     - name: assignmentGroup
       description: 'Example: "Office Supplies (North America)"'
     - name: affectedCI
@@ -360,11 +365,14 @@ script:
       required: true
       description: 'Category of incident. Example: (incident, complaint)'
     - name: company
+      description: "Example: advantage"
     - name: phase
       description: 'Example: "Categorization"'
     - name: status
       description: 'Example: "Categorize"'
     - name: subarea
+      description: "Example: system or application hangs, function or feature not working,  
+error message, job failed, hardware failure, etc."
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -379,27 +387,49 @@ script:
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
+      description: Incident area
     - contextPath: HPSM.Incidents.Assignee
+      description: Incident assignee
     - contextPath: HPSM.Incidents.AssignmentGroup
+      description: Incident assignment group
     - contextPath: HPSM.Incidents.Category
+      description: Incident category
     - contextPath: HPSM.Incidents.ClosedBy
+      description: The user that closed the incident
     - contextPath: HPSM.Incidents.ClosedTime
+      description: Incident close time
     - contextPath: HPSM.Incidents.ClosureCode
+      description: Incident closure code
     - contextPath: HPSM.Incidents.Company
+      description: Incident company
     - contextPath: HPSM.Incidents.Contact
+      description: Incident contact details
     - contextPath: HPSM.Incidents.Description
+      description: Incident description
     - contextPath: HPSM.Incidents.Impact
+      description: Incident impact
     - contextPath: HPSM.Incidents.JournalUpdates
+      description: Incident journal updates
     - contextPath: HPSM.Incidents.OpenTime
+      description: Incident open time
     - contextPath: HPSM.Incidents.OpenedBy
+      description: The user that opened the incident
     - contextPath: HPSM.Incidents.Phase
+      description: Incident phase
     - contextPath: HPSM.Incidents.Solution
+      description: Incident solution
     - contextPath: HPSM.Incidents.Status
+      description: Incident status
     - contextPath: HPSM.Incidents.Subarea
+      description: Incident sub area
     - contextPath: HPSM.Incidents.Title
+      description: Incident title
     - contextPath: HPSM.Incidents.UpdatedBy
+      description: The last user that update the incident
     - contextPath: HPSM.Incidents.UpdatedTime
+      description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
+      description: Incident urgency
     description: 'Creating new incident '
   - name: hpsm-list-incidents
     arguments:
@@ -410,6 +440,7 @@ script:
       description: Result of incident query. Contains array of incident ids
     description: Returns all incidents
   - name: hpsm-get-incident-by-id
+    description: Returns single incident by id. If incident not exists with such id, then error will returned
     arguments:
     - name: incidentId
       required: true
@@ -429,51 +460,90 @@ script:
     - contextPath: HPSM.Incidents.Service
       description: Service/device number (e.g CI1001030)
     - contextPath: HPSM.Incidents.Area
+      description: Incident area
     - contextPath: HPSM.Incidents.Assignee
+      description: Incident Assignee
     - contextPath: HPSM.Incidents.AssignmentGroup
+      description: Incident assignment group
     - contextPath: HPSM.Incidents.Category
+      description: Incident category
     - contextPath: HPSM.Incidents.ClosedBy
+      description: The user that closed the incident
     - contextPath: HPSM.Incidents.ClosedTime
+      description: Incident close time
     - contextPath: HPSM.Incidents.ClosureCode
+      description: Incident closure code
     - contextPath: HPSM.Incidents.Company
+      description: Incident company
     - contextPath: HPSM.Incidents.Contact
+      description: Incident contact details
     - contextPath: HPSM.Incidents.Description
+      description: Incident description
     - contextPath: HPSM.Incidents.Impact
+      description: Incident impact
     - contextPath: HPSM.Incidents.JournalUpdates
+      description: Incident journal updates
     - contextPath: HPSM.Incidents.OpenTime
+      description: Incident open time
     - contextPath: HPSM.Incidents.OpenedBy
+      description: The user that opened the incident
     - contextPath: HPSM.Incidents.Phase
+      description: Incident phase
     - contextPath: HPSM.Incidents.Solution
+      description: Incident solution
     - contextPath: HPSM.Incidents.Status
+      description: Incident status
     - contextPath: HPSM.Incidents.Subarea
+      description: Incident sub area
     - contextPath: HPSM.Incidents.Title
+      description: Incident title
     - contextPath: HPSM.Incidents.UpdatedBy
+      description: The last user that update the incident
     - contextPath: HPSM.Incidents.UpdatedTime
+      description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
+      description: Incident urgency
   - name: hpsm-list-devices
+    description: Returns list of devices filtered according to query.
     arguments:
     - name: query
       description: 'OPTIONAL example (field1=value1&field2=value2)  Also see here:
         https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
     outputs:
     - contextPath: HPSM.DeviceIDs
+      description: "All the ids(configurationItems) of the devices"
     description: Returns list of devices ids
   - name: hpsm-get-device
+    description: Find and return device by id
     arguments:
     - name: configurationItem
       required: true
       description: 'Id of device, configuration item of device. Example: CI1000011'
     outputs:
     - contextPath: HPSM.Devices.AssignmentGroup
+      description: Device assignment group
     - contextPath: HPSM.Devices.Company
+      description: Device company
     - contextPath: HPSM.Devices.ConfigurationItem
+      description: Device configuration item
     - contextPath: HPSM.Devices.ConfigurationItemSubType
+      description: Device configurationItem sub type
     - contextPath: HPSM.Devices.ConfigurationItemType
+      description: Device configurationItem item type
     - contextPath: HPSM.Devices.Department
+      description: Device department
     - contextPath: HPSM.Devices.DisplayName
+      description: Device display name
     - contextPath: HPSM.Devices.Location
+      description: Device location
     - contextPath: HPSM.Devices.LocationCode
+      description: Device location code
     - contextPath: HPSM.Devices.Model
+      description: Device model
     - contextPath: HPSM.Devices.PartNumber
+      description: Device part number
     - contextPath: HPSM.Devices.Status
+      description: Device status
     - contextPath: HPSM.Devices.UpdatedBy
+      description: The last user that update the device
+releaseNotes: added description to commands
