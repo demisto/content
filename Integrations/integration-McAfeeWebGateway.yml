@@ -359,4 +359,4 @@ script:
       required: true
       description: Entry Position in table
     description: Delete an entry from a list
-releaseNotes: added force logout in case of errors
+releaseNotes: Added force logout in case of errors
