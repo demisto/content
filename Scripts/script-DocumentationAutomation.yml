@@ -1,0 +1,127 @@
+commonfields:
+  id: DocumentationAutomation
+  version: -1
+name: DocumentationAutomation
+script: |+
+  import yaml
+  import sys
+
+  reload(sys)
+  sys.setdefaultencoding('utf-8')
+
+  entryID = demisto.args()['entryID']
+
+  res = demisto.executeCommand('getFilePath', {'id': entryID})
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(0)
+
+  path = res[0]['Contents']['path']
+
+  f = open(path,'rb')
+  data = f.read()
+  f.close()
+
+  yamlFile  = open(path)
+  dataMap = yaml.safe_load(yamlFile)
+  yamlFile.close()
+
+  def addLines(str):
+      output = ''
+      lastDigit = 0
+      for i in range(len(str)):
+          if str[i].isdigit():
+              if str[i+1] == '.':
+                  output += str[lastDigit:i] + '\n'
+                  lastDigit = i
+      output += str[lastDigit:len(str)] + '\n'
+      return output
+
+  name = dataMap['name']
+
+  doc = ''
+
+  # Overview
+  doc += 'Overview:\n'
+  if 'overview' in demisto.args():
+      doc += demisto.args()['overview']
+
+  #Setup integration to work with Demisto
+
+  doc += '\nTo set up ' + name + ' on Demisto'
+
+  if 'setupOnIntegration' in demisto.args():
+      doc += addLines(demisto.args()['setupOnIntegration'])
+
+  #Setup integration on Demisto
+
+  doc += "To set up the integration on Demisto:\n1.Go to 'Settings > Integrations > Servers & Services'\n\
+  2.Locate " + name + " by searching for it using the search box on the top of the page.\n\
+  3.Click 'Add instance' to create a configure a new integration\n\
+  You should configure the following settings:\n1.Name: a textual name for the integration instance."
+
+  if 'setupOnDemisto' in demisto.args():
+      doc += addLines(demisto.args()['setupOnDemisto'])
+
+  # Top Use-cases
+
+  doc += 'Top Use-cases:'
+
+  if 'useCases' in demisto.args():
+      doc +=addLines(demisto.args()['useCases'])
+
+  # Commands
+
+  doc += 'Commands:\n'
+  for i in range(len(dataMap['script']['commands'])):
+      doc += str(i+1) + '.Command name: ' + dataMap['script']['commands'][i]['name'] + '\n'
+      #Inputs
+      doc += 'Inputs:\n'
+      if len(dataMap['script']['commands'][i]['arguments']) == 0:
+          for j in range(len(dataMap['script']['commands'][i]['arguments'])):
+              doc += str(j+1)+ '.' +dataMap['script']['commands'][i]['arguments'][j]['name']
+              doc += ' - '+ dataMap['script']['commands'][i]['arguments'][j]['description'] + '\n'
+      else:
+          doc += '-\n'
+      #Context output
+      doc += 'Context Output:\n'
+      if 'outputs' in dataMap['script']['commands'][i]:
+          for k in range(len(dataMap['script']['commands'][i]['outputs'])):
+              doc += 'Path: ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + '\n'
+              doc += 'Description: ' + dataMap['script']['commands'][i]['outputs'][k]['description'] + '\n'
+      else:
+          doc += '-\n'
+      #Raw output:
+      doc += 'Raw output:\n'
+
+  # Troubleshooting
+  doc += 'Troubleshooting:\n'
+  if 'troubleshooting' in demisto.args():
+      doc +=addLines(demisto.args()['troubleshooting'])
+
+  filename = name + '-documantation.txt'
+  demisto.results(fileResult(filename, doc))
+
+
+type: python
+tags: []
+comment: 'Automates integration documentation'
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: War-room entry ID of sample file
+- name: overview
+  description: Documentation overview
+- name: setupOnIntegration
+  description: Setting to work with Demisto instructions. Number the steps by 'x.'
+    (i.e. '1.')
+- name: setupOnDemisto
+  description: Setting to work on Demisto instructions. Number the steps by 'x.' starting
+    at 2 (i.e. '2.')
+- name: useCases
+  description: Top use-cases. Number the steps by 'x.' (i.e. '1.')
+- name: troubleshooting
+  description: Integration troubleshooting
+scripttarget: 0
+dockerimage: demisto/python
