@@ -1,0 +1,25 @@
+commonfields:
+  id: DumpJSON
+  version: -1
+name: DumpJSON
+script: |-
+  import json
+  JSON_CONTEXT_KEY = "JsonStr"
+  key = demisto.args()['key']
+  objStr = json.dumps(demisto.get(demisto.context(), key))
+  demisto.setContext(JSON_CONTEXT_KEY, objStr)
+  demisto.results(objStr)
+type: python
+tags:
+- Utility
+comment: Dumps a json from context key input, and returns a json object string result
+enabled: true
+args:
+- name: key
+  required: true
+  default: true
+  description: context path to the json object
+outputs:
+- contextPath: JsonStr
+  description: The JSON object as string
+scripttarget: 0

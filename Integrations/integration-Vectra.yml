@@ -744,7 +744,7 @@ script:
   - name: vec-settings
     deprecated: true
     arguments: []
-    description: he settings information includes S-series sensor and X-series configurations
+    description: The settings information includes S-series sensor and X-series configurations
       input by the administrator
   - name: vectra-settings
     arguments: []
@@ -925,4 +925,3 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
-releaseNotes: "Fix some edge case of vec-detections api call"

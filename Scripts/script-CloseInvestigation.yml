@@ -3,13 +3,15 @@ commonfields:
   version: 1
 name: CloseInvestigation
 script: |-
-  dArgs = {}
-  if demisto.get(demisto.args(), 'reason'):
-      dArgs['closeReason'] = demisto.args()['reason']
-  if demisto.get(demisto.args(), 'notes'):
-      dArgs['closeNotes'] = demisto.args()['notes']
-  demisto.results(demisto.executeCommand('closeInvestigation', dArgs))
-type: python
+  var dArgs = {};
+  if (args.reason) {
+      dArgs.closeReason = args.reason;
+  }
+  if (args.notes) {
+      dArgs.closeNotes = args.notes;
+  }
+  return executeCommand('closeInvestigation', dArgs);
+type: javascript
 tags:
 - server
 - management

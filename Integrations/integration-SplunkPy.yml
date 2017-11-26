@@ -47,6 +47,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Timezone of Splunk server in minutes e.g. for gmt +3 set +180 (set only
+    if different than Demisto server), relevent for fetch notable events only
+  name: timezone
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     import splunklib.client as client
@@ -57,6 +63,60 @@ script:
     import urllib2
     import ssl
     from StringIO import StringIO
+    import requests
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
+        """
+        Update some notable events.
+
+        Arguments:
+        sessionKey -- The session key to use
+        comment -- A description of the change or some information about the notable events
+        status -- A status (only required if you are changing the status of the event)
+        urgency -- An urgency (only required if you are changing the urgency of the event)
+        owner -- A nowner (only required if reassigning the event)
+        eventIDs -- A list of notable event IDs (must be provided if a search ID is not provided)
+        searchID -- An ID of a search. All of the events associated with this search will be modified unless a list of eventIDs are provided that limit the scope to a sub-set of the results.
+        """
+
+        # Make sure that the session ID was provided
+        if sessionKey is None:
+            raise Exception("A session key was not provided")
+
+        # Make sure that rule IDs and/or a search ID is provided
+        if eventIDs is None and searchID is None:
+            raise Exception("Either eventIDs of a searchID must be provided (or both)")
+            return False
+
+        # These the arguments to the REST handler
+        args = {}
+        args['comment'] = comment
+
+        if status is not None:
+            args['status'] = status
+
+        if urgency is not None:
+            args['urgency'] = urgency
+
+        if owner is not None:
+            args['newOwner'] = owner
+
+        # Provide the list of event IDs that you want to change:
+        if eventIDs is not None:
+            args['ruleUIDs'] = eventIDs
+
+        # If you want to manipulate the notable events returned by a search then include the search ID
+        if searchID is not None:
+            args['searchID'] = searchID
+
+        auth_header = {'Authorization': 'Splunk %s' % sessionKey}
+
+        args['output_mode'] = 'json'
+        mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header, verify=False)
+
+        return mod_notables.json()
 
     def severity_to_level(severity):
         if severity == 'informational':
@@ -165,6 +225,17 @@ script:
         ec['Splunk.Result'] = res
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
         sys.exit(0)
+    if demisto.command() == 'splunk-job-create':
+        searchquery_normal = demisto.args()['query']
+        if not searchquery_normal.startswith('search'):
+            searchquery_normal = 'search '+searchquery_normal
+        kwargs_normalsearch = {"exec_mode": "normal"}
+        job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
+
+        ec = {};
+        ec['Splunk.Job'] = job.sid
+        demisto.results({"Type": 1, "ContentsFormat": formats['text'], "Contents": "Splunk Job created with SID: "+job.sid, "EntryContext": ec})
+        sys.exit(0)
     if demisto.command() == 'splunk-results':
         jobs = service.jobs
         found = False
@@ -189,6 +260,9 @@ script:
 
         incidents = []
         t = datetime.utcnow()
+        if demisto.get(demisto.params(), 'timezone'):
+            timezone = demisto.params()['timezone']
+            t = t + timedelta(minutes=int(timezone))
         now = t.strftime("%Y-%m-%dT%H:%M:%S")
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
@@ -204,6 +278,46 @@ script:
             incidents.append(inc)
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
+        sys.exit(0)
+    if demisto.command() == 'splunk-get-indexes':
+        indexes = service.indexes
+        indexesNames = []
+        for index in indexes:
+            index_json = {'name':index.name, 'count': index["totalEventCount"]}
+            indexesNames.append(index_json)
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames), 'HumanReadable':tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+        sys.exit(0)
+    if demisto.command() == 'splunk-submit-event':
+        try:
+            index = service.indexes[demisto.args()['index']]
+        except KeyError:
+            demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
+            sys.exit(0)
+        else:
+            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            demisto.results('Event was created in Splunk index: '+r.name)
+        sys.exit(0)
+    if demisto.command() == 'splunk-notable-event-edit':
+        baseurl = 'https://'+demisto.params()['host']+':'+demisto.params()['port']+'/'
+        username=demisto.params()['authentication']['identifier']
+        password=demisto.params()['authentication']['password']
+        auth_req = requests.post(baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'}, verify=False)
+        sessionKey = auth_req.json()['sessionKey']
+        eventIDs = None
+        if demisto.get(demisto.args(), 'eventIDs'):
+            eventIDsStr = demisto.args()['eventIDs']
+            eventIDs = eventIDsStr.split(",")
+        status = None
+        if demisto.get(demisto.args(), 'status'):
+            status = int(demisto.args()['status'])
+        response_info = updateNotableEvents( sessionKey=sessionKey, baseurl=baseurl, comment=demisto.get(demisto.args(), 'comment'), status=status,
+            urgency=demisto.get(demisto.args(), 'urgency'),
+            owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
+        if not response_info['success']:
+                demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
+                    'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
+                sys.exit(0)
+        demisto.results('Splunk ES Notable events: '+response_info['message'])
         sys.exit(0)
   type: python
   commands:
@@ -236,8 +350,62 @@ script:
         unlimited
     outputs:
     - contextPath: Splunk.Result
-      description: The splunk search result, json array where each item is a splunk event
+      description: The splunk search result, json array where each item is a splunk
+        event
     description: Search Splunk for events
-  dockerimage: demisto/splunksdk
+  - name: splunk-submit-event
+    arguments:
+    - name: index
+      required: true
+      description: Splunk index to push data to, run splunk-print-indexes to get all
+        indexes
+    - name: data
+      required: true
+      default: true
+      description: The new event data to push, can be any string
+    - name: sourcetype
+      required: true
+      description: Event sourcetype
+    - name: host
+      required: true
+      description: Event host, can be 'Local' or '120.0.0.1' for example
+    description: Create new event in splunk
+  - name: splunk-get-indexes
+    arguments: []
+    description: Print all Splunk index names
+  - name: splunk-notable-event-edit
+    arguments:
+    - name: eventIDs
+      required: true
+      description: 'The notable events event_id, comma separated for a list '
+    - name: owner
+      description: Splunk user to assign to notable event
+    - name: comment
+      required: true
+      description: Comment to add to notable event
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+      description: Notable Event urgency
+    - name: status
+      description: Notable event status- 0 for Unassigned,1 for Assigned, 2 for In
+        Progress, 3 for pending, 4 for Resolved, 5 for Closed
+    description: Update an existing Notable event in Splunk ES
+    execution: true
+  - name: splunk-job-create
+    arguments:
+    - name: query
+      required: true
+      description: The splunk search language string to execute, example :"* | head
+        3"
+    outputs:
+    - contextPath: Splunk.Job
+      description: The created jon SID
+    description: 'Create new search job in Splunk '
+  dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: Adding Search capability to SplunkPy intergration

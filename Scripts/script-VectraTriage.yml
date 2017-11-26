@@ -24,8 +24,8 @@ system: true
 args: []
 scripttarget: 0
 timeout: 0s
-deperecated: true
-releaseNotes: Depercated, use vectra-triage command instead
+deprecated: true
 dependson:
   must:
   - vec-triage
+releaseNotes: "-"

@@ -4,7 +4,7 @@ import json
 import sys
 import yaml
 
-from Tests.test_utils import print_color, print_error, LOG_COLORS
+from Tests.test_utils import print_error
 
 contentLibPath = "./"
 limitedVersion = False
@@ -61,9 +61,9 @@ class Content:
 
                 if len(newStr) > 0:
                     if new_count > 1:
-                        section_body += "#### " + str(new_count) + " New " + self.getHeader() + "\n"
+                        section_body += "\n#### " + str(new_count) + " New " + self.getHeader() + "\n"
                     else:
-                        section_body += "#### New " + self.getHeader() + "\n"
+                        section_body += "\n#### New " + self.getHeader() + "\n"
                     section_body += newStr
             if len(self.modifiedStore) > 0:
                 modifiedStr = ""
@@ -79,12 +79,12 @@ class Content:
                         modified_count += 1
                 if len(modifiedStr) > 0:
                     if modified_count > 1:
-                        section_body += "##### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
+                        section_body += "\n#### " + str(modified_count) + " Improved " + self.getHeader() + "\n"
                     else:
-                        section_body += "##### Improved " + self.getHeader() + "\n"
+                        section_body += "\n#### Improved " + self.getHeader() + "\n"
                     section_body += modifiedStr
             if len(self.deletedStore) > 0:
-                section_body += "##### Removed " + self.getHeader() + "\n"
+                section_body += "\n#### Removed " + self.getHeader() + "\n"
                 for rawContent in self.deletedStore:
                     section_body += "- " + rawContent + "\n"
 
@@ -206,7 +206,6 @@ class ReputationContent(Content):
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
-            res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
@@ -277,6 +276,15 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+
+        if not "/" in fullFileName:
+            return
+
+        fileType = fullFileName.split("/")[0]
+        fileTypeMapping = releaseNoteGenerator.get(fileType)
+        if fileTypeMapping is None:
+            return
+
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
@@ -287,11 +295,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
-                if "/" in fullFileName:
-                    fileType = fullFileName.split("/")[0]
-                    fileTypeMapping = releaseNoteGenerator.get(fileType)
-                    if fileTypeMapping is not None:
-                        fileTypeMapping.add(changeType, data)
+                fileTypeMapping.add(changeType, data)
 
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00

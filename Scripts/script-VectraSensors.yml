@@ -28,5 +28,5 @@ timeout: 0s
 dependson:
   must:
   - vec-sensors
-deperecated: true
-releaseNotes: Depercated, use vectra-sensors command instead
+deprecated: true
+releaseNotes: "-"

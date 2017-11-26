@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: ExtractDomainFromURL
   version: -1
@@ -37,3 +36,4 @@ scripttarget: 0
 outputs:
 - contextPath: Domain.Name
   description: Domain name
+releaseNotes: "-"

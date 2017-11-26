@@ -465,10 +465,6 @@ script:
       description: The actual score
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the full Description
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
     description: search for IP indicator
   - name: url
     arguments:
@@ -500,10 +496,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: ""
     description: search for URL indicator
   - name: file
     arguments:
@@ -539,10 +531,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: ""
     description: search for File indicator
   - name: tc-owners
     arguments: []
@@ -674,15 +662,15 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-      related: ""
     description: Check domain reputation
   - name: tc-get-incident-associate-indicators
+    description: Get incidents that are related to a specific indicator
     arguments:
     - name: incidentId
+      description: incident ID
       required: true
       default: true
     - name: owner
+      description: filter by owner too
   dockerimage: demisto/threatconnect-sdk
+releaseNotes: "-"

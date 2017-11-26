@@ -17,7 +17,9 @@ system: true
 args:
 - name: fieldName
   required: true
+  description: Incident field name to set
   default: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

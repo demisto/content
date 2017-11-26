@@ -331,13 +331,6 @@ script:
     - contentPath: rules
       contextPath: rules
       description: DAM Rules
-    important:
-    - contextPath: alertAccessedObjects
-      description: DAM Accessed Objects
-    - contextPath: dbUser
-      description: DAM Database User
-    - contextPath: database
-      description: DAM Database
     description: Get a DAM alert from McAfee Database Activity Monitoring by alert
       ID
   - name: dam-get-latest-by-rule
@@ -374,13 +367,6 @@ script:
     - contentPath: rules
       contextPath: rules
       description: DAM Rules
-    important:
-    - contextPath: alertAccessedObjects
-      description: DAM Accessed Objects
-    - contextPath: dbUser
-      description: DAM Database User
-    - contextPath: database
-      description: DAM Database
     description: Get latest DAM alerts by rule name
   isfetch: true
 hidden: false

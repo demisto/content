@@ -33,6 +33,11 @@ script: |-
       else:
           demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Coudn't extract TaskID from upload" })
           sys.exit(0)
+
+  if taskID == "-1":
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "File type not supported" })
+      sys.exit(0)
+
   ############ Poll stage ############
   status = None
   istate = None
@@ -182,6 +187,3 @@ outputs:
   description: Vendor used to calculate the score (only in case of report type=json)
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
-important:
-- contextPath: File(val.Malicious)
-  description: Malicious files

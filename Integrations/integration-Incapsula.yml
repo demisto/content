@@ -117,10 +117,6 @@ script:
     arguments: []
     description: Use this operation to retrieve a list of all text messages that may
       be part of API responses
-  - name: incap-get-texts
-    arguments: []
-    description: Use this operation to retrieve a list of all text messages that may
-      be part of API responses
   - name: incap-list-sites
     arguments:
     - name: account_id

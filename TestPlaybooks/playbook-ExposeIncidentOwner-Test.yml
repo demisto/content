@@ -1,0 +1,168 @@
+id: ExposeIncidentOwner-Test
+version: -1
+name: ExposeIncidentOwner-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 690111d9-9322-44ed-8992-496ac7c559a8
+    type: start
+    task:
+      id: 690111d9-9322-44ed-8992-496ac7c559a8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 3b3701b8-11b1-4214-8c22-f5f2f70a7236
+    type: regular
+    task:
+      id: 3b3701b8-11b1-4214-8c22-f5f2f70a7236
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assignBy: ""
+      email: ""
+      roles: ""
+      username: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f6362785-ebac-4058-87a7-65eccc56683d
+    type: regular
+    task:
+      id: f6362785-ebac-4058-87a7-65eccc56683d
+      version: -1
+      name: ExposeIncidentOwner
+      description: Expose the incident owner into IncidentOwner context key
+      scriptName: ExposeIncidentOwner
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    results:
+    - IncidentOwner
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 02fb261a-c97d-4268-8053-d09970121237
+    type: condition
+    task:
+      id: 02fb261a-c97d-4268-8053-d09970121237
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "4"
+    scriptarguments:
+      left: ${incident.owner}
+      right: ${IncidentOwner.username}
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 745a7918-008b-47b4-8831-cbc632feac07
+    type: regular
+    task:
+      id: 745a7918-008b-47b4-8831-cbc632feac07
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 3a4c52f3-d72a-4c93-80b9-53b8362457e6
+    type: regular
+    task:
+      id: 3a4c52f3-d72a-4c93-80b9-53b8362457e6
+      version: -1
+      name: Error
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

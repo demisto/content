@@ -135,8 +135,8 @@ script:
 
     var getReport = function() {
         uriSuffix = jobOrTaskId();
-        if ((args.type) && (args.type === 'json')){
-            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+        if ((args.type) && ( (args.type === 'table') || (args.type === 'json') )){
+            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json','GET', getHeaders());
             var resString = JSON.stringify(res);
             var summary = res.Summary;
             summary.VerdictDescription = summary.Verdict.Description;
@@ -151,11 +151,26 @@ script:
             };
         }
         if (args.type === 'pdf'){
+            if (!getSession().isAdmin) {
+                return 'No permission to download PDF'
+            }
             var filename = args.jobId;
             if ((!filename) || (filename.length === 0)) {
                 filename = args.taskId;
             }
             filename = filename + '.pdf';
+            return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET',getHeaders(),filename);
+        }
+        if (args.type === 'sample') {
+            var permissionCheck = sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+            if (permissionCheck.substring(11,16) === 'false') {
+                return 'No permission to download sample'
+            }
+            var filename = args.jobId;
+            if ((!filename) || (filename.length === 0)) {
+                filename = args.taskId;
+            }
+            filename = filename + '.zip';
             return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET',getHeaders(),filename);
         }
         return sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
@@ -286,7 +301,7 @@ script:
 
     var uploadFile = function(body,fileParam) {
         uri = '/php/fileupload.php'
-        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name') 
+        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name')
         filename = undefined
         if (filenameDq && filenameDq[0]) {
             filename = filenameDq[0]
@@ -495,7 +510,7 @@ script:
       - txt
       - xml
       - zip
-      - json
+      - table
       - ioc
       - stix
       - pdf
@@ -532,9 +547,6 @@ script:
       description: Vendor used to calculate the score (only in case of report type=json)
     - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious files
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
@@ -552,3 +564,4 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
+releaseNotes: "Bug fixes regarding get-reports (permissions to download PDF and samples and types of files)"

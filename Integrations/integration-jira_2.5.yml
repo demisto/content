@@ -354,7 +354,7 @@ script:
             var cookies = getCookies();
             var url = params.url+'rest/api/2/issue/';
             var issue = {};
-            if (args.issueJson && args.issueJson.length > 0 ){
+            if (args.issueJson){
                 issue = JSON.parse(args.issueJson);
             }
             if (!issue.fields) {
@@ -644,3 +644,4 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
+releaseNotes: "-"

@@ -72,10 +72,6 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: DBotScore.Score
   description: The actual score
-important:
-- contextPath: File(val.Malicious)
-  description: Malicious Files
-  related: File
 scripttarget: 0
 dependson:
   must:
