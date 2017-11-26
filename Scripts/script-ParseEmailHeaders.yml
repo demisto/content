@@ -1,6 +1,6 @@
 commonfields:
-  id: ParseEmailHeaders
-  version: 34
+  id: ParseEmailHeader
+  version: -1
 name: ParseEmailHeaders
 script: |-
   from email.parser import HeaderParser
@@ -29,7 +29,7 @@ script: |-
 
           demisto.results({"ContentsFormat": formats["json"], "Type": entryTypes["note"], "Contents": h.keys(), "HumanReadable": md, "EntryContext": ec})
       else:
-          demisto.results("This file is not exists or it is not eml file type\n");
+          demisto.results("Couldn't find EML file for entry ID: " + demisto.args()['entryId'] + "\n");
 type: python
 tags:
 - email
