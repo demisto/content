@@ -12,6 +12,9 @@ script: |-
   var interval = ('interval' in args) ? parseInt(args.interval) : 10;
 
   var search_args = {};
+  if ('query_expression' in args) {
+      search_args.query_expression = args.query_expression;
+  }
   if ('fields' in args) {
       search_args.fields = args.fields;
   }
@@ -24,7 +27,7 @@ script: |-
   }
 
   //submit query, retrive  search_id
-  var query_res = executeCommand("qradar-searches", args);
+  var query_res = executeCommand("qradar-searches", search_args);
 
   if (isError(query_res[0])) {
       return query_res;

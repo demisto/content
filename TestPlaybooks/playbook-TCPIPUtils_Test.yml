@@ -1,0 +1,145 @@
+id: TCPUtils-Test
+version: 15
+name: Tcpiputlis Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
+    type: start
+    task:
+      id: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": -140
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e0a74686-e777-42ef-8233-d24b739a2afa
+    type: regular
+    task:
+      id: e0a74686-e777-42ef-8233-d24b739a2afa
+      version: -1
+      name: ip
+      description: get information for ip
+      script: TCPIPUtils|||ip
+      type: regular
+      iscommand: true
+      brand: TCPIPUtils
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    scriptarguments:
+      ip: tcpiputils.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c1402d0a-75cd-458e-895e-5f8f71dfa863
+    type: regular
+    task:
+      id: c1402d0a-75cd-458e-895e-5f8f71dfa863
+      version: -1
+      name: VerifyIPOutput
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: '"AS13335"'
+      extend-context: ""
+      field1: IP.ASN
+      field2: IP.Geo.Country
+      field3: IP.Address
+      field4: ""
+      fields: ""
+      path: IP.ASN
+      value: ' ${IP.ASN} ${IP.Address} ${IP.Geo.Country}${IP.Geo.Description}'
+      value1: ${IP.ASN}
+      value2: ${IP.Geo.Country}
+      value3: ${IP.Address}
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 477
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 04c5abc5-d6e2-4270-841d-9b933c325064
+    type: regular
+    task:
+      id: 04c5abc5-d6e2-4270-841d-9b933c325064
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: Address,WHOIS,ASN
+      path: IP
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 477
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 0bfe087f-2db5-4fe5-8558-026bec69711c
+    type: regular
+    task:
+      id: 0bfe087f-2db5-4fe5-8558-026bec69711c
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 27
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 712,
+        "width": 1390,
+        "x": 120,
+        "y": -140
+      }
+    }
+  }
+inputs: []

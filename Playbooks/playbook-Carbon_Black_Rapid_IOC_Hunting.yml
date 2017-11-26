@@ -13,6 +13,7 @@ tasks:
     task:
       id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
       version: -1
+      description: "Playbook start point"
       name: ""
       iscommand: false
       brand: ""
@@ -88,6 +89,7 @@ tasks:
     task:
       id: 189b725f-2b0a-42cc-8148-95395f810983
       version: -1
+      description: "Done"
       name: Done
       type: title
       iscommand: false
@@ -142,3 +144,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"

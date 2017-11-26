@@ -40,3 +40,5 @@ dependson:
   must:
   - file
 timeout: 0s
+deprecated: true
+releaseNotes: "-"

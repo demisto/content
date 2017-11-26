@@ -136,7 +136,10 @@ script:
         var hash = args.md5 || args.hash || args.file;
         if(!hash)
             throw 'Missing md5/hash argument.';
-
+        if (hash.length === 40) {
+            // SHA1 not supported.
+            return 'No results';
+        }
         var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
         var resXML = sendRequest(url, bodyXML, headers);
         if(!resXML){
@@ -248,9 +251,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
     description: Retrieve results for a file hash using WildFire
   - name: file
     description: Retrieve results for a file hash using WildFire
@@ -280,12 +280,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
   - name: wildfire-upload
     arguments:
     - name: upload
       description: ID of the entry containing the file to upload
     description: Upload file to WildFire for analysis.
 hidden: false
+releaseNotes: "-"

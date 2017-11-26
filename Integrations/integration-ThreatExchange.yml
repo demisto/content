@@ -93,12 +93,15 @@ script:
         }
         var res = doReq('GET', 'malware_analyses', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.file] = [];
         var md = tblToMd('ThreatExchange Hash Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -135,12 +138,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: ip, Type: 'ip', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.ip] = [];
         var md = tblToMd('ThreatExchange IP Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -173,12 +179,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: url, Type: 'url', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + url + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.url] = [];
         var md = tblToMd('ThreatExchange URL Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -211,12 +220,15 @@ script:
         }
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
-        if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n'};
-        }
         var ec = {};
         ec.DBotScore = [];
+        if (data.length === 0) {
+            ec.DBotScore.push({Indicator: domain, Type: 'domain', Vendor: 'ThreatExchange', Score: 0});
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n',
+                EntryContext: ec
+            };
+        }
         ec[outputPaths.domain] = [];
         var md = tblToMd('ThreatExchange Domain Reputation', data, argToList(args.headers));
         for (var i=0; i<data.length; i++) {
@@ -329,10 +341,6 @@ script:
       description: For malicious files, the reason for the vendor to make the decision
     - contextPath: File.Malicious.Score
       description: For malicious files, the score from the vendor
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: ""
     description: Check file reputation of the given hash
   - name: ip
     arguments:
@@ -360,10 +368,6 @@ script:
       description: The actual score
     - contextPath: IP.Malicious.Score
       description: For malicious IPs, the score from the vendor
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
     description: Check IP Reputation
   - name: url
     arguments:
@@ -377,8 +381,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -396,10 +401,6 @@ script:
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: ""
     description: Check URL Reputation
   - name: domain
     arguments:
@@ -414,8 +415,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
@@ -431,10 +433,6 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-      related: ""
     description: Check domain reputation
   - name: threatexchange-query
     arguments:
@@ -451,8 +449,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     description: ' Searching for subjective opinions on indicators of compromise stored
       in ThreatExchange'
   - name: threatexchange-members
@@ -462,3 +461,4 @@ script:
       address. You can set this address, if desired, under the settings panel for
       your application
 hidden: false
+releaseNotes: "-"

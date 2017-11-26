@@ -95,5 +95,5 @@ timeout: 0s
 dependson:
   must:
   - vec-detections
-deperecated: true
-releaseNotes: Depercated, use vectra-detections command instead
+deprecated: true
+releaseNotes: "-"

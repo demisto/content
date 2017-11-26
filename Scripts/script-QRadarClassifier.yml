@@ -2,6 +2,7 @@ commonfields:
   id: QRadarClassifier
   version: -1
 name: QRadarClassifier
+deprecated: true
 script: |
   var QRADAR_CATEGORIES = {
       'Recon' : 'Reconnaissance',

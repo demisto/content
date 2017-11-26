@@ -62,7 +62,7 @@ script:
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
-            throw 'No content recieved.';
+            throw 'No content received.';
         }
         var obj;
         try {
@@ -393,6 +393,41 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
     };
 
+    var doReport = function() {
+        var result = http(
+            serverUrl + 'reports/entities/report-files/v1' + encodeToURLQuery({ids: args.id}),
+            {
+                Headers: {
+                    'X-CSIX-CUSTID': [params.id],
+                    'X-CSIX-CUSTKEY': [params.key],
+                    'Accept': ['application/pdf']
+                },
+                Method: 'GET'
+            },
+            params.insecure,
+            params.useproxy
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to retrieve PDF, status code: ' + result.StatusCode + ', body: ' + result.Body;
+        }
+        // Try to extract the filename
+        var disposition = result.Headers['Content-Disposition'];
+        var filename = 'report-' + args.id + '.pdf';
+        if (disposition) {
+            disposition = disposition[0];
+            if (disposition) {
+                var parts = disposition.split(';');
+                if (parts && parts.length > 1) {
+                    var name = parts[1].split('=');
+                    if (name && name.length > 1) {
+                        filename = name[1].trim();
+                    }
+                }
+            }
+        }
+        return {Type: entryTypes.entryInfoFile, FileID: saveFile(result.Body), File: filename, Contents: filename};
+    }
+
     switch (command) {
         case 'test-module':
             doReq('GET', 'actors/queries/actors/v1', {q: 'panda'});
@@ -411,6 +446,8 @@ script:
             return doIndicators();
         case 'cs-reports':
             return doReports();
+        case 'cs-report-pdf':
+            return doReport();
         default:
             throw 'Unknown command - ' + command;
     }
@@ -443,9 +480,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
     description: Check file reputation
   - name: url
     deprecated: false
@@ -470,9 +504,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
     description: Check the given URL reputation
   - name: domain
     deprecated: false
@@ -497,9 +528,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
     description: Check the given URL reputation
   - name: ip
     deprecated: false
@@ -524,9 +552,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
     description: Check IP reputation
   - name: cs-actors
     deprecated: false
@@ -690,15 +715,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-    - contextPath: Domain(val.Malicious)
-      description: Malicious Domains
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
     description: Search known indicators based on the given parameters
   - name: cs-reports
     deprecated: false
@@ -771,5 +787,15 @@ script:
         type, created_date, last_modified_date'
     description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
       publications.
+  - name: cs-report-pdf
+    deprecated: false
+    arguments:
+    - name: id
+      required: true
+      deprecated: false
+      default: true
+      description: The ID of the report to retrieve
+    description: Retrieve the Falcon Intel Report PDF
 hidden: false
 fromversion: 2.5.0
+releaseNotes: "-"

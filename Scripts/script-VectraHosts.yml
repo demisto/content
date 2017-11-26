@@ -66,5 +66,5 @@ timeout: 0s
 dependson:
   must:
   - vec-hosts
-deperecated: true
-releaseNotes: Depercated, use vectra-hosts command instead
+deprecated: true
+releaseNotes: "-"

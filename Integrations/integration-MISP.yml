@@ -443,9 +443,11 @@ script:
   type: javascript
   commands:
   - name: internal-misp-upload-sample
+    description: Internal function, do not use it directly
     arguments:
     - name: filename
       required: true
+      description: File name
     - name: fileContent
       required: true
       description: File Content in Base64
@@ -561,8 +563,10 @@ script:
       description: RelatedEvent
     description: Search for events in misp
   - name: file
+    description: Check file in misp
     arguments:
     - name: file
+      description: file
       required: true
     outputs:
     - contextPath: File.MD5
@@ -583,13 +587,10 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: File(val.Malicious)
-      description: Malicious Files
-      related: ""
   - name: url
     arguments:
     - name: url
+      description: Check URL in misp
       required: true
     outputs:
     - contextPath: URL.Data
@@ -606,12 +607,9 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: URL(val.Malicious)
-      description: Malicious URLs
-      related: ""
     description: Check if IP is in MISP events
   - name: ip
+    description: Check ip in misp
     arguments:
     - name: ip
       required: true
@@ -631,10 +629,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    important:
-    - contextPath: IP(val.Malicious)
-      description: Malicious IPs
-      related: ""
   - name: internal-misp-download-sample
     arguments:
     - name: hash
@@ -652,3 +646,4 @@ script:
         for the hash provided above.
     description: Download malware sample by hash
 hidden: false
+releaseNotes: "-"

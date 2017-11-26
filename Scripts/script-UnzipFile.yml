@@ -5,7 +5,6 @@ name: UnzipFile
 script: |-
   import zipfile
   import os
-  import subprocess
 
   filePath = None
   fileEntryID = ''
@@ -75,16 +74,14 @@ script: |-
 
   results = []
   for filename in filenames:
-      uniqueName = demisto.uniqueFile()
-      subprocess.call(['mv', filename, demisto.investigation()['id'] + '_' + uniqueName])
-      results.append({'ContentsFormat': 'text', 'Type': entryTypes['file'], 'File': filename, 'FileID': uniqueName, 'Contents': ''})
+      demisto.results(file_result_existing_file(filename))
 
   results.append(
       {
           'Type': entryTypes['note'],
           'ContentsFormat': formats['json'],
           'Contents': { 'extractedFiles': filenames },
-          'EntryContext': { 'ExtractedFiles': filenames },
+          'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unzipped': True },
           'ReadableContentsFormat' : formats['markdown'],
           'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
       })
@@ -94,9 +91,12 @@ type: python
 tags:
 - Utility
 - file
+comment: Unzip a file using fileName or entryID to specify a file. Files unzipped
+  will be pushed to the war room and names will be pushed to the context.
 args:
 - name: fileName
   default: true
+  description: output filename
   deprecated: true
 - name: password
   secret: true
@@ -104,9 +104,10 @@ args:
 - name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
+  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
   deprecated: true
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
-
+releaseNotes: "-"

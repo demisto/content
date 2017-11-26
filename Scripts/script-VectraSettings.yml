@@ -28,5 +28,5 @@ timeout: 0s
 dependson:
   must:
   - vec-settings
-deperecated: true
-releaseNotes: Depercated, use vectra-settings command instead
+deprecated: true
+releaseNotes: "-"

@@ -288,6 +288,7 @@ script:
                 case 'domain':
                     malInfo['Name'] = args[argName];
                     outputPath = outputPaths.domain;
+                    dbotScoreType = 'domain';
                     break;
                 case 'url':
                     malInfo['Data'] = args[argName];
@@ -301,6 +302,9 @@ script:
                 default:
                     dbotScoreType = 'hash';
                     malInfo[argName.toUpperCase()] = args[argName];
+            }
+            if (raw === 'Not found') {
+                return raw;
             }
             if (dq(raw, 'pulse_info.count') > 0) {
                 dbotScore = dq(raw, 'pulse_info.count');
@@ -367,7 +371,7 @@ script:
     - contextPath: Domain.AlienVaultOTX.Whois
       description: Whois URL for domain data
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator checked
     - contextPath: DBotScore.Score
       description: The score from AlienVault
     - contextPath: DBotScore.Type
@@ -478,8 +482,10 @@ script:
       description: Pulse description
     description: Search for pulses in AlienVault OTX
   - name: alienvault-get-pulse-details
+    description: Get pulse details (pulse are alian vault's entities)
     arguments:
     - name: pulse-id
+      description: ID of desired pules
       required: true
     outputs:
     - contextPath: AlienVault.Pulses.Description
@@ -508,3 +514,5 @@ script:
       description: 'URL '
     description: Query url in AlienVault OTX
 hidden: false
+toversion: 3.0.1
+releaseNotes: "-"

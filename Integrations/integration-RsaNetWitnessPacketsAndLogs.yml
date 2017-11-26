@@ -1903,11 +1903,15 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
+      description: "The id of the first session"
     - name: startMeta
       required: true
+      description: ""
     - name: maxSessions
       required: true
+      description: "Count of sessions to return"
     - name: query
+      description: "Query used to query the sessions"
     description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
   - name: nw-concentrator-status
     arguments:
@@ -2072,11 +2076,15 @@ For regular expressions, change “keyword” to “regex”
         validated
     - name: startSession
       required: true
+      description: "The id of the first session"
     - name: startMeta
       required: true
+      description: ""
     - name: maxSessions
       required: true
+      description: "Count of sessions to return"
     - name: query
+      description: "Query used to query the sessions"
     description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
   - name: nw-broker-status
     arguments:
@@ -2136,3 +2144,4 @@ For regular expressions, change “keyword” to “regex”
       description: <uint32, optional> What types of nodes to return information about,
         default is zero (all nodes)
     description: 'Fires notifications when the node changes security.roles: everyone'
+releaseNotes: "-"

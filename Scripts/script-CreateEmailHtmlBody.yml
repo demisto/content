@@ -1,0 +1,89 @@
+commonfields:
+  id: CreateEmailHtmlBody
+  version: -1
+name: CreateEmailHtmlBody
+script: |
+  //replace all occurences of textToReplace with replaceWith string
+  String.prototype.replaceAll = function(textToReplace,replaceWith) {
+      return this.split(textToReplace).join(replaceWith);
+  };
+
+  // get a specific label from incident labels
+  var getLabel = function(incident,path) {
+      label = path.split('.')[2];
+      for (var i=0;i<incident.labels.length;i++) {
+          if (incident.labels[i].type==label) {
+              return incident.labels[i].value;
+          }
+      }
+      return null;
+  };
+
+  var res = executeCommand("getList", {"listName":args.listTemplate});
+
+  if (res[0].Type == entryTypes.error) {
+      return res;
+  }
+
+  // Finding all placeholders and creating a map with values
+  var html = res[0].Contents;
+  var reg = /\${(.+?)}/g;
+  var map = {};
+  while (found = reg.exec(html)) {
+      var path = found[1];
+
+      if (path.indexOf('incident.labels.') === 0) {
+          map[path] = getLabel(incidents[0], path);
+      } else if (path.indexOf('incident.') === 0) {
+          map[path] = dq({'incident': incidents[0]}, path);
+      } else if (path.indexOf('object.') === 0) {
+          var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
+          map[path] = dq({'object': obj}, path);
+      } else {
+          map[path] = dq(invContext, path);
+      }
+      if (!map[path]) {
+          map[path]=false;
+      }
+  }
+
+  // replacing all placeholders with values
+  for (var path in map) {
+      // if value found replace. Otherwise will leave placeholder
+      if (map[path]) {
+          html = html.replaceAll('${'+path+'}',map[path]);
+      }
+  }
+
+  setContext(args.key,html);
+  return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: {htmlBody:html}, HumanReadable: 'htmlBody set to context key ' + args.key } ;
+type: javascript
+tags:
+- email
+- communication
+comment: |-
+  This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+  Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+  Available placeholders for example:
+  - ${incident.labels.Email/from}
+  - ${incident.name}
+  - ${object.value}
+  See incident Context Data menu for available placeholders
+
+  Note: Sending emails require an active  Mail Sender integration instance.
+enabled: true
+args:
+- name: listTemplate
+  required: true
+  default: true
+  description: The list where the template is stored
+- name: key
+  required: true
+  description: Context key to store the HTML body
+- name: object
+  description: Values object provided as stringified JSON
+  isArray: true
+outputs:
+- contextPath: htmlBody
+  description: HTML Body
+scripttarget: 0
