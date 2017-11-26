@@ -44,14 +44,14 @@ script: |+
   # Overview
   doc += 'Overview:\n'
   if 'overview' in demisto.args():
-      doc += demisto.args()['overview']
+      doc += demisto.args()['overview'] + '\n'
 
   #Setup integration to work with Demisto
 
-  doc += '\nTo set up ' + name + ' on Demisto'
+  doc += '\nTo set up ' + name + ' on Demisto:'
 
   if 'setupOnIntegration' in demisto.args():
-      doc += addLines(demisto.args()['setupOnIntegration'])
+      doc += addLines(demisto.args()['setupOnIntegration']) + '\n'
 
   #Setup integration on Demisto
 
@@ -61,14 +61,14 @@ script: |+
   You should configure the following settings:\n1.Name: a textual name for the integration instance."
 
   if 'setupOnDemisto' in demisto.args():
-      doc += addLines(demisto.args()['setupOnDemisto'])
+      doc += addLines(demisto.args()['setupOnDemisto']) + '\n'
 
   # Top Use-cases
 
   doc += 'Top Use-cases:'
 
   if 'useCases' in demisto.args():
-      doc +=addLines(demisto.args()['useCases'])
+      doc +=addLines(demisto.args()['useCases']) + '\n'
 
   # Commands
 
@@ -93,6 +93,7 @@ script: |+
           doc += '-\n'
       #Raw output:
       doc += 'Raw output:\n'
+      doc += '\n'
 
   # Troubleshooting
   doc += 'Troubleshooting:\n'
