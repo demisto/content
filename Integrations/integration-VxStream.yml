@@ -163,8 +163,12 @@ script:
         }
 
         var response = res.response;
+        return response;
+
+    }
+
+    function tableFromEnvironments(response) {
         var environments = response.backend.global_environment;
-        // create table from environments
         var tableMapper = {
            VMs_busy: 'busy VMS',
            VMs_total: 'total VMS',
@@ -288,7 +292,25 @@ script:
         return res;
     }
 
-    function detonateFile(entryId, environmentId, delay, timeout) {
+    function detonateFile(entryId, delay, timeout) {
+
+        var environmentId;
+        if (args.environmentID) {
+            environmentId = args.environmentID;
+        } else {
+            var environments = getEnvironments().backend.global_environment;
+            for (var i=0; i<environments.length; i++) {
+                if (environments[i]['ID'] === 100) {
+                    environmentId = 100;
+                    break;
+                 } else if (environments[i]['architecture'] === 'WINDOWS') {
+                    environmentId = environments[i]['ID'];
+                    break;
+                    } else {
+                        throw 'Please enter valid environment ID';
+                }
+            }
+        }
 
         var hash = submitFile(entryId, environmentId).substring(10);
 
@@ -319,10 +341,11 @@ script:
             }
             return entry && entry.Contents;
         case 'vx-scan':
-            var res = scan(args.file)
+            var res = scan(args.file);
             return scanToEntry(res);
         case 'vx-get-environments':
-            return getEnvironments();
+            var response = getEnvironments();
+            return tableFromEnvironments(response);
         case 'vx-submit-sample':
             var hash = submitFile(args.entryId, args.environmentID);
             return submitFileMsg(hash);
@@ -331,7 +354,7 @@ script:
         case 'vx-result':
             return vxResult(args.file, args.environmentId);
         case 'vx-detonate-file':
-            return detonateFile(args.entryId, args.environmentID, args.delay, args.timeout);
+            return detonateFile(args.entryId, args.delay, args.timeout);
     }
 
   type: javascript
@@ -465,8 +488,8 @@ script:
       required: true
       description: War-room entry ID of sample file
     - name: environmentID
-      required: true
-      description: 'environment ID to submit file to(get all via vx-get-environments) '
+      description: environment ID to submit file to(get all via vx-get-environments).
+        Default is 100, or other WINDOWS ID
     - name: delay
       description: Delay wait time between calls (in seconds)
       defaultValue: "3"
@@ -475,3 +498,4 @@ script:
       defaultValue: "60"
     description: Detonate file through VxSteam
 releaseNotes: 'Adding file detonation'
+
