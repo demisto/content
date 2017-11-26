@@ -1,213 +1,169 @@
-id: playbook15
+id: Tanium Demo Playbook
 version: -1
-system: true
-fromversion: 2.5.0
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
+fromversion: 2.5.0
+releaseNotes: Updated playbook with new commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5cb45209-143e-48db-8c6c-50d7bbf35ac4
+    taskid: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
     type: start
     task:
-      id: 5cb45209-143e-48db-8c6c-50d7bbf35ac4
+      description: ""
+      id: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
       version: -1
-      name: start_task
-      type: start
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 130cbbb8-b90a-4e4c-8027-35139c982f9c
-    type: title
-    task:
-      id: 130cbbb8-b90a-4e4c-8027-35139c982f9c
-      version: -1
-      name: Querying Tanium
-      type: section
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
-    taskid: db37ccb1-1420-4fe2-8d30-b4ff9a75068d
-    type: regular
-    task:
-      id: db37ccb1-1420-4fe2-8d30-b4ff9a75068d
-      version: -1
-      name: Query Tanium for a summary of Tanium client versions currently deployed
-        in our network
-      scriptName: TaniumAskQuestion
-      type: standard
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      id: ""
-      name: Tanium Client Versions
-      pollfreq: ""
-      timeout: "60"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 702c2a70-1d8d-4efb-8feb-1c0d7f25df5e
-    type: regular
-    task:
-      id: 702c2a70-1d8d-4efb-8feb-1c0d7f25df5e
-      version: -1
-      name: Ask Tanium to show us all running applications
-      scriptName: TaniumAskQuestion
-      type: standard
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      id: ""
-      name: Running Applications
-      pollfreq: ""
-      timeout: "60"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 5d3927fb-d5d7-440c-8265-ce5779c75790
-    type: regular
-    task:
-      id: 5d3927fb-d5d7-440c-8265-ce5779c75790
-      version: -1
-      name: Run a complex Tanium query to find all machines with processes starting
-        with "EC"
-      scriptName: TaniumFindRunningProcesses
-      type: standard
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      processNamePrefix: EC
-      timeout: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 8d9f43c9-e4f9-452a-8519-e8a85867f295
-    type: title
-    task:
-      id: 8d9f43c9-e4f9-452a-8519-e8a85867f295
-      version: -1
-      name: Deploying Actions
-      type: section
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
-        }
-      }
-  "6":
-    id: "6"
-    taskid: a572c5ab-274d-4f90-8b9e-916a7da59a56
-    type: regular
-    task:
-      id: a572c5ab-274d-4f90-8b9e-916a7da59a56
-      version: -1
-      name: Deploy a Tanium action to enable USB write protect for all hosts
-      scriptName: TaniumDeployAction
-      type: standard
+      name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "7"
-    scriptarguments:
-      comment: Turn on USB write protect for all hosts
-      packageID: ""
-      packageName: USB Write Protect - Set to On
-      parameters: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1010
+          "x": 450,
+          "y": 54
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3533d2be-a90d-4f93-8630-c169d790254d
+    type: regular
+    task:
+      id: 3533d2be-a90d-4f93-8630-c169d790254d
+      version: -1
+      name: Ask questions
+      description: Ask the server to parse the question text and choose the first
+        parsed result as the question to run
+      script: Tanium|||tn-ask-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      question: ${Tanium.SavedQuestions.query_text}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 669
+        }
+      }
+  "3":
+    id: "3"
+    taskid: d7609125-e21f-4871-8d72-518017ea0b93
+    type: regular
+    task:
+      id: d7609125-e21f-4871-8d72-518017ea0b93
+      version: -1
+      name: Run a complex Tanium query to find all machines with processes starting
+        with "EC"
+      description: Ask the server to parse the question text and choose the first
+        parsed result as the question to run
+      script: Tanium|||tn-ask-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      question: Get all machines with processes starting with "EC"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6553c9ee-e178-4084-8718-5e2fdc549fed
+    type: regular
+    task:
+      id: 6553c9ee-e178-4084-8718-5e2fdc549fed
+      version: -1
+      name: Get saved question - Tanium Client Versions
+      description: Get a saved question by name or id
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id: ""
+      name: Tanium Client Versions
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 338
+        }
+      }
+  "6":
+    id: "6"
+    taskid: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
+    type: regular
+    task:
+      id: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
+      version: -1
+      name: Get saved question - Running Applications
+      description: Get a saved question by name or id
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      id: ""
+      name: Running Applications
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 508
         }
       }
   "7":
     id: "7"
-    taskid: 68e7ad73-0b6d-4311-8155-8893b06fe849
+    taskid: 474a6415-eb35-4137-8977-c60db94ac520
     type: title
     task:
-      id: 68e7ad73-0b6d-4311-8155-8893b06fe849
+      description: ""
+      id: 474a6415-eb35-4137-8977-c60db94ac520
       version: -1
-      name: Actions pending approval - Viewing and approving
-      type: section
+      name: Querying Tanium
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "4"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": 450,
+          "y": 198
         }
       }
   "8":
     id: "8"
-    taskid: 95001a71-2758-4667-8b59-e162c3c42893
-    type: regular
+    taskid: c6202d75-3923-44df-86e6-a685195739c8
+    type: title
     task:
-      id: 95001a71-2758-4667-8b59-e162c3c42893
+      description: ""
+      id: c6202d75-3923-44df-86e6-a685195739c8
       version: -1
-      name: Show Tanium actions that are currently pending approval
-      scriptName: TaniumShowPendingActions
-      type: standard
+      name: Deploying Actions
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
@@ -216,29 +172,81 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1330
+          "x": 450,
+          "y": 998
         }
       }
   "9":
     id: "9"
-    taskid: 6fb88307-6cc9-4ae7-880b-9c92a5d4ff5f
+    taskid: b05fd6d0-3e6d-40a9-81b3-58888214b896
     type: regular
     task:
-      id: 6fb88307-6cc9-4ae7-880b-9c92a5d4ff5f
+      id: b05fd6d0-3e6d-40a9-81b3-58888214b896
       version: -1
-      name: Approve all pending "USB Write On" Tanium actions
-      scriptName: TaniumApprovePendingActions
-      type: standard
-      iscommand: false
-      brand: ""
+      name: Deploy a Tanium action to enable USB write protect for all hosts
+      description: Deploy a package and get the results back
+      script: Tanium|||tn-deploy-package
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
-      approvedpackages: USB Write Protect - Set to On
+      action_filters: ""
+      action_options: ""
+      get_results: ""
+      package: USB Write Protect - Set to On
+      package_args: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1505
+          "x": 450,
+          "y": 1152
+        }
+      }
+  "10":
+    id: "10"
+    taskid: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
+    type: title
+    task:
+      description: ""
+      id: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
+      version: -1
+      name: Actions pending approval - Viewing and approving
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1337
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
+    type: regular
+    task:
+      id: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
+      version: -1
+      name: Approve pending "USB Write On" Tanium action
+      description: Approve saved actions
+      script: Tanium|||tn-approve-pending-action
+      type: regular
+      iscommand: true
+      brand: Tanium
+    scriptarguments:
+      action_id: ${Tanium.SavedActions.Id}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1517
         }
       }
 view: |-
@@ -246,10 +254,11 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1550,
+        "height": 1558,
         "width": 380,
-        "x": 50,
-        "y": 50
+        "x": 450,
+        "y": 54
       }
     }
   }
+inputs: []
