@@ -1,0 +1,368 @@
+id: ServiceNow-Test
+version: -1
+name: ServiceNow-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d26af84d-ea44-468d-87ef-61bd481a60b7
+    type: start
+    task:
+      id: d26af84d-ea44-468d-87ef-61bd481a60b7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 54edc00e-4f5b-44ed-898b-979858da724a
+    type: regular
+    task:
+      id: 54edc00e-4f5b-44ed-898b-979858da724a
+      version: -1
+      name: Create Ticket
+      script: ServiceNow|||servicenow-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: some comments
+      comments_and_work_notes: ""
+      company: my company
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      custom_fields: ""
+      delivery_plan: ""
+      description: this is description
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      extend-context: ticketID=sys_id
+      follow_up: ""
+      group_list: ""
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: this is short description
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      template: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b3b877e0-faaf-4914-81b8-a4430f931085
+    type: regular
+    task:
+      id: b3b877e0-faaf-4914-81b8-a4430f931085
+      version: -1
+      name: Update ticket
+      script: ServiceNow|||servicenow-update
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      custom_fields: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      follow_up: ""
+      group_list: ""
+      id: ${ticketID}
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: ${inputs.newShortDescription}
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: f60820ca-b54c-453a-82bf-b6235ddd5243
+    type: regular
+    task:
+      id: f60820ca-b54c-453a-82bf-b6235ddd5243
+      version: -1
+      name: Get ticket details
+      script: ServiceNow|||servicenow-get
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      active: ""
+      activity_due: ""
+      additional_assignee_list: ""
+      approval_history: ""
+      approval_set: ""
+      assigned_to: ""
+      assignment_group: ""
+      business_duration: ""
+      business_service: ""
+      business_stc: ""
+      calendar_duration: ""
+      caller_id: ""
+      category: ""
+      caused_by: ""
+      close_code: ""
+      close_notes: ""
+      closed_at: ""
+      closed_by: ""
+      cmdb_ci: ""
+      comment: ""
+      comments: ""
+      comments_and_work_notes: ""
+      company: ""
+      contact_type: ""
+      correlation_display: ""
+      correlation_id: ""
+      custom_fields: ""
+      delivery_plan: ""
+      description: ""
+      display: ""
+      due_date: ""
+      escalation: ""
+      expected_start: ""
+      extend-context: shortDescription=short_description
+      file_id: ""
+      file_name: ""
+      follow_up: ""
+      group_list: ""
+      id: ${ticketID}
+      impact: ""
+      incident_state: ""
+      knowledge: ""
+      limit: ""
+      link: ""
+      location: ""
+      made_sla: ""
+      notify: ""
+      number: ""
+      order: ""
+      parent: ""
+      parent_incident: ""
+      post-as-comment: ""
+      priority: ""
+      problem_id: ""
+      reassignment_count: ""
+      reopen_count: ""
+      resolved_at: ""
+      resolved_by: ""
+      rfc: ""
+      severity: ""
+      short_description: ""
+      sla_due: ""
+      subcategory: ""
+      sys_updated_by: ""
+      sys_updated_on: ""
+      sysparm_query: ""
+      template: ""
+      text: ""
+      ticket_type: ""
+      urgency: ""
+      user_input: ""
+      watch_list: ""
+      work_end: ""
+      work_notes: ""
+      work_notes_list: ""
+      work_start: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4a8784b4-6d99-4a2c-8082-cc722e9e0ec8
+    type: condition
+    task:
+      id: 4a8784b4-6d99-4a2c-8082-cc722e9e0ec8
+      version: -1
+      name: Check if update worked
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      left: ${inputs.newShortDescription}
+      right: ${shortDescription}
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 388c2f92-c87b-4527-89b5-6c4e7411547a
+    type: regular
+    task:
+      id: 388c2f92-c87b-4527-89b5-6c4e7411547a
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: newShortDescription
+  value: this is a new short description
+  description: ""

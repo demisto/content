@@ -20,7 +20,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "True"
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Do not validate server certificate (insecure)
@@ -83,13 +83,13 @@ script:
         if (!level) {
             level=0;
         }
-        if (!value || value == '') {
+        if (!value || value === '') {
             return '<br>';
         } else if (typeof value == 'string') {
             return value.replace(/(\n)/gm," ") + '<br>';
         } else {
             var ret = (level>0) ? identLevel(level-1) + '{ <br>' : '';
-            for (key in value) {
+            for (var key in value) {
                 ret += identLevel(level) + key + ': ' + flattenValue(value[key],level+1);
             }
             return (level>0) ? ret + identLevel(level-1) + '}<br>' : ret;
@@ -116,7 +116,7 @@ script:
         }
 
         if(cusFields){
-            for (fd in cusFields){
+            for (var fd in cusFields){
                 body["u_"+fd] = cusFields[fd];
             }
         }
@@ -140,7 +140,7 @@ script:
             };
         }
         body = (body) ? body : '';
-        var api = '/api/now/';
+        var api = 'api/now/';
         if (params.api_version) {
             api += params.api_version + '/';
         }
@@ -252,7 +252,7 @@ script:
             ec.Ticket = ticketEc(data);
         }
         return ec;
-    }
+    };
 
     var dataToMd = function(command,data) {
         var md;
@@ -261,7 +261,7 @@ script:
 
         var dict = (command in mdDict) ? mdDict[command] : mdDict['default'];
 
-        for (key in dict) {
+        for (var key in dict) {
             head += dict[key] + '|';
             line += '-|';
         }
@@ -529,6 +529,56 @@ script:
         return dicRes;
     }
 
+
+    var SNGetGroups = function(name){
+        var parameters={};
+
+        var ticket_type = "sys_user_group";
+        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
+        res = sendRequest('GET',path).obj;
+
+        var md = '## ServiceNow groups\n';
+        var ec = {ServiceNowGroups: []};
+        for (var i = 0; i < res.result.length; i++) {
+            var headerTran = function(name) {
+                var headers = {
+                    sys_id: 'Id'
+                    name: 'Name',
+                    description: 'Description',
+                    email: 'Email',
+                    active: 'Active',
+                    manager: 'Manager'
+                }
+                if (headers[name]) {
+                    return headers[name];
+                } else {
+                    return name;
+                }
+            };
+
+            if (name) {
+                if (res.result[i].name === name) {
+                    md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
+
+                    ec.ServiceNowGroups.push({
+                        GroupId: res.result[i].sys_id,
+                        GroupName: res.result[i].name
+                    });
+
+                }
+            } else {
+                md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
+
+                    ec.ServiceNowGroups.push({
+                        GroupId: res.result[i].sys_id,
+                        GroupName: res.result[i].name
+                    });
+            }
+        }
+
+        return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec};
+    };
+
     if (!params.ticket_type) {
         params.ticket_type = 'incident';
     }
@@ -555,6 +605,8 @@ script:
         case "servicenow-upload-file":
         case "servicenow-incident-upload-file":
             return SNUploadFile();
+        case 'servicenow-get-groups':
+            return SNGetGroups(args.name);
         case 'fetch-incidents':
             return fetchIncidents();
         case 'test-module':
@@ -586,7 +638,7 @@ script:
     - name: number
       description: Incident number to retrieve
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow incident ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -614,7 +666,7 @@ script:
     - name: number
       description: Incident number to retrieve
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow incident ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -726,13 +778,13 @@ script:
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "Notify about this incident"
       auto: PREDEFINED
       predefined:
       - "1"
       - "0"
+      description: Notify about this incident
     - name: order
-      description: "Order number"
+      description: Order number
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -740,9 +792,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "How many users included in this ticket before"
+      description: How many users included in this ticket before
     - name: reopen_count
-      description: "How many time the ticket has been reopened"
+      description: How many time the ticket has been reopened
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -752,15 +804,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "Subcategory"
+      description: Subcategory
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "Input from the end user"
+      description: Input from the end user
     - name: watch_list
-      description: "A list of watched tickets"
+      description: A list of watched tickets
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -768,7 +820,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "Date when started to work on the ticket"
+      description: Date when started to work on the ticket
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -776,13 +828,13 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "Priority of the ticket (number)"
+      description: Priority of the ticket (number)
     - name: template
       description: Template name to use as a base to create new incidents.
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -839,7 +891,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "Category name"
+      description: Category name
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -895,13 +947,13 @@ script:
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "Notify about this incident"
       auto: PREDEFINED
       predefined:
       - "1"
       - "0"
+      description: Notify about this incident
     - name: order
-      description: "Order number"
+      description: Order number
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -909,9 +961,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "How many users included in this ticket before"
+      description: How many users included in this ticket before
     - name: reopen_count
-      description: "How many time the ticket has been reopened"
+      description: How many time the ticket has been reopened
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -921,15 +973,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "Subcategory"
+      description: Subcategory
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "Input from the end user"
+      description: Input from the end user
     - name: watch_list
-      description: "A list of watched tickets"
+      description: A list of watched tickets
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -937,7 +989,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "Date when started to work on the ticket"
+      description: Date when started to work on the ticket
     - name: assignment_group
       description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
     - name: incident_state
@@ -945,11 +997,11 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "Priority of the ticket (number)"
+      description: Priority of the ticket (number)
     - name: template
       description: Template name to use as a base to create new incidents.
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -973,7 +1025,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
-      description: "Ticket urgency"
+      description: Ticket urgency
     - name: severity
       description: Ticket severity
     - name: impact
@@ -1005,7 +1057,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "Category name"
+      description: Category name
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1061,13 +1113,13 @@ script:
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "Notify about this incident"
       auto: PREDEFINED
       predefined:
       - "1"
       - "0"
+      description: Notify about this incident
     - name: order
-      description: "Order number"
+      description: Order number
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1075,9 +1127,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "How many users included in this ticket before"
+      description: How many users included in this ticket before
     - name: reopen_count
-      description: "How many time the ticket has been reopened"
+      description: How many time the ticket has been reopened
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1087,15 +1139,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "Subcategory"
+      description: Subcategory
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "Input from the end user"
+      description: Input from the end user
     - name: watch_list
-      description: "A list of watched tickets"
+      description: A list of watched tickets
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1103,7 +1155,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "Date when started to work on the ticket"
+      description: Date when started to work on the ticket
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1111,7 +1163,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "Priority of the ticket (number)"
+      description: Priority of the ticket (number)
     - name: id
       required: true
       description: Id(UID) of the ticket to update
@@ -1132,7 +1184,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
-      description: "Ticket urgency"
+      description: Ticket urgency
     - name: severity
       description: Ticket severity
     - name: impact
@@ -1164,7 +1216,7 @@ script:
     - name: caller_id
       description: UID Format
     - name: category
-      description: "Category name"
+      description: Category name
     - name: caused_by
       description: UID Format
     - name: close_code
@@ -1220,13 +1272,13 @@ script:
     - name: made_sla
       description: SLA of the ticket
     - name: notify
-      description: "Notify about this incident"
       auto: PREDEFINED
       predefined:
       - "1"
       - "0"
+      description: Notify about this incident
     - name: order
-      description: "Order number"
+      description: Order number
     - name: parent
       description: UID Format
     - name: parent_incident
@@ -1234,9 +1286,9 @@ script:
     - name: problem_id
       description: UID Format
     - name: reassignment_count
-      description: "How many users included in this ticket before"
+      description: How many users included in this ticket before
     - name: reopen_count
-      description: "How many time the ticket has been reopened"
+      description: How many time the ticket has been reopened
     - name: resolved_at
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
@@ -1246,15 +1298,15 @@ script:
     - name: sla_due
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: subcategory
-      description: "Subcategory"
+      description: Subcategory
     - name: sys_updated_by
       description: Last updated by
     - name: sys_updated_on
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: user_input
-      description: "Input from the end user"
+      description: Input from the end user
     - name: watch_list
-      description: "A list of watched tickets"
+      description: A list of watched tickets
     - name: work_end
       description: 'Format: YYYY-MM-DD HH:MM:SS'
     - name: work_notes
@@ -1262,7 +1314,7 @@ script:
     - name: work_notes_list
       description: List with UIDs
     - name: work_start
-      description: "Date when started to work on the ticket"
+      description: Date when started to work on the ticket
     - name: assignment_group
       description: UID
     - name: incident_state
@@ -1270,7 +1322,7 @@ script:
     - name: number
       description: Ticket number
     - name: priority
-      description: "Priority of the ticket (number)"
+      description: Priority of the ticket (number)
     - name: id
       required: true
       description: Id(UID) of the ticket to update
@@ -1383,7 +1435,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1411,7 +1463,7 @@ script:
       description: Ticket type to create
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket ID
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1465,6 +1517,10 @@ script:
       description: Filename of uploaded file to override the existing file name in
         entry
     description: Upload new file
+  - name: servicenow-get-groups
+    arguments:
+    - name: name
+      description: Servicenow group name
+    description: Return information about specific servicenow group
   isfetch: true
-hidden: false
-releaseNotes: "-"
+  releaseNotes: "Added servicenow-get-groups command."
