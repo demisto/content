@@ -30,5 +30,3 @@ args:
   required: true
   description: The substring to look for.
 scripttarget: 0
-releaseNotes: "-"
-

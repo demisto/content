@@ -255,4 +255,3 @@ script:
         are not fully indexed yet (default false). You can search by mailbox and date
         time across active messages
     description: query mimecast emails
-releaseNotes: "-"

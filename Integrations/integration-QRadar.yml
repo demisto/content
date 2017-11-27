@@ -453,4 +453,3 @@ script:
       description: Number of results in return
     description: Get closing reasons
   isfetch: true
-releaseNotes: 'Printing message body in case of stringify error'
