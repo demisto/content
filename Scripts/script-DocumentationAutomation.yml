@@ -18,10 +18,6 @@ script: |+
 
   path = res[0]['Contents']['path']
 
-  f = open(path,'rb')
-  data = f.read()
-  f.close()
-
   yamlFile  = open(path)
   dataMap = yaml.safe_load(yamlFile)
   yamlFile.close()
