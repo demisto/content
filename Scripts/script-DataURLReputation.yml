@@ -43,4 +43,3 @@ dependson:
   - pt-malware
 timeout: 0s
 deprecated: true
-releaseNotes: "-"

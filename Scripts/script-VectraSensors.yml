@@ -29,4 +29,3 @@ dependson:
   must:
   - vec-sensors
 deprecated: true
-releaseNotes: "-"

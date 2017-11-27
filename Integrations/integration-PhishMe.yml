@@ -448,4 +448,3 @@ script:
       description: The actual score
     description: Check if sender address is malicious
 hidden: false
-releaseNotes: "Changed reputation of threats to be calculated by severity level"

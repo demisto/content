@@ -564,4 +564,3 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
-releaseNotes: "Bug fixes regarding get-reports (permissions to download PDF and samples and types of files)"

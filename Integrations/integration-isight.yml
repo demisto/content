@@ -438,4 +438,3 @@ script:
       - other
     description: Submission of malware and other files for community sharing
 hidden: false
-releaseNotes: "-"

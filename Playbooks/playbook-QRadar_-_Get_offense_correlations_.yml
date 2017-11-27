@@ -214,4 +214,3 @@ inputs:
 - key: MaxLogsCount
   value: "20"
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
-releaseNotes: "-"

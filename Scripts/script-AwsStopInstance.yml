@@ -36,4 +36,3 @@ timeout: 0s
 dependson:
   must:
   - stop-instance
-releaseNotes: "-"

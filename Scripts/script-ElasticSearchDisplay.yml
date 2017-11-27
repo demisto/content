@@ -54,4 +54,3 @@ dependson:
   must:
   - elasticsearch|||search
 timeout: 0s
-releaseNotes: "Added description"
