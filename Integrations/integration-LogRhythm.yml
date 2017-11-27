@@ -591,4 +591,3 @@ script:
     description: Retrieve alarms in a given time period, optionally filtered by the
       alarm status or entity
   isfetch: true
-releaseNotes: "-"

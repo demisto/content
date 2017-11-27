@@ -67,4 +67,3 @@ dependson:
   must:
   - vec-hosts
 deprecated: true
-releaseNotes: "-"

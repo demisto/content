@@ -935,4 +935,3 @@ script:
     description: Cancels the job specified by the Job ID
   isfetch: true
 hidden: false
-releaseNotes: "-"

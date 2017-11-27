@@ -111,4 +111,3 @@ dependson:
   - ews-search-mailbox
 timeout: 86.4µs
 deprecated: true
-releaseNotes: "-"

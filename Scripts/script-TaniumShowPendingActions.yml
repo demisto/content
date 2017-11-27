@@ -149,4 +149,3 @@ dependson:
   must:
   - tn-get-object
 timeout: 0s
-releaseNotes: Deprecated. Use tn-get-all-pending-actions instead

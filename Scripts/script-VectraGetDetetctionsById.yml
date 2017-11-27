@@ -30,4 +30,3 @@ dependson:
   must:
   - vec-get-detetctions-by-id
 deprecated: true
-releaseNotes: "-"
