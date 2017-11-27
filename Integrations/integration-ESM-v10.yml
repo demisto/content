@@ -1185,4 +1185,3 @@ script:
       description: whether the user is an admin
     description: Get a list of all users.
   isfetch: true
-releaseNotes: "-"

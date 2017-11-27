@@ -124,4 +124,3 @@ script:
       - websites
       - certificates
     description: Attribute search
-releaseNotes: "-"
