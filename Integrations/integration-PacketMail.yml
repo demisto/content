@@ -123,4 +123,3 @@ script:
       description: For malicious IPs, the reason for the vendor to make the decision
     description: Get intel from PacketMail.net on IPs
 hidden: false
-releaseNotes: "Fixed context path"

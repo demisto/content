@@ -868,4 +868,3 @@ script:
     arguments: []
     description: Get API token, to use in integration configuration
   isfetch: true
-releaseNotes: "Added descriptions for outputs"

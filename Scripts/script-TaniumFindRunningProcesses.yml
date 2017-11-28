@@ -167,4 +167,3 @@ dependson:
   - tn-result-data
   - tn-result-info
 timeout: 0s
-releaseNotes: Deprecated. Use tn-ask-question instead

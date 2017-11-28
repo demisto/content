@@ -326,4 +326,3 @@ inputs:
 - key: Path
   value: ""
   description: If initialized, D2 will try and collect the file at target path
-releaseNotes: "-"

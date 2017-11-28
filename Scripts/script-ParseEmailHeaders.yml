@@ -1,0 +1,46 @@
+commonfields:
+  id: ParseEmailHeader
+  version: -1
+name: ParseEmailHeaders
+script: |-
+  from email.parser import HeaderParser
+
+  ec = {"Email.Headers" : {}}
+  md = "";
+
+  arrFiles = demisto.context()["File"];
+  for file in arrFiles:
+      if file["EntryID"] == demisto.args()['entryId'] and file["Info"] == "eml":
+          # Get the file path of the email file as it lokated in Demisto server
+          filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId']})[0]['Contents']['path']
+
+          # Read the content of the file
+          with open(filePath, 'rb') as f:
+              fileContents = f.read()
+
+          # Parse the headers from the email file
+          parser = HeaderParser()
+          h = parser.parsestr(fileContents)
+
+          # Print all the headers and add them to the context
+          for key in h.keys():
+              md += key + " : " + h[key] + "\n"
+              ec["Email.Headers"][key] = h[key]
+
+          demisto.results({"ContentsFormat": formats["json"], "Type": entryTypes["note"], "Contents": h.keys(), "HumanReadable": md, "EntryContext": ec})
+      else:
+          demisto.results("Couldn't find EML file for entry ID: " + demisto.args()['entryId'] + "\n");
+type: python
+tags:
+- email
+comment: This automation parses headers from an email file.
+enabled: true
+args:
+- name: entryId
+  required: true
+  default: true
+  description: Entry ID of an email file
+outputs:
+- contextPath: Email.Headers
+  description: The headers of the email
+scripttarget: 0

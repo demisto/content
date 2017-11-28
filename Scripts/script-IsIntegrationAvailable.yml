@@ -30,5 +30,3 @@ outputs:
   description: if integration is available
 - contextPath: no
   description: if there is no instance for the given brand
-releaseNotes: "-"
-
