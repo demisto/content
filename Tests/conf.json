@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": [],
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
@@ -145,10 +149,6 @@
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         }
     ],
     "skipped": [
