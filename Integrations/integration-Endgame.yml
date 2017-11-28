@@ -792,4 +792,3 @@ script:
     - contextPath: EndGame.Investigations.Status
       description: Endgame investigation status
     description: Returns the current investigation status
-releaseNotes: "-"

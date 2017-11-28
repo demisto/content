@@ -29,4 +29,3 @@ dependson:
   must:
   - vec-settings
 deprecated: true
-releaseNotes: "-"

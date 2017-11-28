@@ -40,4 +40,3 @@ outputs:
 - contextPath: "no"
   description: if first <= second
 scripttarget: 0
-releaseNotes: "-"
