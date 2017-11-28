@@ -1478,4 +1478,4 @@ script:
     description: Move one or more item to one destination folder. Note that after
       an item is moved, a new id will be associated with it.
   isfetch: true
-  releaseNotes: Fix fetch incidents, when there is no 'To' in mail. Added ews-move-item command.
+releaseNotes: Fix fetch incidents, when there is no 'To' in mail. Added ews-move-item command
