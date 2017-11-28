@@ -1848,3 +1848,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added a utility function to format object values as strings (jsonToHumanReadable)"
