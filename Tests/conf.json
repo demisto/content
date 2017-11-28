@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": [],
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
