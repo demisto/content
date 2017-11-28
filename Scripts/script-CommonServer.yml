@@ -1364,6 +1364,78 @@ script: |-
       return false;
   }
 
+  /**
+   * Converts all object (and array) values of a given object to human-readable strings
+   * @param {Object} obj - the object that is to be converted
+   * @returns {Object} - a new object containing the same fields as formatted strings
+   */
+  function jsonToHumanReadable(obj) {
+
+    /* Helper function to reduces multiples newlines in a string */
+    var reduceNewlines = function(str) {
+        var res = str;
+        while (res.indexOf('\n\n\n') != -1) {
+            res = res.replace('\n\n\n', '\n\n');
+        }
+        return res;
+    }
+
+    /* Helper function that handles the padding of new lines by depth */
+    var indent = function(depth) {
+        var res = ''
+        for (var i = 0; i < (depth || 0); i++) {
+            res += '  ';
+        }
+        return res;
+    }
+
+    /* Helper function that rucurses an object, formatting it's values as strings */
+    var jsonToHumanReadableRecursive = function(obj, depth) {
+        var res = '';
+
+        /* Return non objects (or dates) as strings */
+        if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+              return indent(depth || 0) + obj + '\n';  // this will always convert to string type
+        }
+
+        /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
+        Object.keys(obj).forEach(function(key) {
+            var value = obj[key];
+            var isArrayElement = obj instanceof Array;
+
+            /* Handle object values in a new call */
+            if (typeof value === 'object') {
+                if (isArrayElement) {
+                    res += jsonToHumanReadableRecursive(value, (depth || 0)) + '\n';
+                } else {
+                    res += indent(depth) + key + '\n';
+                    res += jsonToHumanReadableRecursive(value, (depth || 0) + 1) + '\n';
+                }
+            } else {
+                /* Format primitives as a string */
+                var keyStr = (isArrayElement) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
+                res += indent(depth) + keyStr + ': ' + value + '\n';
+            }
+        });
+
+        res = reduceNewlines(res);
+        return res;
+    }
+
+    /* Run all object keys and invoke the recursive helper function */
+    if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+        return obj;
+    }
+    var res = {};
+    Object.keys(obj).forEach(function(key) {
+        var str = jsonToHumanReadableRecursive(obj[key]);
+        str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
+        res[key] = str;
+    });
+
+    return res;
+  }
+
   /********************************** Date Formatting **************************************/
   /* Date formats
     %d - day 01, 02 ... 31
@@ -1776,3 +1848,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added a utility function to format object values as strings (jsonToHumanReadable)"
