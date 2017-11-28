@@ -32,4 +32,3 @@ dependson:
   must:
   - vec-get-host-by-id
 deprecated: true
-releaseNotes: "-"

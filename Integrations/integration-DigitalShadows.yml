@@ -2869,4 +2869,3 @@ script:
       description: Determines whether the tag descriptions will be included.
     description: Batch retrieve specic tags by their ids
   isfetch: true
-releaseNotes: "-"

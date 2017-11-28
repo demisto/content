@@ -485,4 +485,3 @@ script:
     - contextPath: SecureWorks.Tickets.ID
       description: The ticket ID
     description: Assign a ticket to the SecureWorks Counter Threat Operations Center
-releaseNotes: "-"
