@@ -493,9 +493,8 @@ script:
             resStatus: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.-ResponseClass',
             contextKey: 'EWS.MovedItems',
             translator: [
-                { to: 'New-Item-Id', from: 'ItemId.-Id'}
-            ],
-            targetToContext: true
+                { to: 'NewItemId', from: 'ItemId.-Id'}
+            ]
         },
         'folders-ids': {
             template: '<t:FolderId Id="%id%"/>'
