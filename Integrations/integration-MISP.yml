@@ -646,4 +646,3 @@ script:
         for the hash provided above.
     description: Download malware sample by hash
 hidden: false
-releaseNotes: "-"

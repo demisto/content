@@ -1576,4 +1576,3 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
-releaseNotes: 'Adding proxy and skip certificate options'

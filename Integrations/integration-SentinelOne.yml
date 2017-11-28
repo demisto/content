@@ -2714,4 +2714,3 @@ script:
       default: true
       description: The ID of the threat
     description: Resolve threats
-releaseNotes: "-"

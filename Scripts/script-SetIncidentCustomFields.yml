@@ -29,5 +29,3 @@ args:
   description: The list of values to match the fields - can be either array or comma
     separated
 scripttarget: 0
-releaseNotes: "-"
-

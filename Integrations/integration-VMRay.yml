@@ -105,4 +105,3 @@ script:
     description: Get all jobs details about a specific sample.
   dockerimage: demisto/vmray
 hidden: false
-releaseNotes: "Uses public docker image now"

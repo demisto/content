@@ -925,4 +925,3 @@ script:
       defaultValue: json
     description: Gets a specific threat feed
 hidden: false
-releaseNotes: "-"

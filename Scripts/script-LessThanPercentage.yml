@@ -40,4 +40,3 @@ args:
   description: second percentage
   required: true
 scripttarget: 0
-releaseNotes: "-"

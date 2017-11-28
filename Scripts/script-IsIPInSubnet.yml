@@ -22,5 +22,3 @@ outputs:
 - contextPath: no
   description: if  IP is not in subnet
 scripttarget: 0
-releaseNotes: "-"
-

@@ -546,4 +546,3 @@ error message, job failed, hardware failure, etc."
       description: Device status
     - contextPath: HPSM.Devices.UpdatedBy
       description: The last user that update the device
-releaseNotes: added description to commands
