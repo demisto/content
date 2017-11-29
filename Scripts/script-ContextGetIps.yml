@@ -3,22 +3,24 @@ commonfields:
   version: -1
 name: ContextGetIps
 script: |+
-  if (args.subnets)
-      var subnets = args.subnets.split(',');
+  var excludedIps;
+  if (args.excludedIps) {
+      excludedIps = args.excludedIps.split(',');
+  }
   var flat = {};
   var res = [];
-  var re = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
+  var currentValue;
   flattenFields(invContext,undefined,flat);
   keysArr = Object.keys(flat);
-  for (i = 0; i < keysArr.length; i++) {
-      if (re.test(flat[keysArr[i]]) && res.indexOf(flat[keysArr[i]]) == -1) {
-          if (subnets) {
-              if (subnets.indexOf(flat[keysArr[i]]) == -1) {
-                  res.push(flat[keysArr[i]]);
+  for (var i = 0; i < keysArr.length; i++) {
+      currentValue=flat[keysArr[i]];
+      if (ipRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
+          if (excludedIps) {
+              if (excludedIps.indexOf(currentValue) === -1) {
+                  res.push(currentValue);
               }
           } else {
-              res.push(flat[keysArr[i]]);
+              res.push(currentValue);
           }
       }
   }
@@ -39,6 +41,6 @@ tags: []
 comment: Gets all IP addresses in context, excluding ones given.
 enabled: true
 args:
-- name: subnets
+- name: excludedIps
   description: IP addresses to exclude (separated by commas)
 scripttarget: 0

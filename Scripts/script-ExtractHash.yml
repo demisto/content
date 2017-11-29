@@ -9,20 +9,17 @@ script: |-
   }
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   var matches = {}, found;
-  var regMD5 = /\b[a-fA-F\d]{32}\b/gm;
-  while (found = regMD5.exec(text)) {
+  while (found = md5Regex.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
           matches[found[0]] = true;
       }
   }
-  var regSHA1 = /\b[a-fA-F\d]{40}\b/gm;
-  while (found = regSHA1.exec(text)) {
+  while (found = sha1Regex.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
           matches[found[0]] = true;
       }
   }
-  var regSHA256 = /\b[a-fA-F\d]{64}\b/gm;
-  while (found = regSHA256.exec(text)) {
+  while (found = sha256Regex.exec(text)) {
       if (whitelist.indexOf(found[0]) < 0) {
           matches[found[0]] = true;
       }
