@@ -3,22 +3,24 @@ commonfields:
   version: -1
 name: ContextGetEmails
 script: |+
-  if (args.domains)
-      var domains = args.domains.split(',');
+  var excludedDomains;
+  if (args.excludedDomains) {
+      excludedDomains = args.excludedDomains.split(',');
+  }
   var flat = {};
   var res = [];
-  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+  var currentValue;
   flattenFields(invContext,undefined,flat);
   keysArr = Object.keys(flat);
-  for (i = 0; i < keysArr.length; i++) {
-      if (re.test(flat[keysArr[i]]) && res.indexOf(flat[keysArr[i]]) == -1) {
-          if (domains) {
-              if (domains.indexOf(flat[keysArr[i]]) == -1) {
-                  res.push(flat[keysArr[i]]);
+  for (var i = 0; i < keysArr.length; i++) {
+      currentValue=flat[keysArr[i]];
+      if (emailRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
+          if (excludedDomains) {
+              if (excludedDomains.indexOf(currentValue) === -1) {
+                  res.push(currentValue);
               }
           } else {
-              res.push(flat[keysArr[i]]);
+              res.push(currentValue);
           }
       }
   }
@@ -39,7 +41,7 @@ tags: []
 comment: Gets all email addresses in context, excluding ones given.
 enabled: true
 args:
-- name: domains
+- name: excludedDomains
   description: Email addresses to exclude (separated by commas)
   isArray: true
 scripttarget: 0
