@@ -1,0 +1,45 @@
+commonfields:
+  id: ContextGetEmails
+  version: -1
+name: ContextGetEmails
+script: |+
+  if (args.domains)
+      var domains = args.domains.split(',');
+  var flat = {};
+  var res = [];
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  flattenFields(invContext,undefined,flat);
+  keysArr = Object.keys(flat);
+  for (i = 0; i < keysArr.length; i++) {
+      if (re.test(flat[keysArr[i]]) && res.indexOf(flat[keysArr[i]]) == -1) {
+          if (domains) {
+              if (domains.indexOf(flat[keysArr[i]]) == -1) {
+                  res.push(flat[keysArr[i]]);
+              }
+          } else {
+              res.push(flat[keysArr[i]]);
+          }
+      }
+  }
+
+  var md = '### Email addresses in context\n';
+  for (var i = 0; i<res.length; i++) {
+      md += '- ' + res[i] + '\n';
+  }
+  return {
+          Type: entryTypes.note,
+          Contents: res,
+          ContentsFormat: formats.json,
+          HumanReadable: md
+          };
+
+type: javascript
+tags: []
+comment: Gets all email addresses in context, excluding ones given.
+enabled: true
+args:
+- name: domains
+  description: Email addresses to exclude (separated by commas)
+  isArray: true
+scripttarget: 0
