@@ -81,6 +81,7 @@ configuration:
   type: 0
   required: false
 script:
+script:
   script: |
     var server = params.server.replace(/[\/]+$/, '') + '/';
     var defaultPageSize = 100;
@@ -101,7 +102,7 @@ script:
             items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
                                 'root', 'junkemail', 'searchfolders', 'voicemail']
         }
-    }
+    };
 
     var commandsDictionary = {
         'ews-find-folders': {
@@ -126,7 +127,6 @@ script:
                 '</soap:Envelope>',
             contextKey: 'EWS.Folders(val.ID == obj.FolderID.ID)',
             innerPath: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.RootFolder.Folders.Folder',
-            targetToContext: true,
             resStatus: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.-ResponseClass',
             translator: [
                 {to: 'DisplayName', from: 'DisplayName'},
@@ -141,7 +141,6 @@ script:
             contextKey: 'EWS.Folders(val.ID == obj.ID)',
             innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',
             resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',
-            targetToContext: true,
             translator: [
                 {to: 'ChildFolderCount', from: 'ChildFolderCount'},
                 {to: 'DisplayName', from: 'DisplayName'},
@@ -172,6 +171,12 @@ script:
                 '</soap:Body>' +
                 '</soap:Envelope>'
             },
+            saveArgsToContext: [
+                {
+                    contextKey:'targetMailbox',
+                    argName: 'target-mailbox'
+                }
+            ],
         'ews-delete-items': {
             arrayArgNames: ['item-ids'],
             innerPath: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage',
@@ -182,14 +187,15 @@ script:
                 {to: 'Message', from: 'MessageText'},
                 {to: 'Link', from: 'DescriptiveLinkKey'},
             ],
+            contextKey: 'EWS',
             tableTitle: 'EWS delete items items for %target-mailbox% items %item-ids%',
             saveArgsToContext: [
                 {
-                    contextKey:'EWS.DeletedItems',
+                    contextKey:'DeletedItems',
                     argName: 'item-ids'
                 }
             ],
-            targetToContext: true,
+            dontAddTranslatedToContext: true,
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
                 '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
@@ -245,7 +251,12 @@ script:
             tableTitle: 'EWS get items for %target-mailbox% items %item-ids% items',
             nonDisplayItems: ['Body'],
             contextKey: 'EWS.Items(val.ID == obj.ID)',
-            targetToContext: true,
+            saveArgsToContext: [
+                {
+                    contextKey:'targetMailbox',
+                    argName: 'target-mailbox'
+                }
+            ],
             defaultArgs: {
                 'include-mime-content': false
             },
@@ -281,7 +292,6 @@ script:
             defaultArgs: {
                 'max-entries-returned': 10
             },
-            targetToContext: true,
             translator: [
                 {to: 'Created', from: 'DateTimeCreated'},
                 {to: 'Sent', from: 'DateTimeSent'},
@@ -297,6 +307,12 @@ script:
             ],
             tableTitle: 'EWS search mailbox %target-mailbox% folder %folders-ids% with query %query%',
             contextKey: 'EWS.SearchItems(val.ID == obj.ID)',
+            saveArgsToContext: [
+                {
+                    contextKey:'targetMailbox',
+                    argName: 'target-mailbox'
+                }
+            ],
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
@@ -323,7 +339,6 @@ script:
             },
         'ews-get-contacts': {
             arrayArgNames: ['item-ids'],
-            targetToContext: true,
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
@@ -357,14 +372,15 @@ script:
                 {to: 'Message', from: 'MessageText'},
                 {to: 'Link', from: 'DescriptiveLinkKey'},
             ],
+            contextKey: 'EWS',
             tableTitle: 'EWS delete attachments items for %target-mailbox% items %attachments-ids%',
             saveArgsToContext: [
                 {
-                    contextKey:'EWS.DeletedAttachments',
+                    contextKey:'DeletedAttachments',
                     argName: 'item-ids'
                 }
             ],
-            targetToContext: true,
+            dontAddTranslatedToContext: true,
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
@@ -460,13 +476,17 @@ script:
                 {to: 'Subject', from: 'Subject'},
                 {to: 'ToRecipients', from: 'ToRecipients.SmtpAddress'},
             ],
-            contextKey: 'EWS.Searchs.Search(obj.filter==val.filter)',
-            contextArrayName: 'Results',
-            argsToContext: ['filter']
+            contextKey: 'EWS.Searchs.Search(obj.filter==val.filter).Results',
+            saveArgsToContext: [
+                {
+                    contextKey:'filter',
+                    argName: 'filter'
+                }
+            ],
         },
-        'ews-move-items' : {
-            arrayArgNames: ['item-ids','folder-identifier'],
-            tableTitle: 'Successfully moved item/s',
+        'ews-move-item' : {
+            arrayArgNames: ['item-id','folder-identifier'],
+            tableTitle: 'Successfully moved item',
             template:
                 '<?xml version="1.0" encoding="utf-8"?>'+
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
@@ -484,7 +504,7 @@ script:
                             '%folder-identifier%' +
                         '</m:ToFolderId>' +
                         '<m:ItemIds>' +
-                            '%item-ids%' +
+                            '%item-id%' +
                         '</m:ItemIds>' +
                     '</m:MoveItem>' +
                 '</soap:Body>' +
@@ -494,7 +514,27 @@ script:
             contextKey: 'EWS.MovedItems',
             translator: [
                 { to: 'NewItemId', from: 'ItemId.-Id'}
-            ]
+            ],
+            saveArgsToContext: [
+                {
+                    contextKey:'OldItemId',
+                    argName: 'item-id'
+                }
+            ],
+            addUpdatesToContext: function(entry, savedArgs){
+                var oldID = savedArgs['OldItemId'];
+                var newID = entry.EntryContext['EWS.MovedItems']['NewItemId'];
+                var inContext = function(path) {
+                    var val  = dq(invContext, path);
+                    return val ? true : false;
+                };
+                var paths = ['EWS.Items(val.ID==="'+ oldID +'").ID', 'EWS.SearchItems(val.ID==="' + oldID +'").ID'];
+                paths.forEach(function(path){
+                    if(inContext(path)) {
+                        entry.EntryContext[path] = newID;
+                    }
+                });
+            }
         },
         'folders-ids': {
             template: '<t:FolderId Id="%id%"/>'
@@ -503,6 +543,10 @@ script:
             template: '<t:FolderId Id="%id%"/>'
         },
         'item-ids': {
+            template:
+                '<t:ItemId Id="%id%" />'
+        },
+        'item-id': {
             template:
                 '<t:ItemId Id="%id%" />'
         },
@@ -612,7 +656,21 @@ script:
         }
         return createDisplaySingle(translated);
     };
-
+    var createAdditionalContextFromArgs = function(objArr) {
+        var res = {};
+        objArr.forEach(function(obj) {
+            if (!args[obj.argName]) { return; }
+            if (Array.isArray(args[obj.argName])) {
+                res[obj.contextKey] = args[obj.argName];
+            } else if(args[obj.argName].indexOf(',') > -1) {
+                res[obj.contextKey] = args[obj.argName].split(',');
+            }
+            else {
+                res[obj.contextKey] = args[obj.argName];
+            }
+        });
+        return res;
+    };
     var execute = function(command, args) {
         var currentCommand = commandsDictionary[command];
         var hrTitle = command;
@@ -627,17 +685,7 @@ script:
                 }
             }
         }
-        var additionalContextFromArgs = {};
-        if (currentCommand.saveArgsToContext) {
-            currentCommand.saveArgsToContext.forEach(function(obj) {
-                if (!args[obj.argName]) { return; }
-                if (Array.isArray(args[obj.argName])) {
-                    additionalContextFromArgs[obj.contextKey] = args[obj.argName];
-                } else {
-                    additionalContextFromArgs[obj.contextKey] = args[obj.argName].split(',');
-                }
-            });
-        }
+        var additionalContextFromArgs = currentCommand.saveArgsToContext ? createAdditionalContextFromArgs(currentCommand.saveArgsToContext): {};
         var httpParams = {
                 Method: 'POST',
                 Headers: {
@@ -676,35 +724,20 @@ script:
             if (currentCommand.translator) {
                 if (data) {
                     var translated = mapObjFunction(currentCommand.translator)(data);
-                    extraContext = {};
-                    if (currentCommand.targetToContext) {
-                        extraContext.targetMailbox = args['target-mailbox'];
-                    }
-                    if (currentCommand.contextKey) {
-                        var arrContext;
-                        if (currentCommand.contextArrayName) {
-                            arrContext = {};
-                            arrContext[currentCommand.contextArrayName] = createContext(translated, extraContext);
-                        }
-                        entry.EntryContext[currentCommand.contextKey] = arrContext ? arrContext : createContext(translated, extraContext);
-                        if (currentCommand.argsToContext) {
-                            for (var k in currentCommand.argsToContext) {
-                                entry.EntryContext[currentCommand.contextKey][currentCommand.argsToContext[k]] = args[currentCommand.argsToContext[k]];
-                            }
-                        }
-                    }
                     var disp = buildDisplay(currentCommand, translated);
                     entry.HumanReadable = tableToMarkdown(
                         hrTitle,
                         disp
                     );
+                    translated = currentCommand.dontAddTranslatedToContext ? {} : translated;
+                    entry.EntryContext[currentCommand.contextKey] = createContext(translated, additionalContextFromArgs);
+                    if (currentCommand.addUpdatesToContext) {currentCommand.addUpdatesToContext(entry , additionalContextFromArgs);}
+                    log(JSON.stringify(entry.EntryContext));
                 } else {
                     entry.HumanReadable = 'No results';
                 }
+
             }
-        }
-        for (var key in additionalContextFromArgs) {
-            entry.EntryContext[key] = additionalContextFromArgs[key];
         }
         return entry;
     }
@@ -1455,14 +1488,13 @@ script:
     - contextPath: EWS.Items.Headers.#text
       description: Mail attachment text
     description: Get actual attachment item from email
-  - name: ews-move-items
+  - name: ews-move-item
     arguments:
     - name: target-mailbox
       description: The user email address
-    - name: item-ids
+    - name: item-id
       required: true
-      description: Comma separated list of Item IDs (result of the ews-search-mailbox
-        command)
+      description: The item ID (can be found in results from ews-search-mailbox command)
     - name: folder-identifier
       required: true
       description: The folder id or distinguished id. Distinguished id is the folder
