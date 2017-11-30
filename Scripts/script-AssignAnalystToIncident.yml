@@ -98,3 +98,4 @@ args:
 - name: email
   description: When specified, the user of provided email will be assigned as the incident owner (optional)
 scripttarget: 0
+releaseNotes: "-"
