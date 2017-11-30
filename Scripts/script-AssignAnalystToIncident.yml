@@ -31,7 +31,7 @@ script: |
   if (!userToAssign) {
     switch(assignBy) {
         case 'online':
-            var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
+            var usersRes = executeCommand('getUsers', { roles: args.roles || '', online: true });
             var usersList = usersRes[0].Contents.map(function (u) { return u.username });
             userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
             break;        
