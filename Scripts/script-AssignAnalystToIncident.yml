@@ -36,7 +36,7 @@ script: |
             userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
             break;        
         case 'random':
-            var usersRes = executeCommand('getUsers', { roles: args.roles });
+            var usersRes = executeCommand('getUsers', { roles: args.roles || '' });
             var usersList = usersRes[0].Contents.map(function (u) { return u.username });
             userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
             break;
