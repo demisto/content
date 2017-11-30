@@ -187,11 +187,11 @@ script:
                 {to: 'Message', from: 'MessageText'},
                 {to: 'Link', from: 'DescriptiveLinkKey'},
             ],
-            contextKey: 'EWS',
+            contextKey: 'EWS.DeletedItems(val.ID==obj.ID)',
             tableTitle: 'EWS delete items items for %target-mailbox% items %item-ids%',
             saveArgsToContext: [
                 {
-                    contextKey:'DeletedItems',
+                    contextKey:'ID',
                     argName: 'item-ids'
                 }
             ],
@@ -372,11 +372,11 @@ script:
                 {to: 'Message', from: 'MessageText'},
                 {to: 'Link', from: 'DescriptiveLinkKey'},
             ],
-            contextKey: 'EWS',
+            contextKey: 'EWS.DeletedAttachments(val.ID==obj.ID)',
             tableTitle: 'EWS delete attachments items for %target-mailbox% items %attachments-ids%',
             saveArgsToContext: [
                 {
-                    contextKey:'DeletedAttachments',
+                    contextKey:'ID',
                     argName: 'item-ids'
                 }
             ],
