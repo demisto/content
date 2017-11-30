@@ -27,8 +27,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Default ticket type of commands. Can be incident, problem or change_reuquest.
-    Commands also take ticket_type argument
+- display: Default ticket type of commands. Can be incident, sc_request, problem or
+    change_reuquest. Commands also take ticket_type argument
   name: ticket_type
   defaultvalue: incident
   type: 0
@@ -312,6 +312,7 @@ script:
         var path = "table/"+ticket_type+"/"+args["id"];
         var res = sendRequest('PATCH',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident updated\n";
+        md += "### Ticket type: " + ticket_type + '\n';
         md += dataToMd(command,res.obj.result);
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
     }
@@ -344,6 +345,7 @@ script:
         var path = "table/"+ticket_type;
         var res = sendRequest('POST',path,null,JSON.stringify(body));
         var md = "### ServiceNow incident created\n";
+        md += "### Ticket type: " + ticket_type + '\n';
         md += dataToMd(command,res.obj.result);
         var ec = dataToEc(res.obj.result);
         return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
@@ -528,6 +530,49 @@ script:
         return dicRes;
     }
 
+
+    var SNGetGroups = function(name){
+        var parameters={};
+        var ticket_type = "sys_user_group";
+        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
+        res = sendRequest('GET',path).obj;
+        var md = '## ServiceNow groups\n';
+        var ec = {ServiceNowGroups: []};
+        for (var i = 0; i < res.result.length; i++) {
+            var headerTran = function(name) {
+                var headers = {
+                    sys_id: 'Id'
+                    name: 'Name',
+                    description: 'Description',
+                    email: 'Email',
+                    active: 'Active',
+                    manager: 'Manager'
+                }
+                if (headers[name]) {
+                    return headers[name];
+                } else {
+                    return name;
+                }
+            };
+            if (name) {
+                if (res.result[i].name === name) {
+                    md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
+                    ec.ServiceNowGroups.push({
+                        GroupId: res.result[i].sys_id,
+                        GroupName: res.result[i].name
+                    });
+                }
+            } else {
+                md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
+                    ec.ServiceNowGroups.push({
+                        GroupId: res.result[i].sys_id,
+                        GroupName: res.result[i].name
+                    });
+            }
+        }
+        return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec};
+    };
+
     if (!params.ticket_type) {
         params.ticket_type = 'incident';
     }
@@ -554,6 +599,8 @@ script:
         case "servicenow-upload-file":
         case "servicenow-incident-upload-file":
             return SNUploadFile();
+        case 'servicenow-get-groups':
+            return SNGetGroups(args.name);
         case 'fetch-incidents':
             return fetchIncidents();
         case 'test-module':
@@ -580,6 +627,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: number
@@ -634,6 +682,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -979,6 +1028,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: urgency
@@ -1306,6 +1356,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: link
@@ -1355,6 +1406,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: comment
@@ -1399,6 +1451,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     outputs:
@@ -1453,6 +1506,7 @@ script:
       - incident
       - problem
       - change_request
+      - sc_request
       description: Ticket type to create
       defaultValue: incident
     - name: file_id
@@ -1484,5 +1538,11 @@ script:
       description: Filename of uploaded file to override the existing file name in
         entry
     description: Upload new file
+  - name: servicenow-get-groups
+    arguments:
+    - name: name
+      required: true
+      description: Servicenow group name
+    description: Return information about specific servicenow group
   isfetch: true
-releaseNotes: "Added type ticket (normal, standard, emergency) argument to the create and update commands. Added ticket state argument to the create and update commands."
+releaseNotes: "Added type ticket (normal, standard, emergency) argument to the create and update commands. Added ticket state argument to the create and update commands. Added Get group details command."
