@@ -129,7 +129,7 @@ script:
          "delivery_plan", "delivery_task", "description", "due_date", "expected_start", "follow_up", "group_list", "hold_reason", "impact", "incident_state",
          "knowledge", "location", "made_sla", "notify", "order", "parent", "parent_incident", "priority", "problem_id", "resolved_at", "resolved_by", "rfc",
          "severity", "sla_due", "state", "subcategory", "sys_tags", "time_worked", "urgency", "user_input", "watch_list", "work_end", "work_notes", "work_notes_list",
-         "work_start", "impact", "incident_state", "title", "type", "category"];
+         "work_start", "impact", "incident_state", "title", "type", "category", "state"];
 
     var sendRequest = function(method, path, headers, body, file_id) {
         if (!headers) {
@@ -788,6 +788,8 @@ script:
       - emergency
       description: Type of Change Request ticket
       defaultValue: normal
+    - name: state
+      description: State of the incident (an integer)
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
@@ -1132,6 +1134,8 @@ script:
       - emergency
       description: Type of Change Request ticket
       defaultValue: normal
+    - name: state
+      description: State of the incident (an integer)
     description: Update specific ticket by providing ticket id
   - name: servicenow-incident-update
     deprecated: true
@@ -1481,4 +1485,4 @@ script:
         entry
     description: Upload new file
   isfetch: true
-releaseNotes: "Added type ticket (normal, standard, emergency) to the create and update commands."
+releaseNotes: "Added type ticket (normal, standard, emergency) argument to the create and update commands. Added ticket state argument to the create and update commands."
