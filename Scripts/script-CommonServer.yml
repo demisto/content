@@ -1676,9 +1676,9 @@ script: |-
               res[4 * i + 3] = SHA256_H[i] & 0xff;
           }
 
-          delete SHA256_H;
-          delete SHA256_buf;
-          delete SHA256_len;
+          SHA256_H = undefined;
+          SHA256_buf = undefined;
+          SHA256_len = undefined;
           return res;
       }
 
@@ -1747,7 +1747,7 @@ script: |-
         SHA256_write(md);
         for(var i = 0; i < 64; i++)
           HMAC_SHA256_key[i] = 0;
-        delete HMAC_SHA256_key;
+        HMAC_SHA256_key = undefined;
         return SHA256_finalize();
       }
 
