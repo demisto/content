@@ -3,6 +3,9 @@
     "testInterval": 30,
     "tests": [
         {
+            "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
@@ -86,11 +89,6 @@
             "playbookID": "TestIsValueInArray"
         },
         {
-            "integrations": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
-        },
-        {
             "playbookID": "TestStringReplace"
         },
         {
@@ -119,16 +117,9 @@
             "playbookID": "PhishTank Testing"
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest"
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout" : 500
-        },
-        {
-            "playbookID": "ExposeIncidentOwner-Test"
         },
         {
             "integrations": "TCPIPUtils",
@@ -155,6 +146,15 @@
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
+        },
+                {
+            "integrations": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
+        },
+                {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest"
         }
     ]
 }
