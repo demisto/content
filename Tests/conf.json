@@ -140,14 +140,8 @@
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
-        }
-    ],
-    "skipped": [
-        {
-            "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
         },
-                {
+        {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
@@ -155,6 +149,12 @@
                 {
             "integrations": "iDefense",
             "playbookID": "iDefenseTest"
+        }
+    ],
+    "skipped": [
+        {
+            "integrations": "Cisco Umbrella Investigate",
+            "playbookID": "Cisco-Umbrella-Test"
         }
     ]
 }
