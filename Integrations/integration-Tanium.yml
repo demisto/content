@@ -424,9 +424,9 @@ script:
       default: true
       description: Name of package to deploy with this action
     - name: action_filters
-      description: List of strings. Each string must describe a sensor and a filter
-        which limits which computers the action will deploy package to (e.g. Operating
-        System, that contains:Windows, Computer Name, that contains:WIN)
+      description: A comma separated sensor and filter
+        which limit which computers the action will deploy the package to (e.g. Operating
+        System, that contains:Windows)
     - name: action_options
       description: Comma separated list of options to apply to action_filters
     - name: get_results
@@ -438,7 +438,7 @@ script:
         action
     - name: package_args
       description: Comma separated list of arguments needed to execute the package
-        command
+        command. Please run 'tn-get-package' for detailed list of arguments
     outputs:
     - contextPath: Tanium.SavedActions.Id
       description: Saved action id
