@@ -8,7 +8,9 @@ script: |-
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
   var matches = {}, found;
-  var reg = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
+  var ipStringRegex = ipRegex.toString().substring(1,34);
+  var gm = 'gm';
+  var reg = new RegExp(ipStringRegex, gm);
   var whitelist = getCSVListAsArray('Indicators Whitelist');
   while (found = reg.exec(text)) {
       matches[found[0]] = true;
@@ -46,3 +48,4 @@ outputs:
 - contextPath: IP.Address
   description: Extracted IPs
 scripttarget: 0
+releaseNotes: "-"
