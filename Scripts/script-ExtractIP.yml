@@ -8,7 +8,7 @@ script: |-
       text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
   }
   var matches = {}, found;
-  var ipStringRegex = ipRegex.toString().substring(1,34);
+  var ipStringRegex = ipRegex.toString().substring(1,(ipRegex.toString().length - 1));
   var gm = 'gm';
   var reg = new RegExp(ipStringRegex, gm);
   var whitelist = getCSVListAsArray('Indicators Whitelist');
