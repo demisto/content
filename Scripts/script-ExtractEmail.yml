@@ -8,7 +8,7 @@ script: |
       text = JSON.stringify(args.text).replace(/\\n/g,' ');
   }
   var matches = {};
-  var emailStringRegex = emailRegex.toString().substring(1,72);
+  var emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length - 1));
   var gmi = 'gmi';
   var reg = new RegExp(emailStringRegex, gmi);
 
