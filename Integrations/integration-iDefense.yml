@@ -252,7 +252,7 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
-    logError(command)
+    logDebug('entering with command: ' + command)
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
@@ -410,4 +410,4 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-releaseNotes: 'skip'
+releaseNotes: 'added server log for command'
