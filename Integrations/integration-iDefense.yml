@@ -252,6 +252,7 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
+    logError(command)
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
