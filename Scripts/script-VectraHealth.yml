@@ -31,4 +31,3 @@ dependson:
   must:
   - vec-health
 deprecated: true
-releaseNotes: "-"

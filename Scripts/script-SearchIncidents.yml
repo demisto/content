@@ -99,4 +99,3 @@ outputs:
 - contextPath: foundIncidents.phase
   description: Phases of the found incidents
 scripttarget: 0
-releaseNotes: "-"

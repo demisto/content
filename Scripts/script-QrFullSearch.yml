@@ -90,4 +90,3 @@ dependson:
   - qr-searches
   - qr-get-search
   - QrGetSearchResults
-releaseNotes: "-"

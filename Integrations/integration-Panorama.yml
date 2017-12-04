@@ -154,4 +154,3 @@ script:
       required: true
       description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
 hidden: false
-releaseNotes: "-"

@@ -491,4 +491,3 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
-releaseNotes: Enable integration by default
