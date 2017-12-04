@@ -1,5 +1,5 @@
 id: Test CommonServer
-version: 1
+version: 3
 name: Test CommonServer
 starttaskid: "0"
 tasks:
@@ -25,13 +25,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 4bd1fe25-c038-43ee-8785-69db61293f82
+    taskid: 85edc5ad-2fe5-467a-87fc-1987ce538931
     type: regular
     task:
-      id: 4bd1fe25-c038-43ee-8785-69db61293f82
+      id: 85edc5ad-2fe5-467a-87fc-1987ce538931
       version: -1
-      name: Test JsontoHumanReadable function
-      scriptName: TestJsontoHumanReadable
+      name: Test FormatTableValues function
+      scriptName: TestFormatTableValues
       type: regular
       iscommand: false
       brand: ""

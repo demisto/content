@@ -123,7 +123,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      excludedDomains: ""
+      excludedEmails: ""
       extend-context: testEmail=.
     view: |-
       {
@@ -300,7 +300,7 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      excludedDomains: mail3@aol.com
+      excludedEmails: mail3@aol.com
       extend-context: testExcludedEmail=.
     view: |-
       {
