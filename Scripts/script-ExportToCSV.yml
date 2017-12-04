@@ -86,4 +86,3 @@ args:
   required: true
   isArray: true
 scripttarget: 0
-releaseNotes: "-"

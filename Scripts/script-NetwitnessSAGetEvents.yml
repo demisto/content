@@ -87,4 +87,3 @@ dependson:
   must:
   - nw-get-events
 timeout: 0s
-releaseNotes: "-"

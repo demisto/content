@@ -74,4 +74,3 @@ dependson:
   must:
   - trendmicro-system-event-retrieve
 timeout: 0s
-releaseNotes: "-"

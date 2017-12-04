@@ -93,4 +93,3 @@ script:
     description: send an SMS
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "-"

@@ -282,7 +282,7 @@ script:
     }
     sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
 
-    if (!result['submission_Key']) {
+    if (typeof result === 'object' && !result['submission_Key']) {
       result['submission_Key'] = submissionKey;
     }
 
@@ -468,4 +468,3 @@ script:
       description: FireEye application ID
     - contextPath: FFireEyeAX.Sensors.Profiles.Applications.-name
       description: FireEye application name
-releaseNotes: "-"
