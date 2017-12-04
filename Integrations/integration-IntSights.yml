@@ -335,7 +335,12 @@ script:
         var entries = [];
         for (var i = 0; i < iocTypes.length; i++) {
             args.Type = iocTypes[i];
-            result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
+            var res = sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body;
+            try {
+              result = JSON.parse(res);
+            } catch (err) {
+              throw 'JSON parsing failed, body: ' + res;
+            }
             entries.push(parseResponse('intsights-get-iocs', result))
         }
 
@@ -398,8 +403,12 @@ script:
     var getAlerts = function(startTime) {
         command = 'intsights-get-alerts';
         args.DateFrom = startTime;
-        result = JSON.parse(sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body);
-
+        var res = sendRequest(methodDictionary[command], getUrl(command, args), createBody(command, args), loginCookies).Body;
+        try {
+          result = JSON.parse(res);
+        } catch (err) {
+          throw 'JSON parsing failed, body: ' + res;
+        }
         return result;
     }
 
@@ -475,14 +484,17 @@ script:
             args.IsArchived = JSON.parse(args.IsArchived);
 
         default:
-            result = JSON.parse(
-                sendRequest(
-                    methodDictionary[command],
-                    getUrl(command, args),
-                    createBody(command, args),
-                    loginCookies
-                ).Body
-            );
+            res = sendRequest(
+                         methodDictionary[command],
+                         getUrl(command, args),
+                         createBody(command, args),
+                         loginCookies
+                     ).Body;
+            try {
+              result = JSON.parse(res);
+            } catch (err) {
+              throw 'JSON parsing failed, body: ' + res;
+            }
 
             shouldParseResponse = true;
     }
@@ -814,4 +826,3 @@ script:
       description: IOCs details
     description: Get all the IOCs
 hidden: false
-releaseNotes: "-"

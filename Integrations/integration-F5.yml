@@ -194,4 +194,3 @@ script:
       description: Client IP address
       required: true
     description: Lists all the sessions with client ip for the given username
-releaseNotes: "-"

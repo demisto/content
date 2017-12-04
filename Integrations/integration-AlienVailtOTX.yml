@@ -515,4 +515,3 @@ script:
     description: Query url in AlienVault OTX
 hidden: false
 toversion: 3.0.1
-releaseNotes: "-"

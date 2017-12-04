@@ -2,6 +2,7 @@ commonfields:
   id: EWS
   version: -1
 name: EWS
+releaseNotes: Support searching more than 20000 mailboxes
 display: EWS
 fromversion: 2.6.0
 category: Messaging
@@ -1443,4 +1444,3 @@ script:
       description: Mail attachment text
     description: Get actual attachment item from email
   isfetch: true
-releaseNotes: Support searching more than 20000 mailboxes

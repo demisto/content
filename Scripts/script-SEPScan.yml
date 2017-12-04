@@ -40,7 +40,6 @@ tags:
 - sep
 - symantec
 comment: Scans ip/hostname with Symantec Endpoint Protection
-releaseNotes: "-"
 enabled: true
 args:
 - name: scanType

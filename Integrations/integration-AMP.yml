@@ -414,5 +414,3 @@ script:
     arguments: []
     description: Fetch list of versions
 system: true
-releaseNotes: "-"
-

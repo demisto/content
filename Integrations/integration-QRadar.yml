@@ -94,7 +94,12 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        return JSON.parse(res.Body);
+        try {
+          return JSON.parse(res.Body);
+        } catch (err) {
+            logInfo('QRadar error: Could stringify respons for ' + url + '. Error is ' + err + '. Returned body is ' + res.Body);
+            throw 'QRadar error\n Could stringify respons for ' + url + '\n Error is ' + err + '\n Returned body is ' + res.Body;
+        }
     }
 
     var getOffenses = function(filter, fields, range) {
@@ -448,4 +453,3 @@ script:
       description: Number of results in return
     description: Get closing reasons
   isfetch: true
-releaseNotes: 'Adding proxy config support for Qradar'

@@ -1,0 +1,194 @@
+id: Icebrg Test
+version: -1
+name: Icebrg Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2731a525-627d-49d2-88db-d988d6fc75d6
+    type: start
+    task:
+      id: 2731a525-627d-49d2-88db-d988d6fc75d6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "1"
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 45
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e53a13f2-f138-40e6-882b-1886cba7e096
+    type: regular
+    task:
+      id: e53a13f2-f138-40e6-882b-1886cba7e096
+      version: -1
+      name: icebrg-get-history
+      description: Gets history of the events
+      script: icebrg|||icebrg-get-history
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 9b1571e9-ba5c-4f9b-8618-5f1714836065
+    type: regular
+    task:
+      id: 9b1571e9-ba5c-4f9b-8618-5f1714836065
+      version: -1
+      name: icebrg-search-events
+      description: Perform an ICEBRG datastore event search
+      script: icebrg|||icebrg-search-events
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      customer_id: ""
+      end_date: ""
+      history: ""
+      limit: ""
+      order: ""
+      order_by: ""
+      query: ${Icebrg.UserQueryHistory.Query}
+      service_traffic: ""
+      start_date: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
+    type: regular
+    task:
+      id: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
+      version: -1
+      name: icebrg-get-reports
+      description: Gets a list of reports
+      script: icebrg|||icebrg-get-reports
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - "9"
+      - "8"
+    scriptarguments:
+      account_uuid: ""
+      archived: ""
+      confidence: ""
+      limit: ""
+      offset: ""
+      published_end: ""
+      published_start: ""
+      risk: ""
+      search: ""
+      sort_by: ""
+      sort_order: ""
+      status: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 230
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
+    type: regular
+    task:
+      id: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
+      version: -1
+      name: icebrg-get-report-indicators
+      description: Gets indicators for a reports
+      script: icebrg|||icebrg-get-report-indicators
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid: ${Icebrg.Reports.Uuid}
+    view: |-
+      {
+        "position": {
+          "x": 855,
+          "y": 410
+        }
+      }
+  "9":
+    id: "9"
+    taskid: ab22df59-3c3b-4498-8f17-91e031dbf716
+    type: regular
+    task:
+      id: ab22df59-3c3b-4498-8f17-91e031dbf716
+      version: -1
+      name: icebrg-get-report-assets
+      description: Gets impacted assets for a report
+      script: icebrg|||icebrg-get-report-assets
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid: ${Icebrg.Reports.Uuid}
+    view: |-
+      {
+        "position": {
+          "x": 1292,
+          "y": 410
+        }
+      }
+  "10":
+    id: "10"
+    taskid: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
+    type: regular
+    task:
+      id: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
+      version: -1
+      name: icebrg-saved-searches
+      description: Gets user saved searches
+      script: icebrg|||icebrg-saved-searches
+      type: regular
+      iscommand: true
+      brand: icebrg
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 460,
+        "width": 1642,
+        "x": 30,
+        "y": 45
+      }
+    }
+  }
+inputs: []

@@ -45,4 +45,3 @@ args:
 - name: fileName
   description: Name of output file
 scripttarget: 0
-releaseNotes: "-"
