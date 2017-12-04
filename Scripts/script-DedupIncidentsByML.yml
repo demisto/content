@@ -19,7 +19,10 @@ script: |-
           for inc in openSimilarIncidents:
               openIds = inc['id'] + ',' + openIds
       else:
-          demisto.results("No open similar incidents were found")
+          if isError(openIncidents[0]):
+              demisto.results(openIncidents[0])
+          else:
+              demisto.results("No open similar incidents were found")
           sys.exit()
       dupResult = demisto.executeCommand("linkIncidents",
           {"linkedIncidentIDs":openIds,"action":"duplicate"})
@@ -33,6 +36,7 @@ type: python
 tags:
 - dedup
 - incidents
+- ml
 comment: This automation will scan given incident (or the the incident currently being
   investigated), for similar incidents in the Demisto platform, if found , will duplicate
   and close one of them.
