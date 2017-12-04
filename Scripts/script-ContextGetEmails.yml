@@ -3,9 +3,9 @@ commonfields:
   version: -1
 name: ContextGetEmails
 script: |+
-  var excludedDomains;
-  if (args.excludedDomains) {
-      excludedDomains = args.excludedDomains.split(',');
+  var excludedEmails;
+  if (args.excludedEmails) {
+      excludedEmails = args.excludedEmails.split(',');
   }
   var flat = {};
   var res = [];
@@ -15,8 +15,8 @@ script: |+
   for (var i = 0; i < keysArr.length; i++) {
       currentValue=flat[keysArr[i]];
       if (emailRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
-          if (excludedDomains) {
-              if (excludedDomains.indexOf(currentValue) === -1) {
+          if (excludedEmails) {
+              if (excludedEmails.indexOf(currentValue) === -1) {
                   res.push(currentValue);
               }
           } else {
@@ -41,7 +41,7 @@ tags: []
 comment: Gets all email addresses in context, excluding ones given.
 enabled: true
 args:
-- name: excludedDomains
+- name: excludedEmails
   description: Email addresses to exclude (separated by commas)
   isArray: true
 scripttarget: 0
