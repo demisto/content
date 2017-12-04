@@ -1,0 +1,47 @@
+commonfields:
+  id: DedupIncidentsByML
+  version: -1
+name: DedupIncidentsByML
+script: |-
+  res = demisto.executeCommand("relatedIncidents", demisto.args())
+  if not isError(res[0]) and demisto.get(res[0], 'Contents'):
+      similarIncidents = demisto.get(res[0], 'Contents')
+      if len(similarIncidents) == 0:
+          demisto.results("No similar incidents were found")
+          sys.exit()
+      ids = ""
+      for inc in similarIncidents:
+          ids = inc['incidentid'] + ',' + ids
+      openIncidents = demisto.executeCommand("getIncidents", {"notstatus":2,"id":ids})
+      if not isError(openIncidents[0]) and demisto.get(openIncidents[0], 'Contents.data'):
+          openIds = ""
+          openSimilarIncidents = demisto.get(openIncidents[0], 'Contents.data')
+          for inc in openSimilarIncidents:
+              openIds = inc['id'] + ',' + openIds
+      else:
+          demisto.results("No open similar incidents were found")
+          sys.exit()
+      dupResult = demisto.executeCommand("linkIncidents",
+          {"linkedIncidentIDs":openIds,"action":"duplicate"})
+      demisto.results(dupResult)
+  else:
+      if isError(res[0]):
+          demisto.results(res)
+      else:
+          demisto.results("No similar incidents were found")
+type: python
+tags:
+- dedup
+- incidents
+comment: This automation will scan given incident (or the the incident currently being
+  investigated), for similar incidents in the Demisto platform, if found , will duplicate
+  and close one of them.
+enabled: true
+args:
+- name: incidentId
+  default: true
+  description: The incident id to scan for duplicates of, default is current investigation
+- name: maxDistance
+  description: Fetch incidents which are at distance lower then this argument only,
+    default is 0.8
+scripttarget: 0
