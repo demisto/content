@@ -143,7 +143,7 @@ script:
             summary.VerdictDescription = summary.Verdict.Description;
             summary.VerdictSeverity = summary.Verdict.Severity ;
             var context = buildReportContext(summary);
-            jsonToHumanReadable(summary);
+            summary = formatTableValues(summary);
             var md = resToMD(summary,'ATD Sandbox Report');
 
             return { Type: entryTypes.note,
@@ -566,4 +566,4 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
-releaseNotes: "Bug fixes regarding get-reports (permissions to download PDF and samples and types of files) and some more complex fields are now formatted for better readability."
+releaseNotes: "Some more complex fields are now formatted for better readability."

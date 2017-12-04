@@ -1,11 +1,11 @@
 commonfields:
-  id: TestJsontoHumanReadable
+  id: TestFormatTableValues
   version: -1
-name: TestJsontoHumanReadable
+name: TestFormatTableValues
 script: |-
   /* Tests an invalid input param and compares it to the return value */
   var testInvalidParam = function (param) {
-    var res = jsonToHumanReadable(param);
+    var res = formatTableValues(param);
 
     if (res !== param) {
       throw new Error('Test value ' + param + ' changed');
@@ -15,7 +15,7 @@ script: |-
   }
   /* Tests a single value as a field and compares it to the stringified result */
   var testSingleValueInObject = function (param) {
-    var res = jsonToHumanReadable(
+    var res = formatTableValues(
       {
         testKey: param,
       }
@@ -27,7 +27,7 @@ script: |-
   }
   /* Tests a single value as a field and compares it to the stringified result */
   var testSingleValueInArray = function (param) {
-    var res = jsonToHumanReadable(
+    var res = formatTableValues(
       [
         param,
       ]
@@ -41,7 +41,7 @@ script: |-
   var testIndentation = function (input, expectedIndentation) {
     var longest = 0;
     var count = 0;
-    var obj = jsonToHumanReadable(input);
+    var obj = formatTableValues(input);
 
     /* Run all stringified object values */
     for (key in obj) {
