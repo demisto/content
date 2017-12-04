@@ -1059,6 +1059,8 @@ script:
         }
         args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
         var slicedMailboxes = [];
+
+        // breaks the list of mailboxes into groups of 15,000 due to EWS limitation of max number of mailboxes per search
         for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
             slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
         }
@@ -1068,7 +1070,7 @@ script:
             return "No mailboxes to search";
         }
 
-        currentCommand = commandsDictionary[command];
+        currentCommand = commandsDictionary['ews-search-mailboxes'];
         var rawData = [];
         var lastRes;
         for (var j=0; j< slicedMailboxes.length; j++){
@@ -1083,7 +1085,11 @@ script:
         if(!lastRes){
             return "No results";
         }
-        lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
+        try {
+            lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
+        } catch (err) {
+            throw 'Error - response from EWS could not be parsed.\nResponse from EWS is:\n' + JSON.stringify(lastRes);
+        }
         return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
     }
 
