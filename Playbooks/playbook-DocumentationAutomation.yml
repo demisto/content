@@ -1,6 +1,6 @@
-id: DocumantationAutomation Playbook
+id: DocumentationAutomation Playbook
 version: -1
-name: DocumantationAutomation Playbook
+name: DocumentationAutomation Playbook
 description: Automates integration documantation.
 starttaskid: "0"
 tasks:
