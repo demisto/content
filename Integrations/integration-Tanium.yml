@@ -178,7 +178,7 @@ script:
             parsed_param['Type'] = param['parameterType'].split('::')[-1] if param.get('parameterType') else 'Type not specified'
             parsed_params.append(parsed_param)
             parsed_param = {}
-        return tableToMarkdown('Package Arguments Details', parsed_params)
+        return tableToMarkdown('Package Arguments Details', parsed_params, ['Key','Name', 'Values', 'Description', 'Type'])
 
     def getPackage(handler):
         response = getObject(handler, u'package')
@@ -438,7 +438,7 @@ script:
         action
     - name: package_args
       description: Comma separated list of arguments needed to execute the package
-        command. Please run 'tn-get-package' for detailed list of arguments
+        command. Please run 'tn-get-package' for a detailed list of arguments
     outputs:
     - contextPath: Tanium.SavedActions.Id
       description: Saved action id
