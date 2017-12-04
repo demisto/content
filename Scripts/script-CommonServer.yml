@@ -1365,11 +1365,11 @@ script: |-
   }
 
   /**
-   * Converts all object (and array) values of a given object to human-readable strings
-   * @param {Object} obj - the object that is to be converted
-   * @returns {Object} - a new object containing the same fields as formatted strings
+   * Converts all cells in a Demisto table in JSON form to human-readable strings
+   * @param {Object} obj - the Demisto table
+   * @returns {Object} - a new Demisto table containing the same fields as formatted strings
    */
-  function jsonToHumanReadable(obj) {
+  function formatTableValues(obj) {
 
     /* Helper function to reduces multiples newlines in a string */
     var reduceNewlines = function(str) {
@@ -1390,7 +1390,7 @@ script: |-
     }
 
     /* Helper function that rucurses an object, formatting it's values as strings */
-    var jsonToHumanReadableRecursive = function(obj, depth) {
+    var formatTableValuesRecursive = function(obj, depth) {
         var res = '';
 
         /* Return non objects (or dates) as strings */
@@ -1406,10 +1406,10 @@ script: |-
             /* Handle object values in a new call */
             if (typeof value === 'object') {
                 if (isArrayElement) {
-                    res += jsonToHumanReadableRecursive(value, (depth || 0)) + '\n';
+                    res += formatTableValuesRecursive(value, (depth || 0)) + '\n';
                 } else {
                     res += indent(depth) + key + '\n';
-                    res += jsonToHumanReadableRecursive(value, (depth || 0) + 1) + '\n';
+                    res += formatTableValuesRecursive(value, (depth || 0) + 1) + '\n';
                 }
             } else {
                 /* Format primitives as a string */
@@ -1428,7 +1428,7 @@ script: |-
     }
     var res = {};
     Object.keys(obj).forEach(function(key) {
-        var str = jsonToHumanReadableRecursive(obj[key]);
+        var str = formatTableValuesRecursive(obj[key]);
         str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
         res[key] = str;
     });
@@ -1861,4 +1861,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added a utility function to format object values as strings (jsonToHumanReadable)"
+releaseNotes: "Added a function to format Demisto table cells as strings (formatTableValues)"
