@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: IsIPInRanges
 script: |
-  import socket, struct
+  from netaddr import IPNetwork, IPAddress
 
   private_subnets = ['172.16.0.0/12',
                        '10.0.0.0/8',
@@ -13,11 +13,7 @@ script: |
                        '192.0.0.0/24']
 
   def addressInNetwork(ip, net_n_bits):
-      ipaddr = struct.unpack('<L', socket.inet_aton(ip))[0]
-      net, bits = net_n_bits.split('/')
-      netaddr = struct.unpack('<L', socket.inet_aton(net))[0]
-      netmask = ((1L << int(bits)) - 1)
-      return ipaddr & netmask == netaddr & netmask
+      return IPAddress(ip) in IPNetwork(net_n_bits)
 
   isInRange = "no"
 
@@ -53,6 +49,8 @@ dependson: {}
 timeout: 0s
 outputs:
 - contextPath: yes
-  description: if given value is an IP range
+  description: if given value is in IP ranges
 - contextPath: no
-  description: if given value is not a IP range
+  description: if given value is not in IP ranges
+dockerimage: demisto/netaddr
+releaseNotes: "Bug fix in subnet calcolation"
