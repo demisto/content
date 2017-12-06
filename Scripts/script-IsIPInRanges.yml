@@ -3,39 +3,36 @@ commonfields:
   version: -1
 name: IsIPInRanges
 script: |
-  from netaddr import IPNetwork, IPAddress
-
-  private_subnets = ['172.16.0.0/12',
+  var private_subnets = ['172.16.0.0/12',
                        '10.0.0.0/8',
                        '198.18.0.0/15',
                        '192.168.0.0/16',
                        '100.64.0.0/10',
-                       '192.0.0.0/24']
+                       '192.0.0.0/24'];
 
-  def addressInNetwork(ip, net_n_bits):
-      return IPAddress(ip) in IPNetwork(net_n_bits)
+  var isInRange = "no";
+  var ip = args.ip;
+  var ipranges = argToList(args.ipRanges);
 
-  isInRange = "no"
+  if(!ipranges || ipranges.length === 0)
+  {
+      ipranges = private_subnets;
+  }
 
-  ip = str(demisto.get(demisto.args(),"ip"))
-  ipranges = argToList(demisto.get(demisto.args(),"ipRanges"))
-  ipranges = ipranges if ipranges else private_subnets
+  ipranges.forEach(function(iprange) {
+      if(isIPInSubnet(ip,iprange)){
+          isInRange = "yes";
+      }
 
-  if not ip:
-      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'IP was not found.' })
-  else:
-      for iprange in ipranges:
-          if addressInNetwork(ip, iprange):
-              isInRange = "yes"
-              break
+  });
 
-  demisto.results(isInRange)
-type: python
+  return isInRange;
+type: javascript
 tags:
 - ip
 - Condition
-comment: 'Returns Yes if ip is in one of the ranges provided.'
-system: true
+comment: Returns Yes if ip is in one of the ranges provided.
+enabled: true
 args:
 - name: ip
   required: true
@@ -44,13 +41,10 @@ args:
 - name: ipRanges
   description: list of IP ranges to check the ip in (if list is not provided, will
     use default list (e.g  192.16.0.0/16)
-scripttarget: 0
-dependson: {}
-timeout: 0s
 outputs:
-- contextPath: yes
-  description: if given value is in IP ranges
-- contextPath: no
-  description: if given value is not in IP ranges
-dockerimage: demisto/netaddr
-releaseNotes: "Bug fix in subnet calcolation"
+- contextPath: "yes"
+  description: if given value is an IP range
+- contextPath: "no"
+  description: if given value is not a IP range
+scripttarget: 0
+releaseNotes: "Change script to javascript"
