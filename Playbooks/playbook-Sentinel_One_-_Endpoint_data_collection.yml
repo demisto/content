@@ -223,4 +223,3 @@ inputs:
 - key: Hostname
   value: ${Endpoint.Hostname}
   description: The Hostname of the device to run on
-releaseNotes: "-"

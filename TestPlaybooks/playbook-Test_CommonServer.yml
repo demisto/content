@@ -1,0 +1,57 @@
+id: Test CommonServer
+version: 3
+name: Test CommonServer
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+    type: start
+    task:
+      id: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 85edc5ad-2fe5-467a-87fc-1987ce538931
+    type: regular
+    task:
+      id: 85edc5ad-2fe5-467a-87fc-1987ce538931
+      version: -1
+      name: Test FormatTableValues function
+      scriptName: TestFormatTableValues
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []

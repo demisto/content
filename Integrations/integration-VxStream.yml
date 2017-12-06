@@ -106,7 +106,9 @@ script:
     };
 
     function scan(hash) {
-        var res = sendRequest('/api/scan/' + hash);
+        return sendRequest('/api/scan/' + hash);
+    }
+    function scanToEntry(res) {
         if (res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
@@ -161,8 +163,12 @@ script:
         }
 
         var response = res.response;
+        return response;
+
+    }
+
+    function tableFromEnvironments(response) {
         var environments = response.backend.global_environment;
-        // create table from environments
         var tableMapper = {
            VMs_busy: 'busy VMS',
            VMs_total: 'total VMS',
@@ -203,22 +209,18 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Multipart Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
         var body;
         try {
             body = JSON.parse(res.Body);
         } catch (ex) {
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
-
-
         if (body.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
+
         }
-
-        var resMessage = "File submitted successfully";
         var response = body.response;
-
+        var resMessage = '';
         if (response.sha256) {
             resMessage = resMessage + '\nsha256 - ' + response.sha256;
         }
@@ -229,6 +231,12 @@ script:
             resMessage = resMessage + '\nmd5 - ' + response.md5;
         }
 
+        return resMessage;
+    }
+
+    function submitFileMsg(hash) {
+        var resMessage = "File submitted successfully";
+        resMessage += resMessage + hash;
         return resMessage;
     }
 
@@ -284,6 +292,47 @@ script:
         return res;
     }
 
+    function detonateFile(entryId, delay, timeout) {
+
+        var environmentId;
+        if (args.environmentID) {
+            environmentId = args.environmentID;
+        } else {
+            var environments = getEnvironments().backend.global_environment;
+            for (var i=0; i<environments.length; i++) {
+                if (environments[i]['ID'] === 100) {
+                    environmentId = 100;
+                    break;
+                 } else if (environments[i]['architecture'] === 'WINDOWS') {
+                    environmentId = environments[i]['ID'];
+                    break;
+                    } else {
+                        throw 'Please enter valid environment ID';
+                }
+            }
+        }
+
+        var hash = submitFile(entryId, environmentId).substring(10);
+
+        delayTime = parseInt(delay);
+        timeOut = parseInt(timeout);
+        var waitTime = delayTime;
+
+        wait(delayTime);
+
+        while (waitTime<timeOut) {
+            res = scan(hash);
+            if (res.response.length > 0 && res.response[0]) {
+                return scanToEntry(res);
+            } else {
+                waitTime = waitTime + delayTime;
+                wait(delayTime);
+            }
+        }
+        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
+
+    }
+
     switch (command) {
         case 'test-module':
             var entry = searchQuery('url:google');
@@ -292,15 +341,20 @@ script:
             }
             return entry && entry.Contents;
         case 'vx-scan':
-            return scan(args.file);
+            var res = scan(args.file);
+            return scanToEntry(res);
         case 'vx-get-environments':
-            return getEnvironments();
+            var response = getEnvironments();
+            return tableFromEnvironments(response);
         case 'vx-submit-sample':
-            return submitFile(args.entryId, args.environmentID);
+            var hash = submitFile(args.entryId, args.environmentID);
+            return submitFileMsg(hash);
         case 'vx-search':
             return searchQuery(args.query);
         case 'vx-result':
             return vxResult(args.file, args.environmentId);
+        case 'vx-detonate-file':
+            return detonateFile(args.entryId, args.delay, args.timeout);
     }
 
   type: javascript
@@ -375,7 +429,7 @@ script:
       description: War-room entry ID of sample file
     - name: environmentID
       required: true
-      description: 'environment ID to submit file to(get all via vx-get-environments) '
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
     description: Submit a file from investigation to analysis server  (NOTE - minimum
       required authorization is `default`)
   - name: vx-search
@@ -428,3 +482,20 @@ script:
       description: 'environment ID to submit file to(get all via vx-get-environments) '
     description: Retrieve result data upon a file. NOTE - This command returns a file
       (also - minimum required authorization is `default`)
+  - name: vx-detonate-file
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via vx-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    description: Detonate file through VxSteam
+releaseNotes: 'Adding file detonation'
+

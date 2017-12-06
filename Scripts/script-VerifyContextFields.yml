@@ -42,4 +42,3 @@ args:
   description: "optional field4 value validation"
 scripttarget: 0
 deprecated: true
-releaseNotes: "-"

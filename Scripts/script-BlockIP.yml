@@ -27,7 +27,6 @@ script: |-
   return entries;
 type: javascript
 comment: Blocks IP in configured firewall
-releaseNotes: "-"
 tags:
 - firewall
 - checkpoint

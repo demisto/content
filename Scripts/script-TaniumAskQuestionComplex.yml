@@ -165,4 +165,3 @@ dependson:
   - tn-result-info
   - tn-add-question-complex
 timeout: 0s
-releaseNotes: Deprecated. Use tn-ask-question instead

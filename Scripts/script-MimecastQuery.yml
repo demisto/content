@@ -98,4 +98,3 @@ timeout: 0s
 dependson:
   must:
   - mimecast-query
-releaseNotes: "-"

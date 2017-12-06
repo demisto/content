@@ -836,4 +836,3 @@ script:
     - contextPath: ATPIncidents.Result.uuid
       description: The GUID assigned for this incident
     description: Query incidents from ATP
-releaseNotes: "Change logo to Symantec instead of ATP"

@@ -444,5 +444,3 @@ script:
       defaultValue: "3"
     description: Checks the reputation of the given IP
 hidden: false
-releaseNotes: "Added threshold argument to set if query is malicious"
-

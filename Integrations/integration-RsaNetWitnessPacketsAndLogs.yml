@@ -2144,4 +2144,3 @@ For regular expressions, change “keyword” to “regex”
       description: <uint32, optional> What types of nodes to return information about,
         default is zero (all nodes)
     description: 'Fires notifications when the node changes security.roles: everyone'
-releaseNotes: "-"

@@ -209,7 +209,7 @@ script:
         if demisto.get(demisto.args(), 'event_limit'):
             kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
         searchquery_oneshot = demisto.args()['query']
-        if not searchquery_oneshot.startswith('search'):
+        if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search') and not searchquery_oneshot.startswith('|'):
             searchquery_oneshot = 'search '+searchquery_oneshot
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
@@ -409,3 +409,4 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: fix issue with query that start with | on splunk-search

@@ -581,4 +581,3 @@ script:
     description: Returns all installed autoruns programs in this host
   isfetch: true
 hidden: false
-releaseNotes: "Added descriptions for some arguments"

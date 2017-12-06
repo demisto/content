@@ -43,4 +43,3 @@ dependson:
   must:
   - VMRay|||get_job_sample
 timeout: 0s
-releaseNotes: "-"
