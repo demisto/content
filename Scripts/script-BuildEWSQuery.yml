@@ -27,5 +27,3 @@ args:
 - name: body
   description: Parameter 'body' of the query
 scripttarget: 0
-releaseNotes: "-"
-

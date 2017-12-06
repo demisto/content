@@ -826,4 +826,3 @@ script:
       description: IOCs details
     description: Get all the IOCs
 hidden: false
-releaseNotes: "Will throw body when json parsing fails"
