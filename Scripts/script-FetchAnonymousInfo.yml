@@ -1,0 +1,115 @@
+commonfields:
+  id: FetchAnonymousInfo
+  version: -1
+name: FetchAnonymousInfo
+script: |-
+  import hashlib, json, datetime
+
+  INCIDENT_SAFE_FIELDS = [u'status', u'autime', u'isPlayground', u'activated', u'id', u'category',
+                          u'linkedIncidents', u'dueDate', u'version', u'openDuration', u'closed', u'reminder',
+                          u'type', u'parent', u'runStatus', u'occurred', u'phase', u'severity', u'account',
+                          u'created', u'modified', u'investigationId', u'playbookId', u'sla']
+
+  INCIDENT_HASH_VALUES = ['name', u'owner', 'closingUserId', 'closeNotes', 'reason', 'closeReason', 'CustomFields']
+
+
+  INDICATOR_SAFE_FIELDS = ['lastReputationRun', 'manualSetTime', 'timestamp', 'modified', 'calculatedTime',
+                           'indicator_type', 'source', 'version', 'investigationIDs', 'lastSeen', 'insightCache',
+                           'score', 'id', 'firstSeen', 'manualScore']
+
+  ANONYMOUES_DATA = (demisto.args()['anonymous'] == 'yes')
+
+  def hash_object(str_list_dict):
+      if not ANONYMOUES_DATA:
+          return str_list_dict
+      if str_list_dict == "" or str_list_dict is None:
+          return str_list_dict
+      if (type(str_list_dict)) == dict:
+          return dict(map(lambda (k,v): (k, hash_object(v)), str_list_dict.iteritems()))
+      if (type(str_list_dict) == list):
+          return map(hash_object, str_list_dict)
+
+      if (type(str_list_dict) in [str,unicode]):
+          str_value = str_list_dict.encode('utf-8')
+      else:
+          str_value = str(str_list_dict)
+      return hashlib.md5(str_value).hexdigest()
+
+  def parse_incident(incident):
+      incident_info = {key:incident[key] for key in INCIDENT_SAFE_FIELDS}
+      for field in INCIDENT_HASH_VALUES:
+          incident_info[field] = hash_object(incident[field])
+
+      if incident['labels'] is not None:
+          incident_info['labels'] = []
+          for label in incident['labels']:
+              incident_info['labels'].append({'type': label['type'], 'value': hash_object(label['value'])})
+      else:
+          incident_info['labels'] = None
+
+      if incident['attachment'] is not None:
+          incident_info['attachment'] = []
+          for attachment in incident_info['attachment']:
+              incident_info['attachment'].append({'type': attachment['type'], 'name': hash_object(attachment['name'])})
+      else:
+          incident_info['attachment'] = None
+
+      return incident_info
+
+  def parse_indicator(indicator):
+      indicator_info = {key:indicator[key] for key in INDICATOR_SAFE_FIELDS}
+      indicator_info['value'] = hash_object(indicator['value'])
+
+      return indicator_info
+
+
+  cmd_run = False
+  if (demisto.args().has_key('fromDate')):
+      from_date = demisto.args()['fromDate']
+  else:
+      from_date = (datetime.datetime.now().date() - datetime.timedelta(days=365)).isoformat()
+
+  if demisto.args()['incidents'] == 'yes':
+      cmd_run = True
+      res = demisto.executeCommand("getIncidents", {'query': 'created:>"%s"' % from_date})
+      incidents_data = map(parse_incident, res[0]['Contents']['data'])
+      demisto.results(fileResult('incidents.json',json.dumps(incidents_data)))
+
+  if demisto.args()['indicators'] == 'yes':
+      cmd_run = True
+      res = demisto.executeCommand('findIndicators', {'query': 'modified:>"%s"' % from_date})
+      indicators_data = map(parse_indicator, res[0]['Contents'])
+      demisto.results(fileResult('indicators.json',json.dumps(indicators_data)))
+
+  if not cmd_run:
+      myErrorText  = "You have to choose one of the arguments to be 'yes'"
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : myErrorText } )
+type: python
+tags: []
+comment: Fetch system incidents and indicators data
+enabled: true
+args:
+- name: incidents
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Fetch incident data?
+  defaultValue: "yes"
+- name: indicators
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Fetch indicators data?
+  defaultValue: "yes"
+- name: anonymous
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Hash sensitive values (e.g. indicator values)?
+  defaultValue: "yes"
+- name: fromDate
+  description: Fetch data from this date. Iso format (e.g. 2017-01-01)
+scripttarget: 0
