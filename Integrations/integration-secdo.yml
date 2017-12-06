@@ -13,7 +13,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Secdo Key
+- display: Secdo API Key
   name: key
   defaultvalue: ""
   type: 4
@@ -36,6 +36,10 @@ configuration:
 script:
   script: |+
     var sendRequest = function() {
+        if (params.server.indexOf('https://') === -1) {
+            params.server = 'https://' + params.server;
+        }
+
         var requestUrl = 'https://' + params.server + '/publicapi/v2/load_ioc/';
         var data = {
             company: params.company,
@@ -74,16 +78,15 @@ script:
         var md = "## Secdo\n";
         var res =  sendRequest();
         if (res.StatusCode === 200) {
-            md += 'The IOCs have been successfully added to Secdo.\n';
-        } else {
-            md += 'Opps, it seems that there is some error with adding the IOCs to Secdo.\n'
+            md += 'IOCs have been successfully added to Secdo.\n';
         }
 
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': {}, "HumanReadable": md} );
+        return {ContentsFormat: formats.json, Type: entryTypes.note, Contents: {}, HumanReadable: md};
     };
 
     switch (command) {
         case 'test-module':
+        // Don't check it because Secdo api always return's true.
             return 'ok';
         case 'secdo-add-IOCs':
             return addIocs();
@@ -106,7 +109,7 @@ script:
       - hostname
       description: Type of artifacts
       defaultValue: mixed
-    - name: responce
+    - name: response
       required: true
       auto: PREDEFINED
       predefined:
@@ -115,7 +118,7 @@ script:
       - CASE
       - WHITELIST
       - SILENT_REPORT
-      description: How Secdo will responde after the IOCs add
+      description: The Secdo response after the IOCs were added
       defaultValue: REPORT
     - name: severity
       required: true
@@ -128,8 +131,9 @@ script:
       defaultValue: LOW
     - name: comment
       required: true
-      description: Comment
+      description: Comment to the added IOCs
     - name: data
       required: true
-      description: The IOCs data in text (Each IOCs in seperated with new line - \n)
+      description: The IOCs data in text (Each IOCs in separated a with new line -
+        \n)
     description: Add IOCs to Secdo
