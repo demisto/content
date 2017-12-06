@@ -67,8 +67,8 @@ script:
 
     try:
         import pytan
-        import pytan.binsupport  # noqa
-        import taniumpy  # noqa
+        import pytan.binsupport
+        import taniumpy
     except Exception:
         raise
 
