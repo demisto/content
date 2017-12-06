@@ -219,7 +219,7 @@ tasks:
       script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy2
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "9"
