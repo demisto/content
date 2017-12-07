@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: Use API Key
   name: prem
-  defaultvalue: "false"
+  defaultvalue: "true"
   type: 8
   required: false
 - display: API key
