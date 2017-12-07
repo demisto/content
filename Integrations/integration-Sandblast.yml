@@ -525,4 +525,4 @@ script:
     description: Use the Quote API to have a client application get the current license
       and quota status of the API Key that you use
 hidden: false
-releaseNotes: '-'
+releaseNotes: Added an option to use the integration without API key (for example, when using on premises)
