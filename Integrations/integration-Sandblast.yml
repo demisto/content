@@ -18,8 +18,8 @@ configuration:
   type: 0
   required: true
 - display: Use API Key
-  name: prem
-  defaultvalue: "false"
+  name: useApiKey
+  defaultvalue: "true"
   type: 8
   required: false
 - display: API key
@@ -45,15 +45,17 @@ script:
     var version = params.version;
     var requestTemplate = JSON.stringify({request:[{features:['te']}]});
     var base = server.replace(/[\/]+$/, '') +'/tecloud/api/' + version + '/file/';
+    var useApiKey = params.useApiKey;
+    if (useApiKey === undefined) {
+      useApiKey = true;
+    }
 
-    if (!params.prem) {
-        var headers = {};
-    } else {
+    var headers = {};
+    if (useApiKey) {
         if (!params.token) {
-            return 'API Key not provided.';
+            throw 'API Key not provided.';
         }
-        var token = params.token;
-        var headers = {'Authorization': [token]};
+        headers = {'Authorization': [params.token]};
     }
 
     var urlDict = {
@@ -523,4 +525,4 @@ script:
     description: Use the Quote API to have a client application get the current license
       and quota status of the API Key that you use
 hidden: false
-releaseNotes: 'Added an option to use the integration without API key (for example, when using on premises)'
+releaseNotes: Added an option to use the integration without API key (for example, when using on premises)
