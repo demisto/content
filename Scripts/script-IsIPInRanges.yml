@@ -29,7 +29,7 @@ tags:
 - ip
 - Condition
 comment: Returns yes if ip is in one of the ranges provided, returns no otherwise.
-enabled: true
+system: true
 args:
 - name: ip
   required: true
