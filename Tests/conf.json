@@ -137,6 +137,9 @@
             "playbookID": "ProofpointDecodeURL-Test"
         },
         {
+            "playbookID": "listExecutedCommands-Test"
+        },
+        {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
