@@ -716,38 +716,38 @@ script:
         if(returnRaw){
             return raw;
         }
-        return createEntry(currentCommand, raw, hrTitle);
+        return createEntry(currentCommand, raw, hrTitle,additionalContextFromArgs);
     }
 
-    function createEntry(currentCommand, raw, hrTitle){
-        var entry = {
-            Type: entryTypes.note,
-            Contents: raw,
-            ContentsFormat: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            EntryContext: {}
-        };
-        if (currentCommand.innerPath) {
-            var data = dq(raw, currentCommand.innerPath);
-            if (currentCommand.translator) {
-                if (data) {
-                    var translated = mapObjFunction(currentCommand.translator)(data);
-                    var disp = buildDisplay(currentCommand, translated);
-                    entry.HumanReadable = tableToMarkdown(
-                        hrTitle,
-                        disp
-                    );
-                    translated = currentCommand.dontAddTranslatedToContext ? {} : translated;
-                    entry.EntryContext[currentCommand.contextKey] = createContext(translated, additionalContextFromArgs);
-                    if (currentCommand.addUpdatesToContext) {currentCommand.addUpdatesToContext(entry , additionalContextFromArgs);}
-                } else {
-                    entry.HumanReadable = 'No results';
-                }
-
+function createEntry(currentCommand, raw, hrTitle, additionalContext){
+    var entry = {
+        Type: entryTypes.note,
+        Contents: raw,
+        ContentsFormat: formats.json,
+        ReadableContentsFormat: formats.markdown,
+        EntryContext: {}
+    };
+    if (currentCommand.innerPath) {
+        var data = dq(raw, currentCommand.innerPath);
+        if (currentCommand.translator) {
+            if (data) {
+                var translated = mapObjFunction(currentCommand.translator)(data);
+                var disp = buildDisplay(currentCommand, translated);
+                entry.HumanReadable = tableToMarkdown(
+                    hrTitle,
+                    disp
+                );
+                translated = currentCommand.dontAddTranslatedToContext ? {} : translated;
+                entry.EntryContext[currentCommand.contextKey] = createContext(translated, additionalContext);
+                if (currentCommand.addUpdatesToContext) {currentCommand.addUpdatesToContext(entry , additionalContext);}
+            } else {
+                entry.HumanReadable = 'No results';
             }
+
         }
-        return entry;
     }
+    return entry;
+}
 
     function buildBody(command, args) {
         var currentCommand = commandsDictionary[command];
