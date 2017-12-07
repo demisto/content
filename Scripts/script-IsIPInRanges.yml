@@ -32,7 +32,7 @@ tags:
 - ip
 - Condition
 comment: Returns Yes if ip is in one of the ranges provided.
-enabled: true
+system: true
 args:
 - name: ip
   required: true
@@ -47,4 +47,4 @@ outputs:
 - contextPath: "no"
   description: if given value is not a IP range
 scripttarget: 0
-releaseNotes: "Change script to javascript"
+releaseNotes: "-"
