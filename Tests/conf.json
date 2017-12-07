@@ -3,6 +3,13 @@
     "testInterval": 30,
     "tests": [
         {
+            "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
+            "integrations": [],
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
@@ -82,11 +89,6 @@
             "playbookID": "TestIsValueInArray"
         },
         {
-            "integrations": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
-        },
-        {
             "playbookID": "TestStringReplace"
         },
         {
@@ -115,16 +117,9 @@
             "playbookID": "PhishTank Testing"
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest"
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout" : 500
-        },
-        {
-            "playbookID": "ExposeIncidentOwner-Test"
         },
         {
             "integrations": "TCPIPUtils",
@@ -142,9 +137,22 @@
             "playbookID": "ProofpointDecodeURL-Test"
         },
         {
+            "playbookID": "listExecutedCommands-Test"
+        },
+        {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
+        },
+        {
+            "integrations": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
+        },
+                {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
         }
     ],
     "skipped": [

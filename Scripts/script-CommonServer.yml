@@ -1364,6 +1364,78 @@ script: |-
       return false;
   }
 
+  /**
+   * Converts all cells in a Demisto table in JSON form to human-readable strings
+   * @param {Object} obj - the Demisto table
+   * @returns {Object} - a new Demisto table containing the same fields as formatted strings
+   */
+  function formatTableValues(obj) {
+
+    /* Helper function to reduces multiples newlines in a string */
+    var reduceNewlines = function(str) {
+        var res = str;
+        while (res.indexOf('\n\n\n') != -1) {
+            res = res.replace('\n\n\n', '\n\n');
+        }
+        return res;
+    }
+
+    /* Helper function that handles the padding of new lines by depth */
+    var indent = function(depth) {
+        var res = ''
+        for (var i = 0; i < (depth || 0); i++) {
+            res += '  ';
+        }
+        return res;
+    }
+
+    /* Helper function that rucurses an object, formatting it's values as strings */
+    var formatTableValuesRecursive = function(obj, depth) {
+        var res = '';
+
+        /* Return non objects (or dates) as strings */
+        if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+              return indent(depth || 0) + obj + '\n';  // this will always convert to string type
+        }
+
+        /* Recurse all object keys, formatting values as independent lines, increasing depth with each call */
+        Object.keys(obj).forEach(function(key) {
+            var value = obj[key];
+            var isArrayElement = obj instanceof Array;
+
+            /* Handle object values in a new call */
+            if (typeof value === 'object') {
+                if (isArrayElement) {
+                    res += formatTableValuesRecursive(value, (depth || 0)) + '\n';
+                } else {
+                    res += indent(depth) + key + '\n';
+                    res += formatTableValuesRecursive(value, (depth || 0) + 1) + '\n';
+                }
+            } else {
+                /* Format primitives as a string */
+                var keyStr = (isArrayElement) ? (parseInt(key) + 1) : key;    // 1-based indexing for arrays for better readability
+                res += indent(depth) + keyStr + ': ' + value + '\n';
+            }
+        });
+
+        res = reduceNewlines(res);
+        return res;
+    }
+
+    /* Run all object keys and invoke the recursive helper function */
+    if (!obj || typeof obj !== 'object' || !Object.keys(obj).length) {
+        return obj;
+    }
+    var res = {};
+    Object.keys(obj).forEach(function(key) {
+        var str = formatTableValuesRecursive(obj[key]);
+        str = str.trim('\n');   //There's no need for a newline at the end of the entire stirng
+        res[key] = str;
+    });
+
+    return res;
+  }
+
   /********************************** Date Formatting **************************************/
   /* Date formats
     %d - day 01, 02 ... 31
@@ -1604,9 +1676,9 @@ script: |-
               res[4 * i + 3] = SHA256_H[i] & 0xff;
           }
 
-          delete SHA256_H;
-          delete SHA256_buf;
-          delete SHA256_len;
+          SHA256_H = undefined;
+          SHA256_buf = undefined;
+          SHA256_len = undefined;
           return res;
       }
 
@@ -1675,7 +1747,7 @@ script: |-
         SHA256_write(md);
         for(var i = 0; i < 64; i++)
           HMAC_SHA256_key[i] = 0;
-        delete HMAC_SHA256_key;
+        HMAC_SHA256_key = undefined;
         return SHA256_finalize();
       }
 
@@ -1767,6 +1839,19 @@ script: |-
 
       /**************************** HMAC_SHA256 end *******************************/
 
+    /**************************** REGEX FORMATTING *******************************/
+
+      var ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
+      var emailRegex =/[a-z0-9]+[_a-z0-9\.-]*[a-z0-9]+@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})/;
+      var hashRegex = /[a-fA-F0-9]/;
+      var md5Regex = /\b[a-fA-F\d]{32}\b/gm;
+      var sha1Regex = /\b[a-fA-F\d]{40}\b/gm;
+      var sha256Regex = /\b[a-fA-F\d]{64}\b/gm;
+
+    /**************************** REGEX FORMATTING end *******************************/
+
+
+
 type: javascript
 tags:
 - infra
@@ -1776,3 +1861,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Added a function to format Demisto table cells as strings (formatTableValues)"

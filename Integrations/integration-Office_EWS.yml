@@ -2,6 +2,7 @@ commonfields:
   id: EWS
   version: -1
 name: EWS
+releaseNotes: Fixed fetch incidents, when there is no 'To' in mail. Added ews-move-item command. Support searching more than 20000 mailboxes
 display: EWS
 fromversion: 2.6.0
 category: Messaging
@@ -671,7 +672,7 @@ script:
         });
         return res;
     };
-    var execute = function(command, args) {
+    var execute = function(command, args, returnRaw) {
         var currentCommand = commandsDictionary[command];
         var hrTitle = command;
         if (currentCommand.tableTitle) {
@@ -712,6 +713,13 @@ script:
                 throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
             }
         }
+        if(returnRaw){
+            return raw;
+        }
+        return createEntry(currentCommand, raw, hrTitle);
+    }
+
+    function createEntry(currentCommand, raw, hrTitle){
         var entry = {
             Type: entryTypes.note,
             Contents: raw,
@@ -1124,12 +1132,58 @@ script:
         return JSON.stringify(incidents);
     }
 
+    function searchMailboxes(args){
+        if (!args['mailbox-search-scope']) {
+            var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
+            args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
+        } else {
+            if (!Array.isArray(args['mailbox-search-scope'])) {
+                args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
+            }
+        }
+        args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
+        var slicedMailboxes = [];
+
+        // breaks the list of mailboxes into groups of 15,000 due to EWS limitation of max number of mailboxes per search
+        for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
+            slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
+        }
+
+        var resArray = [];
+        if(slicedMailboxes.length === 0){
+            return "No mailboxes to search";
+        }
+
+        currentCommand = commandsDictionary['ews-search-mailboxes'];
+        var rawData = [];
+        var lastRes;
+        for (var j=0; j< slicedMailboxes.length; j++){
+            args['mailbox-search-scope'] = slicedMailboxes[j];
+            res =  execute(command, args, true);
+            data = dq(res, currentCommand.innerPath);
+            if (data){
+                lastRes = res;
+                rawData = rawData.concat(data);
+            }
+        }
+        if(!lastRes){
+            return "No results";
+        }
+        try {
+            lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
+        } catch (err) {
+            throw 'Error - response from EWS could not be parsed.\nResponse from EWS is:\n' + JSON.stringify(lastRes);
+        }
+        return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
+    }
+
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
     if (!args['target-mailbox']) {
         args['target-mailbox'] = getDefaultTargetMailbox();
     }
+    args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
 
     setImpersonation(args);
 
@@ -1147,15 +1201,7 @@ script:
             return getAttachment(args, true);
         }
         case 'ews-search-mailboxes':
-            if (!args['mailbox-search-scope']) {
-                var mailboxes = execute('ews-get-searchable-mailboxes', {});
-                args['mailbox-search-scope'] = dq(mailboxes, 'Contents.Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
-            } else {
-                if (!Array.isArray(args['mailbox-search-scope'])) {
-                    args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
-                }
-            }
-            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.trim(); });
+            return searchMailboxes(args);
         default:
             return execute(command, args);
     }
@@ -1166,7 +1212,6 @@ script:
     - name: folders-ids
       required: true
       description: The Item IDs (result of the ews-search-mailbox command)
-      isArray: true
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1511,4 +1556,3 @@ script:
     description: Move one or more item to one destination folder. Note that after
       an item is moved, a new id will be associated with it.
   isfetch: true
-releaseNotes: Fix fetch incidents, when there is no 'To' in mail. Added ews-move-item command. Add context update

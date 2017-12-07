@@ -138,17 +138,19 @@ script:
         if ((args.type) && ( (args.type === 'table') || (args.type === 'json') )){
             var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json','GET', getHeaders());
             var resString = JSON.stringify(res);
+
             var summary = res.Summary;
             summary.VerdictDescription = summary.Verdict.Description;
             summary.VerdictSeverity = summary.Verdict.Severity ;
             var context = buildReportContext(summary);
+            summary = formatTableValues(summary);
             var md = resToMD(summary,'ATD Sandbox Report');
-            return {Type: entryTypes.note,
-              Contents: resString,
-              ContentsFormat: formats.json,
-              HumanReadable: md,
-              EntryContext: context
-            };
+
+            return { Type: entryTypes.note,
+            Contents: resString,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context };
         }
         if (args.type === 'pdf'){
             if (!getSession().isAdmin) {
@@ -564,3 +566,4 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
+releaseNotes: "Some more complex fields are now formatted for better readability."
