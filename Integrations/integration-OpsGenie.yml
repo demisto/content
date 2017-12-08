@@ -38,8 +38,8 @@ script:
         users: 'users'
     };
 
-    var sendRequest = function(url, param) {
-        var requestUrl = baseURL + url + encodeToURLQuery(param);
+    var sendRequest = function(url) {
+        var requestUrl = baseURL + url;
         logDebug('OpsGenie API requestUrl: ' + requestUrl);
         var res = http(
             requestUrl,
@@ -76,7 +76,6 @@ script:
         }
         var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls' + encodeToURLQuery(urlParams);
 
-        console.log(url);
         var res = sendRequest(url);
         var md = '### OpsGenie On-Call Schedule __' + schedule + '__\n';
         var ec = {};
@@ -124,10 +123,10 @@ script:
     var getScheduleTimeline = function(schedule) {
         var url = serviceURLs.schedules + '/' + schedule + '/timeline?identifierType=name';
         var res = sendRequest(url);
-        var rotations = res.data.finalTimeline.rotations;
         var md = '### OpsGenie On Call Timeline for ' + schedule + '\n';
         var ec = {};
         if (res && res.data) {
+            var rotations = res.data.finalTimeline.rotations;
             rotations.forEach(function(rotation) {
                 md += '#### Rotation ' + rotation.name + '\n';
                 var periodsArr = [];
