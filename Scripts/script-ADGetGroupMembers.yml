@@ -2,6 +2,7 @@ commonfields:
   id: ADGetGroupMembers
   version: -1
 name: ADGetGroupMembers
+releaseNotes: "Fixed script failure when user/computer has no groups"
 script: |+
   def createEndpointEntities(t,attrs):
       endpoints = []
@@ -10,7 +11,9 @@ script: |+
           endpoint['Type'] = 'AD'
           endpoint['ID'] = demisto.get(l,'dn')
           endpoint['Hostname'] = demisto.get(l,'name')
-          endpoint['Groups'] = demisto.get(l,'memberOf').split('<br>')
+          endpoint['Groups'] = None
+          if demisto.get(l,'memberOf'):
+              endpoint['Groups'] = demisto.get(l,'memberOf').split('<br>')
           for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
               endpoint[attr.title()] = demisto.get(l,attr)
           endpoints.append(endpoint)
@@ -26,7 +29,9 @@ script: |+
           account['Email'] = demisto.get(l,'mail')
           account['Username'] = demisto.get(l,'name')
           account['DisplayName'] = demisto.get(l,'displayName')
-          account['Groups'] = demisto.get(l,'memberOf').split('<br>')
+          account['Groups'] = None
+          if demisto.get(l,'memberOf'):
+              account['Groups'] = demisto.get(l,'memberOf').split('<br>')
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
               account[attr.title()] = demisto.get(l,attr)
           accounts.append(account)

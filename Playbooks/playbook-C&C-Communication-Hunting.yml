@@ -13,6 +13,7 @@ tasks:
     type: start
     task:
       id: b0106ff2-1f84-4336-811c-501b301327a3
+      description: ""
       version: -1
       name: start_task
       type: start
@@ -35,6 +36,7 @@ tasks:
     task:
       id: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
       version: -1
+      description: ""
       name: Prepare
       issystemtask: true
       type: title
@@ -56,6 +58,7 @@ tasks:
     type: regular
     task:
       id: 3608118f-e307-4a7e-8478-a74fe26a8747
+      description: ""
       version: -1
       name: Trigger an update of our IoC repository from all available Threat Intel
         sources
@@ -103,6 +106,7 @@ tasks:
     type: title
     task:
       id: e0c2eca8-a6bd-4924-835b-4264c1d5a673
+      description: ""
       version: -1
       name: Hunt
       issystemtask: true
@@ -150,6 +154,7 @@ tasks:
     task:
       id: 4ddbe71f-9a61-4f7c-8dd4-50673f386a1a
       version: -1
+      description: ""
       name: Search web proxy logs for C&C URLs
       issystemtask: true
       type: regular
@@ -172,6 +177,7 @@ tasks:
     task:
       id: bbefe0d0-cde1-4f50-8bdc-f469f3c80264
       version: -1
+      description: ""
       name: Search the organization's DNS server logs for C&C domains
       issystemtask: true
       type: regular
@@ -194,6 +200,7 @@ tasks:
     task:
       id: 388ef341-1a5b-4352-8328-2af51d604196
       version: -1
+      description: ""
       name: Search Endpoint monitoring infrastructure for communication with C&C IPs
       issystemtask: true
       type: regular
@@ -240,6 +247,7 @@ tasks:
     task:
       id: e8beb59e-d7fd-4bc4-8c5d-f29bfa3370ce
       version: -1
+      description: ""
       name: Validate findings
       issystemtask: true
       type: title
@@ -262,6 +270,7 @@ tasks:
     task:
       id: 20253d8e-c1d5-4918-82d1-aeac6837d061
       version: -1
+      description: ""
       name: Did we uncover any suspected C&C communication?
       issystemtask: true
       type: condition
@@ -335,6 +344,7 @@ tasks:
     task:
       id: 69cd0199-8b53-4358-89ed-63677ad5c20c
       version: -1
+      description: ""
       name: Is PassiveTotal Available?
       scriptName: Exists
       issystemtask: true
@@ -387,6 +397,7 @@ tasks:
     task:
       id: 0d2eda66-3682-4884-892e-82d33324855d
       version: -1
+      description: ""
       name: Is CrowdStrike Intel Available?
       scriptName: Exists
       issystemtask: true
@@ -415,6 +426,7 @@ tasks:
     task:
       id: 2676407a-39f4-4dae-8f1e-b72e52bcd409
       version: -1
+      description: ""
       name: Get and review CrowdStrike indicator information
       issystemtask: true
       type: regular
@@ -437,6 +449,7 @@ tasks:
     task:
       id: 1127e16d-2f20-4090-89a2-e000f2cd9461
       version: -1
+      description: ""
       name: Do the found IoCs include domain names?
       issystemtask: true
       type: condition
@@ -461,6 +474,7 @@ tasks:
     task:
       id: a71b6494-370c-486a-84ac-1a3c58118c11
       version: -1
+      description: ""
       name: Review the domains' Whois information
       issystemtask: true
       type: regular
@@ -483,6 +497,7 @@ tasks:
     task:
       id: caae4dd9-e7c0-458c-84a9-90db5c2e6fac
       version: -1
+      description: ""
       name: Retrieve DNS history for these domains
       issystemtask: true
       type: regular
@@ -505,6 +520,7 @@ tasks:
     task:
       id: c91818be-5898-46ee-8263-a2f531216e5e
       version: -1
+      description: ""
       name: Review IP reputation for the IPs to which this domain resolved at the
         time
       issystemtask: true
@@ -528,6 +544,7 @@ tasks:
     task:
       id: 5823c9d5-90cc-41cf-87c5-7b94b692f96e
       version: -1
+      description: ""
       name: Summarize the list of validated malicious indicators
       issystemtask: true
       type: regular
@@ -550,6 +567,7 @@ tasks:
     task:
       id: b7ee6752-2787-4142-8802-0d3ae23033c7
       version: -1
+      description: ""
       name: Respond
       issystemtask: true
       type: title
@@ -572,6 +590,7 @@ tasks:
     task:
       id: 9ac6e273-1fa9-42e3-8367-031ce8a663f3
       version: -1
+      description: ""
       name: Have any machines been confirmed as compromised?
       issystemtask: true
       type: condition
@@ -595,6 +614,7 @@ tasks:
     type: regular
     task:
       id: 7b632ce1-d607-40a1-8704-1097f5df2e72
+      description: ""
       version: -1
       name: Isolate compromised hosts from network
       issystemtask: true
@@ -667,6 +687,7 @@ tasks:
     type: condition
     task:
       id: 00d3bb90-f069-4f86-8b0d-b68573ec9ddc
+      description: ""
       version: -1
       name: Is Slack Available?
       scriptName: Exists
@@ -694,6 +715,7 @@ tasks:
     type: regular
     task:
       id: e7c70fba-f94f-4a02-8041-ef0bbf35baf0
+      description: ""
       version: -1
       name: Retrieve the user's phone number from Active Directory
       issystemtask: true
@@ -716,6 +738,7 @@ tasks:
     type: condition
     task:
       id: 9f4c6dba-dd4b-4673-86a8-19de7b29b237
+      description: ""
       version: -1
       name: Is Twilio Available?
       scriptName: Exists
@@ -745,6 +768,7 @@ tasks:
     task:
       id: dcf67394-61f2-49bb-8e0d-bc4fe64777b8
       version: -1
+      description: ""
       name: Call the user and tell them that their machine is being isolated and investigated
       issystemtask: true
       type: regular
@@ -767,6 +791,7 @@ tasks:
     task:
       id: 322e404d-bfed-49fd-824d-67dc96c95596
       version: -1
+      description: ""
       name: SMS the user that their machine is being isolated and investigated
       issystemtask: true
       type: regular
@@ -789,6 +814,7 @@ tasks:
     task:
       id: 3c17b8bd-e79e-4a02-8b1d-83e10fd749a8
       version: -1
+      description: ""
       name: Tell the user on Slack that their machine is being isolated and investigated
       issystemtask: true
       type: regular
@@ -811,6 +837,7 @@ tasks:
     task:
       id: c43c578d-8337-42b4-8fbc-73e178f6d0d5
       version: -1
+      description: ""
       name: Open separate incidents to further investigate each compromised host
       issystemtask: true
       type: regular
@@ -833,6 +860,7 @@ tasks:
     task:
       id: 789a66bc-3116-4084-8c04-61b840d818ce
       version: -1
+      description: ""
       name: Remediate and Wrap up
       issystemtask: true
       type: title
@@ -855,6 +883,7 @@ tasks:
     task:
       id: 6f288fd3-3fb2-49af-8036-96f1063cd098
       version: -1
+      description: ""
       name: Have the machines been cleaned successfully?
       issystemtask: true
       type: condition
@@ -879,6 +908,7 @@ tasks:
     task:
       id: ba3b890e-71b4-4f4d-8fd1-b33f295fd72e
       version: -1
+      description: ""
       name: Open a ticket for IT to reimage the machine
       issystemtask: true
       type: regular
@@ -901,6 +931,7 @@ tasks:
     task:
       id: c3330605-13ed-4282-8d71-6150364e16d2
       version: -1
+      description: ""
       name: Restore network access for cleaned up hosts
       issystemtask: true
       type: regular
@@ -923,6 +954,7 @@ tasks:
     task:
       id: bd76719e-c055-464d-868f-da361e6d134c
       version: -1
+      description: ""
       name: Reinstate locked user accounts with new credentials
       issystemtask: true
       type: regular
@@ -945,6 +977,7 @@ tasks:
     task:
       id: a80fd4c5-d1b2-4095-88a8-242e4ae17db5
       version: -1
+      description: ""
       name: Is Slack Available?
       scriptName: IsIntegrationAvailable
       issystemtask: true
@@ -974,6 +1007,7 @@ tasks:
     task:
       id: b195772e-ba3d-4283-8cd5-2103d953285d
       version: -1
+      description: ""
       name: Retrieve the user's phone number from Active Directory
       issystemtask: true
       type: regular
@@ -996,6 +1030,7 @@ tasks:
     task:
       id: 18edd09f-be16-4da9-872c-3934845a255d
       version: -1
+      description: ""
       name: Is Twilio Available?
       scriptName: Exists
       issystemtask: true
@@ -1024,6 +1059,7 @@ tasks:
     task:
       id: 2c7bfecc-9b5d-43ba-8e1b-a35265824fef
       version: -1
+      description: ""
       name: Call the user and tell them that their accounts have been reinstated
       issystemtask: true
       type: regular
@@ -1095,6 +1131,7 @@ tasks:
     task:
       id: 1a2dbd58-f17d-437d-8573-54a8339d3ccb
       version: -1
+      description: ""
       name: Deploy validated IoCs with high confidence rating against future attacks
       issystemtask: true
       type: regular
@@ -1141,6 +1178,7 @@ tasks:
     task:
       id: a5a8e072-2d12-46ad-8448-1c958924aa4d
       version: -1
+      description: ""
       name: Issue report to CISO by email
       issystemtask: true
       type: regular
@@ -1160,6 +1198,7 @@ tasks:
     task:
       id: a38ffd8c-2fc9-4c28-8726-a9f59033aaca
       version: -1
+      description: ""
       name: Expose Configured Integrations
       script: ExposeModules
       type: regular

@@ -877,6 +877,7 @@ script:
   - name: verodin-get-job
     arguments:
     - name: id
+      description: "Job id"
       required: true
     outputs:
     - contextPath: Verodin.Jobs.ID

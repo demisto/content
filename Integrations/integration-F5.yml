@@ -191,5 +191,6 @@ script:
   - name: f5-list-all-user-sessions
     arguments:
     - name: resource-ip
+      description: Client IP address
       required: true
     description: Lists all the sessions with client ip for the given username

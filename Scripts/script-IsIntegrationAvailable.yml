@@ -15,9 +15,11 @@ type: python
 tags:
 - infra
 - Condition
+comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'
 system: true
 args:
 - name: brandname
+  description: Integration's brand name to query
   required: true
   default: true
 scripttarget: 0

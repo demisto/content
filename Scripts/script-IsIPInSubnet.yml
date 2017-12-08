@@ -4,6 +4,7 @@ commonfields:
 name: IsIPInSubnet
 script: 'return isIPInSubnet(args.ip, args.subnet) ? ''yes'' : ''no'''
 type: javascript
+comment: Returns 'yes' if IP is in subent. Otherwise returns 'no'
 tags:
 - Condition
 enabled: true
@@ -21,3 +22,5 @@ outputs:
 - contextPath: no
   description: if  IP is not in subnet
 scripttarget: 0
+deprecated: true
+releaseNotes: Deprecated. Use IsIPInRanges instead.

@@ -14,6 +14,7 @@ tasks:
     task:
       id: 0e3fe5d5-d93f-4ce9-8b62-685427fb9e5a
       version: -1
+      description: ""
       name: start_task
       issystemtask: true
       type: start
@@ -89,6 +90,7 @@ tasks:
     task:
       id: a6a568b4-7902-40da-8d7d-bb87db62debc
       version: -1
+      description: ""
       name: Open ServiceNow ticket for admin to install agents
       script: ServiceNow|||servicenow-incident-create
       issystemtask: true
@@ -206,6 +208,7 @@ tasks:
     task:
       id: f35617e9-0a55-4967-8a2e-1c878e4711a0
       version: -1
+      description: ""
       name: CloseInvestigation
       scriptName: CloseInvestigation
       issystemtask: true
@@ -228,6 +231,7 @@ tasks:
     task:
       id: 4a32bb9b-8d01-48f5-8685-c754b5067c09
       version: -1
+      description: ""
       name: Check connectivity for each endpoint using ping
       scriptName: Ping
       issystemtask: true
@@ -255,6 +259,7 @@ tasks:
     task:
       id: b5a87844-2303-4da8-8b3f-9824047aa547
       version: -1
+      description: ""
       name: Remotely check that McAfee Agent is installed and running
       issystemtask: true
       type: regular
@@ -277,6 +282,7 @@ tasks:
     task:
       id: 2c6c6764-94f8-4777-836b-649ef7b51b98
       version: -1
+      description: ""
       name: Remotely execute cmdagent commandline utility to force communication with
         ePO
       issystemtask: true
@@ -299,6 +305,7 @@ tasks:
     task:
       id: 70cbf053-e249-48eb-823e-10c903391df5
       version: -1
+      description: ""
       name: Retrieve McAfee Agent logs from non-communicating endpoints
       issystemtask: true
       type: regular

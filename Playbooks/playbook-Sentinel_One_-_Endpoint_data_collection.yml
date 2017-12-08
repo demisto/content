@@ -1,0 +1,225 @@
+id: Sentinel One - Endpoint data collection
+version: -1
+name: Sentinel One - Endpoint data collection
+description: |-
+  # Collect endpoint information based on SentinelOne commands.
+
+  Input:
+  * Hostname (Default: ${Endpoint.Hostname})
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 27fc5e2d-5e47-4d5b-81ef-889cfeb1676e
+    type: start
+    task:
+      id: 27fc5e2d-5e47-4d5b-81ef-889cfeb1676e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: a127bd66-2910-4a57-86b2-e0c36065263c
+    type: regular
+    task:
+      id: a127bd66-2910-4a57-86b2-e0c36065263c
+      version: -1
+      name: Get  Host Agent info
+      script: sentinelOne|||so-agents-query
+      type: regular
+      iscommand: true
+      brand: sentinelOne
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      agent_id: ""
+      agent_version__in: ""
+      computer_name__like: ${inputs.Hostname}
+      core_count__gte: ""
+      core_count__lte: ""
+      cpu_count__gte: ""
+      cpu_count__lte: ""
+      created_at__gt: ""
+      created_at__lt: ""
+      domain__in: ""
+      encrypted_applications: ""
+      group_id: ""
+      group_id__in: ""
+      id__in: ""
+      id__nin: ""
+      include_decommissioned: ""
+      infected: ""
+      is_active: ""
+      is_decommissioned: ""
+      is_pending_uninstall: ""
+      is_uninstalled: ""
+      is_up_to_date: ""
+      last_active_date__gt: ""
+      last_active_date__lt: ""
+      limit: ""
+      machine_type__in: ""
+      network_status: ""
+      os_type: ""
+      os_type__in: ""
+      policy_id__in: ""
+      query: ""
+      registerd_at__gt: ""
+      registered_at__lt: ""
+      skip: ""
+      total_memory__gte: ""
+      total_memory__lte: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 8a5366c2-6ab4-4eeb-8515-edde825d2f0d
+    type: condition
+    task:
+      id: 8a5366c2-6ab4-4eeb-8515-edde825d2f0d
+      version: -1
+      name: Did we get the Agent info?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      value: ${SentinelOne.Agents.Id}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 88cf0630-08b2-4ec8-8dff-a49dc81a9f8c
+    type: regular
+    task:
+      id: 88cf0630-08b2-4ec8-8dff-a49dc81a9f8c
+      version: -1
+      name: No Agent was found
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value: No Agent was found
+    view: |-
+      {
+        "position": {
+          "x": 51,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 85bc7a45-7439-417a-84a8-51eebf2753b3
+    type: title
+    task:
+      id: 85bc7a45-7439-417a-84a8-51eebf2753b3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 9300a326-4267-4ade-8870-24310ab4445c
+    type: title
+    task:
+      id: 9300a326-4267-4ade-8870-24310ab4445c
+      version: -1
+      name: Collect info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: cdb41868-c1b9-471c-8abd-da5ca3cac6e6
+    type: regular
+    task:
+      id: cdb41868-c1b9-471c-8abd-da5ca3cac6e6
+      version: -1
+      name: Get Processes
+      description: Get agent proccesses
+      script: sentinelOne|||so-get-agent-processes
+      type: regular
+      iscommand: true
+      brand: sentinelOne
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      agent_id: ${SentinelOne.Agents.Id}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 809,
+        "x": 51,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: ${Endpoint.Hostname}
+  description: The Hostname of the device to run on

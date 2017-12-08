@@ -187,12 +187,17 @@ script:
             } else {
                 body = encodeBody(args);
             }
-            return sendRequest(
+            var res= sendRequest(
                 method,
                 server + url + query,
                 urlDict[command],
                 body
             );
+            if (command === 'test-module') {
+              return 'ok';
+            } else {
+              return res;
+            }
     }
   type: javascript
   commands:
@@ -371,6 +376,7 @@ script:
       description: The particular group guid
     description: Returns a particular group
   - name: amp_set_group_policy
+    description: Set a security policy to group of endpoints
     arguments:
     - name: group_guid
       required: true

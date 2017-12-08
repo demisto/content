@@ -106,6 +106,7 @@ type: javascript
 tags:
 - Amazon Web Services
 system: true
+comment: Get AWS EC2 instance details
 args:
 - name: instanceId
   default: true

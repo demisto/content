@@ -250,6 +250,7 @@ script:
       - folder
       description: The applications trust rating
     - name: mime_type
+      description: The mime type of the object/document (if any)
     - name: updated_before
       description: Filters assets updated before the specified timestamp
     - name: updated_after
@@ -295,6 +296,7 @@ script:
     description: This endpoint returns all of the applications installed by a user
       (based on the users email address)
   - name: cloudlock-get-activities
+    description: Returns UBA (User Behavioral Analysis) activities
     arguments:
     - name: event_type
       description: Filter based on the event type i.e. login, user_settings, other

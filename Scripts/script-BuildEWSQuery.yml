@@ -12,13 +12,18 @@ script: |-
   }
   return str || ' ';
 type: javascript
+comment: Returns an EWS query that includes the given arguments
 tags:
 - ews
 enabled: true
 args:
 - name: from
   default: true
+  description: Parameter 'from' of the query
 - name: subject
+  description: Parameter 'subject' of the query
 - name: attachmentName
+  description: Parameter 'attachmentName' of the query
 - name: body
+  description: Parameter 'body' of the query
 scripttarget: 0

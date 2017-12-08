@@ -47,6 +47,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Timezone of Splunk server in minutes e.g. for gmt +3 set +180 (set only
+    if different than Demisto server), relevent for fetch notable events only
+  name: timezone
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     import splunklib.client as client
@@ -203,7 +209,7 @@ script:
         if demisto.get(demisto.args(), 'event_limit'):
             kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
         searchquery_oneshot = demisto.args()['query']
-        if not searchquery_oneshot.startswith('search'):
+        if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search') and not searchquery_oneshot.startswith('|'):
             searchquery_oneshot = 'search '+searchquery_oneshot
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
@@ -254,6 +260,9 @@ script:
 
         incidents = []
         t = datetime.utcnow()
+        if demisto.get(demisto.params(), 'timezone'):
+            timezone = demisto.params()['timezone']
+            t = t + timedelta(minutes=int(timezone))
         now = t.strftime("%Y-%m-%dT%H:%M:%S")
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
@@ -400,3 +409,4 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: fix issue with query that start with | on splunk-search

@@ -101,7 +101,7 @@ def remove_releaseNotes_folder(folder_path, files_extension):
 
 def main(root_dir):
     yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', ] # yml
-    json_folders_to_scan = ['Reports', ] # json
+    json_folders_to_scan = ['Reports', 'Misc', ] # json
 
     for folder in yml_folders_to_scan:
         print 'Scanning directory: "%s"' % (folder, )

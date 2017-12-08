@@ -381,8 +381,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -414,8 +415,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found
@@ -447,8 +449,9 @@ script:
       description: 'Headers to display in Human readable format, comma separated format,
         for example: header1,header2,header3'
     - name: since
-      description: ' Returns malware collected after a timestamp, format: 1391813489'
+      description: 'Returns malware collected after a timestamp, format: 1391813489'
     - name: until
+      description: 'Returns malware collected before a timestamp, format: 1391813489'
     description: ' Searching for subjective opinions on indicators of compromise stored
       in ThreatExchange'
   - name: threatexchange-members
@@ -458,4 +461,3 @@ script:
       address. You can set this address, if desired, under the settings panel for
       your application
 hidden: false
-releaseNotes: "will now add DBotScore 0 when no results are returned"

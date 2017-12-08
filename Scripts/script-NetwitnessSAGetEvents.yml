@@ -69,7 +69,9 @@ args:
 - name: lastCollectionTime
   description: '[optional datetime] Last collection time'
 - name: mid1
+  description: "mID1"
 - name: mid2
+  description: "mID2"
 - name: investigationToken
   description: '[optional guid] Investigation id token'
 - name: page

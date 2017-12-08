@@ -903,6 +903,7 @@ script:
   - name: threat-grid-user-get-rate-limit
     arguments:
     - name: login
+      description: User login name
       required: true
       default: true
     description: Get rate limit for user
@@ -913,6 +914,7 @@ script:
       default: true
       description: The feed name
     - name: feed-period
+      description: Feed period (hourly/daily)
       required: true
       auto: PREDEFINED
       predefined:

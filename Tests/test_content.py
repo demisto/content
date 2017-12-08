@@ -67,43 +67,59 @@ def main():
         with open(secret_conf_path) as data_file:
             secret_conf = json.load(data_file)
 
-    integrations = conf['integrations']
+    tests = conf['tests']
 
-    secret_integrations = secret_conf['integrations'] if secret_conf else []
+    secret_params = secret_conf['integrations'] if secret_conf else []
 
-    if not integrations or len(integrations) is 0:
+    if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
 
     succeed_playbooks = []
     failed_playbooks = []
-    for integration in integrations:
+    for t in tests:
         test_options = {
-            'timeout': integration['timeout'] if 'timeout' in integration else conf.get('testTimeout', 30),
+            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
             'interval': conf.get('testInterval', 10)
         }
 
-        integration_name = integration.get('name', None)
-        playbook_id = integration['playbookID']
-        if 'params' in integration:
-            integration_params = integration['params']
-        else:
-            # get from secret conf
-            secret_integration_match = [item for item in secret_integrations if item["name"] == integration_name]
-            if len(secret_integration_match) > 0:
-                integration_params = secret_integration_match[0].get('params')
-            else:
-                integration_params = {}
+        playbook_id = t['playbookID']
 
-        if integration_name:
-            test_message = 'integration: ' + integration_name + ' with playbook: ' + playbook_id
-        else:
-            test_message = 'playbook: ' + playbook_id
+        integrations_conf = t.get('integrations', [])
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        integrations = []
+        for integration in integrations_conf:
+            if type(integration) is dict:
+                # dict description
+                integrations.append({
+                    'name': integration.get('name'),
+                    'byoi': integration.get('byoi',True),
+                    'params': {}
+                })
+            else:
+                # string description
+                integrations.append({
+                    'name': integration,
+                    'byoi': True,
+                    'params': {}
+                })
+
+        for integration in integrations:
+            integration_params = [item for item in secret_params if item["name"] == integration['name']]
+            if integration_params:
+                integration['params'] = integration_params[0].get('params', {})
+
+        test_message = 'playbook: ' + playbook_id
+        if integrations:
+            integrations_names = [integration['name'] for integration in integrations]
+            test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
+
         print '------ Test %s start ------' % (test_message, )
 
-        nightly_test = integration.get('nightly', False)
-
-        is_byoi = integration.get('byoi', True)
+        nightly_test = t.get('nightly', False)
 
         skip_test = True if nightly_test and not is_nightly else False
 
@@ -111,7 +127,7 @@ def main():
             print 'Skip test'
         else:
             # run test
-            succeed = test_integration(c, integration_name, integration_params, playbook_id, is_byoi, test_options)
+            succeed = test_integration(c, integrations, playbook_id, test_options)
 
             # use results
             if succeed:

@@ -39,6 +39,7 @@ type: javascript
 tags:
 - sep
 - symantec
+comment: Scans ip/hostname with Symantec Endpoint Protection
 enabled: true
 args:
 - name: scanType

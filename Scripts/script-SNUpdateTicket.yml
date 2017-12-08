@@ -31,15 +31,21 @@ script: |-
 type: python
 tags:
 - servicenow
+comment: "Update a ServiceNow ticket."
 system: true
 deprecated: true
 args:
 - name: category
   default: true
+  description: Ticket new category
 - name: subcategory
+  description: Ticket new sub category
 - name: shortdescription
+  description: Ticket new short description
 - name: comments
+  description: Ticket new comments
 - name: assignmentgroup
+  description: Ticket new assignment group
 - name: id
   required: true
   description: ID of the Ticket/Incident in ServiceNow

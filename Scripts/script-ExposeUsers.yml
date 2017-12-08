@@ -12,6 +12,7 @@ script: |
   }
   return res;
 type: javascript
+comment: Returns Demisto users
 tags:
 - Utility
 system: true

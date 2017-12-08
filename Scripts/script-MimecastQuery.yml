@@ -28,9 +28,8 @@ args:
     will override other query arguments
   name: queryXml
 - auto: PREDEFINED
+  description: search for this text in api messages
   name: text
-  predefined:
-  - search for this text in api messages
 - auto: PREDEFINED
   description: Will no execute the query, but just return the query string builded
   name: dryRun

@@ -1,86 +1,92 @@
 {
     "testTimeout": 120,
     "testInterval": 30,
-    "integrations": [
+    "tests": [
         {
-            "name": "GoogleSafeBrowsing",
+            "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
+            "integrations": [],
+            "playbookID": "Test CommonServer"
+        },
+        {
+            "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
         },
         {
-            "name": "PostgreSQL",
+            "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
         {
-            "name": "Qualys",
+            "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
         {
-            "name": "google",
-            "playbookID": "GsuiteTest",
-            "byoi": false
+            "integrations": {
+                "name": "google",
+                "byoi": false
+            },
+            "playbookID": "GsuiteTest"
         },
         {
-            "name": "OpenPhish",
+            "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "name": "RSA Archer",
+            "integrations": "RSA Archer",
             "playbookID": "Archer-Test-Playbook"
         },
         {
-            "name": "ThreatExchange",
+            "integrations": "ThreatExchange",
             "playbookID": "ThreatExchange-test"
         },
         {
-            "name": "jira",
+            "integrations": "jira",
             "playbookID": "Jira-Test"
         },
         {
-            "name": "ThreatConnect",
+            "integrations": "ThreatConnect",
             "playbookID": "test-ThreatConnect"
         },
         {
-            "name": "XFE",
+            "integrations": "XFE",
             "playbookID": "XFE Test",
             "timeout": 140,
             "nightly": true
         },
         {
-            "name": "ipinfo",
+            "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
         {
-            "name": "jira",
+            "integrations": "jira",
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
             "playbookID": "ExtractURL Test"
         },
         {
-            "name": "carbonblack",
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
             "playbookID": "CB-Response-Test",
-            "byoi": false,
             "nightly": true
         },
         {
-            "name": "McAfee ESM-v10",
+            "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500,
             "nightly": true
         },
         {
-            "playbookID": "TestCommonPython"            
+            "playbookID": "TestCommonPython"
         },
         {
-            "playbookID": "TestFileCreateAndUpload"            
+            "playbookID": "TestFileCreateAndUpload"
         },
         {
             "playbookID": "TestIsValueInArray"
-        },
-        {
-            "name": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
         },
         {
             "playbookID": "TestStringReplace"
@@ -89,34 +95,69 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
-            "name": "VxStream",
+            "integrations": "VxStream",
             "playbookID": "VxStream Test"
         },
         {
-            "name": "SplunkPy",
+            "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
         {
-            "name" : "McAfee NSM",
+            "integrations" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
-            "timeout" : 300
+            "timeout" : 400,
+            "nightly": true
         },
         {
-            "name": "McAfee Active Response",
+            "integrations": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test"
         },
         {
-            "name": "PhishTank",
+            "integrations": "PhishTank",
             "playbookID": "PhishTank Testing"
         },
         {
-            "name": "iDefense",
-            "playbookID": "iDefenseTest"
+            "integrations": "McAfee Web Gateway",
+            "playbookID": "McAfeeWebGatewayTest",
+            "timeout" : 500
+        },
+        {
+            "integrations": "TCPIPUtils",
+            "playbookID": "TCPUtils-Test"
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "McAfee-TIE Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook"
+        },
+        {
+            "playbookID": "ProofpointDecodeURL-Test"
+        },
+        {
+            "playbookID": "listExecutedCommands-Test"
+        },
+        {
+            "integrations": "icebrg",
+            "playbookID": "Icebrg Test",
+            "timeout" : 500
+        },
+        {
+            "integrations": "Service Manager",
+            "playbookID": "TestHPServiceManager",
+            "timeout": 400
+        },
+                {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
         }
     ],
     "skipped": [
         {
-            "name": "Cisco Umbrella Investigate",
+            "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
         }
     ]

@@ -57,6 +57,11 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Credential names - comma-seperated list of credentials names in vault
+  name: credentialNames
+  defaultvalue: ""
+  type: 12
+  required: false
 script:
   script: |-
     var port = params.port;
@@ -71,7 +76,7 @@ script:
     var password = params.password;
     var token;
 
-    var sendRequest = function(method, url, args, allowOtherStatuses) {
+    var sendRequest = function(method, url, args) {
         var res = http(
             url + (method === 'GET' ? encodeToURLQuery(args) : ''),
             {
@@ -84,7 +89,7 @@ script:
             false,
             30000
         );
-        if ((allowOtherStatuses && res.StatusCode !== 400) && (res.StatusCode < 200 || res.StatusCode >= 300)) {
+        if (res.StatusCode !== 400 && (res.StatusCode < 200 || res.StatusCode >= 300)) {
             if (res.StatusCode === 404) {
                 return undefined;
             }
@@ -194,60 +199,91 @@ script:
         };
     };
 
-    var getCredentials = function(humanReadable) {
-        var result = sendRequest('GET', accountsUrl, args, true);
-        if (!result) {
-            return 'no results found';
+    var getCredentials = function(asList) {
+        args.AppID = appid;
+        args.Folder = params.folder;
+        args.Safe = params.safe;
+
+        var credsToFetch  = [];
+        if (args.identifier) {
+            credsToFetch.push(args.identifier);
+            delete args.identifier;
+        } else if (params.credentialNames) {
+            credsToFetch = params.credentialNames.split(',');
         }
+
         var credentials = [];
-        if (result.ErrorMsg && result.ErrorMsg.indexOf("Too many password objects matching query") !== -1) {
-            credentials = parseACcountsFromErroMessage(result.ErrorMsg);
-        } else {
-            if (humanReadable) {
-                if (!(result instanceof Array)) {
-                    result = [result];
-                }
-                for (var j = 0; j < result.length; j++) {
-                    delete(result[j].Content);
-                }
-                return {
-                    Type: entryTypes.note,
-                    ContentsFormat: formats.json,
-                    Contents: result,
-                    EntryContext: {'CyberArk.AIM(val.Name==obj.Name)': result},
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: tableToMarkdown('AIM Query response', result)
-                };
-            } else {
-                var crednetialDetails = {};
-                crednetialDetails.user = result.UserName;
-                crednetialDetails.password = result.Content;
-                crednetialDetails.name = result.Name;
-                credentials.push(crednetialDetails);
+
+        for (var i = 0; i < credsToFetch.length; i++) {
+            args.Object = credsToFetch[i].trim();
+
+            var result = sendRequest('GET', accountsUrl, args);
+            if (result) {
+                var itemToAdd = asList ? result : {
+                        'user': result.UserName,
+                        'password': result.Content,
+                        'name': result.Name
+                    };
+                credentials.push(itemToAdd);
             }
         }
-        return JSON.stringify(credentials);
+
+        if (credentials.length === 0) {
+            // no creds were fetched - log to server
+            logInfo('No credentials were fetched for [' + credsToFetch.join(', ') + ']');
+        }
+
+        return asList ? credentials : JSON.stringify(credentials);
+    }
+
+    var listCredentials = function() {
+        var creds = getCredentials(true);
+
+        for (var i = 0; i < creds.length; i++) {
+            // delete password
+            delete creds[i].Content;
+        }
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: creds,
+            EntryContext: {'CyberArk.AIM(val.Name==obj.name)': creds},
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Credentials fetched from CyberArk AIM valut:', creds)
+        };
+    }
+
+    function testModuleAndCredentials() {
+        args.AppID = appid;
+        args.Folder = params.folder;
+        args.Safe = params.safe;
+
+        var paramCredsString = params.credentialNames;
+        if (!paramCredsString) {
+            sendRequest('GET', accountsUrl, args);
+        } else {
+            var names = paramCredsString.split(',');
+            for (var i = 0; i < names.length; i++) {
+                var name = names[i].trim()
+                args.Object = name
+                // exception would be thrown if identifier (Object) does not exists
+                var result = sendRequest('GET', accountsUrl, args);
+                if (!result) {
+                    throw 'Could not find object for: "' + name + '"'
+                }
+            }
+        }
+
+        return 'ok';
     }
 
     switch (command) {
         case 'test-module':
-            args.AppID = appid;
-            args.Folder = params.folder;
-            args.Safe = params.safe;
-            args.username = 'root';
-            sendRequest('GET', accountsUrl, args);
-            return 'ok';
+            return testModuleAndCredentials();
         case 'fetch-credentials':
-            args.AppID = appid;
-            args.Folder = params.folder;
-            args.Safe = params.safe;
-            if (args.identifier) {
-                args.Object = args.identifier;
-                delete args.identifier;
-            }
-            return getCredentials(false);
+            return getCredentials();
         case 'reset-credentials':
-            args.ImmediateChangeByCPM = args.immediateChangeByCPM;
             return resetCredentials(args);
         case 'account-details':
             args.Safe = args.safe || params.safe;
@@ -255,15 +291,10 @@ script:
             args.Keywords = args.keywords;
             delete args.keywords;
             return getAccountDetails(args);
+        case 'list-credentials':
+            return listCredentials();
         default:
-            args.AppID = appid;
-            args.Folder = params.folder;
-            args.Safe = params.safe;
-            if (args.identifier) {
-                args.Object = args.identifier;
-                delete args.identifier;
-            }
-            return getCredentials(true);
+            throw 'Command "' + command + '" is not supported';
     }
   type: javascript
   commands:
@@ -303,12 +334,16 @@ script:
     - contextPath: CyberArk.AIM.DeviceType
       description: Account device type
     description: Query CyberArk AIM
-  - name: fetch-credentials
+  - name: list-credentials
     arguments:
     - name: identifier
+      default: true
+      description: When used, command will return a specific credential
+    description: Lists all credentials available
   - name: reset-credentials
     arguments:
     - name: immediateChangeByCPM
+      description: Signle the CPM that the change is effective immediately
       auto: PREDEFINED
       predefined:
       - "Yes"
@@ -330,4 +365,3 @@ script:
       description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
-releaseNotes: "added reset credentials and account details commands"

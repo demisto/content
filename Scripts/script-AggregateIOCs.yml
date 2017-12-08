@@ -16,6 +16,7 @@ type: python
 tags:
 - Utility
 system: true
+comment: "DEPRECATED - Aggregating several context items for IOCs into a single list"
 deprecated: true
 scripttarget: 0
 dependson: {}

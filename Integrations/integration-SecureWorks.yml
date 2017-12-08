@@ -15,11 +15,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API token
-  name: token
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: Username
   name: credentials
   defaultvalue: ""
@@ -64,7 +59,7 @@ script:
         },
         'secure-works-get-ticket-count': {
             url: 'tickets/count',
-            method: 'GET',
+            method: 'POST',
             translator: [
                 {to: 'TicketCount', from: 'ticketCount'}
             ],
@@ -105,7 +100,7 @@ script:
         },
         'test-module': {
             url: 'tickets/count',
-            method: 'GET',
+            method: 'POST',
         },
         'secure-works-get-ticket': {
             url: 'tickets/%id%',
@@ -161,7 +156,7 @@ script:
                     }
                     current = current[values[i]];
                 }
-                current[values[values.length - 1]] = obj[k];
+               current[values[values.length - 1]] = obj[k];
             });
             return res;
         };
@@ -186,7 +181,7 @@ script:
             {
                 Method: commandData.method,
                 Headers: {
-                    'Authorization': [params.token + ' ' + params.credentials.identifier + ':' + params.credentials.password ],
+                    'Authorization': [ 'APIKEY ' + params.credentials.identifier + ':' + params.credentials.password ],
                     'Content-Type': ['application/json'],
                 },
                 Body: commandData.method !== 'GET' ? JSON.stringify(args || commandData.defaultArgs) : undefined
@@ -211,12 +206,12 @@ script:
         ContentsFormat: formats.json,
     };
     if (commandData.extended) {
-        var translated = mapObjFunction(commandData.translator)(dq(result, commandData.innerPath));
+        var translated = mapObjFunction(commandData.translator)(result);
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown(commandData.title,translated);
-        if (currentCommand.contextKey) {
+        if (commandData.contextKey) {
             entry.EntryContext = {};
-            entry.EntryContext[currentCommand.contextKey] = createContext(translated);
+            entry.EntryContext[commandData.contextKey] = createContext(translated);
         }
     }
     return entry;
@@ -304,9 +299,13 @@ script:
       - UNKNOWN
       description: Ticket priority
     - name: customerMiscellaneous1
+      description: Ticket custom field No.1
     - name: customerMiscellaneous2
+      description: Ticket custom field No.2
     - name: customerMiscellaneous3
+      description: Ticket custom field No.3
     - name: customerMiscellaneous4
+      description: Ticket custom field No.4
     - name: categorizationClass
       description: Ticket categorization class
     - name: categorizationCategory
@@ -338,9 +337,13 @@ script:
     - name: watchers
       description: ticket watchers
     - name: customerMiscellaneous1
+      description: Ticket custom field No.1
     - name: customerMiscellaneous2
+      description: Ticket custom field No.2
     - name: customerMiscellaneous3
+      description: Ticket custom field No.3
     - name: customerMiscellaneous4
+      description: Ticket custom field No.4
     outputs:
     - contextPath: SecureWorks.Ticket.ID
       description: Ticket ID in secure works

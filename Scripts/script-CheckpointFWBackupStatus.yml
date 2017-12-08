@@ -65,6 +65,7 @@ enabled: true
 args:
 - name: devices
   required: true
+  description: List of devices to backup, comma separated
   default: true
 - name: waittimeout
   description: In seconds. If not provided, does not wait.

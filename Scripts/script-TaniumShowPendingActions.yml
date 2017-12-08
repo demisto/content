@@ -2,6 +2,7 @@ commonfields:
   id: TaniumShowPendingActions
   version: -1
 name: TaniumShowPendingActions
+deprecated: true
 script: |
   // An example script for asking Tanium a question
 

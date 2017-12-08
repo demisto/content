@@ -664,9 +664,12 @@ script:
       description: The actual score
     description: Check domain reputation
   - name: tc-get-incident-associate-indicators
+    description: Get incidents that are related to a specific indicator
     arguments:
     - name: incidentId
+      description: incident ID
       required: true
       default: true
     - name: owner
+      description: filter by owner too
   dockerimage: demisto/threatconnect-sdk

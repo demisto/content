@@ -26,6 +26,7 @@ script: |-
 type: python
 tags:
 - servicenow
+comment: "List tickets from ServiceNow"
 system: true
 deprecated: true
 args:
@@ -33,7 +34,7 @@ args:
   default: true
   description: 'ServiceNow syntax: http://wiki.servicenow.com/index.php?title=Encoded_Query_Strings'
 - name: fields
-  description: property fields to include in results
+  description: Property fields to include in results
 scripttarget: 0
 dependson:
   must:

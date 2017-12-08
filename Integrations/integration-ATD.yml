@@ -135,27 +135,44 @@ script:
 
     var getReport = function() {
         uriSuffix = jobOrTaskId();
-        if ((args.type) && (args.type === 'json')){
-            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+        if ((args.type) && ( (args.type === 'table') || (args.type === 'json') )){
+            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json','GET', getHeaders());
             var resString = JSON.stringify(res);
+
             var summary = res.Summary;
             summary.VerdictDescription = summary.Verdict.Description;
             summary.VerdictSeverity = summary.Verdict.Severity ;
             var context = buildReportContext(summary);
+            summary = formatTableValues(summary);
             var md = resToMD(summary,'ATD Sandbox Report');
-            return {Type: entryTypes.note,
-              Contents: resString,
-              ContentsFormat: formats.json,
-              HumanReadable: md,
-              EntryContext: context
-            };
+
+            return { Type: entryTypes.note,
+            Contents: resString,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: context };
         }
         if (args.type === 'pdf'){
+            if (!getSession().isAdmin) {
+                return 'No permission to download PDF'
+            }
             var filename = args.jobId;
             if ((!filename) || (filename.length === 0)) {
                 filename = args.taskId;
             }
             filename = filename + '.pdf';
+            return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET',getHeaders(),filename);
+        }
+        if (args.type === 'sample') {
+            var permissionCheck = sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
+            if (permissionCheck.substring(11,16) === 'false') {
+                return 'No permission to download sample'
+            }
+            var filename = args.jobId;
+            if ((!filename) || (filename.length === 0)) {
+                filename = args.taskId;
+            }
+            filename = filename + '.zip';
             return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET',getHeaders(),filename);
         }
         return sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type,'GET', getHeaders());
@@ -286,7 +303,7 @@ script:
 
     var uploadFile = function(body,fileParam) {
         uri = '/php/fileupload.php'
-        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name') 
+        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name')
         filename = undefined
         if (filenameDq && filenameDq[0]) {
             filename = filenameDq[0]
@@ -495,7 +512,7 @@ script:
       - txt
       - xml
       - zip
-      - json
+      - table
       - ioc
       - stix
       - pdf
@@ -549,3 +566,4 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
+releaseNotes: "Some more complex fields are now formatted for better readability."

@@ -13,6 +13,7 @@ tasks:
     type: start
     task:
       id: start-enrich
+      description: ""
       version: -1
       name: ""
       iscommand: false
@@ -34,6 +35,7 @@ tasks:
     task:
       id: enrich-integ
       version: -1
+      description: ""
       name: Enrich with Integrations
       type: title
       iscommand: false
@@ -59,6 +61,7 @@ tasks:
     task:
       id: check-res
       version: -1
+      description: ""
       name: Check Result
       type: title
       iscommand: false
@@ -80,6 +83,7 @@ tasks:
     task:
       id: enrich-done
       version: -1
+      description: ""
       name: Done
       scriptName: Print
       type: regular
@@ -101,6 +105,7 @@ tasks:
     task:
       id: 1b38d3b8-4657-4cea-84f9-6e4ac2b5d544
       version: -1
+      description: ""
       name: Do we have MD5 hashes?
       scriptName: Exists
       type: condition
@@ -127,6 +132,7 @@ tasks:
     task:
       id: d2de03c7-2e14-40b0-83f6-dee616098d0e
       version: -1
+      description: ""
       name: Check MD5s
       scriptName: FileReputation
       type: regular
@@ -151,6 +157,7 @@ tasks:
     task:
       id: 8c9ccba0-d9d6-477e-8774-3f6fc8624a57
       version: -1
+      description: ""
       name: Do we have SHA1 hashes?
       scriptName: Exists
       type: condition
@@ -177,6 +184,7 @@ tasks:
     task:
       id: b01bef15-7c9d-40a8-83e7-7fe9474399d4
       version: -1
+      description: ""
       name: Check SHA1s
       scriptName: FileReputation
       type: regular
@@ -201,6 +209,7 @@ tasks:
     task:
       id: 5006c24b-1bc8-4af3-86be-0944cb97d7db
       version: -1
+      description: ""
       name: Do we have SHA256 hashes?
       scriptName: Exists
       type: condition
@@ -227,6 +236,7 @@ tasks:
     task:
       id: 57fc5852-cd27-43ba-87fc-03f8fd220b4d
       version: -1
+      description: ""
       name: Do we have IPs?
       scriptName: Exists
       type: condition
@@ -253,6 +263,7 @@ tasks:
     task:
       id: 5417106f-4250-4478-8ce6-5bc2465393f9
       version: -1
+      description: ""
       name: Do we have URLs?
       scriptName: Exists
       type: condition
@@ -279,6 +290,7 @@ tasks:
     task:
       id: c54d3c30-e2bb-47af-83a0-bfe2279edc19
       version: -1
+      description: ""
       name: Check SHA256s
       scriptName: FileReputation
       type: regular
@@ -303,6 +315,7 @@ tasks:
     task:
       id: de7cff35-df2d-4e32-8f3e-657226146b05
       version: -1
+      description: ""
       name: Check IPs
       scriptName: IPReputation
       type: regular
@@ -328,6 +341,7 @@ tasks:
     task:
       id: 015bee76-dcfa-4a82-8db6-0ca8e268c7ab
       version: -1
+      description: ""
       name: Check URLs
       scriptName: URLReputation
       type: regular

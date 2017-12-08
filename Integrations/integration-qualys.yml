@@ -1703,6 +1703,7 @@ script:
   - name: qualys-host-excluded-list
     arguments:
     - name: ips
+      description: Get list of excluded hosts or addresses range
     - name: network_id
       description: (Optional, and valid only when the Network Support feature is enabled
         for the user’s account) Restrict the request to a certain custom network ID.
@@ -2189,6 +2190,7 @@ script:
       description: Report ID
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-host-based-findings
+    description: Run host based findings report
     arguments:
     - name: template_id
       required: true
@@ -2289,6 +2291,7 @@ script:
       description: Report ID
     execution: true
   - name: qualys-report-launch-patch
+    description: Run patch report
     arguments:
     - name: template_id
       required: true
@@ -2381,6 +2384,7 @@ script:
       description: Report ID
     execution: true
   - name: qualys-report-launch-remediation
+    description: Run remediation report
     arguments:
     - name: template_id
       required: true
@@ -2478,6 +2482,7 @@ script:
       description: Report ID
     execution: true
   - name: qualys-report-launch-compliance
+    description: Run compliance report
     arguments:
     - name: template_id
       required: true
@@ -2574,6 +2579,7 @@ script:
       description: Report ID
     execution: true
   - name: qualys-report-launch-compliance-policy
+    description: Run compliance policy report
     arguments:
     - name: template_id
       required: true

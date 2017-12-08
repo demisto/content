@@ -1,14 +1,15 @@
 test:
   pre:
-    # install python client
+    # install dependencies
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
+    - pip install pykwalify
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM d9d2de23493ea67fba166ac1b130d412cf1b97ff 3.0.0
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM cb78e08b698de8247eb556054c2eeb3e3c541b36 3.1.0
 
     # create content bundle
     - mkdir bundle
@@ -27,7 +28,7 @@ test:
     - chmod +x ./Tests/scripts/*
 
     # ensure file name
-    - ./Tests/scripts/ensurefilenames.sh
+    - ./Tests/scripts/validate_files_structure.sh
 
     # get installer from server
     - ./Tests/scripts/server_get_artifact.sh
@@ -35,14 +36,14 @@ test:
     # run demisto instance
     - ./Tests/scripts/create_instance.sh
 
+    # download conf file
+    - ./Tests/scripts/download_demisto_conf.sh
+
     # run installer
     - ./Tests/scripts/run_installer_on_instance.sh
 
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
-
-    # download conf file
-    - ./Tests/scripts/download_secret_conf_file.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh

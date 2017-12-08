@@ -1,6 +1,7 @@
 id: 00aaa86b-cc9d-43b8-8448-1fd381689202
 version: 15
 name: GoogleApps-PlayBook
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -10,6 +11,7 @@ tasks:
     task:
       id: 6576dd1d-61cb-4da1-89fb-cd26e4bce623
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""

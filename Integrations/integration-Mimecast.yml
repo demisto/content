@@ -188,9 +188,7 @@ script:
         Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262,
         using this will override other query arguments
     - name: text
-      auto: PREDEFINED
-      predefined:
-      - search for this text in api messages
+      description: Search for this text in api messages
     - name: dryRun
       auto: PREDEFINED
       predefined:

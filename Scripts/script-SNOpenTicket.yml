@@ -31,15 +31,21 @@ script: |-
 type: python
 tags:
 - servicenow
+comment: "Create a ServiceNow ticket."
 system: true
 deprecated: true
 args:
 - name: category
   default: true
+  description: New ticket category
 - name: subcategory
+  description: New ticket sub category
 - name: shortdescription
+  description: New ticket short desciption category
 - name: comments
+  description: New ticket comments
 - name: assignmentgroup
+  description: New ticket assignment group
 scripttarget: 0
 dependson:
   must:

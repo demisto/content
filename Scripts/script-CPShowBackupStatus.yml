@@ -63,6 +63,7 @@ enabled: true
 deprecated: true
 args:
 - name: devices
+  description: List of devices to backup, commma separated
   required: true
   default: true
 - name: waittimeout

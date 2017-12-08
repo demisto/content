@@ -252,6 +252,7 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
+    logDebug('entering with command: ' + command)
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
@@ -342,6 +343,7 @@ script:
       description: The actual score
     description: Check URL reputation
   - name: idefense-general
+    description: Get threats from iDefense database. Returns all records of ip/url/domain
     arguments:
     - name: max_result
       default: true
@@ -375,6 +377,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
   - name: uuid
+    description: Get specific indicator reputation
     arguments:
     - name: uuid
       required: true
@@ -407,3 +410,4 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+releaseNotes: '-'

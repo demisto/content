@@ -100,7 +100,7 @@ class Content:
 class ScriptContent(Content):
 
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Scripts"
@@ -130,7 +130,7 @@ Content.register(ScriptContent)
 
 class PlaybookContent(Content):
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Playbooks"
@@ -206,7 +206,6 @@ class ReputationContent(Content):
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
-            res =  "- " + cnt["details"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
@@ -215,7 +214,7 @@ Content.register(ReputationContent)
 
 class IntegrationContent(Content):
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Integrations"
@@ -277,6 +276,15 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         names = fileName.split("\t")
         changeType = names[0]
         fullFileName = names[1]
+
+        if not "/" in fullFileName:
+            return
+
+        fileType = fullFileName.split("/")[0]
+        fileTypeMapping = releaseNoteGenerator.get(fileType)
+        if fileTypeMapping is None:
+            return
+
         if changeType == "D":
             handleDeletedFiles(deleteFilePath, fullFileName)
         elif changeType != "R100" and changeType != "R094":
@@ -287,16 +295,12 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
-                if "/" in fullFileName:
-                    fileType = fullFileName.split("/")[0]
-                    fileTypeMapping = releaseNoteGenerator.get(fileType)
-                    if fileTypeMapping is not None:
-                        fileTypeMapping.add(changeType, data)
+                fileTypeMapping.add(changeType, data)
 
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = "## Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res
+    release_notes = "## Demisto Content Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),

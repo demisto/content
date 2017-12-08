@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: ExtractDomainFromURL
   version: -1
