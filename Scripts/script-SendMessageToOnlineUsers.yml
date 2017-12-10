@@ -16,14 +16,19 @@ script: |-
       }
       return ret;
   };
+  var medium = (args.medium) ? args.medium.toLowerCase() : 'email';
   var slackEnabled = commandAvailable('slack-send');
   var emailEnabled = commandAvailable('send-mail');
 
   if (!slackEnabled && !emailEnabled) {
       throw 'No available medium to send message';
   }
-
-  var medium = (args.medium) ? args.medium.toLowerCase() : 'email';
+  if (medium === 'email' && !emailEnabled) {
+    throw 'Email integration not available';
+  }
+  if (medium === 'slack' && !slackEnabled) {
+    throw 'Slack integration not available';
+  }
 
   var res = executeCommand("getUsers", {online: true});
   if (isError(res[0])) {
