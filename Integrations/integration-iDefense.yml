@@ -410,4 +410,3 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-releaseNotes: '-'

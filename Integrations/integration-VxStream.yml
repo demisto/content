@@ -497,5 +497,3 @@ script:
       description: Total wait time (in seconds)
       defaultValue: "60"
     description: Detonate file through VxSteam
-releaseNotes: 'Adding file detonation'
-
