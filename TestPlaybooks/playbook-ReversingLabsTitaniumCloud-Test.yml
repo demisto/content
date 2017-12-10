@@ -1,0 +1,216 @@
+id: 01f92c20-349f-4ced-877e-30476d014fe3
+version: 2
+name: ReversingLabsTitaniumCloud-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fed3f37d-24f9-4764-82dd-f53ed02a2b24
+    type: start
+    task:
+      id: fed3f37d-24f9-4764-82dd-f53ed02a2b24
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 005acac6-3573-458f-8e89-414c661617cf
+    type: regular
+    task:
+      id: 005acac6-3573-458f-8e89-414c661617cf
+      version: -1
+      name: Extract File Hashes
+      scriptName: ExtractHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    scriptarguments:
+      text: ${incident}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 15bba6b2-1259-4136-8e90-3cacc3bd2554
+    type: regular
+    task:
+      id: 15bba6b2-1259-4136-8e90-3cacc3bd2554
+      version: -1
+      name: Enrich MD5
+      script: ReversingLabs Titanium Core|||file
+      type: regular
+      iscommand: true
+      brand: ReversingLabs Titanium Core
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file: ${File.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 3a9736c5-ea44-4ca4-83cc-129d4ebf4301
+    type: regular
+    task:
+      id: 3a9736c5-ea44-4ca4-83cc-129d4ebf4301
+      version: -1
+      name: Enrich SHA1
+      script: ReversingLabs Titanium Core|||file
+      type: regular
+      iscommand: true
+      brand: ReversingLabs Titanium Core
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file: ${File.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 05c345b2-1040-49e7-8471-fa8e7492d64f
+    type: regular
+    task:
+      id: 05c345b2-1040-49e7-8471-fa8e7492d64f
+      version: -1
+      name: Enrich SHA256
+      script: ReversingLabs Titanium Core|||file
+      type: regular
+      iscommand: true
+      brand: ReversingLabs Titanium Core
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file: ${File.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 2358bbe9-a85a-4587-8fd9-e6a9aded2410
+    type: condition
+    task:
+      id: 2358bbe9-a85a-4587-8fd9-e6a9aded2410
+      version: -1
+      name: Is Malicious Indicator Found?
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    scriptarguments:
+      includeSuspicious: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 953bffc7-6d7e-4a43-8d4e-4413215bb349
+    type: regular
+    task:
+      id: 953bffc7-6d7e-4a43-8d4e-4413215bb349
+      version: -1
+      name: Escalate Ticket
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addLabels: ""
+      customFieldName: ""
+      customFieldValue: ""
+      details: ""
+      labels: ""
+      name: ""
+      owner: ""
+      playbook: ""
+      severity: High
+      stage: ""
+      type: ""
+      updatePlaybookForType: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 92a1818a-d086-4a09-896b-1b4a5f4103da
+    type: regular
+    task:
+      id: 92a1818a-d086-4a09-896b-1b4a5f4103da
+      version: -1
+      name: Close Incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: No malicious indicators found
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
