@@ -2,7 +2,8 @@ commonfields:
   id: SendEmailToManager
   version: 1
 name: SendEmailToManager
-toVersion: 3.1.0
+fromVersion: 3.5.0
+releaseNotes: Add the option to use persistent entitlement in order to support adding artifacts to the war room by multiple external users
 script: |-
   email = demisto.get(demisto.args(), 'email')
   if not email:
@@ -34,9 +35,9 @@ script: |-
   if not managerDN:
       demisto.results('Unable to get manager email from DN - ' + managerDN)
       sys.exit(0)
-  entitlement = demisto.get(demisto.args(), 'entitlement')
-  if entitlement:
-      res = demisto.executeCommand('addOneTimeEntitlement', {'persistent': demisto.get(demisto.args(), 'entitlement')})
+  allowReply = demisto.get(demisto.args(), 'allowReply')
+  if allowReply:
+      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistentEntitlement')})
       if isError(res[0]):
           demisto.results(res)
           sys.exit(0)
@@ -73,8 +74,12 @@ args:
     will be taken from incident label 'Email/from'
 - name: manager
   description: The manager attribute in Active Directory. Default is 'manager'.
-- name: entitlement
-  description: If provided (any value), we will add an entitlement to the subject
+- name: allowReply
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If true, we will add an entitlement to the subject
     allowing manager to reply to war room
 - name: body
   description: The contents of the email body. It's a template that can include $empName
@@ -82,6 +87,12 @@ args:
 - name: request
   description: The contents of the request from the manager. Will be added below the
     body. If none is provided, incident details will be taken.
+- name: persistentEntitlement
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to use persistent(use 'true') or one-time(use 'false') key used by external users to add artifacts to the war room via e-mail
 scripttarget: 0
 dependson:
   must:
