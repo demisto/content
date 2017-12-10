@@ -2,7 +2,7 @@ commonfields:
   id: SendEmailToManager
   version: 1
 name: SendEmailToManager
-fromVersion: 3.5.0
+fromversion: 3.5.0
 releaseNotes: Add the option to use persistent entitlement in order to support adding artifacts to the war room by multiple external users
 script: |-
   email = demisto.get(demisto.args(), 'email')
