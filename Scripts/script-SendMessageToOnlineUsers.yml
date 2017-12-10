@@ -19,6 +19,10 @@ script: |-
   var slackEnabled = commandAvailable('slack-send');
   var emailEnabled = commandAvailable('send-mail');
 
+  if (!slackEnabled && !emailEnabled) {
+      throw 'No available medium to send message';
+  }
+
   var medium = (args.medium) ? args.medium.toLowerCase() : 'email';
 
   var res = executeCommand("getUsers", {online: true});
@@ -64,7 +68,8 @@ args:
   - Slack
   - Email
   - All
-  description: Medium to send message over (Slack or Email). Default is email.
+  description: Medium to send message over (Slack or Email).
+  defaultValue: Email
 - name: message
   required: true
   default: true
