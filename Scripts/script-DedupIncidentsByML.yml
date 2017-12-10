@@ -59,3 +59,4 @@ args:
   description: Fetch incidents which are at distance lower then this argument only,
     default is 0.8, range between 0 to 1
 scripttarget: 0
+fromversion: 3.5.0
