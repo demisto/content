@@ -153,6 +153,9 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "playbookID": "langDetect-Test"
         }
     ],
     "skipped": [
