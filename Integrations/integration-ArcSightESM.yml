@@ -808,20 +808,23 @@ script:
     }
 
     function deleteCase() {
+        deleteCaseRequest(args.authToken, args.caseId);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Case ' + args.caseId + ' successfully deleted'
+        };
+    }
+    function deleteCaseRequest(authToken, caseId) {
         var reqBody = {
             'cas.deleteByUUID': {
-                'cas.authToken': args.authToken,
-                'cas.id': args.caseId
+                'cas.authToken': authToken,
+                'cas.id': caseId
             }
         };
-
-        try {
-            var res = postRestRequest('www/manager-service/rest/CaseService/deleteByUUID', null, reqBody);
-        } catch (err) {
-            throw 'soapReq: ' + reqBody + '\n' + err;
-        }
-
-        throw res;
+        var res = postRestRequest('www/manager-service/rest/CaseService/deleteByUUID', null, reqBody);
+        return res;
     }
 
     var intToIpDT = ';function intToIP(int){\
