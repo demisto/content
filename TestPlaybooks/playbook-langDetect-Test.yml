@@ -1,7 +1,7 @@
-id: langDetect-Test
+id: LanguageDetect-Test
 version: -1
-name: langDetect-Test
-description: Testing langDetect script
+name: LanguageDetect-Test
+description: Testing LanguageDetect script
 starttaskid: "0"
 tasks:
   "0":
@@ -32,7 +32,7 @@ tasks:
       id: 238a2ccc-2d44-48e7-8d20-183a9cdecfc0
       version: -1
       name: Detect english
-      scriptName: langDetect
+      scriptName: LanguageDetect
       type: regular
       iscommand: false
       brand: ""
