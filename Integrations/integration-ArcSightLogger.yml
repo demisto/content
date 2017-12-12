@@ -57,575 +57,570 @@ configuration:
   required: false
 script:
   script: |-
-    function ArcSightLogger() {
+    var serverURL = params.url;
+    if (serverURL.slice(-1) === '/') {
+        serverURL = serverURL.slice(0,-1);
+    }
+    var SERVER_URL = serverURL + ':' + params.port + '/';
+    var DAY_IN_MILLIS = 24*60*60*1000;
 
-        var addresses = {
-            loginPath: 'core-service/rest/LoginService/login',
-            logoutPath: 'core-service/rest/LoginService/logout',
-            search: 'server/search',
-            statusPath: 'server/search/status',
-            drilldownPath: 'server/search/drilldown',
-            eventsPath: 'server/search/events',
-            closePath: 'server/search/close',
-            stopPath: 'server/search/stop'
+    function login(username, password) {
+        var fullUrl = SERVER_URL + 'core-service/rest/LoginService/login';
+        
+        var bodyObj = { 
+            login: username, 
+            password: password 
         };
+        var bodyString = encodeToURLQuery(bodyObj).substring(1);
 
-        var httpMethods = {
-            POST: 'POST',
-            GET: 'GET'
-        };
-        //The Search Session Id. Required for all commands.
-        var sessID;
-        //The User Session Id returned from the login request. Required for all commands.
-        var token;
-        function setStandartRequestBody() {
-            var body = {};
-            body['search_session_id'] = sessID;
-            body['user_session_id'] = token;
-            return body;
-        }
-        var buildStandartRequestBody = function(){
-            var body = setStandartRequestBody();
-            return JSON.stringify(body);
-        };
-        var commands = {
-            'as-search' : {
-                path: addresses.search,
-                method: httpMethods.POST,
-                buildRequstBody: function() {
-                    var body = setStandartRequestBody();
-                    for (var key in args) {
-                        if (key === 'timeout') {
-                            args[key] = parseInt(args[key]);
-                        } else if (key === 'field_summary' || key === 'local_search') {
-                            args[key] = args[key] === 'true' ? true : false;
-                        }
-
-                        body[key] = args[key];
-                    }
-                    return JSON.stringify(body);
-                },
-                customEntry: function(result) {
-                    var entry = {
-                        Type: entryTypes.note,
-                        Contents: {
-                            searchSessionId: sessID,
-                            sessionId : token
-                        },
-                        ContentsFormat: formats.json,
-                        ReadableContentsFormat: formats.markdown
-                    };
-                    var title = "ArcSight Logger - Start Search Session";
-                    var context = {
-                        'SearchSessionId': sessID,
-                        'SessionId' : token
-                    };
-                    entry.HumanReadable = tableToMarkdown(title, context);
-                    entry.EntryContext = {
-                        ArcSightLogger: {
-                            Search: context
-                        }
-                    };
-                    return entry;
-                }
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type': ['application/x-www-form-urlencoded']
             },
-            'as-status' : {
-                method: 'POST',
-                path: addresses.statusPath,
-                buildRequstBody: buildStandartRequestBody,
-                translator: {
-                    data: [
-                        {to: 'Status', from: 'status'},
-                        {to: 'ResultType', from: 'result_type'},
-                        {to: 'Hit', from: 'hit'},
-                        {to: 'Scanned', from: 'scanned'},
-                        {to: 'Elapsed', from: 'elapsed'},
-                        {to: 'Message', from: 'message'}
-                    ],
-                    title: 'ArcSight Logger - Search Status',
-                }
-            },
-            'as-drilldown' : {
-                path: addresses.drilldownPath,
-                method: httpMethods.POST,
-                buildRequstBody: function() {
-                    var body = setStandartRequestBody();
-                    for (var key in args) {
-                        body[key] = args[key];
-                    }
-                    return JSON.stringify(body);
-                },
-                customEntry: function(result) {
-                    var entry = {
-                        Type: entryTypes.note,
-                        Contents: result,
-                        ContentsFormat: formats.json,
-                        ReadableContentsFormat: formats.text
-                    };
-                    entry.HumanReadable = 'Success drilldown request';
-                    return entry;
-                }
-            },
-            'as-events' : {
-                method: 'POST',
-                path: addresses.eventsPath,
-                buildRequstBody: function() {
-                    var body = setStandartRequestBody();
-                    for (var key in args) {
-                        args[key] = (key == 'offset' || key == 'length') ? parseInt(args[key]) : args[key];
-                        body[key] = args[key];
-                    }
-
-                    return JSON.stringify(body);
-                },
-                customEntry: function(result) {
-                    var eventsArray = xmlObjectToJSON(result);
-                    var entry = {
-                        Type: entryTypes.note,
-                        Contents: eventsArray,
-                        ContentsFormat: formats.json,
-                        ReadableContentsFormat: formats.markdown
-                    };
-                    var title = 'ArcSight Logger - Events';
-                    var context = eventsArray;
-                    entry.HumanReadable = eventsToMarkdown(result, title);
-                    entry.EntryContext = {
-                        ArcSight: {
-                            Events: context
-                        }
-                    };
-                    return entry;
-                }
-            },
-            'as-close' : {
-                path: addresses.closePath,
-                method: httpMethods.POST,
-                buildRequstBody: buildStandartRequestBody,
-                customEntry: function(result) {
-                    var entry = {
-                        Type: entryTypes.note,
-                        Contents: result,
-                        ContentsFormat: formats.json,
-                        ReadableContentsFormat: formats.text
-                    };
-                    entry.HumanReadable = 'Success close request';
-                    return entry;
-                }
-            },
-            'as-stop' : {
-                path: addresses.stopPath,
-                method: httpMethods.POST,
-                buildRequstBody: buildStandartRequestBody,
-                customEntry: function(result) {
-                    var entry = {
-                        Type: entryTypes.note,
-                        Contents: result,
-                        ContentsFormat: formats.json,
-                        ReadableContentsFormat: formats.text
-                    };
-                    entry.HumanReadable = 'Success stop request';
-                    return entry;
-                }
-            },
+            Body: bodyString
         };
-        function xmlObjectToJSON(eventsRes) {
-            var context = [];
-            if (eventsRes && eventsRes.fields && eventsRes.results) {
-                var keys = [];
-                var fields = eventsRes.fields;
-                var entries = eventsRes.results;
-                fields.forEach(function(field){
-                    if(field.name){
-                        keys.push(field.name.replace(/\s/g, '').replace(/^\_/,''));
-                    }
-                });
-                entries.forEach(function(entry){
-                    if (entry.length == keys.length){
-                        var newEntry = {};
-                        for (var i = 0; i<  entry.length; i++){
-                            var val = entry[i];
-                            if(val !== '' && val !== undefined && val !== null ){
-                                newEntry[keys[i]] = val;
-                            }
-                        }
-                        context.push(newEntry);
-                    }
-                });
-            }
-            return context;
-
-        }
-        function eventsToMarkdown(eventsRes, title, headerTransform) {
-            var mdResults = '';
-            if (title) {
-              mdResults = '### ' + title + '\n';
-            }
-            if (eventsRes && eventsRes.fields && eventsRes.results) {
-                var headers = [];
-                var fields = eventsRes.fields;
-                if(!headerTransform){
-                    headerTransform = function(string){return string.replace(/^\_/,'');};
-                }
-                fields.forEach(function(field){
-                    if (field.name){
-                        headers.push(headerTransform(field.name));
-                    }
-                });
-                if (headers.length > 1) {
-                  mdResults += headers.join('|') + '\n';
-                } else {
-                  mdResults += headers[0] + '|' + '\n';
-                }
-                var sep = [];
-                headers.forEach(function(h){
-                  sep.push('-');
-                });
-                if (sep.length === 1) {
-                  sep[0] = sep[0]+'|';
-                }
-                mdResults += sep.join('|') + '\n';
-                var results = eventsRes.results;
-                results.forEach(function(arr){
-                    if(arr.length == headers.length){
-                        var vals = [];
-                        arr.forEach(function(val){
-                            if(val === null || val === undefined || val ==='') {
-                                vals.push(' ');
-                            } else {
-                                vals.push(stringEscapeMD(formatCell(val), true) || ' ');
-                            }
-                        });
-                        if (vals.length === 1) {
-                            vals[0] = vals[0]+'|';
-                        }
-                        mdResults += vals.join('|') + '\n';
-                    }
-                });
-            } else{
-                mdResults += 'No data returned\n';
-            }
-            return mdResults;
-        }
-        function logRequest(requestBody) {
-            var bodyStr = encodeToURLQuery(requestBody);
-            var req = {
-                Method: httpMethods.POST,
-                Body: bodyStr.substring(1),
-                Headers: {'Content-Type': ['application/x-www-form-urlencoded']}
-            };
-            return req;
-        }
-        function parseXML(httpResponse) {
-            var body = httpResponse.Body.replace(/&#x.*?;/g, "");
-            var parsed = JSON.parse(x2j(body));
-            return parsed;
-        }
-        function initClient() {
-            params.url = params.url.replace(/\/$/, "");
-            var client = {
-                password: params.credentials.password,
-                userName: params.credentials.identifier,
-                proxy: params.proxy,
-                insecure: params.insecure,
-                host: params.url + ':' + params.port + '/'
-            };
-            var login = function() {
-                var fullPath = client.host + addresses.loginPath;
-                var bodyObj ={login: client.userName, password: client.password};
-                var req =logRequest(bodyObj);
-                var res = http(fullPath, req, client.insecure, client.proxy);
-                if (res.StatusCode !== 200) {
-                    throw "Login to ArcSight Logger has failed - unknown response " + res.StatusCode + ". Response Body: " + res.Body;
-                }
-                var body = parseXML(res);
-                if (!body.loginResponse.return) {
-                    throw 'Login to ArcSight Logger has failed - Session id is missing from response';
-                }
-                token = body.loginResponse.return;
-            };
-            var logout = function() {
-                if (!token) {
-                    throw 'Cant logout from ArcSight Logger. Seesion id is missing';
-                }
-                var fullPath = client.host + addresses.logoutPath;
-                var bodyObj = {authToken: token};
-                var req = logRequest(bodyObj);
-                var res = http(fullPath, req, client.insecure, client.proxy);
-                if (res.StatusCode !== 204) {
-                    throw "Logout from ArcSight Logger has failed - unknown response " + res.StatusCode;
-                }
-            };
-            var getToken = function() { return token; };
-            return {
-                settings: client,
-                login: login,
-                logout: logout
-            };
+        
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+        if (res.StatusCode !== 200) {
+            throw 'Login failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
         }
 
-        var c = initClient();
+        var resBody = parseXML(res.Body);
+        if (!resBody.loginResponse.return) {
+            throw 'Login to ArcSight Logger has failed - Session id is missing from response';
+        }
+        
+        var userSessionId = resBody.loginResponse.return;
+        return userSessionId;
+    }
 
-        var test = function() {
-            c.login();
-            c.logout();
+    function logout(userSessionId) {
+        if (!userSessionId) {
+            throw 'Cant logout from ArcSight Logger. Seesion id is missing';
+        }
+        var fullUrl = SERVER_URL + 'core-service/rest/LoginService/logout';
+        
+        var bodyObj = { 
+            authToken: userSessionId 
+        };
+        var bodyString = encodeToURLQuery(bodyObj).substring(1);
+
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type': ['application/x-www-form-urlencoded']
+            },
+            Body: bodyString
         };
 
-        function errMessage(msg) {
-            return {
-                sucsses: false,
-                message: msg
-            };
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+        if (res.StatusCode !== 204) {
+            throw 'Logout failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
         }
-        function errEntry(msg) {
-            var entry = {
-                Type: entryTypes.error,
-                Contents: msg,
-                ContentsFormat: formats.text
-            };
-            return entry;
-        }
-        var execute = function(cmd) {
-            var url = c.settings.host + cmd.path;
-            var req = {
-                Headers: {
-                    'Content-Type' : ['application/json; charset=UTF-8'],
-                    'Accept': ['appliction/json']
-                },
-                Body: cmd.buildRequstBody(),
-                Method: cmd.method
-            };
+    }
 
-            var res = http(url, req, c.settings.insecure, c.settings.proxy);
-            var body = {};
+    function getSearchEvents(userSessionId) {
+        var events = getSearchEventsRequest(
+            userSessionId,
+            args.query, 
+            args.timeout, 
+            args.start_time, 
+            args.end_time, 
+            args.discover_fields, 
+            args.summary_fields, 
+            args.field_summary, 
+            args.local_search, 
+            args.lastDays,
+            args.offset,
+            args.dir,
+            args.length,
+            args.fields);
 
-            //drilldown empty response
-            if (res.Body == '' && res.StatusCode == 200) {
-                return {success: true, body: body};
-            }
-            try {
-                body = JSON.parse(res.Body);
-            } catch (err) {
-                return errMessage('Unexpected response from ArcSight Logger. Failed to parse response body');
-            }
-            if (res.StatusCode >= 300) {
-                var errTbl = body.errors[0];
-                if (errTbl.message) return errMessage(errTbl.message);
-                return errMessage("Request to ArcSight Logger has failed - unknown response " + res.StatusCode);
-            }
-            return {success: true, body: body};
+        var entry = {
+            Type: entryTypes.note,
+            Contents: events,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
         };
-        function generateSearchSessionId() {
-            sessID = new Date().getTime();
-            return sessID;
-        }
-        function setSession() {
-            if (args.sessionId) {
-                token = args.sessionId;
-                delete args.sessionId;
+        var title = 'ArcSight Logger - Events';
+        var context = events;
+        entry.HumanReadable = tableToMarkdown(title, events);
+        entry.EntryContext = {
+            ArcSight: {
+                Events: context
             }
-            if (args.searchSessionId) {
-                //check if number
-                sessID = parseInt(args.searchSessionId);
-                delete args.searchSessionId;
-            }
-        }
-        var executeAndCreateEntry = function(cmdName) {
-            var cmd = commands[cmdName];
-            if (!cmd) {
-                throw 'Unknown command: ' + cmdName;
-            }
-            var res = execute(cmd);
-            if (!res.success) return errEntry(res.message);
-            if (cmd.translator) {
-                return createEntry(res.body,cmd.translator);
-            }
-            return cmd.customEntry(res.body);
         };
-        var startSearchSession = function() {
-            generateSearchSessionId();
-            try{
-                c.login();
-            } catch (err) {
-                return errEntry(err);
-            }
-            return executeAndCreateEntry('as-search');
-        };
-        function search() {
-            searchSessionId = generateSearchSessionId();
-            try{
-                c.login();
-            } catch (err) {
-                throw err
-                return errEntry(err);
-            }
+        return entry;
+    }
 
-            var result = execute(commands['as-search']);
-            return {
+    function getSearchEventsRequest(userSessionId, query, timeout, startTime, 
+        endTime, discoverFields, summaryFields, fieldSummary, localSearch, lastDays, 
+        offset, dir, length, fields) {
+        // start new search
+        var searchSessionId = startSearchSessionRequest(
+            userSessionId, 
+            query,
+            timeout,
+            startTime,
+            endTime,
+            discoverFields,
+            summaryFields,
+            fieldSummary,
+            localSearch,
+            lastDays);
+
+        // wait until the search is complete so we could collect the events
+        var statusResult;
+        do {
+            wait(1);
+            statusResult = getSearchStatusRequest(userSessionId, searchSessionId);
+            if (statusResult.status === 'error') {
+                throw 'Invalid query.\nSearch status: ' + JSON.stringify(statusResult, null ,2);
+            }
+        } while(statusResult.status === 'complete');
+
+        // get the results
+        var events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
+
+        // close the session
+        closeSessionRequest(userSessionId, searchSessionId);
+
+        logout(userSessionId);
+        return events;
+    }
+
+    function startSearchSession(userSessionId) {
+        var searchSessionId = startSearchSessionRequest(
+            userSessionId,
+            args.query, 
+            args.timeout, 
+            args.start_time, 
+            args.end_time, 
+            args.discover_fields, 
+            args.summary_fields, 
+            args.field_summary, 
+            args.local_search, 
+            args.lastDays);
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: {
                 searchSessionId: searchSessionId,
-                sessionId: result.body.sessionId
-            };
-        }
-        function status(searchSessionId, sessionId) {
-            var result = execute(commands['as-status']);
-            if (result.success === true) {
-                return result.body;
-            }
-
-            throw 'Failed to get the status of session: ' + sessionId;
-        }
-        var runCommandOnExistingSession = function(cmdName) {
-            setSession();
-            return executeAndCreateEntry(cmdName);
+                sessionId : userSessionId
+            },
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
         };
-        var closeSession= function() {
-            var entry = runCommandOnExistingSession('as-close');
-            try{
-                c.logout();
-            } catch(err) {}
-            return entry;
-        }
-        var dayInMillis = 24*60*60*1000;
-        var fetchEventsAsIncidents= function(){
-            var n = new Date();
-            var lastRun = getLastRun();
-            var currRun = {endTime: n.toISOString()};
-            delete args['lastRun'];
-            args['end_time'] = currRun.endTime;
-            if (lastRun && lastRun.endTime && lastRun.endTime !== '') {
-                args['start_time'] = lastRun.endTime;
-            } else {
-                n.setTime(n.getTime() - 200 * dayInMillis);
-                args['start_time'] = n.toISOString();
-            }
-            if (params.eventsQuery){
-                args['query'] = params.eventsQuery;
-            }
-            logInfo(JSON.stringify(args));
-            startSearchSession();
-
-            var statusResponse;
-            do {
-                wait(1);
-                statusResponse = status();
-                if (statusResponse.status === 'error') {
-                    return {
-                        Type: entryTypes.error,
-                        ContentsFormat: formats.text,
-                        Contents: 'Search has error, probably the query is invalid.'
-                    }
-                }
-            } while(statusResponse.status !== 'complete')
-
-            var res = execute(commands['as-events']);
-            var incidents = [];
-            if (res.success && res.body !== '' && Object.keys(res.body).length > 0 ) {
-                var events = xmlObjectToJSON(res.body);
-                events.forEach(function(event){
-                    var incident = incidentFromEvent(event);
-                    //console.log(JSON.stringify(incident));
-                    incidents.push(incident);
-                });
-            }
-            setLastRun(currRun);
-            closeSession();
-            return JSON.stringify(incidents);
+        var title = "ArcSight Logger - Start Search Session";
+        var context = {
+            'SearchSessionId': searchSessionId,
+            'SessionId' : userSessionId
         };
-        var getEvents = function(){
-            // start search session
-            var searchResponse = search();
-            var sessionId = searchResponse.sessionId;
-            var searchSessionId = searchResponse.searchSessionId;
-            args.sessionId = sessionId;
-            args.searchSessionId = searchSessionId;
-
-            // check the status of the query until it completes or error
-            var statusResponse;
-            do {
-                wait(1);
-                statusResponse = status();
-                if (statusResponse.status === 'error') {
-                    return {
-                        Type: entryTypes.error,
-                        ContentsFormat: formats.text,
-                        Contents: 'Search has error, probably the query is invalid.'
-                    }
-                }
-            } while(statusResponse.status !== 'complete')
-
-            var res = execute(commands['as-events']);
-            if (!res.success) {
-                return {
-                    Type: entryTypes.error,
-                    ContentsFormat: formats.text,
-                    Contents: res.message
-                };
+        entry.HumanReadable = tableToMarkdown(title, context);
+        entry.EntryContext = {
+            ArcSightLogger: {
+                Search: context
             }
-            if (res.body === '' || Object.keys(res.body).length === 0 ) {
-                return {
-                    Type: entryTypes.error,
-                    ContentsFormat: formats.json,
-                    Contents: [],
-                    ReadableContentsFormat: formats.text,
-                    HumanReadable: 'There are no events'
-                };
-            }
-
-            var events = xmlObjectToJSON(res.body);
-            closeSession();
-
-            // create entry
-            var entry = {
-                Type: entryTypes.note,
-                Contents: events,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat: formats.markdown
-            };
-            var title = 'ArcSight Logger - Events';
-            var context = events;
-            entry.HumanReadable = eventsToMarkdown(res.body, title);
-            entry.EntryContext = {
-                ArcSight: {
-                    Events: context
-                }
-            };
-            return entry;
         };
-        function incidentFromEvent(event){
-            var incident = {}
-            //incident.labels = Object.keys(event);
-            incident.rawJSON = JSON.stringify(event);
-            var name = 'ArcSight Logger Incident';
-            name = event.rowId ? name + ' ' + event.rowId : name;
-            incident.name = name;
-            return incident;
+        return entry;
+    }
+
+    function startSearchSessionRequest(userSessionId, query, timeout, startTime, endTime, discoverFields, summaryFields, fieldSummary, localSearch, lastDays) {
+        var searchSessionId = generateSearchSessionId();
+        var bodyArgs = {
+            search_session_id: searchSessionId,
+            user_session_id: userSessionId
+        };
+        if (query) {
+            bodyArgs.query = query;
         }
+        if (timeout) {
+            bodyArgs.timeout = parseInt(timeout);
+        }
+        if (lastDays) {
+            var ld = parseInt(lastDays);
+            var now = new Date();
+            bodyArgs.end_time = now.toISOString();
+
+            now.setTime(now.getTime() - ld * DAY_IN_MILLIS)
+            bodyArgs.start_time = now.toISOString(); 
+        } else {
+            if (startTime) {
+                bodyArgs.start_time = startTime;
+            }
+            if (endTime) {
+                bodyArgs.end_time = endTime;
+            }
+        }
+        if (discoverFields) {
+            bodyArgs.discover_fields = parseBool(discoverFields);
+        }
+        if (summaryFields) {
+            bodyArgs.summary_fields = summaryFields;
+        }
+        if (fieldSummary) {
+            bodyArgs.field_summary = fieldSummary;
+        }
+        if (localSearch) {
+            bodyArgs.local_search = parseBool(localSearch);
+        }
+
+        var resBody = httpPost('server/search', null, bodyArgs);
+
+        return searchSessionId;
+    }
+
+    function closeSession() {
+        closeSessionRequest(args.sessionId, args.searchSessionId);
         return {
-            test: test,
-            run: runCommandOnExistingSession,
-            startSearchSession: startSearchSession,
-            search: search,
-            getEvents: getEvents,
-            status: status,
-            closeSession: closeSession,
-            fetchIncidents: fetchEventsAsIncidents
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Session closed successfully'
         };
     }
-    var AS = ArcSightLogger();
+
+    function closeSessionRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+
+        var resBody = httpPost('server/search/close', null, bodyArgs);
+        return resBody;
+    }
+
+    function getSearchStatus() {
+        var searchStatus = getSearchStatusRequest(args.sessionId, args.searchSessionId);
+        return createEntry(searchStatus, {
+            data: [
+                {to: 'Status', from: 'status'},
+                {to: 'ResultType', from: 'result_type'},
+                {to: 'Hit', from: 'hit'},
+                {to: 'Scanned', from: 'scanned'},
+                {to: 'Elapsed', from: 'elapsed'},
+                {to: 'Message', from: 'message'}
+            ],
+            title: 'ArcSight Logger - Search Status',
+        });
+    }
+
+    function getSearchStatusRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+
+        var resBody = httpPost('server/search/status', null, bodyArgs);
+        return resBody;
+    }
+
+    function getEvents() {
+        var events = getEventsRequest(
+            args.sessionId, 
+            args.searchSessionId, 
+            args.offset, 
+            args.dir, 
+            args.length, 
+            args.field_summary);
+        var entry = {
+            Type: entryTypes.note,
+            Contents: events,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
+        };
+        var title = 'ArcSight Logger - Events';
+        var context = events;
+        entry.HumanReadable = tableToMarkdown(title, events);
+        entry.EntryContext = {
+            ArcSight: {
+                Events: context
+            }
+        };
+        return entry;
+    }
+
+    function getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        if (offset) {
+            bodyArgs.offset = parseInt(offset);
+        }
+        if (dir) {
+            bodyArgs.dir = dir;
+        }
+        if (length) {
+            bodyArgs.length = parseInt(length);
+        }
+        if (fields) {
+            bodyArgs.fields = fields;
+        }
+
+        var resBody = httpPost('server/search/events', null, bodyArgs);
+        var events = xmlObjectToJSON(resBody);
+        return events;
+    }
+
+    function drilldown() {
+        var result = drilldownRequest(args.sessionId, args.searchSessionId, args.start_time, args.end_time, args.lastDays);
+        var entry = {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.text,
+            HumanReadable: 'Success drilldown request'
+        };
+        return entry;
+    }
+
+    function drilldownRequest(userSessionId, searchSessionId, startTime, endTime, lastDays) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        if (lastDays) {
+            var ld = parseInt(lastDays);
+            var now = new Date();
+            bodyArgs.end_time = now.toISOString();
+
+            now.setTime(now.getTime() - ld * DAY_IN_MILLIS)
+            bodyArgs.start_time = now.toISOString(); 
+        } else {
+            if (startTime) {
+                bodyArgs.start_time = startTime;
+            }
+            if (endTime) {
+                bodyArgs.end_time = endTime;
+            }
+        }
+        
+        var resBody = httpPost('server/search/drilldown', null, bodyArgs);
+        return resBody;
+    }
+
+    function stopSearch() {
+        closeSessionRequest(args.sessionId, args.searchSessionId);
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Search stopped successfully'
+        };
+    }
+
+    function stopSearchRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+
+        var resBody = httpPost('server/search/stop', null, bodyArgs);
+        return resBody;
+    }
+
+    function fetchIncidents() {
+        var userSessionId = login(params.credentials.identifier, params.credentials.password);
+        var lastRun = getLastRun();
+
+        var n = new Date();
+        var endTime = n.toISOString();
+        var startTime;
+        var query;
+        if (lastRun && lastRun.time && lastRun.time !== '') {
+            startTime = lastRun.time;
+        } else {
+            n.setTime(n.getTime() - 1 * DAY_IN_MILLIS);
+            startTime = n.toISOString();
+        }
+        if (params.eventsQuery){
+            query = params.eventsQuery;
+        }
+        var fields = null;
+        var events = getSearchEventsRequest(userSessionId, query, 120000, startTime, 
+            endTime, null, null, null, false, null, 
+            null, null, 100, fields);
+
+        var incidents = [];
+        for (var i = 0; i < events.length; i++) {
+            var incident = incidentFromEvent(events[i]); 
+            incidents.push(incident);
+        }
+
+        setLastRun({ time: endTime });
+        return JSON.stringify(incidents);
+    }
 
     switch(command) {
         case 'test-module':
-            AS.test();
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            logout(userSessionId);
             return 'ok';
-        case 'as-search-events':
-            return AS.getEvents();
-        case 'as-search':
-            return AS.startSearchSession();
-        case 'as-close':
-            return AS.closeSession();
         case 'fetch-incidents':
-            return AS.fetchIncidents();
+            return fetchIncidents();
+        case 'as-search-events':
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            return getSearchEvents(userSessionId);
+        case 'as-search':
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            var result = startSearchSession(userSessionId);
+            return result;
+        case 'as-status':
+            var result = getSearchStatus();
+            return result;
+        case 'as-events':
+            return getEvents();
+        case 'as-close':
+            closeSession();
+            logout(args.sessionId);
+        case 'as-stop':
+            return stopSearch();
+        case 'as-drilldown':   
+            return drilldown();   
         default:
-            return AS.run(command);
+            throw 'Command ' + command + ' not exists';
+    }
+
+    function httpPost(path, queryObject, body) {
+        var fullUrl = SERVER_URL + path;
+        if (queryObject) {
+            fullUrl += encodeToURLQuery(queryObject)
+        }
+
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type' : ['application/json; charset=UTF-8'],
+                'Accept': ['appliction/json']
+            },
+            Body: JSON.stringify(body)
+        }
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            try {
+                var resBody = JSON.parse(res.Body);
+                var errTbl = resBody.errors[0];
+                if (errTbl.message) {
+                    throw 'Request to ' + fullUrl + ' failed. StatusCode: ' + res.StatusCode + '. Error: ' + errTbl.message;
+                }
+            } catch (err) {
+                // it will throw exception anyway
+            }
+
+            throw 'Request to ' + fullUrl + ' failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        } catch(err){
+            return res.Body;
+        }
+    }
+
+
+    function parseXML(httpResponseBody) {
+        var body = httpResponseBody.replace(/&#x.*?;/g, "");
+        var parsed = JSON.parse(x2j(body));
+        return parsed;
+    }
+
+    function parseBool(val) {
+        return val === 'true' ? true : false;
+    }
+
+    function generateSearchSessionId() {
+        var sessID = new Date().getTime();
+        return sessID;
+    }
+
+    function xmlObjectToJSON(xmlObject) {
+        var context = [];
+        if (xmlObject && xmlObject.fields && xmlObject.results) {
+            var keys = [];
+            var fields = xmlObject.fields;
+            var entries = xmlObject.results;
+            fields.forEach(function(field){
+                if(field.name){
+                    keys.push(field.name.replace(/\s/g, '').replace(/^\_/,''));
+                }
+            });
+            entries.forEach(function(entry){
+                if (entry.length == keys.length){
+                    var newEntry = {};
+                    for (var i = 0; i<  entry.length; i++){
+                        var val = entry[i];
+                        if(val !== '' && val !== undefined && val !== null ){
+                            newEntry[keys[i]] = val;
+                        }
+                    }
+                    context.push(newEntry);
+                }
+            });
+        }
+        return context;
+
+    }
+    function eventsToMarkdown(eventsRes, title, headerTransform) {
+        var mdResults = '';
+        if (title) {
+          mdResults = '### ' + title + '\n';
+        }
+        if (eventsRes && eventsRes.fields && eventsRes.results) {
+            var headers = [];
+            var fields = eventsRes.fields;
+            if(!headerTransform){
+                headerTransform = function(string){return string.replace(/^\_/,'');};
+            }
+            fields.forEach(function(field){
+                if (field.name){
+                    headers.push(headerTransform(field.name));
+                }
+            });
+            if (headers.length > 1) {
+              mdResults += headers.join('|') + '\n';
+            } else {
+              mdResults += headers[0] + '|' + '\n';
+            }
+            var sep = [];
+            headers.forEach(function(h){
+              sep.push('-');
+            });
+            if (sep.length === 1) {
+              sep[0] = sep[0]+'|';
+            }
+            mdResults += sep.join('|') + '\n';
+            var results = eventsRes.results;
+            results.forEach(function(arr){
+                if(arr.length == headers.length){
+                    var vals = [];
+                    arr.forEach(function(val){
+                        if(val === null || val === undefined || val ==='') {
+                            vals.push(' ');
+                        } else {
+                            vals.push(stringEscapeMD(formatCell(val), true) || ' ');
+                        }
+                    });
+                    if (vals.length === 1) {
+                        vals[0] = vals[0]+'|';
+                    }
+                    mdResults += vals.join('|') + '\n';
+                }
+            });
+        } else{
+            mdResults += 'No data returned\n';
+        }
+        return mdResults;
+    }
+
+    function incidentFromEvent(event){
+        var incident = {}
+        //incident.labels = Object.keys(event);
+        incident.rawJSON = JSON.stringify(event);
+        var name = 'ArcSight Logger Incident';
+        name = event.rowId ? name + ' ' + event.rowId : name;
+        incident.name = name;
+        return incident;
     }
   type: javascript
   commands:
