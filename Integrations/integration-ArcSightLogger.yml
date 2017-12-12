@@ -175,7 +175,7 @@ script:
             if (statusResult.status === 'error') {
                 throw 'Invalid query.\nSearch status: ' + JSON.stringify(statusResult, null ,2);
             }
-        } while(statusResult.status === 'complete');
+        } while(statusResult.status !== 'complete');
 
         // get the results
         var events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
