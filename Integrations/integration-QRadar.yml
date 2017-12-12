@@ -80,6 +80,9 @@ script:
                     Body: body,
                 };
         if (token) {
+            if (!httpParams.Headers) {
+                httpParams.Headers = {};
+            }
             httpParams.Headers['SEC'] = [token];
         } else {
             httpParams.Username = username;
