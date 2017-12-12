@@ -1,5 +1,5 @@
 id: LanguageDetect-Test
-version: -1
+version: -1 
 name: LanguageDetect-Test
 description: Testing LanguageDetect script
 starttaskid: "0"

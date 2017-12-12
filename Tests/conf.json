@@ -3,6 +3,11 @@
     "testInterval": 30,
     "tests": [
         {
+            "playbookID": "LanguageDetect-Test"
+        }
+    ],
+    "skipped": [
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -154,11 +159,6 @@
             "playbookID": "iDefenseTest",
             "timeout": 300
         },
-        {
-            "playbookID": "LanguageDetect-Test"
-        }
-    ],
-    "skipped": [
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
