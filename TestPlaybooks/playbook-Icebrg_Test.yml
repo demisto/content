@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2731a525-627d-49d2-88db-d988d6fc75d6
+    taskid: c8fa8730-747a-4fdd-8e45-2ff78648bf99
     type: start
     task:
-      id: 2731a525-627d-49d2-88db-d988d6fc75d6
+      id: c8fa8730-747a-4fdd-8e45-2ff78648bf99
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: e53a13f2-f138-40e6-882b-1886cba7e096
+    taskid: 4563c6f2-196f-4574-8249-34e62c9ad4b2
     type: regular
     task:
-      id: e53a13f2-f138-40e6-882b-1886cba7e096
+      id: 4563c6f2-196f-4574-8249-34e62c9ad4b2
       version: -1
       name: icebrg-get-history
       description: Gets history of the events
@@ -50,10 +50,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 9b1571e9-ba5c-4f9b-8618-5f1714836065
+    taskid: 7abe37a2-2d05-4ac0-8c3c-eae694fcb422
     type: regular
     task:
-      id: 9b1571e9-ba5c-4f9b-8618-5f1714836065
+      id: 7abe37a2-2d05-4ac0-8c3c-eae694fcb422
       version: -1
       name: icebrg-search-events
       description: Perform an ICEBRG datastore event search
@@ -62,15 +62,16 @@ tasks:
       iscommand: true
       brand: icebrg
     scriptarguments:
-      customer_id: ""
-      end_date: ""
-      history: ""
-      limit: ""
-      order: ""
-      order_by: ""
-      query: ${Icebrg.UserQueryHistory.Query}
-      service_traffic: ""
-      start_date: ""
+      customer_id: {}
+      end_date: {}
+      history: {}
+      limit: {}
+      order: {}
+      order_by: {}
+      query:
+        simple: ${Icebrg.UserQueryHistory.[0].Query}
+      service_traffic: {}
+      start_date: {}
     view: |-
       {
         "position": {
@@ -80,10 +81,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
+    taskid: 786f3f16-5077-4813-8ee4-76d375bce4e1
     type: regular
     task:
-      id: 480a0ac5-2fcb-4d73-894a-64cbb20596bd
+      id: 786f3f16-5077-4813-8ee4-76d375bce4e1
       version: -1
       name: icebrg-get-reports
       description: Gets a list of reports
@@ -96,18 +97,18 @@ tasks:
       - "9"
       - "8"
     scriptarguments:
-      account_uuid: ""
-      archived: ""
-      confidence: ""
-      limit: ""
-      offset: ""
-      published_end: ""
-      published_start: ""
-      risk: ""
-      search: ""
-      sort_by: ""
-      sort_order: ""
-      status: ""
+      account_uuid: {}
+      archived: {}
+      confidence: {}
+      limit: {}
+      offset: {}
+      published_end: {}
+      published_start: {}
+      risk: {}
+      search: {}
+      sort_by: {}
+      sort_order: {}
+      status: {}
     view: |-
       {
         "position": {
@@ -117,10 +118,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
+    taskid: 66870130-5574-466e-842c-2450b437c716
     type: regular
     task:
-      id: 2346bc62-a895-4bd1-87ee-3e93d7cb2cb5
+      id: 66870130-5574-466e-842c-2450b437c716
       version: -1
       name: icebrg-get-report-indicators
       description: Gets indicators for a reports
@@ -129,7 +130,8 @@ tasks:
       iscommand: true
       brand: icebrg
     scriptarguments:
-      report_uuid: ${Icebrg.Reports.Uuid}
+      report_uuid:
+        simple: ${Icebrg.Reports.Uuid}
     view: |-
       {
         "position": {
@@ -139,10 +141,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: ab22df59-3c3b-4498-8f17-91e031dbf716
+    taskid: b0cbc68b-8a1a-4d00-8e6b-61e46fbc9910
     type: regular
     task:
-      id: ab22df59-3c3b-4498-8f17-91e031dbf716
+      id: b0cbc68b-8a1a-4d00-8e6b-61e46fbc9910
       version: -1
       name: icebrg-get-report-assets
       description: Gets impacted assets for a report
@@ -151,7 +153,8 @@ tasks:
       iscommand: true
       brand: icebrg
     scriptarguments:
-      report_uuid: ${Icebrg.Reports.Uuid}
+      report_uuid:
+        simple: ${Icebrg.Reports.Uuid}
     view: |-
       {
         "position": {
@@ -161,10 +164,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
+    taskid: 2871b8c7-9ec1-44ff-8a60-29c5c487463f
     type: regular
     task:
-      id: e913adbb-9e6e-4e40-89f5-6ce00fbc9157
+      id: 2871b8c7-9ec1-44ff-8a60-29c5c487463f
       version: -1
       name: icebrg-saved-searches
       description: Gets user saved searches
