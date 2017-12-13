@@ -80,6 +80,9 @@ script:
                     Body: body,
                 };
         if (token) {
+            if (!httpParams.Headers) {
+                httpParams.Headers = {};
+            }
             httpParams.Headers['SEC'] = [token];
         } else {
             httpParams.Username = username;
@@ -307,7 +310,7 @@ script:
       - OPEN
       - HIDDEN
       - CLOSED
-      description: he new status for the offense
+      description: The new status for the offense
     - name: closing_reason_id
       description: The ID of a closing reason. You must provide a valid closing_reason_id
         when you close an offense
@@ -453,3 +456,4 @@ script:
       description: Number of results in return
     description: Get closing reasons
   isfetch: true
+releaseNotes: "-"
