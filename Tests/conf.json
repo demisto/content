@@ -156,7 +156,7 @@
             "timeout": 300
         },
         {
-            "playbookID": "langDetect-Test"
+            "playbookID": "LanguageDetect-Test"
         }
     ],
     "skipped": [
