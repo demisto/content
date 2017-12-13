@@ -111,7 +111,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      seconds: "60"
+      seconds: "60" 
     view: |-
       {
         "position": {
