@@ -1,0 +1,17 @@
+commonfields:
+  id: DomainReputation
+  version: -1
+name: DomainReputation
+script: |-
+  return executeCommand(''domain'', {domain: args.domain});
+type: javascript
+tags:
+- enhancement
+comment: A context script for Domain entities
+enabled: true
+args:
+- name: domain
+  required: true
+  default: true
+  description: Domain to look up
+scripttarget: 0

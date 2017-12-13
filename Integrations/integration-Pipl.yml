@@ -1,0 +1,279 @@
+commonfields:
+  id: Pipl
+  version: -1
+name: Pipl
+display: Pipl
+category: Data Enrichment
+image: data:image/png;base64,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
+description: Get contact, social, and professional information about people
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://api.pipl.com/search/
+  type: 0
+  required: false
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    var url = params.url;
+    var columns;
+    if (params.columns) {
+        columns = params.columns.split(',');
+    }
+
+    var sendRequest = function(args) {
+
+        var requestUrl = url.replace(/[\/]+$/, '');
+
+        var queryArgs = {};
+        var argKeys = Object.keys(args);
+        for (var i=0; i<argKeys.length; i++) {
+            queryArgs[argKeys[i].replace('-','_')] = args[argKeys[i]];
+        }
+        requestUrl += encodeToURLQuery(queryArgs);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/x-www-form-urlencoded']
+                },
+                Body: 'key=' + params.key
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(res.Body);
+    };
+
+    var createEntry = function(response) {
+        var data = [];
+        ec = {};
+        ec.Account =[];
+        //Only one person
+        if (response.person) {
+            data[0] = addPerson(response.person);
+            ec.Account[0] = buildEC(data, 0);
+            data[0]['Emails'] = '';
+            for (var j=0; j<data[0].Email.length; j++) {
+                data[0]['Emails'] += data[0].Email[j].Address + '\n';
+            }
+            delete data[0].Email;
+        } else {
+        //More than one person
+            for (var i=0; i<response.possible_persons.length; i++) {
+                data[i] = addPerson(response.possible_persons[i]);
+                ec.Account[i] = buildEC(data, i);
+                data[i]['Emails'] = '';
+                for (var j=0; j<data[i].Email.length; j++) {
+                    data[i]['Emails'] += data[i].Email[j].Address + '\n';
+                }
+                delete data[i].Email;
+            }
+        }
+
+        return {
+                    Type: entryTypes.note,
+                    ContentsFormat: formats.table,
+                    Contents: data,
+                    ReadableContentsFormat: formats.table,
+                    //HumanReadable: tableToMarkdown('Pipl', data, columns),
+                    //HumanReadable: data,
+                    EntryContext: ec
+                };
+    };
+
+    var buildEC = function(data, i) {
+        return {
+                    Addresses : data[i].Addresses,
+                    Email : data[i].Email,
+                    IDs : data[i].UserIDs,
+                    Names: data[i].Names,
+                    Phones: data[i].Phones,
+                    Usernames: data[i].Usernames
+                };
+    };
+
+    var addPerson = function(person) {
+        var response = {
+            Names: '',
+            Phones: '',
+            Gender: '',
+            DoB: '',
+            Image: '',
+            Usernames: '',
+            Email: '',
+            Educations: '',
+            UserIDs: '',
+            URLs: '',
+            Jobs: '',
+            Addresses: ''
+        };
+        if (person.names) {
+            for (var i=0; i<person.names.length; i++) {
+                response['Names'] += person.names[i].middle ? person.names[i].first + ' ' + person.names[i].middle + ' ' + person.names[i].last + '\n' : person.names[i].first + ' ' + person.names[i].last + '\n';
+            }
+        }
+        if (person.phones) {
+            for (var i=0; i<person.phones.length; i++) {
+                response['Phones'] += person.phones[i].display + ' ' + person.phones[i].display_international + '\n';
+            }
+        }
+        if (person.gender){
+            response['Gender'] = person.gender.content;
+        }
+        if (person.dob) {
+            response['DoB'] = person.dob.display;
+        }
+        if (person.images) {
+            //response['Image'] = '![some alt]('+person.images[0].url+'=size=100X100)';
+            var url='https://thumb.pipl.com/image?height=100&width=100&favicon=false&zoom_face=false&token='+person.images[0].thumbnail_token;
+            response['Image']='__img__:src,'+ url +';alt,'+''+';height,100;width,100';
+
+        }
+        if (person.usernames) {
+            for (var i=0; i<person.usernames.length; i++) {
+                response['Usernames'] += person.usernames[i].content + '\n';
+            }
+        }
+        if (person.emails) {
+            response['Email'] = [];
+            for (var i=0; i<person.emails.length; i++) {
+                response['Email'][i] = {Address:person.emails[i].address};
+            }
+        }
+        if (person.educations) {
+            for (var i=0; i<person.educations.length; i++) {
+                response['Educations'] += person.educations[i].display + '\n';
+            }
+        }
+        if (person.user_ids) {
+            for (var i=0; i<person.user_ids.length; i++) {
+                response['UserIDs'] += person.user_ids[i].content + '\n';
+            }
+        }
+        if (person.urls) {
+            for (var i=0; i<person.urls.length; i++) {
+                response['URLs'] += person.urls[i].url + '\n';
+            }
+        }
+        if (person.jobs) {
+            for (var i=0; i<person.jobs.length; i++) {
+                response['Jobs'] += person.jobs[i].display + '\n';
+            }
+        }
+        if (person.addresses) {
+            for (var i=0; i<person.addresses.length; i++) {
+                response['Addresses'] += person.addresses[i].display + '\n';
+            }
+        }
+        response['provider'] = 'pipl';
+        return response;
+    };
+
+    switch (command) {
+        case 'test-module':
+            var response = sendRequest({'first-name': 'clark', 'last-name': 'kent'});
+            return 'ok';
+        case 'pipl-search':
+            if (Object.keys(args).length === 0) {
+                return 'No arguments given.'
+            }
+            var response = sendRequest(args);
+            return createEntry(response);
+        case 'email':
+            var response = sendRequest(args);
+            return createEntry(response);
+        default:
+
+    }
+
+
+  type: javascript
+  commands:
+  - name: pipl-search
+    arguments:
+    - name: email
+      description: Email address to search
+    - name: phone
+      description: Home/work/mobile phone number to search
+    - name: username
+      description: Username/screen-name to search. Minimum 4 characters
+    - name: first-name
+      description: First name to search. Minimum 2 characters
+    - name: last-name
+      description: Last name to search. Minimum 2 characters
+    - name: middle-name
+      description: Middle name or middle initial to search
+    - name: raw-name
+      description: Full name to search. Use this parameter if the accurate name parts
+        (first/middle/last) are not available, this parameter will only be used in
+        absence of first-name and last-name
+    - name: country
+      description: A two-letter country code to searchs
+    - name: state
+      description: A United States, Canada, Great Britain or Australia state code.
+        If a US state is provided and no country specified, we’ll assume the country
+        to be US.
+    - name: city
+      description: City to search
+    - name: zipcode
+      description: ZIP code to search
+    - name: raw-address
+      description: Full address to search
+    - name: age
+      description: Age to search in String, an exact (YY) or approximate (YY-YY) age
+    - name: columns
+      description: Order of columns to be displayed in results (comma seperated list
+        of values)
+    outputs:
+    - contextPath: Account.Email
+      description: 'Email addresses '
+    - contextPath: Account.IDs
+      description: User IDs
+    - contextPath: Account.Addresses
+      description: Addresses (geographic)
+    - contextPath: Account.Names
+      description: Full names
+    - contextPath: Account.Phones
+      description: Phone numbers
+    - contextPath: Account.Usernames
+      description: Online platforms usernames
+    description: Search for required query
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      description: Email address to search for
+    outputs:
+    - contextPath: Account.Email
+      description: 'Email addresses '
+    - contextPath: Account.IDs
+      description: User IDs
+    - contextPath: Account.Addresses
+      description: Addresses (geographic)
+    - contextPath: Account.Names
+      description: Full names
+    - contextPath: Account.Phones
+      description: Phone numbers
+    - contextPath: Account.Usernames
+      description: Online platforms usernames
+    description: Searches for information regarding given email address
