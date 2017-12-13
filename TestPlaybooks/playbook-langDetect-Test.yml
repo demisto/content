@@ -1,5 +1,5 @@
 id: LanguageDetect-Test
-version: -1 
+version: -1
 name: LanguageDetect-Test
 description: Testing LanguageDetect script
 starttaskid: "0"
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     view: |-
       {
         "position": {
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 21070234-ca9b-430d-8620-44bd525cfb0e
+    taskid: d1c85417-91a0-47f8-888a-2696b1d612b4
     type: regular
     task:
-      id: 21070234-ca9b-430d-8620-44bd525cfb0e
+      id: d1c85417-91a0-47f8-888a-2696b1d612b4
       version: -1
       name: Detect english
       scriptName: LanguageDetect
@@ -41,11 +41,12 @@ tasks:
       - "4"
     scriptarguments:
       text: Hello World
+    continueonerror: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
   "2":
@@ -69,7 +70,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
   "3":
@@ -91,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
   "4":
@@ -115,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
   "5":
@@ -139,7 +140,32 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+    type: regular
+    task:
+      id: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -147,7 +173,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50
