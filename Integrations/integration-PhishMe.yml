@@ -438,7 +438,7 @@ script:
       description: Number of threats
     - contextPath: PhishMe.String
       description: String to search
-    description: ' Search for extracted strings discovered within malware campaigns.'
+    description: 'Search for extracted strings discovered within malware campaigns.'
   - name: email
     arguments:
     - name: email
@@ -458,3 +458,4 @@ script:
       description: The actual score
     description: Check if sender address is malicious
 hidden: false
+releaseNotes: 'Added Threat IDs and last published date to output'
