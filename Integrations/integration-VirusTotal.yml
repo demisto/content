@@ -211,7 +211,7 @@ script:
         }
         ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
-        md += 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n';
+        md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
         md += 'Country: **' + o.country + '**\n';
         md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
         var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
@@ -757,3 +757,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
+releaseNotes: 'Handling missing ASN scenario'
