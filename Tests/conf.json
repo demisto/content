@@ -131,7 +131,8 @@
         },
         {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook"
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
