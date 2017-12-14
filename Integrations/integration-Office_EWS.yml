@@ -905,6 +905,14 @@ script:
                     lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
                 }
             }
+            if (lastRun.folderId !== params.folder) {
+              //Folder was changed, we need to reset lastRun
+              lastRun = {
+                  folderId: params.folder,
+                  lastId: '',
+                  lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
+              }
+            }
             var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultPageSize;
             //Will fetch emails according to time stamp
                 var fetchTmpl = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
@@ -966,7 +974,7 @@ script:
             }
             fetchArgs.last_time = new Date(lastRun.lastTime).toISOString();
             fetchArgs['target-mailbox'] = getDefaultTargetMailbox();
-            if (params.folder) {
+            if (lastRun.folderId) {
                 fetchArgs['folder'] = lastRun.folderId;
                 fetchArgs['target-folder'] = replaceInTemplates(targetFolderTmpl,fetchArgs);
             } else {
@@ -1015,8 +1023,8 @@ script:
                             if (lastRun.lastTime < incident.occurred.getTime()) {
                                 lastRun.lastTime = incident.occurred.getTime();
                                 lastRun.lastId = message.Items.Message.ItemId["-Id"];
+                                setLastRun(lastRun);
                             }
-                            setLastRun(lastRun);
                             labels = [];
                             //handle  recipients
                             recipients = message.Items.Message.ToRecipients;
@@ -1106,6 +1114,7 @@ script:
             }
             return JSON.stringify(incidents);
         }
+
 
         function searchMailboxes(args){
             if (!args['mailbox-search-scope']) {
