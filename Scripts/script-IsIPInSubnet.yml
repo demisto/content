@@ -23,4 +23,3 @@ outputs:
   description: if  IP is not in subnet
 scripttarget: 0
 deprecated: true
-releaseNotes: Deprecated. Use IsIPInRanges instead.
