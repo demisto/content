@@ -70,7 +70,7 @@ script:
         }
     };
 
-    var addMD = function(threats,k) {
+    var addMD = function(threats, k) {
         var md = "";
         md += '### Threat ID ' + (k+1) + ': ' + threats[k].id + '\n';
 
@@ -111,8 +111,8 @@ script:
             ec.URL = {
                         Data: url,
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                    };
-            for (var k=0; k<threats.length; k++) {
+                      };
+            for (var k = 0; k < threats.length; k++) {
                 for (var i = 0; i < threats[0].blockSet.length; i++){
                     if (threats[0].blockSet[i]['data'].indexOf(url) !== -1) {
                         var severityLevel = threats[0].blockSet[i]['impact'];
@@ -121,7 +121,7 @@ script:
                 }
                 dbotScore = calcScore(severityLevel);
                 md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats,k);
+                md += addMD(threats, k);
                 threatArray[k] = threats[k].id;
             }
             ec.URL['PhishMe'] = {};
@@ -150,10 +150,10 @@ script:
                 limit = 10;
             }
 
-            for(var i=0; i<threats.length; i++){
-                if(threats[i].hasReport === true){
+            for(var i = 0; i < threats.length; i++){
+                if (threats[i].hasReport === true){
                     countThreats += 1;
-                    if(countThreats<limit+1){
+                    if (countThreats<limit+1){
                         acThreats.push(threats[i].threatDetailURL);
                     }
                 }
@@ -187,10 +187,10 @@ script:
         var threatArray = [];
         if (threats.length !== 0) {
             ec.Email = {
-                        Data: sender_name,
-                        Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                    };
-            for (var k=0; k<threats.length; k++) {
+                          Data: sender_name,
+                          Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+                        };
+            for (var k = 0; k < threats.length; k++) {
                 for (var i = 0; i < threats[0].blockSet.length; i++){
                     if (threats[0].blockSet[i]['data'].indexOf(sender_name) !== -1) {
                         var severityLevel = threats[0].blockSet[i]['impact'];
@@ -199,7 +199,7 @@ script:
                 }
                 dbotScore = calcScore(severityLevel);
                 md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats,k);
+                md += addMD(threats, k);
                 threatArray[k] = threats[k].id;
             }
             ec.Email['PhishMe'] = {};
@@ -226,8 +226,8 @@ script:
             ec.File = {
                         MD5: str,
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                    };
-            for (var k=0; k<threats.length; k++) {
+                        };
+            for (var k = 0; k < threats.length; k++) {
                 for (var i = 0; i < threats[0].executableSet.length; i++){
                     if (threats[0].executableSet[i]['md5Hex'] === str) {
                         var severityLevel = threats[0].executableSet[i]['severityLevel'];
@@ -261,10 +261,10 @@ script:
         var threatArray = [];
         if (threats.length !== 0) {
             ec.IP = {
-                Data: ip,
-                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-            };
-            for (var k=0; k<threats.length; k++) {
+                      Data: ip,
+                      Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+                    };
+            for (var k = 0; k < threats.length; k++) {
                 for (var i = 0; i < threats[0].blockSet.length; i++){
                     if (threats[0].blockSet[i]['ipDetail'] && threats[0].blockSet[i]['ipDetail']['ip']===ip) {
                         var severityLevel = threats[0].blockSet[i]['impact'];
