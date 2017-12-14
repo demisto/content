@@ -1545,4 +1545,3 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
-releaseNotes: "Added type ticket (normal, standard, emergency) argument to the create and update commands. Added ticket state argument to the create and update commands. Added Get group details command."
