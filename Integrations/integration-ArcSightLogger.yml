@@ -631,11 +631,6 @@ script:
     - name: fields
       description: The list of fields in the order to show. If not specified, all
         fields will be used
-    outputs:
-    - contextPath: ArcSightLogger.Search.SearchSessionId
-      description: The search session id
-    - contextPath: ArcSightLogger.Search.SessionId
-      description: The session id
     description: Start a new search, wait until the search status is complete and
       then return the events. This command combine 3 commands - as-search, as-status,
       as-events
