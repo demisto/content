@@ -131,7 +131,8 @@
         },
         {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook"
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
@@ -153,6 +154,9 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "playbookID": "LanguageDetect-Test"
         }
     ],
     "skipped": [
