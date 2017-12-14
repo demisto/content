@@ -169,14 +169,19 @@ script:
 
         // wait until the search is complete so we could collect the events
         var statusResult;
+        var requiredEvents = Infinity;
+        if(length){
+            requiredEvents = offset ? parseInt(length) + parseInt(offset) : parseInt (length);
+        }
         do {
             wait(1);
             statusResult = getSearchStatusRequest(userSessionId, searchSessionId);
             if (statusResult.status === 'error') {
                 throw 'Invalid query.\nSearch status: ' + JSON.stringify(statusResult, null ,2);
             }
-        } while(statusResult.status !== 'complete');
-
+        } while(statusResult.status !== 'complete' && requiredEvents > statusResult.hit);
+        console.log('out of the loop');
+        console.log(statusResult.hit);
         // get the results
         var events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
 
@@ -242,9 +247,14 @@ script:
             now.setTime(now.getTime() - ld * DAY_IN_MILLIS)
             bodyArgs.start_time = now.toISOString();
         } else if (startTime && endTime) {
+            console.log('set time');
             bodyArgs.end_time = endTime;
             bodyArgs.start_time = startTime;
         }
+        console.log(startTime);
+        console.log(endTime);
+        console.log(bodyArgs.start_time);
+        console.log(bodyArgs.end_time);
         if (discoverFields) {
             bodyArgs.discover_fields = parseBool(discoverFields);
         }
@@ -576,11 +586,11 @@ script:
       - "false"
       description: Indicates that the search should try to discover fields in the
         events found.
-    - name: startTime
+    - name: start_time
       description: 'The date and time string for the start time in the search time
         range. If start_ time is provided, end_time must be present as well. Format:
         - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
-    - name: endTime
+    - name: end_time
       description: 'The date and time string for the end time in the search time range.
         If end_ time is provided, start_time must be present as well. See Integration
         tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
@@ -613,6 +623,8 @@ script:
       description: The offset from the first even
     - name: length
       description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
     - name: dir
       description: The sort direction based on event time. forward/backward (default
         is forward).
@@ -689,6 +701,8 @@ script:
         fields will be used
     - name: length
       description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
     - name: offset
       description: The offset from the first even
     description: Returns the list of events found in the specified search.
@@ -721,11 +735,11 @@ script:
       - "false"
       description: Indicates that the search should try to discover fields in the
         events found.
-    - name: startTime
+    - name: start_time
       description: 'The date and time string for the start time in the search time
         range. If start_ time is provided, end_time must be present as well. Format:
         - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
-    - name: endTime
+    - name: end_time
       description: 'The date and time string for the end time in the search time range.
         If end_ time is provided, start_time must be present as well. See Integration
         tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
