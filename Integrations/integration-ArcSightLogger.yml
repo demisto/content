@@ -609,7 +609,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers.
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
@@ -753,7 +753,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers.
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
