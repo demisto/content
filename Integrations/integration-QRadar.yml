@@ -239,6 +239,24 @@ script:
             return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
         case 'qradar-get-closing-reasons':
             return addHumanRedable(getClosingReasons(args), 'QRadar get closing reasons', headers);
+        case 'qradar-create-note':
+            return addHumanRedable(
+                sendRequest(
+                    'POST',
+                    server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes', args) + encodeToURLQuery(args),
+                    headers,
+                    'create note'),
+                'QRadar create note',
+                headers);
+        case 'qradar-get-note':
+            return addHumanRedable(
+                sendRequest(
+                    'GET',
+                    server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes/%note_id%', args) + encodeToURLQuery(args),
+                    headers,
+                    'get note'),
+                'QRadar get note',
+                headers);
     }
   type: javascript
   commands:
@@ -455,5 +473,32 @@ script:
     - name: range
       description: Number of results in return
     description: Get closing reasons
+  - name: qradar-create-note
+    arguments:
+    - name: offense_id
+      required: true
+      default: true
+      description: The offense ID to add the note to
+    - name: note_text
+      required: true
+      description: The note text
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get
+        back in the response. Fields that are not named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas
+    description: Create a note on an offense
+  - name: qradar-get-note
+    arguments:
+    - name: offense_id
+      required: true
+      default: true
+      description: The offense ID to retrieve the note from
+    - name: note_id
+      required: true
+      description: The note ID
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get
+        back in the response. Fields that are not named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas
+    description: Retrieve a note for an offense
   isfetch: true
-releaseNotes: "-"
