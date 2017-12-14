@@ -1861,4 +1861,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added a function to format Demisto table cells as strings (formatTableValues)"

@@ -48,4 +48,3 @@ outputs:
 - contextPath: IP.Address
   description: Extracted IPs
 scripttarget: 0
-releaseNotes: "-"
