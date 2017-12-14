@@ -842,6 +842,14 @@ script:
                 lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
             }
         }
+        if (lastRun.folderId !== params.folder) {
+          //Folder was changed, we need to reset lastRun
+          lastRun = {
+              folderId: params.folder,
+              lastId: '',
+              lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
+          }
+        }
         var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultPageSize;
         //Will fetch emails according to time stamp
             var fetchTmpl = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
@@ -903,7 +911,7 @@ script:
         }
         fetchArgs.last_time = new Date(lastRun.lastTime).toISOString();
         fetchArgs['target-mailbox'] = getDefaultTargetMailbox();
-        if (params.folder) {
+        if (lastRun.folderId) {
             fetchArgs['folder'] = lastRun.folderId;
             fetchArgs['target-folder'] = replaceInTemplates(targetFolderTmpl,fetchArgs);
         } else {
