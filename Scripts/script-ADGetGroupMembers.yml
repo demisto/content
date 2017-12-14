@@ -2,7 +2,6 @@ commonfields:
   id: ADGetGroupMembers
   version: -1
 name: ADGetGroupMembers
-releaseNotes: "Fixed script failure when user/computer has no groups"
 script: |+
   def createEndpointEntities(t,attrs):
       endpoints = []
