@@ -1,7 +1,7 @@
 commonfields:
-  id: langDetect
+  id: LanguageDetect
   version: -1
-name: langDetect
+name: LanguageDetect
 script: |
   from langdetect import detect_langs
 

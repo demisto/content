@@ -84,9 +84,9 @@ configuration:
   required: false
 script:
   script: |
-        var server = params.server.replace(/[\/]+$/, '') + '/';
-        var defaultPageSize = 100;
-        var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
+    var server = params.server.replace(/[\/]+$/, '') + '/';
+    var defaultPageSize = 100;
+    var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
 
         // map of argument that can contain distinguished item as values
         var distinguishedArgs = {
@@ -532,151 +532,151 @@ script:
             }
         };
 
-        function getDefaultTargetMailbox() {
-            if (params.defaultTargetMailbox) {
-                return params.defaultTargetMailbox;
-            }
-            return params.credentials.identifier + '@' + params.domain;
+    function getDefaultTargetMailbox() {
+        if (params.defaultTargetMailbox) {
+            return params.defaultTargetMailbox;
         }
+        return params.credentials.identifier + '@' + params.domain;
+    }
 
-        function setImpersonation(args) {
-            args['impersonation'] = '';
-            if (params.impersonation) {
-                args['impersonation'] = replaceInTemplates('<t:ExchangeImpersonation>'+
-                        '<t:ConnectingSID>'+
-                        '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
-                        '</t:ConnectingSID>'+
-                        '</t:ExchangeImpersonation>', args);
-            }
+    function setImpersonation(args) {
+        args['impersonation'] = '';
+        if (params.impersonation) {
+            args['impersonation'] = replaceInTemplates('<t:ExchangeImpersonation>'+
+                    '<t:ConnectingSID>'+
+                    '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
+                    '</t:ConnectingSID>'+
+                    '</t:ExchangeImpersonation>', args);
         }
+    }
 
-        var mapObjFunction = function(mapFields) {
-            var transformSingleObj= function(obj) {
-                var res = {};
-                mapFields.forEach(function(f) {
-                   res[f.to] = dq(obj, f.from);
-                });
-                return res;
-            };
-            return function(obj) {
-                if (obj instanceof Array) {
-                    var res = [];
-                    for (var j=0; j < obj.length; j++) {
-                        res.push(transformSingleObj(obj[j]));
-                    }
-                    return res;
-                }
-                return transformSingleObj(obj);
-            };
+    var mapObjFunction = function(mapFields) {
+        var transformSingleObj= function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+               res[f.to] = dq(obj, f.from);
+            });
+            return res;
         };
-
-        var createContext = function(data, extraData) {
-            var createContextSingle = function(obj) {
-                var res = {};
-                var keys = Object.keys(obj);
-                keys.forEach(function(k) {
-                    var values = k.split('-');
-                    var current = res;
-                    for (var j = 0; j<values.length - 1; j++) {
-                        if (!current[values[j]]) {
-                            current[values[j]] = {};
-                        }
-                        current = current[values[j]];
-                    }
-                    current[values[j]] = obj[k];
-                });
-
-                var extraKeys = Object.keys(extraData);
-                extraKeys.forEach(function(k) {
-                    res[k] = extraData[k];
-                });
-
-                return res;
-            };
-            if (data instanceof Array) {
+        return function(obj) {
+            if (obj instanceof Array) {
                 var res = [];
-                for (var j=0; j < data.length; j++) {
-                    res.push(createContextSingle(data[j]));
+                for (var j=0; j < obj.length; j++) {
+                    res.push(transformSingleObj(obj[j]));
                 }
                 return res;
             }
-            return createContextSingle(data);
-        };
-
-        var buildDisplay = function(currentCommand, translated) {
-            var createDisplaySingle = function(obj) {
-                var disp = {};
-                var keys = Object.keys(obj);
-                for (var k in keys) {
-                    if ((!currentCommand.nonDisplayItems || currentCommand.nonDisplayItems.indexOf(keys[k]) === -1) && obj[keys[k]]) {
-                        disp[keys[k]] = obj[keys[k]];
-                    }
-                }
-                return disp;
-            };
-            if (translated instanceof Array) {
-                var res = [];
-                for (var j=0; j < translated.length; j++) {
-                    res.push(createDisplaySingle(translated[j]));
-                }
-                return res;
-            }
-            return createDisplaySingle(translated);
-        };
-
-        var execute = function(command, args, returnRaw) {
-            var currentCommand = commandsDictionary[command];
-            var hrTitle = command;
-            if (currentCommand.tableTitle) {
-                hrTitle = replaceInTemplates(currentCommand.tableTitle, args);
-            }
-            if (currentCommand.defaultArgs) {
-                var keys = Object.keys(currentCommand.defaultArgs);
-                for (var j in keys) {
-                    if (!args[keys[j]]) {
-                        args[keys[j]] = currentCommand.defaultArgs[keys[j]];
-                    }
-                }
-            }
-            var ids = [];
-            if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName]) {
-                if (Array.isArray(args[currentCommand.arrayArgName])) {
-                    ids = args[currentCommand.arrayArgName];
-                } else {
-                    ids = args[currentCommand.arrayArgName].split(',');
-                }
-            }
-            var httpParams = {
-                    Method: 'POST',
-                    Headers: {
-                        'Content-Type': ['text/xml; charset=utf-8']
-                    },
-                    Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
-                    Password: params.credentials.password,
-                    Domain: params.domain,
-                    AuthProtocol: [params.authType],
-                    Body: buildBody(command, args),
-                };
-            var res = http(server, httpParams, params.insecure, params.proxy);
-            if (res.StatusCode < 200 || res.StatusCode >= 300) {
-                throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-            }
-            var bdy = res.Body.replace(/&#x.*?;/g, "");
-            var raw = JSON.parse(x2j(bdy));
-            if (currentCommand.resStatus) {
-                resStatus = dq(raw, currentCommand.resStatus);
-                if (!Array.isArray(resStatus)) {
-                    resStatus = [resStatus];
-                }
-                if (resStatus[0] !== 'Success') {
-                    throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-                }
-            }
-            if(returnRaw){
-                return raw;
-            }
-            return createEntry(currentCommand, raw, hrTitle);
+            return transformSingleObj(obj);
         }
+    }
+
+    var createContext = function(data, extraData) {
+        var createContextSingle = function(obj) {
+            var res = {};
+            var keys = Object.keys(obj);
+            keys.forEach(function(k) {
+                var values = k.split('-');
+                var current = res;
+                for (var j = 0; j<values.length - 1; j++) {
+                    if (!current[values[j]]) {
+                        current[values[j]] = {};
+                    }
+                    current = current[values[j]];
+                }
+                current[values[j]] = obj[k];
+            });
+
+            var extraKeys = Object.keys(extraData);
+            extraKeys.forEach(function(k) {
+                res[k] = extraData[k];
+            });
+
+            return res;
+        };
+        if (data instanceof Array) {
+            var res = [];
+            for (var j=0; j < data.length; j++) {
+                res.push(createContextSingle(data[j]));
+            }
+            return res;
+        }
+        return createContextSingle(data);
+    }
+
+    var buildDisplay = function(currentCommand, translated) {
+        var createDisplaySingle = function(obj) {
+            var disp = {};
+            var keys = Object.keys(obj);
+            for (var k in keys) {
+                if ((!currentCommand.nonDisplayItems || currentCommand.nonDisplayItems.indexOf(keys[k]) === -1) && obj[keys[k]]) {
+                    disp[keys[k]] = obj[keys[k]];
+                }
+            }
+            return disp;
+        };
+        if (translated instanceof Array) {
+            var res = [];
+            for (var j=0; j < translated.length; j++) {
+                res.push(createDisplaySingle(translated[j]));
+            }
+            return res;
+        }
+        return createDisplaySingle(translated);
+    }
+
+    var execute = function(command, args, returnRaw) {
+        var currentCommand = commandsDictionary[command];
+        var hrTitle = command;
+        if (currentCommand.tableTitle) {
+            hrTitle = replaceInTemplates(currentCommand.tableTitle, args);
+        }
+        if (currentCommand.defaultArgs) {
+            var keys = Object.keys(currentCommand.defaultArgs);
+            for (var j in keys) {
+                if (!args[keys[j]]) {
+                    args[keys[j]] = currentCommand.defaultArgs[keys[j]];
+                }
+            }
+        }
+        var ids = [];
+        if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName]) {
+            if (Array.isArray(args[currentCommand.arrayArgName])) {
+                ids = args[currentCommand.arrayArgName];
+            } else {
+                ids = args[currentCommand.arrayArgName].split(',');
+            }
+        }
+        var httpParams = {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['text/xml; charset=utf-8']
+                },
+                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
+                Password: params.credentials.password,
+                Domain: params.domain,
+                AuthProtocol: [params.authType],
+                Body: buildBody(command, args),
+            };
+        var res = http(server, httpParams, params.insecure, params.proxy);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
+        }
+        var bdy = res.Body.replace(/&#x.*?;/g, "");
+        var raw = JSON.parse(x2j(bdy));
+        if (currentCommand.resStatus) {
+            resStatus = dq(raw, currentCommand.resStatus);
+            if (!Array.isArray(resStatus)) {
+                resStatus = [resStatus];
+            }
+            if (resStatus[0] !== 'Success') {
+                throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
+            }
+        }
+        if(returnRaw){
+            return raw;
+        }
+        return createEntry(currentCommand, raw, hrTitle);
+    }
 
         function createEntry(currentCommand, raw, hrTitle){
             var entry = {
@@ -727,183 +727,182 @@ script:
             return entry;
         }
 
-        function buildBody(command, args) {
-            var currentCommand = commandsDictionary[command];
-            if (currentCommand.defaultArgs) {
-                for (var j in currentCommand.defaultArgs) {
-                    if (!args[j]) {
-                        args[j] = currentCommand.defaultArgs[j];
-                    }
+    function buildBody(command, args) {
+        var currentCommand = commandsDictionary[command];
+        if (currentCommand.defaultArgs) {
+            for (var j in currentCommand.defaultArgs) {
+                if (!args[j]) {
+                    args[j] = currentCommand.defaultArgs[j];
                 }
             }
-            if (currentCommand.arrayArgName) {
-                var items = [];
-                if (Array.isArray(args[currentCommand.arrayArgName])) {
-                    items = args[currentCommand.arrayArgName];
-                } else {
-                    items = args[currentCommand.arrayArgName].split(',');
-                }
-                var itemsStr = '';
-                for (var i in items) {
-                    var itemId = items[i];
-                    var template;
-                    var distinguished = distinguishedArgs[currentCommand.arrayArgName];
-                    if(distinguished && distinguished.items.indexOf(itemId) > -1) {
-                        template = distinguished.template;
-                    } else {
-                        template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;
-                    }
-                    itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
-                }
-                args[currentCommand.arrayArgName] = itemsStr;
-            }
-            return replaceInTemplates(currentCommand.template, args);
         }
-
-        function sendRequest(tmpl, reqArgs, resStatusPath) {
-            var readyBody = replaceInTemplates(tmpl, reqArgs);
-            var httpParams = {
-                    Method: 'POST',
-                    Headers: {
-                        'Content-Type': ['text/xml; charset=utf-8']
-                    },
-                    Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
-                    Password: params.credentials.password,
-                    Domain: params.domain,
-                    AuthProtocol: [params.authType],
-                    Body: readyBody
-                };
-            var res = http(server, httpParams, params.insecure, params.proxy);
-            if (res.StatusCode < 200 || res.StatusCode >= 300) {
-                throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-            }
-            var bdy = res.Body.replace(/&#x.*?;/g, "");
-            var raw = JSON.parse(x2j(bdy));
-
-            var resStatus = dq(raw, resStatusPath);
-            if (!Array.isArray(resStatus)) {
-                resStatus = [resStatus];
-            }
-            if (resStatus[0] !== 'Success') {
-                throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-            }
-
-            return raw;
-        }
-
-        function parseItemAttachment(rawItem, args) {
-            var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';
-            var entry;
-
-            var data = dq(raw, itemPath);
-            if (data) {
-                entry = {
-                    Type: entryTypes.note,
-                    Contents: raw,
-                    ContentsFormat: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                };
-                var translator = [
-                    {to: 'BodyType', from: 'Message.Body.-BodyType'},
-                    {to: 'Body', from: 'Message.Body.#text'},
-                    {to: 'Created', from: 'Message.DateTimeCreated'},
-                    {to: 'Sent', from: 'Message.DateTimeSent'},
-                    {to: 'From-Email', from: 'Message.From.Mailbox.EmailAddress'},
-                    {to: 'From-Name', from: 'Message.From.Mailbox.Name'},
-                    {to: 'From-RoutingType', from: 'Message.From.Mailbox.RoutingType'},
-                    {to: 'To-Email', from: 'Message.ReceivedBy.Mailbox.EmailAddress'},
-                    {to: 'To-Name', from: 'Message.ReceivedBy.ToRecipients.Mailbox.Name'},
-                    {to: 'To-RoutingType', from: 'Message.ToRecipients.Mailbox.RoutingType'},
-                    {to: 'HasAttachments', from: 'Message.HasAttachments'},
-                    {to: 'IsAssociated', from: 'Message.IsAssociated'},
-                    {to: 'IsRead', from: 'Message.IsRead'},
-                    {to: 'Sensitivity', from: 'Sensitivity'},
-                    {to: 'Size', from: 'Size'},
-                    {to: 'ID', from: 'AttachmentId.-Id'},
-                    {to: 'Subject', from: 'Message.Subject'},
-                    {to: 'Attachment-ID', from: 'Message.Attachments.FileAttachment.AttachmentId.-Id'},
-                    {to: 'Attachment-IsContactPhoto', from: 'Message.Attachments.FileAttachment.IsContactPhoto'},
-                    {to: 'Attachment-IsInline', from: 'Message.Attachments.FileAttachment.IsInline'},
-                    {to: 'Attachment-LastModifiedTime', from: 'Message.Attachments.FileAttachment.LastModifiedTime'},
-                    {to: 'Attachment-Name', from: 'Message.Attachments.FileAttachment.Name'},
-                    {to: 'Attachment-Size', from: 'Message.Attachments.FileAttachment.Size'},
-                    {to: 'Mail-Attachment-ID', from: 'Message.Attachments.ItemAttachment.AttachmentId.-Id'},
-                    {to: 'Mail-Attachment-IsContactPhoto', from: 'Message.Attachments.ItemAttachment.IsContactPhoto'},
-                    {to: 'Mail-Attachment-IsInline', from: 'Message.Attachments.ItemAttachment.IsInline'},
-                    {to: 'Mail-Attachment-LastModifiedTime', from: 'Message.Attachments.ItemAttachment.LastModifiedTime'},
-                    {to: 'Mail-Attachment-Name', from: 'Message.Attachments.ItemAttachment.Name'},
-                    {to: 'Mail-Attachment-Size', from: 'Message.Attachments.ItemAttachment.Size'},
-                    {to: 'Headers', from: "Message.InternetMessageHeaders.InternetMessageHeader"},
-                ];
-                var translated = mapObjFunction(translator)(data);
-
-                var contextKey = 'EWS.Items(val.ID == obj.ID)';
-                entry.EntryContext = {};
-                entry.EntryContext[contextKey] = createContext(translated, {targetMailbox: args['target-mailbox']});
-
-                var disp = buildDisplay({}, translated);
-                var hrTitle = replaceInTemplates('EWS get attachment got item for %target-mailbox%, %attachment-id% ', args);
-                entry.HumanReadable = tableToMarkdown(
-                    hrTitle,
-                    disp
-                );
-            }
-            return entry;
-        }
-
-        function parseFileAttachment(raw, args) {
-            var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';
-            var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';
-            var fileName = dq(raw, fileNamePath);
-            var entry;
-            if(fileName) {
-                var entry = entry = {Type: 3, FileID: saveFile(raw, fileContentPath, true), File: fileName, Contents: fileName};
-            }
-            return entry;
-        }
-
-        function getAttachment(attachArgs, isItem) {
-            var attachmentTmpl = '<?xml version="1.0" encoding="utf-8"?>' +
-        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-        '  <soap:Header>' +
-        '<t:RequestServerVersion Version="%version%" />' +
-        '%impersonation%'+
-        ' </soap:Header>' +
-        '  <soap:Body>' +
-        '    <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-        '      <AttachmentShape/>' +
-        '     <AttachmentIds>' +
-        '        <t:AttachmentId Id="%attachment-id%"/>' +
-        '      </AttachmentIds>' +
-        '    </GetAttachment>' +
-        '   </soap:Body>' +
-        ' </soap:Envelope>';
-            raw = sendRequest(attachmentTmpl, attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');
-            var entry;
-            if(isItem) {
-                entry = parseItemAttachment(raw, attachArgs);
+        if (currentCommand.arrayArgName) {
+            var items = [];
+            if (Array.isArray(args[currentCommand.arrayArgName])) {
+                items = args[currentCommand.arrayArgName];
             } else {
-                entry = parseFileAttachment(raw, attachArgs);
+                items = args[currentCommand.arrayArgName].split(',');
             }
-            if(!entry) {
-                entry = {
-                    Type: entryTypes.note,
-                    Contents: raw,
-                    ContentsFormat: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: 'No results'
-                };
+            var itemsStr = '';
+            for (var i in items) {
+                var itemId = items[i];
+                var template;
+                var distinguished = distinguishedArgs[currentCommand.arrayArgName];
+                if(distinguished && distinguished.items.indexOf(itemId) > -1) {
+                    template = distinguished.template;
+                } else {
+                    template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;
+                }
+                itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
             }
-            return entry;
+            args[currentCommand.arrayArgName] = itemsStr;
+        }
+        return replaceInTemplates(currentCommand.template, args);
+    }
+
+    function sendRequest(tmpl, reqArgs, resStatusPath) {
+        var readyBody = replaceInTemplates(tmpl, reqArgs);
+        var httpParams = {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['text/xml; charset=utf-8']
+                },
+                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
+                Password: params.credentials.password,
+                Domain: params.domain,
+                AuthProtocol: [params.authType],
+                Body: readyBody
+            };
+        var res = http(server, httpParams, params.insecure, params.proxy);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
+        }
+        var bdy = res.Body.replace(/&#x.*?;/g, "");
+        var raw = JSON.parse(x2j(bdy));
+
+        var resStatus = dq(raw, resStatusPath);
+        if (!Array.isArray(resStatus)) {
+            resStatus = [resStatus];
+        }
+        if (resStatus[0] !== 'Success') {
+            throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
         }
 
-        function fetchEmailsAsIncidents() {
-            var lastRun = getLastRun();
-            if (!lastRun || !lastRun.lastTime) {
-                lastRun = {
-                    lastId: '',
-                    lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
-                }
+        return raw;
+    }
+
+    function parseItemAttachment(rawItem, args) {
+        var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';
+        var entry;
+
+        var data = dq(raw, itemPath);
+        if (data) {
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+            };
+            var translator = [
+                {to: 'BodyType', from: 'Message.Body.-BodyType'},
+                {to: 'Body', from: 'Message.Body.#text'},
+                {to: 'Created', from: 'Message.DateTimeCreated'},
+                {to: 'Sent', from: 'Message.DateTimeSent'},
+                {to: 'From-Email', from: 'Message.From.Mailbox.EmailAddress'},
+                {to: 'From-Name', from: 'Message.From.Mailbox.Name'},
+                {to: 'From-RoutingType', from: 'Message.From.Mailbox.RoutingType'},
+                {to: 'To-Email', from: 'Message.ReceivedBy.Mailbox.EmailAddress'},
+                {to: 'To-Name', from: 'Message.ReceivedBy.ToRecipients.Mailbox.Name'},
+                {to: 'To-RoutingType', from: 'Message.ToRecipients.Mailbox.RoutingType'},
+                {to: 'HasAttachments', from: 'Message.HasAttachments'},
+                {to: 'IsAssociated', from: 'Message.IsAssociated'},
+                {to: 'IsRead', from: 'Message.IsRead'},
+                {to: 'Sensitivity', from: 'Sensitivity'},
+                {to: 'Size', from: 'Size'},
+                {to: 'ID', from: 'AttachmentId.-Id'},
+                {to: 'Subject', from: 'Message.Subject'},
+                {to: 'Attachment-ID', from: 'Message.Attachments.FileAttachment.AttachmentId.-Id'},
+                {to: 'Attachment-IsContactPhoto', from: 'Message.Attachments.FileAttachment.IsContactPhoto'},
+                {to: 'Attachment-IsInline', from: 'Message.Attachments.FileAttachment.IsInline'},
+                {to: 'Attachment-LastModifiedTime', from: 'Message.Attachments.FileAttachment.LastModifiedTime'},
+                {to: 'Attachment-Name', from: 'Message.Attachments.FileAttachment.Name'},
+                {to: 'Attachment-Size', from: 'Message.Attachments.FileAttachment.Size'},
+                {to: 'Mail-Attachment-ID', from: 'Message.Attachments.ItemAttachment.AttachmentId.-Id'},
+                {to: 'Mail-Attachment-IsContactPhoto', from: 'Message.Attachments.ItemAttachment.IsContactPhoto'},
+                {to: 'Mail-Attachment-IsInline', from: 'Message.Attachments.ItemAttachment.IsInline'},
+                {to: 'Mail-Attachment-LastModifiedTime', from: 'Message.Attachments.ItemAttachment.LastModifiedTime'},
+                {to: 'Mail-Attachment-Name', from: 'Message.Attachments.ItemAttachment.Name'},
+                {to: 'Mail-Attachment-Size', from: 'Message.Attachments.ItemAttachment.Size'},
+                {to: 'Headers', from: "Message.InternetMessageHeaders.InternetMessageHeader"},
+            ];
+            var translated = mapObjFunction(translator)(data);
+
+            var contextKey = 'EWS.Items(val.ID == obj.ID)';
+            entry.EntryContext = {};
+            entry.EntryContext[contextKey] = createContext(translated, {targetMailbox: args['target-mailbox']});
+
+            var disp = buildDisplay({}, translated);
+            var hrTitle = replaceInTemplates('EWS get attachment got item for %target-mailbox%, %attachment-id% ', args);
+            entry.HumanReadable = tableToMarkdown(
+                hrTitle,
+                disp
+            );
+        }
+        return entry;
+    }
+
+    function parseFileAttachment(raw, args) {
+        var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';
+        var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';
+        var fileName = dq(raw, fileNamePath);
+        var entry;
+        if(fileName) {
+            var entry = entry = {Type: 3, FileID: saveFile(raw, fileContentPath, true), File: fileName, Contents: fileName};
+        }
+        return entry;
+    }
+
+    function getAttachment(attachArgs, isItem) {
+        var attachmentTmpl = '<?xml version="1.0" encoding="utf-8"?>' +
+    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+    '  <soap:Header>' +
+    '<t:RequestServerVersion Version="%version%" />' +
+    '%impersonation%'+
+    ' </soap:Header>' +
+    '  <soap:Body>' +
+    '    <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+    '      <AttachmentShape/>' +
+    '     <AttachmentIds>' +
+    '        <t:AttachmentId Id="%attachment-id%"/>' +
+    '      </AttachmentIds>' +
+    '    </GetAttachment>' +
+    '   </soap:Body>' +
+    ' </soap:Envelope>';
+        raw = sendRequest(attachmentTmpl, attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');
+        var entry;
+        if(isItem) {
+            entry = parseItemAttachment(raw, attachArgs);
+        } else {
+            entry = parseFileAttachment(raw, attachArgs);
+        }
+        if(!entry) {
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: 'No results'
+            };
+        }
+        return entry;
+    }
+
+    function fetchEmailsAsIncidents() {
+        var lastRun = getLastRun();
+        if (!lastRun || !lastRun.lastTime) {
+            lastRun = {
+                lastId: '',
+                lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
             }
             if (lastRun.folderId !== params.folder) {
               //Folder was changed, we need to reset lastRun
@@ -948,13 +947,13 @@ script:
         '    </soap:Body>' +
         '</soap:Envelope>';
 
-        var defaultTargetTargetFolderTmpl ='<t:DistinguishedFolderId Id="inbox">' +
-                            '<t:Mailbox>' +
-                                '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
-                            '</t:Mailbox>' +
-                        '</t:DistinguishedFolderId>';
+    var defaultTargetTargetFolderTmpl ='<t:DistinguishedFolderId Id="inbox">' +
+                        '<t:Mailbox>' +
+                            '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
+                        '</t:Mailbox>' +
+                    '</t:DistinguishedFolderId>';
 
-        var targetFolderTmpl ='<t:FolderId Id="%folder%"></t:FolderId>';
+    var targetFolderTmpl ='<t:FolderId Id="%folder%"></t:FolderId>';
 
             var fetchArgs = {};
             setImpersonation(fetchArgs);
@@ -983,35 +982,35 @@ script:
             fetchArgs.version = params.defaultServerVersion
             raw = sendRequest(fetchTmpl, fetchArgs, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass');
 
-            //Now iterate on email ids, and do get items one by one
-            var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
-            var itemIds = dq(raw, itemIdPath);
-            if (itemIds && !Array.isArray(itemIds)) {
-                itemIds = [itemIds];
+        //Now iterate on email ids, and do get items one by one
+        var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
+        var itemIds = dq(raw, itemIdPath);
+        if (itemIds && !Array.isArray(itemIds)) {
+            itemIds = [itemIds];
+        }
+        incidents = [];
+        if (itemIds) {
+            itemArgs = {};
+            itemArgs['item-ids'] = '';
+            for (var i = 0 ; i < itemIds.length; i++) {
+                itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
             }
-            incidents = [];
-            if (itemIds) {
-                itemArgs = {};
-                itemArgs['item-ids'] = '';
-                for (var i = 0 ; i < itemIds.length; i++) {
-                    itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
-                }
-                itemArgs['target-mailbox'] = getDefaultTargetMailbox();
-                itemArgs.version = params.defaultServerVersion;
-                itemArgs['include-mime-content'] = "false";
-                setImpersonation(itemArgs);
-                rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs, commandsDictionary['ews-get-items'].resStatus);
-                actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;
-                if (actualMessages && !Array.isArray(actualMessages)) {
-                    actualMessages = [actualMessages];
-                }
-                if (actualMessages) {
-                    //Now create an incident from each item
-                    for (var i = 0 ; i < actualMessages.length; i++) {
-                        // if fetched incident is the same as the one in lastRun - ignore it
-                        if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
-                          continue;
-                        }
+            itemArgs['target-mailbox'] = getDefaultTargetMailbox();
+            itemArgs.version = params.defaultServerVersion;
+            itemArgs['include-mime-content'] = "false";
+            setImpersonation(itemArgs);
+            rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs, commandsDictionary['ews-get-items'].resStatus);
+            actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;
+            if (actualMessages && !Array.isArray(actualMessages)) {
+                actualMessages = [actualMessages];
+            }
+            if (actualMessages) {
+                //Now create an incident from each item
+                for (var i = 0 ; i < actualMessages.length; i++) {
+                    // if fetched incident is the same as the one in lastRun - ignore it
+                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
+                      continue;
+                    }
 
                         message = actualMessages[i];
                         if (message['-ResponseClass'] === 'Success') {
@@ -1065,138 +1064,141 @@ script:
                             labels.push({type: bodyFormatLabel, value: format['#text'] });
                             labels.push({type: 'Email/subject', value: incident.name });
 
-                            //Handle attachment - file name
-                            attachments = message.Items.Message.Attachments;
-                            attachments = attachments ? attachments.FileAttachment : null;
-                            if (attachments && !Array.isArray(attachments)) {
-                                attachments = [attachments];
-                            }
-                            if (attachments) {
-                                for (j = 0; j < attachments.length; j++ ) {
-                                    labels.push({type: 'Email/attachments', value: attachments[j].Name});
-                                    labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
-                                }
-                            }
-
-                            //Handle item attachment
-                            attachments = message.Items.Message.Attachments;
-                            attachments = attachments ? attachments.ItemAttachment : null;
-                            if (attachments && !Array.isArray(attachments)) {
-                                attachments = [attachments];
-                            }
-                            if (attachments) {
-                                for (j = 0; j < attachments.length; j++ ) {
-                                    labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
-                                    labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
-                                }
-                            }
-
-                            //Handle headers
-                            headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
-                            if (headers && !Array.isArray(headers)) {
-                                headers = [headers];
-                            }
-                            if (headers) {
-                                for (j = 0; j < headers.length; j++ ) {
-                                    labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
-                                }
-                            }
-
-                            //Add item ID
-                            labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
-
-                            incident.labels = labels;
-                            incident.rawJSON = JSON.stringify(message.Items.Message);
-                            incidents.push(incident);
+                        //Handle attachment - file name
+                        attachments = message.Items.Message.Attachments;
+                        attachments = attachments ? attachments.FileAttachment : null;
+                        if (attachments && !Array.isArray(attachments)) {
+                            attachments = [attachments];
                         }
+                        if (attachments) {
+                            for (j = 0; j < attachments.length; j++ ) {
+                                labels.push({type: 'Email/attachments', value: attachments[j].Name});
+                                labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
+                            }
+                        }
+
+                        //Handle item attachment
+                        attachments = message.Items.Message.Attachments;
+                        attachments = attachments ? attachments.ItemAttachment : null;
+                        if (attachments && !Array.isArray(attachments)) {
+                            attachments = [attachments];
+                        }
+                        if (attachments) {
+                            for (j = 0; j < attachments.length; j++ ) {
+                                labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
+                                labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
+                            }
+                        }
+
+                        //Handle headers
+                        headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
+                        if (headers && !Array.isArray(headers)) {
+                            headers = [headers];
+                        }
+                        if (headers) {
+                            for (j = 0; j < headers.length; j++ ) {
+                                labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
+                            }
+                        }
+
+                        //Add item ID
+                        labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
+
+                        incident.labels = labels;
+                        incident.rawJSON = JSON.stringify(message.Items.Message);
+                        incidents.push(incident);
                     }
                 }
             }
-            return JSON.stringify(incidents);
+            if (incidents.length) {
+                //store last run again
+                setLastRun(lastRun);
+            }
+        }
+        return JSON.stringify(incidents);
+    }
+
+    function searchMailboxes(args){
+        if (!args['mailbox-search-scope']) {
+            var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
+            args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
+        } else {
+            if (!Array.isArray(args['mailbox-search-scope'])) {
+                args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
+            }
+        }
+        args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
+        var slicedMailboxes = [];
+
+        // breaks the list of mailboxes into groups of 15,000 due to EWS limitation of max number of mailboxes per search
+        for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
+            slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
         }
 
-
-        function searchMailboxes(args){
-            if (!args['mailbox-search-scope']) {
-                var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
-                args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
-            } else {
-                if (!Array.isArray(args['mailbox-search-scope'])) {
-                    args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
-                }
-            }
-            args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
-            var slicedMailboxes = [];
-
-            // breaks the list of mailboxes into groups of 15,000 due to EWS limitation of max number of mailboxes per search
-            for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
-                slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
-            }
-
-            var resArray = [];
-            if(slicedMailboxes.length === 0){
-                return "No mailboxes to search";
-            }
-
-            currentCommand = commandsDictionary['ews-search-mailboxes'];
-            var rawData = [];
-            var lastRes;
-            for (var j=0; j< slicedMailboxes.length; j++){
-                args['mailbox-search-scope'] = slicedMailboxes[j];
-                res =  execute(command, args, true);
-                data = dq(res, currentCommand.innerPath);
-                if (data){
-                    lastRes = res;
-                    rawData = rawData.concat(data);
-                }
-            }
-            if(!lastRes){
-                return "No results";
-            }
-            try {
-                lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
-            } catch (err) {
-                throw 'Error - response from EWS could not be parsed.\nResponse from EWS is:\n' + JSON.stringify(lastRes);
-            }
-            return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
+        var resArray = [];
+        if(slicedMailboxes.length === 0){
+            return "No mailboxes to search";
         }
 
-        if (!args.version) {
-            args.version = params.defaultServerVersion;
-        }
-        if (!args['target-mailbox']) {
-            args['target-mailbox'] = getDefaultTargetMailbox();
-        }
-        args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
-
-        setImpersonation(args);
-
-        switch (command) {
-            case 'test-module':
-                args['folders-ids'] = 'inbox';
-                execute('ews-get-folder', args);
-                return 'ok';
-            case 'fetch-incidents':
-                return fetchEmailsAsIncidents();
-            case 'ews-get-attachment': {
-                return getAttachment(args, false);
+        currentCommand = commandsDictionary['ews-search-mailboxes'];
+        var rawData = [];
+        var lastRes;
+        for (var j=0; j< slicedMailboxes.length; j++){
+            args['mailbox-search-scope'] = slicedMailboxes[j];
+            res =  execute(command, args, true);
+            data = dq(res, currentCommand.innerPath);
+            if (data){
+                lastRes = res;
+                rawData = rawData.concat(data);
             }
-            case 'ews-get-attachment-item': {
-                return getAttachment(args, true);
-            }
-            case 'ews-search-mailboxes':
-                return searchMailboxes(args);
-            default:
-                return execute(command, args);
         }
+        if(!lastRes){
+            return "No results";
+        }
+        try {
+            lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
+        } catch (err) {
+            throw 'Error - response from EWS could not be parsed.\nResponse from EWS is:\n' + JSON.stringify(lastRes);
+        }
+        return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
+    }
+
+    if (!args.version) {
+        args.version = params.defaultServerVersion;
+    }
+    if (!args['target-mailbox']) {
+        args['target-mailbox'] = getDefaultTargetMailbox();
+    }
+    args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
+
+    setImpersonation(args);
+
+    switch (command) {
+        case 'test-module':
+            args['folders-ids'] = 'inbox';
+            execute('ews-get-folder', args);
+            return 'ok';
+        case 'fetch-incidents':
+            return fetchEmailsAsIncidents();
+        case 'ews-get-attachment': {
+            return getAttachment(args, false);
+        }
+        case 'ews-get-attachment-item': {
+            return getAttachment(args, true);
+        }
+        case 'ews-search-mailboxes':
+            return searchMailboxes(args);
+        default:
+            return execute(command, args);
+    }
   type: javascript
   commands:
   - name: ews-get-folder
     arguments:
     - name: folders-ids
       required: true
-      description: The Item IDs (result of the ews-search-mailbox command)
       isArray: true
+      description: The Item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1221,8 +1223,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      description: The item IDs (result of the ews-search-mailbox)
       isArray: true
+      description: The item IDs (result of the ews-search-mailbox)
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1237,8 +1239,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      description: The attachment IDs  (result of the ews-get-items command)
       isArray: true
+      description: The attachment IDs  (result of the ews-get-items command)
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1253,8 +1255,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      description: The Item IDs (result of the ews-search-mailbox command)
       isArray: true
+      description: The Item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
       description: The user email address
     - name: version
@@ -1354,8 +1356,8 @@ script:
     - name: item-ids
       required: true
       default: true
-      description: The item IDs (result of the ews-search-mailbox command)
       isArray: true
+      description: The item IDs (result of the ews-search-mailbox command)
     - name: target-mailbox
       description: The user email address
     - name: version
