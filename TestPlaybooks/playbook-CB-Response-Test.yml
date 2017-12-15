@@ -274,8 +274,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      sensor: ${CbResponse.Sessions.CbSensorID}
-      session: ${CbResponse.Sessions.CbSessionID}
+      sensor: ${CbResponse.Sessions.[0].CbSensorID}
+      session: ${CbResponse.Sessions.[0].CbSessionID}
     view: |-
       {
         "position": {
@@ -316,3 +316,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"
