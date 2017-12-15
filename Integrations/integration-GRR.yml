@@ -34,8 +34,21 @@ script:
     var server = params.server + ':' + params.port;
     var insecure = params.insecure;
 
+    var getCSRFToken = function(url) {
+        var res = http(
+                url,
+                {
+                    Method: 'GET',
+                    Username: username,
+                    Password: password
+                },
+                insecure
+            );
+        return res.Cookies[0].Value;
+    }
+
     var sendRequest = function(method, url, queryName, body) {
-        var csrfToken = '83838383838383838383838383';
+        var csrfToken = getCSRFToken(url);
         var res = http(
                 url,
                 {
@@ -259,7 +272,7 @@ script:
         case 'grr-set-flows':
         case 'grr_set_flows'://deprecated
             return getFlows('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
-        case 'grr-get-files': 
+        case 'grr-get-files':
         case 'grr_get_files'://deprecated
             args.paths = JSON.parse(args.paths);
             return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
@@ -298,7 +311,6 @@ script:
       description: JSON string of the flow to set
     - name: headers
       description: The headers to show
-    description: Starts a flow on a given client with given parameters
     outputs:
     - contextPath: Flow
       description: A GRR Flow
@@ -319,6 +331,8 @@ script:
     important:
     - contextPath: Flow.ID
       description: The Flow ID
+      related: ""
+    description: Starts a flow on a given client with given parameters
   - name: grr-get-flows
     arguments:
     - name: client_id
@@ -331,7 +345,6 @@ script:
       description: Max number of flows to fetch
     - name: headers
       description: headers to show in output
-    description: Lists flows launched on a given client
     outputs:
     - contextPath: Flow
       description: A GRR Flow
@@ -352,6 +365,8 @@ script:
     important:
     - contextPath: Flow.ID
       description: The Flow ID
+      related: ""
+    description: Lists flows launched on a given client
   - name: grr-get-files
     deprecated: true
     arguments:
@@ -386,7 +401,6 @@ script:
       description: Only return hunts that were active within given time duration
     - name: headers
       description: headers to show in output
-    description: Renders list of available hunts
     outputs:
     - contextPath: Hunt
       description: A GRR Hunt
@@ -409,6 +423,8 @@ script:
     important:
     - contextPath: Hunt.ID
       description: The Hunt ID
+      related: ""
+    description: Renders list of available hunts
   - name: grr-get-hunt
     arguments:
     - name: hunt_id
@@ -417,7 +433,6 @@ script:
       description: Hunt id
     - name: headers
       description: headers to show in output
-    description: Renders hunt's summary
     outputs:
     - contextPath: Hunt
       description: A GRR Hunt
@@ -440,6 +455,8 @@ script:
     important:
     - contextPath: Hunt.ID
       description: The Hunt ID
+      related: ""
+    description: Renders hunt's summary
   - name: grr-set-hunts
     arguments:
     - name: hunt_runner_args
@@ -459,7 +476,6 @@ script:
       description: 'Number of found client to fetch. '
     - name: headers
       description: headers to show in output
-    description: 'Renders results of a client search. '
     outputs:
     - contextPath: Client
       description: A GRR Client
@@ -490,6 +506,8 @@ script:
     important:
     - contextPath: Client.ID
       description: The Client ID
+      related: ""
+    description: 'Renders results of a client search. '
   - name: grr_set_flows
     deprecated: true
     arguments:
@@ -559,4 +577,3 @@ script:
     - name: hunt_args
       description: Hunt arguments
     description: Handles hunt creation request
-system: true
