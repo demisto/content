@@ -141,11 +141,6 @@
             "playbookID": "listExecutedCommands-Test"
         },
         {
-            "integrations": "icebrg",
-            "playbookID": "Icebrg Test",
-            "timeout" : 500
-        },
-        {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
@@ -163,6 +158,11 @@
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
+        },
+                {
+            "integrations": "icebrg",
+            "playbookID": "Icebrg Test",
+            "timeout" : 500
         }
     ]
 }
