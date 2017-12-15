@@ -74,7 +74,8 @@ script:
         # and stores it internaly. To get the filename you need an automation.
         # You can use demisto.args()[argName] to get a specific arg. args are strings.
         file = demisto.args()['file_id']
-        demisto.results(submit_sample(api, open(file, "rb")))
+        path = demisto.getFilePath(file)
+        demisto.results(submit_sample(api, open(path['path'], "rb")))
     if demisto.command() == 'get_results':
         job_id = demisto.args()['sample_id']
         get_request(api, url_dict[demisto.command()] % job_id)
@@ -104,4 +105,4 @@ script:
       description: Job sample id
     description: Get all jobs details about a specific sample.
   dockerimage: demisto/vmray
-hidden: false
+releaseNotes: 'Fix VMRay fetching file issue'
