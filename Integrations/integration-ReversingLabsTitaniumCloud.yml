@@ -1,0 +1,221 @@
+commonfields:
+  id: ReversingLabs Titanium Cloud
+  version: -1
+name: ReversingLabs Titanium Cloud
+display: ReversingLabs Titanium Cloud
+category: Data Enrichment
+image: data:image/png;base64,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
+description: 'ReversingLabs Data provides malware status of the sample. Status can
+  be: malicious, suspicious, known and unknown. Service supports single or bulk queries,
+  with extended option for response data (trust factor, threat level, ...).'
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Base URL
+  name: base
+  defaultvalue: https://ticloud-cdn-api.reversinglabs.com
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import base64
+    import requests
+    from requests.auth import HTTPBasicAuth
+    import re
+    import os
+
+    base_url = demisto.params()['base']
+    user = demisto.params()['credentials']['identifier']
+    password = demisto.params()['credentials']['password']
+    auth = HTTPBasicAuth(user,password)
+
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    def rldata(hash_value):
+        type_dict = {
+            32: {
+                'type':'md5',
+                'regex':r'([a-fA-F\d]{32})'
+            },
+            40: {
+                'type':'sha1',
+                'regex':r'([a-fA-F\d]{40})'
+            },
+            64: {
+                'type':'sha256',
+                'regex':r'([a-fA-F\d]{64})'
+            }
+        }
+
+        if len(hash_value) not in type_dict.keys():
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Not Valid Hash"})
+            sys.exit(0)
+
+        if not re.match(type_dict[len(hash_value)]['regex'],hash_value):
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Not Valid Hash1" })
+            sys.exit(0)
+
+        hash_type = type_dict[len(hash_value)]['type']
+
+        endpoint = "/api/databrowser/rldata/query/{hash_type}/{hash_value}?extended=true&format=json"
+        try:
+            contents = requests.get(base_url + endpoint.format(hash_value=hash_value, hash_type=hash_type),auth=auth).json()['rl']
+        except:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Cannot Find Hash" })
+            sys.exit(0)
+
+        ec = {}
+        md5 = contents['sample']['md5']
+        sha1 = contents['sample']['sha1']
+        sha256 = contents['sample']['sha256']
+        size = contents['sample']['sample_size']
+
+        md = ''
+        md += '## ReversingLabs Data For: ' + hash_value + '\n'
+        md += 'MD5: **' + md5 + '**\n'
+        md += 'SHA1: **' + sha1 + '**\n'
+        md += 'SHA256: **' + sha256 + '**\n'
+
+        try:
+            malware_presence_md, malware_presence_add = mwp(hash_type,hash_value,md5,sha1,sha256)
+            if malware_presence_md:
+                md += malware_presence_md
+                ec = malware_presence_add
+
+
+        except Exception,e:
+            md+= str(e) + '\n'
+
+        try:
+            all_scanners = len(contents['sample']['xref']['entries'][0]['scanners'])
+            recent_detections = [item for item in contents['sample']['xref']['entries'][0]['scanners'] if item['result']]
+            detection_ratio = (1.0 * len(recent_detections) / all_scanners * 100)
+            first_scan = contents['sample']['xref']['entries'][-1]['info']['scanners'][-1]['timestamp']
+            last_scan = contents['sample']['xref']['entries'][0]['info']['scanners'][0]['timestamp']
+            total_scans = len(contents['sample']['xref']['entries'])
+
+            md += '***\n'
+            md += '#### AV Detections Information: \n'
+            md += 'AV Detection Ratio: **{detection_ratio}%** \n'.format(detection_ratio=str(int(detection_ratio)))
+            md += 'Positive Scans: **{positive_scanners}** out of **{all_scanners}**\n'.format(positive_scanners=len(recent_detections),all_scanners=all_scanners)
+            md += 'First Scan: **{first_scan}** \n'.format(first_scan=first_scan)
+            md += 'Last Scan: **{last_scan}** \n'.format(last_scan=last_scan)
+            md += 'Total Scans: **{total_scans}**\n'.format(total_scans=total_scans)
+            if recent_detections:
+                md += '***\n'
+                md += '#### Recent Detections: \n'
+                md += "\n".join(['{} -- {}'.format(item['name'],item['result']) for item in recent_detections])
+        except Exception,e:
+            md += '***\n'
+            md += 'No AV Reference Data Found'
+            md += str(e) + '\n'
+        demisto.results( {'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': contents, 'EntryContext': ec, 'HumanReadable': md} )
+        sys.exit(0)
+
+    def mwp(hash_type,hash_value,md5,sha1,sha256):
+        endpoint = "/api/databrowser/malware_presence/query/{hash_type}/{hash_value}?extended=true&format=json"
+        contents = requests.get(base_url + endpoint.format(hash_value=hash_value, hash_type=hash_type),auth=auth).json()['rl']['malware_presence']
+
+        md = ''
+        md += '***\n'
+        md += '## ReversingLabs Malware Presence:\n'
+        md += 'Malware Status: **{mwp_status}**\n'.format(mwp_status=contents['status'])
+
+        try:
+            md += 'First Seen: **' + contents['first_seen'] + '**\n'
+            md += 'Last Seen: **' + contents['last_seen'] + '**\n'
+            md += 'Positives / Total: **' + str(contents['scanner_match']) + '/' + str(contents['scanner_count']) + '**\n'
+        except:
+            None
+
+        ec = {}
+        addFile = {}
+        ec['DBotScore'] = []
+        addFile[outputPaths['file']] = {
+            'MD5': md5,
+            'SHA1': sha1,
+            'SHA256': sha256,
+        }
+
+        dbot_score_map = {'UNKNOWN':0,'KNOWN': 1, 'SUSPICIOUS': 2, 'MALICIOUS': 3}
+
+        if contents['status'] == 'UNKNOWN':
+            addFile[outputPaths['file']]['Unknown'] = {'Vendor': 'ReversingLabs', 'Detections': contents['scanner_match'], 'TotalEngines': contents['scanner_count']}
+            addFile[outputPaths['file']]['properties_to_append'] = ['Unknown']
+
+        elif contents['status'] == 'KNOWN':
+            addFile[outputPaths['file']]['Known'] = {'Vendor': 'ReversingLabs', 'Detections': contents['scanner_match'], 'TotalEngines': contents['scanner_count']}
+            addFile[outputPaths['file']]['properties_to_append'] = ['Known']
+
+        elif contents['status'] == 'SUSPICIOUS':
+            addFile[outputPaths['file']]['Suspicious'] = {'Vendor': 'ReversingLabs', 'Detections': contents['scanner_match'], 'TotalEngines': contents['scanner_count']}
+            addFile[outputPaths['file']]['properties_to_append'] = ['Suspicious']
+
+        elif contents['status'] == 'MALICIOUS':
+            addFile[outputPaths['file']]['Malicious'] = {'Vendor': 'ReversingLabs', 'Detections': contents['scanner_match'], 'TotalEngines': contents['scanner_count']}
+            addFile[outputPaths['file']]['properties_to_append'] = ['Malicious']
+
+        ec[outputPaths['file']] = []
+        ec[outputPaths['file']].append(addFile[outputPaths['file']])
+
+        ec['DBotScore'].append({'Indicator': md5, 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': dbot_score_map[contents['status']]})
+        ec['DBotScore'].append({'Indicator': sha1, 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': dbot_score_map[contents['status']]})
+        ec['DBotScore'].append({'Indicator': sha256, 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': dbot_score_map[contents['status']]})
+        return md, ec
+
+
+    if demisto.command() == 'test-module':
+        try:
+            contents = requests.get("https://ticloud-cdn-api.reversinglabs.com/api/databrowser/rldata/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json",auth=auth).json()['rl']
+            demisto.results('ok')
+            sys.exit(0)
+        except Exception, e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unable to login.  Please check credentials and/or proxy settings.'})
+            sys.exit(0)
+
+    if demisto.command() == 'file':
+        hash_value = demisto.args()['file']
+        rldata(hash_value)
+  type: python
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: file hash
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash found
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Retrieve Malware Presence Status from ReversingLabs
