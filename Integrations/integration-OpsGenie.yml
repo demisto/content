@@ -195,4 +195,3 @@ script:
       default: true
       description: Schedule name
     description: Get schedule timeline information
-releaseNotes: Added ability to get all schedules, and to get on-call for future time
