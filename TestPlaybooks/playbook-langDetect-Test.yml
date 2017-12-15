@@ -1,0 +1,183 @@
+id: LanguageDetect-Test
+version: -1
+name: LanguageDetect-Test
+description: Testing LanguageDetect script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7238e150-e4f4-404f-8bfc-80ff4b8273ed
+    type: start
+    task:
+      id: 7238e150-e4f4-404f-8bfc-80ff4b8273ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: d1c85417-91a0-47f8-888a-2696b1d612b4
+    type: regular
+    task:
+      id: d1c85417-91a0-47f8-888a-2696b1d612b4
+      version: -1
+      name: Detect english
+      scriptName: LanguageDetect
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      text: Hello World
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6c9ea698-a55f-4195-8adb-12e0097087d6
+    type: condition
+    task:
+      id: 6c9ea698-a55f-4195-8adb-12e0097087d6
+      version: -1
+      name: Check if we found English
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      value: ${langDetect(val.lang=='en')}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 52cfb4ba-93d1-4f65-8473-72decda9c58a
+    type: regular
+    task:
+      id: 52cfb4ba-93d1-4f65-8473-72decda9c58a
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 216f45df-ed29-4d60-8af4-c15bf67b62e3
+    type: regular
+    task:
+      id: 216f45df-ed29-4d60-8af4-c15bf67b62e3
+      version: -1
+      name: Sleep for 3 minutes
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds: "60" 
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a5cc10e3-f1f2-4473-8c55-8d241a08ea4b
+    type: regular
+    task:
+      id: a5cc10e3-f1f2-4473-8c55-8d241a08ea4b
+      version: -1
+      name: Detect english once again
+      scriptName: LanguageDetect
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      text: Hello World
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+    type: regular
+    task:
+      id: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
