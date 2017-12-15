@@ -1,8 +1,8 @@
 commonfields:
-  id: Symantec MSS
+  id: Symantec MSS_changethis
   version: -1
-name: Symantec MSS
-display: Symantec MSS
+name: Symantec MSS_changethis
+display: Symantec MSS_changethis
 category: Analytics & SIEM
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAyCAYAAAATIfj2AAAACXBIWXMAAAsTAAALEwEAmpwYAAA7oGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wMi0xNlQyMDozOTo1NCswMjowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTAzLTA4VDE0OjI1OjQxKzAyOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wMy0wOFQxNDoyNTo0MSswMjowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDpmZDgyZDE4NC03OWNiLTQ5MDAtOGViNC00YzYyNWIxZjM3MGU8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6ZTBhOGJjMDAtZTZlZS00NGRiLTg4NTYtYzliZWViMjcyYTgxPC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6ZTBhOGJjMDAtZTZlZS00NGRiLTg4NTYtYzliZWViMjcyYTgxPC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOmUwYThiYzAwLWU2ZWUtNDRkYi04ODU2LWM5YmVlYjI3MmE4MTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xNlQyMDozOTo1NCswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5zYXZlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjIwNWQ5NmJmLTY5MmUtNDRiMS1hNTMwLWFjN2VjOGRhYjY3MDwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xOFQxMjo1MzoyNiswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5zYXZlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOmZkODJkMTg0LTc5Y2ItNDkwMC04ZWI0LTRjNjI1YjFmMzcwZTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMy0wOFQxNDoyNTo0MSswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzIwMDAwLzEwMDAwPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WVJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+NjU1MzU8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUyPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAg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
 configuration:
@@ -41,84 +41,263 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Timezone of the server in minutes. e.g. for gmt +3 set +180 (set only if
+    different than Demisto server), relevant for fetch notable events only
+  name: timezone
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |
-    /* GLOBAL VARS HERE */
-    var SERVER_URL = params.server.replace(/[\/]+$/, '');
-    var CERTIFICATE = Base64.decode(params.certificate);
-    var CERTIFICATE_PASSPHRASE = params.passphrase;
+    import tempfile
+    import ssl
+    import OpenSSL.crypto
+    import requests
+    import contextlib
+    import xml.etree.ElementTree
+    import base64
+    import re
+    import datetime
+    import xmltodict
 
-    var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+    # CONSTANTS
+    SECURITY_INCIDENT_SUMMARY_NODE_XPATH = './/SecurityIncidentSummary'
+    SECURITY_INCIDENT_NODE_XPATH = './/SecurityIncident'
 
+    # GLOBAL VARS
+    SERVER_URL = re.sub('/[\/]+$/', '', demisto.params()["server"])
+    CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
+    CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
 
-    /* FUNCIONS HERE */
-    function getRecentList() {
-        // modify args here
+    # HELPERS
+    @contextlib.contextmanager
+    def pfx_to_pem(pfx, pfx_password):
+        ''' Decrypts the .pfx file to be used with requests. '''
+        with tempfile.NamedTemporaryFile(suffix='.pem') as t_pem:
+            f_pem = open(t_pem.name, 'wb')
+            p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password)
+            f_pem.write(OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_PEM, p12.get_privatekey()))
+            f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, p12.get_certificate()))
+            ca = p12.get_ca_certificates()
+            if ca is not None:
+                for cert in ca:
+                    f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, cert))
+            f_pem.close()
+            yield t_pem.name
 
-        // call the request function
-        var recentList = getRecentListRequest();
+    def apiCall(body, headers):
+        with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
+            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers)
+            if res.status_code < 200 or res.status_code >= 300:
+                raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            return xml.etree.ElementTree.fromstring(res.content)
 
-        return recentList; //remove thissssssssssssssssssssss
+    def event_to_incident(event):
+        incident = {}
 
-        // prepare human readable
-        var hr = '';
+        incident["name"] = "Incident: %s (%s)" % (event['IncidentNumber'], event['Classification'])
+        # incident["severity"]= severity_to_level(event['urgency'])
+        incident["details"] = event["Description"]
+        incident["occurred"] = event["TimeCreated"]
+        incident["rawJSON"] = json.dumps(event)
 
-        // prepare entry context
-        var context = {};
+        labels = []
+        # labels.append({'type':'security_domain','value':event["security_domain"]})
+        incident['labels'] = labels
 
-        // return entry/entries
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.text,
-            Content: forResult,
-            HumanReadable: hr,
-            ReadableContentsFormat: formats.markdown
-        };
-    }
+        return incident
 
-    function getRecentListRequest() {
-        log(CERTIFICATE);
-        var body = '<?xml version="1.0" encoding="utf-8"?>' +
-            '<soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><IncidentGetList xmlns="https://www.monitoredsecurity.com/"></IncidentGetList></soap12:Body></soap1:Envelope>';
+    # FUNCIONS
+    def fetchIncidents():
+        lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
 
-        // make the http call
-        var httpParams = {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': 'application/soap+xml; charset=utf-8',
-                    'Content-Length': body.length
-                },
-                pfx: CERTIFICATE,
-                passphrase: CERTIFICATE_PASSPHRASE,
-                Body: body
-            };
+        incidents = []
+        t = datetime.datetime.utcnow()
+        if demisto.get(demisto.params(), 'timezone'):
+            timezone = demisto.params()['timezone']
+            t = t + timedelta(minutes=int(timezone))
+        now = t.strftime("%Y-%m-%dT%H:%M:%S")
 
-        var res = http(SERVER_URL + '/SWS/incidents.asmx', httpParams, params.insecure, params.proxy);
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
+        if len(lastRun) == 0:
+            t = t - timedelta(minutes=10)
+            lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
+
+        events = getRecentList(lastRun)
+        for event in events:
+            inc = event_to_incident(event)
+            incidents.append(inc)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
+
+    def getRecentList(time):
+        result = []
+
+        # Request recent events
+        root = getRecentListRequest(time)
+        incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
+
+        for incident in incidentNodes:
+            element = {}
+            stringIncident = xml.etree.ElementTree.tostring(incident)
+            dictIncident = xmltodict.parse(stringIncident)['SecurityIncidentSummary']
+
+            # For each recent event - query for additional details
+            dictQuery = queryIncident(dictIncident['IncidentNumber'])
+
+            # Merge both dicts
+            element.update(dictIncident)
+            element.update(dictQuery)
+            result.append(element)
+
+            ### CONSIDER SLEEPING HERE IN CASE WE GET BLOCKED BY THE SERVER
+
+        return result
+
+    def updateIncident():
+        # Fill in required fields from the existing incident (for the api call)
+        num = demisto.args()['number']  # requried by demisto
+        dictQuery = queryIncident(num=num, workflowQuery=True)
+        dictWorkflowQuery = dictQuery['WorkFlowDetail']
+
+        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] if dictWorkflowQuery['Status'] else '' # required by api
+        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] if dictWorkflowQuery['Resolution'] else ''  # required by api
+        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] if dictQuery['Severity'] else '' # required by api
+
+        ref = demisto.args()['reference'] if 'reference' in demisto.args() else None # optional
+        comments = demisto.args()['comments'] if 'comments' in demisto.args() else None # optional
+
+        # Only one of them should exist
+        assignToOrg = demisto.args()['assignOrganization'] if 'assignOrganization' in demisto.args() else None
+        assignToPerson = demisto.args()['assignPerson'] if 'assignPerson' in demisto.args() else None
+
+        if assignToOrg and assignToPerson:
+            raise Exception('Unable to assign to both organization and a person, please choose only one')
+
+        if not assignToOrg and not assignToPerson:
+            if 'AssignedOrganization' in dictWorkflowQuery and dictWorkflowQuery['AssignedOrganization']:
+                assignToOrg = dictWorkflowQuery['AssignedOrganization']
+            elif 'AssignedPerson' in dictWorkflowQuery and dictWorkflowQuery['AssignedPerson']:
+                assignToPerson = dictWorkflowQuery['AssignedPerson']
+
+        res = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+        demisto.results(res)
+
+    def queryIncident(num, workflowQuery=False):
+        query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
+        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
+        stringQuery = xml.etree.ElementTree.tostring(queryNode)
+        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
+        return dictQuery
+
+    def queryIncidentWorkflowRequest(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentWorkflowQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentWorkflowQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
         }
+        return apiCall(body=body, headers=headers)
 
-        // conver to object
-        var result = xml2json(res);
-        return result;
-    }
+    def queryIncidentRequest(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+        return apiCall(body=body, headers=headers)
 
-    /* AUTHENTICATION HERE */
-    // var session = login(params.credentials);
+    def getRecentListRequest(time):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                      <soap12:Body>
+                        <IncidentGetRecentList xmlns="https://www.monitoredsecurity.com/">
+                            <StartTimeStampGMT>%s</StartTimeStampGMT>
+                        </IncidentGetRecentList>
+                      </soap12:Body>
+                    </soap12:Envelope>""" % (time)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+        return apiCall(body=body, headers=headers)
 
-    /* EXECUTION */
-    var result;
-    switch(command) {
-        case 'smss-get-recent-list':
-            result = getRecentList();
-            break;
-    }
+    def updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
+        # Create optional parameter tags if needed
+        ref = "<Reference>%s</Reference>" % (ref) if ref else ""
+        assignToOrg = "<AssignedToOrganiztion>%s</AssignedToOrganiztion>" % (assignToOrg) if assignToOrg else ""
+        assignToPerson = "<AssignedToPerson>%s</AssignedToPerson>" % (assignToPerson) if assignToPerson else ""
+        comments = "<Comments>%s</Comments>" % (comments) if comments else ""
 
-    /*  LOGOUT HERE */
-    logout();
-    return result;
-  type: javascript
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                      <soap12:Body>
+                        <UpdateIncidentWorkflow xmlns="https://www.monitoredsecurity.com/">
+                          <IncidentNumber>%s</IncidentNumber>
+                          <Status>%s</Status>
+                          <Resolution>%s</Resolution>
+                          %s
+                          <Severity>%s</Severity>
+                          %s
+                          %s
+                          %s
+                        </UpdateIncidentWorkflow>
+                      </soap12:Body>
+                    </soap12:Envelope>""" % (num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+        return body # remove and uncomment this only once ready to make changes in the environment
+        # return apiCall(body=body, headers=headers)
+
+
+    # EXECUTION
+    if demisto.command() == 'fetch-incidents' or demisto.command() == 'smss-remove-later': # remove the 2nd condition
+        fetchIncidents()
+        exit(0)
+
+    if demisto.command() == 'smss-update-incident-workflow':
+        updateIncident()
+        exit(0)
+  type: python
   commands:
-  - name: smss-get-recent-list
+  - name: smss-update-incident-workflow
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    - name: status
+      description: To change the incident status
+    - name: resolution
+      description: To change he incident status resolution
+    - name: reference
+      description: Update reference comments
+    - name: severity
+      description: To change the incident severity
+    - name: assignOrganization
+      description: 'To change incident assignment to organization (Note: assign to
+        an organization OR a person is required)'
+    - name: assignPerson
+      description: 'To change incident assignment to person. (Note: assign to an organization
+        OR a person is required)'
+    - name: comments
+      description: Incident update comment
+  - name: smss-remove-later
     arguments: []
+  dockerimage: guy_test
   isfetch: true
