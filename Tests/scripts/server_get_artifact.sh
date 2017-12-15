@@ -15,3 +15,5 @@ echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
 echo "SERVER_DOWNLOAD_LINK = ${SERVER_DOWNLOAD_LINK}"
 
 curl -o demistoserver.sh ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
+
+echo "Done!"
