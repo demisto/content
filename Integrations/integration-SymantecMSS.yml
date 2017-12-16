@@ -71,6 +71,12 @@ script:
     CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
     VERIFY =  demisto.params()['insecure'] == False
 
+    if not demisto.params()['proxy']:
+      del os.environ['HTTP_PROXY']
+      del os.environ['HTTPS_PROXY']
+      del os.environ['http_proxy']
+      del os.environ['https_proxy']
+
     # HELPERS
     @contextlib.contextmanager
     def pfx_to_pem(pfx, pfx_password):
