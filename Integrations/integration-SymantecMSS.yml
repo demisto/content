@@ -37,12 +37,6 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Timezone of the server in minutes. e.g. for gmt +3 set +180 (set only if
-    different than Demisto server), relevant for fetch notable events only
-  name: timezone
-  defaultvalue: ""
-  type: 0
-  required: false
 script:
   script: |
     import tempfile
@@ -108,18 +102,15 @@ script:
 
     # FUNCTIONS
     def fetchIncidents():
-        lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
-
         incidents = []
-        t = datetime.datetime.utcnow()
-        if demisto.get(demisto.params(), 'timezone'):
-            timezone = demisto.params()['timezone']
-            t = t + timedelta(minutes=int(timezone))
-        now = t.strftime("%Y-%m-%dT%H:%M:%S")
 
+        t = datetime.datetime.utcnow()
+        now = str(t)
+
+        lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
-            lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
+            lastRun = t
 
         events = getRecentList(lastRun)
         for event in events:
@@ -149,8 +140,6 @@ script:
             element.update(dictQuery)
             result.append(element)
 
-            ### CONSIDER SLEEPING HERE IN CASE WE GET BLOCKED BY THE SERVER
-
         return result
 
     def updateIncident():
@@ -161,7 +150,7 @@ script:
 
         status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] if dictWorkflowQuery['Status'] else 'Closed' # required by api
         resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] if dictWorkflowQuery['Resolution'] else 'Resolved'  # required by api
-        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] if dictQuery['Severity'] else '' # required by api
+        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] if dictQuery['Severity'] else 'Informational' # required by api
 
         ref = demisto.args()['reference'] if 'reference' in demisto.args() else None # optional
         comments = demisto.args()['comments'] if 'comments' in demisto.args() else None # optional
