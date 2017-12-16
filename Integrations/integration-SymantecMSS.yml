@@ -69,6 +69,7 @@ script:
     SERVER_URL = re.sub('/[\/]+$/', '', demisto.params()["server"])
     CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
     CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
+    VERIFY =  demisto.params()['insecure'] == False
 
     # HELPERS
     @contextlib.contextmanager
@@ -88,14 +89,13 @@ script:
 
     def apiCall(body, headers):
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers)
+            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers, verify=VERIFY)
             if res.status_code < 200 or res.status_code >= 300:
                 raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
             return xml.etree.ElementTree.fromstring(res.content)
 
     def event_to_incident(event):
         incident = {}
-
         incident["name"] = "Incident: %s (%s)" % (event['IncidentNumber'], event['Classification'])
         incident["details"] = event["Description"]
         incident["occurred"] = event["TimeCreated"]
@@ -106,7 +106,7 @@ script:
 
         return incident
 
-    # FUNCIONS
+    # FUNCTIONS
     def fetchIncidents():
         lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
 
@@ -159,8 +159,8 @@ script:
         dictQuery = queryIncident(num=num, workflowQuery=True)
         dictWorkflowQuery = dictQuery['WorkFlowDetail']
 
-        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] if dictWorkflowQuery['Status'] else '' # required by api
-        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] if dictWorkflowQuery['Resolution'] else ''  # required by api
+        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] if dictWorkflowQuery['Status'] else 'Closed' # required by api
+        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] if dictWorkflowQuery['Resolution'] else 'Resolved'  # required by api
         severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] if dictQuery['Severity'] else '' # required by api
 
         ref = demisto.args()['reference'] if 'reference' in demisto.args() else None # optional
