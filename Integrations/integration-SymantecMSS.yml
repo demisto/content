@@ -61,6 +61,7 @@ script:
     SERVER_URL = re.sub('/[\/]+$/', '', demisto.params()["server"])
     CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
     CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
+    PROXY = { "http": "http://10.100.120.182:8080", "https": "http://10.100.120.182:8080" } if demisto.params()["proxy"] else {}
 
     if not demisto.params()['proxy']:
       del os.environ['HTTP_PROXY']
@@ -86,7 +87,7 @@ script:
 
     def apiCall(body, headers):
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers)
+            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers, proxies=PROXY)
             if res.status_code < 200 or res.status_code >= 300:
                 raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
             return xml.etree.ElementTree.fromstring(res.content)
