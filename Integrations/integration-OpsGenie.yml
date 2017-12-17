@@ -5,10 +5,10 @@ name: OpsGenie
 display: OpsGenie
 category: IT Services
 image: data:image/png;base64,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
-description: Get current on-call assignments and users info
+description: Get current on-call assignments, schedules, and users info
 detaileddescription: OpsGenie integration allows querying for the current on-call
-  users for a given Schedule. The integration requires an API key, that can
-  be acquired from the OpsGenie interface, under Integrations / API.
+  users for a given Schedule. The integration requires an API key, that can be acquired
+  from the OpsGenie interface, under Integrations / API.
 configuration:
 - display: Base URL
   name: baseURL
@@ -40,6 +40,7 @@ script:
 
     var sendRequest = function(url) {
         var requestUrl = baseURL + url;
+        logDebug('OpsGenie API requestUrl: ' + requestUrl);
         var res = http(
             requestUrl,
             {
@@ -63,24 +64,29 @@ script:
             jsonBody = JSON.parse(res.Body);
             return jsonBody;
         } catch (err) {
-            logInfo('OpsGenie error: Could not parse respons for ' + requestUrl + '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
+            logError('OpsGenie error: Could not parse respons for ' + requestUrl + '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
             throw 'OpsGenie error\n Could not parse respons for ' + requestUrl + '\n Error is ' + err;
         }
     };
 
-    var getOnCall = function(schedule) {
-        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls?scheduleIdentifierType=name';
+    var getOnCall = function(schedule, date) {
+        var urlParams = {scheduleIdentifierType:'name'};
+        if (date) {
+            urlParams.date = new Date(date).toISOString();
+        }
+        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls' + encodeToURLQuery(urlParams);
+
         var res = sendRequest(url);
         var md = '### OpsGenie On-Call Schedule __' + schedule + '__\n';
         var ec = {};
         if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length > 0) {
-            var onCall = dq(res.data.onCallParticipants,'name')
+            var onCall = dq(res.data.onCallParticipants,'name');
             md += 'Currently on-call for __' + schedule + '__ schedule:\n';
             ec.OpsGenie = {Schedule: schedule, OnCall: []};
             onCall.forEach(function(name) {
                 var user = getUser(name);
                 md += '- ' + user.Contents.fullName + ' ('+name+')\n';
-                ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName})
+                ec.OpsGenie.OnCall.push({email: name, name:user.Contents.fullName});
             });
         } else {
             md += 'Cannot find on-call for __' + schedule + '__\n';
@@ -93,26 +99,64 @@ script:
         var res = sendRequest(url);
         var md = '### OpsGenie User Info\n';
         var ec = {};
-        if (res && res.data && res.data) {
-            var user = res.data;
-            md += objToMd(user);
+        if (res && res.data) {
+            md += objToMd(res.data);
         } else {
             md = 'Cannot find user ' + userID + '\n';
         }
         return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
     };
 
+    var getSchedules = function() {
+        var url = serviceURLs.schedules;
+        var res = sendRequest(url);
+        var md = '### OpsGenie On Call Schedules\n';
+        var ec = {};
+        if (res && res.data) {
+            md += tableToMarkdown('',res.data,['name','timezone','enabled','description']);
+        } else {
+            md = 'No schedules\n';
+        }
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
+    var getScheduleTimeline = function(schedule) {
+        var url = serviceURLs.schedules + '/' + schedule + '/timeline?identifierType=name';
+        var res = sendRequest(url);
+        var md = '### OpsGenie On Call Timeline for ' + schedule + '\n';
+        var ec = {};
+        if (res && res.data) {
+            var rotations = res.data.finalTimeline.rotations;
+            rotations.forEach(function(rotation) {
+                md += '#### Rotation ' + rotation.name + '\n';
+                var periodsArr = [];
+                rotation.periods.forEach(function(period) {
+                    periodsArr.push({Start: period.startDate, End: period.endDate, 'On Call': period.recipient.name});
+                });
+                md += tableToMarkdown('',periodsArr,['Start','End','On Call']) + '\n';
+            });
+        } else {
+            md = 'No timeline\n';
+        }
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+    };
+
     switch (command) {
         case 'test-module':
-            var url = serviceURLs.account;
-            sendRequest(url);
+            getSchedules();
             return 'ok';
 
         case 'opsgenie-get-on-call':
-            return getOnCall(args.schedule);
+            return getOnCall(args.schedule, args.date);
 
         case 'opsgenie-get-user':
             return getUser(args.userID);
+
+        case 'opsgenie-get-schedules':
+            return getSchedules();
+
+        case 'opsgenie-get-schedule-timeline':
+            return getScheduleTimeline(args.schedule);
 
         default:
             throw 'OpsGenie error\n unknown command ' + command;
@@ -124,6 +168,8 @@ script:
     - name: schedule
       required: true
       description: Schedule Name
+    - name: date
+      description: Date to check the on-call schedule
     outputs:
     - contextPath: OpsGenie.Schedule
       description: Schedule name
@@ -139,3 +185,13 @@ script:
       default: true
       description: User identifier (i.e. email)
     description: Get user information
+  - name: opsgenie-get-schedules
+    arguments: []
+    description: Get all schedules
+  - name: opsgenie-get-schedule-timeline
+    arguments:
+    - name: schedule
+      required: true
+      default: true
+      description: Schedule name
+    description: Get schedule timeline information

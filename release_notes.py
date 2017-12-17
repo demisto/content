@@ -100,7 +100,7 @@ class Content:
 class ScriptContent(Content):
 
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Scripts"
@@ -130,7 +130,7 @@ Content.register(ScriptContent)
 
 class PlaybookContent(Content):
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Playbooks"
@@ -214,7 +214,7 @@ Content.register(ReputationContent)
 
 class IntegrationContent(Content):
     def loadData(self, data):
-        return yaml.load(data)
+        return yaml.safe_load(data)
 
     def getHeader(self):
         return "Integrations"

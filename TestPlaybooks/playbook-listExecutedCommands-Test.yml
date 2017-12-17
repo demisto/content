@@ -1,0 +1,243 @@
+id: listExecutedCommands-Test
+version: -1
+name: listExecutedCommands-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f5cc5846-bdd4-4ea1-8301-21379f6db67c
+    type: start
+    task:
+      id: f5cc5846-bdd4-4ea1-8301-21379f6db67c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6252dc54-69d4-4bcf-8011-1cd06170dbb8
+    type: regular
+    task:
+      id: 6252dc54-69d4-4bcf-8011-1cd06170dbb8
+      version: -1
+      name: Print Hello World
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value: Hello World
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c3b4845e-c9fd-4847-8d27-730db1b1a77f
+    type: regular
+    task:
+      id: c3b4845e-c9fd-4847-8d27-730db1b1a77f
+      version: -1
+      name: Get list of manual commands
+      scriptName: listExecutedCommands
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      source: Manual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: bc5eb7ee-ace6-4541-8f41-ecff7c043efe
+    type: regular
+    task:
+      id: bc5eb7ee-ace6-4541-8f41-ecff7c043efe
+      version: -1
+      name: Save response to context
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey: noData
+      entryId: ${lastCompletedTaskEntries}
+      listSeperator: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8629b4dc-1921-401a-8315-2ac29b4504d1
+    type: condition
+    task:
+      id: 8629b4dc-1921-401a-8315-2ac29b4504d1
+      version: -1
+      name: Check that we didn't get any commands
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left: ${noData=val.trim()}
+      right: No commands found
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 719
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 28c54813-8890-461e-8839-d70962f93a2e
+    type: regular
+    task:
+      id: 28c54813-8890-461e-8839-d70962f93a2e
+      version: -1
+      name: Get playbook commands
+      scriptName: listExecutedCommands
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      source: Playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 5fd8f086-ce66-47c0-8677-5802caf863b6
+    type: regular
+    task:
+      id: 5fd8f086-ce66-47c0-8677-5802caf863b6
+      version: -1
+      name: Save response to context
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      contextKey: withData
+      entryId: ${lastCompletedTaskEntries}
+      listSeperator: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1069
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 4d15e900-cce0-4f9e-815b-4a01bea70368
+    type: condition
+    task:
+      id: 4d15e900-cce0-4f9e-815b-4a01bea70368
+      version: -1
+      name: Check that we got commands
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+    scriptarguments:
+      left: ${withData=val.trim()}
+      right: No commands found
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 194b2ce3-61d1-4a90-8a06-fe272eb1d017
+    type: regular
+    task:
+      id: 194b2ce3-61d1-4a90-8a06-fe272eb1d017
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
