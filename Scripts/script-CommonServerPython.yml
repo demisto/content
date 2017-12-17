@@ -388,7 +388,7 @@ script: |-
 
       content = dq(result, translator['innerPath'].split('.')) if 'innerPath' in translator else result;
       translatedMD = mapObj(content, translator['data'], MDfilter)
-      entry['HumanReadable'] = tableToMarkdown2(translator['title'], translatedMD)
+      entry['HumanReadable'] = tableToMarkdown(translator['title'], translatedMD)
       # entry['HumanReadable'] = tblToMd(title, translatedMD)
 
       translatedContext = mapObj(content, translator['data'])
