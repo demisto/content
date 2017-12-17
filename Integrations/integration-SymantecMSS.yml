@@ -334,7 +334,7 @@ script:
     - name: time
       required: true
       default: true
-      description: Only return incidents created since the specified date (i.e. 2014-11-25T22:06:15.5)
+      description: Only return incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z)
     description: Gets incidents created since the supplied time
   - name: symantec-mss-get-incident-workflow
     arguments:
