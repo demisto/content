@@ -288,6 +288,12 @@ script:
         demisto.results(res)
         exit(0)
 
+    if demisto.command() == 'symantec-mss-get-incident-workflow':
+        res = {}
+        res.update(queryIncident(demisto.args()['number'], workflowQuery=True))
+        demisto.results(res)
+        exit(0)
+
     if demisto.command() == 'symantec-mss-incidents-list':
         demisto.results(getIncidentsList(demisto.args()['time']))
         exit(0)
@@ -322,7 +328,7 @@ script:
       required: true
       default: true
       description: The incident number in the SOC
-    description: Get a specific incident by number
+    description: Query a specific incident by number
   - name: symantec-mss-incidents-list
     arguments:
     - name: time
@@ -330,5 +336,12 @@ script:
       default: true
       description: Only return incidents created since the specified date (i.e. 2014-11-25T22:06:15.5)
     description: Gets incidents created since the supplied time
+  - name: symantec-mss-get-incident-workflow
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    description: Query for a specific incident's workflow by number
   dockerimage: demisto/symantec_mss
   isfetch: true
