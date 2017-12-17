@@ -29,6 +29,16 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: 'The low threshold '
+  name: lowPercnt
+  defaultvalue: "34"
+  type: 0
+  required: true
+- display: 'The high threshold '
+  name: highPercnt
+  defaultvalue: "66"
+  type: 0
+  required: true
 script:
   script: |
     var sendRequest = function(url,param, fileId) {
@@ -54,15 +64,15 @@ script:
                 'file',
                 fileName);
         } else {
-           res = http(
-            requestUrl,
-            {
-                Method: 'GET',
-                Headers: {
-                    Accept: ['application/json']
+            res = http(
+                requestUrl,
+                {
+                    Method: 'GET',
+                    Headers: {
+                        Accept: ['application/json']
+                    }
                 }
-            }
-        );
+                );
         }
 
 
@@ -75,7 +85,12 @@ script:
 
 
     var searchHash = function() {
-        var res = JSON.parse(sendRequest('/hash/', args.hash).Body);
+        var res;
+        try {
+            res = JSON.parse(sendRequest('/hash/', args.hash).Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
         var md = '# OPSWAT-Metadefender\n';
         var ec = {};
         var dbotScore = 0;
@@ -101,13 +116,13 @@ script:
 
             var percntBad = (res.scan_results.total_detected_avs / res.scan_results.total_avs) * 100;
 
-            if (percntBad >= 66) {
+            if (percntBad >= parseInt(params.highPercnt)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.file,{
                     Hash: args.hash,
                     Malicious: {Vendor: 'OPSWAT', Description: 'Result from OPSWAT-Metadefender'}
                 });
-            } else if (percntBad >= 34) {
+            } else if (percntBad >= parseInt(params.lowPercnt)) {
                 dbotScore = 2;
             } else {
                 dbotScore = 1;
@@ -125,7 +140,12 @@ script:
 
 
     var scanFile = function() {
-        var res = JSON.parse(sendRequest('file', '' , args.fileId).Body);
+        var res;
+        try {
+            res = JSON.parse(sendRequest('file', '' , args.fileId).Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
         var md = '# OPSWAT-Metadefender\n';
         var ec = {};
 
@@ -144,21 +164,31 @@ script:
 
 
     var getScanResult = function() {
-        var res = JSON.parse(sendRequest('file/' + args.id, '').Body);
+        var res;
+        try {
+            res = JSON.parse(sendRequest('file/' + args.id, '').Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
+
         var md = '# OPSWAT-Metadefender\n';
         var ec = {};
         var dbotScore = 0;
 
         md += '### Results for scan id ' + args.id + '\n';
 
-        if (res.file_info) {
+        if (res.file_info &&
+            res.process_info) {
             if (res.process_info.progress_percentage < 100) {
                 md += '### The scan proccess is in progrees (done: ' + res.process_info.progress_percentage + '%) \n'
             }
             md += 'File name: ' + res.file_info.display_name + '\n';
             md += 'File description: ' + res.file_info.file_type_description + '\n';
-            md += 'Scan result: ' + res.scan_results.scan_all_result_a + '\n';
-            md += 'Detected AV: ' + res.scan_results.scan_all_result_i + '/' + res.scan_results.total_avs + '\n';
+            if (res.scan_results) {
+                md += 'Scan result: ' + res.scan_results.scan_all_result_a + '\n';
+                md += 'Detected AV: ' + res.scan_results.scan_all_result_i + '/' + res.scan_results.total_avs + '\n';
+            }
+
             md += 'Scan progress percentage ' + res.process_info.progress_percentage + '\n';
 
             var percntBad = (res.scan_results.scan_all_result_i / res.scan_results.total_avs) * 100;
@@ -181,13 +211,13 @@ script:
 
 
 
-            if (percntBad >= 66) {
+            if (percntBad >= parseInt(params.highPercnt)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.file,{
                     Hash: res.file_info.md5,
                     Malicious: {Vendor: 'OPSWAT', Description: 'Result from OPSWAT-Metadefender'}
                 });
-            } else if (percntBad >= 34) {
+            } else if (percntBad >= parseInt(params.lowPercnt)) {
                 dbotScore = 2;
             } else {
                 dbotScore = 1;
@@ -224,16 +254,25 @@ script:
     arguments:
     - name: hash
       required: true
+      default: true
+      description: File hash (Can be any hash type)
+    description: Check file hash on OPSWAT
   - name: opswat-scan-file
     arguments:
     - name: fileId
       required: true
+      default: true
+      description: Entry id of a file in Demisto
     outputs:
-    - contextPath: OPSWAT\FileName
+    - contextPath: OPSWAT.FileName
       description: OPSWAT file name to scan
-    - contextPath: OPSWAT\ScanId
+    - contextPath: OPSWAT.ScanId
       description: OPSWAT scan id of the scan
+    description: Scan file in OPSWAT
   - name: opswat-scan-result
     arguments:
     - name: id
       required: true
+      default: true
+      description: OPSWAT scan id
+    description: Get OPSWAT result
