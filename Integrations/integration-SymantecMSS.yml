@@ -174,7 +174,12 @@ script:
                 assignToPerson = dictWorkflowQuery['AssignedPerson']
 
         res = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
-        demisto.results(res)
+        if res.text == "true":
+            msg = "Incident updated successfully"
+        else:
+            msg = "Incident update failed"
+
+        demisto.results(msg)
 
     def queryIncident(num, workflowQuery=False):
         query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
