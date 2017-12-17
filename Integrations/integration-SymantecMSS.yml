@@ -101,17 +101,20 @@ script:
 
         return incident
 
+    def isoformat(date):
+        return date.isoformat()[:-3] + 'Z'
+
     # FUNCTIONS
     def fetchIncidents():
         incidents = []
 
         t = datetime.datetime.utcnow()
-        now = str(t)
+        now = isoformat(t)
 
         lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
-            lastRun = t
+            lastRun = isoformat(t)
 
         events = getRecentList(lastRun)
         for event in events:
@@ -175,7 +178,10 @@ script:
                 assignToPerson = dictWorkflowQuery['AssignedPerson']
 
         res = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
-        if res.text == "true":
+        resString = xml.etree.ElementTree.tostring(res)
+        dictRes = xmltodict.parse(resString)
+        res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
+        if res == "true":
             msg = "Incident updated successfully"
         else:
             msg = "Incident update failed"
