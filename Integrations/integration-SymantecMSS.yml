@@ -118,7 +118,7 @@ script:
             t = t - timedelta(minutes=10)
             lastRun = isoformat(t)
 
-        events = getIncidentsList(lastRun)
+        events = getIncidentsListRequest(time=lastRun, srcIp=None, severities="Emergency,Critical", maxIncidents=100)
         for event in events:
             inc = event_to_incident(event)
             incidents.append(inc)
@@ -132,12 +132,38 @@ script:
         demisto.results('ok')
 
     def getIncidentsList(time):
-        result = []
+        srcIp = demisto.args()['sourceIp'] if 'sourceIp' in demisto.args() else None
+        severities = demisto.args()['severities'] if 'severities' in demisto.args() else None
+        maxIncidents = demisto.args()['max'] if 'max' in demisto.args() else None
 
         # Request recent events
-        root = getIncidentsListRequest(time)
-        incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
+        result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
+        return result
 
+    def getIncidentsListRequest(time, srcIp, severities, maxIncidents):
+        srcIp = "<SourceIP>%s</SourceIP>" % srcIp if srcIp else ""
+        severities = "<Severity>%s</Severity>" % severities if severities else ""
+        maxIncidents = "<MaxIncidents>%s</MaxIncidents>" % maxIncidents if maxIncidents else ""
+
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentGetList xmlns="https://www.monitoredsecurity.com/">
+                            <StartTimeStampGMT>%s</StartTimeStampGMT>
+                            %s
+                            %s
+                            %s
+                            </IncidentGetList>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (time, srcIp, severities, maxIncidents)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+
+        root = apiCall(body=body, headers=headers)
+        incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
+        result = []
         for incident in incidentNodes:
             element = {}
             stringIncident = xml.etree.ElementTree.tostring(incident)
@@ -150,7 +176,6 @@ script:
             element.update(dictIncident)
             element.update(dictQuery)
             result.append(element)
-
         return result
 
     def updateIncident():
@@ -221,21 +246,6 @@ script:
                             </IncidentQuery>
                         </soap12:Body>
                     </soap12:Envelope>""" % (num)
-        headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
-        }
-        return apiCall(body=body, headers=headers)
-
-    def getIncidentsListRequest(time):
-        body = """<?xml version="1.0" encoding="utf-8"?>
-                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-                        <soap12:Body>
-                            <IncidentGetList xmlns="https://www.monitoredsecurity.com/">
-                            <StartTimeStampGMT>%s</StartTimeStampGMT>
-                            </IncidentGetList>
-                        </soap12:Body>
-                    </soap12:Envelope>""" % (time)
         headers = {
             'content-Type': 'application/soap+xml; charset=utf-8',
             'content-Length': str(len(body))
@@ -337,6 +347,13 @@ script:
       required: true
       default: true
       description: Only return incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z)
+    - name: severities
+      description: Comma-delimited list of valid Security Incident severities set
+        by MSS
+    - name: sourceIp
+      description: Comma-delimited list of valid Source IP Addresses
+    - name: max
+      description: The maximum number of incidents to return
     description: Gets incidents created since the supplied time
   - name: symantec-mss-get-incident-workflow
     arguments:
