@@ -116,7 +116,7 @@ script:
             t = t - timedelta(minutes=10)
             lastRun = isoformat(t)
 
-        events = getRecentList(lastRun)
+        events = getIncidentsList(lastRun)
         for event in events:
             inc = event_to_incident(event)
             incidents.append(inc)
@@ -126,14 +126,14 @@ script:
 
     def test():
         now = datetime.datetime.utcnow()
-        getRecentList(now)
+        getIncidentsList(now)
         demisto.results('ok')
 
-    def getRecentList(time):
+    def getIncidentsList(time):
         result = []
 
         # Request recent events
-        root = getRecentListRequest(time)
+        root = getIncidentsListRequest(time)
         incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
 
         for incident in incidentNodes:
@@ -225,7 +225,7 @@ script:
         }
         return apiCall(body=body, headers=headers)
 
-    def getRecentListRequest(time):
+    def getIncidentsListRequest(time):
         body = """<?xml version="1.0" encoding="utf-8"?>
                     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                         <soap12:Body>
@@ -270,7 +270,7 @@ script:
 
 
     # EXECUTION
-    if demisto.command() == 'fetch-incidents' or demisto.command() == 'smss-remove-later': # remove the 2nd condition
+    if demisto.command() == 'fetch-incidents':
         fetchIncidents()
         exit(0)
 
@@ -278,12 +278,22 @@ script:
         test()
         exit(0)
 
-    if demisto.command() == 'smss-update-incident-workflow':
+    if demisto.command() == 'symantec-mss-update-incident':
         updateIncident()
+        exit(0)
+
+    if demisto.command() == 'symantec-mss-get-incident':
+        res = {}
+        res.update(queryIncident(demisto.args()['number']))
+        demisto.results(res)
+        exit(0)
+
+    if demisto.command() == 'symantec-mss-incidents-list':
+        demisto.results(getIncidentsList(demisto.args()['time']))
         exit(0)
   type: python
   commands:
-  - name: smss-update-incident-workflow
+  - name: symantec-mss-update-incident
     arguments:
     - name: number
       required: true
@@ -306,7 +316,19 @@ script:
     - name: comments
       description: Incident update comment
     description: Updates an incident's workflow by incident number
-  - name: smss-remove-later
-    arguments: []
+  - name: symantec-mss-get-incident
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    description: Get a specific incident by number
+  - name: symantec-mss-incidents-list
+    arguments:
+    - name: time
+      required: true
+      default: true
+      description: Only return incidents created since the specified date (i.e. 2014-11-25T22:06:15.5)
+    description: Gets incidents created since the supplied time
   dockerimage: demisto/symantec_mss
   isfetch: true
