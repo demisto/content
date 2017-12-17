@@ -247,6 +247,13 @@ script: |-
           demisto.setContext(key, data)
 
   def tableToMarkdown(name, t, headers=None):
+      '''
+      Converts a demisto table in JSON form to a Markdown table
+      @param {String} name - the name of the table
+      @param {Object} t - the JSON table - Array of objects with the same keys
+      @param {list} headers - optinal, the output markdown table will show only these headers (by order)
+      @returns {string} array from the original string-list
+      '''
       if not isinstance(t, list):
           t = [t]
       # in case of headers was not provided (backward compatibility)
@@ -305,11 +312,10 @@ script: |-
 
   def dq(obj, path):
       '''
-      return a value in an object path.
-      @param obj - ditionary tree to search in
-      @param path - a list of strings representing the path of the desired value in the object
+      return a value in an object path. in case of multiple objects in path, searches them all.
+      @param obj - dictionary tree to search in
+      @param path (list) - a path of the desired value in the object. for example: ['root', 'key', 'subkey']
       '''
-
       if len(path) == 0:
           return obj
 
@@ -335,18 +341,43 @@ script: |-
       return d
 
   def mapObj(content, mapFields, filter_func=None):
+      '''
+      Converts object fields according to mapping dictionary
+      @param content - original content to copy
+      @param mapFields - an object assosiating source and destination object fields
+      @filter_func - function to filter out fields
+      @returns the mapped object
+      '''
       if isinstance(content, (list, tuple)):
           return [mapSingleObj(item, mapFields, filter_func) for item in content]
       else:
           return mapSingleObj(content, mapFields, filter_func)
 
 
-  # TODO:
-  # add implementation of headerTransform
-  def createEntry(result, translator, MDfilter=None, headerTransform=None):
+  def createEntry(result, translator, MDfilter=None):
+      '''
+      Creates war room entry
+      @param {dict} result - the raw result to be parsed
+      @param {dict} translator - maps raw data to war room output. Should be of the following format:
+      {
+        contextPath: <context-path>,
+        title: <war-room-title>,
+        innerPath: (optional) path to the root of all data in result dictionary.
+        data: [
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              ...
+          ]
+      }
+      * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
+      * dest-key is also used for war room table headers
+      * humanReadable states whether field should appear in war room table. Default is true.
+      @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+      @returns {dict} - the war room entry
+      '''
       # filters out all fields where humanReadable is false
       if MDfilter is None:
-          MDfilter = lambda mf: mf.get('HumanReadable', True)
+          MDfilter = lambda mf: mf.get('humanReadable', True)
 
       entry = {
           'Type': entryTypes['note'],
@@ -355,9 +386,10 @@ script: |-
           'ReadableContentsFormat': formats['markdown'],
       }
 
-      content = dq(result, translator['innerPath']) if 'innerPath' in translator else result;
+      content = dq(result, translator['innerPath'].split('.')) if 'innerPath' in translator else result;
       translatedMD = mapObj(content, translator['data'], MDfilter)
-      entry['HumanReadable'] = tblToMd(title, translatedMD)
+      entry['HumanReadable'] = tableToMarkdown2(translator['title'], translatedMD)
+      # entry['HumanReadable'] = tblToMd(title, translatedMD)
 
       translatedContext = mapObj(content, translator['data'])
       context = createContext(translatedContext)
@@ -631,4 +663,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added createEntry function corresponding with JS implementation"
+releaseNotes: "Added function documentation"
