@@ -61,13 +61,7 @@ script:
     SERVER_URL = re.sub('\/$', '', re.sub('/[\/]+$/', '', demisto.params()["server"]))
     CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
     CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
-    PROXY = { "http": "http://10.100.120.182:8080", "https": "http://10.100.120.182:8080" } if demisto.params()["proxy"] else {}
-
-    if not demisto.params()['proxy']:
-      del os.environ['HTTP_PROXY']
-      del os.environ['HTTPS_PROXY']
-      del os.environ['http_proxy']
-      del os.environ['https_proxy']
+    PROXY = { "http": os.environ['http_proxy'], "https": os.environ['https_proxy'] } if demisto.params()["proxy"] else {}
 
     # HELPERS
     @contextlib.contextmanager
@@ -110,12 +104,10 @@ script:
     # FUNCTIONS
     def test():
         now = datetime.datetime.utcnow()
-        getIncidentsList(now)
+        getIncidentsList(isoformat(now))
         demisto.results('ok')
 
     def fetchIncidents():
-        incidents = []
-
         t = datetime.datetime.utcnow()
         now = isoformat(t)
 
@@ -124,6 +116,7 @@ script:
             t = t - timedelta(minutes=10)
             lastRun = isoformat(t)
 
+        incidents = []
         events = getIncidentsListRequest(time=lastRun, srcIp=None, severities="Emergency,Critical", maxIncidents=100)
         for event in events:
             inc = event_to_incident(event)
