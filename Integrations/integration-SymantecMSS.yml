@@ -107,6 +107,11 @@ script:
         return date.isoformat()[:-3] + 'Z'
 
     # FUNCTIONS
+    def test():
+        now = datetime.datetime.utcnow()
+        getIncidentsList(now)
+        demisto.results('ok')
+
     def fetchIncidents():
         incidents = []
 
@@ -126,17 +131,12 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
 
-    def test():
-        now = datetime.datetime.utcnow()
-        getIncidentsList(now)
-        demisto.results('ok')
-
     def getIncidentsList(time):
         srcIp = demisto.args()['sourceIp'] if 'sourceIp' in demisto.args() else None
         severities = demisto.args()['severities'] if 'severities' in demisto.args() else None
         maxIncidents = demisto.args()['max'] if 'max' in demisto.args() else None
 
-        # Request recent events
+        # Request events
         result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
         return result
 
@@ -204,53 +204,10 @@ script:
             elif 'AssignedPerson' in dictWorkflowQuery and dictWorkflowQuery['AssignedPerson']:
                 assignToPerson = dictWorkflowQuery['AssignedPerson']
 
-        res = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
-        resString = xml.etree.ElementTree.tostring(res)
-        dictRes = xmltodict.parse(resString)
-        res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
-        if res == "true":
-            msg = "Incident updated successfully"
-        else:
-            msg = "Incident update failed"
+        success = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+        msg = "Incident updated successfully" if success else "Incident update failed"
 
         demisto.results(msg)
-
-    def queryIncident(num, workflowQuery=False):
-        query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
-        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
-        stringQuery = xml.etree.ElementTree.tostring(queryNode)
-        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
-        return dictQuery
-
-    def queryIncidentWorkflowRequest(num):
-        body = """<?xml version="1.0" encoding="utf-8"?>
-                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-                        <soap12:Body>
-                            <IncidentWorkflowQuery xmlns="https://www.monitoredsecurity.com/">
-                                <IncidentNumber>%s</IncidentNumber>
-                            </IncidentWorkflowQuery>
-                        </soap12:Body>
-                    </soap12:Envelope>""" % (num)
-        headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
-        }
-        return apiCall(body=body, headers=headers)
-
-    def queryIncidentRequest(num):
-        body = """<?xml version="1.0" encoding="utf-8"?>
-                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-                        <soap12:Body>
-                            <IncidentQuery xmlns="https://www.monitoredsecurity.com/">
-                                <IncidentNumber>%s</IncidentNumber>
-                            </IncidentQuery>
-                        </soap12:Body>
-                    </soap12:Envelope>""" % (num)
-        headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
-        }
-        return apiCall(body=body, headers=headers)
 
     def updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
         # Create optional parameter tags if needed
@@ -278,7 +235,59 @@ script:
             'content-Type': 'application/soap+xml; charset=utf-8',
             'content-Length': str(len(body))
         }
-        return apiCall(body=body, headers=headers)
+
+        res = apiCall(body=body, headers=headers)
+        resString = xml.etree.ElementTree.tostring(res)
+        dictRes = xmltodict.parse(resString)
+        res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
+
+        return res == "true"
+
+    def queryIncident(num, workflowQuery=False):
+        query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
+        return query
+
+    def queryIncidentRequest(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+
+        query = apiCall(body=body, headers=headers)
+        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
+        stringQuery = xml.etree.ElementTree.tostring(queryNode)
+        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
+
+        return dictQuery
+
+    def queryIncidentWorkflowRequest(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentWorkflowQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentWorkflowQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            'content-Type': 'application/soap+xml; charset=utf-8',
+            'content-Length': str(len(body))
+        }
+
+        query = apiCall(body=body, headers=headers)
+        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
+        stringQuery = xml.etree.ElementTree.tostring(queryNode)
+        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
+
+        return dictQuery
 
 
     # EXECUTION
