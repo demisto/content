@@ -131,8 +131,17 @@ script:
         maxIncidents = demisto.args()['max'] if 'max' in demisto.args() else None
 
         # Request events
-        result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
-        return result
+        result = {}
+        incidents = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
+        result['Incidents'] = incidents
+
+        demisto.results({
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': result
+                #'ReadableContentsFormat': formats['markdown'],
+                # 'HumanReadable': result
+            })
 
     def getIncidentsListRequest(time, srcIp, severities, maxIncidents):
         srcIp = "<SourceIP>%s</SourceIP>" % srcIp if srcIp else ""
@@ -201,7 +210,13 @@ script:
         success = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
         msg = "Incident updated successfully" if success else "Incident update failed"
 
-        demisto.results(msg)
+        demisto.results({
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': msg
+            #'ReadableContentsFormat': formats['markdown'],
+            # 'HumanReadable': result
+        })
 
     def updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
         # Create optional parameter tags if needed
@@ -236,6 +251,17 @@ script:
         res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
 
         return res == "true"
+
+    def queryIncidentCmd(workflowQuery=False):
+        result = { "Incident": {} }
+        result["Incident"].update(queryIncident(demisto.args()['number'], workflowQuery=workflowQuery))
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': result
+            #'ReadableContentsFormat': formats['markdown'],
+            # 'HumanReadable': result
+        })
 
     def queryIncident(num, workflowQuery=False):
         query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
@@ -298,19 +324,15 @@ script:
         exit(0)
 
     if demisto.command() == 'symantec-mss-get-incident':
-        res = {}
-        res.update(queryIncident(demisto.args()['number']))
-        demisto.results(res)
+        queryIncidentCmd(False)
         exit(0)
 
     if demisto.command() == 'symantec-mss-get-incident-workflow':
-        res = {}
-        res.update(queryIncident(demisto.args()['number'], workflowQuery=True))
-        demisto.results(res)
+        queryIncidentCmd(True)
         exit(0)
 
     if demisto.command() == 'symantec-mss-incidents-list':
-        demisto.results(getIncidentsList(demisto.args()['time']))
+        getIncidentsList(demisto.args()['time'])
         exit(0)
   type: python
   commands:
