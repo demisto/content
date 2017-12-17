@@ -120,6 +120,11 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
 
+    def test():
+        now = datetime.datetime.utcnow()
+        getRecentList(now)
+        demisto.results('ok')
+
     def getRecentList(time):
         result = []
 
@@ -211,11 +216,11 @@ script:
     def getRecentListRequest(time):
         body = """<?xml version="1.0" encoding="utf-8"?>
                     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-                      <soap12:Body>
-                        <IncidentGetRecentList xmlns="https://www.monitoredsecurity.com/">
+                        <soap12:Body>
+                            <IncidentGetList xmlns="https://www.monitoredsecurity.com/">
                             <StartTimeStampGMT>%s</StartTimeStampGMT>
-                        </IncidentGetRecentList>
-                      </soap12:Body>
+                            </IncidentGetList>
+                        </soap12:Body>
                     </soap12:Envelope>""" % (time)
         headers = {
             'content-Type': 'application/soap+xml; charset=utf-8',
@@ -255,6 +260,10 @@ script:
     # EXECUTION
     if demisto.command() == 'fetch-incidents' or demisto.command() == 'smss-remove-later': # remove the 2nd condition
         fetchIncidents()
+        exit(0)
+
+    if demisto.command() == 'test-module':
+        test()
         exit(0)
 
     if demisto.command() == 'smss-update-incident-workflow':
