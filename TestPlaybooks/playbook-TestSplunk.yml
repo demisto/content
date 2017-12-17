@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 87785543-db15-4317-8b04-d94a02121189
+    taskid: 351cae67-22a0-4cb2-809a-9a8666c1ca45
     type: start
     task:
-      id: 87785543-db15-4317-8b04-d94a02121189
+      id: 351cae67-22a0-4cb2-809a-9a8666c1ca45
       version: -1
       name: ""
       iscommand: false
@@ -19,16 +19,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 78f80c3b-60f9-4b90-8e33-562cef25c6ce
+    taskid: 09548dd7-623d-4d12-86c9-a2f8f5fb7006
     type: regular
     task:
-      id: 78f80c3b-60f9-4b90-8e33-562cef25c6ce
+      id: 09548dd7-623d-4d12-86c9-a2f8f5fb7006
       version: -1
       name: splunk-search
       description: Search Splunk for events
@@ -47,16 +47,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: a23f6147-2676-4691-847b-0abfdbc378f5
+    taskid: b8407378-5edf-457b-81f3-55de895f3043
     type: regular
     task:
-      id: a23f6147-2676-4691-847b-0abfdbc378f5
+      id: b8407378-5edf-457b-81f3-55de895f3043
       version: -1
       name: Verify Context result of Splunk Search
       scriptName: VerifyContext
@@ -73,16 +73,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: 935d8554-4d68-4701-8c01-9f582cba9262
+    taskid: 0d109243-8344-4c72-8ef0-a7268f299814
     type: regular
     task:
-      id: 935d8554-4d68-4701-8c01-9f582cba9262
+      id: 0d109243-8344-4c72-8ef0-a7268f299814
       version: -1
       name: Get indexes names
       script: SplunkPy|||splunk-get-indexes
@@ -97,16 +97,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
   "4":
     id: "4"
-    taskid: 6be6bcd6-1262-4042-823e-bb758a886562
+    taskid: 1716aefc-ac5c-4290-85bf-6cfac51a9788
     type: condition
     task:
-      id: 6be6bcd6-1262-4042-823e-bb758a886562
+      id: 1716aefc-ac5c-4290-85bf-6cfac51a9788
       version: -1
       name: Has main index
       scriptName: StringContains
@@ -127,22 +127,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
   "5":
     id: "5"
-    taskid: b7bfa816-b6f3-4b5c-8816-f64cfc011592
+    taskid: 454a2cdf-7c07-4ea8-858e-34197b878734
     type: regular
     task:
-      id: b7bfa816-b6f3-4b5c-8816-f64cfc011592
+      id: 454a2cdf-7c07-4ea8-858e-34197b878734
       version: -1
       name: Create new Splunk event
       script: SplunkPy|||splunk-submit-event
       type: regular
       iscommand: true
       brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       data: test
       host: localhost
@@ -151,16 +154,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 351,
-          "y": 1062
+          "x": 265,
+          "y": 1070
         }
       }
   "6":
     id: "6"
-    taskid: ceb53bad-937f-4301-8184-b22f0dcfd615
+    taskid: a396c123-9db0-4910-88e2-23252fe95443
     type: regular
     task:
-      id: ceb53bad-937f-4301-8184-b22f0dcfd615
+      id: a396c123-9db0-4910-88e2-23252fe95443
       version: -1
       name: DumpJSON
       description: Dumps a json from context key input, and returns a json object
@@ -178,16 +181,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
   "7":
     id: "7"
-    taskid: a93df2c6-5154-49e1-8fea-486b4dbefc66
+    taskid: dcb515f1-fb21-4a8e-8256-2583e72000c6
     type: regular
     task:
-      id: a93df2c6-5154-49e1-8fea-486b4dbefc66
+      id: dcb515f1-fb21-4a8e-8256-2583e72000c6
       version: -1
       name: FAIL
       scriptName: VerifyContext
@@ -201,8 +204,107 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -202,
-          "y": 1062
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4da57014-6892-4d73-800c-0490e7b9ba90
+    type: regular
+    task:
+      id: 4da57014-6892-4d73-800c-0490e7b9ba90
+      version: -1
+      name: Test eventcount query
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      earliest_time: ""
+      event_limit: ""
+      extend-context: eventcount=
+      latest_time: ""
+      query: '| eventcount'
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    taskid: c000d130-5826-49a6-8ebd-4bed05392eb9
+    type: condition
+    task:
+      id: c000d130-5826-49a6-8ebd-4bed05392eb9
+      version: -1
+      name: Verify eventcount
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "10"
+    scriptarguments:
+      first: ${eventcount.[0].count}
+      second: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+  "10":
+    id: "10"
+    taskid: b299236a-2370-4448-8064-7e95f9a69e97
+    type: regular
+    task:
+      id: b299236a-2370-4448-8064-7e95f9a69e97
+      version: -1
+      name: Hurry!
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: Hurry!
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "11":
+    id: "11"
+    taskid: fa1333b7-a05c-4771-83e6-4830ef4a85f4
+    type: regular
+    task:
+      id: fa1333b7-a05c-4771-83e6-4830ef4a85f4
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: non-existent
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
         }
       }
 view: |-
@@ -210,9 +312,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1107,
-        "width": 933,
-        "x": -202,
+        "height": 1640,
+        "width": 1025,
+        "x": 50,
         "y": 50
       }
     }

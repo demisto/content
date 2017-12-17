@@ -17,11 +17,16 @@ configuration:
   defaultvalue: v1
   type: 0
   required: true
+- display: Use API Key
+  name: useApiKey
+  defaultvalue: "true"
+  type: 8
+  required: false
 - display: API key
   name: token
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -37,12 +42,21 @@ script:
     var server = params.server;
     var insecure = params.insecure;
     var proxy = params.proxy;
-    var token = params.token;
     var version = params.version;
     var requestTemplate = JSON.stringify({request:[{features:['te']}]});
-
     var base = server.replace(/[\/]+$/, '') +'/tecloud/api/' + version + '/file/';
-    var headers = {'Authorization': [token]};
+    var useApiKey = params.useApiKey;
+    if (useApiKey === undefined) {
+      useApiKey = true;
+    }
+
+    var headers = {};
+    if (useApiKey) {
+        if (!params.token) {
+            throw 'API Key not provided.';
+        }
+        headers = {'Authorization': [params.token]};
+    }
 
     var urlDict = {
         'sb-query': 'query',
@@ -125,7 +139,7 @@ script:
     }
 
     var contextData = getIntegrationContext();
-    var cookies = contextData.cookies
+    var cookies = contextData.cookies;
     var requestCookies = !cookies;
     for (var i = 0; !requestCookies && i < cookies.length; i++) {
         var currentTime = new Date();
@@ -349,7 +363,7 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor which found the file as malicious
     - contextPath: File.Malicious.Description
-      description: A description of the file as maliciouse    
+      description: A description of the file as malicious
     - contextPath: File.Malicious.Confidence
       description: Level of confidence that the file is malicious
     - contextPath: File.Malicious.MalwareFamily
@@ -357,7 +371,7 @@ script:
     - contextPath: File.Malicious.MalwareType
       description: The type of this malware
     - contextPath: File.Malicious.Severity
-      description: The severity of this malware 
+      description: The severity of this malware
     - contextPath: File.Malicious.SignatureName
       description: The file signature name
     - contextPath: File.MD5
@@ -450,7 +464,7 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor which found the file as malicious
     - contextPath: File.Malicious.Description
-      description: A description of the file as maliciouse    
+      description: A description of the file as malicious
     - contextPath: File.Malicious.Confidence
       description: Level of confidence that the file is malicious
     - contextPath: File.Malicious.MalwareFamily
@@ -458,7 +472,7 @@ script:
     - contextPath: File.Malicious.MalwareType
       description: The type of this malware
     - contextPath: File.Malicious.Severity
-      description: The severity of this malware 
+      description: The severity of this malware
     - contextPath: File.Malicious.SignatureName
       description: The file signature name
     - contextPath: File.MD5
@@ -494,7 +508,7 @@ script:
     - contextPath: File.SHA1
       description: The file sha1
     - contextPath: File.SHA256
-      description: The file sha256   
+      description: The file sha256
     - contextPath: File.Name
       description: The file name
     description: 'Use the Download API to have a client application download files
