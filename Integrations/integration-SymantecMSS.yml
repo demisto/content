@@ -58,7 +58,7 @@ script:
     SECURITY_INCIDENT_NODE_XPATH = './/SecurityIncident'
 
     # GLOBALS
-    SERVER_URL = re.sub('/[\/]+$/', '', demisto.params()["server"])
+    SERVER_URL = re.sub('\/$', '', re.sub('/[\/]+$/', '', demisto.params()["server"]))
     CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
     CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
     PROXY = { "http": "http://10.100.120.182:8080", "https": "http://10.100.120.182:8080" } if demisto.params()["proxy"] else {}
