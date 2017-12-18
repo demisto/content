@@ -90,7 +90,6 @@ script:
     def event_to_incident(event):
         incident = {}
         incident["name"] = "Incident: %s (%s)" % (event['IncidentNumber'], event['Classification'])
-        incident["details"] = event["Description"]
         incident["occurred"] = event["TimeCreated"]
         incident["rawJSON"] = json.dumps(event)
 
@@ -135,16 +134,15 @@ script:
         maxIncidents = demisto.args()['max'] if 'max' in demisto.args() else None
 
         # Request events
-        result = {}
-        incidents = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
-        result['Incidents'] = incidents
+        result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
+        hr = tableToMarkdown("Incidents", result)
 
         demisto.results({
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
-                'Contents': result
-                #'ReadableContentsFormat': formats['markdown'],
-                # 'HumanReadable': result
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr
             })
 
 
@@ -173,18 +171,10 @@ script:
         incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
         result = []
         for incident in incidentNodes:
-            element = {}
             stringIncidentXml = xml.etree.ElementTree.tostring(incident)
             stringIncidentJson = xml2json(stringIncidentXml)
             dictIncident = json.loads(stringIncidentJson)['SecurityIncidentSummary']
-
-            # For each recent event - query for additional details
-            dictQuery = queryIncident(dictIncident['IncidentNumber'])
-
-            # Merge both dicts
-            element.update(dictIncident)
-            element.update(dictQuery)
-            result.append(element)
+            result.append(dictIncident)
         return result
 
 
@@ -257,22 +247,22 @@ script:
 
         res = apiCall(body=body, headers=headers)
         resStringXml = xml.etree.ElementTree.tostring(res)
-        resStringJson = xml2json(resStringxml)
+        resStringJson = xml2json(resStringXml)
         dictRes = json.loads(resStringJson)
-        res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
+        res = dictRes['Envelope']['Body']['UpdateIncidentWorkflowResponse']['UpdateIncidentWorkflowResult']
         return res == "true"
 
 
     def queryIncidentCmd(workflowQuery=False):
         result = queryIncident(demisto.args()['number'], workflowQuery=workflowQuery)
-        hr = tableToMarkdown("Incident query", result)
+        # hr = tableToMarkdown("Incident query", result)
 
         demisto.results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr
+            'Contents': result
+            # 'ReadableContentsFormat': formats['markdown'],
+            # 'HumanReadable': hr
         })
 
 
@@ -339,10 +329,6 @@ script:
         exit(0)
 
     if demisto.command() == 'symantec-mss-get-incident':
-        queryIncidentCmd(False)
-        exit(0)
-
-    if demisto.command() == 'symantec-mss-get-incident-workflow':
         queryIncidentCmd(True)
         exit(0)
 
@@ -380,7 +366,7 @@ script:
       required: true
       default: true
       description: The incident number in the SOC
-    description: Query a specific incident by number
+    description: Query an incident by number
   - name: symantec-mss-incidents-list
     arguments:
     - name: time
@@ -395,12 +381,5 @@ script:
     - name: max
       description: The maximum number of incidents to return
     description: Gets incidents created since the supplied time
-  - name: symantec-mss-get-incident-workflow
-    arguments:
-    - name: number
-      required: true
-      default: true
-      description: The incident number in the SOC
-    description: Query for a specific incident's workflow by number
   dockerimage: demisto/symantec_mss
   isfetch: true
