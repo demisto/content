@@ -51,7 +51,6 @@ script:
     import base64
     import re
     import datetime
-    import xmltodict
 
     # CONSTANTS
     SECURITY_INCIDENT_SUMMARY_NODE_XPATH = './/SecurityIncidentSummary'
@@ -79,12 +78,14 @@ script:
             f_pem.close()
             yield t_pem.name
 
+
     def apiCall(body, headers):
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
             res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers, proxies=PROXY)
             if res.status_code < 200 or res.status_code >= 300:
                 raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
             return xml.etree.ElementTree.fromstring(res.content)
+
 
     def event_to_incident(event):
         incident = {}
@@ -95,17 +96,19 @@ script:
 
         labels = []
         incident['labels'] = labels
-
         return incident
+
 
     def isoformat(date):
         return date.isoformat()[:-3] + 'Z'
+
 
     # FUNCTIONS
     def test():
         now = datetime.datetime.utcnow()
         getIncidentsList(isoformat(now))
         demisto.results('ok')
+
 
     def fetchIncidents():
         t = datetime.datetime.utcnow()
@@ -125,6 +128,7 @@ script:
         demisto.incidents(incidents)
         demisto.setLastRun({'time': now})
 
+
     def getIncidentsList(time):
         srcIp = demisto.args()['sourceIp'] if 'sourceIp' in demisto.args() else None
         severities = demisto.args()['severities'] if 'severities' in demisto.args() else None
@@ -142,6 +146,7 @@ script:
                 #'ReadableContentsFormat': formats['markdown'],
                 # 'HumanReadable': result
             })
+
 
     def getIncidentsListRequest(time, srcIp, severities, maxIncidents):
         srcIp = "<SourceIP>%s</SourceIP>" % srcIp if srcIp else ""
@@ -169,8 +174,9 @@ script:
         result = []
         for incident in incidentNodes:
             element = {}
-            stringIncident = xml.etree.ElementTree.tostring(incident)
-            dictIncident = xmltodict.parse(stringIncident)['SecurityIncidentSummary']
+            stringIncidentXml = xml.etree.ElementTree.tostring(incident)
+            stringIncidentJson = xml2json(stringIncidentXml)
+            dictIncident = json.loads(stringIncidentJson)['SecurityIncidentSummary']
 
             # For each recent event - query for additional details
             dictQuery = queryIncident(dictIncident['IncidentNumber'])
@@ -180,6 +186,7 @@ script:
             element.update(dictQuery)
             result.append(element)
         return result
+
 
     def updateIncident():
         # Fill in required fields from the existing incident (for the api call)
@@ -208,15 +215,18 @@ script:
                 assignToPerson = dictWorkflowQuery['AssignedPerson']
 
         success = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
-        msg = "Incident updated successfully" if success else "Incident update failed"
+        msg = "Updated successfully" if success else "Update failed"
+        result = { "Update status": msg }
+        hr = tableToMarkdown("", [result])
 
         demisto.results({
             'ContentsFormat': formats['text'],
             'Type': entryTypes['note'],
-            'Contents': msg
-            #'ReadableContentsFormat': formats['markdown'],
-            # 'HumanReadable': result
+            'Contents': msg,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
         })
+
 
     def updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
         # Create optional parameter tags if needed
@@ -246,26 +256,30 @@ script:
         }
 
         res = apiCall(body=body, headers=headers)
-        resString = xml.etree.ElementTree.tostring(res)
-        dictRes = xmltodict.parse(resString)
+        resStringXml = xml.etree.ElementTree.tostring(res)
+        resStringJson = xml2json(resStringxml)
+        dictRes = json.loads(resStringJson)
         res = dictRes['ns0:Envelope']['ns0:Body']['ns1:UpdateIncidentWorkflowResponse']['ns1:UpdateIncidentWorkflowResult']
-
         return res == "true"
 
+
     def queryIncidentCmd(workflowQuery=False):
-        result = { "Incident": {} }
-        result["Incident"].update(queryIncident(demisto.args()['number'], workflowQuery=workflowQuery))
+        result = queryIncident(demisto.args()['number'], workflowQuery=workflowQuery)
+        hr = tableToMarkdown("Incident query", result)
+
         demisto.results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
-            'Contents': result
-            #'ReadableContentsFormat': formats['markdown'],
-            # 'HumanReadable': result
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
         })
+
 
     def queryIncident(num, workflowQuery=False):
         query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
         return query
+
 
     def queryIncidentRequest(num):
         body = """<?xml version="1.0" encoding="utf-8"?>
@@ -283,10 +297,11 @@ script:
 
         query = apiCall(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
-        stringQuery = xml.etree.ElementTree.tostring(queryNode)
-        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
-
+        stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
+        stringQueryJson = xml2json(stringQueryXml)
+        dictQuery = json.loads(stringQueryJson)['SecurityIncident']
         return dictQuery
+
 
     def queryIncidentWorkflowRequest(num):
         body = """<?xml version="1.0" encoding="utf-8"?>
@@ -304,9 +319,9 @@ script:
 
         query = apiCall(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
-        stringQuery = xml.etree.ElementTree.tostring(queryNode)
-        dictQuery = xmltodict.parse(stringQuery)['SecurityIncident']
-
+        stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
+        stringQueryJson = xml2json(stringQueryXml)
+        dictQuery = json.loads(stringQueryJson)['SecurityIncident']
         return dictQuery
 
 
