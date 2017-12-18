@@ -30,7 +30,6 @@ script:
 
 
     base_url = 'https://jbxcloud.joesecurity.org/api/';
-    tmp_path = demisto.uniqueFile()
     def postRequest(url_suffix, data=None, files=None):
         headers = {}
         data = {} if data is None else data
@@ -56,6 +55,7 @@ script:
             ],
         })
 
+
     def analysis_to_entry(title, info):
         return createEntry(info, {
             'contextPath' : 'Joe.Analysis(val.WebID && val.WebID == obj.WebID)',
@@ -70,6 +70,7 @@ script:
                 {'to' : 'Result', 'from' : u'runs.detection'},
             ],
         })
+
 
     def get_info(web_id):
         cmd_url = 'v2/analysis/info'
@@ -112,6 +113,11 @@ script:
         res = postRequest('v2/analysis/submit',
             data={'accept-tac': 1, 'url' : url})
 
+        if 'errors' in res:
+            demisto.error('Error! in command analyse_url: url=%s' % (url, ))
+            demisto.error('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            return 'Error! ' + '\n'.join(e['message'] for e in res['errors'])
+
         if should_wait:
             return poll_webid(res['data']['webids'][0])
 
@@ -129,10 +135,14 @@ script:
                     data={'accept-tac': 1},
                     files={'sample':f})
 
-
         if sample_url is not None:
             res = postRequest('v2/analysis/submit',
                 data={'accept-tac': 1, 'sample-url' : sample_url})
+
+        if 'errors' in res:
+            demisto.error('Error! in command analyse_url: url=%s' % (url, ))
+            demisto.error('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            return 'Error! ' + '\n'.join(e['message'] for e in res['errors'])
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
