@@ -141,6 +141,12 @@ script:
 
     var scanFile = function() {
         var res;
+        var fileName = dq(invContext, 'File(val.EntryID == \'' + args.fileId + '\').Name');
+
+        if (!fileName) {
+            throw 'Wrong FileID\n';
+        }
+
         try {
             res = JSON.parse(sendRequest('file', '' , args.fileId).Body);
         } catch (err) {
@@ -151,8 +157,6 @@ script:
 
         md += 'The file has been successfully submitted to scan.\n';
         md += 'Scan id: ' + res.data_id + '\n';
-
-        var fileName = dq(invContext, 'File(val.EntryID == \'' + args.fileId + '\').Name');
 
         ec.OPSWAT = {
             FileName: fileName[0],
