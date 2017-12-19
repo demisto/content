@@ -189,4 +189,5 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 found in parsed file
 scripttarget: 0
-timeout: 120ns
+timeout: 120s
+releaseNotes: "ParseCSV parse all the csv by default"
