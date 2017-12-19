@@ -9,9 +9,9 @@ description: At the heart of the solution, the Metadefender multi-scanning engin
   uses 30+ anti-malware engines to scan files for threats, significantly increasing
   malware detection.
 configuration:
-- display: Server URL (e.g. https://api.metadefender.com/v2)
+- display: Server URL (e.g. http://localhost:8008/metascan_rest/)
   name: url
-  defaultvalue: https://api.metadefender.com/v2
+  defaultvalue: http://localhost:8008/metascan_rest/
   type: 0
   required: true
 - display: API Key
