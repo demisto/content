@@ -449,7 +449,8 @@ script:
         exit(0)
 
     if demisto.command() == 'symantec-mss-incidents-list':
-        getIncidentsList(demisto.args()['time'])
+        time = demisto.args()['time'] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
+        getIncidentsList(time)
         exit(0)
   type: python
   commands:
@@ -462,7 +463,7 @@ script:
     - name: status
       description: To change the incident status
     - name: resolution
-      description: To change he incident status resolution
+      description: To change the incident status resolution
     - name: reference
       description: Update reference comments
     - name: severity
@@ -486,16 +487,18 @@ script:
   - name: symantec-mss-incidents-list
     arguments:
     - name: time
-      required: true
       default: true
-      description: Only return incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z)
+      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z).
+        If not supplied, defaults to the last 24 hours
     - name: severities
       description: Comma-delimited list of valid Security Incident severities set
-        by MSS
+        by MSS. If not supplied, all severities are returned
     - name: sourceIp
-      description: Comma-delimited list of valid Source IP Addresses
+      description: Comma-delimited list of valid Source IP Addresses. If not supplied,
+        all addresses are returned
     - name: max
-      description: The maximum number of incidents to return
-    description: Gets incidents created since the supplied time
+      description: The maximum number of incidents to return. If not supplied,  all
+        incidents are returned
+    description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
