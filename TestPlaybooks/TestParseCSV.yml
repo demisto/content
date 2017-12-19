@@ -1,0 +1,276 @@
+id: TestParseCSV
+version: -1
+name: TestParseCSV
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8899c7ea-a494-4225-8869-3b9a0f597144
+    type: start
+    task:
+      id: 8899c7ea-a494-4225-8869-3b9a0f597144
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: cd35436d-f383-4555-88ea-40432622e94b
+    type: regular
+    task:
+      id: cd35436d-f383-4555-88ea-40432622e94b
+      version: -1
+      name: ExportToCSV - so we could have csv file in the warroom
+      description: Export given array to csv file
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      csvArray:
+        simple: ${arr}
+      fileName:
+        simple: tata.csv
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 816802bf-925a-4d59-86b3-2adaa9acd9f0
+    type: regular
+    task:
+      id: 816802bf-925a-4d59-86b3-2adaa9acd9f0
+      version: -1
+      name: parse the whole csv
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domains: {}
+      extend-context:
+        simple: allcsv=.
+      file:
+        simple: tata.csv
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "3":
+    id: "3"
+    taskid: edb8d300-2830-47d9-8594-c161afcacaa8
+    type: regular
+    task:
+      id: edb8d300-2830-47d9-8594-c161afcacaa8
+      version: -1
+      name: parse ips column from csv and set to context
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domains: {}
+      file:
+        simple: tata.csv
+      hashes: {}
+      ips:
+        simple: "1"
+      parseAll:
+        simple: "no"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1069
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 9077ecff-e6b5-44c0-83e2-5e5ba8258754
+    type: regular
+    task:
+      id: 9077ecff-e6b5-44c0-83e2-5e5ba8258754
+      version: -1
+      name: Create array of objects which will be exported to csv file
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: arr
+      value:
+        simple: '[{"sourceIP":"1.1.1.1","count":0},{"sourceIP":"2.2.2.2","count":1},{"sourceIP":"3.3.3.3","count":2}]'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: c3978019-0e0a-4d84-8786-1e725d976f54
+    type: regular
+    task:
+      id: c3978019-0e0a-4d84-8786-1e725d976f54
+      version: -1
+      name: Verify csv exported to context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      bad_hash_weight: {}
+      bad_ip_weight: {}
+      bad_url_weight: {}
+      cmdArguments: {}
+      cmdToRun: {}
+      domains: {}
+      expectedValue: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields:
+        simple: sourceIP,count
+      file: {}
+      hashes: {}
+      humanReadableEntryId: {}
+      initialscore: {}
+      ips: {}
+      keyToWatch: {}
+      parseAll: {}
+      path:
+        simple: allcsv
+      substring: {}
+      threshold_critical: {}
+      threshold_high: {}
+      threshold_medium: {}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 18fd9cca-7434-419e-8209-6ebaccda218a
+    type: regular
+    task:
+      id: 18fd9cca-7434-419e-8209-6ebaccda218a
+      version: -1
+      name: Verify ips are exported
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      cmdArguments: {}
+      cmdToRun: {}
+      expectedValue: {}
+      extend-context: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields:
+        simple: Address
+      keyToWatch: {}
+      path:
+        simple: IP
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1243
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 61dbdc2f-9a78-4d96-8f6b-694e34c675f0
+    type: regular
+    task:
+      id: 61dbdc2f-9a78-4d96-8f6b-694e34c675f0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1288,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
