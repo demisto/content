@@ -77,7 +77,7 @@ script:
             yield t_pem.name
 
 
-    def loadServerUrl():
+    def load_server_url():
         """ Cleans and loads the server url from the configuration """
         url = demisto.params()["server"]
         url = re.sub("/[\/]+$/", "", url)
@@ -85,7 +85,7 @@ script:
         return url
 
 
-    def loadCertificate():
+    def load_certificate():
         """ Loads the certificate and passphrase from the configuration """
         cert = demisto.params()["certificate"]
         cert = base64.b64decode(cert)
@@ -93,7 +93,7 @@ script:
         return cert, passphrase
 
 
-    def loadProxy():
+    def load_proxy():
         """ Loads the system configured proxy if enabled in configuration """
         proxy = {}
         if demisto.params()["proxy"]:
@@ -103,12 +103,12 @@ script:
 
 
     # GLOBALS
-    SERVER_URL = loadServerUrl()
-    CERTIFICATE, CERTIFICATE_PASSPHRASE = loadCertificate()
-    PROXY = loadProxy()
+    SERVER_URL = load_server_url()
+    CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
+    PROXY = load_proxy()
 
     # HELPERS
-    def apiCall(body, headers):
+    def api_call(body, headers):
         """ Makes an HTTP Post to the SWS incidents API using the configured certificate and proxy """
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
             res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers, proxies=PROXY)
@@ -141,7 +141,7 @@ script:
         demisto.results("ok")
 
 
-    def fetchIncidents():
+    def fetch_incidents():
         t = datetime.datetime.utcnow()
         now = isoformat(t)
 
@@ -151,7 +151,7 @@ script:
             lastRun = isoformat(t)
 
         incidents = []
-        events = getIncidentsListRequest(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES, maxIncidents=FETCH_MAX_INCIDENTS)
+        events = get_incidents_list_request(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES, maxIncidents=FETCH_MAX_INCIDENTS)
         for event in events:
             inc = event_to_incident(event)
             incidents.append(inc)
@@ -160,13 +160,13 @@ script:
         demisto.setLastRun({"time": now})
 
 
-    def getIncidentsList(time):
+    def get_incidents_list(time):
         srcIp = demisto.args()["sourceIp"] if "sourceIp" in demisto.args() else None
         severities = demisto.args()["severities"] if "severities" in demisto.args() else None
         maxIncidents = demisto.args()["max"] if "max" in demisto.args() else None
 
         # Request events
-        result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
+        result = get_incidents_list_request(time, srcIp, severities, maxIncidents)
 
         # Set human readable
         headers = [
@@ -212,7 +212,7 @@ script:
         })
 
 
-    def getIncidentsListRequest(time, srcIp, severities, maxIncidents):
+    def get_incidents_list_request(time, srcIp, severities, maxIncidents):
         srcIp = "<SourceIP>%s</SourceIP>" % srcIp if srcIp else ""
         severities = "<Severity>%s</Severity>" % severities if severities else ""
         maxIncidents = "<MaxIncidents>%s</MaxIncidents>" % maxIncidents if maxIncidents else ""
@@ -233,7 +233,7 @@ script:
             "content-Length": str(len(body))
         }
 
-        root = apiCall(body=body, headers=headers)
+        root = api_call(body=body, headers=headers)
         incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
         result = []
         for incident in incidentNodes:
@@ -244,10 +244,10 @@ script:
         return result
 
 
-    def updateIncident():
+    def update_incident():
         # Fill in required fields from the existing incident (for the api call)
         num = demisto.args()["number"]
-        dictQuery = queryIncident(num=num, workflowQuery=True)
+        dictQuery = query_incident(num=num, workflowQuery=True)
         dictWorkflowQuery = dictQuery["WorkFlowDetail"]
 
         # Use the supplied params, filling the missing ones from the existing workflow if possible, if not possible - require from user
@@ -281,7 +281,7 @@ script:
                 assignToPerson = dictWorkflowQuery["AssignedPerson"]
 
         # Make the request with the params
-        success = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+        success = update_incident_request(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
 
         # Create result
         msg = "Updated successfully" if success else "Update failed"
@@ -297,7 +297,7 @@ script:
         })
 
 
-    def updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
+    def update_incident_request(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
         # Create optional parameter tags if needed
         ref = "<Reference>%s</Reference>" % (ref) if ref else ""
         assignToOrg = "<AssignedToOrganiztion>%s</AssignedToOrganiztion>" % (assignToOrg) if assignToOrg else ""
@@ -324,7 +324,7 @@ script:
             "content-Length": str(len(body))
         }
 
-        res = apiCall(body=body, headers=headers)
+        res = api_call(body=body, headers=headers)
         resStringXml = xml.etree.ElementTree.tostring(res)
         resStringJson = xml2json(resStringXml)
         dictRes = json.loads(resStringJson)
@@ -332,8 +332,8 @@ script:
         return res == "true"
 
 
-    def queryIncidentCmd():
-        result = queryIncident(demisto.args()["number"], workflowQuery=True)
+    def query_incident_cmd():
+        result = query_incident(demisto.args()["number"], workflowQuery=True)
 
         # Create minimal signature list
         sigs = []
@@ -394,14 +394,14 @@ script:
                 "AssignedPerson": result["WorkFlowDetail"]["AssignedPerson"]
             },
             "IncidentComments": {
-                "IncidentComment": { # array?
+                "IncidentComment": {
                     "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
                     "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
                     "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
                 }
             },
             "IncidentAttachmentItems": {
-                "IncidentAttachmentItem": { # array?
+                "IncidentAttachmentItem": {
                     "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
                     "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
                     "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
@@ -410,7 +410,7 @@ script:
                 }
             },
             "RelatedIncidents": {
-                "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"] # array for sure
+                "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"]
             }
         }
         context = {
@@ -427,12 +427,12 @@ script:
         })
 
 
-    def queryIncident(num, workflowQuery=False):
-        query = queryIncidentRequest(num) if not workflowQuery else queryIncidentWorkflowRequest(num)
+    def query_incident(num, workflowQuery=False):
+        query = query_incident_request(num) if not workflowQuery else query_incident_workflow_request(num)
         return query
 
 
-    def queryIncidentRequest(num):
+    def query_incident_request(num):
         body = """<?xml version="1.0" encoding="utf-8"?>
                     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                         <soap12:Body>
@@ -446,7 +446,7 @@ script:
             "content-Length": str(len(body))
         }
 
-        query = apiCall(body=body, headers=headers)
+        query = api_call(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
         stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
         stringQueryJson = xml2json(stringQueryXml)
@@ -454,7 +454,7 @@ script:
         return dictQuery
 
 
-    def queryIncidentWorkflowRequest(num):
+    def query_incident_workflow_request(num):
         body = """<?xml version="1.0" encoding="utf-8"?>
                     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                         <soap12:Body>
@@ -468,7 +468,7 @@ script:
             "content-Length": str(len(body))
         }
 
-        query = apiCall(body=body, headers=headers)
+        query = api_call(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
         stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
         stringQueryJson = xml2json(stringQueryXml)
@@ -478,7 +478,7 @@ script:
 
     # EXECUTION
     if demisto.command() == "fetch-incidents":
-        fetchIncidents()
+        fetch_incidents()
         exit(0)
 
     if demisto.command() == "test-module":
@@ -486,16 +486,16 @@ script:
         exit(0)
 
     if demisto.command() == "symantec-mss-update-incident":
-        updateIncident()
+        update_incident()
         exit(0)
 
     if demisto.command() == "symantec-mss-get-incident":
-        queryIncidentCmd()
+        query_incident_cmd()
         exit(0)
 
     if demisto.command() == "symantec-mss-incidents-list":
         time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
-        getIncidentsList(time)
+        get_incidents_list(time)
         exit(0)
   type: python
   commands:
