@@ -55,21 +55,17 @@ script:
     import datetime
 
     # CONSTANTS
-    SECURITY_INCIDENT_SUMMARY_NODE_XPATH = './/SecurityIncidentSummary'
-    SECURITY_INCIDENT_NODE_XPATH = './/SecurityIncident'
+    SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
+    SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
+    FETCH_MAX_INCIDENTS = 500
+    FETCH_SEVERITIES = "Emergency,Critical"
 
-    # GLOBALS
-    SERVER_URL = re.sub('\/$', '', re.sub('/[\/]+$/', '', demisto.params()["server"]))
-    CERTIFICATE = base64.b64decode(demisto.params()["certificate"])
-    CERTIFICATE_PASSPHRASE = demisto.params()["passphrase"]
-    PROXY = { "http": os.environ['http_proxy'], "https": os.environ['https_proxy'] } if demisto.params()["proxy"] else {}
-
-    # HELPERS
+    # PREREQUISITES
     @contextlib.contextmanager
     def pfx_to_pem(pfx, pfx_password):
-        ''' Decrypts the .pfx file to be used with requests. '''
-        with tempfile.NamedTemporaryFile(suffix='.pem') as t_pem:
-            f_pem = open(t_pem.name, 'wb')
+        """ Decrypts the .pfx file to be used with requests. """
+        with tempfile.NamedTemporaryFile(suffix=".pem") as t_pem:
+            f_pem = open(t_pem.name, "wb")
             p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password)
             f_pem.write(OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_PEM, p12.get_privatekey()))
             f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, p12.get_certificate()))
@@ -81,66 +77,100 @@ script:
             yield t_pem.name
 
 
+    def loadServerUrl():
+        """ Cleans and loads the server url from the configuration """
+        url = demisto.params()["server"]
+        url = re.sub("/[\/]+$/", "", url)
+        url = re.sub("\/$", "", url)
+        return url
+
+
+    def loadCertificate():
+        """ Loads the certificate and passphrase from the configuration """
+        cert = demisto.params()["certificate"]
+        cert = base64.b64decode(cert)
+        passphrase = demisto.params()["passphrase"] if "passphrase" in demisto.params() else ""
+        return cert, passphrase
+
+
+    def loadProxy():
+        """ Loads the system configured proxy if enabled in configuration """
+        proxy = {}
+        if demisto.params()["proxy"]:
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+
+    # GLOBALS
+    SERVER_URL = loadServerUrl()
+    CERTIFICATE, CERTIFICATE_PASSPHRASE = loadCertificate()
+    PROXY = loadProxy()
+
+    # HELPERS
     def apiCall(body, headers):
+        """ Makes an HTTP Post to the SWS incidents API using the configured certificate and proxy """
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-            res = requests.post(url=SERVER_URL + '/SWS/incidents.asmx', cert=cert, data=body, headers=headers, proxies=PROXY)
+            res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers, proxies=PROXY)
             if res.status_code < 200 or res.status_code >= 300:
-                raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
-            return xml.etree.ElementTree.fromstring(res.content)
+                raise Exception("Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(res.headers))
+        return xml.etree.ElementTree.fromstring(res.content)
 
 
     def event_to_incident(event):
+        """ Converts a Symantec event to a Demisto incident """
         incident = {}
-        incident["name"] = "Incident: %s (%s)" % (event['IncidentNumber'], event['Classification'])
+        incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
         incident["occurred"] = event["TimeCreated"]
         incident["rawJSON"] = json.dumps(event)
 
         labels = []
-        incident['labels'] = labels
+        incident["labels"] = labels
         return incident
 
 
     def isoformat(date):
-        return date.isoformat()[:-3] + 'Z'
+        """ Convert a datetime object to asmx ISO format """
+        return date.isoformat()[:-3] + "Z"
 
 
     # FUNCTIONS
     def test():
         now = datetime.datetime.utcnow()
         getIncidentsList(isoformat(now))
-        demisto.results('ok')
+        demisto.results("ok")
 
 
     def fetchIncidents():
         t = datetime.datetime.utcnow()
         now = isoformat(t)
 
-        lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
+        lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
             lastRun = isoformat(t)
 
         incidents = []
-        events = getIncidentsListRequest(time=lastRun, srcIp=None, severities="Emergency,Critical", maxIncidents=100)
+        events = getIncidentsListRequest(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES, maxIncidents=FETCH_MAX_INCIDENTS)
         for event in events:
             inc = event_to_incident(event)
             incidents.append(inc)
 
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': now})
+        demisto.setLastRun({"time": now})
 
 
     def getIncidentsList(time):
-        srcIp = demisto.args()['sourceIp'] if 'sourceIp' in demisto.args() else None
-        severities = demisto.args()['severities'] if 'severities' in demisto.args() else None
-        maxIncidents = demisto.args()['max'] if 'max' in demisto.args() else None
+        srcIp = demisto.args()["sourceIp"] if "sourceIp" in demisto.args() else None
+        severities = demisto.args()["severities"] if "severities" in demisto.args() else None
+        maxIncidents = demisto.args()["max"] if "max" in demisto.args() else None
 
         # Request events
         result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
 
         # Set human readable
         headers = [
-            'IncidentNumber',
+            "IncidentNumber",
             "TimeCreated",
             "Severity",
             "Category",
@@ -169,16 +199,16 @@ script:
 
         # Set context
         context = {
-            'Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)' : result
+            "Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)" : result
         }
 
         demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'EntryContext': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
         })
 
 
@@ -199,8 +229,8 @@ script:
                         </soap12:Body>
                     </soap12:Envelope>""" % (time, srcIp, severities, maxIncidents)
         headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
         }
 
         root = apiCall(body=body, headers=headers)
@@ -209,48 +239,61 @@ script:
         for incident in incidentNodes:
             stringIncidentXml = xml.etree.ElementTree.tostring(incident)
             stringIncidentJson = xml2json(stringIncidentXml)
-            dictIncident = json.loads(stringIncidentJson)['SecurityIncidentSummary']
+            dictIncident = json.loads(stringIncidentJson)["SecurityIncidentSummary"]
             result.append(dictIncident)
         return result
 
 
     def updateIncident():
         # Fill in required fields from the existing incident (for the api call)
-        num = demisto.args()['number']  # requried by demisto
+        num = demisto.args()["number"]
         dictQuery = queryIncident(num=num, workflowQuery=True)
-        dictWorkflowQuery = dictQuery['WorkFlowDetail']
+        dictWorkflowQuery = dictQuery["WorkFlowDetail"]
 
-        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] or 'Closed' # required by api
-        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] or 'Resolved'  # required by api
-        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] or 'Informational' # required by api
+        # Use the supplied params, filling the missing ones from the existing workflow if possible, if not possible - require from user
+        status = demisto.args()["status"] if "status" in demisto.args() else dictWorkflowQuery["Status"]
+        if not status:
+            raise Exception("No current status, please supply a status parameter")
 
-        ref = demisto.args()['reference'] if 'reference' in demisto.args() else None # optional
-        comments = demisto.args()['comments'] if 'comments' in demisto.args() else None # optional
+        resolution = demisto.args()["resolution"] if "resolution" in demisto.args() else dictWorkflowQuery["Resolution"]
+        if not resolution:
+            raise Exception("No current resolution, please supply a resolution parameter")
+
+        severity = demisto.args()["severity"] if "severity" in demisto.args() else dictQuery["Severity"]
+        if not severity:
+            raise Exception("No current severity, please supply a severity parameter")
+
+        # Optional params
+        ref = demisto.args()["reference"] if "reference" in demisto.args() else None
+        comments = demisto.args()["comments"] if "comments" in demisto.args() else None
 
         # Only one of them should exist
-        assignToOrg = demisto.args()['assignOrganization'] if 'assignOrganization' in demisto.args() else None
-        assignToPerson = demisto.args()['assignPerson'] if 'assignPerson' in demisto.args() else None
+        assignToOrg = demisto.args()["assignOrganization"] if "assignOrganization" in demisto.args() else None
+        assignToPerson = demisto.args()["assignPerson"] if "assignPerson" in demisto.args() else None
 
         if assignToOrg and assignToPerson:
-            raise Exception('Unable to assign to both organization and a person, please choose only one')
+            raise Exception("Unable to assign to both organization and a person, please choose only one")
 
         if not assignToOrg and not assignToPerson:
-            if 'AssignedOrganization' in dictWorkflowQuery and dictWorkflowQuery['AssignedOrganization']:
-                assignToOrg = dictWorkflowQuery['AssignedOrganization']
-            elif 'AssignedPerson' in dictWorkflowQuery and dictWorkflowQuery['AssignedPerson']:
-                assignToPerson = dictWorkflowQuery['AssignedPerson']
+            if "AssignedOrganization" in dictWorkflowQuery and dictWorkflowQuery["AssignedOrganization"]:
+                assignToOrg = dictWorkflowQuery["AssignedOrganization"]
+            elif "AssignedPerson" in dictWorkflowQuery and dictWorkflowQuery["AssignedPerson"]:
+                assignToPerson = dictWorkflowQuery["AssignedPerson"]
 
+        # Make the request with the params
         success = updateIncidentRequest(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+
+        # Create result
         msg = "Updated successfully" if success else "Update failed"
-        result = { "Update status": msg }
-        hr = tableToMarkdown("", [result])
+        result = [{ "Update status": msg }]
+        hr = tableToMarkdown("", result)
 
         demisto.results({
-            'ContentsFormat': formats['text'],
-            'Type': entryTypes['note'],
-            'Contents': msg,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr
+            "ContentsFormat": formats["text"],
+            "Type": entryTypes["note"],
+            "Contents": msg,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
         })
 
 
@@ -277,20 +320,20 @@ script:
                       </soap12:Body>
                     </soap12:Envelope>""" % (num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
         headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
         }
 
         res = apiCall(body=body, headers=headers)
         resStringXml = xml.etree.ElementTree.tostring(res)
         resStringJson = xml2json(resStringXml)
         dictRes = json.loads(resStringJson)
-        res = dictRes['Envelope']['Body']['UpdateIncidentWorkflowResponse']['UpdateIncidentWorkflowResult']
+        res = dictRes["Envelope"]["Body"]["UpdateIncidentWorkflowResponse"]["UpdateIncidentWorkflowResult"]
         return res == "true"
 
 
     def queryIncidentCmd():
-        result = queryIncident(demisto.args()['number'], workflowQuery=True)
+        result = queryIncident(demisto.args()["number"], workflowQuery=True)
 
         # Create minimal signature list
         sigs = []
@@ -371,16 +414,16 @@ script:
             }
         }
         context = {
-            'Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)' : resultCtx
+            "Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)" : resultCtx
         }
 
         demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'EntryContext': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
         })
 
 
@@ -399,15 +442,15 @@ script:
                         </soap12:Body>
                     </soap12:Envelope>""" % (num)
         headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
         }
 
         query = apiCall(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
         stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
         stringQueryJson = xml2json(stringQueryXml)
-        dictQuery = json.loads(stringQueryJson)['SecurityIncident']
+        dictQuery = json.loads(stringQueryJson)["SecurityIncident"]
         return dictQuery
 
 
@@ -421,37 +464,37 @@ script:
                         </soap12:Body>
                     </soap12:Envelope>""" % (num)
         headers = {
-            'content-Type': 'application/soap+xml; charset=utf-8',
-            'content-Length': str(len(body))
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
         }
 
         query = apiCall(body=body, headers=headers)
         queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
         stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
         stringQueryJson = xml2json(stringQueryXml)
-        dictQuery = json.loads(stringQueryJson)['SecurityIncident']
+        dictQuery = json.loads(stringQueryJson)["SecurityIncident"]
         return dictQuery
 
 
     # EXECUTION
-    if demisto.command() == 'fetch-incidents':
+    if demisto.command() == "fetch-incidents":
         fetchIncidents()
         exit(0)
 
-    if demisto.command() == 'test-module':
+    if demisto.command() == "test-module":
         test()
         exit(0)
 
-    if demisto.command() == 'symantec-mss-update-incident':
+    if demisto.command() == "symantec-mss-update-incident":
         updateIncident()
         exit(0)
 
-    if demisto.command() == 'symantec-mss-get-incident':
+    if demisto.command() == "symantec-mss-get-incident":
         queryIncidentCmd()
         exit(0)
 
-    if demisto.command() == 'symantec-mss-incidents-list':
-        time = demisto.args()['time'] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
+    if demisto.command() == "symantec-mss-incidents-list":
+        time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
         getIncidentsList(time)
         exit(0)
   type: python
