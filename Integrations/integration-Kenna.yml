@@ -33,19 +33,88 @@ script:
     var apiKey = params.key;
     var url = params.url;
 
-    function sendRequest(method, endpoint, body, urlQuery) {
+    function searchVulnerabilities(args) {
+        var urlQuery = {};
+            argKeys = Object.keys(args);
+            for (var i = 0; i < argKeys.length; i++) {
+                if (argKeys[i] === 'min-score') {
+                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                } else {
+                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                }
+            }
 
-        var requestUrl = url.replace(/[\/]+$/, '') + '/' + endpoint + encodeToURLQuery(urlQuery);
+            var response = searchVulnerabilitiesRequest(urlQuery);
+            var res = response.vulnerabilities;
+
+            var hr = [];
+            var context = {};
+            context.Kenna = [];
+            for (var i = 0; i < res.length; i++) {
+
+                hr[i] = {
+                    'ID' : res[i].id,
+                    'Score' : res[i].risk_meter_score,
+                    'Name' : res[i].cve_id
+                };
+
+                context.Kenna[i]={};
+                context.Kenna[i].AssetID = res[i].asset_id;
+                context.Kenna[i].Connectors = [];
+                for (var j = 0; j < res[i].connectors.length; j++) {
+                    context.Kenna[i].Connectors[j] = {};
+                    context.Kenna[i].Connectors[j].DefinitionName = res[i].connectors[j].connector_definition_name;
+                    context.Kenna[i].Connectors[j].ID = res[i].connectors[j].id;
+                    context.Kenna[i].Connectors[j].Name = res[i].connectors[j].name;
+                    context.Kenna[i].Connectors[j].Vendor = res[i].connectors[j].vendor;
+                }
+                context.Kenna[i].CveID = res[i].cve_id;
+                context.Kenna[i].FixID = res[i].fix_id;
+                context.Kenna[i].ID = res[i].id;
+                context.Kenna[i].Patch = res[i].patch;
+                context.Kenna[i].RiskMeterScore = res[i].risk_meter_score;
+                context.Kenna[i].ScannerVulnerabilities = [];
+                for (var j = 0; j < res[i].scanner_vulnerabilities.length; j++) {
+                    context.Kenna[i].ScannerVulnerabilities[j] = {};
+                    context.Kenna[i].ScannerVulnerabilities[j].ExternalID = res[i].scanner_vulnerabilities[j].external_unique_id;
+                    context.Kenna[i].ScannerVulnerabilities[j].Open = res[i].scanner_vulnerabilities[j].open;
+                    context.Kenna[i].ScannerVulnerabilities[j].Port = res[i].scanner_vulnerabilities[j].port;
+                }
+                context.Kenna[i].Score = res[i].score;
+                if (res[i].service_ticket) {
+                    context.Kenna[i].ServiceTicket = {};
+                    context.Kenna[i].ServiceTicket.DueDate = res[i].service_ticket.due_date;
+                    context.Kenna[i].ServiceTicket.ExternalIdentifier = res[i].service_ticket.external_identifier;
+                    context.Kenna[i].ServiceTicket.Status = res[i].service_ticket.status;
+                    context.Kenna[i].ServiceTicket.TicketType = res[i].service_ticket.ticket_type;
+                }
+                context.Kenna[i].Severity = res[i].severity;
+                context.Kenna[i].Status = res[i].status;
+                context.Kenna[i].Threat = res[i].threat;
+                context.Kenna[i].TopPriority = res[i].top_priority;
+            }
+
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat : formats.markdown,
+                EntryContext : context,
+                HumanReadable: tableToMarkdown('Kenna Vulnerabilities', hr)
+            };
+    }
+
+    function searchVulnerabilitiesRequest(urlQuery) {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/vulnerabilities/search' + encodeToURLQuery(urlQuery);
         var res = http(
             requestUrl,
             {
-                Method: method,
+                Method: 'GET',
                 Headers: {
                     'X-Risk-Token': [apiKey],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
-                },
-                Body: body ? JSON.stringify(body) : ''
+                }
             },
             params.insecure,
             params.proxy
@@ -56,22 +125,90 @@ script:
         return JSON.parse(res.Body);
     }
 
-    function closeVulnerability (id) {
-        var body = {
-            'vulnerability': {
-                    'status': 'closed'
-            }
+
+    function getConnectors() {
+        var response = getConnectorsRequest();
+        var res = response.connectors;
+        var hr = [];
+        var context = {};
+        if (!context.Kenna) {
+            context.Kenna = {};
+        }
+        context.Kenna.ConnectorsList = []
+        for (var i = 0; i < res.length; i++) {
+            hr[i] = {
+                'Host' : res[i].host,
+                'Name' : res[i].name,
+                'Running' : res[i].running,
+                'ID' : res[i].id
+            };
+            context.Kenna.ConnectorsList[i] = {};
+            context.Kenna.ConnectorsList[i].ID = res[i].id;
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            EntryContext : context,
+            HumanReadable: tableToMarkdown('Kenna', hr)
         };
-        sendRequest('PUT', 'vulnerabilities/'+id, body);
-        return 'Vulnerability ' + id +' is closed.';
     }
 
-    switch (command) {
-        case 'test-module':
-            // Tests Authentication
-            sendRequest('GET', 'assets');
-            return 'ok';
-        case 'kenna-search-vulnerabilities':
+    function getConnectorsRequest() {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/connectors';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [apiKey],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    function runConnector(id) {
+        try {
+                var response = runConnectorRequest(id);
+                if (response.success === 'true') {
+                    return 'Connector ran successfully!';
+                }
+            } catch(err) {
+                return 'Could not run connector.';
+            }
+    }
+
+    function runConnectorRequest(id) {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/connectors/' + id + '/run';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [apiKey],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    function searchFixes(args) {
             var urlQuery = {};
             argKeys = Object.keys(args);
             for (var i = 0; i < argKeys.length; i++) {
@@ -81,16 +218,15 @@ script:
                     urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
                 }
             }
-            var response = sendRequest('GET', 'vulnerabilities/search', undefined, urlQuery);
-            var res = response.vulnerabilities;
-            var md = [];
+            var response = searchFixesRequest(urlQuery);
+            var res = response.fixes;
+            var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
+            var hr = '';
             for (var i = 0; i < res.length; i++) {
-                md[i] = {
-                    'ID' : res[i].id,
-                    'Score' : res[i].risk_meter_score,
-                    'Name' : res[i].cve_id
-
-                };
+                hr += res[i].title + '\n';
+                hr += res[i].vuln_count + ' vulnerabilities affected\n';
+                hr += '#### Diagnosis:\n';
+                hr += res[i].diagnosis.replace(rex,' ') + '\n' + '&nbsp;' + '\n';
             }
             return {
                 Type: entryTypes.note,
@@ -98,67 +234,126 @@ script:
                 ContentsFormat: formats.json,
                 ReadableContentsFormat : formats.markdown,
                 //EntryContext : context,
-                HumanReadable: tableToMarkdown('Kenna', md)
+                HumanReadable: hr
             };
+    }
+
+    function searchFixesRequest(urlQuery) {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/fixes' + encodeToURLQuery(urlQuery);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [apiKey],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    function updateAsset(id, notes) {
+        var body = {
+            'asset': {
+                'notes': notes
+            }
+        };
+        var statusCode = updateAssetRequest(id, body);
+        if (statusCode === 204) {
+            return 'Asset ' + id +' was updated.';
+        } else {
+            return 'Could not update asset.';
+        }
+    }
+
+    function updateAssetRequest(id, body) {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/assets/' + id;
+        var res = http(
+            requestUrl,
+            {
+                Method: 'PUT',
+                Headers: {
+                    'X-Risk-Token': [apiKey],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.StatusCode;
+    }
+
+    function updateVulnerability(id, notes, status) {
+        if (!status && !notes) {
+            throw 'Please insert arguments to update.'
+        }
+        var body = {};
+        body['vulnerability'] = {};
+        if (status) {
+            body['vulnerability']['status'] = status;
+        }
+        if (notes) {
+            body['vulnerability']['notes'] = notes;
+        }
+        var statusCode = updateVulnerabilityRequest(id, body);
+        if (statusCode === 204) {
+            return 'Vulnerability ' + id +' was updated.';
+        } else {
+            return 'Could not update vulnerability.';
+        }
+    }
+
+    function updateVulnerabilityRequest(id, body) {
+        var requestUrl = url.replace(/[\/]+$/, '') + '/vulnerabilities/' + id;
+        var res = http(
+            requestUrl,
+            {
+                Method: 'PUT',
+                Headers: {
+                    'X-Risk-Token': [apiKey],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.StatusCode;
+    }
+
+    switch (command) {
+        case 'test-module':
+            // Tests Authentication
+            sendRequest('GET', 'assets');
+            return 'ok';
+        case 'kenna-search-vulnerabilities':
+            return searchVulnerabilities(args);
         case 'kenna-get-connectors':
-            var response = sendRequest('GET', 'connectors');
-            var res = response.connectors;
-            var md = [];
-            for (var i = 0; i < res.length; i++) {
-                md[i] = {
-                    'Host' : res[i].host,
-                    'Name' : res[i].name,
-                    'Running' : res[i].running,
-                    'ID' : res[i].id
-                };
-            }
-            return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat : formats.markdown,
-                //EntryContext : context,
-                HumanReadable: tableToMarkdown('Kenna', md)
-            };
+            return getConnectors();
         case 'kenna-run-connector':
-            try {
-                var response = sendRequest('GET', 'connectors/' + args.id + '/run');
-                if (response.success === 'true') {
-                    return 'Connector ran successfully!';
-                }
-            } catch(err) {
-                return 'Could not run connector.';
-            }
-            break;
+            return runConnector(args.id);
         case 'kenna-search-fixes':
-            var urlQuery = {};
-                argKeys = Object.keys(args);
-                for (var i = 0; i < argKeys.length; i++) {
-                    if (argKeys[i] === 'min-score') {
-                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                    } else {
-                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
-                    }
-                }
-                var response = sendRequest('GET', 'fixes', undefined, urlQuery);
-                var res = response.fixes;
-                var rex = /(<([^>]+)>)/ig;
-                var md = '';
-                for (var i = 0; i < res.length; i++) {
-                    md += res[i].title + '\n';
-                    md += res[i].vuln_count + ' vulnerabilities affected\n'
-                    md += '#### Diagnosis:\n'
-                    md += res[i].diagnosis.replace(rex,' ') + '\n\n';
-
-                }
-                return {
-                    Type: entryTypes.note,
-                    Contents: res,
-                    ContentsFormat: formats.json,
-                    ReadableContentsFormat : formats.markdown,
-                    //EntryContext : context,
-                    HumanReadable: md
-                };
+            return searchFixes(args);
+        case 'kenna-update-asset':
+            return updateAsset(args.id, args.notes);
+        case 'kenna-update-vulnerability':
+            return updateVulnerability(args.id, args.notes, args.status);
         default:
     }
   type: javascript
@@ -184,10 +379,56 @@ script:
       - risk_accepted
       - false_positive
       description: Status of the vulnerability
+    outputs:
+    - contextPath: Kenna.AssetID
+      description: Asset ID related to vulnerability
+    - contextPath: Kenna.Connectors.DefinitionName
+      description: Connector definition name related to vulnerability
+    - contextPath: Kenna.Connectors.ID
+      description: Connector ID related to vulnerability
+    - contextPath: Kenna.Connectors.Name
+      description: Connector name related to vulnerability
+    - contextPath: Kenna.Connectors.Vendor
+      description: Connector vendor related to vulnerability
+    - contextPath: Kenna.CveID
+      description: CVE ID related to vulnerability
+    - contextPath: Kenna.FixID
+      description: Fix ID related to vulnerability
+    - contextPath: Kenna.Patch
+      description: There is patch related to vulnerability
+    - contextPath: Kenna.RiskMeterScore
+      description: Risk meter score of vulnerability
+    - contextPath: Kenna.ScannerVulnerabilities.ExternalID
+      description: Vulnerability scanner external ID
+    - contextPath: Kenna.ScannerVulnerabilities.Open
+      description: Vulnerability scanner is open
+    - contextPath: Kenna.ScannerVulnerabilities.Port
+      description: Vulnerability scanner port
+    - contextPath: Kenna.Score
+      description: Vulnerability score
+    - contextPath: Kenna.ServiceTicket.DueDate
+      description: 'Service ticket due date '
+    - contextPath: Kenna.ServiceTicket.ExternalIdentifier
+      description: Service ticket external identifier
+    - contextPath: Kenna.ServiceTicket.Status
+      description: Service ticket status
+    - contextPath: Kenna.ServiceTicket.TicketType
+      description: Service ticket type
+    - contextPath: Kenna.Severity
+      description: Vulnerability severity
+    - contextPath: Kenna.Status
+      description: Vulnerability status
+    - contextPath: Kenna.Threat
+      description: Vulnerability threat
+    - contextPath: Kenna.TopPriority
+      description: Vulnerability is top priority
     description: Filters vulnerabilities by a given set of parameters and returns
       the filtered vulnerabilities
   - name: kenna-get-connectors
     arguments: []
+    outputs:
+    - contextPath: Kenna.ConnectorsList.ID
+      description: Connector ID
     description: Returns all of your connectors
   - name: kenna-run-connector
     arguments:
@@ -219,3 +460,28 @@ script:
       description: Status of the vulnerability
     description: Filters fixes by a given set of vulnerability and asset parameters
       and returns the filtered fixes
+  - name: kenna-update-asset
+    arguments:
+    - name: id
+      required: true
+      description: The id of an Asset to be updated
+    - name: notes
+      required: true
+      description: Notes about an asset
+    description: Update a single asset's attributes by ID
+  - name: kenna-update-vulnerability
+    arguments:
+    - name: id
+      required: true
+      description: The id of an vulnerability to be updated
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      description: The status of a vulnerability
+    - name: notes
+      description: Notes about a vulnerability
+    description: Update a single vulnerability's attributes by ID
