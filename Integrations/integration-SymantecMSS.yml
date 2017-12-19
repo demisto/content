@@ -135,15 +135,49 @@ script:
 
         # Request events
         result = getIncidentsListRequest(time, srcIp, severities, maxIncidents)
-        hr = tableToMarkdown("Incidents", result)
+
+        # Set human readable
+        headers = [
+            'IncidentNumber',
+            "TimeCreated",
+            "Severity",
+            "Category",
+            "CountryOfOrigin",
+            "DaysSeenGlobally",
+            "SourceIPString",
+            "Correlation",
+            "HostNameList",
+            "IsInternalExternal",
+            "GlobalLookbackDays",
+            "LatestKeyEvent",
+            "CustomerSeverity",
+            "CountryCode",
+            "FirstSeenInLast30Days",
+            "DaysSeenInLast30Days",
+            "DestOrganizationName",
+            "SourceOrganizationName",
+            "FirstSeenGlobally",
+            "CountryName",
+            "UserList",
+            "Classification",
+            "UpdateTimestampGMT",
+            "PrevalenceGlobally"
+        ]
+        hr = tableToMarkdown("Incidents", result, headers)
+
+        # Set context
+        context = {
+            'Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)' : result
+        }
 
         demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr
-            })
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': result,
+            'EntryContext': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        })
 
 
     def getIncidentsListRequest(time, srcIp, severities, maxIncidents):
@@ -184,9 +218,9 @@ script:
         dictQuery = queryIncident(num=num, workflowQuery=True)
         dictWorkflowQuery = dictQuery['WorkFlowDetail']
 
-        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] if dictWorkflowQuery['Status'] else 'Closed' # required by api
-        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] if dictWorkflowQuery['Resolution'] else 'Resolved'  # required by api
-        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] if dictQuery['Severity'] else 'Informational' # required by api
+        status = demisto.args()['status'] if 'status' in demisto.args() else dictWorkflowQuery['Status'] or 'Closed' # required by api
+        resolution = demisto.args()['resolution'] if 'resolution' in demisto.args() else dictWorkflowQuery['Resolution'] or 'Resolved'  # required by api
+        severity = demisto.args()['severity'] if 'severity' in demisto.args() else dictQuery['Severity'] or 'Informational' # required by api
 
         ref = demisto.args()['reference'] if 'reference' in demisto.args() else None # optional
         comments = demisto.args()['comments'] if 'comments' in demisto.args() else None # optional
@@ -253,16 +287,98 @@ script:
         return res == "true"
 
 
-    def queryIncidentCmd(workflowQuery=False):
-        result = queryIncident(demisto.args()['number'], workflowQuery=workflowQuery)
-        # hr = tableToMarkdown("Incident query", result)
+    def queryIncidentCmd():
+        result = queryIncident(demisto.args()['number'], workflowQuery=True)
+
+        # Create minimal signature list
+        sigs = []
+        for sig in result["SignatureList"]["Signature"]:
+            sigDict = {}
+            sigDict["SourceIPString"] = sig["SourceIPString"]
+            sigDict["SignatureName"] = sig["SignatureName"]
+            sigDict["VendorSignature"] = sig["VendorSignature"]
+            sigDict["NumberBlocked"] = sig["NumberBlocked"]
+            sigDict["NumberNotBlocked"] = sig["NumberNotBlocked"]
+            sigs.append(sigDict)
+
+        # Set Human readable
+        flattenRelevantFields = [{
+            "Incident Number": result["IncidentNumber"],
+            "Time Created": result["TimeCreated"],
+            "Status": result["WorkFlowDetail"]["Status"] or "",
+            "Classification": result["Classification"],
+            "Assigned Person": result["WorkFlowDetail"]["AssignedPerson"] or "",
+            "Description": result["Description"],
+            "Analyst Assessment": result["AnalystAssessment"],
+            "Number of Analyzed Signatures": result["NumberOfAnalyzedSignatures"],
+            "Signaturtes": json.dumps(sigs) or "",
+            "Related Incidents": json.dumps(result["RelatedIncidents"]["IncidentNumber"]) or "",
+            "Comment": result["IncidentComments"]["IncidentComment"]["Comment"] or ""
+        }]
+        headers = [
+            "Incident Number",
+            "Time Created",
+            "Status",
+            "Classification",
+            "Assigned Person",
+            "Description",
+            "Analyst Assessment",
+            "Number of Analyzed Signatures",
+            "Signaturtes",
+            "Related Incidents",
+            "Comment"
+        ]
+        hr = tableToMarkdown("Incident query", flattenRelevantFields, headers)
+
+        # Set context
+        resultCtx = {
+            "IncidentNumber": result["IncidentNumber"],
+            "NumberOfAnalyzedSignatures": result["NumberOfAnalyzedSignatures"],
+            "SignatureList": {
+                "Signature": sigs
+            },
+            "TimeCreated": result["TimeCreated"],
+            "Classification": result["Classification"],
+            "Description": result["Description"],
+            "AnalystAssessment": result["AnalystAssessment"],
+            "CountryCode": result["CountryCode"],
+            "CountryName": result["CountryName"],
+            "RelatedTickets": result["RelatedTickets"],
+            "WorkFlowDetail": {
+                "Status": result["WorkFlowDetail"]["Status"],
+                "AssignedPerson": result["WorkFlowDetail"]["AssignedPerson"]
+            },
+            "IncidentComments": {
+                "IncidentComment": { # array?
+                    "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
+                    "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
+                    "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
+                }
+            },
+            "IncidentAttachmentItems": {
+                "IncidentAttachmentItem": { # array?
+                    "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
+                    "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
+                    "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
+                    "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
+                    "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"]
+                }
+            },
+            "RelatedIncidents": {
+                "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"] # array for sure
+            }
+        }
+        context = {
+            'Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)' : resultCtx
+        }
 
         demisto.results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
-            'Contents': result
-            # 'ReadableContentsFormat': formats['markdown'],
-            # 'HumanReadable': hr
+            'Contents': result,
+            'EntryContext': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
         })
 
 
@@ -329,7 +445,7 @@ script:
         exit(0)
 
     if demisto.command() == 'symantec-mss-get-incident':
-        queryIncidentCmd(True)
+        queryIncidentCmd()
         exit(0)
 
     if demisto.command() == 'symantec-mss-incidents-list':
