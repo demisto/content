@@ -1,0 +1,284 @@
+id: SymantecMSSTest
+version: 12
+name: SymantecMSSTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e8ad073e-45f1-4d5d-86a2-5a3f69af231d
+    type: start
+    task:
+      id: e8ad073e-45f1-4d5d-86a2-5a3f69af231d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 526d531e-5b08-4489-8b31-d941e3cee175
+    type: regular
+    task:
+      id: 526d531e-5b08-4489-8b31-d941e3cee175
+      version: -1
+      name: symantec-mss-incidents-list
+      description: Get a list of incidents
+      script: Symantec MSS|||symantec-mss-incidents-list
+      type: regular
+      iscommand: true
+      brand: Symantec MSS
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      max: {}
+      severities: {}
+      sourceIp: {}
+      time: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 33c8cbb8-ae53-44b5-8081-5dd100247b07
+    type: regular
+    task:
+      id: 33c8cbb8-ae53-44b5-8081-5dd100247b07
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a48e2b92-0d09-4ad2-87e8-02f73d646e96
+    type: regular
+    task:
+      id: a48e2b92-0d09-4ad2-87e8-02f73d646e96
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields:
+        simple: GlobalLookbackDays,DestOrganizationName,DaysSeenInLast30Days,UpdateTimestampGMT,CountryName,LatestKeyEvent,Correlation,DaysSeenGlobally,CountryCode,Classification,UserList,HostNameList,IsInternalExternal,SourceIPString,CountryOfOrigin,SourceOrganizationName,PrevalenceGlobally,FirstSeenInLast30Days,CustomerSeverity,FirstSeenGlobally,IncidentNumber,Severity,Category
+      humanReadableEntryId: {}
+      path:
+        simple: Symantec MSS.Incidents list
+      substring: {}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: cc5c3bfc-337c-41a3-861a-3367f2bf1737
+    type: regular
+    task:
+      id: cc5c3bfc-337c-41a3-861a-3367f2bf1737
+      version: -1
+      name: symantec-mss-get-incident
+      description: Query an incident by number
+      script: Symantec MSS|||symantec-mss-get-incident
+      type: regular
+      iscommand: true
+      brand: Symantec MSS
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      number:
+        simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: c83a1e0f-56ba-49ca-8ff8-612039672692
+    type: regular
+    task:
+      id: c83a1e0f-56ba-49ca-8ff8-612039672692
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 24d40e58-6dbd-482e-8753-38fb0379bda0
+    type: regular
+    task:
+      id: 24d40e58-6dbd-482e-8753-38fb0379bda0
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: CountryName,CountryCode,AnalyswtAssesment,Classification,IncidentComments,IncidentAttachmentItems,WorkflowDetail,SignatureList,RelatedIncidents,IncidentNumber,TimeCreated,RelatedTickets,Description
+      path:
+        simple: Symantec MSS.Inident query
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 042b5c8b-8821-42b1-8e99-2f2b7334a08c
+    type: regular
+    task:
+      id: 042b5c8b-8821-42b1-8e99-2f2b7334a08c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 54ec948f-07fe-467d-87fe-a3c36e008c06
+    type: regular
+    task:
+      id: 54ec948f-07fe-467d-87fe-a3c36e008c06
+      version: -1
+      name: symantec-mss-update-incident
+      description: Updates an incident's workflow by incident number
+      script: Symantec MSS|||symantec-mss-update-incident
+      type: regular
+      iscommand: true
+      brand: Symantec MSS
+    scriptarguments:
+      assignOrganization: {}
+      assignPerson: {}
+      comments: {}
+      number:
+        simple: "1"
+      reference: {}
+      resolution:
+        simple: Resolved
+      severity: {}
+      status:
+        simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
