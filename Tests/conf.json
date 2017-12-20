@@ -152,7 +152,10 @@
         },
         {
             "playbookID": "LanguageDetect-Test"
-        }
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
     ],
     "skipped": [
         {
