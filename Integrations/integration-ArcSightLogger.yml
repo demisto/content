@@ -618,10 +618,14 @@ script:
         Default is 100.
       defaultValue: "100"
     - name: dir
+      auto: PREDEFINED
+      predefined:
+      - "forward"
+      - "backward"
       description: The sort direction based on event time. forward/backward (default
         is forward).
     - name: fields
-      description: The list of fields in the order to show. If not specified, all
+      description: comma separated list of fields in the order to show. If not specified, all
         fields will be used
     description: Start a new search, wait until the search status is complete and
       then return the events. This command combine 3 commands - as-search, as-status,
@@ -681,10 +685,14 @@ script:
       required: true
       description: The Session ID returned from as-search command
     - name: dir
+      auto: PREDEFINED
+      predefined:
+      - "forward"
+      - "backward"
       description: The sort direction based on event time. forward/backward (default
         is forward).
     - name: fields
-      description: The list of fields in the order to show. If not specified, all
+      description: comma separated list of fields in the order to show. If not specified, all
         fields will be used
     - name: length
       description: The length or number of events to retrieve. Maximum number is 10000.
