@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: DomainReputation
 script: |-
-  return executeCommand(''domain'', {domain: args.domain});
+  return executeCommand('domain', {domain: args.domain});
 type: javascript
 tags:
 - enhancement

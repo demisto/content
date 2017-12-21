@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: EmailReputation
 script: |-
-  return executeCommand(''email'', {email: args.email});
+  return executeCommand('email', {email: args.email});
 type: javascript
 tags:
 - enhancement
