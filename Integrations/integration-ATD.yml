@@ -566,4 +566,3 @@ script:
     arguments: []
     description: Returns a logon result for ATD
 hidden: false
-releaseNotes: "Some more complex fields are now formatted for better readability."
