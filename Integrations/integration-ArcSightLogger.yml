@@ -319,7 +319,7 @@ script:
             args.offset,
             args.dir,
             args.length,
-            args.field_summary);
+            args.fields);
         var entry = {
             Type: entryTypes.note,
             Contents: events,
@@ -352,9 +352,8 @@ script:
             bodyArgs.length = parseInt(length);
         }
         if (fields) {
-            bodyArgs.fields = fields;
+            bodyArgs.fields = fields.split(",");
         }
-
         var resBody = httpPost('server/search/events', null, bodyArgs);
         var events = xmlObjectToJSON(resBody);
         return events;
