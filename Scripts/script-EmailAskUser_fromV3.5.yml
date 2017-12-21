@@ -12,7 +12,7 @@ script: |-
   }
 
   // Get entitlement
-  res = executeCommand('addEntitlement', {persistent: args.persistentEntitlement});
+  res = executeCommand('addEntitlement', {'persistent': true, 'replyEntriesTag': args.replyEntriesTag})
   if (res[0].Type === entryTypes.error) {
       return res;
   }
@@ -130,10 +130,6 @@ args:
   defaultValue: text
 - name: replyAddress
   description: Address of reply for html links
-- name: persistentEntitlement
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Indicates whether to use persistent(use 'true') or one-time(use 'false') key used by external users to add artifacts to the war room via e-mail
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
 scripttarget: 0
