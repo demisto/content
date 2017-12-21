@@ -37,7 +37,7 @@ script: |-
       sys.exit(0)
   allowReply = demisto.get(demisto.args(), 'allowReply')
   if allowReply:
-      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistentEntitlement')})
+      res = demisto.executeCommand('addEntitlement', {'persistent': true, 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag'})
       if isError(res[0]):
           demisto.results(res)
           sys.exit(0)
@@ -87,12 +87,8 @@ args:
 - name: request
   description: The contents of the request from the manager. Will be added below the
     body. If none is provided, incident details will be taken.
-- name: persistentEntitlement
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Indicates whether to use persistent(use 'true') or one-time(use 'false') key used by external users to add artifacts to the war room via e-mail
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
 scripttarget: 0
 dependson:
   must:
