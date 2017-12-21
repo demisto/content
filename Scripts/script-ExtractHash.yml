@@ -56,4 +56,3 @@ outputs:
 - contextPath: File.SHA256
   description: Extracted SHA256
 scripttarget: 0
-releaseNotes: "-"
