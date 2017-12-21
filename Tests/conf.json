@@ -152,7 +152,11 @@
         },
         {
             "playbookID": "LanguageDetect-Test"
-        }
+        },
+        {
+            "integrations": "ArcSight Logger",
+            "playbookID": "ArcSight Logger test",
+        },
     ],
     "skipped": [
         {
