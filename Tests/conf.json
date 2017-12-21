@@ -131,18 +131,14 @@
         },
         {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook"
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
         },
         {
             "playbookID": "listExecutedCommands-Test"
-        },
-        {
-            "integrations": "icebrg",
-            "playbookID": "Icebrg Test",
-            "timeout" : 500
         },
         {
             "integrations": "Service Manager",
@@ -155,13 +151,22 @@
             "timeout": 300
         },
         {
-            "playbookID": "langDetect-Test"
+            "playbookID": "LanguageDetect-Test"
         }
     ],
     "skipped": [
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
+        },
+        {
+            "integrations": "icebrg",
+            "playbookID": "Icebrg Test",
+            "timeout" : 500
+        },
+        {
+            "integrations": "Symantec MSS",
+            "playbookID": "SymantecMSSTest"
         }
     ]
 }

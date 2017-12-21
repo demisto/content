@@ -300,7 +300,8 @@ def createFileReleaseNotes(fileName, deleteFilePath):
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = "## Demisto Content Release Notes for version " + version + " (" + assetId + ")" + "\n\n" + res
+    release_notes = "## Demisto Content Release Notes for version " + version + " (" + assetId + ")\n"
+    release_notes += "##### Published at %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),
