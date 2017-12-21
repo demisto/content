@@ -423,12 +423,14 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: cf550206-433a-4d9d-8e30-3ef9de9c4639
+    taskid: c4b5f8e7-8133-4122-8e88-ea69e15f0803
     type: regular
     task:
-      id: cf550206-433a-4d9d-8e30-3ef9de9c4639
+      id: c4b5f8e7-8133-4122-8e88-ea69e15f0803
       version: -1
       name: Set severity to "Critical"
+      description: Set incident's severity to Critical - Some entity is part of a
+        critical group
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -611,12 +613,13 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 542c81cd-988b-43f2-88d0-3711be3c898e
+    taskid: f28ae149-d9e7-4f6f-8858-ea4634b41465
     type: condition
     task:
-      id: 542c81cd-988b-43f2-88d0-3711be3c898e
+      id: f28ae149-d9e7-4f6f-8858-ea4634b41465
       version: -1
       name: Do we have the Endpoint AD groups?
+      description: Check if the endpoint has AD groups in context
       scriptName: Exists
       type: condition
       iscommand: false
@@ -637,12 +640,13 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: dcf973e9-e6d1-4c1f-849e-09565ffbfc78
+    taskid: 5d855f43-e087-406d-8578-b12f9d929c69
     type: condition
     task:
-      id: dcf973e9-e6d1-4c1f-849e-09565ffbfc78
+      id: 5d855f43-e087-406d-8578-b12f9d929c69
       version: -1
       name: Do we have the username AD groups?
+      description: Check if the user has AD groups in context
       scriptName: Exists
       type: condition
       iscommand: false
