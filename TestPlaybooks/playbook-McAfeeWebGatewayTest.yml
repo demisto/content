@@ -1,5 +1,5 @@
 id: McAfeeWebGatewayTest
-version: 32
+version: 38
 name: McAfeeWebGatewayTest
 starttaskid: "0"
 tasks:
@@ -39,8 +39,9 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
     view: |-
       {
         "position": {
@@ -64,7 +65,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      list_id: ${MWG.Lists.[0].Name}
+      list_id:
+        simple: ${MWG.Lists.[0].Name}
     view: |-
       {
         "position": {
@@ -88,7 +90,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      outputformat: json
+      outputformat:
+        simple: json
     view: |-
       {
         "position": {
@@ -112,20 +115,22 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      all: ""
-      attributes: ""
-      customFieldData: ""
-      customFieldType: ""
-      desc: ""
-      description: ""
-      dn: ""
-      entryIDs: ""
-      headers: ""
-      key: ""
-      name: ""
-      nestedSearch: ""
-      path: MWG.ListEntries.ListID
-      value: ${MWG.Lists.[0].Name}
+      all: {}
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      desc: {}
+      description: {}
+      dn: {}
+      entryIDs: {}
+      headers: {}
+      key: {}
+      name: {}
+      nestedSearch: {}
+      path:
+        simple: MWG.ListEntries.ListID
+      value:
+        simple: ${MWG.Lists.[0].Name}
     view: |-
       {
         "position": {
@@ -149,7 +154,7 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      list_id: ""
+      list_id: {}
     view: |-
       {
         "position": {
@@ -173,7 +178,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      list_id: ${MWG.Lists.[5].Name}
+      list_id:
+        simple: ${MWG.Lists.[5].Name}
     view: |-
       {
         "position": {
@@ -198,8 +204,10 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      entry_pos: "0"
-      list_id: com.scur.type.applcontrol.261
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: com.scur.type.applcontrol.261
     view: |-
       {
         "position": {
@@ -223,9 +231,11 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      key: ""
-      path: MWG.ListEntries.Name
-      value: Zenno
+      key: {}
+      path:
+        simple: MWG.ListEntries.Name
+      value:
+        simple: Zenno
     view: |-
       {
         "position": {
@@ -235,10 +245,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: d1f9e239-6a8d-4750-80cd-ade48ea64232
+    taskid: 7a538336-2c85-4474-8170-dedf4368485f
     type: regular
     task:
-      id: d1f9e239-6a8d-4750-80cd-ade48ea64232
+      id: 7a538336-2c85-4474-8170-dedf4368485f
       version: -1
       name: Insert a new entry
       script: McAfee Web Gateway|||mwg-insert-entry
@@ -247,12 +257,15 @@ tasks:
       brand: McAfee Web Gateway
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
     scriptarguments:
-      description: ""
-      entry_pos: "0"
-      list_id: com.scur.type.string.263
-      name: ${incident.created}
+      description: {}
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: com.scur.type.string.263
+      name:
+        simple: ${incident.created}
     view: |-
       {
         "position": {
@@ -273,13 +286,15 @@ tasks:
       iscommand: true
       brand: McAfee Web Gateway
     scriptarguments:
-      entry_pos: "0"
-      list_id: com.scur.type.string.263
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: com.scur.type.string.263
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
   "15":
@@ -298,8 +313,9 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
     view: |-
       {
         "position": {
@@ -323,7 +339,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      list_id: com.scur.type.string.263
+      list_id:
+        simple: com.scur.type.string.263
     view: |-
       {
         "position": {
@@ -331,12 +348,39 @@ tasks:
           "y": 1770
         }
       }
+  "17":
+    id: "17"
+    taskid: 56286803-2f67-4929-81c0-efce2885c718
+    type: regular
+    task:
+      id: 56286803-2f67-4929-81c0-efce2885c718
+      version: -1
+      name: Wait a couple of seconds
+      description: let the "insert" command sync and fully release the mutex on the
+        list entry before removing it.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2165,
+        "height": 2340,
         "width": 380,
         "x": 50,
         "y": 50
@@ -344,3 +388,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"
