@@ -11,3 +11,4 @@ dxlclient
 dxlmarclient
 dxltieclient
 lxml
+langdetect
