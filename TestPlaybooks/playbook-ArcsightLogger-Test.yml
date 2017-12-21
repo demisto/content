@@ -1,6 +1,6 @@
-id: b0e52187-c83e-4c52-8c6d-14c560f00ce6
+id: ArcSight Logger test
 version: -1
-name: ArcSight Logger test playbook
+name: ArcSight Logger test
 starttaskid: "0"
 tasks:
   "0":
