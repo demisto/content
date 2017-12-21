@@ -155,7 +155,7 @@
         },
         {
             "playbookID": "TestParseCSV"
-        },
+        }
     ],
     "skipped": [
         {
