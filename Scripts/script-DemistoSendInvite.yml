@@ -59,4 +59,3 @@ dependson:
   - demisto-api-post
   - demisto-api-get
 releaseNotes: "-"
-
