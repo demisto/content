@@ -297,7 +297,7 @@ script:
                 return resp;
             }
             break;
-        case 'okta-deactivate-user':
+        case 'okta-unlock-user':
             var userId = getUserId(args, params);
             var res = post(args, params, 'api/v1/users/' + userId + '/lifecycle/unlock');
             var md = "### Okta user unlocked: " + args.username + '\n';
