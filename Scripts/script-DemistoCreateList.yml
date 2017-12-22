@@ -39,4 +39,4 @@ scripttarget: 0
 dependson:
   must:
   - demisto-api-post
-  
+releaseNotes: "-"
