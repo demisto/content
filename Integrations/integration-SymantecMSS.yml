@@ -1,0 +1,549 @@
+commonfields:
+  id: Symantec MSS
+  version: -1
+name: Symantec MSS
+display: Symantec MSS
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: Leverage the power of Symantec Managed Security Services for continual
+  threat monitoring and customized guidance 24x7
+detaileddescription: |-
+  * Export a Production certificate that enables you to access your organization’s information in SWS (https://api.monitoredsecurity.com/SWS/) in .p12 format
+
+  * Encode the .p12 certificate file using any File to Base64 Encoder and paste the encoded string in the "Certificate" field
+configuration:
+- display: Server URL
+  name: server
+  defaultvalue: https://api.monitoredsecurity.com
+  type: 0
+  required: true
+- display: Certificate (Base64 encoded)
+  name: certificate
+  defaultvalue: ""
+  type: 12
+  required: true
+- display: Certificate Passphrase
+  name: passphrase
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |
+    import tempfile
+    import ssl
+    import OpenSSL.crypto
+    import requests
+    import contextlib
+    import xml.etree.ElementTree
+    import base64
+    import re
+    import datetime
+
+    # CONSTANTS
+    SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
+    SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
+    FETCH_MAX_INCIDENTS = 500
+    FETCH_SEVERITIES = "Emergency,Critical"
+
+    # PREREQUISITES
+    @contextlib.contextmanager
+    def pfx_to_pem(pfx, pfx_password):
+        """ Decrypts the .pfx file to be used with requests. """
+        with tempfile.NamedTemporaryFile(suffix=".pem") as t_pem:
+            f_pem = open(t_pem.name, "wb")
+            p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password)
+            f_pem.write(OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_PEM, p12.get_privatekey()))
+            f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, p12.get_certificate()))
+            ca = p12.get_ca_certificates()
+            if ca is not None:
+                for cert in ca:
+                    f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, cert))
+            f_pem.close()
+            yield t_pem.name
+
+
+    def load_server_url():
+        """ Cleans and loads the server url from the configuration """
+        url = demisto.params()["server"]
+        url = re.sub("/[\/]+$/", "", url)
+        url = re.sub("\/$", "", url)
+        return url
+
+
+    def load_certificate():
+        """ Loads the certificate and passphrase from the configuration """
+        cert = demisto.params()["certificate"]
+        cert = base64.b64decode(cert)
+        passphrase = demisto.params()["passphrase"] if "passphrase" in demisto.params() else ""
+        return cert, passphrase
+
+
+    def load_proxy():
+        """ Loads the system configured proxy if enabled in configuration """
+        proxy = {}
+        if demisto.params()["proxy"]:
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+
+    # GLOBALS
+    SERVER_URL = load_server_url()
+    CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
+    PROXY = load_proxy()
+
+    # HELPERS
+    def api_call(body, headers):
+        """ Makes an HTTP Post to the SWS incidents API using the configured certificate and proxy """
+        with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
+            res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers, proxies=PROXY)
+            if res.status_code < 200 or res.status_code >= 300:
+                raise Exception("Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(res.headers))
+        return xml.etree.ElementTree.fromstring(res.content)
+
+
+    def event_to_incident(event):
+        """ Converts a Symantec event to a Demisto incident """
+        incident = {}
+        incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
+        incident["occurred"] = event["TimeCreated"]
+        incident["rawJSON"] = json.dumps(event)
+
+        labels = []
+        incident["labels"] = labels
+        return incident
+
+
+    def isoformat(date):
+        """ Convert a datetime object to asmx ISO format """
+        return date.isoformat()[:-3] + "Z"
+
+
+    # FUNCTIONS
+    def test():
+        now = datetime.datetime.utcnow()
+        get_incidents_list_request(isoformat(now), None, None, 1)
+        demisto.results("ok")
+
+
+    def fetch_incidents():
+        t = datetime.datetime.utcnow()
+        now = isoformat(t)
+
+        lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
+        if len(lastRun) == 0:
+            t = t - timedelta(minutes=10)
+            lastRun = isoformat(t)
+
+        incidents = []
+        events = get_incidents_list_request(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES, maxIncidents=FETCH_MAX_INCIDENTS)
+        for event in events:
+            inc = event_to_incident(event)
+            incidents.append(inc)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({"time": now})
+
+
+    def get_incidents_list(time):
+        srcIp = demisto.args()["sourceIp"] if "sourceIp" in demisto.args() else None
+        severities = demisto.args()["severities"] if "severities" in demisto.args() else None
+        maxIncidents = demisto.args()["max"] if "max" in demisto.args() else None
+
+        # Request events
+        result = get_incidents_list_request(time, srcIp, severities, maxIncidents)
+
+        # Set human readable
+        headers = [
+            "IncidentNumber",
+            "TimeCreated",
+            "Severity",
+            "Category",
+            "CountryOfOrigin",
+            "DaysSeenGlobally",
+            "SourceIPString",
+            "Correlation",
+            "HostNameList",
+            "IsInternalExternal",
+            "GlobalLookbackDays",
+            "LatestKeyEvent",
+            "CustomerSeverity",
+            "CountryCode",
+            "FirstSeenInLast30Days",
+            "DaysSeenInLast30Days",
+            "DestOrganizationName",
+            "SourceOrganizationName",
+            "FirstSeenGlobally",
+            "CountryName",
+            "UserList",
+            "Classification",
+            "UpdateTimestampGMT",
+            "PrevalenceGlobally"
+        ]
+        hr = tableToMarkdown("Incidents", result, headers)
+
+        # Set context
+        context = {
+            "Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)" : result
+        }
+
+        demisto.results({
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
+        })
+
+
+    def get_incidents_list_request(time, srcIp, severities, maxIncidents):
+        srcIp = "<SourceIP>%s</SourceIP>" % srcIp if srcIp else ""
+        severities = "<Severity>%s</Severity>" % severities if severities else ""
+        maxIncidents = "<MaxIncidents>%s</MaxIncidents>" % maxIncidents if maxIncidents else ""
+
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentGetList xmlns="https://www.monitoredsecurity.com/">
+                            <StartTimeStampGMT>%s</StartTimeStampGMT>
+                            %s
+                            %s
+                            %s
+                            </IncidentGetList>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (time, srcIp, severities, maxIncidents)
+        headers = {
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
+        }
+
+        root = api_call(body=body, headers=headers)
+        incidentNodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
+        result = []
+        for incident in incidentNodes:
+            stringIncidentXml = xml.etree.ElementTree.tostring(incident)
+            stringIncidentJson = xml2json(stringIncidentXml)
+            dictIncident = json.loads(stringIncidentJson)["SecurityIncidentSummary"]
+            result.append(dictIncident)
+        return result
+
+
+    def update_incident():
+        # Fill in required fields from the existing incident (for the api call)
+        num = demisto.args()["number"]
+        dictQuery = query_incident(num=num, workflowQuery=True)
+        dictWorkflowQuery = dictQuery["WorkFlowDetail"]
+
+        # Use the supplied params, filling the missing ones from the existing workflow if possible, if not possible - require from user
+        status = demisto.args()["status"] if "status" in demisto.args() else dictWorkflowQuery["Status"]
+        if not status:
+            raise Exception("No current status, please supply a status parameter")
+
+        resolution = demisto.args()["resolution"] if "resolution" in demisto.args() else dictWorkflowQuery["Resolution"]
+        if not resolution:
+            raise Exception("No current resolution, please supply a resolution parameter")
+
+        severity = demisto.args()["severity"] if "severity" in demisto.args() else dictQuery["Severity"]
+        if not severity:
+            raise Exception("No current severity, please supply a severity parameter")
+
+        # Optional params
+        ref = demisto.args()["reference"] if "reference" in demisto.args() else None
+        comments = demisto.args()["comments"] if "comments" in demisto.args() else None
+
+        # Only one of them should exist
+        assignToOrg = demisto.args()["assignOrganization"] if "assignOrganization" in demisto.args() else None
+        assignToPerson = demisto.args()["assignPerson"] if "assignPerson" in demisto.args() else None
+
+        if assignToOrg and assignToPerson:
+            raise Exception("Unable to assign to both organization and a person, please choose only one")
+
+        if not assignToOrg and not assignToPerson:
+            if "AssignedOrganization" in dictWorkflowQuery and dictWorkflowQuery["AssignedOrganization"]:
+                assignToOrg = dictWorkflowQuery["AssignedOrganization"]
+            elif "AssignedPerson" in dictWorkflowQuery and dictWorkflowQuery["AssignedPerson"]:
+                assignToPerson = dictWorkflowQuery["AssignedPerson"]
+
+        # Make the request with the params
+        success = update_incident_request(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+
+        # Create result
+        msg = "Updated successfully" if success else "Update failed"
+        result = [{ "Update status": msg }]
+        hr = tableToMarkdown("", result)
+
+        demisto.results({
+            "ContentsFormat": formats["text"],
+            "Type": entryTypes["note"],
+            "Contents": msg,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
+        })
+
+
+    def update_incident_request(num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments):
+        # Create optional parameter tags if needed
+        ref = "<Reference>%s</Reference>" % (ref) if ref else ""
+        assignToOrg = "<AssignedToOrganiztion>%s</AssignedToOrganiztion>" % (assignToOrg) if assignToOrg else ""
+        assignToPerson = "<AssignedToPerson>%s</AssignedToPerson>" % (assignToPerson) if assignToPerson else ""
+        comments = "<Comments>%s</Comments>" % (comments) if comments else ""
+
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                      <soap12:Body>
+                        <UpdateIncidentWorkflow xmlns="https://www.monitoredsecurity.com/">
+                          <IncidentNumber>%s</IncidentNumber>
+                          <Status>%s</Status>
+                          <Resolution>%s</Resolution>
+                          %s
+                          <Severity>%s</Severity>
+                          %s
+                          %s
+                          %s
+                        </UpdateIncidentWorkflow>
+                      </soap12:Body>
+                    </soap12:Envelope>""" % (num, status, resolution, ref, severity, assignToOrg, assignToPerson, comments)
+        headers = {
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
+        }
+
+        res = api_call(body=body, headers=headers)
+        resStringXml = xml.etree.ElementTree.tostring(res)
+        resStringJson = xml2json(resStringXml)
+        dictRes = json.loads(resStringJson)
+        res = dictRes["Envelope"]["Body"]["UpdateIncidentWorkflowResponse"]["UpdateIncidentWorkflowResult"]
+        return res == "true"
+
+
+    def query_incident_cmd():
+        result = query_incident(demisto.args()["number"], workflowQuery=True)
+
+        # Create minimal signature list
+        sigs = []
+        for sig in result["SignatureList"]["Signature"]:
+            sigDict = {}
+            sigDict["SourceIPString"] = sig["SourceIPString"]
+            sigDict["SignatureName"] = sig["SignatureName"]
+            sigDict["VendorSignature"] = sig["VendorSignature"]
+            sigDict["NumberBlocked"] = sig["NumberBlocked"]
+            sigDict["NumberNotBlocked"] = sig["NumberNotBlocked"]
+            sigs.append(sigDict)
+
+        # Set Human readable
+        flattenRelevantFields = [{
+            "Incident Number": result["IncidentNumber"],
+            "Time Created": result["TimeCreated"],
+            "Status": result["WorkFlowDetail"]["Status"] or "",
+            "Classification": result["Classification"],
+            "Assigned Person": result["WorkFlowDetail"]["AssignedPerson"] or "",
+            "Description": result["Description"],
+            "Analyst Assessment": result["AnalystAssessment"],
+            "Number of Analyzed Signatures": result["NumberOfAnalyzedSignatures"],
+            "Signaturtes": json.dumps(sigs) or "",
+            "Related Incidents": json.dumps(result["RelatedIncidents"]["IncidentNumber"]) or "",
+            "Comment": result["IncidentComments"]["IncidentComment"]["Comment"] or ""
+        }]
+        headers = [
+            "Incident Number",
+            "Time Created",
+            "Status",
+            "Classification",
+            "Assigned Person",
+            "Description",
+            "Analyst Assessment",
+            "Number of Analyzed Signatures",
+            "Signaturtes",
+            "Related Incidents",
+            "Comment"
+        ]
+        hr = tableToMarkdown("Incident query", flattenRelevantFields, headers)
+
+        # Set context
+        resultCtx = {
+            "IncidentNumber": result["IncidentNumber"],
+            "NumberOfAnalyzedSignatures": result["NumberOfAnalyzedSignatures"],
+            "SignatureList": {
+                "Signature": sigs
+            },
+            "TimeCreated": result["TimeCreated"],
+            "Classification": result["Classification"],
+            "Description": result["Description"],
+            "AnalystAssessment": result["AnalystAssessment"],
+            "CountryCode": result["CountryCode"],
+            "CountryName": result["CountryName"],
+            "RelatedTickets": result["RelatedTickets"],
+            "WorkFlowDetail": {
+                "Status": result["WorkFlowDetail"]["Status"],
+                "AssignedPerson": result["WorkFlowDetail"]["AssignedPerson"]
+            },
+            "IncidentComments": {
+                "IncidentComment": {
+                    "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
+                    "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
+                    "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
+                }
+            },
+            "IncidentAttachmentItems": {
+                "IncidentAttachmentItem": {
+                    "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
+                    "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
+                    "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
+                    "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
+                    "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"]
+                }
+            },
+            "RelatedIncidents": {
+                "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"]
+            }
+        }
+        context = {
+            "Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)" : resultCtx
+        }
+
+        demisto.results({
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr
+        })
+
+
+    def query_incident(num, workflowQuery=False):
+        query = query_incident_request(num) if not workflowQuery else query_incident_workflow_request(num)
+        return query
+
+
+    def query_incident_request(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
+        }
+
+        query = api_call(body=body, headers=headers)
+        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
+        stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
+        stringQueryJson = xml2json(stringQueryXml)
+        dictQuery = json.loads(stringQueryJson)["SecurityIncident"]
+        return dictQuery
+
+
+    def query_incident_workflow_request(num):
+        body = """<?xml version="1.0" encoding="utf-8"?>
+                    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                        <soap12:Body>
+                            <IncidentWorkflowQuery xmlns="https://www.monitoredsecurity.com/">
+                                <IncidentNumber>%s</IncidentNumber>
+                            </IncidentWorkflowQuery>
+                        </soap12:Body>
+                    </soap12:Envelope>""" % (num)
+        headers = {
+            "content-Type": "application/soap+xml; charset=utf-8",
+            "content-Length": str(len(body))
+        }
+
+        query = api_call(body=body, headers=headers)
+        queryNode = query.find(SECURITY_INCIDENT_NODE_XPATH)
+        stringQueryXml = xml.etree.ElementTree.tostring(queryNode)
+        stringQueryJson = xml2json(stringQueryXml)
+        dictQuery = json.loads(stringQueryJson)["SecurityIncident"]
+        return dictQuery
+
+
+    # EXECUTION
+    if demisto.command() == "fetch-incidents":
+        fetch_incidents()
+        exit(0)
+
+    if demisto.command() == "test-module":
+        test()
+        exit(0)
+
+    if demisto.command() == "symantec-mss-update-incident":
+        update_incident()
+        exit(0)
+
+    if demisto.command() == "symantec-mss-get-incident":
+        query_incident_cmd()
+        exit(0)
+
+    if demisto.command() == "symantec-mss-incidents-list":
+        time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
+        get_incidents_list(time)
+        exit(0)
+  type: python
+  commands:
+  - name: symantec-mss-update-incident
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    - name: status
+      description: To change the incident status
+    - name: resolution
+      description: To change the incident status resolution
+    - name: reference
+      description: Update reference comments
+    - name: severity
+      description: To change the incident severity
+    - name: assignOrganization
+      description: 'To change incident assignment to organization (Note: assign to
+        an organization OR a person is required)'
+    - name: assignPerson
+      description: 'To change incident assignment to person. (Note: assign to an organization
+        OR a person is required)'
+    - name: comments
+      description: Incident update comment
+    description: Updates an incident's workflow by incident number
+  - name: symantec-mss-get-incident
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    description: Query an incident by number
+  - name: symantec-mss-incidents-list
+    arguments:
+    - name: time
+      default: true
+      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z).
+        If not supplied, defaults to the last 24 hours
+    - name: severities
+      description: Comma-delimited list of valid Security Incident severities set
+        by MSS. If not supplied, all severities are returned
+    - name: sourceIp
+      description: Comma-delimited list of valid Source IP Addresses. If not supplied,
+        all addresses are returned
+    - name: max
+      description: The maximum number of incidents to return. If not supplied,  all
+        incidents are returned
+    description: Get a list of incidents
+  dockerimage: demisto/symantec_mss
+  isfetch: true
