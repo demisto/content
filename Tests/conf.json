@@ -156,7 +156,7 @@
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test",
-        },
+        }
     ],
     "skipped": [
         {
