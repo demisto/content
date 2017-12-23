@@ -8,9 +8,10 @@ script: |-
   res = True
   for inc in demisto.incidents():
       host = ''
-      for t in inc['labels']:
-          if t['type'] == 'System':
-              host = t['value']
+      if inc['labels']:
+          for t in inc['labels']:
+              if t['type'] == 'System':
+                  host = t['value']
       if len(host) > 0:
           sameIncidents = demisto.executeCommand("getIncidents",
               {"query":"labels.value:\""+host+"\"  and labels.type:System"})
@@ -18,6 +19,7 @@ script: |-
               # if found sameIncidents found, add this incident data to war room
               sameIncidentsCount = sameIncidents[0]['Contents']['total']
               if sameIncidentsCount > 0:
+                  res = False
                   otherIncidents = sameIncidents[0]['Contents']['data']
                   entries = []
                   entries.append({'Contents': "Duplicate incident from crowdstrike: "+inc['name']})
