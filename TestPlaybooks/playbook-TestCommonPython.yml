@@ -1,14 +1,14 @@
 id: TestCommonPython
-version: 3
+version: 4
 name: TestCommonPython
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83976a03-17b3-4637-83a2-dc8a789944e8
+    taskid: c3abef67-7252-42da-8ebb-f76e0f0c8620
     type: start
     task:
-      id: 83976a03-17b3-4637-83a2-dc8a789944e8
+      id: c3abef67-7252-42da-8ebb-f76e0f0c8620
       version: -1
       name: ""
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+    taskid: 2f964c10-f69d-45a8-880c-c7094d412816
     type: regular
     task:
-      id: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+      id: 2f964c10-f69d-45a8-880c-c7094d412816
       version: -1
       name: TestXml2JSON
       description: 'Tests for common functions xml2json and json2xml '
@@ -36,6 +36,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     view: |-
       {
         "position": {
@@ -43,14 +46,33 @@ tasks:
           "y": 230
         }
       }
+  "2":
+    id: "2"
+    taskid: 9184e0ff-2492-4d46-8b65-94591120a37e
+    type: regular
+    task:
+      id: 9184e0ff-2492-4d46-8b65-94591120a37e
+      version: -1
+      name: TestDQ
+      scriptName: TestDQ
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 439,
+          "y": 431
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
+        "height": 476,
+        "width": 391,
+        "x": 439,
         "y": 50
       }
     }
