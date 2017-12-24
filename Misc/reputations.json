@@ -121,6 +121,14 @@
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
       "enhancementScriptNames": ["cveSearch"]
+    },
+    {
+      "id": "userRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "user",
+      "enhancementScriptNames": []
     }
   ]
 }
