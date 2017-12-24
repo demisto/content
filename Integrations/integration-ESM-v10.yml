@@ -96,7 +96,7 @@ script:
 
         # body
         for row in rows:
-            md = md + ' | '.join(row['values']) + '\n'
+            md = md + ' | '.join(r.replace('|', '\\|') for r in row['values']) + '\n'
 
         return md
 
@@ -177,7 +177,7 @@ script:
                 except Exception as e:
                     demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e), ))
 
-        def cmdquery(self, cmd, query=None, no_answer=False):
+        def cmdquery(self, cmd, query=None, no_answer=False, no_validation=False):
             """ Send query to ESM, return JSON result """
             self.cmd = cmd
             self.query = query
@@ -185,19 +185,20 @@ script:
             self.result = requests.post(self.url + self.cmd,
                                         headers=self.session_headers,
                                         data=self.query, verify=verify)
-            if no_answer:
-                if self.result.status_code != 200:
-                    throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
-            else:
-                try:
-                    res = self.result.json()
-                    if not isZeroVersion:
-                        res = res['return']
-                    return res
-                except:
-                    throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
+            if not no_validation:
+                if no_answer:
+                    if self.result.status_code != 200:
+                        throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
+                else:
+                    try:
+                        res = self.result.json()
+                        if not isZeroVersion:
+                            res = res['return']
+                        return res
+                    except:
+                        throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
 
-        def execute_query(self, time_range, custom_start, custom_end, filters, query_type):
+        def execute_query(self, time_range, custom_start, custom_end, filters, fields, query_type):
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
@@ -205,13 +206,17 @@ script:
             if (time_range == 'CUSTOM'):
                cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
 
-            query = json.dumps({
+            q = {
                 'config': {
                     'timeRange': time_range,
-                    'filters': filters
+                    'filters': filters,
                 }
-            })
+            }
+            if fields is not None:
+                q['config']['fields'] = json.loads(fields)
+            query = json.dumps(q)
 
+            demisto.log(query)
             res = self.cmdquery(cmd, query)
             return res['resultID']
 
@@ -249,10 +254,10 @@ script:
             res = self.cmdquery(cmd, query)
             return res
 
-        def search(self, time_range, custom_start, custom_end, filters, query_type, max_wait):
+        def search(self, time_range, custom_start, custom_end, filters, fields, query_type, max_wait):
             self.login()
             # execute command
-            resultID = self.execute_query(time_range, custom_start, custom_end, filters, query_type)
+            resultID = self.execute_query(time_range, custom_start, custom_end, filters, fields, query_type)
 
             # wait for result to be ready
             self.wait_for_results(resultID, max_wait)
@@ -310,6 +315,24 @@ script:
                 del alarm["id"]
 
             return res
+        def update_alarms_status(self, alarm_ids):
+            cmd = 'alarm%(action)sTriggeredAlarm' % (action, )
+            query = json.dumps({'triggeredIds' : [{'value' : int(i)} for i in alarm_ids]})
+
+            self.login()
+
+            # the command return an error for a list of alarm ids however is execute the update successfully.
+            self.cmdquery(cmd, query, no_validation=True)
+            return 'Alarms has been %sd.' % (action, )
+
+        def acknowledge_alarms(self, alarm_ids):
+            return self.update_alarms_status('Acknowledge', alarm_ids)
+
+        def unacknowledge_alarms(self, alarm_ids):
+            return self.update_alarms_status('Unacknowledge', alarm_ids)
+
+        def delete_alarms(self, alarm_ids):
+            return self.update_alarms_status('Delete', alarm_ids)
 
         # case statuses commands
         def add_case_status(self, name, should_show_in_case_pane):
@@ -711,7 +734,8 @@ script:
             'EntryContext': context
        }
 
-    esm = NitroESM(demisto.params()['ip']+':'+demisto.params()['port'], demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
+    esm = NitroESM(demisto.params()['ip'] + ':' + demisto.params()['port'], demisto.params()['credentials']['identifier'],
+        demisto.params()['credentials']['password'])
     final_result = 'No result set'
 
     if demisto.command() == 'fetch-incidents':
@@ -781,7 +805,8 @@ script:
             demisto.get(args, 'timeRange'),
             demisto.get(args, 'customStart'),
             demisto.get(args, 'customEnd'),
-            json.loads(demisto.get(args, 'filters')),
+            json.loads(args.get('filters')),
+            args.get('fields'),
             demisto.get(args, 'queryType') or 'EVENT',
             demisto.get(args, 'maxWait') or 30
             )
@@ -877,6 +902,21 @@ script:
         )
         final_result = alarms_to_entry(res)
 
+    elif demisto.command() == 'esm-acknowledge-alarms':
+        args = demisto.args()
+        res = esm.acknowledge_alarms(argToList(demisto.get(args, 'alarmIds')))
+        final_result = res
+
+    elif demisto.command() == 'esm-blacklists':
+        pass
+
+    elif demisto.command() == 'esm-get-ioc-data':
+        pass
+
+    elif demisto.command() == 'esm-filters':
+        pass
+
+
     esm.logout()
     demisto.results(final_result)
     sys.exit(0)
@@ -887,10 +927,8 @@ script:
     description: Get all fields that can be used in query filters, with type information
       for each field
   - name: esm-search
-    description: Search query against ESM database
     arguments:
     - name: timeRange
-      description: Time range of data to fetch
       required: true
       auto: PREDEFINED
       predefined:
@@ -930,12 +968,13 @@ script:
       description: if timeRange is CUSTOM, start time for the time range (e.g. 2017-06-01T12:48:16.734Z)
     - name: customEnd
       description: if timeRange is CUSTOM, end time for the time range (e.g. 2017-06-01T12:48:16.734Z)
+    - name: fields
+      description: The fields that will be selected when this query is executed.
     description: Perform a query against Mcafee ESM SIEM
   - name: esm-fetch-alarms
     arguments:
     - name: timeRange
       required: true
-      description: Time range of alarms to fetch
       auto: PREDEFINED
       predefined:
       - LAST_3_DAYS
@@ -1184,4 +1223,31 @@ script:
     - contextPath: EsmUser.IsAdmin
       description: whether the user is an admin
     description: Get a list of all users.
+  - name: esm-acknowledge-alarms
+    arguments:
+    - name: alarmIds
+      required: true
+      default: true
+      description: list of triggered alarm ids to be marked acknowledged separated
+        with commas
+      isArray: true
+    description: Mark triggered alarms as acknowledged
+  - name: esm-unacknowledge-alarms
+    arguments:
+    - name: alarm_ids
+      required: true
+      default: true
+      description: list of triggered alarm ids to be marked unacknowledged separated
+        with commas
+      isArray: true
+    description: Mark triggered alarms as unacknowledged
+  - name: esm-delete-alarms
+    arguments:
+    - name: alarm_ids
+      required: true
+      default: true
+      description: list of triggered alarm ids to be deleted separated with commas
+      isArray: true
+    description: Delete triggered alarms
   isfetch: true
+releaseNotes: "Added support in fields parameter to search command"
