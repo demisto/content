@@ -23,24 +23,33 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
+    ''' IMPORTS '''
     import time
     import requests
     from distutils.util import strtobool
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
+    ''' GLOBAL VARS '''
+    BASE_URL = 'https://jbxcloud.joesecurity.org/api/'
+    USE_SSL = not demisto.params().get('insecure')
 
-    base_url = 'https://jbxcloud.joesecurity.org/api/';
-    def postRequest(url_suffix, data=None, files=None):
-        headers = {}
+    ''' HELPER FUNCTIONS '''
+    def http_post(url_suffix, data=None, files=None):
         data = {} if data is None else data
 
         data.setdefault('apikey', demisto.params()['api_key'])
+        LOG('running request with url=%s\tdata=%s\tfiles=%s' % (BASE_URL + url_suffix,
+            data, files, ))
         try:
-            res = requests.post(base_url + url_suffix,
+            res = requests.post(BASE_URL + url_suffix,
+                verify=USE_SSL,
                 data=data,
                 files=files
             )
         except Exception, e:
+            LOG(e)
             return 'Error! ' + e.message
 
         return res.json()
@@ -72,51 +81,64 @@ script:
         })
 
 
-    def get_info(web_id):
-        cmd_url = 'v2/analysis/info'
-        return postRequest(cmd_url, data={'webid' : web_id})
-
-
-    def is_online():
-        cmd_url = 'v2/server/online'
-        res = postRequest(cmd_url)
-        return res['data']['online']
-
-
-    def list_analysis():
-        cmd_url = 'v2/analysis/list'
-        res = postRequest(cmd_url)
-        return webid_to_entry('Web IDs:', res['data'])
-
-
-    def analysis_info(web_id):
-        res = get_info(web_id)
-        return analysis_to_entry('Analysis #' + web_id, res['data'])
-
-
     def poll_webid(web_id):
         result = {'data' : {'status' : 'pending'}}
         max_polls = 100;
 
         while (max_polls >=0) and result['data']['status'] != 'finished':
-            result = get_info(web_id)
+            if result['data']['status'] != 'pending':
+                LOG('error while polling: result is %s' % (result, ))
+            result = info_request(web_id)
             time.sleep(2);
             max_polls -= 1
 
+        LOG('reached max_polls #%d' % (max_polls, ))
         if max_polls < 0:
             return analysis_to_entry('Polling timeout on Analysis #' + web_id, result['data'])
         else:
             return analysis_to_entry('Analysis #' + web_id, result['data'])
 
 
-    def analyse_url(url, should_wait=False):
-        res = postRequest('v2/analysis/submit',
+    ''' FUNCTIONS '''
+    def is_online():
+        cmd_url = 'v2/server/online'
+        res = http_post(cmd_url)
+        return res['data']['online']
+
+
+    def list_analysis():
+        cmd_url = 'v2/analysis/list'
+        res = http_post(cmd_url)
+        return webid_to_entry('Web IDs:', res['data'])
+
+
+    def analysis_info():
+        web_id = demisto.args().get('webid')
+        LOG('info: web_id = %s' % (web_id, ))
+        res = info_request(web_id)
+        return analysis_to_entry('Analysis #' + web_id, res['data'])
+
+
+    def info_request(web_id):
+        cmd_url = 'v2/analysis/info'
+        return http_post(cmd_url, data={'webid' : web_id})
+
+
+    def analyse_url():
+        args = demisto.args()
+        url = args.get('url')
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+        return analyse_url_request(url, should_wait)
+
+
+    def analyse_url_request(url, should_wait):
+        res = http_post('v2/analysis/submit',
             data={'accept-tac': 1, 'url' : url})
 
         if 'errors' in res:
-            demisto.error('Error! in command analyse_url: url=%s' % (url, ))
-            demisto.error('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-            return 'Error! ' + '\n'.join(e['message'] for e in res['errors'])
+            LOG('Error! in command analyse_url: url=%s' % (url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            return 'Failure'
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
@@ -124,25 +146,33 @@ script:
         info = [{'webid' : i} for i in res['data']['webids']]
         return webid_to_entry('Web ID:', info)
 
-    def analyse_sample(file_entry, sample_url, should_wait=False):
+
+    def analyse_sample():
+        args = demisto.args()
+        file_entry = args.get('sample')
+        sample_url = args.get('sample_url')
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+
         if (file_entry is None and sample_url is None) or (None not in [file_entry, sample_url]):
             return 'You must specify one (and only one) of the following: sample_url, sample.'
 
-        res = {'status':'failure'}
+        LOG('analysing sample')
         if file_entry is not None:
-            with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
-                res = postRequest('v2/analysis/submit',
-                    data={'accept-tac': 1},
-                    files={'sample':f})
+            return analyse_sample_file_request(file_entry, should_wait)
+        else:
+            return analyse_sample_url_request(sample_url, should_wait)
 
-        if sample_url is not None:
-            res = postRequest('v2/analysis/submit',
-                data={'accept-tac': 1, 'sample-url' : sample_url})
 
-        if 'errors' in res:
-            demisto.error('Error! in command analyse_url: url=%s' % (url, ))
-            demisto.error('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-            return 'Error! ' + '\n'.join(e['message'] for e in res['errors'])
+    def analyse_sample_file_request(file_entry, should_wait):
+        with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
+            res = http_post('v2/analysis/submit',
+                data={'accept-tac': 1},
+                files={'sample':f})
+
+            if 'errors' in res:
+                LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+                LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+                return 'Failure'
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
@@ -151,45 +181,44 @@ script:
         return webid_to_entry('Web ID:', info)
 
 
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() in ['test-module', 'joe-is-online']:
-        # This is the call made when pressing the integration test button.
-        if is_online():
-            demisto.results('ok')
-        else:
-            demisto.results('not online')
-        sys.exit(0)
-    elif demisto.command() == 'joe-list-analysis':
-        demisto.results(list_analysis())
-    elif demisto.command() == 'joe-analysis-info':
-        demisto.results(analysis_info(demisto.args()['webid']))
-    elif demisto.command() == 'joe-analysis-submit-url':
-        args = demisto.args()
-        demisto.results(analyse_url(
-            demisto.get(args, 'url'),
-            bool(strtobool(demisto.get(args, 'should_wait')))
-            ))
-    elif demisto.command() == 'joe-analysis-submit-sample':
-        # demisto.log(dir(demisto))
-        args = demisto.args()
-        demisto.results(analyse_sample(
-            demisto.get(args, 'sample'),
-            demisto.get(args, 'sample_url'),
-            bool(strtobool(demisto.get(args, 'should_wait')))
-            ))
+    def analyse_sample_url_request(sample_url, should_wait):
+        res = http_post('v2/analysis/submit',
+                data={'accept-tac': 1, 'sample-url' : sample_url})
 
-    if demisto.command() == 'fetch-incidents':
-        # You can store the last run time...
-        demisto.setLastRun({'time': 'now'})
-        # And retrieve it for use later:
-        lastRun = demisto.getLastRun()
-        # lastRun is a dictionary, with value "now" for key "time".
-        # JSON of the incident type created by this integration
-        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
-        sys.exit(0)
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
+        if 'errors' in res:
+            LOG('Error! in command sample file: file url=%s' % (sample_url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            return 'Failure'
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        info = [{'webid' : i} for i in res['data']['webids']]
+        return webid_to_entry('Web ID:', info)
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() in ['test-module', 'joe-is-online']:
+            # This is the call made when pressing the integration test button.
+            if is_online():
+                demisto.results('ok')
+            else:
+                demisto.results('not online')
+        elif demisto.command() == 'joe-list-analysis':
+            demisto.results(list_analysis())
+        elif demisto.command() == 'joe-analysis-info':
+            demisto.results(analysis_info())
+        elif demisto.command() == 'joe-analysis-submit-url':
+            demisto.results(analyse_url())
+        elif demisto.command() == 'joe-analysis-submit-sample':
+            demisto.results(analyse_sample())
+
+    except Exception, e:
+        if demisto.params().get('verbose'):
+            LOG(e.message)
+            LOG.print_log()
+        raise
   type: python
   commands:
   - name: joe-is-online
@@ -211,6 +240,18 @@ script:
     outputs:
     - contextPath: Joe. Analysis.WebID
       description: Web ID
+    - contextPath: Joe. Analysis.FileName
+      description: Sample Data
+    - contextPath: Joe. Analysis.Status
+      description: Analysis Status
+    - contextPath: Joe. Analysis.Comments
+      description: Analysis Comments
+    - contextPath: Joe. Analysis.Time
+      description: Submitted Time
+    - contextPath: Joe. Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe. Analysis.Result
+      description: Analysis Results
     description: Submit a url for analysis.
   - name: joe-analysis-info
     arguments:
