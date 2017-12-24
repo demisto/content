@@ -34,3 +34,7 @@ args:
   default: true
   description: Incident ID to delete
 scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+releaseNotes: "-"
