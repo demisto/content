@@ -92,25 +92,24 @@ script:
         }
 
         return {
-                Type: entryTypes.note,
-                ContentsFormat: formats.table,
-                Contents: data,
-                ReadableContentsFormat: formats.table,
-                HumanReadable: tableToMarkdown('Pipl', data, columns),
-                HumanReadable: data,
-                EntryContext: ec
-                };
+            Type: entryTypes.note,
+            ContentsFormat: formats.table,
+            Contents: data,
+            ReadableContentsFormat: formats.table,
+            HumanReadable: data,
+            EntryContext: ec
+        };
     };
 
     var buildEC = function(data, i) {
         return {
-                Addresses : data[i].Addresses,
-                Email : data[i].Email,
-                IDs : data[i].UserIDs,
-                Names: data[i].Names,
-                Phones: data[i].Phones,
-                Usernames: data[i].Usernames
-                };
+            Addresses: data[i].Addresses,
+            Email: data[i].Email,
+            IDs: data[i].UserIDs,
+            Names: data[i].Names,
+            Phones: data[i].Phones,
+            Usernames: data[i].Usernames
+        };
     };
 
     var addPerson = function(person) {
@@ -129,12 +128,12 @@ script:
             Addresses: ''
         };
         if (person.names) {
-            for (var i = 0; i < person.names.length; i++) {
+            for (let i = 0; i < person.names.length; i++) {
                 response.Names += person.names[i].middle ? person.names[i].first + ' ' + person.names[i].middle + ' ' + person.names[i].last + '\n' : person.names[i].first + ' ' + person.names[i].last + '\n';
             }
         }
         if (person.phones) {
-            for (var i = 0; i < person.phones.length; i++) {
+            for (let i = 0; i < person.phones.length; i++) {
                 response.Phones += person.phones[i].display + ' ' + person.phones[i].display_international + '\n';
             }
         }
@@ -150,38 +149,38 @@ script:
 
         }
         if (person.usernames) {
-            for (var i = 0; i < person.usernames.length; i++) {
+            for (let i = 0; i < person.usernames.length; i++) {
                 response.Usernames += person.usernames[i].content + '\n';
             }
         }
         if (person.emails) {
             response.Email = [];
-            for (var i = 0; i < person.emails.length; i++) {
+            for (let i = 0; i < person.emails.length; i++) {
                 response.Email[i] = {Address:person.emails[i].address};
             }
         }
         if (person.educations) {
-            for (var i = 0; i < person.educations.length; i++) {
+            for (let i = 0; i < person.educations.length; i++) {
                 response.Educations += person.educations[i].display + '\n';
             }
         }
         if (person.user_ids) {
-            for (var i = 0; i < person.user_ids.length; i++) {
+            for (let i = 0; i < person.user_ids.length; i++) {
                 response.UserIDs += person.user_ids[i].content + '\n';
             }
         }
         if (person.urls) {
-            for (var i = 0; i < person.urls.length; i++) {
+            for (let i = 0; i < person.urls.length; i++) {
                 response.URLs += person.urls[i].url + '\n';
             }
         }
         if (person.jobs) {
-            for (var i = 0; i < person.jobs.length; i++) {
+            for (let i = 0; i < person.jobs.length; i++) {
                 response.Jobs += person.jobs[i].display + '\n';
             }
         }
         if (person.addresses) {
-            for (var i = 0; i < person.addresses.length; i++) {
+            for (let i = 0; i < person.addresses.length; i++) {
                 response.Addresses += person.addresses[i].display + '\n';
             }
         }
