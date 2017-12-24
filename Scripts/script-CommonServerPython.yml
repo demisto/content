@@ -250,7 +250,7 @@ script: |-
       '''
       Converts a demisto table in JSON form to a Markdown table
       @param {String} name - the name of the table
-      @param {Object} t - the JSON table - Array of objects with the same keys
+      @param {Object(s)} t - the JSON table - Array of objects with the same keys or a single objects
       @param {list} headers - optinal, the output markdown table will show only these headers (by order)
       @returns {string} array from the original string-list
       '''
@@ -371,7 +371,6 @@ script: |-
       content = demisto.dt(result, translator['innerPath']) if 'innerPath' in translator else result;
       translatedMD = mapObj(content, translator['data'], MDfilter)
       entry['HumanReadable'] = tableToMarkdown(translator['title'], translatedMD)
-      # entry['HumanReadable'] = tblToMd(title, translatedMD)
 
       translatedContext = mapObj(content, translator['data'])
       context = createContext(translatedContext)
@@ -645,4 +644,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added function documentation"
+releaseNotes: "Removed dq implementation, using demisto.dt instead"
