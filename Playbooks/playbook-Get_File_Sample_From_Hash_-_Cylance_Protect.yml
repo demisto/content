@@ -15,6 +15,7 @@ tasks:
     task:
       id: d947a1c1-7312-4f99-8f56-bfcb4b0c3dfe
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -63,6 +64,7 @@ tasks:
     task:
       id: af2e86ff-6413-4cd8-8d5f-799edb0770e6
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -81,6 +83,7 @@ tasks:
     task:
       id: 80b8842e-e1d1-4556-80fd-8e86357eeeac
       version: -1
+      description: Checks for SHA256 in context
       name: Do we have a SHA256?
       scriptName: Exists
       type: condition
@@ -107,6 +110,7 @@ tasks:
     task:
       id: 12699c68-681e-4974-8fde-3175b0fc1269
       version: -1
+      description: Query Cylance Protect for HASH's link
       name: Get download link from HASH
       script: Cylance Protect|||cylance-protect-download-threat
       type: regular
@@ -138,6 +142,7 @@ tasks:
     task:
       id: da389084-d70d-4404-88d6-7b68c2052c05
       version: -1
+      description: Checks for a download link in context
       name: Did we get a download link?
       scriptName: Exists
       type: condition
@@ -167,6 +172,7 @@ tasks:
     task:
       id: f9168f7d-2271-4272-81a6-ee3a7bb7d9a1
       version: -1
+      description: Send an HTTP request to download the zip file
       name: Download File (ZIP format)
       scriptName: http
       type: regular
@@ -200,6 +206,7 @@ tasks:
     task:
       id: 086b406d-2bb7-4708-86d1-203ea607e2f2
       version: -1
+      description: Checks for ZIP file format in context
       name: Did we successfully download the ZIP file?
       scriptName: Exists
       type: condition
