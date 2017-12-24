@@ -36,3 +36,7 @@ args:
 - name: listData
   description: Initial data of list
 scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+releaseNotes: "-"

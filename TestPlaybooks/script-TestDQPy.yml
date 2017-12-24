@@ -1,0 +1,39 @@
+commonfields:
+  id: TestDQ
+  version: 22
+name: TestDQ
+script: |-
+  info = {'b' : 1,
+      'a': {
+          'safd' : 3,
+          'b' : [
+              {'c' : {'d' : 432}, 'd' : 2},
+              {'c' : {'f' : 1}},
+              {'b' : 1234},
+              {'c' : {'d' : 4567}},
+              {'c' : {'d' : 11}}],
+          'c' : {'d' : 10},
+          }
+      }
+  expected_x = [432, 4567, 11]
+  x = demisto.dt(info, 'a.b.c.d')
+
+  if x != expected_x:
+      raise ValueError('expected: [%s]\n %s\ngot: [%s]\n%s' % (type(expected_x), expected_x, type(x), x))
+
+  entry = createEntry(info, {
+          'contextPath' : 'PY.Test(val.ID && val.ID == obj.ID)',
+          'title' : 'Python DQ Test',
+          'innerPath' : 'a.b',
+          'data' : [
+              {'to' : 'd_label', 'from' : u'c.d'},
+              {'to' : 'e_hidden', 'from' : u'c.e', 'humanReadable' : False},
+          ],
+      })
+
+  demisto.results(entry)
+type: python
+tags: []
+comment: Tests for common function dq and create entry
+enabled: true
+scripttarget: 0
