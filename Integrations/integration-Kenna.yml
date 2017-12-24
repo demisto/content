@@ -34,72 +34,72 @@ script:
     var URL = params.url.replace(/[\/]+$/, '');
 
     function searchVulnerabilities(args) {
-            var urlQuery = {};
-                argKeys = Object.keys(args);
-                for (var i = 0; i < argKeys.length; i++) {
-                    if (argKeys[i] === 'min-score') {
-                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                    } else {
-                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
-                    }
+        var urlQuery = {};
+            argKeys = Object.keys(args);
+            for (var i = 0; i < argKeys.length; i++) {
+                if (argKeys[i] === 'min-score') {
+                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                } else {
+                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
                 }
-            var res = searchVulnerabilitiesRequest(urlQuery);
-
-            var hr = [];
-            var context = {};
-            context.Kenna = [];
-            for (var i = 0; i < res.length; i++) {
-
-                hr[i] = {
-                    'ID' : res[i].id,
-                    'Score' : res[i].risk_meter_score,
-                    'Name' : res[i].cve_id
-                };
-
-                context.Kenna[i]={};
-                context.Kenna[i].AssetID = res[i].asset_id;
-                context.Kenna[i].Connectors = [];
-                for (var j = 0; j < res[i].connectors.length; j++) {
-                    context.Kenna[i].Connectors[j] = {};
-                    context.Kenna[i].Connectors[j].DefinitionName = res[i].connectors[j].connector_definition_name;
-                    context.Kenna[i].Connectors[j].ID = res[i].connectors[j].id;
-                    context.Kenna[i].Connectors[j].Name = res[i].connectors[j].name;
-                    context.Kenna[i].Connectors[j].Vendor = res[i].connectors[j].vendor;
-                }
-                context.Kenna[i].CveID = res[i].cve_id;
-                context.Kenna[i].FixID = res[i].fix_id;
-                context.Kenna[i].ID = res[i].id;
-                context.Kenna[i].Patch = res[i].patch;
-                context.Kenna[i].RiskMeterScore = res[i].risk_meter_score;
-                context.Kenna[i].ScannerVulnerabilities = [];
-                for (var j = 0; j < res[i].scanner_vulnerabilities.length; j++) {
-                    context.Kenna[i].ScannerVulnerabilities[j] = {};
-                    context.Kenna[i].ScannerVulnerabilities[j].ExternalID = res[i].scanner_vulnerabilities[j].external_unique_id;
-                    context.Kenna[i].ScannerVulnerabilities[j].Open = res[i].scanner_vulnerabilities[j].open;
-                    context.Kenna[i].ScannerVulnerabilities[j].Port = res[i].scanner_vulnerabilities[j].port;
-                }
-                context.Kenna[i].Score = res[i].score;
-                if (res[i].service_ticket) {
-                    context.Kenna[i].ServiceTicket = {};
-                    context.Kenna[i].ServiceTicket.DueDate = res[i].service_ticket.due_date;
-                    context.Kenna[i].ServiceTicket.ExternalIdentifier = res[i].service_ticket.external_identifier;
-                    context.Kenna[i].ServiceTicket.Status = res[i].service_ticket.status;
-                    context.Kenna[i].ServiceTicket.TicketType = res[i].service_ticket.ticket_type;
-                }
-                context.Kenna[i].Severity = res[i].severity;
-                context.Kenna[i].Status = res[i].status;
-                context.Kenna[i].Threat = res[i].threat;
-                context.Kenna[i].TopPriority = res[i].top_priority;
             }
+        var res = searchVulnerabilitiesRequest(urlQuery);
 
-            return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat : formats.markdown,
-                EntryContext : context,
-                HumanReadable: tableToMarkdown('Kenna Vulnerabilities', hr)
+        var hr = [];
+        var context = {};
+        context.Kenna = [];
+        for (var i = 0; i < res.length; i++) {
+
+            hr[i] = {
+                'ID' : res[i].id,
+                'Score' : res[i].risk_meter_score,
+                'Name' : res[i].cve_id
             };
+
+            context.Kenna[i]={};
+            context.Kenna[i].AssetID = res[i].asset_id;
+            context.Kenna[i].Connectors = [];
+            for (var j = 0; j < res[i].connectors.length; j++) {
+                context.Kenna[i].Connectors[j] = {};
+                context.Kenna[i].Connectors[j].DefinitionName = res[i].connectors[j].connector_definition_name;
+                context.Kenna[i].Connectors[j].ID = res[i].connectors[j].id;
+                context.Kenna[i].Connectors[j].Name = res[i].connectors[j].name;
+                context.Kenna[i].Connectors[j].Vendor = res[i].connectors[j].vendor;
+            }
+            context.Kenna[i].CveID = res[i].cve_id;
+            context.Kenna[i].FixID = res[i].fix_id;
+            context.Kenna[i].ID = res[i].id;
+            context.Kenna[i].Patch = res[i].patch;
+            context.Kenna[i].RiskMeterScore = res[i].risk_meter_score;
+            context.Kenna[i].ScannerVulnerabilities = [];
+            for (var j = 0; j < res[i].scanner_vulnerabilities.length; j++) {
+                context.Kenna[i].ScannerVulnerabilities[j] = {};
+                context.Kenna[i].ScannerVulnerabilities[j].ExternalID = res[i].scanner_vulnerabilities[j].external_unique_id;
+                context.Kenna[i].ScannerVulnerabilities[j].Open = res[i].scanner_vulnerabilities[j].open;
+                context.Kenna[i].ScannerVulnerabilities[j].Port = res[i].scanner_vulnerabilities[j].port;
+            }
+            context.Kenna[i].Score = res[i].score;
+            if (res[i].service_ticket) {
+                context.Kenna[i].ServiceTicket = {};
+                context.Kenna[i].ServiceTicket.DueDate = res[i].service_ticket.due_date;
+                context.Kenna[i].ServiceTicket.ExternalIdentifier = res[i].service_ticket.external_identifier;
+                context.Kenna[i].ServiceTicket.Status = res[i].service_ticket.status;
+                context.Kenna[i].ServiceTicket.TicketType = res[i].service_ticket.ticket_type;
+            }
+            context.Kenna[i].Severity = res[i].severity;
+            context.Kenna[i].Status = res[i].status;
+            context.Kenna[i].Threat = res[i].threat;
+            context.Kenna[i].TopPriority = res[i].top_priority;
+        }
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            EntryContext : context,
+            HumanReadable: tableToMarkdown('Kenna Vulnerabilities', hr)
+        };
     }
 
     function searchVulnerabilitiesRequest(urlQuery) {
@@ -128,10 +128,9 @@ script:
     function getConnectors() {
         var connectors = getConnectorsRequest();
         var hr = [];
-        var context = {};
-        if (!context.Kenna) {
-            context.Kenna = {};
-        }
+        var context = {
+            Kenna: {}
+        };
         context.Kenna.ConnectorsList = []
         for (var i = 0; i < connectors.length; i++) {
             var connector = connectors[i];
@@ -177,14 +176,12 @@ script:
     }
 
     function runConnector(id) {
-        try {
-                var response = runConnectorRequest(id);
-                if (response.success === 'true') {
-                    return 'Connector ran successfully!';
-                }
-            } catch(err) {
-                return 'Could not run connector.';
-            }
+        var response = runConnectorRequest(id);
+        if (response.success === 'true') {
+            return 'Connector ran successfully!';
+        } else {
+            return 'Could not run connector.';
+        }
     }
 
     function runConnectorRequest(id) {
@@ -209,32 +206,32 @@ script:
     }
 
     function searchFixes(args) {
-            var urlQuery = {};
-                argKeys = Object.keys(args);
-                for (var i = 0; i < argKeys.length; i++) {
-                    if (argKeys[i] === 'min-score') {
-                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                    } else {
-                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
-                    }
+        var urlQuery = {};
+            argKeys = Object.keys(args);
+            for (var i = 0; i < argKeys.length; i++) {
+                if (argKeys[i] === 'min-score') {
+                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                } else {
+                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
                 }
-            var res = searchFixesRequest(urlQuery);
-
-            var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
-            var hr = '';
-            for (var i = 0; i < res.length; i++) {
-                hr += res[i].title + '\n';
-                hr += res[i].vuln_count + ' vulnerabilities affected\n';
-                hr += '#### Diagnosis:\n';
-                hr += res[i].diagnosis.replace(rex,' ') + '\n' + '&nbsp;' + '\n';
             }
-            return {
-                Type: entryTypes.note,
-                Contents: res,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat : formats.markdown,
-                HumanReadable: hr
-            };
+        var res = searchFixesRequest(urlQuery);
+
+        var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
+        var hr = '';
+        for (var i = 0; i < res.length; i++) {
+            hr += res[i].title + '\n';
+            hr += res[i].vuln_count + ' vulnerabilities affected\n';
+            hr += '#### Diagnosis:\n';
+            hr += res[i].diagnosis.replace(rex,' ') + '\n' + '&nbsp;' + '\n';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            HumanReadable: hr
+        };
     }
 
     function searchFixesRequest(urlQuery) {
