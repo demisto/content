@@ -261,7 +261,14 @@ script:
             return getFlows('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
         case 'grr-get-files': 
         case 'grr_get_files'://deprecated
-            args.paths = JSON.parse(args.paths);
+            var pathsArr;
+            try {
+                pathsArr = JSON.parse(args.paths);
+            } catch (e) {
+                logDebug('input is not a valid JSON trying to split');
+                pathsArr = args.paths ? args.paths.split(",") : [];
+            }
+            args.paths = pathsArr;
             return sendRequestAndParse('POST', server + '/api/robot-actions/get-files', 'post get-files', JSON.stringify(args));
         case 'grr-get-hunts':
         case 'grr_get_hunts'://deprecated
@@ -560,3 +567,4 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
+releaseNotes: Fixed parsing of paths for grr_get_files
