@@ -16,7 +16,7 @@ script: |-
           }
       }
   expected_x = [432, None, None, 4567, 11]
-  x = demisto.dt(info, ['a','b','c','d'])
+  x = demisto.dt(info, 'a.b.c.d'])
 
   if x != expected_x:
       raise ValueError('expected: [%s]\n %s\ngot: [%s]\n%s' % (type(expected_x), expected_x, type(x), x))
