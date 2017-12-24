@@ -196,6 +196,7 @@ script:
         info = [{'webid' : i} for i in res['data']['webids']]
         return webid_to_entry('Web ID:', info)
 
+
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
     try:
