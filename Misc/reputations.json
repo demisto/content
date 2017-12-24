@@ -130,5 +130,6 @@
       "details": "user",
       "enhancementScriptNames": []
     }
-  ]
+  ],
+  "releaseNotes":"add new user reputation"
 }
