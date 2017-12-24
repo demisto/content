@@ -164,10 +164,14 @@
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
         },
-                {
+        {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
+        },
+        {
+            "integrations": "Symantec MSS",
+            "playbookID": "SymantecMSSTest"
         }
     ]
 }
