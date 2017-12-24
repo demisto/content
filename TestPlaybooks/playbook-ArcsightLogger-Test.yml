@@ -76,7 +76,6 @@ tasks:
       start_time: ""
       summary_fields: ""
       timeout: ""
-      using: ArcSight Logger_instance_1
     view: |-
       {
         "position": {
@@ -136,7 +135,6 @@ tasks:
       offset: ""
       searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
       sessionId: ${ArcSightLogger.Search.SessionId}
-      using: ArcSight Logger_instance_1
     view: |-
       {
         "position": {
@@ -163,7 +161,6 @@ tasks:
     scriptarguments:
       searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
       sessionId: ${ArcSightLogger.Search.SessionId}
-      using: ArcSight Logger_instance_1
     view: |-
       {
         "position": {
@@ -215,7 +212,6 @@ tasks:
     scriptarguments:
       searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
       sessionId: ${ArcSightLogger.Search.SessionId}
-      using: ArcSight Logger_instance_1
     view: |-
       {
         "position": {
