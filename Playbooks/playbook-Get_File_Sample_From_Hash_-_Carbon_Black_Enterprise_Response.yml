@@ -77,10 +77,6 @@ tasks:
       - "4"
     scriptarguments:
       value: ${File.MD5}
-    sla:
-      hours: 0
-      days: 0
-      weeks: 0
     view: |-
       {
         "position": {
@@ -114,6 +110,7 @@ tasks:
     task:
       id: 31f102b5-5108-4f19-865e-cfc50b7793d8
       version: -1
+      description: ""
       name: Get binary from MD5
       script: carbonblack|||cb-binary-get
       type: regular
