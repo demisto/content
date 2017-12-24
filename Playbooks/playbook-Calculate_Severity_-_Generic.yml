@@ -20,6 +20,7 @@ tasks:
     task:
       id: 3eded69b-617e-4212-86b7-2537474285f3
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -40,6 +41,7 @@ tasks:
     task:
       id: 5d35b08e-ffa6-43f6-85c9-2e71151c47ec
       version: -1
+      description: ""
       name: Check indicators
       type: title
       iscommand: false
@@ -330,6 +332,7 @@ tasks:
     task:
       id: 75a46609-7bfd-4575-8945-2f9efd0cf549
       version: -1
+      description: ""
       name: Check for critical entities
       type: title
       iscommand: false
@@ -410,6 +413,7 @@ tasks:
     task:
       id: 483350d5-ab17-44cd-87b3-0e2360ce3577
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -428,6 +432,7 @@ tasks:
     task:
       id: c4b5f8e7-8133-4122-8e88-ea69e15f0803
       version: -1
+      description: ""
       name: Set severity to "Critical"
       description: Set incident's severity to Critical - Some entity is part of a
         critical group
