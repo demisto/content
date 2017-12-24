@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Kenna is a Risk Intelligence & Vulnerability platform that enables InfoSec
   teams to prioritize and remediate vulns faster.
 configuration:
-- display: Server URL for the search API (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
   defaultvalue: https://api.kennasecurity.com
   type: 0
@@ -30,22 +30,20 @@ configuration:
   required: false
 script:
   script: |
-    var apiKey = params.key;
-    var url = params.url;
+    var API_KEY = params.key;
+    var URL = params.url.replace(/[\/]+$/, '');
 
     function searchVulnerabilities(args) {
-        var urlQuery = {};
-            argKeys = Object.keys(args);
-            for (var i = 0; i < argKeys.length; i++) {
-                if (argKeys[i] === 'min-score') {
-                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                } else {
-                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+            var urlQuery = {};
+                argKeys = Object.keys(args);
+                for (var i = 0; i < argKeys.length; i++) {
+                    if (argKeys[i] === 'min-score') {
+                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                    } else {
+                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                    }
                 }
-            }
-
-            var response = searchVulnerabilitiesRequest(urlQuery);
-            var res = response.vulnerabilities;
+            var res = searchVulnerabilitiesRequest(urlQuery);
 
             var hr = [];
             var context = {};
@@ -105,13 +103,13 @@ script:
     }
 
     function searchVulnerabilitiesRequest(urlQuery) {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/vulnerabilities/search' + encodeToURLQuery(urlQuery);
+        var requestUrl = URL + '/vulnerabilities/search' + encodeToURLQuery(urlQuery);
         var res = http(
             requestUrl,
             {
                 Method: 'GET',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 }
@@ -122,47 +120,48 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-        return JSON.parse(res.Body);
+        var response = JSON.parse(res.Body);
+        return response.vulnerabilities;
     }
 
 
     function getConnectors() {
-        var response = getConnectorsRequest();
-        var res = response.connectors;
+        var connectors = getConnectorsRequest();
         var hr = [];
         var context = {};
         if (!context.Kenna) {
             context.Kenna = {};
         }
         context.Kenna.ConnectorsList = []
-        for (var i = 0; i < res.length; i++) {
+        for (var i = 0; i < connectors.length; i++) {
+            var connector = connectors[i];
             hr[i] = {
-                'Host' : res[i].host,
-                'Name' : res[i].name,
-                'Running' : res[i].running,
-                'ID' : res[i].id
+                'Host' : connector.host,
+                'Name' : connector.name,
+                'Running' : connector.running,
+                'ID' : connector.id
             };
             context.Kenna.ConnectorsList[i] = {};
-            context.Kenna.ConnectorsList[i].ID = res[i].id;
+            context.Kenna.ConnectorsList[i].ID = connector.id;
         }
         return {
             Type: entryTypes.note,
-            Contents: res,
+            Contents: connectors,
             ContentsFormat: formats.json,
             ReadableContentsFormat : formats.markdown,
             EntryContext : context,
-            HumanReadable: tableToMarkdown('Kenna', hr)
+            HumanReadable: tableToMarkdown('Kenna Connectors', hr)
         };
     }
 
     function getConnectorsRequest() {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/connectors';
+        var requestUrl = URL + '/connectors';
         var res = http(
             requestUrl,
             {
                 Method: 'GET',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 }
@@ -173,7 +172,8 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-        return JSON.parse(res.Body);
+        var response = JSON.parse(res.Body);
+        return response.connectors;
     }
 
     function runConnector(id) {
@@ -188,13 +188,13 @@ script:
     }
 
     function runConnectorRequest(id) {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/connectors/' + id + '/run';
+        var requestUrl = URL + '/connectors/' + id + '/run';
         var res = http(
             requestUrl,
             {
                 Method: 'GET',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 }
@@ -210,16 +210,16 @@ script:
 
     function searchFixes(args) {
             var urlQuery = {};
-            argKeys = Object.keys(args);
-            for (var i = 0; i < argKeys.length; i++) {
-                if (argKeys[i] === 'min-score') {
-                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                } else {
-                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                argKeys = Object.keys(args);
+                for (var i = 0; i < argKeys.length; i++) {
+                    if (argKeys[i] === 'min-score') {
+                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                    } else {
+                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                    }
                 }
-            }
-            var response = searchFixesRequest(urlQuery);
-            var res = response.fixes;
+            var res = searchFixesRequest(urlQuery);
+
             var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
             var hr = '';
             for (var i = 0; i < res.length; i++) {
@@ -233,19 +233,18 @@ script:
                 Contents: res,
                 ContentsFormat: formats.json,
                 ReadableContentsFormat : formats.markdown,
-                //EntryContext : context,
                 HumanReadable: hr
             };
     }
 
     function searchFixesRequest(urlQuery) {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/fixes' + encodeToURLQuery(urlQuery);
+        var requestUrl = URL + '/fixes' + encodeToURLQuery(urlQuery);
         var res = http(
             requestUrl,
             {
                 Method: 'GET',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 }
@@ -256,7 +255,8 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-        return JSON.parse(res.Body);
+        var response = JSON.parse(res.Body);
+        return response.fixes;
     }
 
     function updateAsset(id, notes) {
@@ -274,13 +274,13 @@ script:
     }
 
     function updateAssetRequest(id, body) {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/assets/' + id;
+        var requestUrl = URL + '/assets/' + id;
         var res = http(
             requestUrl,
             {
                 Method: 'PUT',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 },
@@ -316,13 +316,13 @@ script:
     }
 
     function updateVulnerabilityRequest(id, body) {
-        var requestUrl = url.replace(/[\/]+$/, '') + '/vulnerabilities/' + id;
+        var requestUrl = URL + '/vulnerabilities/' + id;
         var res = http(
             requestUrl,
             {
                 Method: 'PUT',
                 Headers: {
-                    'X-Risk-Token': [apiKey],
+                    'X-Risk-Token': [API_KEY],
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 },
@@ -337,10 +337,30 @@ script:
         return res.StatusCode;
     }
 
+    function testRequest() {
+        var requestUrl = URL + '/assets';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+    }
+
     switch (command) {
         case 'test-module':
             // Tests Authentication
-            sendRequest('GET', 'assets');
+            testRequest();
             return 'ok';
         case 'kenna-search-vulnerabilities':
             return searchVulnerabilities(args);
