@@ -624,9 +624,9 @@ script:
         return fields;
     }
 
-    function createRecord(command, token, arguments) {
-        var appId = arguments.applicationId;
-        var fieldsToValue = JSON.parse(arguments.fieldsToValues);
+    function createRecord(command, token, dataArgs) {
+        var appId = dataArgs.applicationId;
+        var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
@@ -665,10 +665,10 @@ script:
         };
     }
 
-    function updateRecord(command, token, arguments) {
-        var appId = arguments.applicationId;
-        var contentId = arguments.contentId;
-        var fieldsToValue = JSON.parse(arguments.fieldsToValues);
+    function updateRecord(command, token, dataArgs) {
+        var appId = dataArgs.applicationId;
+        var contentId = dataArgs.contentId;
+        var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
 
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
@@ -704,9 +704,9 @@ script:
         }
     }
 
-    function getValueListForField(command, token, arguments){
+    function getValueListForField(command, token, dataArgs){
         var SOAPAction = 'http://archer-tech.com/webservices/GetValueListForField';
-        var fieldID = arguments.fieldID;
+        var fieldID = dataArgs.fieldID;
         var soap = getValueListForFieldSoapRequest(token, fieldID);
         var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
         var result = dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
@@ -718,9 +718,9 @@ script:
         return ret;
     }
 
-    function deleteRecord(command, token, arguments) {
-        var appId = arguments.applicationId;
-        var contentId = arguments.contentId;
+    function deleteRecord(command, token, dataArgs) {
+        var appId = dataArgs.applicationId;
+        var contentId = dataArgs.contentId;
         var soap =  deleteContentSoapRequest(token, appId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
 
@@ -744,16 +744,16 @@ script:
         }
     }
 
-    function searchRecords(command, token, arguments) {
-        var appId = arguments.applicationId;
-        var fieldsToDisplay = arguments.fieldsToDisplay;
-        var maxResults = arguments.maxResults;
-        var fieldToSearchOn = arguments.fieldToSearchOn;
-        var searchValue = arguments.searchValue;
-        var numericOperator = arguments.numericOperator;
-        var dateOperator = arguments.dateOperator;
-        var isDescending = arguments.Descending;
-        var pageNumber = arguments.pageNumber || '1';
+    function searchRecords(command, token, dataArgs) {
+        var appId = dataArgs.applicationId;
+        var fieldsToDisplay = dataArgs.fieldsToDisplay;
+        var maxResults = dataArgs.maxResults;
+        var fieldToSearchOn = dataArgs.fieldToSearchOn;
+        var searchValue = dataArgs.searchValue;
+        var numericOperator = dataArgs.numericOperator;
+        var dateOperator = dataArgs.dateOperator;
+        var isDescending = dataArgs.Descending;
+        var pageNumber = dataArgs.pageNumber || '1';
 
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
@@ -905,7 +905,7 @@ script:
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
 
-    function fetchIncidents(token, arguments) {
+    function fetchIncidents(token, dataArgs) {
         var myTimezone = new Date().getTimezoneOffset() * -1;
         var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
         if (params.timeZone === '0') {
@@ -923,14 +923,14 @@ script:
         }
 
         var searchByField = params.fetchByField;
-        arguments.applicationId = params.fetchApplicationId;
-        arguments.dateOperator = 'GreaterThan';
-        arguments.searchValue = toDateArcherString(new Date(lastTime));
-        arguments.fieldToSearchOn = searchByField;
-        arguments.fieldsToDisplay = params.fetchFields + ',' + searchByField;
+        dataArgs.applicationId = params.fetchApplicationId;
+        dataArgs.dateOperator = 'GreaterThan';
+        dataArgs.searchValue = toDateArcherString(new Date(lastTime));
+        dataArgs.fieldToSearchOn = searchByField;
+        dataArgs.fieldsToDisplay = params.fetchFields + ',' + searchByField;
 
         var incidents = [];
-        var results = searchRecords(cmd, token, arguments);
+        var results = searchRecords(cmd, token, dataArgs);
 
         if (results && results.Contents && results.Contents.length > 0) {
             for (var i = 0; i < results.Contents.length; i++) {
@@ -1134,3 +1134,4 @@ script:
       description: ID of the field
     description: Returns mapping from list value name to list value id
   isfetch: true
+releaseNotes: "-"

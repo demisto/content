@@ -1111,6 +1111,7 @@ script:
                     }
                 }
             }
+        }
         return JSON.stringify(incidents);
     }
 
