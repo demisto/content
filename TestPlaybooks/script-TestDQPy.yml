@@ -15,7 +15,7 @@ script: |-
           'c' : {'d' : 10},
           }
       }
-  expected_x = [432, None, None, 4567, 11]
+  expected_x = [432, 4567, 11]
   x = demisto.dt(info, 'a.b.c.d')
 
   if x != expected_x:
