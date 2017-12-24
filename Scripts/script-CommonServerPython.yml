@@ -198,6 +198,27 @@ script: |-
               return dSub[k] + strRegistryPath[len(k):]
       return strRegistryPath
 
+
+  class IntegrationLogger(object):
+      def __init__(self, ):
+          self.messages = []
+
+      def __call__(self, message):
+          self.messages.append('%s' % (message, ))
+
+      def print_log(self, ):
+          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+          demisto.log(text)
+          demisto.info(text)
+
+  '''
+  a logger for oython integrations:
+  use LOG(<message>) to add a record to the logger (message can be any object with __str__)
+  use LOG.print_log() to display all records in War-Room and server log.
+  '''
+  LOG = IntegrationLogger()
+
+
   def formatCell(data, is_pretty=True):
       l_format = '\n' if is_pretty else ''
       if type(data) in [unicode, str]:
