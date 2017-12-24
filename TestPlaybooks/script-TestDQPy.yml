@@ -15,8 +15,8 @@ script: |-
           'c' : {'d' : 10},
           }
       }
-  expected_x = [432, None, None, 4567, 11]
-  x = dq(info, ['a','b','c','d'])
+  expected_x = [432, 4567, 11]
+  x = demisto.dt(info, 'a.b.c.d')
 
   if x != expected_x:
       raise ValueError('expected: [%s]\n %s\ngot: [%s]\n%s' % (type(expected_x), expected_x, type(x), x))
@@ -34,6 +34,6 @@ script: |-
   demisto.results(entry)
 type: python
 tags: []
-comment: Tests for common function dq
+comment: Tests for common function dq and create entry
 enabled: true
 scripttarget: 0
