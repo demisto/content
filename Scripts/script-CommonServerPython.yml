@@ -310,25 +310,6 @@ script: |-
           return createContextSingle(data, id)
 
 
-  def dq(obj, path):
-      '''
-      return a value in an object path. in case of multiple objects in path, searches them all.
-      @param obj - dictionary tree to search in
-      @param path (list) - a path of the desired value in the object. for example: ['root', 'key', 'subkey']
-      '''
-      if len(path) == 0:
-          return obj
-
-      if isinstance(obj, dict):
-          if path[0] in obj:
-              return dq(obj[path[0]], path[1:])
-      elif isinstance(obj, list):
-          # in case current obj has multiple objects, search them all.
-          return [dq(o, path) for o in obj]
-
-      # in case of error in the path
-      return None
-
   def mapSingleObj(obj, mapFields, filter_func=None):
       if filter_func is None:
           filter_func = lambda mf: True
@@ -336,9 +317,10 @@ script: |-
       d = {}
       for f in mapFields:
           if filter_func(f):
-              d[f['to']] = dq(obj, f['from'].split('.'))
+              d[f['to']] = demisto.dt(obj, f['from'])
 
       return d
+
 
   def mapObj(content, mapFields, filter_func=None):
       '''
@@ -386,7 +368,7 @@ script: |-
           'ReadableContentsFormat': formats['markdown'],
       }
 
-      content = dq(result, translator['innerPath'].split('.')) if 'innerPath' in translator else result;
+      content = demisto.dt(result, translator['innerPath']) if 'innerPath' in translator else result;
       translatedMD = mapObj(content, translator['data'], MDfilter)
       entry['HumanReadable'] = tableToMarkdown(translator['title'], translatedMD)
       # entry['HumanReadable'] = tblToMd(title, translatedMD)
