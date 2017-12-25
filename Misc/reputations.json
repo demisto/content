@@ -128,7 +128,7 @@
       "regex": "",
       "reputationScriptName": "",
       "details": "user",
-      "enhancementScriptNames": []
+      "enhancementScriptNames": ["UserEnrichAD"]
     }
   ],
   "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
