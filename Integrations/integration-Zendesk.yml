@@ -1,4 +1,4 @@
-commonfields:
+ commonfields:
   id: Zendesk
   version: -1
 name: Zendesk
@@ -65,6 +65,7 @@ script:
     if (!cachedInfo.customFields) {
         cachedInfo.customFields = {};
     }
+
     if (!cachedInfo.timestamp) {
         cachedInfo.timestamp = new Date().getTime();
     } else {
@@ -123,7 +124,6 @@ script:
         }
 
         cachedInfo.customFields = dicFields;
-
         setIntegrationContext(cachedInfo);
     };
 
@@ -138,6 +138,12 @@ script:
         } else {
             return null;
         }
+    };
+
+    var getOrganizationDetails = function(id) {
+        var res = sendRequest('GET', 'organizations/' + id + '.json');
+        var org = res.organization;
+        return org;
     };
 
 
@@ -402,6 +408,20 @@ script:
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
+    var addUser = function() {
+
+        var body = {
+                user: {
+                    name: args.name,
+                    email: args.email
+                }
+        };
+
+        res = sendRequest('POST', 'users/create_or_update.json', JSON.stringify(body));
+        md = 'Zendesk user added successfuly.\n';
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
+    };
+
     var addMinutes = function(date, minutes) {
             return new Date(date.getTime() + minutes*60000);
     };
@@ -430,13 +450,22 @@ script:
         var md = '### Zendesk ticket #' + resDetails.ticket.id + " - " + resDetails.ticket.subject + "\n";
         var ec = {}
         var usersEc = {}
+        var org = {};
         var newContext = {};
 
         md += 'Requester: __' + getUserName(resDetails.ticket.requester_id) + '__\n';
         usersEc[resDetails.ticket.requester_id]=getUserName(resDetails.ticket.requester_id);
+        if (resDetails.ticket.organization_id) {
+            org = getOrganizationDetails(resDetails.ticket.organization_id);
+            md += 'Organization: __' + org.name + '__ (' + org.tags.join(', ') +')\n';
+        }
+
+
+
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
         md += 'Priority: __' + resDetails.ticket.priority + '__\n';
         md += 'Status: __' + resDetails.ticket.status + '__\n';
+
 
         if (resDetails.ticket.assignee_id) {
             md += 'Assignee: __' + getUserName(resDetails.ticket.assignee_id) + '__\n';
@@ -516,12 +545,20 @@ script:
             TicketDetails: resDetails,
             TicketComments: resComments,
             Users: usersEc,
+            Org: org,
             CustomFields: fieldsEc
         }
 
         return({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
     };
 
+    var getArticle = function() {
+        var locale = (args.locale) ?  args.locale : 'en-us';
+        var id = args.articleID;
+        var url = 'help_center/' + locale + '/articles/' + id + '.json';
+        res = sendRequest('GET', url);
+        return ( {ContentsFormat: formats.html, Type: entryTypes.note, Contents: res.article.body} );
+    }
 
     var getAttachment = function() {
         var attachmentId = getAttachmentId();
@@ -650,9 +687,15 @@ script:
         case 'zendesk-get-attachment':
             return getAttachment();
 
+        case 'zendesk-get-article':
+            return getArticle();
+
         case 'zendesk-clear-cache':
             setIntegrationContext({});
             return 'Cache cleared';
+
+        case 'zendesk-add-user':
+            return addUser();
 
         case 'fetch-incidents':
             return fetchIncidents();
@@ -820,9 +863,9 @@ script:
   - name: zendesk-add-comment
     arguments:
     - name: comment
-      description: Comment text to add
       required: true
       default: true
+      description: Comment text to add
     - name: private
       auto: PREDEFINED
       predefined:
@@ -864,4 +907,23 @@ script:
   - name: zendesk-clear-cache
     arguments: []
     description: Clear the Zendesk integration cache
+  - name: zendesk-add-user
+    arguments:
+    - name: name
+      required: true
+      description: User full name
+    - name: email
+      required: true
+      description: User email address
+    description: Adds an end-user
+  - name: zendesk-get-article
+    arguments:
+    - name: articleID
+      required: true
+      default: true
+      description: Article ID to get
+    - name: locale
+      description: Locale. Defaults to en-us
+    description: Get Zendesk Help Center article
   isfetch: true
+releaseNotes: Added zendesk-add-user for adding end users. Added zendesk-get-article to get help center article
