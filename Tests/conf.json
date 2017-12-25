@@ -132,7 +132,8 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Demo Playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1200
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
@@ -162,10 +163,14 @@
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
         },
-                {
+        {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
+        },
+        {
+            "integrations": "Symantec MSS",
+            "playbookID": "SymantecMSSTest"
         }
     ]
 }
