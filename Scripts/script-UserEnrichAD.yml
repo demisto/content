@@ -1,6 +1,6 @@
 commonfields:
   id: UserEnrichAD
-  version: 7
+  version: -1
 name: UserEnrichAD
 script: demisto.results( demisto.executeCommand("ADGetUser", demisto.args()))
 type: python
