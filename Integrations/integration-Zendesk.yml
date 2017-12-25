@@ -142,8 +142,7 @@ script:
 
     var getOrganizationDetails = function(id) {
         var res = sendRequest('GET', 'organizations/' + id + '.json');
-        var org = res.organization;
-        return org;
+        return res.organization;
     };
 
 
@@ -406,7 +405,7 @@ script:
         };
 
         res = sendRequest('POST', 'users/create_or_update.json', JSON.stringify(body));
-        md = 'Zendesk user added successfuly.\n';
+        md = 'Zendesk user added successfuly - ' + args.name + ' (' + args.email + ')\n';
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
@@ -444,7 +443,8 @@ script:
         usersEc[resDetails.ticket.requester_id]=getUserName(resDetails.ticket.requester_id);
         if (resDetails.ticket.organization_id) {
             org = getOrganizationDetails(resDetails.ticket.organization_id);
-            md += 'Organization: __' + org.name + '__ (' + org.tags.join(', ') +')\n';
+            var tags = (org.tags && org.tags.length > 0) ? ' (' + org.tags.join(', ') + ')' : '';
+            md += 'Organization: __' + org.name + '__' + tags +'\n';
         }
 
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
@@ -526,16 +526,15 @@ script:
             TicketDetails: resDetails,
             TicketComments: resComments,
             Users: usersEc,
-            Org: org,
+            Organization: org,
             CustomFields: fieldsEc
         }
         return({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
     };
 
     var getArticle = function() {
-        var locale = (args.locale) ?  args.locale : 'en-us';
-        var id = args.articleID;
-        var url = 'help_center/' + locale + '/articles/' + id + '.json';
+        var locale = args.locale || 'en-us';
+        var url = 'help_center/' + locale + '/articles/' + args.articleID + '.json';
         res = sendRequest('GET', url);
         return ( {ContentsFormat: formats.html, Type: entryTypes.note, Contents: res.article.body} );
     }
