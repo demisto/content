@@ -1,0 +1,504 @@
+commonfields:
+  id: Kenna
+  version: -1
+name: Kenna
+display: Kenna
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: Kenna is a Risk Intelligence & Vulnerability platform that enables InfoSec
+  teams to prioritize and remediate vulns faster.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://api.kennasecurity.com
+  type: 0
+  required: false
+- display: Kenna API key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |
+    var API_KEY = params.key;
+    var URL = params.url.replace(/[\/]+$/, '');
+
+    function searchVulnerabilities(args) {
+        var urlQuery = {};
+            argKeys = Object.keys(args);
+            for (var i = 0; i < argKeys.length; i++) {
+                if (argKeys[i] === 'min-score') {
+                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                } else {
+                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                }
+            }
+        var res = searchVulnerabilitiesRequest(urlQuery);
+
+        var hr = [];
+        var context = {};
+        context.Kenna = [];
+        for (var i = 0; i < res.length; i++) {
+
+            hr[i] = {
+                'ID' : res[i].id,
+                'Score' : res[i].risk_meter_score,
+                'Name' : res[i].cve_id
+            };
+
+            context.Kenna[i]={};
+            context.Kenna[i].AssetID = res[i].asset_id;
+            context.Kenna[i].Connectors = [];
+            for (var j = 0; j < res[i].connectors.length; j++) {
+                context.Kenna[i].Connectors[j] = {};
+                context.Kenna[i].Connectors[j].DefinitionName = res[i].connectors[j].connector_definition_name;
+                context.Kenna[i].Connectors[j].ID = res[i].connectors[j].id;
+                context.Kenna[i].Connectors[j].Name = res[i].connectors[j].name;
+                context.Kenna[i].Connectors[j].Vendor = res[i].connectors[j].vendor;
+            }
+            context.Kenna[i].CveID = res[i].cve_id;
+            context.Kenna[i].FixID = res[i].fix_id;
+            context.Kenna[i].ID = res[i].id;
+            context.Kenna[i].Patch = res[i].patch;
+            context.Kenna[i].RiskMeterScore = res[i].risk_meter_score;
+            context.Kenna[i].ScannerVulnerabilities = [];
+            for (var j = 0; j < res[i].scanner_vulnerabilities.length; j++) {
+                context.Kenna[i].ScannerVulnerabilities[j] = {};
+                context.Kenna[i].ScannerVulnerabilities[j].ExternalID = res[i].scanner_vulnerabilities[j].external_unique_id;
+                context.Kenna[i].ScannerVulnerabilities[j].Open = res[i].scanner_vulnerabilities[j].open;
+                context.Kenna[i].ScannerVulnerabilities[j].Port = res[i].scanner_vulnerabilities[j].port;
+            }
+            context.Kenna[i].Score = res[i].score;
+            if (res[i].service_ticket) {
+                context.Kenna[i].ServiceTicket = {};
+                context.Kenna[i].ServiceTicket.DueDate = res[i].service_ticket.due_date;
+                context.Kenna[i].ServiceTicket.ExternalIdentifier = res[i].service_ticket.external_identifier;
+                context.Kenna[i].ServiceTicket.Status = res[i].service_ticket.status;
+                context.Kenna[i].ServiceTicket.TicketType = res[i].service_ticket.ticket_type;
+            }
+            context.Kenna[i].Severity = res[i].severity;
+            context.Kenna[i].Status = res[i].status;
+            context.Kenna[i].Threat = res[i].threat;
+            context.Kenna[i].TopPriority = res[i].top_priority;
+        }
+
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            EntryContext : context,
+            HumanReadable: tableToMarkdown('Kenna Vulnerabilities', hr)
+        };
+    }
+
+    function searchVulnerabilitiesRequest(urlQuery) {
+        var requestUrl = URL + '/vulnerabilities/search' + encodeToURLQuery(urlQuery);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var response = JSON.parse(res.Body);
+        return response.vulnerabilities;
+    }
+
+
+    function getConnectors() {
+        var connectors = getConnectorsRequest();
+        var hr = [];
+        var context = {
+            Kenna: {}
+        };
+        context.Kenna.ConnectorsList = []
+        for (var i = 0; i < connectors.length; i++) {
+            var connector = connectors[i];
+            hr[i] = {
+                'Host' : connector.host,
+                'Name' : connector.name,
+                'Running' : connector.running,
+                'ID' : connector.id
+            };
+            context.Kenna.ConnectorsList[i] = {};
+            context.Kenna.ConnectorsList[i].ID = connector.id;
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: connectors,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            EntryContext : context,
+            HumanReadable: tableToMarkdown('Kenna Connectors', hr)
+        };
+    }
+
+    function getConnectorsRequest() {
+        var requestUrl = URL + '/connectors';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var response = JSON.parse(res.Body);
+        return response.connectors;
+    }
+
+    function runConnector(id) {
+        var response = runConnectorRequest(id);
+        if (response.success === 'true') {
+            return 'Connector ran successfully!';
+        } else {
+            return 'Could not run connector.';
+        }
+    }
+
+    function runConnectorRequest(id) {
+        var requestUrl = URL + '/connectors/' + id + '/run';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    function searchFixes(args) {
+        var urlQuery = {};
+            argKeys = Object.keys(args);
+            for (var i = 0; i < argKeys.length; i++) {
+                if (argKeys[i] === 'min-score') {
+                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                } else {
+                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                }
+            }
+        var res = searchFixesRequest(urlQuery);
+
+        var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
+        var hr = '';
+        for (var i = 0; i < res.length; i++) {
+            hr += res[i].title + '\n';
+            hr += res[i].vuln_count + ' vulnerabilities affected\n';
+            hr += '#### Diagnosis:\n';
+            hr += res[i].diagnosis.replace(rex,' ') + '\n' + '&nbsp;' + '\n';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            HumanReadable: hr
+        };
+    }
+
+    function searchFixesRequest(urlQuery) {
+        var requestUrl = URL + '/fixes' + encodeToURLQuery(urlQuery);
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var response = JSON.parse(res.Body);
+        return response.fixes;
+    }
+
+    function updateAsset(id, notes) {
+        var body = {
+            'asset': {
+                'notes': notes
+            }
+        };
+        var statusCode = updateAssetRequest(id, body);
+        if (statusCode === 204) {
+            return 'Asset ' + id +' was updated.';
+        } else {
+            return 'Could not update asset.';
+        }
+    }
+
+    function updateAssetRequest(id, body) {
+        var requestUrl = URL + '/assets/' + id;
+        var res = http(
+            requestUrl,
+            {
+                Method: 'PUT',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.StatusCode;
+    }
+
+    function updateVulnerability(id, notes, status) {
+        if (!status && !notes) {
+            throw 'Please insert arguments to update.'
+        }
+        var body = {};
+        body['vulnerability'] = {};
+        if (status) {
+            body['vulnerability']['status'] = status;
+        }
+        if (notes) {
+            body['vulnerability']['notes'] = notes;
+        }
+        var statusCode = updateVulnerabilityRequest(id, body);
+        if (statusCode === 204) {
+            return 'Vulnerability ' + id +' was updated.';
+        } else {
+            return 'Could not update vulnerability.';
+        }
+    }
+
+    function updateVulnerabilityRequest(id, body) {
+        var requestUrl = URL + '/vulnerabilities/' + id;
+        var res = http(
+            requestUrl,
+            {
+                Method: 'PUT',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res.StatusCode;
+    }
+
+    function testRequest() {
+        var requestUrl = URL + '/assets';
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'X-Risk-Token': [API_KEY],
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+    }
+
+    switch (command) {
+        case 'test-module':
+            // Tests Authentication
+            testRequest();
+            return 'ok';
+        case 'kenna-search-vulnerabilities':
+            return searchVulnerabilities(args);
+        case 'kenna-get-connectors':
+            return getConnectors();
+        case 'kenna-run-connector':
+            return runConnector(args.id);
+        case 'kenna-search-fixes':
+            return searchFixes(args);
+        case 'kenna-update-asset':
+            return updateAsset(args.id, args.notes);
+        case 'kenna-update-vulnerability':
+            return updateVulnerability(args.id, args.notes, args.status);
+        default:
+    }
+  type: javascript
+  commands:
+  - name: kenna-search-vulnerabilities
+    arguments:
+    - name: id
+      description: Vulnerability ID to search
+    - name: top-priority
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filtering vulnerabilities by those that Kenna recommends should
+        be a top priority to fix
+    - name: min-score
+      description: Find all vulnerabilities with scores greater than this value
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      description: Status of the vulnerability
+    outputs:
+    - contextPath: Kenna.AssetID
+      description: Asset ID related to vulnerability
+    - contextPath: Kenna.Connectors.DefinitionName
+      description: Connector definition name related to vulnerability
+    - contextPath: Kenna.Connectors.ID
+      description: Connector ID related to vulnerability
+    - contextPath: Kenna.Connectors.Name
+      description: Connector name related to vulnerability
+    - contextPath: Kenna.Connectors.Vendor
+      description: Connector vendor related to vulnerability
+    - contextPath: Kenna.CveID
+      description: CVE ID related to vulnerability
+    - contextPath: Kenna.FixID
+      description: Fix ID related to vulnerability
+    - contextPath: Kenna.Patch
+      description: There is patch related to vulnerability
+    - contextPath: Kenna.RiskMeterScore
+      description: Risk meter score of vulnerability
+    - contextPath: Kenna.ScannerVulnerabilities.ExternalID
+      description: Vulnerability scanner external ID
+    - contextPath: Kenna.ScannerVulnerabilities.Open
+      description: Vulnerability scanner is open
+    - contextPath: Kenna.ScannerVulnerabilities.Port
+      description: Vulnerability scanner port
+    - contextPath: Kenna.Score
+      description: Vulnerability score
+    - contextPath: Kenna.ServiceTicket.DueDate
+      description: 'Service ticket due date '
+    - contextPath: Kenna.ServiceTicket.ExternalIdentifier
+      description: Service ticket external identifier
+    - contextPath: Kenna.ServiceTicket.Status
+      description: Service ticket status
+    - contextPath: Kenna.ServiceTicket.TicketType
+      description: Service ticket type
+    - contextPath: Kenna.Severity
+      description: Vulnerability severity
+    - contextPath: Kenna.Status
+      description: Vulnerability status
+    - contextPath: Kenna.Threat
+      description: Vulnerability threat
+    - contextPath: Kenna.TopPriority
+      description: Vulnerability is top priority
+    description: Filters vulnerabilities by a given set of parameters and returns
+      the filtered vulnerabilities
+  - name: kenna-get-connectors
+    arguments: []
+    outputs:
+    - contextPath: Kenna.ConnectorsList.ID
+      description: Connector ID
+    description: Returns all of your connectors
+  - name: kenna-run-connector
+    arguments:
+    - name: id
+      required: true
+      description: Connector ID to run
+    description: Schedules a run of a connector. If file based, it will use most recently
+      uploaded data file
+  - name: kenna-search-fixes
+    arguments:
+    - name: id
+      description: Vulnerability ID to search
+    - name: top-priority
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filtering vulnerabilities by those that Kenna recommends should
+        be a top priority to fix
+    - name: min-score
+      description: Find all vulnerabilities with scores greater than this value
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      description: Status of the vulnerability
+    description: Filters fixes by a given set of vulnerability and asset parameters
+      and returns the filtered fixes
+  - name: kenna-update-asset
+    arguments:
+    - name: id
+      required: true
+      description: The id of an Asset to be updated
+    - name: notes
+      required: true
+      description: Notes about an asset
+    description: Update a single asset's attributes by ID
+  - name: kenna-update-vulnerability
+    arguments:
+    - name: id
+      required: true
+      description: The id of an vulnerability to be updated
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      description: The status of a vulnerability
+    - name: notes
+      description: Notes about a vulnerability
+    description: Update a single vulnerability's attributes by ID

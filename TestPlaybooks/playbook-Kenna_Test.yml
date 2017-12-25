@@ -1,0 +1,195 @@
+id: Kenna Test
+version: -1
+name: Kenna Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32a2ac41-4b38-4869-8ede-0bf9cd114c43
+    type: start
+    task:
+      id: 32a2ac41-4b38-4869-8ede-0bf9cd114c43
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 1c401ee2-3c06-4ee3-80dc-423d90dfaac5
+    type: regular
+    task:
+      id: 1c401ee2-3c06-4ee3-80dc-423d90dfaac5
+      version: -1
+      name: kenna-get-connectors
+      description: Returns all of your connectors
+      script: Kenna|||kenna-get-connectors
+      type: regular
+      iscommand: true
+      brand: Kenna
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 7a66ece3-faf3-4e32-85c7-39d6aa03c76d
+    type: regular
+    task:
+      id: 7a66ece3-faf3-4e32-85c7-39d6aa03c76d
+      version: -1
+      name: kenna-run-connector
+      description: Schedules a run of a connector. If file based, it will use most
+        recently uploaded data file
+      script: Kenna|||kenna-run-connector
+      type: regular
+      iscommand: true
+      brand: Kenna
+    scriptarguments:
+      id:
+        simple: ${Kenna.ConnectorsList.ID}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    taskid: baa1d405-a1f9-45f4-87ee-3eb5d9a466a3
+    type: regular
+    task:
+      id: baa1d405-a1f9-45f4-87ee-3eb5d9a466a3
+      version: -1
+      name: kenna-search-vulnerabilities
+      description: Filters vulnerabilities by a given set of parameters and returns
+        the filtered vulnerabilities
+      script: Kenna|||kenna-search-vulnerabilities
+      type: regular
+      iscommand: true
+      brand: Kenna
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    scriptarguments:
+      id: {}
+      min-score: {}
+      status: {}
+      top-priority: {}
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 230
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 85961c79-693c-4883-82b5-8f87d9e7ad91
+    type: regular
+    task:
+      id: 85961c79-693c-4883-82b5-8f87d9e7ad91
+      version: -1
+      name: kenna-search-fixes
+      description: Filters fixes by a given set of vulnerability and asset parameters
+        and returns the filtered fixes
+      script: Kenna|||kenna-search-fixes
+      type: regular
+      iscommand: true
+      brand: Kenna
+    scriptarguments:
+      id: {}
+      min-score: {}
+      status: {}
+      top-priority: {}
+    view: |-
+      {
+        "position": {
+          "x": 53,
+          "y": 230
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 67541e6d-281e-430e-8b4c-f92d228d913c
+    type: regular
+    task:
+      id: 67541e6d-281e-430e-8b4c-f92d228d913c
+      version: -1
+      name: kenna-update-asset
+      description: Update a single asset's attributes by ID
+      script: Kenna|||kenna-update-asset
+      type: regular
+      iscommand: true
+      brand: Kenna
+    scriptarguments:
+      id:
+        simple: ${Kenna.[1].AssetID}
+      notes:
+        simple: Test Notes
+    view: |-
+      {
+        "position": {
+          "x": 846,
+          "y": 410
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 19bcfdf6-85e7-4e34-8a16-2e2f780b7def
+    type: regular
+    task:
+      id: 19bcfdf6-85e7-4e34-8a16-2e2f780b7def
+      version: -1
+      name: kenna-update-vulnerability
+      description: Update a single vulnerability's attributes by ID
+      script: Kenna|||kenna-update-vulnerability
+      type: regular
+      iscommand: true
+      brand: Kenna
+    scriptarguments:
+      id:
+        simple: ${Kenna.[1].ID}
+      notes:
+        simple: Test Notes
+      status: {}
+    view: |-
+      {
+        "position": {
+          "x": 1244,
+          "y": 410
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 1571,
+        "x": 53,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

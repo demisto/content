@@ -16,7 +16,7 @@ script: |-
   from collections import OrderedDict
 
   import xml.etree.cElementTree as ET
-  
+
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
   formats = {'html': 'html', 'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
   brands = {'xfe': 'xfe', 'vt': 'virustotal', 'wf': 'WildFire', 'cy': 'cylance', 'cs': 'crowdstrike-intel'}
@@ -198,19 +198,42 @@ script: |-
               return dSub[k] + strRegistryPath[len(k):]
       return strRegistryPath
 
-  def formatCell(data):
+
+  class IntegrationLogger(object):
+      def __init__(self, ):
+          self.messages = []
+
+      def __call__(self, message):
+          self.messages.append('%s' % (message, ))
+
+      def print_log(self, ):
+          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+          demisto.log(text)
+          demisto.info(text)
+
+  '''
+  a logger for oython integrations:
+  use LOG(<message>) to add a record to the logger (message can be any object with __str__)
+  use LOG.print_log() to display all records in War-Room and server log.
+  '''
+  LOG = IntegrationLogger()
+
+
+  def formatCell(data, is_pretty=True):
+      l_format = '\n' if is_pretty else ''
       if type(data) in [unicode, str]:
           return data
       elif isinstance(data, dict):
-          return '\n'.join([k + ': ' + flattenCell(data[k]) for k in data])
+          return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
       else:
-          return flattenCell(data)
+          return flattenCell(data, is_pretty)
 
-  def flattenCell(data):
+  def flattenCell(data, is_pretty=True):
+      indent = 4 if is_pretty else None
       if type(data) in [unicode, str]:
           return data
       else:
-          return json.dumps(data, indent=4)
+          return json.dumps(data, indent=indent)
 
   def FormatIso8601(t):
       return t.strftime("%Y-%m-%dT%H:%M:%S")
@@ -244,37 +267,137 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers = None):
-    # in case of headers was not provided (backward compatibility)
-    if not headers:
-        headers = t[0].keys()
+  def tableToMarkdown(name, t, headers=None):
+      '''
+      Converts a demisto table in JSON form to a Markdown table
+      @param {String} name - the name of the table
+      @param {Object(s)} t - the JSON table - Array of objects with the same keys or a single objects
+      @param {list} headers - optinal, the output markdown table will show only these headers (by order)
+      @returns {string} array from the original string-list
+      '''
+      if not isinstance(t, list):
+          t = [t]
+      # in case of headers was not provided (backward compatibility)
+      if not headers:
+          headers = t[0].keys()
 
-    mdResult = ''
-    if name:
-        mdResult = '### ' + name + '\n'
+      mdResult = ''
+      if name:
+          mdResult = '### ' + name + '\n'
 
-    if t:
-        if len(headers) == 1:
-          mdResult += headers[0]+'|' + '\n'
-        else:
-          mdResult += '|'.join(headers) + '\n'
-        sep = '-'
-        if len(headers) == 1:
-          sep = '-|'
-        mdResult += '|'.join([sep] * len(headers)) + '\n'
-        for entry in t:
-            vals = [(formatCell(entry[h]) if h in entry else '') for h in headers]
-            if len(vals) == 1:
-              mdResult += vals[0]+'|' + '\n'
-            else:
-              mdResult += '|'.join(vals) + '\n'
-    else:
-        mdResult += '**No entries.**\n'
-    return mdResult
-    
-    
+      if t:
+          if len(headers) == 1:
+              mdResult += headers[0]+'|' + '\n'
+          else:
+              mdResult += '|'.join(headers) + '\n'
+
+          sep = '-'
+          if len(headers) == 1:
+              sep = '-|'
+          mdResult += '|'.join([sep] * len(headers)) + '\n'
+          for entry in t:
+              vals = [(formatCell(entry[h], False) if h in entry else '') for h in headers]
+              if len(vals) == 1:
+                  mdResult += vals[0] + '|' + '\n'
+              else:
+                  mdResult += '|'.join(vals) + '\n'
+      else:
+          mdResult += '**No entries.**\n'
+      return mdResult
+
+
   tblToMd = tableToMarkdown
 
+  def createContextSingle(obj, id=None):
+      res = {}
+      keys = obj.keys()
+      for key in keys:
+          values = key.split('.')
+          current = res
+          for v in values[:-1]:
+              current.setdefault(v, {})
+              current = current[v]
+          current[values[-1]] = obj[key]
+
+      if id is not None:
+          res.setdefault('ID', id)
+      return res
+
+
+  def createContext(data, id=None):
+      if isinstance(data, (list, tuple)):
+          return [createContextSingle(d, id) for d in data]
+      else:
+          return createContextSingle(data, id)
+
+
+  def mapSingleObj(obj, mapFields, filter_func=None):
+      if filter_func is None:
+          filter_func = lambda mf: True
+
+      d = {}
+      for f in mapFields:
+          if filter_func(f):
+              d[f['to']] = demisto.dt(obj, f['from'])
+
+      return d
+
+
+  def mapObj(content, mapFields, filter_func=None):
+      '''
+      Converts object fields according to mapping dictionary
+      @param content - original content to copy
+      @param mapFields - an object assosiating source and destination object fields
+      @filter_func - function to filter out fields
+      @returns the mapped object
+      '''
+      if isinstance(content, (list, tuple)):
+          return [mapSingleObj(item, mapFields, filter_func) for item in content]
+      else:
+          return mapSingleObj(content, mapFields, filter_func)
+
+
+  def createEntry(result, translator, MDfilter=None):
+      '''
+      Creates war room entry
+      @param {dict} result - the raw result to be parsed
+      @param {dict} translator - maps raw data to war room output. Should be of the following format:
+      {
+        contextPath: <context-path>,
+        title: <war-room-title>,
+        innerPath: (optional) path to the root of all data in result dictionary.
+        data: [
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              ...
+          ]
+      }
+      * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
+      * dest-key is also used for war room table headers
+      * humanReadable states whether field should appear in war room table. Default is true.
+      @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+      @returns {dict} - the war room entry
+      '''
+      # filters out all fields where humanReadable is false
+      if MDfilter is None:
+          MDfilter = lambda mf: mf.get('humanReadable', True)
+
+      entry = {
+          'Type': entryTypes['note'],
+          'Contents': result,
+          'ContentsFormat': formats['json'],
+          'ReadableContentsFormat': formats['markdown'],
+      }
+
+      content = demisto.dt(result, translator['innerPath']) if 'innerPath' in translator else result;
+      translatedMD = mapObj(content, translator['data'], MDfilter)
+      entry['HumanReadable'] = tableToMarkdown(translator['title'], translatedMD)
+
+      translatedContext = mapObj(content, translator['data'])
+      context = createContext(translatedContext)
+      entry['EntryContext'] = {translator['contextPath'] : context}
+
+      return entry
 
   def sectionsToMarkdown(root):
       mdResult = ''
@@ -293,7 +416,7 @@ script: |-
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
-      
+
 
   def file_result_existing_file(filename, saveFilename = None):
       """ Create a file result from an existing file by moving it into the right file name """
@@ -309,7 +432,7 @@ script: |-
 
   def flattenTable(tableDict):
       return [flattenRow(row) for row in tableDict]
- 
+
   MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
@@ -542,3 +665,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Removed dq implementation, using demisto.dt instead"
