@@ -121,6 +121,15 @@
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
       "enhancementScriptNames": ["cveSearch"]
+    },
+    {
+      "id": "userRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "user",
+      "enhancementScriptNames": ["UserEnrichAD"]
     }
-  ]
+  ],
+  "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
 }
