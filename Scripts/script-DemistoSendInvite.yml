@@ -54,3 +54,8 @@ args:
   required: true
   description: Roles of invited user
 scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+  - demisto-api-get
+releaseNotes: "-"
