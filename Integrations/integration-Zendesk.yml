@@ -258,7 +258,6 @@ script:
         }
 
         var ticket = {};
-
         for (var key in args) {
             if (key !== 'comment' &&
                 key !== 'private' &&
@@ -351,7 +350,6 @@ script:
                 var tmpKey = arrCust[i].split('=');
                 dicCustStr[tmpKey[0]] = tmpKey[1];
             }
-
             var arrRes = [];
 
             for (strKey in dicCustStr) {
@@ -360,10 +358,8 @@ script:
                     value: dicCustStr[strKey]
                 })
             }
-
             body.ticket.custom_fields = arrRes;
         }
-
         for (var key in args) {
             if (key !== 'id' &&
                 key !== 'requester_email' &&
@@ -373,18 +369,14 @@ script:
                 ec['Ticket(val.id == ' + ticketId + ').' + key] = args[key];
             }
         }
-
         res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
-
         md += 'Ticket number ' + ticketId + ' has been updated successfully.\n';
-
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
 
     var addComment = function() {
         var ticketId = getTicketId();
-
         var md = '## Zendesk tickets\n';
         var isPublic = (args.private === 'no') ? true : false;
         var comment = args.comment;
@@ -400,16 +392,12 @@ script:
                     }
                 }
             };
-
         res = sendRequest('PUT', 'tickets/' + ticketId + '.json', JSON.stringify(body));
-
         md += 'Comment added successfully.\n';
-
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
 
     var addUser = function() {
-
         var body = {
                 user: {
                     name: args.name,
@@ -425,7 +413,6 @@ script:
     var addMinutes = function(date, minutes) {
             return new Date(date.getTime() + minutes*60000);
     };
-
 
     var getNowTime = function(minutesOffset) {
             var time = new Date();
@@ -460,12 +447,9 @@ script:
             md += 'Organization: __' + org.name + '__ (' + org.tags.join(', ') +')\n';
         }
 
-
-
         md += 'Created time: __' + resDetails.ticket.created_at + '__\n';
         md += 'Priority: __' + resDetails.ticket.priority + '__\n';
         md += 'Status: __' + resDetails.ticket.status + '__\n';
-
 
         if (resDetails.ticket.assignee_id) {
             md += 'Assignee: __' + getUserName(resDetails.ticket.assignee_id) + '__\n';
@@ -507,8 +491,6 @@ script:
             resComments.comments[0].attachments.forEach(function(attachment) {
                 md += '- ' +  attachment.id.toString() + ': ' + attachment.file_name + '\n';
             });
-
-
         }
 
         // starting at 1, as the first comment is actually the ticket description
@@ -540,7 +522,6 @@ script:
             ec.Ticket = newContext;
         }
 
-
         var res = {
             TicketDetails: resDetails,
             TicketComments: resComments,
@@ -548,7 +529,6 @@ script:
             Org: org,
             CustomFields: fieldsEc
         }
-
         return({ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec})
     };
 
@@ -576,7 +556,6 @@ script:
         return ({Type: 3, FileID: createdFileID, File: res.attachment.file_name, Contents: res.attachment.file_name});
     };
 
-
     var listAgents = function() {
         res = sendRequest('GET', 'users.json?role[]=agent&role[]=admin');
         var md = '## Zendesk user details\n';
@@ -600,7 +579,6 @@ script:
                 timeZone: res.users[i].time_zone
             });
         }
-
         return ( {ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md, EntryContext: ec} );
     };
 
@@ -646,13 +624,10 @@ script:
 
                 labels = [];
             }
-
             setLastRun({'time': res.results[0].created_at});
         }
-
         return JSON.stringify(incidents);
     }
-
 
     switch (command) {
         // This is the call made when pressing the integration test button.
@@ -663,7 +638,6 @@ script:
                 res.user.id) {
                 return 'ok';
             }
-
             return JSON.stringify(res);
 
         case 'zendesk-create-ticket':
@@ -701,6 +675,7 @@ script:
             return fetchIncidents();
 
         default:
+            throw 'Zendesk: Unknown command';
     }
   type: javascript
   commands:
