@@ -1,0 +1,17 @@
+commonfields:
+  id: UserEnrichAD
+  version: 7
+name: UserEnrichAD
+script: demisto.results( demisto.executeCommand("ADGetUser", demisto.args()))
+type: python
+tags:
+- enhancement
+- active directory
+- user
+enabled: true
+args:
+- name: name
+  required: true
+  default: true
+  description: Name of user
+scripttarget: 0
