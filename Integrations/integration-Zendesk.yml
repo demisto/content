@@ -1,4 +1,4 @@
- commonfields:
+commonfields:
   id: Zendesk
   version: -1
 name: Zendesk
@@ -901,4 +901,4 @@ script:
       description: Locale. Defaults to en-us
     description: Get Zendesk Help Center article
   isfetch: true
-releaseNotes: Added zendesk-add-user for adding end users. Added zendesk-get-article to get help center article
+releaseNotes: "Added zendesk-add-user for adding end users. Added zendesk-get-article to get help center article"
