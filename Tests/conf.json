@@ -132,7 +132,8 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Demo Playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1200
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
