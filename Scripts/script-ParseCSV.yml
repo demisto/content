@@ -66,18 +66,20 @@ script: |
   res = demisto.executeCommand('getFilePath', {'id': entry['ID']})
   filePath = res[0]['Contents']['path']
   if parseAll:
-      allCsv = []
+      all_csv = []
       with open(filePath, mode='r') as f:
           records = csv.DictReader(f)
           for row in records:
-              allCsv.append(row)
+              all_csv.append(row)
 
+          ec = { 'ParseCSV.ParsedCSV': all_csv }
           demisto.results({
               "Type" : entryTypes["note"],
               "ContentsFormat" : formats["json"],
               "ReadableContentsFormat" : formats["markdown"],
-              "Contents" : allCsv,
-              "HumanReadable": tableToMarkdown(file, allCsv)
+              "Contents" : all_csv,
+              "EntryContext": ec,
+              "HumanReadable": tableToMarkdown(file, all_csv)
           })
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1:
@@ -148,7 +150,6 @@ script: |
               if len(hash)==40: context["File"].append({"SHA1" : hash})
 
   demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : content ,"HumanReadable" : md, "EntryContext": context })
-
 type: python
 tags:
 - file
@@ -188,6 +189,6 @@ outputs:
   description: SHA1 found in parsed file
 - contextPath: File.SHA256
   description: SHA256 found in parsed file
+- contextPath: ParseCSV.ParsedCSV
+  description: Parsed csv in form of JSON array
 scripttarget: 0
-timeout: 120s
-releaseNotes: "ParseCSV parse all the csv by default"
