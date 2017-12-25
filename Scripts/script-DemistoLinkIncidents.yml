@@ -45,3 +45,7 @@ args:
   description: Unlink incidents (default 'no')
   defaultValue: "no"
 scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+releaseNotes: "-"
