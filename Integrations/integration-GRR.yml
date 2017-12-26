@@ -34,8 +34,30 @@ script:
     var server = params.server + ':' + params.port;
     var insecure = params.insecure;
 
+    var getCSRFToken = function(url) {
+        var res = http(
+                url,
+                {
+                    Method: 'GET',
+                    Username: username,
+                    Password: password
+                },
+                insecure
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to get CSRF token, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        for (var ix in res.Cookies) {
+            if (res.Cookies[ix].Name.toLowerCase() == 'csrftoken') {
+                return res.Cookies[ix].Value;
+            }
+        }
+        return 'Failed to get CSRF token, Please verify credentials and check GRR logs.';
+    }
+
     var sendRequest = function(method, url, queryName, body) {
-        var csrfToken = '83838383838383838383838383';
+        var csrfToken = getCSRFToken(url);
         var res = http(
                 url,
                 {
@@ -567,4 +589,4 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
-releaseNotes: Fixed parsing of paths for grr_get_files
+releaseNotes: Fixed CSRF retrieval functionality
