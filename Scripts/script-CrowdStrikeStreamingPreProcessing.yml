@@ -3,8 +3,6 @@ commonfields:
   version: -1
 name: CrowdStrikeStreamingPreProcessing
 script: |-
-  import sys
-
   res = True
   for inc in demisto.incidents():
       host = ''
