@@ -1,0 +1,294 @@
+id: ArcSight Logger test
+version: -1
+name: ArcSight Logger test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9b8d709-708d-4b07-86ac-5fd2fc149e0a
+    type: start
+    task:
+      id: b9b8d709-708d-4b07-86ac-5fd2fc149e0a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: bbbcdeb5-0c34-4e16-8770-aa346c4a5751
+    type: regular
+    task:
+      id: bbbcdeb5-0c34-4e16-8770-aa346c4a5751
+      version: -1
+      name: Delete Context
+      description: Delete all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 915923af-de13-4cdd-82ab-a5116d12ced7
+    type: regular
+    task:
+      id: 915923af-de13-4cdd-82ab-a5116d12ced7
+      version: -1
+      name: Start Search Session
+      description: Start a search session with 'as-search' command
+      script: ArcSight Logger|||as-search
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      discover_fields: ""
+      end_time: ""
+      field_summary: ""
+      lastDays: ""
+      local_search: ""
+      query: ""
+      search_type: ""
+      start_time: ""
+      summary_fields: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a5a14007-1113-4aa4-83f6-04e81d04a768
+    type: regular
+    task:
+      id: a5a14007-1113-4aa4-83f6-04e81d04a768
+      version: -1
+      name: Narrow search time range
+      description: Narrow the search time range. Passing  lastDays=1
+      script: ArcSight Logger|||as-drilldown
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      end_time: ""
+      lastDays: "1"
+      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId: ${ArcSightLogger.Search.SessionId}
+      start_time: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 4f7407a0-fbe0-40c8-8ddf-58bd4d5cde0f
+    type: regular
+    task:
+      id: 4f7407a0-fbe0-40c8-8ddf-58bd4d5cde0f
+      version: -1
+      name: Find events
+      description: Limit list length to 10 events
+      script: ArcSight Logger|||as-events
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      dir: ""
+      fields: ""
+      length: "10"
+      offset: ""
+      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId: ${ArcSightLogger.Search.SessionId}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    taskid: c38f760a-f448-41d1-8029-a941b7e97c14
+    type: regular
+    task:
+      id: c38f760a-f448-41d1-8029-a941b7e97c14
+      version: -1
+      name: Close session
+      description: Close the search session
+      script: ArcSight Logger|||as-close
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId: ${ArcSightLogger.Search.SessionId}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    taskid: e7b4f762-27af-42b6-8c25-9d3bc6485fe4
+    type: regular
+    task:
+      id: e7b4f762-27af-42b6-8c25-9d3bc6485fe4
+      version: -1
+      name: Wait 2 seconds
+      description: Wait 2 seconds in order to aloow the search to be completed.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds: "2"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 7963a823-66bc-4f8a-88ac-91091586ae59
+    type: regular
+    task:
+      id: 7963a823-66bc-4f8a-88ac-91091586ae59
+      version: -1
+      name: Get search status
+      description: using 'as-search'
+      script: ArcSight Logger|||as-status
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId: ${ArcSightLogger.Search.SessionId}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 69a4ece6-0753-4cbe-8736-1184524bcf27
+    type: regular
+    task:
+      id: 69a4ece6-0753-4cbe-8736-1184524bcf27
+      version: -1
+      name: Delete Context
+      description: Delete all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 831a807e-a20d-4873-866f-9a27aaeb3b68
+    type: regular
+    task:
+      id: 831a807e-a20d-4873-866f-9a27aaeb3b68
+      version: -1
+      name: Search events
+      description: execute as-search-events. Limit length to 10 events.
+      script: ArcSight Logger|||as-search-events
+      type: regular
+      iscommand: true
+      brand: ArcSight Logger
+    scriptarguments:
+      dir: ""
+      discover_fields: ""
+      end_time: ""
+      field_summary: ""
+      fields: ""
+      lastDays: ""
+      length: "10"
+      local_search: ""
+      offset: ""
+      query: ""
+      start_time: ""
+      summary_fields: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 595,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
