@@ -1,0 +1,21 @@
+commonfields:
+  id: HostnameEnrichAD
+  version: -1
+name: HostnameEnrichAD
+script: demisto.results( demisto.executeCommand("ADGetComputer", demisto.args()))
+type: python
+comment: 'Enhancement automation for hostname type indicator, to enrich the hostname from Active Directory data'
+tags:
+- enhancement
+- active directory
+- hostname
+enabled: true
+args:
+- name: name
+  required: true
+  default: true
+  description: Name of the desired computer
+scripttarget: 0
+dependson:
+  must:
+  - ad-search

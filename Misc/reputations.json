@@ -123,12 +123,12 @@
       "enhancementScriptNames": ["cveSearch"]
     },
     {
-      "id": "userRep",
+      "id": "hostnameRep",
       "version": -1,
       "regex": "",
       "reputationScriptName": "",
-      "details": "user",
-      "enhancementScriptNames": ["UserEnrichAD"]
+      "details": "hostname",
+      "enhancementScriptNames": ["HostnameEnrichAD"]
     }
   ],
   "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
