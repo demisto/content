@@ -191,4 +191,4 @@ outputs:
   description: The Endpoint hostname
 - contextPath: Endpoint.Groups
   description: The groups the endpoint is part of
-releaseNotes: "Adding hostname indicator to ADGetComputer automation and making it enhancement script"
+releaseNotes: "Adding hostname indicator to ADGetComputer automation and making it enhancement script, also the default argument was changed from dn to name"
