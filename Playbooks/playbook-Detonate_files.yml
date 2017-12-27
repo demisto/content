@@ -14,6 +14,7 @@ tasks:
       id: b914ae63-e755-4b4b-8d46-da635ed2605b
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -63,6 +64,7 @@ tasks:
       id: 12cc937e-cdd5-47df-85af-11301187d67d
       version: -1
       name: Print that there are no relevant files to detonate
+      description: ""
       scriptName: Print
       type: regular
       iscommand: false
