@@ -13,7 +13,6 @@ tasks:
     task:
       id: b914ae63-e755-4b4b-8d46-da635ed2605b
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -46,8 +45,9 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
+      value:
+        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
     view: |-
       {
         "position": {
@@ -62,14 +62,14 @@ tasks:
     task:
       id: 12cc937e-cdd5-47df-85af-11301187d67d
       version: -1
-      description: ""
       name: Print that there are no relevant files to detonate
       scriptName: Print
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      value: There are no relevant files to detonate
+      value:
+        simple: There are no relevant files to detonate
     view: |-
       {
         "position": {
@@ -79,22 +79,31 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: fd843ede-25fb-4cc3-8611-d9d54d4e1de4
+    taskid: b442b416-304c-4b54-871a-f7d16c5c7c90
     type: regular
     task:
-      id: fd843ede-25fb-4cc3-8611-d9d54d4e1de4
+      id: b442b416-304c-4b54-871a-f7d16c5c7c90
       version: -1
-      name: SandboxDetonateFile
-      description: Detonate the file in available sandboxes.
-      scriptName: SandboxDetonateFile
+      name: DetonateFile (WildFire)
+      description: Detonate the file in WildFire.
+      script: WildFire|||detonate-file
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: WildFire
     scriptarguments:
-      entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
-      interval: ""
-      timeout: ""
+      delay: {}
+      entryID:
+        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
+      format: {}
+      hash: {}
+      interval: {}
+      md5: {}
+      timeout: {}
+      upload:
+        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
+      verbose: {}
     view: |-
       {
         "position": {
@@ -115,3 +124,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
