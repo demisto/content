@@ -128,7 +128,7 @@
       "regex": "",
       "reputationScriptName": "",
       "details": "hostname",
-      "enhancementScriptNames": ["HostnameEnrichAD"]
+      "enhancementScriptNames": ["ADGetComputer"]
     }
   ],
   "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
