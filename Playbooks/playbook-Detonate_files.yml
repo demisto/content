@@ -125,3 +125,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "Detonating files using the new command for it in WildFire"
