@@ -121,6 +121,15 @@
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
       "enhancementScriptNames": ["cveSearch"]
+    },
+    {
+      "id": "hostnameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "hostname",
+      "enhancementScriptNames": ["ADGetComputer"]
     }
-  ]
+  ],
+  "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
 }
