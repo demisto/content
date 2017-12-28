@@ -665,4 +665,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Removed dq implementation, using demisto.dt instead"
