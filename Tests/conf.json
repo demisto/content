@@ -146,13 +146,16 @@
             "playbookID": "TestHPServiceManager",
             "timeout": 400
         },
-                {
+        {
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
         },
         {
             "playbookID": "LanguageDetect-Test"
+        },
+        {
+            "playbookID": "TestParseCSV"
         },
         {
             "integrations": "ArcSight Logger",
