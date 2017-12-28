@@ -135,7 +135,9 @@ script: |-
           md = tableToMarkdown("Active Directory Computer", data, headers)
 
           context['Endpoint'] = createEndpointEntities(data,attrs)
-
+          for m in data:
+              if demisto.get(m,'name'):
+                  context['DBotScore'] = {'Indicator': m['name'], 'Type': 'hostname', 'Vendor': 'AD', 'Score': 0, 'isTypedIndicator': True}
       demisto.results({'Type' : entryTypes['note'],
                       'Contents': data,
                       'ContentsFormat' : formats['json'],
@@ -145,16 +147,18 @@ script: |-
 type: python
 tags:
 - active directory
+- enhancement
+- hostname
 comment: |-
   Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filters are provided, the result will show all computers.
 system: true
 args:
 - name: dn
-  default: true
   description: Active Directory Distinguished Name for the desired computer
 - name: name
   description: Name of the desired computer
+  default: true
 - name: attributes
   description: Include these AD attributes of the resulting objects in addition to
     the default ones
@@ -187,3 +191,4 @@ outputs:
   description: The Endpoint hostname
 - contextPath: Endpoint.Groups
   description: The groups the endpoint is part of
+releaseNotes: "Adding hostname indicator to ADGetComputer automation and making it enhancement script, also the default argument was changed from dn to name"
