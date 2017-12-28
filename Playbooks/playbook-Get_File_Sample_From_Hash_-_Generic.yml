@@ -1,0 +1,82 @@
+id: Get File Sample From Hash - Generic
+version: -1
+name: Get File Sample From Hash - Generic
+description: Returns to the war-room a file sample correlating from a hash using one
+  or more products
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+    type: start
+    task:
+      id: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 0b7870df-59a1-4498-8517-e0e47cc2ab42
+    type: playbook
+    task:
+      id: 0b7870df-59a1-4498-8517-e0e47cc2ab42
+      version: -1
+      description: ""
+      name: ""
+      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 32e791fc-de85-4053-807a-9c7251e0f3f3
+    type: playbook
+    task:
+      id: 32e791fc-de85-4053-807a-9c7251e0f3f3
+      version: -1
+      description: ""
+      name: ""
+      playbookName: Get File Sample From Hash - Cylance Protect
+      type: playbook
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
