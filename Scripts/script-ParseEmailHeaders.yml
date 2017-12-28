@@ -2,6 +2,7 @@ commonfields:
   id: ParseEmailHeader
   version: -1
 name: ParseEmailHeaders
+releaseNotes: Support multi values headers (e.g. Received header)
 script: |-
   from email.parser import HeaderParser
 
@@ -10,8 +11,8 @@ script: |-
 
   arrFiles = demisto.context()["File"];
   for file in arrFiles:
-      if file["EntryID"] == demisto.args()['entryId'] and file["Info"] == "eml":
-          # Get the file path of the email file as it lokated in Demisto server
+      if 'EntryID' in file and file["EntryID"] == demisto.args()['entryId'] and 'Info' in file and file["Info"] == "eml":
+          # Get the file path of the email file as it located in Demisto server
           filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryId']})[0]['Contents']['path']
 
           # Read the content of the file
@@ -22,10 +23,23 @@ script: |-
           parser = HeaderParser()
           h = parser.parsestr(fileContents)
 
-          # Print all the headers and add them to the context
+          # Add all the headers to context
           for key in h.keys():
-              md += key + " : " + h[key] + "\n"
-              ec["Email.Headers"][key] = h[key]
+              # Handle multi-values headers (e.g. Received header)
+              if key in ec["Email.Headers"]:
+                  ec["Email.Headers"][key] = []
+                  for line in h.get_all(key):
+                      ec["Email.Headers"][key].append(line)
+              else:
+                  ec["Email.Headers"][key] = h[key]
+
+          # Print all the headers
+          for hKey in ec["Email.Headers"]:
+              if type (ec["Email.Headers"][hKey]) == list:
+                  for value in ec["Email.Headers"][hKey]:
+                      md += hKey + " : " + value + "\n"
+              else:
+                  md += hKey + " : " + h[hKey] + "\n"
 
           demisto.results({"ContentsFormat": formats["json"], "Type": entryTypes["note"], "Contents": h.keys(), "HumanReadable": md, "EntryContext": ec})
       else:
