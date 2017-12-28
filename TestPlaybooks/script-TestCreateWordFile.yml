@@ -17,13 +17,9 @@ script: |
   try:
       document = Document()
       document.add_paragraph(args['text'])
-      demisto.log('1')
       target_stream = StringIO()
-      demisto.log('2')
       document.save(target_stream)
-      demisto.log('3')
       res = fileResult(args['name'], target_stream.getvalue())
-      demisto.log('4')
   except BaseException as e:
       errEntry["Contents"] = "Error occurred while creating the word file.\nException info: " + str(e)
       res = errEntry
