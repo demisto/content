@@ -7,8 +7,6 @@ script: |
   from docx import Document
   from docx.opc.exceptions import PackageNotFoundError
 
-  max_file_size = 1024 ** 2
-
   res = []
   errEntry = {
       "Type": entryTypes["error"],
@@ -38,7 +36,7 @@ script: |
 
   demisto.results(res)
 type: python
-tags: []
+tags: [word, docx, doc, parser]
 enabled: true
 args:
 - name: entryID
