@@ -1172,8 +1172,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            args['folders-ids'] = 'inbox';
-            execute('ews-get-folder', args);
+            execute('ews-get-searchable-mailboxes', args);
             return 'ok';
         case 'fetch-incidents':
             return fetchEmailsAsIncidents();
