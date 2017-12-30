@@ -1,0 +1,213 @@
+id: TestParseCSV
+version: -1
+name: TestParseCSV
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8e36c909-2bc4-4709-88de-edae1b665afc
+    type: start
+    task:
+      id: 8e36c909-2bc4-4709-88de-edae1b665afc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 7712d435-3667-4380-8256-83fc22eca1de
+    type: regular
+    task:
+      id: 7712d435-3667-4380-8256-83fc22eca1de
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 7689ebb9-bf97-48a6-812a-dbfae0d0edc3
+    type: regular
+    task:
+      id: 7689ebb9-bf97-48a6-812a-dbfae0d0edc3
+      version: -1
+      name: Set array in context so we could export it to csv file
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arr
+      value:
+        simple: '[{"sourceIP":"1.1.1.1","count":0},{"sourceIP":"2.2.2.2","count":1},{"sourceIP":"3.3.3.3","count":2}]'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 96dac9ff-2925-4885-8902-92ae8e8b66ff
+    type: regular
+    task:
+      id: 96dac9ff-2925-4885-8902-92ae8e8b66ff
+      version: -1
+      name: ExportToCSV to tata.csv
+      description: Export given array to csv file
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      csvArray:
+        simple: ${arr}
+      fileName:
+        simple: tata.csv
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: c39b0908-30d2-4f08-8062-9457c7949d6a
+    type: regular
+    task:
+      id: c39b0908-30d2-4f08-8062-9457c7949d6a
+      version: -1
+      name: ParseCSV tata.csv file
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domains: {}
+      file:
+        simple: tata.csv
+      hashes: {}
+      ips:
+        simple: "1"
+      parseAll:
+        simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 723
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 41c7af77-51f6-4c71-81e6-ea5c711f8013
+    type: regular
+    task:
+      id: 41c7af77-51f6-4c71-81e6-ea5c711f8013
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: ${ParseCSV.ParsedCSV}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 39da3a4f-3043-41c7-8302-aeb05fd91e1e
+    type: regular
+    task:
+      id: 39da3a4f-3043-41c7-8302-aeb05fd91e1e
+      version: -1
+      name: Verify that IP exported to context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: ${IP.Address}
+    view: |-
+      {
+        "position": {
+          "x": 56,
+          "y": 1125
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1170,
+        "width": 386,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

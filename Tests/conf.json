@@ -146,7 +146,7 @@
             "playbookID": "TestHPServiceManager",
             "timeout": 400
         },
-                {
+        {
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
@@ -156,6 +156,8 @@
         },
         {
             "playbookID": "TestFileToIOC"
+        },
+            "playbookID": "TestParseCSV"
         },
         {
             "integrations": "ArcSight Logger",
