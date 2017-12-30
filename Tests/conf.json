@@ -157,6 +157,7 @@
         {
             "playbookID": "TestFileToIOC"
         },
+        {
             "playbookID": "TestParseCSV"
         },
         {
