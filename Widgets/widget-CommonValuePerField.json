@@ -1,0 +1,27 @@
+{
+  "id": "2f30107a-cc95-4435-9db6-23edebd4c83b",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Common Value per Field",
+  "dataType": "incidents",
+  "widgetType": "list",
+  "query": "-category:job",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 7,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "params": {
+    "groupBy": [
+      "customFields"
+    ]
+  }
+}
