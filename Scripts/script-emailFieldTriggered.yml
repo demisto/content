@@ -16,5 +16,6 @@ script: |-
 type: javascript
 tags:
 - field-change-triggered
+comment: Sends email to incident owner when selected field is triggered.
 enabled: true
 scripttarget: 0
