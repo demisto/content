@@ -1,0 +1,491 @@
+{
+	"id": "097e5436-d8f0-49b7-a19d-a05c60ed1039",
+	"version": -1,
+	"fromDate": "2017-12-20T22:00:00Z",
+	"toDate": "0001-01-01T00:00:00Z",
+	"fromVersion": "3.5.0",
+	"period": {
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 7,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "Incidents",
+	"layout": [
+		{
+			"id": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "6b25afb6-7a95-4878-a24c-24cf067eb38a",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.707584527+02:00",
+				"name": "Active Incidents by Severity",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"severity"
+					]
+				}
+			}
+		},
+		{
+			"id": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 0,
+			"y": 6,
+			"i": "8fa3a770-e4ff-11e7-b60b-df7995291baf",
+			"w": 12,
+			"h": 2,
+			"widget": {
+				"id": "50e863f6-80f7-477a-b9d2-9483961d21cc",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.707063522+02:00",
+				"name": "Active Incidents by Type",
+				"dataType": "incidents",
+				"widgetType": "line",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"type"
+					]
+				}
+			}
+		},
+		{
+			"id": "90f554c0-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 0,
+			"y": 4,
+			"i": "90f554c0-e4ff-11e7-b60b-df7995291baf",
+			"w": 6,
+			"h": 2,
+			"widget": {
+				"id": "acd61a60-26f0-475f-8702-f36ccb16b08e",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.708689502+02:00",
+				"name": "Incident Severity by Type",
+				"dataType": "incidents",
+				"widgetType": "bar",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"severity",
+						"type"
+					]
+				}
+			}
+		},
+		{
+			"id": "91dc8070-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 0,
+			"y": 2,
+			"i": "91dc8070-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "2945de28-7c35-42f0-a87b-8e17eadd82da",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.709196548+02:00",
+				"name": "Incident Types by Severity",
+				"dataType": "incidents",
+				"widgetType": "bar",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"type",
+						"severity"
+					]
+				}
+			}
+		},
+		{
+			"id": "966d2c20-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 3,
+			"y": 0,
+			"i": "966d2c20-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2017-12-19T22:59:39.713469076+02:00",
+				"name": "Unassigned Incidents",
+				"dataType": "incidents",
+				"widgetType": "trend",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 0
+							},
+							"#FF1B15": {
+								"value": null
+							}
+						},
+						"type": "above"
+					}
+				}
+			}
+		},
+		{
+			"id": "99669600-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 9,
+			"y": 1,
+			"i": "99669600-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 3,
+			"widget": {
+				"id": "b2e42da2-79b3-4265-9a2a-60365eec4443",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.711564542+02:00",
+				"name": "Late Tasks by User",
+				"dataType": "system",
+				"widgetType": "bar",
+				"query": "late",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"systemType": "tasks"
+				}
+			}
+		},
+		{
+			"id": "9a62f760-e4ff-11e7-b60b-df7995291baf",
+			"forceRange": false,
+			"x": 9,
+			"y": 4,
+			"i": "9a62f760-e4ff-11e7-b60b-df7995291baf",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "2ce1f876-2258-49c5-8a53-8133d2e70438",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.712508458+02:00",
+				"name": "Open Tasks by User",
+				"dataType": "system",
+				"widgetType": "bar",
+				"query": "late",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"systemType": "tasks"
+				}
+			}
+		},
+		{
+			"id": "f1075600-e500-11e7-800d-976c2c50dc46",
+			"forceRange": false,
+			"x": 9,
+			"y": 0,
+			"i": "f1075600-e500-11e7-800d-976c2c50dc46",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "3873d737-11bd-43af-a5cd-c2bc15933a5a",
+				"version": 1,
+				"modified": "2017-12-19T22:59:39.712041402+02:00",
+				"name": "Late Tasks",
+				"dataType": "system",
+				"widgetType": "number",
+				"query": "late",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"systemType": "tasks"
+				}
+			}
+		},
+		{
+			"id": "708b6750-e5cd-11e7-9a5d-0b1192734a8d",
+			"forceRange": false,
+			"x": 6,
+			"y": 0,
+			"i": "708b6750-e5cd-11e7-9a5d-0b1192734a8d",
+			"w": 3,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2017-12-20T23:32:01.773535261+02:00",
+				"name": "Late Incidents",
+				"dataType": "incidents",
+				"widgetType": "trend",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": null
+							},
+							"#FAC100": {
+								"value": null
+							},
+							"#FF1B15": {
+								"value": 0
+							}
+						},
+						"type": "above"
+					}
+				}
+			}
+		},
+		{
+			"id": "48e91cf0-e5ce-11e7-b1b4-bde0ba5633cd",
+			"forceRange": false,
+			"x": 3,
+			"y": 1,
+			"i": "48e91cf0-e5ce-11e7-b1b4-bde0ba5633cd",
+			"w": 3,
+			"h": 3,
+			"widget": {
+				"id": "e9259d0a-4ba9-450d-8a9e-541c63495d92",
+				"version": 6,
+				"modified": "2017-12-20T23:39:18.562843107+02:00",
+				"name": "Unassigned Incidents",
+				"dataType": "incidents",
+				"widgetType": "list",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"\"",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name"
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "severity"
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": "619492c0-e5ce-11e7-b1b4-bde0ba5633cd",
+			"forceRange": false,
+			"x": 6,
+			"y": 1,
+			"i": "619492c0-e5ce-11e7-b1b4-bde0ba5633cd",
+			"w": 3,
+			"h": 3,
+			"widget": {
+				"id": "97bc3b97-097f-422e-aa44-c0729197d710",
+				"version": 6,
+				"modified": "2017-12-20T23:39:18.560485404+02:00",
+				"name": "Late Incidents",
+				"dataType": "incidents",
+				"widgetType": "list",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow",
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name"
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "dueDate"
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": "2ea3b0c0-e5cf-11e7-a986-a7031c643fca",
+			"forceRange": false,
+			"x": 6,
+			"y": 4,
+			"i": "2ea3b0c0-e5cf-11e7-a986-a7031c643fca",
+			"w": 3,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2017-12-20T23:44:27.468842392+02:00",
+				"name": "Incidents Assigned by User",
+				"dataType": "incidents",
+				"widgetType": "bar",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"owner"
+					],
+					"hideLegend": true
+				}
+			}
+		}
+	],
+	"isPredefined": true
+}
