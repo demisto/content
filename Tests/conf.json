@@ -22,13 +22,6 @@
             "playbookID": "Qualys-Test"
         },
         {
-            "integrations": {
-                "name": "google",
-                "byoi": false
-            },
-            "playbookID": "GsuiteTest"
-        },
-        {
             "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
@@ -163,6 +156,13 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": {
+                "name": "google",
+                "byoi": false
+            },
+            "playbookID": "GsuiteTest"
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
