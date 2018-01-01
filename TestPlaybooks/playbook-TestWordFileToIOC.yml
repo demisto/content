@@ -1,6 +1,6 @@
-id: TestFileToIOC
+id: TestWordFileToIOC
 version: -1
-name: TestFileToIOC
+name: TestWordFileToIOC
 description: Creates a test docx word file, parses it and runs various IOC extraction
   tasks.
 starttaskid: "0"
@@ -90,9 +90,9 @@ tasks:
     task:
       id: bae92b0f-dfcf-4f0b-8122-35094e534e89
       version: -1
-      name: RunWordParser
+      name: RunParseWordDoc
       description: Parses word files to text file
-      scriptName: WordParser
+      scriptName: ParseWordDoc
       type: regular
       iscommand: false
       brand: ""
