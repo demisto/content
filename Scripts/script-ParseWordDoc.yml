@@ -1,7 +1,7 @@
 commonfields:
-  id: WordParser
+  id: ParseWordDoc
   version: -1
-name: WordParser
+name: ParseWordDoc
 comment: Takes an input docx file (entryID) as an input and saves an output text file (file entry) with the original file's contents.
 script: |
   from docx import Document
