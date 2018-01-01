@@ -1,0 +1,25 @@
+{
+  "id": "3873d737-11bd-43af-a5cd-c2bc15933a5a",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Late Tasks",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "late",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 7,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "params": {
+    "systemType": "tasks"
+  }
+}
