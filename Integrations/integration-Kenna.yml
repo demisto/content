@@ -502,3 +502,4 @@ script:
     - name: notes
       description: Notes about a vulnerability
     description: Update a single vulnerability's attributes by ID
+releaseNotes: "-"
