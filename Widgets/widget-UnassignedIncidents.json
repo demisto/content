@@ -1,0 +1,38 @@
+{
+  "id": "e9259d0a-4ba9-450d-8a9e-541c63495d92",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Unassigned Incidents",
+  "dataType": "incidents",
+  "widgetType": "table",
+  "query": "-category:job and -status:archived and -status:closed and owner:\"\"",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 7,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "params": {
+    "tableColumns": [
+      {
+        "displayed": true,
+        "isDefault": true,
+        "key": "name",
+        "width": 100
+      },
+      {
+        "displayed": true,
+        "isDefault": true,
+        "key": "severity",
+        "width": 100
+      }
+    ]
+  }
+}
