@@ -155,6 +155,9 @@
             "playbookID": "LanguageDetect-Test"
         },
         {
+            "playbookID": "TestWordFileToIOC"
+        },
+        {
             "playbookID": "TestParseCSV"
         },
         {
