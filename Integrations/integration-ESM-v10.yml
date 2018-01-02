@@ -950,6 +950,7 @@ script:
       - CURRENT_MONTH
       - PREVIOUS_WEEK
       - CURRENT_WEEK
+      description: The time period for the search
     - name: filters
       required: true
       description: Filter on the query results, should be a json string, of the format
@@ -995,6 +996,7 @@ script:
       - CURRENT_MONTH
       - PREVIOUS_WEEK
       - CURRENT_WEEK
+      description: The time period for the fetch
     - name: customStart
       description: if timeRange is CUSTOM, start time for the time range (e.g. 2017-06-01T12:48:16.734Z)
     - name: customEnd
