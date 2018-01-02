@@ -23,21 +23,21 @@ configuration:
   type: 8
   required: false
 - display: Do not validate server certificate
-  name: certificate
+  name: insecure
   defaultvalue: "true"
   type: 8
   required: false
 script:
   script: |
-    var serverURL = params.url;
-    if (serverURL.slice(-1) === '/') {
-        serverURL = serverURL.slice(0,-1);
+    var SERVER_URL = params.url;
+    if (SERVER_URL.slice(-1) === '/') {
+        SERVER_URL = SERVER_URL.slice(0,-1);
     }
-    serverURL += ':15873/api/web/v1/';
+    SERVER_URL += ':15873/api/web/v1/';
 
-    var userName = params.credentials.identifier;
+    var USER_NAME = params.credentials.identifier;
 
-    var password = params.credentials.password;
+    var PASSWORD = params.credentials.PASSWORD;
 
     function sendRequest(url, method, body, transactionID) {
         var req = {
@@ -46,8 +46,8 @@ script:
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json']
                 },
-                Username: userName,
-                Password: password
+                Username: USER_NAME,
+                Password: PASSWORD
             };
         var reqBody = {};
         if (body) {
@@ -57,7 +57,7 @@ script:
               reqBody['Transaction ID'] = transactionID;
         }
         req.Body = JSON.stringify(reqBody);
-        var res = http(url, req, params.certificate, params.proxy);
+        var res = http(url, req, params.insecure, params.proxy);
         return res;
     }
 
@@ -74,7 +74,7 @@ script:
         }
         var tries = 0;
         var status = {};
-        //check the systen satus, wait until transaction build satus id 'Done'.
+        //check the systen status, wait until transaction build status id 'Done'.
         //The database is only updated after the build is done.
         //Will prevent the need to add 'wait' between playbook tasks
         do {
@@ -88,7 +88,7 @@ script:
         return res;
     }
     function startTransaction() {
-        var url = serverURL + 'categories/start';
+        var url = SERVER_URL + 'categories/start';
         var res = sendRequest(url, 'POST');
         if (res.StatusCode !== 200) {
             if (res.StatusCode === 409) {
@@ -101,12 +101,12 @@ script:
             var tid = resBody['Transaction ID'];
             return tid;
         } catch (err) {
-            throw 'error - unexpected response';
+            throw 'Error - unexpected response. ' + resBody;
         }
     }
 
     function commitTransaction(transactionID) {
-        var url = serverURL + 'categories/commit?transactionid=' + transactionID;
+        var url = SERVER_URL + 'categories/commit?transactionid=' + transactionID;
         var res = sendRequest(url, 'POST');
         if (res.StatusCode !== 200) {
             throw 'error - transaction commit failed. error  ' + res.Status;
@@ -114,7 +114,7 @@ script:
     }
 
     function getTransactionStatus() {
-        var url = serverURL + 'categories/status';
+        var url = SERVER_URL + 'categories/status';
         var res = sendRequest(url, 'GET');
         if (res.StatusCode !== 200) {
             throw 'Error- failed to get transaction status. possible transaction failure';
@@ -171,7 +171,7 @@ script:
     }
 
     function addCategoryRequest(categoryName, categoryDescription, parent) {
-        var url = serverURL + 'categories';
+        var url = SERVER_URL + 'categories';
         var body = {
             Categories: [
                 {
@@ -211,24 +211,24 @@ script:
     }
 
     function parseCategoryList(categories){
-        var catArr = [];
+        var categoryArr = [];
         categories.forEach(function(cat) {
             var children = cat.Children;
             cat.CategoryParent = '';
-            catArr.push(cat);
+            categoryArr.push(cat);
             if (children) {
                 for (var i = 0; i < children.length; i++) {
                     var child = children[i];
                     child.CategoryParent = cat['Category Name'];
-                    catArr.push(child);
+                    categoryArr.push(child);
                 }
             }
         });
-        return catArr;
+        return categoryArr;
     }
 
     function listCategoriesRequest(listAll) {
-        var url = listAll ? serverURL + 'categories/all' : serverURL + 'categories';
+        var url = listAll ? SERVER_URL + 'categories/all' : SERVER_URL + 'categories';
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
@@ -260,27 +260,27 @@ script:
     }
 
     function categoryDetailsByNameRequest(name) {
-        url = serverURL + 'categories/urls?catname=' + name;
+        url = SERVER_URL + 'categories/urls?catname=' + name;
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
 
     function categoryDetailsByIDRequest(id) {
-        url = serverURL + 'categories/urls?catid=' + id;
+        url = SERVER_URL + 'categories/urls?catid=' + id;
         var res =  sendRequest(url, 'GET');
         return parseResponse(res);
     }
 
     function addAddress() {
-        if (!args.IPs && !args.URLs) {
+        if (!args.ips && !args.urls) {
             throw 'Please pass an ip list, url list, or both.'
         }
-        if (!args.categoryID && !args.CategoryName) {
+        if (!args.categoryID && !args.categoryName) {
             throw "Please provide either the category name or it's ID.";
         }
-        var urls = args.URLs ? args.URLs.split(',') : undefined;
-        var ips = args.IPs ? args.IPs.split(',') : undefined;
-        var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID)) : editAddressRequest(urls, ips, undefined, args.CategoryName);
+        var urls = args.urls ? args.urls.split(',') : undefined;
+        var ips = args.ips ? args.ips.split(',') : undefined;
+        var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID)) : editAddressRequest(urls, ips, undefined, args.categoryName);
         var title = 'Forcepoint Category Details';
         var data = [
                     {to: 'CategoryID', from: 'Category ID'},
@@ -301,7 +301,7 @@ script:
     }
 
     function editAddressRequest(urls, ips, id, name, del){
-        var url = serverURL + 'categories/urls';
+        var url = SERVER_URL + 'categories/urls';
         var body = {};
         if (id) {
             body['Category ID'] = id;
@@ -321,15 +321,15 @@ script:
     }
 
     function deleteAddress() {
-        if (!args.IPs && !args.URLs) {
+        if (!args.ips && !args.urls) {
             throw 'Please pass an ip list, url list, or both.'
         }
-        if (!args.categoryID && !args.CategoryName) {
+        if (!args.categoryID && !args.categoryName) {
             throw "Please provide either the category name or it's ID.";
         }
-        var urls = args.URLs ? args.URLs.split(',') : undefined;
-        var ips = args.IPs ? args.IPs.split(',') : undefined;
-        var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID), undefined, true) : editAddressRequest(urls, ips, undefined, args.CategoryName, true);
+        var urls = args.urls ? args.urls.split(',') : undefined;
+        var ips = args.ips ? args.ips.split(',') : undefined;
+        var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID), undefined, true) : editAddressRequest(urls, ips, undefined, args.categoryName, true);
         var title = 'Forcepoint Delete Address From Category';
         var data = [
                         {to: 'CategoryID', from: 'Category ID'},
@@ -414,7 +414,7 @@ script:
     }
 
     function deleteCategoryRequest(ids, names) {
-        var url = serverURL + 'categories';
+        var url = SERVER_URL + 'categories';
         var body = {};
         if (ids) {
             body['Category IDs'] = ids;
@@ -509,13 +509,13 @@ script:
     description: Get a list of URLs and IP addresses in an API-managed category.
   - name: fp-add-address-to-category
     arguments:
-    - name: URLs
+    - name: urls
       description: 'Comma separated list of URL addresses to add. '
-    - name: IPs
+    - name: ips
       description: 'Comma separated list of IP address to add. '
     - name: categoryID
       description: The category ID. Leave blank if category name is provided.
-    - name: CategoryName
+    - name: categoryName
       description: The category name. Leave Blank if category ID is provided.
     outputs:
     - contextPath: Forcepoint.AddAddressToCategory.CategoryName
@@ -549,11 +549,11 @@ script:
     arguments:
     - name: categoryID
       description: The category ID.  Leave blank if category name is provided.
-    - name: URLs
+    - name: urls
       description: Comma separated list of URL address to remove.
-    - name: IPs
+    - name: ips
       description: Comma separated list of IP address to remove.
-    - name: CategoryName
+    - name: categoryName
       description: The category name.  Leave blank if category ID is provided.
     outputs:
     - contextPath: Forcepoint.DeleteAddressesFromCategory.CategoryName
