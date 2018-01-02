@@ -45,7 +45,7 @@ script:
             )
 
             if res.status_code != 200:
-                raise Exception('Your request failed with the following error: ' + r.reason)
+                raise Exception('Your request failed with the following error: ' + res.reason)
 
         except Exception, e:
             LOG(e)
