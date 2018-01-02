@@ -49,7 +49,7 @@ script:
         }
 
         for (var ix in res.Cookies) {
-            if (res.Cookies[ix].Name.toLowerCase() == 'csrftoken') {
+            if (res.Cookies[ix].Name.toLowerCase() === 'csrftoken') {
                 return res.Cookies[ix].Value;
             }
         }
