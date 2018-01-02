@@ -17,11 +17,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Use system proxy settings
-  name: useproxy
-  defaultvalue: ""
-  type: 8
-  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -33,7 +28,7 @@ script:
 
     ''' GLOBAL VARS '''
     BASE_URL = 'https://jbxcloud.joesecurity.org/api/'
-    USE_SSL = not demisto.params().get('insecure')
+    USE_SSL = not demisto.params().get('insecure', False)
 
     ''' HELPER FUNCTIONS '''
     def http_post(url_suffix, data=None, files=None):
@@ -48,9 +43,13 @@ script:
                 data=data,
                 files=files
             )
+
+            if res.status_code != 200:
+                raise Exception('Your request failed with the following error: ' + r.reason)
+
         except Exception, e:
             LOG(e)
-            return 'Error! ' + e.message
+            raise
 
         return res.json()
 
@@ -138,7 +137,7 @@ script:
         if 'errors' in res:
             LOG('Error! in command analyse_url: url=%s' % (url, ))
             LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-            return 'Failure'
+            raise Exception('command failed to run.')
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
@@ -154,7 +153,7 @@ script:
         should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
 
         if (file_entry is None and sample_url is None) or (None not in [file_entry, sample_url]):
-            return 'You must specify one (and only one) of the following: sample_url, sample.'
+            raise ValueError('You must specify one (and only one) of the following: sample_url, sample.')
 
         LOG('analysing sample')
         if file_entry is not None:
@@ -172,7 +171,7 @@ script:
             if 'errors' in res:
                 LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
                 LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-                return 'Failure'
+                raise Exception('command failed to run.')
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
@@ -188,7 +187,7 @@ script:
         if 'errors' in res:
             LOG('Error! in command sample file: file url=%s' % (sample_url, ))
             LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-            return 'Failure'
+            raise Exception('command failed to run.')
 
         if should_wait:
             return poll_webid(res['data']['webids'][0])
