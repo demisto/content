@@ -37,7 +37,7 @@ script:
 
     var USER_NAME = params.credentials.identifier;
 
-    var PASSWORD = params.credentials.PASSWORD;
+    var PASSWORD = params.credentials.password;
 
     function sendRequest(url, method, body, transactionID) {
         var req = {
@@ -89,20 +89,24 @@ script:
     }
     function startTransaction() {
         var url = SERVER_URL + 'categories/start';
-        var res = sendRequest(url, 'POST');
+        var tries = 0;
+        var res = {};
+        // Start a new transacrion - 3 tries for recurring 409 error.
+        //Error 409 - another transaction is in progress (Only one Policy API Server in a global TRITON AP-WEB deployment can start a transaction at a time).
+        do {
+            wait(1);
+            res = sendRequest(url, 'POST');
+            tries++;
+        } while(res.StatusCode === 409 && tries < 3 );
         if (res.StatusCode !== 200) {
             if (res.StatusCode === 409) {
                 throw 'Another transaction is in process. Please wait for a few seconds before sending another request.';
             }
             throw 'error - request failed. error number ' + res.StatusCode;
         }
-        try {
-            var resBody = JSON.parse(res.Body);
-            var tid = resBody['Transaction ID'];
-            return tid;
-        } catch (err) {
-            throw 'Error - unexpected response. ' + resBody;
-        }
+        var resBody = JSON.parse(res.Body);
+        var tid = resBody['Transaction ID'];
+        return tid;
     }
 
     function commitTransaction(transactionID) {
@@ -544,7 +548,8 @@ script:
     - contextPath: Forcepoint.DeletedCategories.IPs
       description: Category IPs
     description: Delete API-managed categories. Refer to categories you wish to delete
-      either by ID list or by name list. It is possible to pass both lists, when each list refers to different categories.
+      either by ID list or by name list. It is possible to pass both lists, when each
+      list refers to different categories.
   - name: fp-delete-address-from-category
     arguments:
     - name: categoryID
