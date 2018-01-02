@@ -18,6 +18,8 @@ test:
     - cp Misc/* bundle/
     - cp Playbooks/* bundle/
     - cp Reports/* bundle/
+    - cp Dashboards/* bundle/
+    - cp Widgets/* bundle/
     - cp content-descriptor.json bundle/
     - cp $(find Scripts -type f -print) bundle/
 
