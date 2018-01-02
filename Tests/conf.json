@@ -137,7 +137,8 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Demo Playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1200
         },
         {
             "playbookID": "ProofpointDecodeURL-Test"
@@ -150,13 +151,23 @@
             "playbookID": "TestHPServiceManager",
             "timeout": 400
         },
-                {
+        {
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
         },
         {
             "playbookID": "LanguageDetect-Test"
+        },
+        {
+            "playbookID": "TestWordFileToIOC"
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "ArcSight Logger",
+            "playbookID": "ArcSight Logger test"
         }
     ],
     "skipped": [
