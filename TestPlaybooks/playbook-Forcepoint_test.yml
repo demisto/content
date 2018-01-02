@@ -122,9 +122,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      CategoryName: ${Forcepoint.CategoryDetails.CategoryName}
-      IPs: ""
-      URLs: https://test.com,http://dem.com
+      categoryName: ${Forcepoint.CategoryDetails.CategoryName}
+      ips: ""
+      urls: https://test.com,http://dem.com
       categoryID: ""
     view: |-
       {
@@ -150,9 +150,9 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      CategoryName: ""
-      IPs: ""
-      URLs: https://test.com
+      categoryName: ""
+      ips: ""
+      urls: https://test.com
       categoryID: ${Forcepoint.CategoryDetails.CategoryID}
     view: |-
       {
