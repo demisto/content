@@ -112,6 +112,12 @@ script:
                 args: ['distribution','to_ids','category','info','analysis','comment'],
                 contextKey: '',
             },
+            'internal-misp-create-event': {
+                url: '/events',
+                title: 'MISP create event',
+                args: ['type','category','to_ids','distribution','comment','value'],
+                contextKey: '',
+            },
             'internal-misp-download-sample': {
                 url: '/attributes/downloadSample',
                 title: '',
@@ -417,6 +423,92 @@ script:
     }
 
 
+    var addMinutes = function(date, minutes) {
+                return new Date(date.getTime() + minutes*60000);
+    };
+
+
+    var getNowTime = function() {
+        var time = new Date();
+        time = addMinutes(time,time.getTimezoneOffset());
+        var month = "0" + (time.getMonth()+1);
+        var day = "0" + time.getDate();
+        var hours = "0" + time.getHours();
+        var minutes = "0" + time.getMinutes();
+        var seconds = "0" + time.getSeconds();
+        var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
+        return dateOld;
+    };
+
+
+    function createEvent(command) {
+        var currentArgs = getProvidedArgsForCommand(command, args);
+        var ec = {};
+
+        if (currentArgs.to_ids === 'true') {
+            currentArgs.to_ids = true;
+        } else {
+            currentArgs.to_ids = false;
+        }
+
+        if (args.published === 'true') {
+            args.published = true;
+        } else {
+            args.published = false;
+        }
+
+        var requestUrl = params.url + commands[command].url;
+
+        var body = { 'Event': {
+            'date': getNowTime(),
+            'threat_level_id': '1',
+            'published': args.published,
+            'info': args.info,
+            'analysis': '0',
+            'distribution': '0',
+            'Attribute': [currentArgs] } };
+
+        var res = doJSONPost(requestUrl, body);
+
+        var md = '## ' + commands[command].title + '\nNew event with id ' + res.Event.id + ' has been successfully created.\n';
+        ec = {'MISP.ID': res.Event.id};
+
+        return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: res,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: ec
+            };
+    }
+
+
+    function addAtribute(command) {
+        var requestUrl = params.url + '/attributes/add/' + args.id;
+
+        var body = { 'Attribute': {
+            'type': args.type
+            'category': args.category,
+            'to_ids': args.to_ids,
+            'distribution': args.distribution,
+            'comment': args.comment,
+            'value': args.value} };
+
+        var res = doJSONPost(requestUrl, body);
+
+        var md = '## ' + 'MISP add attribute' + '\nNew attribute: ' + args.value + ' was added to event id ' + res.Attribute.event_id + '.\n';
+
+        return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: res,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: {}
+            };
+    }
+
 
 
     // The command input arg holds the command sent from the user.
@@ -429,6 +521,10 @@ script:
             return doUploadSample(command);
         case 'internal-misp-download-sample':
             return doGeneralPost(command, args);
+        case 'internal-misp-create-event':
+            return createEvent(command);
+        case 'internal-misp-add-attribute':
+            return addAtribute(command)
         case 'misp-search':
             return translateEvents(doGeneralPost(command, args), commands[command].contextKey, commands[command].title);
         case 'file':
@@ -443,11 +539,9 @@ script:
   type: javascript
   commands:
   - name: internal-misp-upload-sample
-    description: Internal function, do not use it directly
     arguments:
     - name: filename
       required: true
-      description: File name
     - name: fileContent
       required: true
       description: File Content in Base64
@@ -563,10 +657,8 @@ script:
       description: RelatedEvent
     description: Search for events in misp
   - name: file
-    description: Check file in misp
     arguments:
     - name: file
-      description: file
       required: true
     outputs:
     - contextPath: File.MD5
@@ -590,7 +682,6 @@ script:
   - name: url
     arguments:
     - name: url
-      description: Check URL in misp
       required: true
     outputs:
     - contextPath: URL.Data
@@ -609,7 +700,6 @@ script:
       description: The actual score
     description: Check if IP is in MISP events
   - name: ip
-    description: Check ip in misp
     arguments:
     - name: ip
       required: true
@@ -645,4 +735,68 @@ script:
       description: If set, it will return all samples from events that have a match
         for the hash provided above.
     description: Download malware sample by hash
-hidden: false
+  - name: internal-misp-create-event
+    arguments:
+    - name: type
+      description: Type of the event
+    - name: category
+      description: Category of the event
+      defaultValue: External analysis
+    - name: to_ids
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Do it to ids
+      defaultValue: "false"
+    - name: distribution
+      description: To where distribute
+      defaultValue: "0"
+    - name: comment
+      description: Comment
+    - name: value
+      required: true
+      description: Value to add
+    - name: info
+      required: true
+      default: true
+      description: Event name
+    - name: published
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Publish the event
+      defaultValue: "false"
+    outputs:
+    - contextPath: MISP.ID
+      description: MISP event ID
+    description: Create new MISP event
+  - name: internal-misp-add-attribute
+    arguments:
+    - name: id
+      required: true
+      description: MISP event id
+    - name: type
+      required: true
+      description: Type of the attribute
+    - name: category
+      required: true
+      description: Category of the attribute
+    - name: to_ids
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Add attribute to ids
+      defaultValue: "1"
+    - name: distribution
+      description: ' To where distribute'
+    - name: comment
+      required: true
+      description: Name of the attribute
+    - name: value
+      required: true
+      description: Value of the attribute
+    description: Add attribute to existing MISP event
+releaseNotes: "Added internal-misp-create-event and internal-misp-add-attribute commands."
