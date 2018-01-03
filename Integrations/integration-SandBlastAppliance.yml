@@ -46,8 +46,8 @@ script:
     };
 
     var sendRequest = function(url, body, queryName) {
-        log('URL IS: '+base + url)
-        log('BODY IS: '+JSON.stringify(body))
+        logDebug('URL IS: '+base + url)
+        logDebug('BODY IS: '+JSON.stringify(body))
         var res = http(
                 base + url,
                 {
@@ -57,7 +57,6 @@ script:
                 insecure,
                 proxy
             );
-        log('Status code is: '+res.StatusCode )
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
