@@ -1,0 +1,770 @@
+commonfields:
+  id: ArcSight Logger
+  version: -1
+name: ArcSight Logger
+display: ArcSight Logger
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: ArcSight events logger
+detaileddescription: "To use the integration, start a search session using as-search
+  command, both session id and search session id will be returned from the command.
+  \nUse these arguments to preform further filter on the search (e.g. as-drilldown)
+  or to request desired data (e.g. as-events). Eventually use as-close to close the
+  search session and clean data from the server.  \n\nDate/time format for as-search
+  command\nUse the following compliant date/time format in as-search parameters: \nyyyy-MM-dd'T'HH:mm:ss.SSSXXX\nFor
+  example, May 26 2014 at 21:49:46 PM could have a format like one of the following:\nFormat
+  in PDT: 2014-05-26T21:49:46.000-07:00\nFormat in UTC: 2014-05-26T21:49:46.000Z"
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)*
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "9000"
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Events query
+  name: eventsQuery
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Do not validate server certificate
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+script:
+  script: |-
+    var serverURL = params.url;
+    if (serverURL.slice(-1) === '/') {
+        serverURL = serverURL.slice(0,-1);
+    }
+    var SERVER_URL = serverURL + ':' + params.port + '/';
+    var DAY_IN_MILLIS = 24*60*60*1000;
+
+    function login(username, password) {
+        var fullUrl = SERVER_URL + 'core-service/rest/LoginService/login';
+
+        var bodyObj = {
+            login: username,
+            password: password
+        };
+        var bodyString = encodeToURLQuery(bodyObj).substring(1);
+
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type': ['application/x-www-form-urlencoded']
+            },
+            Body: bodyString
+        };
+
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+        if (res.StatusCode !== 200) {
+            throw 'Login failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
+        }
+
+        var resBody = parseXML(res.Body);
+        if (!resBody.loginResponse.return) {
+            throw 'Login to ArcSight Logger has failed - Session id is missing from response';
+        }
+
+        var userSessionId = resBody.loginResponse.return;
+        return userSessionId;
+    }
+
+    function logout(userSessionId) {
+        if (!userSessionId) {
+            throw 'Unable to preform logout from ArcSight Logger. Seesion id is missing';
+        }
+        var fullUrl = SERVER_URL + 'core-service/rest/LoginService/logout';
+
+        var bodyObj = {
+            authToken: userSessionId
+        };
+        var bodyString = encodeToURLQuery(bodyObj).substring(1);
+
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type': ['application/x-www-form-urlencoded']
+            },
+            Body: bodyString
+        };
+
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+        if (res.StatusCode !== 204) {
+            throw 'Logout failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
+        }
+    }
+
+    function getSearchEvents(userSessionId) {
+        var events = getSearchEventsRequest(
+            userSessionId,
+            args.query,
+            args.timeout,
+            args.startTime,
+            args.endTime,
+            args.discover_fields,
+            args.summary_fields,
+            args.field_summary,
+            args.local_search,
+            args.lastDays,
+            args.offset,
+            args.dir,
+            args.length,
+            args.fields);
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: events,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
+        };
+        var title = 'ArcSight Logger - Events';
+        var context = events;
+        entry.HumanReadable = tableToMarkdown(title, events);
+        entry.EntryContext = {};
+        entry.EntryContext['ArcSightLogger.Events(val.rowId === obj.rowId)'] = context;
+        return entry;
+    }
+
+    function getSearchEventsRequest(userSessionId, query, timeout, startTime,
+        endTime, discoverFields, summaryFields, fieldSummary, localSearch, lastDays,
+        offset, dir, length, fields) {
+        // start new search
+        var searchSessionId = startSearchSessionRequest(
+            userSessionId,
+            query,
+            timeout,
+            startTime,
+            endTime,
+            discoverFields,
+            summaryFields,
+            fieldSummary,
+            localSearch,
+            lastDays);
+
+        // wait until the search is complete so we could collect the events
+        var statusResult;
+        var requiredEvents = Infinity;
+        if(length){
+            requiredEvents = offset ? parseInt(length) + parseInt(offset) : parseInt (length);
+        }
+        do {
+            wait(1);
+            statusResult = getSearchStatusRequest(userSessionId, searchSessionId);
+            if (statusResult.status === 'error') {
+                throw 'Invalid query.\nSearch status: ' + JSON.stringify(statusResult, null ,2);
+            }
+        } while(statusResult.status !== 'complete' && requiredEvents > statusResult.hit);
+        // get the results
+        var events = getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields);
+
+        // close the session
+        closeSessionRequest(userSessionId, searchSessionId);
+
+        logout(userSessionId);
+        return events;
+    }
+
+    function startSearchSession(userSessionId) {
+        var searchSessionId = startSearchSessionRequest(
+            userSessionId,
+            args.query,
+            args.timeout,
+            args.startTime,
+            args.endTime,
+            args.discover_fields,
+            args.summary_fields,
+            args.field_summary,
+            args.local_search,
+            args.lastDays);
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: {
+                searchSessionId: searchSessionId,
+                sessionId : userSessionId
+            },
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
+        };
+        var title = "ArcSight Logger - Start Search Session";
+        var context = {
+            'SearchSessionId': searchSessionId,
+            'SessionId' : userSessionId
+        };
+        entry.HumanReadable = tableToMarkdown(title, context);
+        entry.EntryContext = {};
+        entry.EntryContext['ArcSightLogger.Search'] = context;
+        return entry;
+    }
+
+    function startSearchSessionRequest(userSessionId, query, timeout, startTime, endTime, discoverFields, summaryFields, fieldSummary, localSearch, lastDays) {
+        var searchSessionId = generateSearchSessionId();
+        var bodyArgs = {
+            search_session_id: searchSessionId,
+            user_session_id: userSessionId
+        };
+        if (query) {
+            bodyArgs.query = query;
+        }
+        if (timeout) {
+            bodyArgs.timeout = parseInt(timeout);
+        }
+        if (lastDays) {
+            if (isNaN(lastDays)) {
+                throw 'LastDays must be a number';
+            }
+            var ld = parseInt(lastDays);
+            var now = new Date();
+            bodyArgs.end_time = now.toISOString();
+            now.setTime(now.getTime() - ld * DAY_IN_MILLIS)
+            bodyArgs.start_time = now.toISOString();
+        } else if (startTime && endTime) {
+            bodyArgs.end_time = endTime;
+            bodyArgs.start_time = startTime;
+        }
+        if (discoverFields) {
+            bodyArgs.discover_fields = parseBool(discoverFields);
+        }
+        if (summaryFields) {
+            bodyArgs.summary_fields = parseArray(summaryFields);
+        }
+        if (fieldSummary) {
+            bodyArgs.field_summary = fieldSummary;
+        }
+        if (localSearch) {
+            bodyArgs.local_search = parseBool(localSearch);
+        }
+
+        var resBody = httpPost('server/search', null, bodyArgs);
+
+        return searchSessionId;
+    }
+
+    function closeSession() {
+        closeSessionRequest(args.sessionId, args.searchSessionId);
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Session closed successfully'
+        };
+    }
+
+    function closeSessionRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        httpPost('server/search/close', null, bodyArgs);
+    }
+
+    function getSearchStatus() {
+        var searchStatus = getSearchStatusRequest(args.sessionId, args.searchSessionId);
+        var contextKey = 'ArcSightLogger.Status(val.SearchSessionId === obj.SearchSessionId)';
+        var entry = createEntry(searchStatus, {
+            data: [
+                {to: 'Status', from: 'status'},
+                {to: 'ResultType', from: 'result_type'},
+                {to: 'Hit', from: 'hit'},
+                {to: 'Scanned', from: 'scanned'},
+                {to: 'Elapsed', from: 'elapsed'},
+                {to: 'Message', from: 'message'}
+            ],
+            title: 'ArcSight Logger - Search Status',
+            contextPath: contextKey
+        });
+        entry.EntryContext[contextKey]['SearchSessionId'] = args.searchSessionId;
+        return entry;
+    }
+
+    function getSearchStatusRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+
+        var resBody = httpPost('server/search/status', null, bodyArgs);
+        return resBody;
+    }
+
+    function getEvents() {
+        var events = getEventsRequest(
+            args.sessionId,
+            args.searchSessionId,
+            args.offset,
+            args.dir,
+            args.length,
+            args.fields);
+        var entry = {
+            Type: entryTypes.note,
+            Contents: events,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
+        };
+        var title = 'ArcSight Logger - Events';
+        var context = events;
+        entry.HumanReadable = tableToMarkdown(title, events);
+        entry.EntryContext = {};
+        entry.EntryContext['ArcSightLogger.Events(val.rowId === obj.rowId)'] = context;
+        return entry;
+    }
+
+    function getEventsRequest(userSessionId, searchSessionId, offset, dir, length, fields) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        if (offset) {
+            bodyArgs.offset = parseInt(offset);
+        }
+        if (dir) {
+            bodyArgs.dir = dir;
+        }
+        if (length) {
+            if (isNaN(length)) {
+                throw 'Length must be a number';
+            }
+            bodyArgs.length = parseInt(length);
+        }
+        if (fields) {
+            bodyArgs.fields = fields.split(",");
+        }
+        var resBody = httpPost('server/search/events', null, bodyArgs);
+        var events = xmlObjectToJSON(resBody);
+        return events;
+    }
+
+    function drilldown() {
+        var result = drilldownRequest(args.sessionId, args.searchSessionId, args.startTime, args.endTime, args.lastDays);
+        var entry = {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.text,
+            HumanReadable: 'Success drilldown request'
+        };
+        return entry;
+    }
+
+    function drilldownRequest(userSessionId, searchSessionId, startTime, endTime, lastDays) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+        if (lastDays) {
+            if (isNaN(lastDays)) {
+                throw 'LastDays must be a number';
+            }
+            var ld = parseInt(lastDays);
+            var now = new Date();
+            bodyArgs.end_time = now.toISOString();
+            now.setTime(now.getTime() - ld * DAY_IN_MILLIS)
+            bodyArgs.start_time = now.toISOString();
+        } else if (startTime && endTime) {
+            bodyArgs.end_time = endTime;
+            bodyArgs.start_time = startTime;
+        } else {
+            throw 'Make sure lastDays is provided, or both startTime and endTime are provided'
+        }
+        var resBody = httpPost('server/search/drilldown', null, bodyArgs);
+        return resBody;
+    }
+
+    function stopSearch() {
+        stopSearchRequest(args.sessionId, args.searchSessionId);
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Search stopped successfully'
+        };
+    }
+
+    function stopSearchRequest(userSessionId, searchSessionId) {
+        var bodyArgs = {
+            search_session_id: parseInt(searchSessionId),
+            user_session_id: userSessionId
+        };
+
+        httpPost('server/search/stop', null, bodyArgs);
+    }
+
+    function fetchIncidents() {
+        var userSessionId = login(params.credentials.identifier, params.credentials.password);
+        var lastRun = getLastRun();
+
+        var n = new Date();
+        var endTime = n.toISOString();
+        var startTime;
+        var query;
+        if (lastRun && lastRun.time && lastRun.time !== '') {
+            startTime = lastRun.time;
+        } else {
+            n.setTime(n.getTime() - 1 * DAY_IN_MILLIS);
+            startTime = n.toISOString();
+        }
+        if (params.eventsQuery){
+            query = params.eventsQuery;
+        }
+        var fields = null;
+        var events = getSearchEventsRequest(userSessionId, query, 120000, startTime,
+            endTime, null, null, null, false, null,
+            null, null, 100, fields);
+
+        var incidents = [];
+        for (var i = 0; i < events.length; i++) {
+            var incident = incidentFromEvent(events[i]);
+            incidents.push(incident);
+        }
+
+        setLastRun({ time: endTime });
+        return JSON.stringify(incidents);
+    }
+
+    switch(command) {
+        case 'test-module':
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            logout(userSessionId);
+            return 'ok';
+        case 'fetch-incidents':
+            return fetchIncidents();
+        case 'as-search-events':
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            return getSearchEvents(userSessionId);
+        case 'as-search':
+            var userSessionId = login(params.credentials.identifier, params.credentials.password);
+            var result = startSearchSession(userSessionId);
+            return result;
+        case 'as-status':
+            var result = getSearchStatus();
+            return result;
+        case 'as-events':
+            return getEvents();
+        case 'as-close':
+            var result = closeSession();
+            logout(args.sessionId);
+            return result;
+        case 'as-stop':
+            return stopSearch();
+        case 'as-drilldown':
+            return drilldown();
+        default:
+            throw 'Command ' + command + ' not exists';
+    }
+
+    function httpPost(path, queryObject, body) {
+        var fullUrl = SERVER_URL + path;
+        if (queryObject) {
+            fullUrl += encodeToURLQuery(queryObject)
+        }
+
+        var req = {
+            Method: 'POST',
+            Headers: {
+                'Content-Type' : ['application/json; charset=UTF-8'],
+                'Accept': ['appliction/json']
+            },
+            Body: JSON.stringify(body)
+        }
+        var res = http(fullUrl, req, params.insecure, params.proxy);
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            try {
+                var resBody = JSON.parse(res.Body);
+            } catch(e) {
+                throw 'Request to ' + fullUrl + ' failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
+            }
+            var errTbl = resBody.errors;
+            var errMessage = '';
+            if (errTbl) {
+                errTbl.forEach(function(err) {
+                    if(err.message) {
+                        errMessage =  errMessage === '' ?  err.message : errMessage + ', ' + err.message;
+                    }
+                });
+            }
+            throw 'Request to ' + fullUrl + ' failed. StatusCode: ' + res.StatusCode + '. Error: ' + errMessage;
+        }
+        try {
+            return JSON.parse(res.Body);
+        } catch(err){
+            return res.Body;
+        }
+    }
+
+    function parseXML(httpResponseBody) {
+        var body = httpResponseBody.replace(/&#x.*?;/g, "");
+        var parsed = JSON.parse(x2j(body));
+        return parsed;
+    }
+
+    function parseBool(val) {
+        return val === 'true' ? true : false;
+    }
+
+    function generateSearchSessionId() {
+        var sessID = new Date().getTime();
+        return sessID;
+    }
+
+    function parseArray(commaSepList) {
+        return commaSepList.split(',');
+    }
+    function xmlObjectToJSON(xmlObject) {
+        var context = [];
+        if (xmlObject && xmlObject.fields && xmlObject.results) {
+            var keys = [];
+            var fields = xmlObject.fields;
+            var entries = xmlObject.results;
+            fields.forEach(function(field){
+                if(field.name){
+                    keys.push(field.name.replace(/\s/g, '').replace(/^\_/,''));
+                }
+            });
+            entries.forEach(function(entry){
+                if (entry.length == keys.length){
+                    var newEntry = {};
+                    for (var i = 0; i<  entry.length; i++){
+                        newEntry[keys[i]] = entry[i];
+                    }
+                    context.push(newEntry);
+                }
+            });
+        }
+        return context;
+    }
+
+    function incidentFromEvent(event){
+        var incident = {}
+        //incident.labels = Object.keys(event);
+        incident.rawJSON = JSON.stringify(event);
+        var name = 'ArcSight Logger Incident';
+        name = event.rowId ? name + ' ' + event.rowId : name;
+        incident.name = name;
+        return incident;
+    }
+  type: javascript
+  commands:
+  - name: as-search-events
+    arguments:
+    - name: discover_fields
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates that the search should try to discover fields in the
+        events found.
+    - name: startTime
+      description: 'The date and time string for the start time in the search time
+        range. If startTime is provided, endTime must be present as well. Format:
+        - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
+    - name: endTime
+      description: 'The date and time string for the end time in the search time range.
+        If endTime is provided, startTime must be present as well. See Integration
+        tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
+        - InUTC:2014-05-26T21:49:46.000Z '
+    - name: summary_fields
+      description: Comma separated list of fields. To be used to calculate summary
+        when field_summary is true.
+    - name: field_summary
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates to use the field summary.
+    - name: local_search
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+    - name: query
+      description: The search query string to filter/process the events.
+    - name: timeout
+      description: The number of milliseconds to keep the search after processing
+        has stopped. Default timeout is 10 minutes.
+      defaultValue: "120000"
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    - name: offset
+      description: The offset from the first even
+    - name: length
+      description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
+    - name: dir
+      auto: PREDEFINED
+      predefined:
+      - "forward"
+      - "backward"
+      description: The sort direction based on event time. forward/backward (default
+        is forward).
+    - name: fields
+      description: comma separated list of fields in the order to show. If not specified, all
+        fields will be used
+    description: Start a new search, wait until the search status is complete and
+      then return the events. This command combine 3 commands - as-search, as-status,
+      as-events
+  - name: as-status
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    outputs:
+    - contextPath: ArcSightLogger.Status.Status
+      description: The search status. Can be any of starting, running, complete, or
+        error. If the specified search has not started yet, the status will be “starting".
+    - contextPath: ArcSightLogger.Status.ResultType
+      description: Indicates the type of the search results
+    - contextPath: ArcSightLogger.Status.Hit
+      description: The number of events found
+    - contextPath: ArcSightLogger.Status.Scanned
+      description: The number of events scanned.
+    - contextPath: ArcSightLogger.Status.Elapsed
+      description: The elapsed time of this search
+    - contextPath: ArcSightLogger.Status.Message
+      description: The message for the search. This will be used when there is an
+        error in the local/peer search.
+    - contextPath: ArcSightLogger.Status.SearchSessionId
+      description: The search session id.
+    description: Returns the latest status of the specified search.
+  - name: as-drilldown
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: startTime
+      description: The date and time string for the start time in the search time
+        range. If startTime is provided, endTime needs to be present as well. See
+        Integration tips for correct date/time format.
+    - name: endTime
+      description: The date and time string for the end time in the search time range.
+        If endTime is provided, startTime needs to be present as well. See Integration
+        tips for correct date/time format.
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    description: Narrows-down the search results to the specified time range
+  - name: as-events
+    arguments:
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: dir
+      auto: PREDEFINED
+      predefined:
+      - "forward"
+      - "backward"
+      description: The sort direction based on event time. forward/backward (default
+        is forward).
+    - name: fields
+      description: comma separated list of fields in the order to show. If not specified, all
+        fields will be used
+    - name: length
+      description: The length or number of events to retrieve. Maximum number is 10000.
+        Default is 100.
+      defaultValue: "100"
+    - name: offset
+      description: The offset from the first even
+    description: Returns the list of events found in the specified search.
+  - name: as-close
+    arguments:
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    description: Stops the execution of the search and clears the search session data
+      from the server.
+  - name: as-stop
+    arguments:
+    - name: sessionId
+      required: true
+      description: The Session ID returned from as-search command
+    - name: searchSessionId
+      required: true
+      description: The Search Session ID returned from as-search command
+    description: Stops the search operation but keeps the search session so that the
+      search results can be narrowed down later
+  - name: as-search
+    arguments:
+    - name: discover_fields
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates that the search should try to discover fields in the
+        events found.
+    - name: startTime
+      description: 'The date and time string for the start time in the search time
+        range. If startTime is provided, endTime must be present as well. Format:
+        - InPDT:2014-05-26T21:49:46.000-07:00 - InUTC:2014-05-26T21:49:46.000Z '
+    - name: endTime
+      description: 'The date and time string for the end time in the search time range.
+        If endTime is provided, startTime must be present as well. See Integration
+        tips for correct date/time format. Format: - InPDT:2014-05-26T21:49:46.000-07:00
+        - InUTC:2014-05-26T21:49:46.000Z '
+    - name: summary_fields
+      description: Comma separated list of fields. To be used to calculate summary
+        when field_summary is true.
+    - name: field_summary
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates to use the field summary.
+    - name: local_search
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+    - name: query
+      description: The search query string to filter/process the events.
+    - name: timeout
+      description: The number of milliseconds to keep the search after processing
+        has stopped. Default timeout is 10 minutes.
+      defaultValue: "120000"
+    - name: lastDays
+      description: 'The number of days from from current time . Use to limit the search
+        time range. '
+    description: In opposite to as-search-events, as-search-events waits until the
+      search query is complete and returns the events, as-search initiates new logger
+      search query, and returns sessionId and searchSessionId which should be used
+      in other commands like as-status, as-stop, as-events, etc.
+  isfetch: true
