@@ -1545,5 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
-  runonce: false
-releaseNotes: "Fixed some syntex error bug."
+releaseNotes: "-"
