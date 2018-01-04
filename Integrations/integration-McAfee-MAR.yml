@@ -476,3 +476,4 @@ script:
       description: The result of the search query
     description: Search endpoint data crossed by multiple collectors
   dockerimage: demisto/dxl
+releaseNotes: "-"

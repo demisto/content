@@ -414,3 +414,4 @@ script:
     description: Retrieves the set of systems which have referenced (typically executed)
       the specified file
   dockerimage: demisto/dxl
+releaseNotes: "-"
