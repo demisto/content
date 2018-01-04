@@ -195,3 +195,4 @@ script:
     description: Create an XML to update a case.
   isfetch: true
 hidden: false
+releaseNotes: "-"
