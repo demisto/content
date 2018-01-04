@@ -19,4 +19,3 @@ args:
   required: true
   description: The d2 command to run
 scripttarget: 0
-runonce: false
