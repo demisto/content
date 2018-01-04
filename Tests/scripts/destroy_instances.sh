@@ -2,8 +2,6 @@
 
 set -e
 
-sleep 2h
-
 INSTANCE_ID=$(cat instance_ids)
 USER=centos
 
