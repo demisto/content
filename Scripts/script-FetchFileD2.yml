@@ -14,4 +14,3 @@ args:
   required: true
   description: Local filepath on the endpoint
 scripttarget: 0
-runonce: false
