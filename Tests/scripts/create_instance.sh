@@ -12,7 +12,7 @@ IMAGE_ID="ami-d2c924b2" # centos
 INSTANCE_ID=$(aws ec2 run-instances \
     --image-id ${IMAGE_ID} \
     --security-group-ids sg-714f3816 \
-    --instance-type t2.small \
+    --instance-type t2.large \
     --key-name ci-key \
     --instance-initiated-shutdown-behavior terminate \
     --block-device-mappings DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true} \
