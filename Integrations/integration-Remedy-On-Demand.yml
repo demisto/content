@@ -122,7 +122,9 @@ script:
                     'Content-Type': ['application/x-www-form-urlencoded']
                 },
                 Body: encodeToURLQuery(body).replace(/^\?/, '')
-            }
+            },
+            insecure,
+            proxy
         );
 
         if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -154,7 +156,7 @@ script:
         };
     };
 
-    var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency) {
+    var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency, customFields) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
         var token = login();
 
@@ -171,6 +173,15 @@ script:
                "Urgency" : urgency
          }
         };
+        if (customFields) {
+            var customFieldsArr = customFields.split(',');
+            for (var i = 0; i < customFieldsArr.length; i++) {
+                var equalIndex = customFieldsArr[i].indexOf('=');
+                var key = customFieldsArr[i].substring(0, equalIndex);
+                var value = customFieldsArr[i].substring(equalIndex + 1);
+                body.values[key] = value;
+            }
+        }
         var res = sendRequest(url, token, "POST", JSON.stringify(body));
         // get created incident
         var incidentUrl = res && res.Headers && res.Headers.Location && res.Headers.Location[0];
@@ -244,7 +255,8 @@ script:
                 args.source,
                 args['service-type'],
                 args.impact,
-                args.urgency
+                args.urgency,
+                args['custom-fields']
             );
         case 'remedy-get-incident':
             return getIncident(args.ID);
@@ -266,7 +278,6 @@ script:
   type: javascript
   commands:
   - name: remedy-incident-create
-    description: Create new ticket incident
     arguments:
     - name: first-name
       required: true
@@ -332,6 +343,9 @@ script:
       - 3-Medium
       - 4-Low
       description: Incident urgency
+    - name: custom-fields
+      description: Custom fields for incident creation. Should be comma separated
+        query (i.e. field1=value1,field2=value2).
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -349,6 +363,7 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
+    description: Create new ticket incident
   - name: remedy-get-incident
     arguments:
     - name: ID
@@ -473,3 +488,5 @@ script:
       description: Ticket service type
     description: Update exiting incident
 hidden: false
+releaseNotes: "Added option to login with insecure flag and add custom fields to incident creation"
+
