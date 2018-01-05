@@ -27,12 +27,18 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     var username = params.credentials.identifier;
     var password = params.credentials.password;
     var server = params.server + ':' + params.port;
     var insecure = params.insecure;
+    var proxy = params.proxy;
 
     var getCSRFToken = function(url) {
         var res = http(
@@ -42,7 +48,8 @@ script:
                     Username: username,
                     Password: password
                 },
-                insecure
+                insecure,
+                proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to get CSRF token, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
@@ -68,7 +75,8 @@ script:
                     Headers: {'X-CSRFToken': [csrfToken]},
                     Cookies: [{Name: 'csrftoken', Value: csrfToken, Path: '/', MaxAge: 300}]
                 },
-                insecure
+                insecure,
+                proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + (queryName || 'get main page') + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
