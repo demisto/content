@@ -1,0 +1,208 @@
+id: playbook-ServiceNow
+version: 6
+name: playbook-ServiceNow
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4bb84a5e-6e50-4312-88a6-b1c98519b9fe
+    type: start
+    task:
+      id: 4bb84a5e-6e50-4312-88a6-b1c98519b9fe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e08f9e1d-1c38-44ff-8b8d-ab0d6a3a84b7
+    type: regular
+    task:
+      id: e08f9e1d-1c38-44ff-8b8d-ab0d6a3a84b7
+      version: -1
+      name: Get incidents
+      script: ServiceNow|||servicenow-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "1"
+      sysparm_query: {}
+      ticket_type: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 045b338b-9171-4c3a-83a1-f4cbc26267a3
+    type: regular
+    task:
+      id: 045b338b-9171-4c3a-83a1-f4cbc26267a3
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c85321aa-94fa-4f5b-8fb7-2249c4ff5d2a
+    type: regular
+    task:
+      id: c85321aa-94fa-4f5b-8fb7-2249c4ff5d2a
+      version: -1
+      name: Create new ticket
+      script: ServiceNow|||servicenow-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description:
+        simple: TestPlaybook
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      template: {}
+      ticket_type: {}
+      type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 1d6b1623-530a-4b3d-8978-f4cd581946b7
+    type: regular
+    task:
+      id: 1d6b1623-530a-4b3d-8978-f4cd581946b7
+      version: -1
+      name: Get ticket info
+      script: ServiceNow|||servicenow-get
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    scriptarguments:
+      id: {}
+      number:
+        simple: ${Ticket.Number}
+      ticket_type: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -541,7 +541,7 @@ script:
         for (var i = 0; i < res.result.length; i++) {
             var headerTran = function(name) {
                 var headers = {
-                    sys_id: 'Id'
+                    sys_id: 'Id',
                     name: 'Name',
                     description: 'Description',
                     email: 'Email',
@@ -1545,3 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
+releaseNotes: "-"
