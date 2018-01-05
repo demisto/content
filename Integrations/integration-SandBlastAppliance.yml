@@ -46,8 +46,6 @@ script:
     };
 
     var sendRequest = function(url, body, queryName) {
-        logDebug('URL IS: '+base + url)
-        logDebug('BODY IS: '+JSON.stringify(body))
         var res = http(
                 base + url,
                 {
