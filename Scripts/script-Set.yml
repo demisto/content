@@ -4,7 +4,14 @@ commonfields:
 name: Set
 script: |-
   var ec = {};
-  ec[args.key] = args.value;
+  var value;
+  try {
+      value = JSON.parse(args.value);
+  } catch(err) {
+      value = args.value;
+  }
+
+  ec[args.key] = value;
   var result = {
       Type: entryTypes.note,
       Contents: ec,
@@ -13,10 +20,10 @@ script: |-
   };
 
   if (!args.append || args.append === 'false') {
-      setContext(args.key, args.value);
+      setContext(args.key, value);
   } else {
       result.EntryContext = ec;
-  } 
+  }
 
   return result;
 type: javascript
@@ -31,12 +38,14 @@ args:
   description: The key to set
 - name: value
   required: true
-  isArray: true
   description: The value to set to the key. Can be an array. Usually, a dq expression.
+  isArray: true
 - name: append
-  description: If false then then the context key will be overwritten. If set to true then the script will append to existing context key
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
+  description: If false then then the context key will be overwritten. If set to true
+    then the script will append to existing context key
 scripttarget: 0
+releaseNotes: "If object passed as string, Set will parse the value to JSON then set to context"
