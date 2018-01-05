@@ -312,30 +312,29 @@ script:
             except Exception as ex:
                 return create_error_entry(str(ex))
 
-    if __name__ == '__main__':
 
-        args = demisto.args()
-        if demisto.command() == 'test-module':
-            test()
-            demisto.results('ok')
-            sys.exit(0)
-        elif demisto.command() == 'file':
-            results = file(args.get('file'))
-            demisto.results(results)
-            sys.exit(0)
-        elif demisto.command() == 'tie-file-references':
-            results = file_references(args.get('file'))
-            demisto.results(results)
-            sys.exit(0)
-        elif demisto.command() == 'tie-set-file-reputation':
-            results = set_file_reputation(
-                args.get('file'),
-                args.get('trust_level'),
-                args.get('filename'),
-                args.get('comment')
-            )
-            demisto.results(results)
-            sys.exit(0)
+    args = demisto.args()
+    if demisto.command() == 'test-module':
+        test()
+        demisto.results('ok')
+        sys.exit(0)
+    elif demisto.command() == 'file':
+        results = file(args.get('file'))
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'tie-file-references':
+        results = file_references(args.get('file'))
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'tie-set-file-reputation':
+        results = set_file_reputation(
+            args.get('file'),
+            args.get('trust_level'),
+            args.get('filename'),
+            args.get('comment')
+        )
+        demisto.results(results)
+        sys.exit(0)
   type: python
   commands:
   - name: file
@@ -415,3 +414,4 @@ script:
     description: Retrieves the set of systems which have referenced (typically executed)
       the specified file
   dockerimage: demisto/dxl
+releaseNotes: "-"
