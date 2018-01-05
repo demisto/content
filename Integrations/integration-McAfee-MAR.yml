@@ -295,36 +295,35 @@ script:
         collectors_table = [{'Name': c, 'Outputs': ', '.join(MAR_COLLECTORS[c])} for c in MAR_COLLECTORS]
         return create_entry('Collectors', collectors_table, collectors_table, {}, ['Name', 'Outputs'])
 
-    if __name__ == '__main__':
-        args = demisto.args()
-        if demisto.command() == 'test-module':
-            test()
-            demisto.results('ok')
-            sys.exit(0)
-        elif demisto.command() == 'mar-search':
-            results = search_wrapper(
-                args.get('collector'),
-                args.get('outputs'),
-                args.get('filter-by'),
-                args.get('filter-operator'),
-                args.get('filter-value')
-            )
-            demisto.results(results)
-            sys.exit(0)
-        elif demisto.command() == 'mar-search-multiple':
-            results = search_multiple_wrapper(
-                args.get('collectors').split(','),
-                args.get('filter_collector'),
-                args.get('filter-by'),
-                args.get('filter-operator'),
-                args.get('filter-value')
-            )
-            demisto.results(results)
-            sys.exit(0)
-        elif demisto.command() == 'mar-collectors-list':
-            results = mar_collectors_list()
-            demisto.results(results)
-            sys.exit(0)
+    args = demisto.args()
+    if demisto.command() == 'test-module':
+        test()
+        demisto.results('ok')
+        sys.exit(0)
+    elif demisto.command() == 'mar-search':
+        results = search_wrapper(
+            args.get('collector'),
+            args.get('outputs'),
+            args.get('filter-by'),
+            args.get('filter-operator'),
+            args.get('filter-value')
+        )
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'mar-search-multiple':
+        results = search_multiple_wrapper(
+            args.get('collectors').split(','),
+            args.get('filter_collector'),
+            args.get('filter-by'),
+            args.get('filter-operator'),
+            args.get('filter-value')
+        )
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'mar-collectors-list':
+        results = mar_collectors_list()
+        demisto.results(results)
+        sys.exit(0)
   type: python
   commands:
   - name: mar-search
@@ -477,3 +476,4 @@ script:
       description: The result of the search query
     description: Search endpoint data crossed by multiple collectors
   dockerimage: demisto/dxl
+releaseNotes: "-"
