@@ -167,18 +167,17 @@ script:
         demisto.results('Modified stage to %s in case %s.' % (stage, case_id))
 
 
-    if __name__ == '__main__':
-        if demisto.command() == 'test-module':
-            demisto.results('ok')
-            sys.exit(0)
+    if demisto.command() == 'test-module':
+        demisto.results('ok')
+        sys.exit(0)
 
-        elif demisto.command() == 'fetch-incidents':
-            incidents = get_incidents_from_xmls()
-            demisto.incidents(incidents)
-            sys.exit(0)
+    elif demisto.command() == 'fetch-incidents':
+        incidents = get_incidents_from_xmls()
+        demisto.incidents(incidents)
+        sys.exit(0)
 
-        elif demisto.command() == 'arcsight-update-case':
-            update_case()
+    elif demisto.command() == 'arcsight-update-case':
+        update_case()
 
   type: python
   commands:
@@ -196,3 +195,4 @@ script:
     description: Create an XML to update a case.
   isfetch: true
 hidden: false
+releaseNotes: "-"
