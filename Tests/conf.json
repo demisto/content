@@ -168,6 +168,10 @@
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
+        },
+        {
+            "integrations": "Forcepoint",
+            "playbookID": "forcepoint test"
         }
     ],
     "skipped": [
