@@ -444,55 +444,68 @@ script:
             authToken: authToken,
             id: queryViewerId
         };
-        var json = JSON.parse(sendRequest(pathDictionary['as-get-matrix-data'], reqArgs));
+        var resBody = sendRequest(pathDictionary['as-get-matrix-data'], reqArgs);
+        var json;
+        try {
+            json = JSON.parse(resBody);
+        } catch(err) {
+            throw 'Failed to parse results for query viewer ' + queryViewerId + '.\nRaw response body: ' + resBody;
+        }
 
+
+        var returnObject;
         if (json && json['qvs.getMatrixDataResponse'] && json['qvs.getMatrixDataResponse']['qvs.return']) {
-            var returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];
-            var columnHeaders = dq(returnObject, 'columnHeaders');
-            if (columnHeaders && !Array.isArray(columnHeaders)) {
-                columnHeaders = [columnHeaders];
-            }
-            if (includeOnlyHeaders) {
-                return {
-                    columnHeaders: columnHeaders
-                };
-            }
+            // ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
+            returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];    
+        } else if (json && json['que.getMatrixDataResponse'] && json['que.getMatrixDataResponse']['que.return']) {
+            // ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
+            returnObject = json['que.getMatrixDataResponse']['que.return'];    
+        } else {
+            throw 'Failed to get results for query viewer ' + queryViewerId + '.\nRaw response body: ' + JSON.stringify(json);
+        }
 
-            if (!returnObject.rows || !Array.isArray(returnObject.rows) || returnObject.rows.length === 0) {
-                // there are no results
-                return {
-                    columnHeaders: columnHeaders,
-                    data: []
-                };
-            }
-
-            if (!columnHeaders || !columnHeaders.length || columnHeaders.length === 0) {
-                // no columns exists
-                return {
-                    columnHeaders: [],
-                    data: []
-                };
-            }
-
-            // we should parse the raws by column headers and create result objects from them
-            var queryResults = [];
-            for (var i = 0; i < returnObject.rows.length; i++) {
-                var row = returnObject.rows[i].value;
-                var qResult = {};
-                for (var columnIdx = 0; columnIdx < columnHeaders.length; columnIdx++) {
-                    column = columnHeaders[columnIdx];
-                    qResult[column] = row[columnIdx]['$'];
-                }
-                queryResults.push(qResult);
-            }
-
+        var columnHeaders = dq(returnObject, 'columnHeaders');
+        if (columnHeaders && !Array.isArray(columnHeaders)) {
+            columnHeaders = [columnHeaders];
+        }
+        if (includeOnlyHeaders) {
             return {
-                columnHeaders: columnHeaders,
-                data: queryResults
+                columnHeaders: columnHeaders
             };
         }
 
-        return null;
+        if (!returnObject.rows || !Array.isArray(returnObject.rows) || returnObject.rows.length === 0) {
+            // there are no results
+            return {
+                columnHeaders: columnHeaders,
+                data: []
+            };
+        }
+
+        if (!columnHeaders || !columnHeaders.length || columnHeaders.length === 0) {
+            // no columns exists
+            return {
+                columnHeaders: [],
+                data: []
+            };
+        }
+
+        // we should parse the raws by column headers and create result objects from them
+        var queryResults = [];
+        for (var i = 0; i < returnObject.rows.length; i++) {
+            var row = returnObject.rows[i].value;
+            var qResult = {};
+            for (var columnIdx = 0; columnIdx < columnHeaders.length; columnIdx++) {
+                column = columnHeaders[columnIdx];
+                qResult[column] = row[columnIdx]['$'];
+            }
+            queryResults.push(qResult);
+        }
+
+        return {
+            columnHeaders: columnHeaders,
+            data: queryResults
+        };
     }
 
     function getAllCases() {
