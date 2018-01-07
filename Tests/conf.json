@@ -182,6 +182,11 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
         }
     ]
 }
