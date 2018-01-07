@@ -1,7 +1,7 @@
 commonfields:
-  id: D2ActiveUsersParsed
+  id: ActiveUsersD2
   version: -1
-name: D2ActiveUsersParsed
+name: ActiveUsersD2
 script: |-
   resp = executeCommand("D2ActiveUsers", {});
   if (isError(resp[0])) {
