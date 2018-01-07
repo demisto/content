@@ -1,0 +1,224 @@
+id: forcepoint test
+version: -1
+name: forcepoint test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3e76235-b461-46d2-80aa-c53a64d18b7c
+    type: start
+    task:
+      id: b3e76235-b461-46d2-80aa-c53a64d18b7c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c45723e1-b428-41da-89ad-7e11c82c390e
+    type: regular
+    task:
+      id: c45723e1-b428-41da-89ad-7e11c82c390e
+      version: -1
+      name: Delete Context
+      description: 'Deletes previous context '
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: d28c1a0a-18eb-429c-803c-b9fa04bdf384
+    type: regular
+    task:
+      id: d28c1a0a-18eb-429c-803c-b9fa04bdf384
+      version: -1
+      name: Add new 'TEST' category
+      description: Will Add new API-managed category.
+      script: Forcepoint|||fp-add-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      categoryDescription: ""
+      categoryName: NEW TEST CATEGORY
+      parent: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 8ac94280-84c1-465f-88da-a48ac24c5eaa
+    type: regular
+    task:
+      id: 8ac94280-84c1-465f-88da-a48ac24c5eaa
+      version: -1
+      name: Get new category details
+      description: Query by category name
+      script: Forcepoint|||fp-get-category-detailes
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      categoryId: ""
+      categoryName: ${Forcepoint.AddCategory.CategoryName}
+      extend-context: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8d9036f8-48b8-44fb-84e2-2ac5fe0a0d0a
+    type: regular
+    task:
+      id: 8d9036f8-48b8-44fb-84e2-2ac5fe0a0d0a
+      version: -1
+      name: Add URLs to 'TEST' category
+      description: |-
+        Using the ID associated with the new category.
+        Add 'https://test.com', 'http://dem.com' to category URL list.
+      script: Forcepoint|||fp-add-address-to-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      categoryName: ${Forcepoint.CategoryDetails.CategoryName}
+      ips: ""
+      urls: https://test.com,http://dem.com
+      categoryID: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1bd3107e-0132-4560-8b91-6a71ad091ca3
+    type: regular
+    task:
+      id: 1bd3107e-0132-4560-8b91-6a71ad091ca3
+      version: -1
+      name: Delete URL from 'TEST' category
+      description: Delete https://test.com from the category URL list
+      script: Forcepoint|||fp-delete-address-from-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      categoryName: ""
+      ips: ""
+      urls: https://test.com
+      categoryID: ${Forcepoint.CategoryDetails.CategoryID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: cc9e9986-06e7-4986-86a0-cc90cbcada96
+    type: regular
+    task:
+      id: cc9e9986-06e7-4986-86a0-cc90cbcada96
+      version: -1
+      name: Get 'TEST' category details after alterations
+      script: Forcepoint|||fp-get-category-detailes
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      categoryId: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: ece37b21-c90b-4240-8681-98c7f46bb12f
+    type: regular
+    task:
+      id: ece37b21-c90b-4240-8681-98c7f46bb12f
+      version: -1
+      name: Delete 'TEST' category
+      description: Using the category ID
+      script: Forcepoint|||fp-delete-categories
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    scriptarguments:
+      categoryIDs: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryNames: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
