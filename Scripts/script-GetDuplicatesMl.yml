@@ -1,6 +1,6 @@
 commonfields:
   id: GetDuplicatesMl
-  version: 2
+  version: -1
 name: GetDuplicatesMl
 script: |-
   import json, collections
@@ -41,7 +41,7 @@ script: |-
   for email_label in demisto.args()['compareEmailLabels'].split(","):
       email_label = email_label.strip()
       if ":" in email_label:
-          email_label, custom_label = user_label.split(":")
+          email_label, custom_label = email_label.split(":")
           EMAIL_LABELS_MAP[custom_label] = email_label
       EMAIL_LABELS_FEATURES.append(email_label.strip())
 
@@ -146,7 +146,7 @@ script: |-
               label_type = label['type']
               if label_type in labels_rename:
                   label_type = labels_rename[label_type]
-              labels_map[label['type']] = label['value']
+              labels_map[label_type] = label['value']
           return labels_map
 
       @staticmethod
