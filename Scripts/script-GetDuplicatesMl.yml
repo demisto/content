@@ -637,3 +637,5 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/ml
+fromversion: 3.5.0
+releaseNotes: make dedup candidates automation by machine learning
