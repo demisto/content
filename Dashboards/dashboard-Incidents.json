@@ -1,7 +1,7 @@
 {
 	"id": "097e5436-d8f0-49b7-a19d-a05c60ed1039",
 	"version": -1,
-	"fromDate": "2017-12-20T22:00:00Z",
+	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"fromVersion": "3.5.0",
 	"period": {
@@ -24,8 +24,7 @@
 			"h": 2,
 			"widget": {
 				"id": "6b25afb6-7a95-4878-a24c-24cf067eb38a",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.707584527+02:00",
+				"version": -1,
 				"name": "Active Incidents by Severity",
 				"dataType": "incidents",
 				"widgetType": "pie",
@@ -60,8 +59,7 @@
 			"h": 2,
 			"widget": {
 				"id": "50e863f6-80f7-477a-b9d2-9483961d21cc",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.707063522+02:00",
+				"version": -1,
 				"name": "Active Incidents by Type",
 				"dataType": "incidents",
 				"widgetType": "line",
@@ -97,8 +95,7 @@
 			"h": 2,
 			"widget": {
 				"id": "acd61a60-26f0-475f-8702-f36ccb16b08e",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.708689502+02:00",
+				"version": -1,
 				"name": "Incident Severity by Type",
 				"dataType": "incidents",
 				"widgetType": "bar",
@@ -134,8 +131,7 @@
 			"h": 2,
 			"widget": {
 				"id": "2945de28-7c35-42f0-a87b-8e17eadd82da",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.709196548+02:00",
+				"version": -1,
 				"name": "Incident Types by Severity",
 				"dataType": "incidents",
 				"widgetType": "bar",
@@ -171,13 +167,12 @@
 			"h": 1,
 			"widget": {
 				"id": "",
-				"version": 0,
-				"modified": "2017-12-19T22:59:39.713469076+02:00",
+				"version": -1,
 				"name": "Unassigned Incidents",
 				"dataType": "incidents",
 				"widgetType": "trend",
 				"query": "-category:job and -status:archived and -status:closed and owner:\"\"",
-				"isPredefined": false,
+				"isPredefined": true,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
 					"toDate": "0001-01-01T00:00:00Z",
@@ -216,13 +211,12 @@
 			"y": 1,
 			"i": "99669600-e4ff-11e7-b60b-df7995291baf",
 			"w": 3,
-			"h": 3,
+			"h": 2,
 			"widget": {
 				"id": "b2e42da2-79b3-4265-9a2a-60365eec4443",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.711564542+02:00",
+				"version": -1,
 				"name": "Late Tasks by User",
-				"dataType": "system",
+				"dataType": "tasks",
 				"widgetType": "bar",
 				"query": "late",
 				"isPredefined": true,
@@ -239,7 +233,9 @@
 					"fromDateLicense": "0001-01-01T00:00:00Z"
 				},
 				"params": {
-					"systemType": "tasks"
+					"groupBy": [
+						"user"
+					]
 				}
 			}
 		},
@@ -247,18 +243,17 @@
 			"id": "9a62f760-e4ff-11e7-b60b-df7995291baf",
 			"forceRange": false,
 			"x": 9,
-			"y": 4,
+			"y": 3,
 			"i": "9a62f760-e4ff-11e7-b60b-df7995291baf",
 			"w": 3,
-			"h": 2,
+			"h": 3,
 			"widget": {
 				"id": "2ce1f876-2258-49c5-8a53-8133d2e70438",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.712508458+02:00",
+				"version": -1,
 				"name": "Open Tasks by User",
-				"dataType": "system",
+				"dataType": "tasks",
 				"widgetType": "bar",
-				"query": "late",
+				"query": "",
 				"isPredefined": true,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -273,7 +268,9 @@
 					"fromDateLicense": "0001-01-01T00:00:00Z"
 				},
 				"params": {
-					"systemType": "tasks"
+					"groupBy": [
+						"user"
+					]
 				}
 			}
 		},
@@ -287,10 +284,9 @@
 			"h": 1,
 			"widget": {
 				"id": "3873d737-11bd-43af-a5cd-c2bc15933a5a",
-				"version": 1,
-				"modified": "2017-12-19T22:59:39.712041402+02:00",
+				"version": -1,
 				"name": "Late Tasks",
-				"dataType": "system",
+				"dataType": "tasks",
 				"widgetType": "number",
 				"query": "late",
 				"isPredefined": true,
@@ -307,7 +303,21 @@
 					"fromDateLicense": "0001-01-01T00:00:00Z"
 				},
 				"params": {
-					"systemType": "tasks"
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 10
+							},
+							"#FF1B15": {
+								"value": 25
+							}
+						},
+						"type": "above"
+					}
 				}
 			}
 		},
@@ -321,13 +331,12 @@
 			"h": 1,
 			"widget": {
 				"id": "",
-				"version": 0,
-				"modified": "2017-12-20T23:32:01.773535261+02:00",
+				"version": -1,
 				"name": "Late Incidents",
 				"dataType": "incidents",
 				"widgetType": "trend",
 				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow",
-				"isPredefined": false,
+				"isPredefined": true,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
 					"toDate": "0001-01-01T00:00:00Z",
@@ -369,8 +378,7 @@
 			"h": 3,
 			"widget": {
 				"id": "e9259d0a-4ba9-450d-8a9e-541c63495d92",
-				"version": 6,
-				"modified": "2017-12-20T23:39:18.562843107+02:00",
+				"version": -1,
 				"name": "Unassigned Incidents",
 				"dataType": "incidents",
 				"widgetType": "list",
@@ -414,8 +422,7 @@
 			"h": 3,
 			"widget": {
 				"id": "97bc3b97-097f-422e-aa44-c0729197d710",
-				"version": 6,
-				"modified": "2017-12-20T23:39:18.560485404+02:00",
+				"version": -1,
 				"name": "Late Incidents",
 				"dataType": "incidents",
 				"widgetType": "list",
@@ -459,13 +466,12 @@
 			"h": 2,
 			"widget": {
 				"id": "",
-				"version": 0,
-				"modified": "2017-12-20T23:44:27.468842392+02:00",
+				"version": -1,
 				"name": "Incidents Assigned by User",
 				"dataType": "incidents",
 				"widgetType": "bar",
 				"query": "-category:job and -status:archived and -status:closed",
-				"isPredefined": false,
+				"isPredefined": true,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
 					"toDate": "0001-01-01T00:00:00Z",
