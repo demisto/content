@@ -56,7 +56,7 @@ script:
 
       };
 
-    var sendRequest = function(url, body, headers) {
+    function sendRequest(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
             url,
@@ -78,7 +78,7 @@ script:
         }
 
         return res.Body;
-    };
+    }
 
     var sendMultipartRequest = function(url, headers, file, body) {
         var res = httpMultipart(
@@ -99,21 +99,22 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    var resToMD = function(body, title, result, verbose, report) {
-        var md = tblToMd(title, body, Object.keys(body));
+    function resToMD(body, title, result, verbose, report) {
+        var md = tableToMarkdown(title, body, Object.keys(body));
         if (verbose) {
-              for (var i=0; i<report.length; i++){
-                  md += tblToMd('Report ' + i, report[i], Object.keys(report[i]));
-              }
-          }
+            for (var i = 0; i < report.length; i++) {
+                md += tableToMarkdown('Report ' + i, report[i], Object.keys(report[i]));
+            }
+        }
         return {Type: entryTypes.note,
                     Contents: result,
                     ContentsFormat: formats.json,
-                    HumanReadable: md
-            };
-    };
+                    HumanReadable: md,
+                    ReadableContentsFormat : formats.markdown
+                };
+    }
 
-    var uploadFile = function(upload) {
+    function uploadFile(upload) {
         uploadUrl = url + urlDict.upload;
         var body = {
             'apikey': token,
@@ -122,13 +123,13 @@ script:
         var result = sendMultipartRequest(uploadUrl, headers, upload, body);
         var uploadData = dq(result, 'wildfire.upload-file-info');
         var returnObj = {
-                res: result,
-                data: uploadData
-            };
+            res: result,
+            data: uploadData
+        };
         return returnObj;
-    };
+    }
 
-    var uploadFileRemote = function(upload) {
+    function uploadFileRemote(upload) {
         linkUrl = url + urlDict.remoteFile;
         var body = {
             apikey: token,
@@ -137,13 +138,13 @@ script:
         var result = sendMultipartRequest(linkUrl, headers, '', body);
         var uploadData = dq(result, 'wildfire.upload-file-info');
         var returnObj = {
-                res: result,
-                data: uploadData
-            };
+            res: result,
+            data: uploadData
+        };
         return returnObj;
-    };
+    }
 
-    var getReport = function(md5, argHash, file, format, verbose) {
+    function getReport(md5, argHash, file, format, verbose) {
         var reportUrl = url + urlDict.report;
         var hash = md5 || argHash || file;
         if(!hash)
@@ -168,9 +169,9 @@ script:
         };
         return returnObj;
 
-    };
+    }
 
-    var createReport = function (reportResponse) {
+    function createReport(reportResponse) {
         var reportUrl = url + urlDict.report;
         var result = reportResponse.res;
         var report = reportResponse.rep;
@@ -208,9 +209,9 @@ script:
         else{ /* default format is xml*/
           return resToMD(file_info,'WildFire Report', result, args.verbose, report);
         }
-    };
+    }
 
-    var detonate = function(type, upload, format, delay, timeout) {
+    function detonate(type, upload, format, delay, timeout) {
         switch (type) {
             case 'file':
                 var uploadData = uploadFile(upload).data;
@@ -235,7 +236,7 @@ script:
             }
         }
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
-    };
+    }
 
     var url = params.server.replace(/[\/]+$/, '');
     var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
