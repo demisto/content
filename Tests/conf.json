@@ -82,7 +82,8 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
+            "timeout": 500,
+            "skip": true
         },
         {
             "playbookID": "TestCommonPython"
