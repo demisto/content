@@ -538,6 +538,7 @@ script: |-
   model.fit(X, Y)
 
   candidates = enrich_incidents_by_indicators(get_incidents_by_time_diff(incident['occurred']))
+  candidates.pop(incident['id'], None)
 
   candidates_features_list = []
   for candidate in candidates.values():
