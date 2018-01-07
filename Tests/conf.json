@@ -187,6 +187,10 @@
         },
         {
             "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
         }
     ]
 }
