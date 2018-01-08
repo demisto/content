@@ -2,22 +2,15 @@ commonfields:
   id: GetDuplicatesMl
   version: -1
 name: GetDuplicatesMl
-script: |-
-  import json, collections
-  import re
+script: |
+  import json, collections, re, dateutil, datetime, pickle, ipaddress
+  import tldextract, editdistance, zlib
   from rfc822 import parseaddr
   from urlparse import urlparse
-
-  import dateutil, datetime
   import pandas as pd
   from sklearn.ensemble import RandomForestClassifier
-  import editdistance
-  import pickle
   from datetime import timedelta
-  import zlib
-
   from sklearn.preprocessing import Imputer
-
 
   DUPLICATE_COL = 'is_duplicate'
 
@@ -61,33 +54,16 @@ script: |-
   USE_MY_DUPLICATES_X_DAYS_AGO = int(demisto.args()['UseLocalEnvDuplicatesInLastDays'])
 
   CANDIDATES_FEATURES_NA_RATIO = 0.2
+  IP_MASK_BITS_FOR_COMPARISON = int(demisto.args()['ipComparisonSubnetMask'])
 
-  ####################################################################
-  class Memoize:
-      def __init__(self, f):
-          self.f = f
-          self.memo = {}
-
-      def __call__(self, *args):
-          if not args in self.memo:
-              self.memo[args] = self.f(*args)
-          return self.memo[args]
-
+  ########################################################################################################################################################################
 
   class Utils():
       email_pattern = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
 
       @staticmethod
       def extract_domain_from_url(url):
-          parsed_domain = urlparse(url)
-          domain = parsed_domain.netloc
-          domain_parts = domain.split('.')
-          if len(domain_parts) > 2:
-              domain = '.'.join(domain_parts[-(2 if domain_parts[-1] in {
-                  'com', 'net', 'org', 'io', 'ly', 'me', 'sh', 'fm', 'us'} else 3):])
-          if len(domain) == 0:
-              return None
-          return domain
+          tldextract.extract(url).domain
 
       @staticmethod
       def uri_validator(url):
@@ -178,72 +154,8 @@ script: |-
           return parseaddr(email)[0]
 
       @staticmethod
-      def find_indices(s, lambda_condition):
-          return [i for i, ch in enumerate(s) if lambda_condition(ch)]
-
-      @staticmethod
-      def calculate_similar_pattern(feature_prefix, group1, group2):
-          feature_functions = {
-              'dash_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch == '/')),
-              'dot_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch == '.')),
-              'underscore_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch == '_')),
-              'question_mark_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch == '?')),
-              'ampersand_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch == '&')),
-              'digit_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: ch.isdigit())),
-              'lowercase_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: 'a' <= ch <= 'z')),
-              'uppercase_indices': Memoize(lambda x: Utils.find_indices(x, lambda ch: 'A' <= ch <= 'Z'))
-          }
-
-          if group1 is None or group2 is None or len(group1) == 0 or len(group2) == 0:
-              return {}
-
-          match_count_max = len(feature_functions)
-
-          features = {}
-          match_counter = {}
-          for function_name, lambda_function in feature_functions.items():
-              def match_function(x, y):
-                  return lambda_function(x) == lambda_function(y) and len(lambda_function(x))
-
-              def amount_function(x, y):
-                  return len(lambda_function(x)) == len(lambda_function(y)) and len(lambda_function(x)) > 0
-
-              for value1 in group1:
-                  for value2 in group2:
-                      match_counter_key = (value1, value2)
-                      if match_counter_key not in match_counter:
-                          match_counter[match_counter_key] = []
-                      if lambda_function(value1) == lambda_function(value2):
-                          bit = lambda_function(value1) == []
-                          match_counter[match_counter_key].append((function_name, bit))
-
-          features["%s_pattern_similarity_max" % feature_prefix] = max(map(len, match_counter.values())) / float(match_count_max)
-
-          return features
-
-      @staticmethod
       def is_groups_cross_empty(group1, group2):
           return group1 is None or len(group1) == 0 or group2 is None or len(group2) == 0
-
-      @staticmethod
-      def is_similarity_exist(group1, group2, func):
-          for x in group1:
-              for y in group2:
-                  if func(x, y):
-                      return True
-
-          return False
-
-      @staticmethod
-      def get_minimal_edit_distance(group1, group2):
-          min_value = None
-          for x in group1:
-              for y in group2:
-                  ed = editdistance.eval(x, y)
-                  if min_value is None or ed < min_value:
-                      min_value = ed
-
-          return min_value
 
       @staticmethod
       def intersection_set(x, y):
@@ -278,6 +190,14 @@ script: |-
           union_cardinality = len(Utils.union_set(x, y))
           return intersection_cardinality / float(union_cardinality)
 
+      @staticmethod
+      def canonize_ip_to_netrok(ip_address, mast_bits):
+          try:
+              return str(ipaddress.IPv4Network(unicode("%s/%d" % (ip_address, mast_bits)), strict=False).broadcast_address)
+          except Exception:
+              return ip_address
+
+
   class IncidentFeatures:
       def __init__(self, incident1, incident2):
 
@@ -300,19 +220,12 @@ script: |-
           if len(domains2) > 0:
               self.indicators2['Domain'] = domains2
 
-      def get_email_features(self):
-          emails1, emails2 = self.indicators1.get('Email', []), self.indicators2.get('Email', [])
-          if Utils.is_groups_cross_empty(emails1, emails2):
-              return {}
+          if IP_MASK_BITS_FOR_COMPARISON < 32 and IP_MASK_BITS_FOR_COMPARISON > 0:
+              if 'IP' in self.indicators1:
+                  self.indicators1['IP'] = map(lambda ip: Utils.canonize_ip_to_netrok(ip, IP_MASK_BITS_FOR_COMPARISON), self.indicators1['IP'])
+              if 'IP' in self.indicators2:
+                  self.indicators2['IP'] = map(lambda ip: Utils.canonize_ip_to_netrok(ip, IP_MASK_BITS_FOR_COMPARISON), self.indicators2['IP'])
 
-          email_user_names1 = map(Utils.extract_email_username, emails1)
-          email_user_names2 = map(Utils.extract_email_username, emails2)
-
-          features = Utils.calculate_similar_pattern('email_username', email_user_names1, email_user_names2)
-
-          features['email_min_ld'] = Utils.get_minimal_edit_distance(email_user_names1, email_user_names2)
-
-          return features
 
       def get_email_labels_features(self):
           def add_label_ld_feature(label_name):
@@ -347,16 +260,6 @@ script: |-
 
           return features
 
-      def get_ip_features(self):
-          ip1, ip2 = self.indicators1.get('IP', []), self.indicators2.get('IP', [])
-          if Utils.is_groups_cross_empty(ip1, ip2):
-              return {}
-
-          def ip_similarity_function(x, y):
-              return Utils.ip_address_in_network(x, "%s/%d" % (y, IP_SUBNET_BITS))
-
-          return {'ip_same_subnet_exist': Utils.is_similarity_exist(ip1, ip2, ip_similarity_function)}
-
       def get_incident_features(self):
           features = {}
           incident_time_diff = Utils.get_time_diff_seconds(self.incident1['occurred'], self.incident2['occurred'])
@@ -385,8 +288,6 @@ script: |-
           features = {}
           features.update(self.get_incident_features())
           features.update(self.get_email_labels_features())
-          features.update(self.get_email_features())
-          features.update(self.get_ip_features())
 
           for key in set(expected_features).difference(set(features.keys())):
               features[key] = None
@@ -567,15 +468,12 @@ script: |-
   if found_duplicates:
       # context
       demisto.setContext('duplicate_candidate', result[0])
-      demisto.setContext('duplicate_candidates_list', result)
+      demisto.setContext('duplicate_candidate_list', result[:10])
       # entry
-      markdown_result = tableToMarkdown("Dupliacte incidents", result, headers=['id', 'name', 'closedTime', 'duplicate_probability', 'occurred_time'])
+      markdown_result = tableToMarkdown("Duplicate incidents candidates", result, headers=['id', 'name', 'closedTime', 'duplicate_probability', 'occurred_time'])
       demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown_result})
   else:
-      demisto.results('Did not found any duplicate incident')
-
-
-  #TODO: limit list to 10 in the context
+      demisto.results('Did not find any duplicate incidents candidates')
 type: python
 tags:
 - dedup
@@ -583,37 +481,37 @@ tags:
 - ml
 - duplicate
 comment: |-
-  Find candidates to duplicate incidents.
-  Use machine learning techniques with pre defined trained data (can use also data from the local environment) , consider different features as labels comparison, email labels (relevant for phishing), incident time, shared indicators (can be customized by the arguments)
+  Find duplicate incidents candidates.
+  Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
 enabled: true
 args:
 - name: maxNumberOfIncidents
-  description: Maximum number of incidents (to fetch from the db) to consider for
-    ml calculation
+  description: Maximum number of incidents (to fetch from the database) to consider
+    for machine-learning calculation.
   defaultValue: "1000"
 - name: timeFrameDays
-  description: Check incidents for duplication in this time frame (days from\after)
+  description: Check candidates for duplication in this time frame of number of days
+    from\after.
   defaultValue: "7"
 - name: ignoreClosedIncidents
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: Ignore closed incidents as duplicates candidates
+  description: Ignore closed incidents as potential candidates.
   defaultValue: "yes"
 - name: threshold
-  description: Certainty threshold to consider incident as duplicate (number between
-    0-1)
+  description: Threshold to consider incident as duplication, number between 0-1
   defaultValue: "0.5"
 - name: compareIndicators
-  description: 'Comma separated values of which indicators to consider when compare
-    incidents from the following: Email, IP, Domain, File SHA256, File MD5, URL'
+  description: 'Indicators to consider for duplicate calculation, from the following
+    options: Email, IP, Domain, File SHA256, File MD5, URL. Comma separated values'
   defaultValue: Email, IP, Domain, File SHA256, File MD5, URL
 - name: compareEmailLabels
-  description: 'Comma separated values of which labels to consider when compare incidents
-    from the following: email/from, email/subject, email/content, email/attachments.
-    If your labels is different from the default, please specify your labels in this
-    way: LABEL_NAME:YOUR_LABEL_NAME. For example, email/from:email_sender'
+  description: 'Email labels to consider for duplicate calculation, from the following
+    options: Email/headers/From, Email/headers/Subject, Email/text, Email/html, Email/attachments.
+    Comma separated values. If your labels are different from the default, please
+    specify your labels as follows: LABEL_NAME:YOUR_LABEL_NAME. For example, email/from:email_sender.'
   defaultValue: Email/headers/From, Email/headers/Subject, Email/text, Email/html,
     Email/attachments
 - name: compareOtherLabels
@@ -621,21 +519,25 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: If yes - take into account all labels keys
+  description: If yes - take into account all labels keys.
   defaultValue: "yes"
 - name: compareIncidentTimeDiff
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: If yes - take into account incident time difference
+  description: If yes - take into account incident time differences.
   defaultValue: "yes"
 - name: UseLocalEnvDuplicatesInLastDays
-  description: Consider duplicate incidents example from the local environment in
-    the last "X" days (default is 0 - means does not use)
+  description: Consider duplicate incidents examples from the local environment within
+    the last "X" days. default is 0, means do not use.
   defaultValue: "0"
+- name: ipComparisonSubnetMask
+  description: Consider equity of IP base on this subnet mask (a valid value is a
+    number in range 0 - 32). default is 32 - means exact match of the ip addresses.
+  defaultValue: "32"
 scripttarget: 0
 runonce: false
-dockerimage: demisto/ml
+dockerimage: demisto/machine-learning:latest
 fromversion: 3.5.0
 releaseNotes: make dedup candidates automation by machine learning
