@@ -105,6 +105,7 @@ script:
             var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=demisto.com';
             var res = sendRequest(url);
             return 'ok';
+        case 'email':
         case 'pwned-email':
             var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/' + args.email;
             var res = sendRequest(url);
@@ -160,4 +161,24 @@ script:
       description: Compromised Domains
       related: ""
     description: Check if domain has been compromised
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: Email to check
+    outputs:
+    - contextPath: Account.Email.Compromised.Vendor
+      description: For comporomised emails, the vendor that made the decision
+    - contextPath: Account.Email.Reason
+      description: For comporomised emails, the reason for the vendor to make the
+        compromised decision
+    - contextPath: Account.Email.Address
+      description: Email address
+    important:
+    - contextPath: Persons(val.Compromised)
+      description: Compromised Persons
+      related: ""
+    description: Check if an email has been compromised as part of past breaches
 hidden: false
+releaseNotes: "-"
