@@ -1,0 +1,314 @@
+commonfields:
+  id: Joe Security
+  version: -1
+name: Joe Security
+display: Joe Security
+category: Forensics & Malware Analysis
+image: data:image/png;base64,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
+description: Sandbox Cloud
+configuration:
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import time
+    import requests
+    from distutils.util import strtobool
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    BASE_URL = 'https://jbxcloud.joesecurity.org/api/'
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    ''' HELPER FUNCTIONS '''
+    def http_post(url_suffix, data=None, files=None):
+        data = {} if data is None else data
+
+        data.setdefault('apikey', demisto.params()['api_key'])
+        LOG('running request with url=%s\tdata=%s\tfiles=%s' % (BASE_URL + url_suffix,
+            data, files, ))
+        try:
+            res = requests.post(BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                files=files
+            )
+
+            if res.status_code != 200:
+                raise Exception('Your request failed with the following error: ' + res.reason)
+
+        except Exception, e:
+            LOG(e)
+            raise
+
+        return res.json()
+
+
+    def webid_to_entry(title, web_ids):
+        return createEntry(web_ids, {
+            'contextPath' : 'Joe.Analysis(val.WebID && val.WebID == obj.WebID)',
+            'title' : title,
+            'data' : [
+                {'to' : 'WebID', 'from' : u'webid'},
+            ],
+        })
+
+
+    def analysis_to_entry(title, info):
+        return createEntry(info, {
+            'contextPath' : 'Joe.Analysis(val.WebID && val.WebID == obj.WebID)',
+            'title' : title,
+            'data' : [
+                {'to' : 'WebID', 'from' : u'webid'},
+                {'to' : 'FileName', 'from' : u'filename'},
+                {'to' : 'Status', 'from' : u'status'},
+                {'to' : 'Comments', 'from' : u'comments'},
+                {'to' : 'Time', 'from' : u'time'},
+                {'to' : 'Runs', 'from' : u'runs', 'humanReadable' : False},
+                {'to' : 'Result', 'from' : u'runs.detection'},
+            ],
+        })
+
+
+    def poll_webid(web_id):
+        result = {'data' : {'status' : 'pending'}}
+        max_polls = 100;
+
+        while (max_polls >=0) and result['data']['status'] != 'finished':
+            if result['data']['status'] != 'pending':
+                LOG('error while polling: result is %s' % (result, ))
+            result = info_request(web_id)
+            time.sleep(2);
+            max_polls -= 1
+
+        LOG('reached max_polls #%d' % (max_polls, ))
+        if max_polls < 0:
+            return analysis_to_entry('Polling timeout on Analysis #' + web_id, result['data'])
+        else:
+            return analysis_to_entry('Analysis #' + web_id, result['data'])
+
+
+    ''' FUNCTIONS '''
+    def is_online():
+        cmd_url = 'v2/server/online'
+        res = http_post(cmd_url)
+        return res['data']['online']
+
+
+    def list_analysis():
+        cmd_url = 'v2/analysis/list'
+        res = http_post(cmd_url)
+        return webid_to_entry('Web IDs:', res['data'])
+
+
+    def analysis_info():
+        web_id = demisto.args().get('webid')
+        LOG('info: web_id = %s' % (web_id, ))
+        res = info_request(web_id)
+        return analysis_to_entry('Analysis #' + web_id, res['data'])
+
+
+    def info_request(web_id):
+        cmd_url = 'v2/analysis/info'
+        return http_post(cmd_url, data={'webid' : web_id})
+
+
+    def analyse_url():
+        args = demisto.args()
+        url = args.get('url')
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+        return analyse_url_request(url, should_wait)
+
+
+    def analyse_url_request(url, should_wait):
+        res = http_post('v2/analysis/submit',
+            data={'accept-tac': 1, 'url' : url})
+
+        if 'errors' in res:
+            LOG('Error! in command analyse_url: url=%s' % (url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        info = [{'webid' : i} for i in res['data']['webids']]
+        return webid_to_entry('Web ID:', info)
+
+
+    def analyse_sample():
+        args = demisto.args()
+        file_entry = args.get('sample')
+        sample_url = args.get('sample_url')
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+
+        if (file_entry is None and sample_url is None) or (None not in [file_entry, sample_url]):
+            raise ValueError('You must specify one (and only one) of the following: sample_url, sample.')
+
+        LOG('analysing sample')
+        if file_entry is not None:
+            return analyse_sample_file_request(file_entry, should_wait)
+        else:
+            return analyse_sample_url_request(sample_url, should_wait)
+
+
+    def analyse_sample_file_request(file_entry, should_wait):
+        with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
+            res = http_post('v2/analysis/submit',
+                data={'accept-tac': 1},
+                files={'sample':f})
+
+            if 'errors' in res:
+                LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+                LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+                raise Exception('command failed to run.')
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        info = [{'webid' : i} for i in res['data']['webids']]
+        return webid_to_entry('Web ID:', info)
+
+
+    def analyse_sample_url_request(sample_url, should_wait):
+        res = http_post('v2/analysis/submit',
+                data={'accept-tac': 1, 'sample-url' : sample_url})
+
+        if 'errors' in res:
+            LOG('Error! in command sample file: file url=%s' % (sample_url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        info = [{'webid' : i} for i in res['data']['webids']]
+        return webid_to_entry('Web ID:', info)
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() in ['test-module', 'joe-is-online']:
+            # This is the call made when pressing the integration test button.
+            if is_online():
+                demisto.results('ok')
+            else:
+                demisto.results('not online')
+        elif demisto.command() == 'joe-list-analysis':
+            demisto.results(list_analysis())
+        elif demisto.command() == 'joe-analysis-info':
+            demisto.results(analysis_info())
+        elif demisto.command() == 'joe-analysis-submit-url':
+            demisto.results(analyse_url())
+        elif demisto.command() == 'joe-analysis-submit-sample':
+            demisto.results(analyse_sample())
+
+    except Exception, e:
+        if demisto.params().get('verbose'):
+            LOG(e.message)
+            LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: joe-is-online
+    arguments: []
+    description: Check if Joe Sandbox is online or in maintenance mode.
+  - name: joe-analysis-submit-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: sample url
+    - name: should_wait
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Should the command poll for the result of the analysis
+      defaultValue: "False"
+    outputs:
+    - contextPath: Joe. Analysis.WebID
+      description: Web ID
+    - contextPath: Joe. Analysis.FileName
+      description: Sample Data
+    - contextPath: Joe. Analysis.Status
+      description: Analysis Status
+    - contextPath: Joe. Analysis.Comments
+      description: Analysis Comments
+    - contextPath: Joe. Analysis.Time
+      description: Submitted Time
+    - contextPath: Joe. Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe. Analysis.Result
+      description: Analysis Results
+    description: Submit a url for analysis.
+  - name: joe-analysis-info
+    arguments:
+    - name: webid
+      required: true
+      default: true
+      description: Web ID
+    outputs:
+    - contextPath: Joe. Analysis.WebID
+      description: Web ID
+    - contextPath: Joe. Analysis.FileName
+      description: Sample Data
+    - contextPath: Joe. Analysis.Status
+      description: Analysis Status
+    - contextPath: Joe. Analysis.Comments
+      description: Analysis Comments
+    - contextPath: Joe. Analysis.Time
+      description: Submitted Time
+    - contextPath: Joe. Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe. Analysis.Result
+      description: Analysis Results
+    description: Show information about an analysis.
+  - name: joe-list-analysis
+    arguments: []
+    outputs:
+    - contextPath: Joe. Analysis.WebID
+      description: Web ID
+    description: List all analyses.
+  - name: joe-analysis-submit-sample
+    arguments:
+    - name: sample
+      default: true
+      description: Sample File
+    - name: sample_url
+      description: Url to a sample file
+    - name: should_wait
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Should the command poll for the result of the analysis
+      defaultValue: "False"
+    outputs:
+    - contextPath: Joe. Analysis.WebID
+      description: Web ID
+    - contextPath: Joe. Analysis.FileName
+      description: Sample Data
+    - contextPath: Joe. Analysis.Status
+      description: Analysis Status
+    - contextPath: Joe. Analysis.Comments
+      description: Analysis Comments
+    - contextPath: Joe. Analysis.Time
+      description: Submitted Time
+    - contextPath: Joe. Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe. Analysis.Result
+      description: Analysis Results
+    description: Submit a sample for analysis.
+releaseNotes: "-"
