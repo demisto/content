@@ -158,9 +158,6 @@
             "playbookID": "TestWordFileToIOC"
         },
         {
-            "playbookID": "TestParseCSV"
-        },
-        {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
         },
@@ -187,6 +184,9 @@
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500
+        },
+        {
+            "playbookID": "TestParseCSV"
         }
     ]
 }
