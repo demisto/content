@@ -320,6 +320,7 @@ script:
     if demisto.command() == 'vmware-get-events':
         result = getEvents(demisto.args()['vm-uuid'])
 
+    logout(si)
     sys.stdout = sout
     demisto.results(result)
     sys.exit(0)
