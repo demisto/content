@@ -19,7 +19,7 @@ script: |-
 
   def test_dq():
       expected_x = [432, 4567, 11, 'asdf']
-      x = demisto.dt(INFO, 'a.b.c.d')
+      x = dq(INFO, 'a.b.c.d'.split('.'))
 
       if x != expected_x:
           raise ValueError('expected: [%s]\n %s\ngot: [%s]\n%s' % (type(expected_x), expected_x, type(x), x))
