@@ -197,7 +197,6 @@ script: |
           except Exception:
               return ip_address
 
-
   class IncidentFeatures:
       def __init__(self, incident1, incident2):
 
@@ -385,11 +384,18 @@ script: |
       return RandomForestClassifier(max_depth=10, n_estimators=100, random_state=1)
 
   def get_result_record(incident, probabilty):
-      return {'id': incident['id'],
-              'name': incident['name'],
-              'closedTime': incident['closed'] if incident['closed'] !="0001-01-01T00:00:00Z" else "",
-              'duplicate_probability': probabilty,
-              'occurred_time': incident['occurred']}
+      occured_time = incident['occurred']
+      try:
+          date_obj = dateutil.parser.parse(occured_time)
+          occured_time = date_obj.strftime('%Y-%m-%d %H:%M:%S')
+      except Exception:
+          pass
+
+      return {'ID': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
+              'Name': incident['name'],
+              'Closed Time': incident['closed'] if incident['closed'] !="0001-01-01T00:00:00Z" else "",
+              'Duplicate Probability': probabilty,
+              'Occurred Time': occured_time}
 
   def has_phishing_labels(incident):
       for label in incident['labels']:
@@ -446,6 +452,9 @@ script: |
       feature_dict = IncidentFeatures(incident, candidate).calculate_features()
       feature_dict['id'] = candidate['id']
       candidates_features_list.append(feature_dict)
+  if len(candidates_features_list) == 0:
+      demisto.results('Did not find any duplicate incidents candidates')
+      exit(0)
 
   candidates_features = pd.DataFrame.from_dict(candidates_features_list)
   candidates_features = candidates_features.dropna(axis=0, thresh=(len(use_features) * (1-CANDIDATES_FEATURES_NA_RATIO)))
@@ -460,7 +469,7 @@ script: |
       if probability >= THRESHOLD:
           result.append(get_result_record(candidates[incident_id], probability))
 
-  result.sort(key=lambda x: x['duplicate_probability'], reverse=True)
+  result.sort(key=lambda x: x['Duplicate Probability'], reverse=True)
 
   # handle results
   found_duplicates = (len(result) > 0)
@@ -470,7 +479,7 @@ script: |
       demisto.setContext('duplicate_candidate', result[0])
       demisto.setContext('duplicate_candidate_list', result[:10])
       # entry
-      markdown_result = tableToMarkdown("Duplicate incidents candidates", result, headers=['id', 'name', 'closedTime', 'duplicate_probability', 'occurred_time'])
+      markdown_result = tableToMarkdown("Duplicate incidents candidates", result, headers=['ID', 'Name', 'Closed Time', 'Duplicate Probability', 'Occurred Time'])
       demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown_result})
   else:
       demisto.results('Did not find any duplicate incidents candidates')
