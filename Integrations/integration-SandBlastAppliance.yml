@@ -1,0 +1,447 @@
+commonfields:
+  id: Check Point Sandblast Appliance
+  version: -1
+name: Check Point Sandblast Appliance
+display: Check Point Sandblast Appliance
+category: Forensics & Malware Analysis
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAyCAYAAADLLVz8AAAACXBIWXMAAC4jAAAuIwF4pT92AAA4KmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wMi0xNlQyMDozMjowMiswMjowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTAzLTA3VDE5OjM0OjU0KzAyOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wMy0wN1QxOTozNDo1NCswMjowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDo2NWNiZWEwMi1kYmI5LTQ5NzAtYWVlNy00MmUxMmVjMjU5MDQ8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6NjVjYmVhMDItZGJiOS00OTcwLWFlZTctNDJlMTJlYzI1OTA0PC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6NjVjYmVhMDItZGJiOS00OTcwLWFlZTctNDJlMTJlYzI1OTA0PC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjY1Y2JlYTAyLWRiYjktNDk3MC1hZWU3LTQyZTEyZWMyNTkwNDwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xNlQyMDozMjowMiswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+MzAwMDAwMC8xMDAwMDwvdGlmZjpYUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6WVJlc29sdXRpb24+MzAwMDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT42NTUzNTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+ODA8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NTA8L2V4aWY6UGl4ZWxZRGltZW5zaW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAg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
+description: Query, upload and download data using Check Point Sandblast
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v1
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var server = params.server;
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+    var version = params.version;
+    var requestTemplate = JSON.stringify({request:[{features:['te']}]});
+    var base = server.replace(/[\/]+$/, '') +':18194/tecloud/gw/' + version + '/file/';
+
+    var urlDict = {
+        'sb-query': 'query',
+        'sb-upload': 'upload',
+        'sb-download': 'download',
+        'sandblast-query': 'query',
+        'sandblast-upload': 'upload',
+        'sandblast-download': 'download'
+    };
+
+    var sendRequest = function(url, body, queryName) {
+        var res = http(
+                base + url,
+                {
+                    Method: 'POST',
+                    Body: body
+                },
+                insecure,
+                proxy
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to ' + queryName + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return JSON.parse(res.Body);
+    };
+
+    var teArgs = {'images': 0, 'reports': 0, 'benign_reports': 1};
+
+    var createRequest = function(args) {
+        if (!args.features) {
+            args.features = 'all';
+        }
+        if (args.features !== 'extraction' && args.features !== 'av') {
+            var feature = {};
+                var keys = Object.keys(teArgs);
+                for (var i = 0; i < keys.length; i++) {
+                    if (args[keys[i]]) {
+                        if (teArgs[keys[i]] === 0) {
+                            feature[keys[i]] = JSON.parse(args[keys[i]]);
+                        } else if (teArgs[keys[i]] === 1) {
+                            feature[keys[i]] = args[keys[i]] === 'true';
+                        }
+                        delete args[keys[i]];
+                    }
+                }
+                if (Object.keys(feature).length) {
+                    args['te'] = feature;
+                }
+        }
+        if (args.features === 'all') {
+            args.features = ['te', 'av', 'extraction'];
+        } else {
+            args.features = [args.features];
+        }
+        var request = {request: args};
+        return JSON.stringify(request);
+    };
+
+    var raw;
+    switch (command) {
+        case 'test-module':
+            if (sendRequest(urlDict['sb-query'], createRequest({md5:'31335bc6357f0eb6e3370803b9a6a318'}), 'test')) {
+                return 'ok';
+            }
+            return 'not-cool';
+        case 'sandblast-download':
+        case 'sb-download':
+            var res = http(
+                base + urlDict[command] + encodeToURLQuery(args),
+                {
+                    Method: 'GET'
+                },
+                insecure,
+                proxy
+            );
+            if (res.StatusCode < 200 || res.StatusCode >= 300) {
+                throw 'Failed to ' + urlDict[command] + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            }
+            // Extract file name from response
+            var currentTime = new Date();
+            var fileName = command + '_at_' + currentTime.getTime();
+            if (res.Headers && res.Headers['Content-Disposition']) {
+                var match = /filename=\"(.*)\"/.exec(res.Headers['Content-Disposition']);
+                if (match && match[1]) {
+                    fileName = match[1];
+                }
+            }
+            raw = {Type: 3, FileID: saveFile(res.Body), File: fileName, Contents: fileName};
+            break;
+        case 'sandblast-upload':
+        case 'sb-upload':
+            var file_id = args['file_id'];
+            delete args['file_id'];
+            var res = httpMultipart(
+                base + urlDict[command],
+                file_id,
+                {
+                    Method: 'POST'
+                },
+                {
+                    'request': createRequest(args)
+                },
+                insecure,
+                proxy
+                );
+            if (res.StatusCode < 200 || res.StatusCode >= 300) {
+                throw 'Failed to sb-upload , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            }
+            raw = {Type: entryTypes.note, ContentsFormat: formats.json, Contents: JSON.parse(res.Body)};
+            break;
+        default:
+            var contents = sendRequest(
+                urlDict[command],
+                command === 'sb-query' || command === 'sandblast-query'? createRequest(args) : requestTemplate, command);
+            raw = {Type: entryTypes.note, ContentsFormat: formats.json, Contents: contents};
+    }
+
+    if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
+        var uniqueKeys = ['md5', 'sha1', 'sha256'];
+        var ec = {};
+        if (raw.Contents.response &&
+            raw.Contents.response.av &&
+            raw.Contents.response.av.malware_info &&
+            raw.Contents.response.av.malware_info.malware_type) {
+            var maliciousData = {
+                Malicious: {
+                    Vendor: 'Sandblast',
+                    Description: 'Sandblast found this file malicious',
+                    Confidence: raw.Contents.response.av.malware_info.confidence,
+                    MalwareFamily: raw.Contents.response.av.malware_info.malware_family,
+                    MalwareType: raw.Contents.response.av.malware_info.malware_type,
+                    Severity: raw.Contents.response.av.malware_info.severity,
+                    SignatureName: raw.Contents.response.av.malware_info.signature_name,
+                }
+            };
+            for (var key in uniqueKeys) {
+                if (raw.Contents.response[uniqueKeys[key]]) {
+                    maliciousData[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
+                }
+            }
+            addMalicious(ec, outputPaths.file, maliciousData);
+        } else {
+            for (var key in uniqueKeys) {
+                if (raw.Contents.response[uniqueKeys[key]]) {
+                    var val = {};
+                    val[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
+                    ec['File(val.' + uniqueKeys[key].toUpperCase() + ' == obj.' + uniqueKeys[key].toUpperCase() + ')'] = val;
+                }
+            }
+        }
+        raw.EntryContext = ec;
+        var prefix = command === 'sandblast-upload' ? 'Upload' : 'Query';
+        raw.HumanReadable = tableToMarkdown(
+            prefix + ' status for file ' +
+            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
+            ', md5 ' + raw.Contents.response.md5,
+            raw.Contents.response.status
+        ) + '\n' +
+        tableToMarkdown(
+            prefix + ' av for file ' +
+            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
+            ', md5 ' + raw.Contents.response.md5,
+            raw.Contents.response.av)+ '\n' +
+        tableToMarkdown(
+            prefix + ' extraction for file ' +
+            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
+            ', md5 ' + raw.Contents.response.md5,
+            raw.Contents.response.extraction)+ '\n' +
+        tableToMarkdown(prefix + ' TE for file ' +
+            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
+            ', md5 ' + raw.Contents.response.md5,
+            raw.Contents.response.te);
+    }
+    return raw;
+  type: javascript
+  commands:
+  - name: sb-query
+    deprecated: true
+    arguments:
+    - name: md5
+      description: The md5 to query
+    - name: sha1
+      description: The sha1 to query
+    - name: sha256
+      description: The sha256 to query
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: quota
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, response delivers the quota data (for cloud services only)
+    - name: file_name
+      description: File name - service calculates the file name from the part name
+    description: Use the Query API to have a client application look for either the
+      analysis report of a specific file on the Check Point Threat Prevention service
+      databases or the status of a file, uploaded for analysis
+  - name: sandblast-query
+    arguments:
+    - name: md5
+      description: The md5 to query
+    - name: sha1
+      description: The sha1 to query
+    - name: sha256
+      description: The sha256 to query
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: quota
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, response delivers the quota data (for cloud services only)
+    - name: file_name
+      description: File name - service calculates the file name from the part name
+    outputs:
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as malicious
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    description: Use the Query API to have a client application look for either the
+      analysis report of a specific file on the Check Point Threat Prevention service
+      databases or the status of a file, uploaded for analysis
+  - name: sb-upload
+    deprecated: true
+    arguments:
+    - name: file_name
+      required: true
+      default: true
+      description: File name - service calculates the file name from the part name
+    - name: md5
+      description: The md5 to upload
+    - name: sha1
+      description: The sha1 to upload
+    - name: sha256
+      description: The sha256 to upload
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: file_id
+      required: true
+      description: The file id
+    description: Use the Upload API to have a client application request that Check
+      Point Threat Prevention modules scan and analyze a file. When you upload a file
+      to the service, the file is encrypted. It is un-encrypted during analysis, and
+      then deleted
+  - name: sandblast-upload
+    arguments:
+    - name: file_name
+      required: true
+      default: true
+      description: File name - service calculates the file name from the part name
+    - name: md5
+      description: The md5 to upload
+    - name: sha1
+      description: The sha1 to upload
+    - name: sha256
+      description: The sha256 to upload
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: file_id
+      required: true
+      description: The file id
+    outputs:
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as malicious
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    description: Use the Upload API to have a client application request that Check
+      Point Threat Prevention modules scan and analyze a file. When you upload a file
+      to the service, the file is encrypted. It is un-encrypted during analysis, and
+      then deleted
+  - name: sb-download
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: File id to download
+    description: 'Use the Download API to have a client application download files
+      generated by the Check Point Threat Prevention service: analysis reports, Threat
+      Emulation sandbox outputs, and more. The request must have the ID of the file
+      to download'
+  - name: sandblast-download
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: File id to download
+    outputs:
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    - contextPath: File.Name
+      description: The file name
+    description: 'Use the Download API to have a client application download files
+      generated by the Check Point Threat Prevention service: analysis reports, Threat
+      Emulation sandbox outputs, and more. The request must have the ID of the file
+      to download'
