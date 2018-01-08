@@ -1,0 +1,305 @@
+id: JoeSecurityTestPlaybook
+version: 24
+name: JoeSecurityTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8e11f044-75f0-43f4-87c0-212349ce9590
+    type: start
+    task:
+      id: 8e11f044-75f0-43f4-87c0-212349ce9590
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 3f6cf685-6eb6-47cc-82b6-630dc0ca97df
+    type: regular
+    task:
+      id: 3f6cf685-6eb6-47cc-82b6-630dc0ca97df
+      version: -1
+      name: Start fresh
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ea8b1bfa-8a10-4286-8fb4-93dcb0f7d6ba
+    type: regular
+    task:
+      id: ea8b1bfa-8a10-4286-8fb4-93dcb0f7d6ba
+      version: -1
+      name: Validate instance is working
+      script: Joe Security|||joe-is-online
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 96befd23-e144-440c-8508-af8fa3535070
+    type: regular
+    task:
+      id: 96befd23-e144-440c-8508-af8fa3535070
+      version: -1
+      name: Analyse a file using a url with out waiting
+      script: Joe Security|||joe-analysis-submit-sample
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      sample: {}
+      sample_url:
+        simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
+      should_wait: {}
+      url: {}
+      webid: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 1fd00cef-26e4-48e8-8e27-99ada2729aae
+    type: regular
+    task:
+      id: 1fd00cef-26e4-48e8-8e27-99ada2729aae
+      version: -1
+      name: Analyse a url without waiting
+      script: Joe Security|||joe-analysis-submit-url
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      should_wait:
+        simple: "False"
+      url:
+        simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 00e5c871-e1f9-4bd2-8a1c-0a02fb224419
+    type: regular
+    task:
+      id: 00e5c871-e1f9-4bd2-8a1c-0a02fb224419
+      version: -1
+      name: Get info on the file analysis
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      should_wait: {}
+      url: {}
+      webid:
+        simple: ${Joe.Analysis.[0].WebID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 961e1d35-2ed4-43a5-8655-3219936045a9
+    type: regular
+    task:
+      id: 961e1d35-2ed4-43a5-8655-3219936045a9
+      version: -1
+      name: Get info on the URL analysis
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      should_wait: {}
+      url: {}
+      webid:
+        simple: ${Joe.Analysis.[1].WebID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: d3caced7-48af-463d-8ba6-a28c89f8a1b3
+    type: regular
+    task:
+      id: d3caced7-48af-463d-8ba6-a28c89f8a1b3
+      version: -1
+      name: Analyse url with polling
+      script: Joe Security|||joe-analysis-submit-url
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      should_wait:
+        simple: "True"
+      url:
+        simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
+      webid: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 99ada482-7b5e-4f7d-83c5-b0bb62f607d3
+    type: regular
+    task:
+      id: 99ada482-7b5e-4f7d-83c5-b0bb62f607d3
+      version: -1
+      name: List all analysis
+      script: Joe Security|||joe-list-analysis
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      should_wait: {}
+      url: {}
+      webid: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    taskid: cd41b90f-c37f-4cbe-85e5-bc1bab2bca51
+    type: regular
+    task:
+      id: cd41b90f-c37f-4cbe-85e5-bc1bab2bca51
+      version: -1
+      name: Create sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      data:
+        simple: qwerty
+      entryId: {}
+      filename:
+        simple: zaq
+    view: |-
+      {
+        "position": {
+          "x": 51,
+          "y": 1590
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d544610c-d075-4efb-849d-561099f32bbc
+    type: regular
+    task:
+      id: d544610c-d075-4efb-849d-561099f32bbc
+      version: -1
+      name: Run sample with file
+      script: Joe Security|||joe-analysis-submit-sample
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      sample:
+        simple: ${File.EntryID}
+      sample_url: {}
+      should_wait: {}
+      url: {}
+      webid: {}
+    view: |-
+      {
+        "position": {
+          "x": 49,
+          "y": 1766
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1811,
+        "width": 382,
+        "x": 49,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+releaseNotes: "-"

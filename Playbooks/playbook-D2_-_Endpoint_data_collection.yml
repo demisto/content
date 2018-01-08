@@ -74,7 +74,7 @@ tasks:
       id: a3cd0e59-5d57-4782-8795-0ea3811ec4d6
       version: -1
       name: d2 agent - Get process list
-      scriptName: D2ExecuteCommand
+      scriptName: ExecuteCommandD2
       type: regular
       iscommand: false
       brand: ""
@@ -101,7 +101,7 @@ tasks:
       version: -1
       name: d2 agent - Get hardware details
       description: Get Hardware details from endpoint
-      scriptName: D2ExecuteCommand
+      scriptName: ExecuteCommandD2
       type: regular
       iscommand: false
       brand: ""
@@ -126,7 +126,7 @@ tasks:
       id: 34499d4a-e00a-4886-8882-e5bcddf3a892
       version: -1
       name: d2 agent - Get active users
-      scriptName: D2ActiveUsersParsed
+      scriptName: ActiveUsersD2
       type: regular
       iscommand: false
       brand: ""
@@ -326,3 +326,4 @@ inputs:
 - key: Path
   value: ""
   description: If initialized, D2 will try and collect the file at target path
+releaseNotes: "-"
