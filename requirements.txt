@@ -12,3 +12,5 @@ dxlmarclient
 dxltieclient
 lxml
 langdetect
+pyVim
+pyVmomi
