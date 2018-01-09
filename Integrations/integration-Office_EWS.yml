@@ -1350,6 +1350,7 @@ script:
       any operation on a mailbox that does not belong to that user will fail. Instructions
       on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
   - name: ews-get-contacts
+    deprecated: true
     arguments:
     - name: item-ids
       required: true
