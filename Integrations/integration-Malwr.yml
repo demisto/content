@@ -389,4 +389,3 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
   dockerimage: demisto/bs4
-releaseNotes: "-"
