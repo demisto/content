@@ -55,6 +55,7 @@ script: |
 
   CANDIDATES_FEATURES_NA_RATIO = 0.2
   IP_MASK_BITS_FOR_COMPARISON = int(demisto.args()['ipComparisonSubnetMask'])
+  MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxCandidates'])
 
   ########################################################################################################################################################################
 
@@ -63,7 +64,10 @@ script: |
 
       @staticmethod
       def extract_domain_from_url(url):
-          tldextract.extract(url).domain
+          domain = tldextract.extract(url).domain.lower()
+          suffix = tldextract.extract(url).suffix.lower()
+          if len(domain) > 0 and len(suffix) > 0:
+              return ".".join([domain, suffix])
 
       @staticmethod
       def uri_validator(url):
@@ -79,7 +83,8 @@ script: |
           index = email.rfind("@")
           if index == -1:
               return None
-          return email[index + 1:]
+          return Utils.extract_domain_from_url(email[index + 1:])
+
 
       @staticmethod
       def extract_email_username(email):
@@ -391,11 +396,15 @@ script: |
       except Exception:
           pass
 
-      return {'ID': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
-              'Name': incident['name'],
-              'Closed Time': incident['closed'] if incident['closed'] !="0001-01-01T00:00:00Z" else "",
-              'Duplicate Probability': probabilty,
-              'Occurred Time': occured_time}
+      return {'id': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
+              'rawId': incident['id'],
+              'name': incident['name'],
+              'closedTime': incident['closed'] if incident['closed'] !="0001-01-01T00:00:00Z" else "",
+              'duplicateProbability': probabilty,
+              'occurredTime': occured_time}
+
+  def camel_case_to_space(s):
+      return ''.join(map(lambda x: x if x.islower() else " "+x, s)).strip().capitalize()
 
   def has_phishing_labels(incident):
       for label in incident['labels']:
@@ -457,7 +466,7 @@ script: |
       exit(0)
 
   candidates_features = pd.DataFrame.from_dict(candidates_features_list)
-  candidates_features = candidates_features.dropna(axis=0, thresh=(len(use_features) * (1-CANDIDATES_FEATURES_NA_RATIO)))
+  candidates_features = candidates_features.dropna(axis=0, thresh=(len(use_features) * (1 - CANDIDATES_FEATURES_NA_RATIO)))
   candidates_features_x = filter_features(candidates_features, use_features)
   candidates_features_x = union_complete_missing_values(X, candidates_features_x, ['features', 'candidates']).loc['candidates']
   predications_prob = model.predict_proba(candidates_features_x)
@@ -469,17 +478,18 @@ script: |
       if probability >= THRESHOLD:
           result.append(get_result_record(candidates[incident_id], probability))
 
-  result.sort(key=lambda x: x['Duplicate Probability'], reverse=True)
+  result.sort(key=lambda x: x['duplicateProbability'], reverse=True)
 
   # handle results
   found_duplicates = (len(result) > 0)
-  demisto.setContext('found_duplicates', found_duplicates)
+  demisto.setContext('foundDuplicates', found_duplicates)
   if found_duplicates:
       # context
-      demisto.setContext('duplicate_candidate', result[0])
-      demisto.setContext('duplicate_candidate_list', result[:10])
+      demisto.setContext('duplicateCandidate', result[0])
+      demisto.setContext('duplicateCandidateList', result[:MAX_CANDIDATES_IN_LIST])
       # entry
-      markdown_result = tableToMarkdown("Duplicate incidents candidates", result, headers=['ID', 'Name', 'Closed Time', 'Duplicate Probability', 'Occurred Time'])
+      hr_result = map(lambda row: dict((camel_case_to_space(k),v) for k,v in row.items()), result)
+      markdown_result = tableToMarkdown("Duplicate incidents candidates", hr_result, headers=['Id', 'Name', 'Closed time', 'Duplicate probability', 'Occurred time'])
       demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown_result})
   else:
       demisto.results('Did not find any duplicate incidents candidates')
@@ -538,14 +548,27 @@ args:
   description: If yes - take into account incident time differences.
   defaultValue: "yes"
 - name: UseLocalEnvDuplicatesInLastDays
-  description: Consider duplicate incidents examples from the local environment within
-    the last "X" days. default is 0, means do not use.
+  description: Consider duplicate incident examples from the local environment within
+    the last "X" days. Default is 0, which means do not use.
   defaultValue: "0"
 - name: ipComparisonSubnetMask
-  description: Consider equity of IP base on this subnet mask (a valid value is a
-    number in range 0 - 32). default is 32 - means exact match of the ip addresses.
+  description: Consider the equity of the IP base on this subnet mask (a valid value
+    is a number between 0 - 32). Default is 32 which means an exact match of the IP
+    addresses.
   defaultValue: "32"
+- name: maxCandidates
+  description: Maximum number of candidates to output (in incidents candidate list).
+  defaultValue: "10"
+outputs:
+- contextPath: duplicateCandidate
+  description: duplicate candidate
+  type: unknown
+- contextPath: foundDuplicates
+  description: found any duplicate?
+- contextPath: duplicateCandidateList
+  description: duplicate incident candidates list
 scripttarget: 0
+runonce: false
 dockerimage: demisto/machine-learning:latest
 fromversion: 3.5.0
 releaseNotes: make dedup candidates automation by machine learning
