@@ -144,7 +144,7 @@ script:
         },
         'ews-get-folder': {
             arrayArgName: 'folders-ids',
-            contextKey: 'EWS.Folders(val.ID == obj.ID)',
+            contextKey: 'EWS.Folders(val.FolderID.ID == obj.FolderID.ID)',
             innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',
             resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',
             targetToContext: true,
