@@ -9,6 +9,7 @@
   "orientation": "portrait",
   "recipients": [],
   "system": true,
+  "releaseNotes": "Added time zone to report time",
   "reportType": "investigation",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
@@ -109,7 +110,7 @@
           "fontSize": 12,
           "marginBottom:": 12
         },
-        "format": "MMMM Do YYYY, h:mm:ss a"
+        "format": "MMMM Do YYYY, h:mm:ss a z"
       }
     },
     {
