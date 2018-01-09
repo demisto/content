@@ -8,6 +8,7 @@
   "orientation": "",
   "recipients": [],
   "system": true,
+  "releaseNotes": "Added time zone to report time",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
     "incident.status.1": { "type": "string", "value": "Assigned" },

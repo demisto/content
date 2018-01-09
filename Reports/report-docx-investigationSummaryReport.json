@@ -9,6 +9,7 @@
   "orientation": "portrait",
   "recipients": [],
   "system": true,
+  "releaseNotes": "Added time zone to report time",
   "reportType": "investigation",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
