@@ -99,7 +99,7 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    function resToMD(body, title, result, verbose, report) {
+    function createEntry(body, title, result, verbose, report) {
         var md = tableToMarkdown(title, body, Object.keys(body));
         if (verbose) {
             for (var i = 0; i < report.length; i++) {
@@ -107,20 +107,20 @@ script:
             }
         }
         return {Type: entryTypes.note,
-                    Contents: result,
-                    ContentsFormat: formats.json,
-                    HumanReadable: md,
-                    ReadableContentsFormat : formats.markdown
-                };
+                Contents: result,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat : formats.markdown
+        };
     }
 
     function uploadFile(upload) {
-        uploadUrl = url + urlDict.upload;
+        uploadUrl = URL + urlDict.upload;
         var body = {
-            'apikey': token,
+            'apikey': TOKEN,
             'file' : upload
         };
-        var result = sendMultipartRequest(uploadUrl, headers, upload, body);
+        var result = sendMultipartRequest(uploadUrl, DEFAULT_HEADERS, upload, body);
         var uploadData = dq(result, 'wildfire.upload-file-info');
         var returnObj = {
             res: result,
@@ -130,12 +130,12 @@ script:
     }
 
     function uploadFileRemote(upload) {
-        linkUrl = url + urlDict.remoteFile;
+        linkUrl = URL + urlDict.remoteFile;
         var body = {
-            apikey: token,
+            apikey: TOKEN,
             url: upload
         };
-        var result = sendMultipartRequest(linkUrl, headers, '', body);
+        var result = sendMultipartRequest(linkUrl, DEFAULT_HEADERS, '', body);
         var uploadData = dq(result, 'wildfire.upload-file-info');
         var returnObj = {
             res: result,
@@ -145,7 +145,7 @@ script:
     }
 
     function getReport(md5, argHash, file, format, verbose) {
-        var reportUrl = url + urlDict.report;
+        var reportUrl = URL + urlDict.report;
         var hash = md5 || argHash || file;
         if(!hash)
             throw 'Missing md5/hash argument.';
@@ -153,8 +153,8 @@ script:
             // SHA1 not supported.
             return 'No results';
         }
-        var bodyXML = 'apikey='+token+'&format=xml&hash='+hash;
-        var resXML = sendRequest(reportUrl, bodyXML, headers);
+        var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
+        var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
         if(!resXML){
           return 'No results yet';
         }
@@ -163,8 +163,8 @@ script:
         var file_info = dq(result, 'wildfire.file_info');
         var returnObj = {
             hash: hash,
-            res: result,
-            rep: report,
+            result: result,
+            report: report,
             info: file_info
         };
         return returnObj;
@@ -172,9 +172,9 @@ script:
     }
 
     function createReport(reportResponse) {
-        var reportUrl = url + urlDict.report;
-        var result = reportResponse.res;
-        var report = reportResponse.rep;
+        var reportUrl = URL + urlDict.report;
+        var result = reportResponse.result;
+        var report = reportResponse.report;
         var file_info = reportResponse.info;
         var hash = reportResponse.hash;
         var context = { DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }};
@@ -195,8 +195,8 @@ script:
             }
         }
         if(args.format === 'pdf'){
-          var bodyPDF = 'apikey='+token+'&format=pdf&hash='+hash;
-          var resPDF = sendRequest(reportUrl, bodyPDF, headers);
+          var bodyPDF = 'apikey='+TOKEN+'&format=pdf&hash='+hash;
+          var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS);
           var currentTime = new Date();
           var fileName = command + '_at_' + currentTime.getTime();
           return {Type: 9,
@@ -207,18 +207,15 @@ script:
           };
         }
         else{ /* default format is xml*/
-          return resToMD(file_info,'WildFire Report', result, args.verbose, report);
+          return createEntry(file_info,'WildFire Report', result, args.verbose, report);
         }
     }
 
     function detonate(type, upload, format, delay, timeout) {
-        switch (type) {
-            case 'file':
-                var uploadData = uploadFile(upload).data;
-                break;
-            case 'remoteFile':
-                var uploadData = uploadFileRemote(upload).data;
-                break;
+        if (type === 'files') {
+            var uploadData = uploadFile(upload).data;
+        } else { //type is remote file
+            var uploadData = uploadFileRemote(upload).data;
         }
         var sha = uploadData.sha256;
         delayTime = parseInt(delay);
@@ -238,19 +235,19 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-    var url = params.server.replace(/[\/]+$/, '');
-    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
-    var token = params.token;
+    var URL = params.server.replace(/[\/]+$/, '');
+    var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
+    var TOEKN = params.token;
 
     switch (command) {
       case 'test-module':
-          testUrl = url + urlDict.report;
+          testUrl = URL + urlDict.report;
           var res = http(
               testUrl,
               {
                   Method: 'POST',
-                  Body: 'apikey='+token+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
-                  Headers: headers
+                  Body: 'apikey='+TOKEN+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                  Headers: DEFAULT_HEADERS
               },
               params.insecure,
               params.proxy
@@ -269,7 +266,7 @@ script:
           var response = uploadFile(args.upload);
           var uploadData = response.data;
           var result = response.res;
-          return resToMD(uploadData,'WildFire Report', result);
+          return createEntry(uploadData,'WildFire Report', result);
       case 'detonate-file':
           return detonate('file', args.upload, args.format, args.delay, args.timeout);
       case 'detonate-file-remote':
