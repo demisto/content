@@ -525,3 +525,4 @@ script:
     description: Use the Quote API to have a client application get the current license
       and quota status of the API Key that you use
 hidden: false
+releaseNotes: '-'
