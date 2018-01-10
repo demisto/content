@@ -3,30 +3,16 @@ commonfields:
   version: -1
 name: EmailReputation
 script: |-
-  resp = demisto.executeCommand('pipl-search', demisto.args());
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
+  return executeCommand('email', {email: args.email});
+type: javascript
 tags:
 - enhancement
 comment: A context script for Email entities
-system: true
+enabled: true
 args:
 - name: email
   required: true
   default: true
   description: Email address to look up
 scripttarget: 0
-dependson:
-  must:
-  - pipl-search
-timeout: 0s
+releaseNotes: "-"
