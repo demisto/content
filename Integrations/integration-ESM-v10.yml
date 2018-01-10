@@ -903,9 +903,18 @@ script:
 
     elif demisto.command() == 'esm-acknowledge-alarms':
         args = demisto.args()
-        res = esm.acknowledge_alarms(argToList(demisto.get(args, 'alarm_ids')))
+        res = esm.acknowledge_alarms(argToList(demisto.get(args, 'alarmIds')))
         final_result = res
 
+    elif demisto.command() == 'esm-unacknowledge-alarms':
+        args = demisto.args()
+        res = esm.unacknowledge_alarms(argToList(demisto.get(args, 'alarmIds')))
+        final_result = res
+
+    elif demisto.command() == 'esm-delete-alarms':
+        args = demisto.args()
+        res = esm.delete_alarms(argToList(demisto.get(args, 'alarmIds')))
+        final_result = res
 
     esm.logout()
     demisto.results(final_result)
@@ -1217,7 +1226,7 @@ script:
     description: Get a list of all users.
   - name: esm-acknowledge-alarms
     arguments:
-    - name: alarm_ids
+    - name: alarmIds
       required: true
       default: true
       description: list of triggered alarm ids to be marked acknowledged separated
@@ -1226,7 +1235,7 @@ script:
     description: Mark triggered alarms as acknowledged
   - name: esm-unacknowledge-alarms
     arguments:
-    - name: alarm_ids
+    - name: alarmIds
       required: true
       default: true
       description: list of triggered alarm ids to be marked unacknowledged separated
@@ -1235,7 +1244,7 @@ script:
     description: Mark triggered alarms as unacknowledged
   - name: esm-delete-alarms
     arguments:
-    - name: alarm_ids
+    - name: alarmIds
       required: true
       default: true
       description: list of triggered alarm ids to be deleted separated with commas
