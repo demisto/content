@@ -143,7 +143,7 @@ script:
         },
         'ews-get-folder': {
             arrayArgName: 'folders-ids',
-            contextKey: 'EWS.Folders(val.ID == obj.ID)',
+            contextKey: 'EWS.Folders(val.FolderID.ID == obj.FolderID.ID)',
             innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',
             resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',
             targetToContext: true,
@@ -1349,6 +1349,7 @@ script:
       any operation on a mailbox that does not belong to that user will fail. Instructions
       on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
   - name: ews-get-contacts
+    deprecated: true
     arguments:
     - name: item-ids
       required: true
