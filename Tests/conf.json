@@ -164,6 +164,9 @@
         {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test"
+        },
+        {
+            "playbookID": "GeneratePassword-Test"
         }
     ],
     "skipped": [
@@ -187,6 +190,10 @@
         },
         {
             "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
         }
     ]
 }
