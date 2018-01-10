@@ -82,7 +82,7 @@ script:
         cmd_url = '/authenticatedSession'
         res = http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
-    def blacklist_list(url):
+    def blacklist_url(url):
         cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
         blacklistUrls = url.split(',')
         data = {
@@ -93,12 +93,11 @@ script:
 
     ''' EXECUTION CODE '''
 
-    auth = login()
+    login()
 
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
-            login()
             demisto.results('ok')
         elif demisto.command() == 'zcaler-blacklist-url':
             demisto.results(blacklist_url(args.url))
