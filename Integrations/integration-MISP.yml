@@ -433,9 +433,6 @@ script:
         time = addMinutes(time,time.getTimezoneOffset());
         var month = "0" + (time.getMonth()+1);
         var day = "0" + time.getDate();
-        var hours = "0" + time.getHours();
-        var minutes = "0" + time.getMinutes();
-        var seconds = "0" + time.getSeconds();
         var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
         return dateOld;
     };
@@ -461,7 +458,7 @@ script:
 
         var body = { 'Event': {
             'date': getNowTime(),
-            'threat_level_id': '1',
+            'threat_level_id': args.threat_level_id,
             'published': args.published,
             'info': args.info,
             'analysis': '0',
@@ -488,7 +485,7 @@ script:
         var requestUrl = params.url + '/attributes/add/' + args.id;
 
         var body = { 'Attribute': {
-            'type': args.type
+            'type': args.type,
             'category': args.category,
             'to_ids': args.to_ids,
             'distribution': args.distribution,
@@ -768,6 +765,9 @@ script:
       - "true"
       description: Publish the event
       defaultValue: "false"
+    - name: threat_level_id
+      description: MISP Threat level id
+      defaultValue: "1"
     outputs:
     - contextPath: MISP.ID
       description: MISP event ID
@@ -799,4 +799,5 @@ script:
       required: true
       description: Value of the attribute
     description: Add attribute to existing MISP event
+  runonce: false
 releaseNotes: "Added internal-misp-create-event and internal-misp-add-attribute commands."
