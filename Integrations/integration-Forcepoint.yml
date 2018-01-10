@@ -97,7 +97,7 @@ script:
             wait(1);
             res = sendRequest(url, 'POST');
             tries++;
-        } while(res.StatusCode === 409 && tries < 3 );
+        } while(res.StatusCode === 409 && tries < 10);
         if (res.StatusCode !== 200) {
             if (res.StatusCode === 409) {
                 throw 'Another transaction is in process. Please wait for a few seconds before sending another request.';
