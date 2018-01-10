@@ -9,6 +9,7 @@
   "orientation": "portrait",
   "recipients": [],
   "system": true,
+  "releaseNotes": "Added time zone to report time",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
     "incident.status.1": { "type": "string", "value": "Assigned" },
@@ -62,7 +63,7 @@
           "fontStyle": "italic",
           "marginBottom:": 12
         },
-        "format": "MMMM Do YYYY, h:mm:ss a"
+        "format": "MMMM Do YYYY, h:mm:ss a z"
       }
     },
     {
