@@ -2,7 +2,7 @@ id: Detonate files
 version: -1
 name: Detonate files
 system: true
-fromversion: 2.5.0
+fromversion: 3.5.0
 description: Detonate files found under File context if they are PDFs or executables
 starttaskid: "0"
 tasks:
@@ -46,8 +46,7 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value:
-        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
           >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
     view: |-
       {
@@ -70,8 +69,7 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      value:
-        simple: There are no relevant files to detonate
+      value: There are no relevant files to detonate
     view: |-
       {
         "position": {
@@ -94,16 +92,14 @@ tasks:
       brand: WildFire
     scriptarguments:
       delay: {}
-      entryID:
-        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
           >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       format: {}
       hash: {}
       interval: {}
       md5: {}
       timeout: {}
-      upload:
-        simple: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      upload: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
           >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       verbose: {}
     view: |-

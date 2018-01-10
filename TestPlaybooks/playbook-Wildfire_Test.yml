@@ -1,6 +1,7 @@
 id: Wildfire Test
 version: -1
 name: Wildfire Test
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +44,7 @@ tasks:
       hash: {}
       md5: {}
       timeout: {}
-      upload:
-        simple: ${File.EntryID}
+      upload: ${File.EntryID}
       verbose: {}
     view: |-
       {
@@ -70,8 +70,7 @@ tasks:
       delay: {}
       format: {}
       timeout: {}
-      upload:
-        simple: http://www.pdf995.com/samples/pdf.pdf
+      upload: http://www.pdf995.com/samples/pdf.pdf
     view: |-
       {
         "position": {

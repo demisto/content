@@ -237,7 +237,7 @@ script:
 
     var URL = params.server.replace(/[\/]+$/, '');
     var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
-    var TOEKN = params.token;
+    var TOKEN = params.token;
 
     switch (command) {
       case 'test-module':
