@@ -557,16 +557,17 @@ args:
     addresses.
   defaultValue: "32"
 - name: maxCandidates
-  description: Maximum number of candidates to output (in incidents candidate list).
+  description: Maximum number of candidates in the output (in incidents candidate
+    list).
   defaultValue: "10"
 outputs:
 - contextPath: duplicateCandidate
-  description: duplicate candidate
+  description: Duplicate candidate.
   type: unknown
 - contextPath: foundDuplicates
-  description: found any duplicate?
+  description: Found any duplicate?
 - contextPath: duplicateCandidateList
-  description: duplicate incident candidates list
+  description: Duplicate incident candidates list.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning:latest
