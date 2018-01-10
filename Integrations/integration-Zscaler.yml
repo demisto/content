@@ -76,11 +76,13 @@ script:
             'apiKey': API_KEY,
             'timestamp': int(round(time.time() * 1000))
         }
-        res = http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+        http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+
 
     def logout():
         cmd_url = '/authenticatedSession'
-        res = http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
+        http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
+
 
     def blacklist_url(url):
         cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
@@ -88,8 +90,11 @@ script:
         data = {
             'blacklistUrls': blacklistUrls
         }
-        res = http_request('POST', cmd_url, data, DEFAULT_HEADERS)
-        return 'Added to blacklist successfully.'
+        http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+        listOfUrls = ''
+        for url in blacklistUrls:
+            listOfUrls += '- ' + url + '\n'
+        return 'Added the following URL to the blacklist successfully:\n' + listOfUrls
 
     ''' EXECUTION CODE '''
 
@@ -114,5 +119,5 @@ script:
     - name: url
       required: true
       default: true
-      description: 'URLs to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com)'
-    description: Adds a URL to the blacklist.
+      description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
+    description: Adds URL to the blacklist.
