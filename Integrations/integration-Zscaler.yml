@@ -1,0 +1,119 @@
+commonfields:
+  id: Zscaler
+  version: -1
+name: Zscaler
+display: Zscaler
+category: Network Security
+image: data:image/png;base64,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
+description: Zscaler is a cloud security solution built for performance and flexible
+  scalability.
+configuration:
+- display: Cloud Name (i.e. admin.zscalertwo.net)
+  name: cloud
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import requests
+    import time
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    CLOUD_NAME=demisto.params()['cloud']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+    API_KEY=str(demisto.params()['port'])
+    BASE_URL=CLOUD_NAME + '/api/v1'
+    USE_SSL = not demisto.params().get('insecure', False)
+    DEFAULT_HEADERS = {
+        'content-Type': 'application/json'
+    }
+
+    ''' HELPER FUNCTIONS '''
+    def http_request(method, url_suffix, data, headers):
+        data = {} if data is None else data
+        LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
+            data, headers))
+        try:
+            res = requests.request(method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                headers=headers
+            )
+            if res.status_code not in (200, 204):
+                raise Exception('Your request failed with the following error: ' + res.reason)
+        except Exception, e:
+            LOG(e)
+            raise
+        return res.json()
+
+    ''' FUNCTIONS '''
+
+    def login():
+        cmd_url = '/authenticatedSession'
+        data = {
+            'username': USERNAME,
+            'password': PASSWORD,
+            'apiKey': API_KEY,
+            'timestamp': int(round(time.time() * 1000))
+        }
+        res = http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+
+    def logout():
+        cmd_url = '/authenticatedSession'
+        res = http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
+
+    def blacklist_list(url):
+        cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
+        blacklistUrls = url.split(',')
+        data = {
+            'blacklistUrls': blacklistUrls
+        }
+        res = http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+        return 'Added to blacklist successfully.'
+
+    ''' EXECUTION CODE '''
+
+    auth = login()
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            login()
+            demisto.results('ok')
+        elif demisto.command() == 'zcaler-blacklist-url':
+            demisto.results(blacklist_url(args.url))
+    except Exception, e:
+            LOG(e.message)
+            LOG.print_log()
+            raise
+    finally:
+        logout()
+  type: python
+  commands:
+  - name: zcaler-blacklist-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: 'URLs to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com)'
+    description: Adds a URL to the blacklist.
