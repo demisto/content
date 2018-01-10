@@ -209,14 +209,13 @@ script:
             q = {
                 'config': {
                     'timeRange': time_range,
-                    'filters': filters,
+                    'filters': filters
                 }
             }
             if fields is not None:
                 q['config']['fields'] = json.loads(fields)
             query = json.dumps(q)
 
-            demisto.log(query)
             res = self.cmdquery(cmd, query)
             return res['resultID']
 
@@ -904,17 +903,8 @@ script:
 
     elif demisto.command() == 'esm-acknowledge-alarms':
         args = demisto.args()
-        res = esm.acknowledge_alarms(argToList(demisto.get(args, 'alarmIds')))
+        res = esm.acknowledge_alarms(argToList(demisto.get(args, 'alarm_ids')))
         final_result = res
-
-    elif demisto.command() == 'esm-blacklists':
-        pass
-
-    elif demisto.command() == 'esm-get-ioc-data':
-        pass
-
-    elif demisto.command() == 'esm-filters':
-        pass
 
 
     esm.logout()
@@ -1227,7 +1217,7 @@ script:
     description: Get a list of all users.
   - name: esm-acknowledge-alarms
     arguments:
-    - name: alarmIds
+    - name: alarm_ids
       required: true
       default: true
       description: list of triggered alarm ids to be marked acknowledged separated
