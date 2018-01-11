@@ -31,6 +31,96 @@ script:
     USE_SSL = not demisto.params().get('insecure', False)
 
     ''' HELPER FUNCTIONS '''
+    def dq(obj, path):
+      '''
+      return a value in an object path. in case of multiple objects in path, searches them all.
+      @param obj - dictionary tree to search in
+      @param path (list) - a path of the desired value in the object. for example: ['root', 'key', 'subkey']
+      '''
+      if len(path) == 0:
+          return obj
+
+      if isinstance(obj, dict):
+          if path[0] in obj:
+              return dq(obj[path[0]], path[1:])
+      elif isinstance(obj, list):
+          # in case current obj has multiple objects, search them all.
+          l = [dq(o, path) for o in obj]
+          return [k for k in l if k is not None]
+
+      # in case of error in the path
+      return None
+
+
+    def mapSingleObj(obj, mapFields, filter_func=None):
+      if filter_func is None:
+          filter_func = lambda mf: True
+
+      d = {}
+      for f in mapFields:
+          if filter_func(f):
+              d[f['to']] = dq(obj, f['from'].split('.'))
+
+      return d
+
+
+    def mapObj(content, mapFields, filter_func=None):
+      '''
+      Converts object fields according to mapping dictionary
+      @param content - original content to copy
+      @param mapFields - an object assosiating source and destination object fields
+      @filter_func - function to filter out fields
+      @returns the mapped object
+      '''
+      if isinstance(content, (list, tuple)):
+          return [mapSingleObj(item, mapFields, filter_func) for item in content]
+      else:
+          return mapSingleObj(content, mapFields, filter_func)
+
+
+    def createEntry(result, translator, MDfilter=None):
+      '''
+      Creates war room entry
+      @param {dict} result - the raw result to be parsed
+      @param {dict} translator - maps raw data to war room output. Should be of the following format:
+      {
+        contextPath: <context-path>,
+        title: <war-room-title>,
+        innerPath: (optional) path to the root of all data in result dictionary.
+        data: [
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+              ...
+          ]
+      }
+      * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
+      * dest-key is also used for war room table headers
+      * humanReadable states whether field should appear in war room table. Default is true.
+      @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+      @returns {dict} - the war room entry
+      '''
+      # filters out all fields where humanReadable is false
+      if MDfilter is None:
+          MDfilter = lambda mf: mf.get('humanReadable', True)
+
+      entry = {
+          'Type': entryTypes['note'],
+          'Contents': result,
+          'ContentsFormat': formats['json'],
+          'ReadableContentsFormat': formats['markdown'],
+      }
+
+      content = dq(result, translator['innerPath'].split('.')) if 'innerPath' in translator else result;
+      translatedMD = mapObj(content, translator['data'], MDfilter)
+      entry['HumanReadable'] = tableToMarkdown(translator['title'], translatedMD)
+
+      translatedContext = mapObj(content, translator['data'])
+      context = createContext(translatedContext)
+      entry['EntryContext'] = {translator['contextPath'] : context}
+
+      return entry
+
+
     def http_post(url_suffix, data=None, files=None):
         data = {} if data is None else data
 
