@@ -6,7 +6,7 @@
   "widgetType": "line",
   "size": 5,
   "query": "",
-  "isPredefined": false,
+  "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
