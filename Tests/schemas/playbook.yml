@@ -22,10 +22,6 @@ mapping:
     type: seq
     sequence:
       - include: input_schema
-  outputs:
-      type: seq
-      sequence:
-        - include: output_schema
   tags:
     type: seq
     sequence:
@@ -126,20 +122,6 @@ schema;input_schema:
       required: yes
     value:
       type: text
-    description:
-      type: str
-      required: yes
-
-# playbook->outputs
-schema;output_schema:
-  type: map
-  mapping:
-    contextPath:
-      type: str
-      required: yes
-    type:
-      type: text
-      required: yes
     description:
       type: str
       required: yes
