@@ -38,8 +38,7 @@ script:
   script: |+
     var urlDict = {
         upload: '/submit/file',
-        report: '/get/report',
-        remoteFile: '/submit/url'
+        report: '/get/report'
       };
 
     var errorDict = {
@@ -56,7 +55,10 @@ script:
 
       };
 
-    function sendRequest(url, body, headers) {
+    /*
+     * Sample function for http GET request with query string
+     */
+    var sendRequest = function(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
             url,
@@ -76,11 +78,10 @@ script:
             throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
           }
         }
-
         return res.Body;
-    }
+    };
 
-    var sendMultipartRequest = function(url, headers, file, body) {
+    var sendMultipartRequest = function(url, headers, file, apikey){
         var res = httpMultipart(
           url,
           file,
@@ -88,7 +89,10 @@ script:
             Method: 'POST',
             Headers: headers,
           },
-          body,
+          {
+            'apikey': apikey,
+            'file' : file
+          },
           params.insecure,
           params.proxy
         );
@@ -99,85 +103,54 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    function createEntry(body, title, result, verbose, report) {
-        var md = tableToMarkdown(title, body, Object.keys(body));
-        if (verbose) {
-            for (var i = 0; i < report.length; i++) {
-                md += tableToMarkdown('Report ' + i, report[i], Object.keys(report[i]));
-            }
-        }
-        return {Type: entryTypes.note,
-                Contents: result,
-                ContentsFormat: formats.json,
-                HumanReadable: md,
-                ReadableContentsFormat : formats.markdown
-        };
-    }
+    var resToMD = function(body, title) {
+        return tblToMd(title, body, Object.keys(body));
+    };
 
-    function uploadFile(upload) {
-        uploadUrl = URL + urlDict.upload;
-        var body = {
-            'apikey': TOKEN,
-            'file' : upload
-        };
-        var result = sendMultipartRequest(uploadUrl, DEFAULT_HEADERS, upload, body);
-        var uploadData = dq(result, 'wildfire.upload-file-info');
-        var returnObj = {
-            res: result,
-            data: uploadData
-        };
-        return returnObj;
-    }
+    var url = params.server.replace(/[\/]+$/, '');
+    var headers = {'Content-Type': ['application/x-www-form-urlencoded']};
 
-    function uploadFileRemote(upload) {
-        linkUrl = URL + urlDict.remoteFile;
-        var body = {
-            apikey: TOKEN,
-            url: upload
-        };
-        var result = sendMultipartRequest(linkUrl, DEFAULT_HEADERS, '', body);
-        var uploadData = dq(result, 'wildfire.upload-file-info');
-        var returnObj = {
-            res: result,
-            data: uploadData
-        };
-        return returnObj;
-    }
+    switch (command) {
+      case 'test-module':
+          url += urlDict.report;
+          var res = http(
+              url,
+              {
+                  Method: 'POST',
+                  Body: 'apikey='+params.token+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                  Headers: headers
+              },
+              params.insecure,
+              params.proxy
+          );
 
-    function getReport(md5, argHash, file, format, verbose) {
-        var reportUrl = URL + urlDict.report;
-        var hash = md5 || argHash || file;
+          if(res.StatusCode===200)
+              return 'ok';
+          else
+              return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
+          break;
+
+      case 'file':
+      case 'wildfire-report':
+        url += urlDict.report;
+        var hash = args.md5 || args.hash || args.file;
         if(!hash)
             throw 'Missing md5/hash argument.';
         if (hash.length === 40) {
             // SHA1 not supported.
             return 'No results';
         }
-        var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
-        var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
+        var bodyXML = 'apikey='+params.token+'&format=xml&hash='+hash;
+        var resXML = sendRequest(url, bodyXML, headers);
         if(!resXML){
           return 'No results yet';
         }
         var result = JSON.parse(x2j(resXML));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
-        var returnObj = {
-            hash: hash,
-            result: result,
-            report: report,
-            info: file_info
-        };
-        return returnObj;
 
-    }
-
-    function createReport(reportResponse) {
-        var reportUrl = URL + urlDict.report;
-        var result = reportResponse.result;
-        var report = reportResponse.report;
-        var file_info = reportResponse.info;
-        var hash = reportResponse.hash;
         var context = { DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }};
+        
         if (file_info) {
             if (file_info.malware === 'yes') {
                 context.DBotScore.Score = 3;
@@ -194,11 +167,14 @@ script:
                 context.DBotScore.Score = 1;
             }
         }
-        if(args.format === 'pdf'){
-          var bodyPDF = 'apikey='+TOKEN+'&format=pdf&hash='+hash;
-          var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS);
+
+        if(args.format==='pdf'){
+          var bodyPDF = 'apikey='+params.token+'&format=pdf&hash='+hash;
+          var resPDF = sendRequest(url, bodyPDF, headers);
+
           var currentTime = new Date();
           var fileName = command + '_at_' + currentTime.getTime();
+
           return {Type: 9,
                   FileID: saveFile(resPDF),
                   File: fileName,
@@ -207,70 +183,33 @@ script:
           };
         }
         else{ /* default format is xml*/
-          return createEntry(file_info,'WildFire Report', result, args.verbose, report);
+          var md = resToMD(file_info,'WildFire Report');
+          if (args.verbose) {
+              for (var i=0; i<report.length; i++){
+                  md += resToMD(report[i],'Report '+i);
+              }
+          }
+          return {Type: entryTypes.note,
+                  Contents: result,
+                  ContentsFormat: formats.json,
+                  HumanReadable: md,
+                  EntryContext: context
+          };
         }
-    }
+        break;
 
-    function detonate(type, upload, format, delay, timeout) {
-        if (type === 'files') {
-            var uploadData = uploadFile(upload).data;
-        } else { //type is remote file
-            var uploadData = uploadFileRemote(upload).data;
-        }
-        var sha = uploadData.sha256;
-        delayTime = parseInt(delay);
-        timeOut = parseInt(timeout);
-        var waitTime = delayTime;
-        wait(delayTime);
-
-        while (waitTime<timeOut) {
-            var reportResponse = getReport(sha);
-            if (reportResponse.res) {
-                return createReport(reportResponse);
-            } else {
-                waitTime = waitTime + delayTime;
-                wait(delayTime);
-            }
-        }
-        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
-    }
-
-    var URL = params.server.replace(/[\/]+$/, '');
-    var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
-    var TOEKN = params.token;
-
-    switch (command) {
-      case 'test-module':
-          testUrl = URL + urlDict.report;
-          var res = http(
-              testUrl,
-              {
-                  Method: 'POST',
-                  Body: 'apikey='+TOKEN+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
-                  Headers: DEFAULT_HEADERS
-              },
-              params.insecure,
-              params.proxy
-          );
-
-          if(res.StatusCode===200)
-              return 'ok';
-          else
-              return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
-          break;
-      case 'file':
-      case 'wildfire-report':
-        var reportResponse = getReport(args.md5, args.hash, args.file);
-        return createReport(reportResponse);
       case 'wildfire-upload':
-          var response = uploadFile(args.upload);
-          var uploadData = response.data;
-          var result = response.res;
-          return createEntry(uploadData,'WildFire Report', result);
-      case 'detonate-file':
-          return detonate('file', args.upload, args.format, args.delay, args.timeout);
-      case 'detonate-file-remote':
-          return detonate('remoteFile', args.upload, args.format, args.delay, args.timeout);
+          url += urlDict.upload;
+          var result = sendMultipartRequest(url, headers, args.upload, params.token);
+          var uploadData = dq(result, 'wildfire.upload-file-info');
+          var md = resToMD(uploadData,'WildFire Report');
+
+          return {Type: entryTypes.note,
+                      Contents: result,
+                      ContentsFormat: formats.json,
+                      HumanReadable: md
+              };
+
     }
 
   type: javascript
@@ -314,9 +253,9 @@ script:
       description: The actual score
     description: Retrieve results for a file hash using WildFire
   - name: file
+    description: Retrieve results for a file hash using WildFire
     arguments:
     - name: file
-      required: true
       description: file hash to check
     outputs:
     - contextPath: File.Name
@@ -341,71 +280,9 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Retrieve results for a file hash using WildFire
   - name: wildfire-upload
     arguments:
     - name: upload
-      required: true
       description: ID of the entry containing the file to upload
     description: Upload file to WildFire for analysis.
-  - name: detonate-file
-    arguments:
-    - name: upload
-      required: true
-      description: ID of the entry containing the file to upload
-    - name: delay
-      description: Delay wait time between calls (in seconds)
-      defaultValue: "7"
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "60"
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - xml
-      - pdf
-      description: Optional - request a structured report (formatted as XML/PDF)
-    outputs:
-    - contextPath: File.Name
-      description: Filename
-    - contextPath: File.Type
-      description: File type e.g. "PE"
-    - contextPath: File.Size
-      description: File size
-    - contextPath: File.MD5
-      description: MD5 hash of the file
-    - contextPath: File.SHA1
-      description: SHA1 hash of the file
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: Detonate file through WildFire
-  - name: detonate-file-remote
-    arguments:
-    - name: upload
-      required: true
-      description: URL of remote file to be uploaded
-    - name: delay
-      description: Delay wait time between calls (in seconds)
-      defaultValue: "7"
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "60"
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - xml
-      - pdf
-      description: Optional - request a structured report (formatted as XML/PDF)
-    description: Detonate file hosted on a website through WildFire
 hidden: false
-releaseNotes: "Added file and remote-file detonation commands"
