@@ -1,0 +1,457 @@
+id: DBot Indicator Enrichment - Generic
+version: -1
+name: DBot Indicator Enrichment - Generic
+description: Get indicators internal Dbot score
+starttaskid: "0"
+fromversion: 3.5.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 5f144764-22dd-48bf-8179-b44b7576d050
+    type: start
+    task:
+      id: 5f144764-22dd-48bf-8179-b44b7576d050
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+      - "8"
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 0c3ee56f-c205-48f6-8799-ba3c069026c5
+    type: condition
+    task:
+      id: 0c3ee56f-c205-48f6-8799-ba3c069026c5
+      version: -1
+      name: Do we have MD5 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c010f570-aa41-429c-8d32-a27c00d6e38a
+    type: regular
+    task:
+      id: c010f570-aa41-429c-8d32-a27c00d6e38a
+      version: -1
+      name: Get MD5 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.MD5}
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    taskid: d1a4161a-90a1-4f74-8d55-8ec4919d5f56
+    type: title
+    task:
+      id: d1a4161a-90a1-4f74-8d55-8ec4919d5f56
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 690
+        }
+      }
+  "4":
+    id: "4"
+    taskid: be679135-f68f-4da0-8aa5-6d35a88a1a84
+    type: condition
+    task:
+      id: be679135-f68f-4da0-8aa5-6d35a88a1a84
+      version: -1
+      name: Is there an Email address to check?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.Email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 8e8d5c3d-e856-4259-81bc-d91c3992a7c7
+    type: regular
+    task:
+      id: 8e8d5c3d-e856-4259-81bc-d91c3992a7c7
+      version: -1
+      name: Get Email address internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.Email}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0751f425-fe00-44b2-8a28-45d2f3d93b73
+    type: condition
+    task:
+      id: 0751f425-fe00-44b2-8a28-45d2f3d93b73
+      version: -1
+      name: Do we have URLs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 340
+        }
+      }
+  "7":
+    id: "7"
+    taskid: d0f130ef-8a64-42b8-8f41-95867bfb528d
+    type: regular
+    task:
+      id: d0f130ef-8a64-42b8-8f41-95867bfb528d
+      version: -1
+      name: Get URL internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.URL}
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 8b33f580-9420-44dd-8a5d-7127372d17e6
+    type: condition
+    task:
+      id: 8b33f580-9420-44dd-8a5d-7127372d17e6
+      version: -1
+      name: Do we have IP Addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 340
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 76e00ef0-7e5f-441e-87f0-bf162fe1ff0b
+    type: regular
+    task:
+      id: 76e00ef0-7e5f-441e-87f0-bf162fe1ff0b
+      version: -1
+      name: Get IP internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.IP}
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d510fe26-bf16-4596-8f67-51e37732383f
+    type: title
+    task:
+      id: d510fe26-bf16-4596-8f67-51e37732383f
+      version: -1
+      name: File
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "11"
+      - "13"
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 81b92541-4de7-4d56-84c2-b22841b13208
+    type: condition
+    task:
+      id: 81b92541-4de7-4d56-84c2-b22841b13208
+      version: -1
+      name: Do we have SHA256 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 340
+        }
+      }
+  "12":
+    id: "12"
+    taskid: c9b67a10-c33f-4ee7-8f7c-d388b6c63f9b
+    type: regular
+    task:
+      id: c9b67a10-c33f-4ee7-8f7c-d388b6c63f9b
+      version: -1
+      name: Get SHA256 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.SHA256}
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 96d3e06c-7866-46e5-837d-07341ed4aa96
+    type: condition
+    task:
+      id: 96d3e06c-7866-46e5-837d-07341ed4aa96
+      version: -1
+      name: Do we have SHA1 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 340
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 58df98f9-89a0-46b6-8182-adeddf72ae34
+    type: regular
+    task:
+      id: 58df98f9-89a0-46b6-8182-adeddf72ae34
+      version: -1
+      name: Get SHA256 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.SHA1}
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 515
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 2742.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Email
+  value:
+    simple: ${Account.Email.Address}
+  required: false
+  description: Email address to enrich with Dbot Score
+- key: URL
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: URL to enrich with Dbot Score
+- key: IP
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: IP to enrich with Dbot Score
+- key: MD5
+  value:
+    simple: ${File.MD5}
+  required: false
+  description: MD5 to enrich with Dbot Score
+- key: SHA1
+  value:
+    simple: ${File.SHA1}
+  required: false
+  description: SH1 to enrich with Dbot Score
+- key: SHA256
+  value:
+    simple: ${File.SHA256}
+  required: false
+  description: SHA256 to enrich with Dbot Score
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
