@@ -17,15 +17,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
-      - "6"
       - "8"
+      - "6"
+      - "4"
       - "10"
     view: |-
       {
         "position": {
-          "x": 837.5,
-          "y": 50
+          "x": 1164,
+          "y": -67
         }
       }
   "1":
@@ -133,10 +133,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 8e8d5c3d-e856-4259-81bc-d91c3992a7c7
+    taskid: 787df5e3-be51-4278-8695-4ddc9e1d75e6
     type: regular
     task:
-      id: 8e8d5c3d-e856-4259-81bc-d91c3992a7c7
+      id: 787df5e3-be51-4278-8695-4ddc9e1d75e6
       version: -1
       name: Get Email address internal Dbot score
       scriptName: GetIndicatorDBotScore
@@ -148,7 +148,9 @@ tasks:
       - "3"
     scriptarguments:
       indicator:
-        simple: ${inputs.Email}
+        complex:
+          root: inputs
+          accessor: Email
     view: |-
       {
         "position": {
@@ -188,10 +190,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: d0f130ef-8a64-42b8-8f41-95867bfb528d
+    taskid: 65eebcbc-20e4-491f-8465-7652e62c7cf9
     type: regular
     task:
-      id: d0f130ef-8a64-42b8-8f41-95867bfb528d
+      id: 65eebcbc-20e4-491f-8465-7652e62c7cf9
       version: -1
       name: Get URL internal Dbot score
       scriptName: GetIndicatorDBotScore
@@ -203,7 +205,9 @@ tasks:
       - "3"
     scriptarguments:
       indicator:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs
+          accessor: URL
     view: |-
       {
         "position": {
@@ -262,7 +266,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 951,
           "y": 515
         }
       }
@@ -321,10 +325,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: c9b67a10-c33f-4ee7-8f7c-d388b6c63f9b
+    taskid: 0508e9e5-e39c-4d17-8742-86f4f5b90f81
     type: regular
     task:
-      id: c9b67a10-c33f-4ee7-8f7c-d388b6c63f9b
+      id: 0508e9e5-e39c-4d17-8742-86f4f5b90f81
       version: -1
       name: Get SHA256 internal Dbot score
       scriptName: GetIndicatorDBotScore
@@ -336,7 +340,9 @@ tasks:
       - "3"
     scriptarguments:
       indicator:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs
+          accessor: SHA256
     view: |-
       {
         "position": {
@@ -376,10 +382,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 58df98f9-89a0-46b6-8182-adeddf72ae34
+    taskid: 2a9fbe65-ff42-4dac-8858-029a2393bfc7
     type: regular
     task:
-      id: 58df98f9-89a0-46b6-8182-adeddf72ae34
+      id: 2a9fbe65-ff42-4dac-8858-029a2393bfc7
       version: -1
       name: Get SHA256 internal Dbot score
       scriptName: GetIndicatorDBotScore
@@ -391,7 +397,9 @@ tasks:
       - "3"
     scriptarguments:
       indicator:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs
+          accessor: SHA1
     view: |-
       {
         "position": {
@@ -404,10 +412,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
+        "height": 822,
         "width": 2742.5,
         "x": 50,
-        "y": 50
+        "y": -67
       }
     }
   }
