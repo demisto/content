@@ -4,7 +4,7 @@
   "name": "Manual Reputation Indicators by User",
   "dataType": "indicators",
   "widgetType": "bar",
-  "size": 1000,
+  "size": 10,
   "query": "manualScore:T",
   "isPredefined": true,
   "dateRange": {
