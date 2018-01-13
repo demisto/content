@@ -488,5 +488,3 @@ script:
       description: Ticket service type
     description: Update exiting incident
 hidden: false
-releaseNotes: "Added option to login with insecure flag and add custom fields to incident creation"
-
