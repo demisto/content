@@ -19,7 +19,7 @@
   },
   "params": {
     "groupBy": [
-      "occurred(d)"
+      "occurred"
     ]
   }
 }
