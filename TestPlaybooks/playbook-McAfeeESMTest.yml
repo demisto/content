@@ -32,10 +32,10 @@ tasks:
       version: -1
       name: esm-add-case
       description: Add a case to the system
-      script: McAfee ESM-v10_copy|||esm-add-case
+      script: McAfee ESM-v10|||esm-add-case
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "6"
@@ -97,10 +97,10 @@ tasks:
       id: 02cad2d2-f125-4cc1-896d-016d57af1a38
       version: -1
       name: Edit severity, organization and summary
-      script: McAfee ESM-v10_copy|||esm-edit-case
+      script: McAfee ESM-v10|||esm-edit-case
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "27"
@@ -137,10 +137,10 @@ tasks:
       id: 9efa94c5-cc6d-48dc-868d-9f55f1893c05
       version: -1
       name: Get case info after event assignment
-      script: McAfee ESM-v10_copy|||esm-get-case-detail
+      script: McAfee ESM-v10|||esm-get-case-detail
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "16"
@@ -170,10 +170,10 @@ tasks:
       id: c9049d3e-a163-4b18-8897-b91daa2d543b
       version: -1
       name: Add new case with all parameters.
-      script: McAfee ESM-v10_copy|||esm-add-case
+      script: McAfee ESM-v10|||esm-add-case
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "13"
@@ -203,10 +203,10 @@ tasks:
       id: dc4f8fa7-d88f-42f9-8f6c-3affbc532a45
       version: -1
       name: Edit the user name of last case to default
-      script: McAfee ESM-v10_copy|||esm-edit-case
+      script: McAfee ESM-v10|||esm-edit-case
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "9"
@@ -261,10 +261,10 @@ tasks:
       id: 7eb1a56d-1126-4f33-83e6-dba84a956936
       version: -1
       name: Add a new case status named "Research"
-      script: McAfee ESM-v10_copy|||esm-add-case-status
+      script: McAfee ESM-v10|||esm-add-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "2"
@@ -288,10 +288,10 @@ tasks:
       id: 5aff2243-8718-4b4b-83a0-29d5e9515188
       version: -1
       name: Change case status name from "Research" to "Development"
-      script: McAfee ESM-v10_copy|||esm-edit-case-status
+      script: McAfee ESM-v10|||esm-edit-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "18"
@@ -316,10 +316,10 @@ tasks:
       id: 7577c97e-6ad7-4182-80ba-cb8297071e41
       version: -1
       name: Remove additional case status
-      script: McAfee ESM-v10_copy|||esm-delete-case-status
+      script: McAfee ESM-v10|||esm-delete-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "20"
@@ -341,10 +341,10 @@ tasks:
       id: d8dba515-1d42-4713-8544-e8444d9ef26a
       version: -1
       name: Set show case pane of new case status
-      script: McAfee ESM-v10_copy|||esm-add-case-status
+      script: McAfee ESM-v10|||esm-add-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "19"
@@ -368,10 +368,10 @@ tasks:
       id: 5bd09a9f-3200-4a08-8cef-8e27f60df21f
       version: -1
       name: Change case status optional parameter
-      script: McAfee ESM-v10_copy|||esm-edit-case-status
+      script: McAfee ESM-v10|||esm-edit-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "17"
@@ -397,10 +397,10 @@ tasks:
       id: b1c01250-db68-42f8-8286-758818267086
       version: -1
       name: Remove additional case status2
-      script: McAfee ESM-v10_copy|||esm-delete-case-status
+      script: McAfee ESM-v10|||esm-delete-case-status
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "22"
@@ -422,10 +422,10 @@ tasks:
       id: bc7ccc2e-4453-4eb0-8206-20e962b3bba0
       version: -1
       name: Fetch Alarms
-      script: McAfee ESM-v10_copy|||esm-fetch-alarms
+      script: McAfee ESM-v10|||esm-fetch-alarms
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "23"
@@ -475,10 +475,10 @@ tasks:
       id: beb59ae6-7ab7-43c1-8266-684c8d6f5671
       version: -1
       name: Get status cases
-      script: McAfee ESM-v10_copy|||esm-get-case-statuses
+      script: McAfee ESM-v10|||esm-get-case-statuses
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "24"
@@ -497,10 +497,10 @@ tasks:
       id: 5b1e813c-3370-414e-8094-1cc1367538e6
       version: -1
       name: Get cases
-      script: McAfee ESM-v10_copy|||esm-get-case-list
+      script: McAfee ESM-v10|||esm-get-case-list
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "25"
@@ -519,10 +519,10 @@ tasks:
       id: 2df35e2d-4185-4310-811d-a8f02efd42ef
       version: -1
       name: Get users
-      script: McAfee ESM-v10_copy|||esm-get-user-list
+      script: McAfee ESM-v10|||esm-get-user-list
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "26"
@@ -541,10 +541,10 @@ tasks:
       id: 68cd9624-0fd8-4d5a-8107-2ffd7aa636c8
       version: -1
       name: Get organizations
-      script: McAfee ESM-v10_copy|||esm-get-organization-list
+      script: McAfee ESM-v10|||esm-get-organization-list
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     view: |-
       {
         "position": {
@@ -560,10 +560,10 @@ tasks:
       id: d011d901-9ee8-415f-8613-c1a1e22134f1
       version: -1
       name: Close Case
-      script: McAfee ESM-v10_copy|||esm-edit-case
+      script: McAfee ESM-v10|||esm-edit-case
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     nexttasks:
       '#none#':
       - "14"
@@ -598,10 +598,10 @@ tasks:
       id: dc0fa851-0775-44bd-818b-78df0732e530
       version: -1
       name: Search by fields
-      script: McAfee ESM-v10_copy|||esm-search
+      script: McAfee ESM-v10|||esm-search
       type: regular
       iscommand: true
-      brand: McAfee ESM-v10_copy
+      brand: McAfee ESM-v10
     scriptarguments:
       customEnd: {}
       customStart: {}
