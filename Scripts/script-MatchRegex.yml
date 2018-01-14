@@ -35,9 +35,10 @@ args:
   description: The regex to match and extract
 - name: group
   description: The matching group to return (if not provided will return the full
-    match)
+    match), please note that start at 1
 - name: contextKey
   description: The context key to populate with the result
 - name: flags
   description: The regex flags for the match - i is the default
 scripttarget: 0
+releaseNotes: '-'
