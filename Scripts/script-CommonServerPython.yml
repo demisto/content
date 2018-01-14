@@ -628,4 +628,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "support python 3.5 and python 2.7"
