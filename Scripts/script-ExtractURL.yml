@@ -93,4 +93,3 @@ outputs:
 - contextPath: URL.Data
   description: Extracted URLs
 scripttarget: 0
-releaseNotes: "-"

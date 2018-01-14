@@ -15,4 +15,3 @@ args:
   default: true
   description: Email address to look up
 scripttarget: 0
-releaseNotes: "-"
