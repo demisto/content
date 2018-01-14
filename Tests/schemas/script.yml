@@ -60,7 +60,7 @@ mapping:
   dockerimage:
     type: str
   runonce:
-    type: str
+    type: bool
   releaseNotes:
     type: str
 
