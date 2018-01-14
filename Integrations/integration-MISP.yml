@@ -539,6 +539,7 @@ script:
     arguments:
     - name: filename
       required: true
+      description: File name
     - name: fileContent
       required: true
       description: File Content in Base64
@@ -569,6 +570,7 @@ script:
     - name: comment
       description: This will populate the comment field of any attribute created using
         this API.
+    description: Upload file sample to MISP
     execution: true
   - name: misp-search
     arguments:
@@ -657,6 +659,9 @@ script:
     arguments:
     - name: file
       required: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that
+        you can pass comma-separated multiple values to efficiently retrieve multiple
+        responses.
     outputs:
     - contextPath: File.MD5
       description: Bad hash found
@@ -676,10 +681,12 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Check file reputation of the given hash
   - name: url
     arguments:
     - name: url
       required: true
+      description: URL to be checked
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -695,12 +702,12 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if IP is in MISP events
+    description: Check if url is in MISP events
   - name: ip
     arguments:
     - name: ip
       required: true
-      description: Check if IP is in MISP events
+      description: IP address to check
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
@@ -716,6 +723,7 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Check IP Reputation
   - name: internal-misp-download-sample
     arguments:
     - name: hash
