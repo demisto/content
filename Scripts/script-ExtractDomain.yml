@@ -87,7 +87,7 @@ script: |-
           domains.push(rootDomain);
           allDomains.push(rootDomain);
       }
-      if (allDomains.indexOf(hostname) < 0) {
+      if ((allDomains.indexOf(hostname) < 0) && (hostname.indexOf('www.') < 0)) {
           domains.push(hostname);
           allDomains.push(hostname);
       }
