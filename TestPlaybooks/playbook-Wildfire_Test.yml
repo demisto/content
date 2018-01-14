@@ -1,7 +1,6 @@
 id: Wildfire Test
 version: -1
 name: Wildfire Test
-fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -39,13 +38,13 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      delay: {}
-      format: {}
-      hash: {}
-      md5: {}
-      timeout: {}
+      delay: ""
+      format: ""
+      hash: ""
+      md5: ""
+      timeout: ""
       upload: ${File.EntryID}
-      verbose: {}
+      verbose: ""
     view: |-
       {
         "position": {
@@ -67,9 +66,9 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      delay: {}
-      format: {}
-      timeout: {}
+      delay: ""
+      format: ""
+      timeout: ""
       upload: http://www.pdf995.com/samples/pdf.pdf
     view: |-
       {
