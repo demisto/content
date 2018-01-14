@@ -76,8 +76,7 @@
         {
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "TestCommonPython"
