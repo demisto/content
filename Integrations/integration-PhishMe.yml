@@ -35,10 +35,10 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
 
-    var sendRequest = function(method,api,urlargs) {
+    var sendRequest = function(method, api, urlargs) {
 
         var url = params.url;
         if (url[url.length - 1] === '/') {
@@ -61,9 +61,12 @@ script:
         if ((res.StatusCode < 200 || res.StatusCode >= 300) && res.success === false) {
             throw 'PhishMe Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
-        try{
-            return JSON.parse(res.Body);
+        try {
+            if (api.substring(0,2) === 't3') {
+                return res.Bytes;
+            } else {
+                return JSON.parse(res.Body)
+            }
         }
         catch(exc){
             throw "PhishMe Error: JSON parse error\n" + res;
@@ -138,42 +141,38 @@ script:
     var extractedString = function(str,limit) {
         var tmpargs = {};
         tmpargs.extractedString = str;
-        var res = sendRequest("POST","threat/search",tmpargs);
+        var res = sendRequest('POST', 'threat/search', tmpargs);
         var threats = res.data.threats;
-        var countThreats = 0;
-        var acThreats = [];
-        var md = "## PhishMe Search Reputation for: "+str+"\n";
+        var md = '## PhishMe search for extracted string: '+str+'\n';
+        var threatArray = [];
         var ec = {};
-
         if (threats.length !== 0) {
-            if(limit === undefined){
-                limit = 10;
-            }
-
-            for(var i = 0; i < threats.length; i++){
-                if (threats[i].hasReport === true){
-                    countThreats += 1;
-                    if (countThreats<limit+1){
-                        acThreats.push(threats[i].threatDetailURL);
-                    }
+            for (var k = 0; k < threats.length; k++) {
+                 md += '### Threat ID: ' + threats[k].id + '\n';
+                if (threats[k].label !== undefined) {
+                    md += 'Campaign name: **' + threats[k].label + '**\n';
                 }
+                if (threats[k].executiveSummary !== undefined) {
+                    md += '#### Executive Summary: \n';
+                    md += threats[k].executiveSummary + '\n' + '&nbsp;'+ '\n';
+                }
+                if (threats[k].threatType !== undefined){
+                    md += 'Threat type: **' + threats[k].threatType + '**\n';
+                }
+                md += '##### Last published: ' + new Date(threats[k].lastPublished) +'\n';
+                threatArray[k] = threats[k].id;
             }
-
-            md += "There are " + countThreats + " threats regarding your string search.\n";
-            md += "### Details from the last campaign\n";
-
-            md += addMD(threats);
-
-            ec = {"PhishMe" : {}};
-            ec.PhishMe = {"String": str, "NumOfThreats": countThreats};
-
+            ec = {
+                PhishMe: {
+                    extractedString: str,
+                    ThreatIDs: threatArray
+                }
+            };
         } else {
-            md += "There are no results for this search\n";
-            ec = {"PhishMe" : {}};
-            ec.PhishMe = {"String": str, "NumOfThreats": 0};
+            md += 'No information found for this string';
         }
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
     };
 
     var checkEmail = function(sender_name) {
@@ -312,6 +311,18 @@ script:
         }
     }
 
+    function getReport(threatID) {
+        var endpoint = 't3/malware/' + threatID + '/pdf';
+        var report = sendRequest('GET', endpoint);
+        var fileName = 'Threat ID ' + threatID + ' report.pdf';
+        return {
+            Type: 3,
+            FileID: saveFile(report, null, true),
+            File: fileName,
+            Contents: fileName
+        };
+    }
+
 
     function addDays(theDate, days) {
         return theDate.getTime() - days*24*60*60*1000;
@@ -352,6 +363,9 @@ script:
 
         case "ip":
             return checkIP(args.ip);
+
+        case "phishme-get-report":
+            return getReport(args['threat-id']);
         default:
     }
   type: javascript
@@ -438,7 +452,7 @@ script:
       description: Number of threats
     - contextPath: PhishMe.String
       description: String to search
-    description: 'Search for extracted strings discovered within malware campaigns.'
+    description: Search for extracted strings discovered within malware campaigns.
   - name: email
     arguments:
     - name: email
@@ -457,4 +471,12 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Check if sender address is malicious
-hidden: false
+  - name: phishme-get-report
+    arguments:
+    - name: threat-id
+      required: true
+      default: true
+      description: Thread ID to retrieve report of.
+    description: 'Retrieves individual PhishMe Intelligence reports.'
+  runonce: false
+releaseNotes: 'Added new command to retrieve reports from PhishMe'
