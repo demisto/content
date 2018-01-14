@@ -91,17 +91,17 @@ tasks:
       iscommand: true
       brand: WildFire
     scriptarguments:
-      delay: {}
+      delay: ""
       entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
           >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
-      format: {}
-      hash: {}
-      interval: {}
-      md5: {}
-      timeout: {}
+      format: ""
+      hash: ""
+      interval: ""
+      md5: ""
+      timeout: ""
       upload: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
           >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
-      verbose: {}
+      verbose: ""
     view: |-
       {
         "position": {
