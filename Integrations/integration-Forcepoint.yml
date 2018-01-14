@@ -571,3 +571,4 @@ script:
       description: Total IP addresses deleted from category.
     description: ' Remove URLs, IP addresses, and ranges from a specific API-managed
       category.  Refer to category either by it''s ID or by it''s name.'
+releaseNotes: '-'
