@@ -478,5 +478,4 @@ script:
       default: true
       description: Thread ID to retrieve report of.
     description: 'Retrieves individual PhishMe Intelligence reports.'
-  runonce: false
 releaseNotes: 'Added new command to retrieve reports from PhishMe'
