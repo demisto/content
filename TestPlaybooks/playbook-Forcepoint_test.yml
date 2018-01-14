@@ -200,8 +200,8 @@ tasks:
       iscommand: true
       brand: Forcepoint
     scriptarguments:
-      categoryIDs: ""
-      categoryNames: ${Forcepoint.AddCategory.CategoryName}
+      categoryIDs: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryNames: ""
     view: |-
       {
         "position": {
