@@ -123,7 +123,7 @@ script: |
               if not found_date and 'email' in label_lower and 'date' in label_lower:
                   labels[EMAIL_DATE_LABEL] = labels.pop(label)
               if not found_sender and 'email' in label_lower and ('from' in label or 'sender' in label_lower):
-                  labels[EMAIL_SENDER] = labels.pop(label)
+                  labels[EMAIL_SENDER_ADDRESS_LABEL] = labels.pop(label)
 
           return labels
 
