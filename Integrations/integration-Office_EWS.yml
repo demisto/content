@@ -676,10 +676,10 @@ script:
         if(returnRaw){
             return raw;
         }
-        return createEntry(currentCommand, raw, hrTitle);
+        return createEntry(currentCommand, raw, hrTitle, ids);
     }
 
-    function createEntry(currentCommand, raw, hrTitle){
+    function createEntry(currentCommand, raw, hrTitle, deletedContext){
         var entry = {
             Type: entryTypes.note,
             Contents: raw,
@@ -708,9 +708,9 @@ script:
                                 entry.EntryContext[currentCommand.contextKey][currentCommand.argsToContext[k]] = args[currentCommand.argsToContext[k]];
                             }
                         }
-                    } else if (currentCommand.deleteContextKey && ids.length) {
+                    } else if (currentCommand.deleteContextKey && deletedContext && deletedContext.length) {
                         entry.EntryContext = {};
-                        entry.EntryContext[currentCommand.deleteContextKey] = ids;
+                        entry.EntryContext[currentCommand.deleteContextKey] = deletedContext;
                     }
                     var disp = buildDisplay(currentCommand, translated);
                     entry.HumanReadable = tableToMarkdown(
@@ -1161,6 +1161,40 @@ script:
         return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
     }
 
+    // test credentials with GetInboxRules operation
+    // operation doc can be found at https://msdn.microsoft.com/en-us/library/office/ff709501(v=exchg.150).aspx
+    function testModule() {
+        var xml =
+            '<?xml version="1.0" encoding="utf-8"?>' +
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+                    ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
+                    ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"' +
+                    ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+              '<soap:Header>' +
+                '<t:RequestServerVersion Version="%version%" />' +
+              '</soap:Header>' +
+              '<soap:Body>' +
+                '<m:GetInboxRules />' +
+              '</soap:Body>' +
+            '</soap:Envelope>';
+
+        var httpParams = {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['text/xml; charset=utf-8']
+                },
+                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
+                Password: params.credentials.password,
+                AuthProtocol: [params.authType],
+                Body: replaceInTemplates(xml, args)
+            };
+        var res = http(server, httpParams, params.insecure, params.proxy);
+        if (res.StatusCode !== 200) {
+            throw JSON.stringify(res);
+        }
+        return 'ok';
+    }
+
     if (!args.version) {
         args.version = params.defaultServerVersion;
     }
@@ -1173,8 +1207,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            execute('ews-get-searchable-mailboxes', args);
-            return 'ok';
+            return testModule();
         case 'fetch-incidents':
             return fetchEmailsAsIncidents();
         case 'ews-get-attachment': {
