@@ -76,8 +76,7 @@
         {
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500,
-            "nightly": true
+            "timeout": 500
         },
         {
             "playbookID": "TestCommonPython"
@@ -163,7 +162,11 @@
         },
         {
             "integrations": "Forcepoint",
-            "playbookID": "forcepoint test"
+            "playbookID": "forcepoint test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "GeneratePassword-Test"
         }
     ],
     "skipped": [
@@ -187,6 +190,10 @@
         },
         {
             "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
         }
     ]
 }
