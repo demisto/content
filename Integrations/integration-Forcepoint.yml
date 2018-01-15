@@ -311,7 +311,7 @@ script:
             body['Category ID'] = id;
         }
         else if(name){
-            body['Category Name'] = name;
+            body['Category Names'] = name;
         }
         if (urls) {
             body.URLs = urls;
