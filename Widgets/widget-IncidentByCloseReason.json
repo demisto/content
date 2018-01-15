@@ -2,7 +2,7 @@
   "id": "incidents-by-close-reason",
   "version": -1,
   "modified": "2018-01-14T22:59:42.479686738Z",
-  "name": "Incidents By CloseReason",
+  "name": "Incidents By Close Reason",
   "dataType": "incidents",
   "widgetType": "line",
   "query": "-category:job and status:Closed",
