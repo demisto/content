@@ -1,0 +1,25 @@
+{
+  "id":"mttr-by-type",
+  "version":-1,
+  "fromVersion":"3.5.0",
+  "name":"MTTR by Type",
+  "dataType":"incidents",
+  "widgetType":"line",
+  "query":"-category:job and status:closed",
+  "isPredefined":true,
+  "dateRange":{
+    "fromDate":"0001-01-01T00:00:00Z",
+    "toDate":"0001-01-01T00:00:00Z",
+    "period":{
+      "byTo":"",
+      "byFrom":"days",
+      "toValue":null,
+      "fromValue":7,
+      "field":""
+    }
+  },
+  "params":{
+     "keys":["avg|openDuration", "count|1"],
+     "groupBy" : ["occurred(d)", "type"]
+  }
+}
