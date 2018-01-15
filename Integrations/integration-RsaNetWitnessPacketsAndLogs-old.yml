@@ -143,7 +143,7 @@ script:
                 try {
                     var currentTime = new Date();
                     var fileName = command + '_at_' + currentTime.getTime();
-                    return {Type: 3, FileID: saveFile(resp.Bytes), File: fileName, Contents: fileName};
+                    return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
                 } catch (e) {
                     return e;
                 }
@@ -2144,5 +2144,4 @@ For regular expressions, change “keyword” to “regex”
       description: <uint32, optional> What types of nodes to return information about,
         default is zero (all nodes)
     description: 'Fires notifications when the node changes security.roles: everyone'
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0

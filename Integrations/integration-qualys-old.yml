@@ -839,7 +839,7 @@ script:
 
         return {
             Type: entryTypes.file,
-            FileID: saveFile(httpRes.Bytes),
+            FileID: saveFile(httpRes.Body),
             File: fileName,
             Contents: fileName
         }
@@ -2869,5 +2869,4 @@ script:
         compliance/nnnnnnnnnn.nnnnn'
     description: fetch scan results for a scan
 hidden: false
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0
