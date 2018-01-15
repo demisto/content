@@ -807,5 +807,4 @@ script:
       required: true
       description: Value of the attribute
     description: Add attribute to existing MISP event
-  runonce: false
 releaseNotes: "Added internal-misp-create-event and internal-misp-add-attribute commands."
