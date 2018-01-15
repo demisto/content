@@ -546,13 +546,13 @@ script:
         var attachBin = http(res.attachment.content_url,{
                     Method: 'GET',
                     Username: params.username + '/token',
-                    Password: params.api,
-                    SaveToFile: true
+                    Password: params.api
                 },
                 params.insecure,
                 params.proxy);
 
-        return ({Type: 3, FileID: attachBin.Path, File: res.attachment.file_name, Contents: res.attachment.file_name});
+        var createdFileID = saveFile(attachBin.Body);
+        return ({Type: 3, FileID: createdFileID, File: res.attachment.file_name, Contents: res.attachment.file_name});
     };
 
     var listAgents = function() {
@@ -901,4 +901,4 @@ script:
     description: Get Zendesk Help Center article
   isfetch: true
 releaseNotes: "Added zendesk-add-user for adding end users. Added zendesk-get-article to get help center article"
-fromversion: 3.5.0
+toversion: 3.1.0

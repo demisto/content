@@ -43,7 +43,7 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        return res;
+        return res.Body;
     }
 
     var urlDict = {
@@ -109,7 +109,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            if (sendRequest(urlDict['moloch_connections_json'], 'Test').Body) {
+            if (sendRequest(urlDict['moloch_connections_json'], 'Test')) {
                 return 'ok';
             }
 
@@ -123,20 +123,20 @@ script:
             }
 
             var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
-            if (!res || !res.Body) {
+            if (!res) {
                 return 'empty';
             }
 
             if (jsonResponses.indexOf(command) !== -1) {
                 if (command == 'moloch_sessions_json') {
-                    return parseSessions(JSON.parse(res.Body));
+                    return parseSessions(JSON.parse(res));
                 } else {
-                    return JSON.parse(res.Body);
+                    return JSON.parse(res);
                 }
             } else if (csvResponses.indexOf(command) !== -1) {
-                return {Type: 9, FileID: saveFile(res.Bytes), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.csv',  Contents: 'we must have contents for an entry'};
+                return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.csv',  Contents: 'we must have contents for an entry'};
             } else if (pcapResponses.indexOf(command) !== -1) {
-                return {Type: 9, FileID: saveFile(res.Bytes), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.pcap',  Contents: 'we must have contents for an entry'};
+                return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.pcap',  Contents: 'we must have contents for an entry'};
             }
 
             return res;
@@ -381,5 +381,4 @@ script:
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
 hidden: false
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0
