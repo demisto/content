@@ -3,11 +3,6 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -194,6 +189,11 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
         }
     ]
 }
