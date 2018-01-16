@@ -18,6 +18,10 @@ mapping:
   view:
     type: str
     required: yes
+  outputs:
+      type: seq
+      sequence:
+        - include: output_schema
   inputs:
     type: seq
     sequence:
@@ -89,6 +93,28 @@ mapping:
                 type: seq
                 sequence:
                   - type: str
+          loop:
+            type: map
+            mapping:
+              iscommand:
+                type: bool
+              builtincondition:
+                type: seq
+                sequence:
+                  - include: arg_filters_schema
+              scriptId:
+                type: str
+              scriptArguments:
+                type: map
+                allowempty: True
+              exitCondition:
+                type: str
+              wait:
+                type: int
+          conditions:
+            type: seq
+            sequence:
+              - include: condition_schema
           view:
             type: str
             required: yes
@@ -121,7 +147,66 @@ schema;input_schema:
       type: str
       required: yes
     value:
-      type: text
+      type: any
     description:
       type: str
       required: yes
+    required:
+      type: bool
+
+# playbook->outputs
+schema;output_schema:
+  type: map
+  mapping:
+    contextPath:
+      type: str
+      required: yes
+    type:
+      type: text
+      required: yes
+    description:
+      type: str
+      required: yes
+
+# playbook->tasks->conditions
+schema;condition_schema:
+  type: map
+  mapping:
+    label:
+      type: str
+      required: yes
+    condition:
+      type: seq
+      sequence:
+        - include: arg_filters_schema
+
+
+schema;arg_filters_schema:
+  type: seq
+  sequence:
+    - include: arg_filter_schema
+
+schema;arg_filter_schema:
+  type: map
+  mapping:
+    operator:
+      type: str
+      required: yes
+    left:
+      type: map
+      required: yes
+      mapping:
+        value:
+          type: str
+          required: yes
+        iscontext:
+          type: bool
+          required: yes
+    right:
+      type: map
+      mapping:
+        value:
+          type: str
+          required: yes
+        iscontext:
+          type: bool
