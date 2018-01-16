@@ -2,9 +2,9 @@
   "id": "roi",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Return On Investment\n(ROI)",
+  "name": "Return On Investment (ROI)",
   "dataType": "roi",
-  "widgetType": "trend",
+  "widgetType": "number",
   "size": 5,
   "query": "",
   "isPredefined": true,
@@ -18,5 +18,8 @@
       "fromValue": 7,
       "field": ""
     }
+  },
+  "params": {
+  	"currencySign" : "$"
   }
 }
