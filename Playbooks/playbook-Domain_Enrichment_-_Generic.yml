@@ -1,6 +1,6 @@
 id: Domain Enrichment - Generic
 version: -1
-fromVersion: "3.5.0"
+fromversion: "3.5.0"
 name: Domain Enrichment - Generic
 description: Enrich Domain using one or more integrations
 starttaskid: "0"
@@ -28,12 +28,13 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 8dd559b1-316d-4e33-8d1b-30d49155d59d
+    taskid: 55a34733-b900-4566-88d7-30365d4e3866
     type: condition
     task:
-      id: 8dd559b1-316d-4e33-8d1b-30d49155d59d
+      id: 55a34733-b900-4566-88d7-30365d4e3866
       version: -1
       name: Are there Domains to check?
+      description: Determines wether the playbook's input contains a domain name.
       type: condition
       iscommand: false
       brand: ""
@@ -59,12 +60,14 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 776d5fda-d233-4505-80f8-47a11548c99a
+    taskid: eb63c499-8a19-481b-8140-aa34e63342b0
     type: regular
     task:
-      id: 776d5fda-d233-4505-80f8-47a11548c99a
+      id: eb63c499-8a19-481b-8140-aa34e63342b0
       version: -1
-      name: Get Domain reputation
+      name: Get Domain Reputation
+      description: Gets domain reputation by invoking domain related engines. Returns
+        the domain score according to the engines.
       scriptName: DomainReputation
       type: regular
       iscommand: false
@@ -82,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 179,
+          "y": 368
         }
       }
   "24":
@@ -113,7 +116,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 492.5,
+        "width": 509,
         "x": 50,
         "y": 50
       }
@@ -132,3 +135,4 @@ outputs:
 - contextPath: DBotScore
   description: DBotScore
   type: unknown
+
