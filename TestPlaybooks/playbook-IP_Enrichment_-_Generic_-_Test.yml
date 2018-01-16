@@ -1,0 +1,155 @@
+id: IP Enrichment - Generic - Test
+version: -1
+fromVersion: "3.5.0"
+name: IP Enrichment - Generic - Test
+description: IP Enrichment - Generic test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee4b7da0-0bfa-4e48-8c7c-0a516170e8d3
+    type: start
+    task:
+      id: ee4b7da0-0bfa-4e48-8c7c-0a516170e8d3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 55
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 72e33409-7423-401d-88bc-f0f991d26ec5
+    type: playbook
+    task:
+      id: 72e33409-7423-401d-88bc-f0f991d26ec5
+      version: -1
+      name: IP Enrichment - Generic
+      description: Enrich IP using one or more integrations
+      playbookName: IP Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      IP:
+        simple: ${IP.Address}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 382
+        }
+      }
+  "2":
+    id: "2"
+    taskid: fe5c2892-0489-4942-8d1e-4638953e228b
+    type: regular
+    task:
+      id: fe5c2892-0489-4942-8d1e-4638953e228b
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 212
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c3973bd5-ce3d-4128-889f-81fca347f7d1
+    type: regular
+    task:
+      id: c3973bd5-ce3d-4128-889f-81fca347f7d1
+      version: -1
+      name: Verify IP Address
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 569
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 0f329963-1ad6-4b42-814b-3420ed106fd8
+    type: regular
+    task:
+      id: 0f329963-1ad6-4b42-814b-3420ed106fd8
+      version: -1
+      name: Verify DBotScore
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Score,Indicator,Type,Vendor
+      path:
+        simple: ${DBotScore}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 749
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 789,
+        "width": 381,
+        "x": 449,
+        "y": 55
+      }
+    }
+  }
+inputs: []
+outputs: []
