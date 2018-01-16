@@ -1,0 +1,157 @@
+id: a9de33b1-c5c2-4250-8f77-5539f63d68fa
+version: -1
+name: Endpoint Enrichment - Generic Test
+fromVersion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06f33f0f-43b8-4260-862c-c700fe7278dd
+    type: start
+    task:
+      id: 06f33f0f-43b8-4260-862c-c700fe7278dd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 9393e0b4-0682-46dd-8193-679aa29b03ab
+    type: regular
+    task:
+      id: 9393e0b4-0682-46dd-8193-679aa29b03ab
+      version: -1
+      name: Get cylance hostname
+      script: Cylance Protect|||cylance-protect-get-devices
+      type: regular
+      iscommand: true
+      brand: Cylance Protect
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: exampleHostname=${Endpoint.[0].Hostname}
+      filters: {}
+      headers: {}
+      page_number: {}
+      page_size: {}
+      sorts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 16bd0702-a7c5-4e26-8a14-432962be81ff
+    type: regular
+    task:
+      id: 16bd0702-a7c5-4e26-8a14-432962be81ff
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "no"
+      extend-context: {}
+      key:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f25d5de8-35e1-43d7-8e8d-62828cacd9ca
+    type: playbook
+    task:
+      id: f25d5de8-35e1-43d7-8e8d-62828cacd9ca
+      version: -1
+      name: Endpoint Enrichment - Generic
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Hostname:
+        simple: ${exampleHostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: fc2ab457-693b-4673-887d-9eb89583eb94
+    type: regular
+    task:
+      id: fc2ab457-693b-4673-887d-9eb89583eb94
+      version: -1
+      name: Verify context endpoint key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Hostname,Mac,IP,OS
+      path:
+        simple: ${Endpoint}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
