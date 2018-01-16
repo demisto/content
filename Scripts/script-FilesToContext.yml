@@ -1,0 +1,42 @@
+commonfields:
+  id: FilesToContext
+  version: -1
+name: FilesToContext
+script: |
+  var entries = executeCommand("getEntries", {});
+  var fileEntries = dq({entries:entries},'entries(val.FileMetadata)');
+
+  var files = [];
+
+  fileEntries.forEach(function(fileEntry) {
+      var entry = {
+          EntryID: fileEntry.ID,
+          Name: fileEntry.File,
+          Size: fileEntry.FileMetadata.Size,
+          Info: fileEntry.FileMetadata.Info,
+          Type: fileEntry.FileMetadata.Type,
+          MD5: fileEntry.FileMetadata.MD5,
+          SHA1: fileEntry.FileMetadata.SHA1,
+          SHA256: fileEntry.FileMetadata.SHA256,
+          SSDeep: fileEntry.FileMetadata.SSDeep,
+      };
+      entry.Extention = (entry.Name.indexOf('.') > -1) ? entry.Name.split('.')[entry.Name.split('.').length-1] : '';
+      files.push(entry);
+  });
+
+  if (files.length === 0) {
+      return 'No files';
+  } else {
+      return {
+          Type: entryTypes.note,
+          Contents: files,
+          ContentsFormat: formats.json,
+          HumanReadable: 'File key set with ' + files.length + ' file(s)',
+          EntryContext: {File: files}
+      };
+  }
+type: javascript
+tags: []
+comment: Sets file entries to File context key
+enabled: true
+scripttarget: 0

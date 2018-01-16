@@ -1,0 +1,167 @@
+id: FilesToContext-Test
+version: -1
+name: FilesToContext-Test
+description: Test the FilesToContext script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49b79a06-1f42-4d91-8e5d-6724146b9aa5
+    type: start
+    task:
+      id: 49b79a06-1f42-4d91-8e5d-6724146b9aa5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 21bb06a3-6619-4bbe-8e76-7f358d87c611
+    type: regular
+    task:
+      id: 21bb06a3-6619-4bbe-8e76-7f358d87c611
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data: this is a test file
+      entryId: ""
+      filename: test.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b5982f4a-77c8-4fc2-810d-ecc53e7e65b1
+    type: regular
+    task:
+      id: b5982f4a-77c8-4fc2-810d-ecc53e7e65b1
+      version: -1
+      name: Delete Context
+      description: Delete the entire context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: dcbc1e1b-03af-4e34-8953-88e5aa091c76
+    type: condition
+    task:
+      id: dcbc1e1b-03af-4e34-8953-88e5aa091c76
+      version: -1
+      name: Check filename
+      description: Check if File context key is populated correctly with filename
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left: ${File.Name}
+      right: test.txt
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 82a0c2fa-7513-4a45-84cb-458f3d70aabd
+    type: regular
+    task:
+      id: 82a0c2fa-7513-4a45-84cb-458f3d70aabd
+      version: -1
+      name: Close
+      description: Close investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 896
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 0965790f-adce-4a90-8576-b8424833a679
+    type: regular
+    task:
+      id: 0965790f-adce-4a90-8576-b8424833a679
+      version: -1
+      name: FilesToContext
+      description: Sets the Files context key
+      scriptName: FilesToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 547
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 941,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
