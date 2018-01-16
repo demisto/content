@@ -207,4 +207,3 @@ script:
   - name: tsc-tickets
     arguments: []
     description: List of tickets
-  runonce: false
