@@ -1,0 +1,264 @@
+id: IP Enrichment - Generic
+version: -1
+fromVersion: "3.5.0"
+name: IP Enrichment - Generic
+description: Enrich IP using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    type: start
+    task:
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
+    type: condition
+    task:
+      id: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
+      version: -1
+      name: Do we have External IP Addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "19"
+    scriptarguments:
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: IP.InRange
+                iscontext: true
+              right:
+                value: "no"
+          accessor: Address
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value: IP.InRange
+            iscontext: true
+          right:
+            value: "no"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 692
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 259ecf36-471d-4423-88cd-f236af47abed
+    type: regular
+    task:
+      id: 259ecf36-471d-4423-88cd-f236af47abed
+      version: -1
+      name: Check IP reputation
+      scriptName: IPReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      extend-context: {}
+      file:
+        simple: ${File.SHA256}
+      ip:
+        complex:
+          root: IP
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: IP.InRange
+                iscontext: true
+              right:
+                value: "no"
+          accessor: Address
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -76,
+          "y": 883
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    type: title
+    task:
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1040
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 5a37438b-fde1-4fde-81c5-607a54f36a34
+    type: regular
+    task:
+      id: 5a37438b-fde1-4fde-81c5-607a54f36a34
+      version: -1
+      name: Check each IP address against internal ranges
+      scriptName: IsIPInRanges_update
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "26"
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP}
+      ipRanges: {}
+      left: {}
+      right: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 267,
+          "y": 370
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 3ec45acd-e3a8-4f70-8ae0-47d32bd25c9a
+    type: title
+    task:
+      id: 3ec45acd-e3a8-4f70-8ae0-47d32bd25c9a
+      version: -1
+      name: Check internal IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 545
+        }
+      }
+  "27":
+    id: "27"
+    taskid: c57e91b0-706a-40a2-8a30-e2fb9cfabba6
+    type: title
+    task:
+      id: c57e91b0-706a-40a2-8a30-e2fb9cfabba6
+      version: -1
+      name: Check external IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "28":
+    id: "28"
+    taskid: a8edb516-2ce9-4898-8467-78d619d42ba7
+    type: condition
+    task:
+      id: a8edb516-2ce9-4898-8467-78d619d42ba7
+      version: -1
+      name: Do we have IP Addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_19_yes": 0.51,
+      "15_24_no": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 1058.5,
+        "x": -76,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple: ${IP.Address}
+  required: true
+  description: The IP addresses to enrich
+outputs:
+- contextPath: IP.Address
+  description: The IP addresses
+  type: string
+- contextPath: DBotScore
+  description: DBotScore
+  type: unknown
