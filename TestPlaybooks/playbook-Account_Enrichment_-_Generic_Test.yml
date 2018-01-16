@@ -1,6 +1,7 @@
 id: eab60aec-03d6-462b-8cc5-21d9d78ac707
 version: -1
 name: Account Enrichment - Generic Test
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +71,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: DisplayName, Manager, Groups, Username, Type, ID, Email
+        simple: DisplFayName, Manager, Groups, Username, Type, ID, Email
       path:
         simple: ${Account}
     separatecontext: false
