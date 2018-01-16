@@ -34,6 +34,7 @@ tasks:
       id: 84876586-752f-417d-855d-25737a8a0042
       version: -1
       name: Domain Enrichment - Generic
+      description: Invokes the subplaybook
       playbookName: Domain Enrichment - Generic
       type: playbook
       iscommand: false
@@ -64,6 +65,7 @@ tasks:
       id: e3732a7a-3ea1-4bda-8044-1f0322a46797
       version: -1
       name: Verify Domain
+      description: Verifies the domain is correct in the context
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -93,6 +95,7 @@ tasks:
       id: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
       version: -1
       name: Verify DBotScore
+      description: Verifies that the DBotScore is correct in the context
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -119,6 +122,7 @@ tasks:
       id: a576bf16-3652-448b-80b9-790bb3045658
       version: -1
       name: Clear Context
+      description: Clears the context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -152,3 +156,4 @@ view: |-
   }
 inputs: []
 outputs: []
+
