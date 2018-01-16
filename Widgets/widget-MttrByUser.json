@@ -19,7 +19,7 @@
     }
   },
   "params":{
-     "keys":["avg|openDuration", "count|1"],
+     "keys":["avg|openDuration / (3600*24)"],
      "groupBy" : ["occurred(d)", "user"]
   }
 }
