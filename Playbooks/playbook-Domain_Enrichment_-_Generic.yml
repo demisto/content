@@ -1,0 +1,134 @@
+id: Domain Enrichment - Generic
+version: -1
+fromVersion: "3.5.0"
+name: Domain Enrichment - Generic
+description: Enrich Domain using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    type: start
+    task:
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 8dd559b1-316d-4e33-8d1b-30d49155d59d
+    type: condition
+    task:
+      id: 8dd559b1-316d-4e33-8d1b-30d49155d59d
+      version: -1
+      name: Are there Domains to check?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 776d5fda-d233-4505-80f8-47a11548c99a
+    type: regular
+    task:
+      id: 776d5fda-d233-4505-80f8-47a11548c99a
+      version: -1
+      name: Get Domain reputation
+      scriptName: DomainReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs
+          accessor: Domain
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "24":
+    id: "24"
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    type: title
+    task:
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_20_yes": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    simple: ${Domain.Name}
+  required: true
+  description: The domain name to enrich
+outputs:
+- contextPath: Domain.Name
+  description: Domain name
+  type: string
+- contextPath: DBotScore
+  description: DBotScore
+  type: unknown
