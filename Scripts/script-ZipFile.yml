@@ -1,0 +1,31 @@
+commonfields:
+  id: ZipFile
+  version: -1
+name: ZipFile
+script: |
+  import zipfile
+  import os
+
+  res = demisto.executeCommand('getFilePath', {'id': demisto.args()["EntryID"]})
+  os.system('cp ' + res[0]['Contents']['path'] + ' ' + res[0]['Contents']['name'])
+
+  zipFilename = res[0]['Contents']['name'] + '.zip'
+  zipfile.ZipFile(zipFilename, mode='w').write(res[0]['Contents']['name'])
+
+  with open(zipFilename, 'rb') as f:
+      data = f.read()
+
+  demisto.results(fileResult(zipFilename,data))
+type: python
+tags:
+- Utility
+- file
+comment: Zip a file and upload to war room
+enabled: true
+args:
+- name: EntryID
+  required: true
+  description: entry id of file to zip
+outputs:
+- description: ""
+scripttarget: 0

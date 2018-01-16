@@ -194,6 +194,9 @@
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
+        }, 
+        {
+            "playbookID": "ZipFile-Test"
         }
     ]
 }

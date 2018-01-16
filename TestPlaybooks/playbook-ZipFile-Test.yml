@@ -1,0 +1,226 @@
+id: ZipFile-Test
+version: -1
+name: ZipFile-Test
+description: Test ZipFile and UnzipFile scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 35e1ae3e-a936-4be5-8e14-a01b820493d2
+    type: start
+    task:
+      id: 35e1ae3e-a936-4be5-8e14-a01b820493d2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 931a75cf-4649-41f7-8c1f-d8f32a7b0ed5
+    type: regular
+    task:
+      id: 931a75cf-4649-41f7-8c1f-d8f32a7b0ed5
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data: something
+      entryId: ""
+      filename: original.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f341eb93-e294-4786-8ea1-8d732191098d
+    type: regular
+    task:
+      id: f341eb93-e294-4786-8ea1-8d732191098d
+      version: -1
+      name: ZipFile
+      description: Zip a file
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID: ${File(val.Name=='original.txt').EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9291c780-9e96-4c37-8574-ce8219e10c19
+    type: regular
+    task:
+      id: 9291c780-9e96-4c37-8574-ce8219e10c19
+      version: -1
+      name: UnzipFile
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID: ${File(val.Extension=='zip').EntryID}
+      fileName: ""
+      lastZipFileInWarroom: ""
+      password: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4ad44ff2-0e64-40a3-87b4-affd6f1b1b74
+    type: regular
+    task:
+      id: 4ad44ff2-0e64-40a3-87b4-affd6f1b1b74
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 8b8a021e-11a2-4735-815b-41c6d4b6ed7a
+    type: regular
+    task:
+      id: 8b8a021e-11a2-4735-815b-41c6d4b6ed7a
+      version: -1
+      name: ReadFile
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entryID: ${File.EntryID=>val[2]}
+      maxFileSize: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ed85a764-25bf-464a-8c9f-9b571c2ea548
+    type: condition
+    task:
+      id: ed85a764-25bf-464a-8c9f-9b571c2ea548
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      left: ${FileData}
+      right: something
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    taskid: eab78c28-49f7-49c5-8711-3324311cf285
+    type: regular
+    task:
+      id: eab78c28-49f7-49c5-8711-3324311cf285
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes: ""
+      closeReason: ""
+      id: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
