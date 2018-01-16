@@ -1,0 +1,97 @@
+id: eab60aec-03d6-462b-8cc5-21d9d78ac707
+version: -1
+name: Account Enrichment - Generic Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bd1b0003-1e61-4474-86cf-5144c2382d78
+    type: start
+    task:
+      id: bd1b0003-1e61-4474-86cf-5144c2382d78
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 652,
+          "y": 60
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f47b44b9-a62c-4a48-81be-2ba920578e43
+    type: playbook
+    task:
+      id: f47b44b9-a62c-4a48-81be-2ba920578e43
+      version: -1
+      name: Account Enrichment - Generic
+      description: Enrich Accounts using one or more integrations
+      playbookName: Account Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Username:
+        simple: administrator
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 652,
+          "y": 280
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 51e54287-2908-49ed-8586-f89451f37e6a
+    type: regular
+    task:
+      id: 51e54287-2908-49ed-8586-f89451f37e6a
+      version: -1
+      name: Verify account fields
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: DisplayName, Manager, Groups, Username, Type, ID, Email
+      path:
+        simple: ${Account}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 652,
+          "y": 485
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 520,
+        "width": 380,
+        "x": 652,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []

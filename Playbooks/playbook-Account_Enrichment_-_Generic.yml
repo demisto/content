@@ -1,0 +1,217 @@
+id: 51af557d-bd76-483c-81b8-658c4a1e09e9
+version: -1
+name: Account Enrichment - Generic
+description: Enrich Accounts using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    type: start
+    task:
+      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 74203dd2-67aa-449e-8d3b-0a37453a0426
+    type: condition
+    task:
+      id: 74203dd2-67aa-449e-8d3b-0a37453a0426
+      version: -1
+      name: Is there a username to query?
+      description: Checks if there's a username to query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: inputs.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 194
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ecd2967b-740c-4806-8a1e-77ff1b093991
+    type: title
+    task:
+      id: ecd2967b-740c-4806-8a1e-77ff1b093991
+      version: -1
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b3c42fed-7e9b-428e-8fd6-142c05a2cbd1
+    type: title
+    task:
+      id: b3c42fed-7e9b-428e-8fd6-142c05a2cbd1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "4":
+    id: "4"
+    taskid: bd472dbf-b849-4bb0-83d0-940b13eacc38
+    type: condition
+    task:
+      id: bd472dbf-b849-4bb0-83d0-940b13eacc38
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if there's an active "Active Directory" instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value: modules.brand
+            iscontext: true
+          right:
+            value: activedir
+      - - operator: string.isEqual
+          left:
+            value: modules.state
+            iscontext: true
+          right:
+            value: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b0499f55-88a6-426b-8a96-cbff52eb0148
+    type: regular
+    task:
+      id: b0499f55-88a6-426b-8a96-cbff52eb0148
+      version: -1
+      name: Get Account info from Active Directory
+      description: Query "Active Directory" for the username's info
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      email: {}
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username:
+        simple: ${Account.Username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 690
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    simple: ${Account.Username}
+  required: false
+  description: The Username to enrich
+outputs:
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
