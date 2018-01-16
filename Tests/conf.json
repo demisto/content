@@ -3,6 +3,11 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -72,11 +77,6 @@
             },
             "playbookID": "CB-Response-Test",
             "nightly": true
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
         },
         {
             "playbookID": "TestCommonPython"
