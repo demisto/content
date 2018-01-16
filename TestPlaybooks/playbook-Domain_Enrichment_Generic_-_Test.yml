@@ -1,0 +1,153 @@
+id: Domain Enrichment Generic - Test
+version: -1
+fromVersion: "3.5.0"
+name: Domain Enrichment Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4cda480e-8fe1-4795-8b8f-e78ee8e84375
+    type: start
+    task:
+      id: 4cda480e-8fe1-4795-8b8f-e78ee8e84375
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 84876586-752f-417d-855d-25737a8a0042
+    type: playbook
+    task:
+      id: 84876586-752f-417d-855d-25737a8a0042
+      version: -1
+      name: Domain Enrichment - Generic
+      playbookName: Domain Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Domain:
+        simple: www.demisto.com
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 238
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e3732a7a-3ea1-4bda-8044-1f0322a46797
+    type: regular
+    task:
+      id: e3732a7a-3ea1-4bda-8044-1f0322a46797
+      version: -1
+      name: Verify Domain
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: ${Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 585
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
+    type: regular
+    task:
+      id: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
+      version: -1
+      name: Verify DBotScore
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator, Vendor, Type, Score
+      path:
+        simple: ${DBotScore}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 772
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a576bf16-3652-448b-80b9-790bb3045658
+    type: regular
+    task:
+      id: a576bf16-3652-448b-80b9-790bb3045658
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 404
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 817,
+        "width": 381,
+        "x": 449,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
