@@ -2,6 +2,7 @@ id: Domain Enrichment Generic - Test
 version: -1
 fromVersion: "3.5.0"
 name: Domain Enrichment Generic - Test
+description: Domain Enrichment Generic test
 starttaskid: "0"
 tasks:
   "0":
