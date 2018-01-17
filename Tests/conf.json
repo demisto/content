@@ -162,6 +162,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        }, 
+        {
+            "playbookID": "ZipFile-Test"
         }
     ],
     "skipped": [
@@ -194,9 +197,6 @@
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
-        }, 
-        {
-            "playbookID": "ZipFile-Test"
         }
     ]
 }
