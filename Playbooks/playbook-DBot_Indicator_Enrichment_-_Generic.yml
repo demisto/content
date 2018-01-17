@@ -21,6 +21,7 @@ tasks:
       - "6"
       - "4"
       - "10"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -44,6 +45,7 @@ tasks:
       - "3"
       "yes":
       - "2"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -60,12 +62,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: c010f570-aa41-429c-8d32-a27c00d6e38a
+    taskid: b1bed29a-6cbe-4238-8c4d-3203457bdc73
     type: regular
     task:
-      id: c010f570-aa41-429c-8d32-a27c00d6e38a
+      id: b1bed29a-6cbe-4238-8c4d-3203457bdc73
       version: -1
       name: Get MD5 internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -76,6 +80,7 @@ tasks:
     scriptarguments:
       indicator:
         simple: ${inputs.MD5}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -94,6 +99,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -117,6 +123,7 @@ tasks:
       - "3"
       "yes":
       - "5"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -133,12 +140,14 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 787df5e3-be51-4278-8695-4ddc9e1d75e6
+    taskid: c84e302e-2844-414f-8b19-71f7b3e0fd18
     type: regular
     task:
-      id: 787df5e3-be51-4278-8695-4ddc9e1d75e6
+      id: c84e302e-2844-414f-8b19-71f7b3e0fd18
       version: -1
       name: Get Email address internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -151,6 +160,7 @@ tasks:
         complex:
           root: inputs
           accessor: Email
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -174,6 +184,7 @@ tasks:
       - "3"
       "yes":
       - "7"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -190,12 +201,14 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 65eebcbc-20e4-491f-8465-7652e62c7cf9
+    taskid: 47908ce9-33ad-4e39-835b-246f3cdfbe53
     type: regular
     task:
-      id: 65eebcbc-20e4-491f-8465-7652e62c7cf9
+      id: 47908ce9-33ad-4e39-835b-246f3cdfbe53
       version: -1
       name: Get URL internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -208,6 +221,7 @@ tasks:
         complex:
           root: inputs
           accessor: URL
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -231,6 +245,7 @@ tasks:
       - "3"
       "yes":
       - "9"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -247,12 +262,14 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 76e00ef0-7e5f-441e-87f0-bf162fe1ff0b
+    taskid: 2efb0c7e-9166-4646-8ad1-041fd257a55c
     type: regular
     task:
-      id: 76e00ef0-7e5f-441e-87f0-bf162fe1ff0b
+      id: 2efb0c7e-9166-4646-8ad1-041fd257a55c
       version: -1
       name: Get IP internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -263,6 +280,7 @@ tasks:
     scriptarguments:
       indicator:
         simple: ${inputs.IP}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -286,6 +304,7 @@ tasks:
       - "1"
       - "11"
       - "13"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -309,6 +328,7 @@ tasks:
       - "3"
       "yes":
       - "12"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -325,12 +345,14 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 0508e9e5-e39c-4d17-8742-86f4f5b90f81
+    taskid: 102eceb6-41fb-4b97-8279-c4ebfeb5bc63
     type: regular
     task:
-      id: 0508e9e5-e39c-4d17-8742-86f4f5b90f81
+      id: 102eceb6-41fb-4b97-8279-c4ebfeb5bc63
       version: -1
       name: Get SHA256 internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -343,6 +365,7 @@ tasks:
         complex:
           root: inputs
           accessor: SHA256
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -366,6 +389,7 @@ tasks:
       - "3"
       "yes":
       - "14"
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
@@ -382,12 +406,14 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 2a9fbe65-ff42-4dac-8858-029a2393bfc7
+    taskid: 4168a3e7-0f00-4e0a-8517-7dde46cf63db
     type: regular
     task:
-      id: 2a9fbe65-ff42-4dac-8858-029a2393bfc7
+      id: 4168a3e7-0f00-4e0a-8517-7dde46cf63db
       version: -1
       name: Get SHA256 internal Dbot score
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
@@ -400,6 +426,7 @@ tasks:
         complex:
           root: inputs
           accessor: SHA1
+    separatecontext: false
     view: |-
       {
         "position": {
