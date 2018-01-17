@@ -402,8 +402,7 @@ script:
                     'X-CSIX-CUSTKEY': [params.key],
                     'Accept': ['application/pdf']
                 },
-                Method: 'GET',
-                SaveToFile: true
+                Method: 'GET'
             },
             params.insecure,
             params.useproxy
@@ -426,7 +425,7 @@ script:
                 }
             }
         }
-        return {Type: entryTypes.entryInfoFile, FileID: result.Path, File: filename, Contents: filename};
+        return {Type: entryTypes.entryInfoFile, FileID: saveFile(result.Body), File: filename, Contents: filename};
     }
 
     switch (command) {
@@ -798,5 +797,5 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
 hidden: false
-fromversion: 3.5.0
-releaseNotes: "-"
+fromversion: 2.5.0
+toversion: 3.1.0
