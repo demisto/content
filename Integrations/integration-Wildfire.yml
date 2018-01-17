@@ -144,7 +144,7 @@ script:
         return returnObj;
     }
 
-    function getReport(md5, argHash, file, format, verbose) {
+    function getReport(md5, argHash, file) {
         var reportUrl = URL + urlDict.report;
         var hash = md5 || argHash || file;
         if(!hash)
@@ -171,7 +171,7 @@ script:
 
     }
 
-    function createReport(reportResponse) {
+    function createReport(reportResponse, format, verbose) {
         var reportUrl = URL + urlDict.report;
         var result = reportResponse.result;
         var report = reportResponse.report;
@@ -194,12 +194,12 @@ script:
                 context.DBotScore.Score = 1;
             }
         }
-        if(args.format === 'pdf'){
+        if(format === 'pdf'){
           var bodyPDF = 'apikey='+TOKEN+'&format=pdf&hash='+hash;
           var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS);
           var currentTime = new Date();
           var fileName = command + '_at_' + currentTime.getTime();
-          return {Type: 9,
+          return {Type: 3,
                   FileID: saveFile(resPDF),
                   File: fileName,
                   Contents: fileName,
@@ -207,12 +207,12 @@ script:
           };
         }
         else{ /* default format is xml*/
-          return createEntry(file_info,'WildFire Report', result, args.verbose, report);
+          return createEntry(file_info, 'WildFire Report', result, verbose, report);
         }
     }
 
-    function detonate(type, upload, format, delay, timeout) {
-        if (type === 'files') {
+    function detonate(type, upload, format, delay, timeout, verbose) {
+        if (type === 'file') {
             var uploadData = uploadFile(upload).data;
         } else { //type is remote file
             var uploadData = uploadFileRemote(upload).data;
@@ -224,9 +224,9 @@ script:
         wait(delayTime);
 
         while (waitTime<timeOut) {
-            var reportResponse = getReport(sha);
-            if (reportResponse.res) {
-                return createReport(reportResponse);
+            var reportResponse = getReport(undefined, sha);
+            if (reportResponse.result) {
+                return createReport(reportResponse, format, verbose);
             } else {
                 waitTime = waitTime + delayTime;
                 wait(delayTime);
@@ -261,14 +261,14 @@ script:
       case 'file':
       case 'wildfire-report':
         var reportResponse = getReport(args.md5, args.hash, args.file);
-        return createReport(reportResponse);
+        return createReport(reportResponse, args.format, args.verbose);
       case 'wildfire-upload':
           var response = uploadFile(args.upload);
           var uploadData = response.data;
           var result = response.res;
           return createEntry(uploadData,'WildFire Report', result);
       case 'detonate-file':
-          return detonate('file', args.upload, args.format, args.delay, args.timeout);
+          return detonate('file', args.upload, args.format, args.delay, args.timeout, args.verbose);
       case 'detonate-file-remote':
           return detonate('remoteFile', args.upload, args.format, args.delay, args.timeout);
     }
