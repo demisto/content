@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 194
+          "y": 193
         }
       }
   "2":
@@ -101,13 +101,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: bd472dbf-b849-4bb0-83d0-940b13eacc38
+    taskid: 6c3ba5ac-1b64-4fd4-83cd-93ac117384d5
     type: condition
     task:
-      id: bd472dbf-b849-4bb0-83d0-940b13eacc38
+      id: 6c3ba5ac-1b64-4fd4-83cd-93ac117384d5
       version: -1
       name: Is Active Directory enabled?
       description: Checks if there's an active "Active Directory" instance
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -116,22 +117,24 @@ tasks:
       - "3"
       "yes":
       - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: activedir
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: activedir
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {

@@ -16,13 +16,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 652,
-          "y": 60
+          "x": 50,
+          "y": 50
         }
       }
   "2":
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 652,
-          "y": 280
+          "x": 50,
+          "y": 370
         }
       }
   "3":
@@ -71,15 +71,42 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: DisplFayName, Manager, Groups, Username, Type, ID, Email
+        simple: DisplayName, Manager, Groups, Username, Type, ID, Email
       path:
         simple: ${Account}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 652,
-          "y": 485
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a06cf79a-9ceb-4845-833e-a3a5f4d14488
+    type: regular
+    task:
+      id: a06cf79a-9ceb-4845-833e-a3a5f4d14488
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -87,10 +114,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 520,
+        "height": 590,
         "width": 380,
-        "x": 652,
-        "y": 60
+        "x": 50,
+        "y": 50
       }
     }
   }
