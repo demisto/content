@@ -12,6 +12,7 @@ tasks:
     task:
       id: 214ebf34-1312-43ec-873d-41d45094ba22
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -32,6 +33,7 @@ tasks:
     task:
       id: 4f88c305-19b2-4d29-8284-0fe706b0b516
       version: -1
+      description: ""
       name: Hash reputation
       type: title
       iscommand: false
@@ -56,6 +58,7 @@ tasks:
       id: 9ca8e98e-7dbb-4bdf-8137-f140c3bc05ab
       version: -1
       name: Check MD5s
+      description: Checks reputation of MD5
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -81,6 +84,7 @@ tasks:
     task:
       id: 66d74bf4-438c-40a8-840f-58052c181d0f
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -100,6 +104,7 @@ tasks:
       id: 898f453d-592a-4946-8a9c-24a16546e4fe
       version: -1
       name: Do we have MD5 hashes?
+      description: Checks if there MD5 hashes to check
       type: condition
       iscommand: false
       brand: ""
@@ -133,6 +138,7 @@ tasks:
       id: 05b3f48a-479d-4c70-872d-a0c26b00aa2b
       version: -1
       name: Do we have SHA256 hashes?
+      description: Checks if there SHA256 hashes to check
       type: condition
       iscommand: false
       brand: ""
@@ -166,6 +172,7 @@ tasks:
       id: 39b93b59-a58a-47c7-8dd9-ea93f7bcb4a9
       version: -1
       name: Check SHA256s
+      description: Checks reputation of SHA256
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -192,6 +199,7 @@ tasks:
       id: 7e4a9672-2b7a-4291-8072-4aa7ffc35291
       version: -1
       name: Do we have SHA1 hashes?
+      description: Checks if there SHA1 hashes to check
       type: condition
       iscommand: false
       brand: ""
@@ -225,6 +233,7 @@ tasks:
       id: 2289f133-81fe-4dd7-8e67-d890237cc537
       version: -1
       name: Check SHA1s
+      description: Checks reputation of SHA1
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -288,7 +297,7 @@ outputs:
   description: For malicious files, the vendor that made the decision
   type: string
 - contextPath: DBotScore.Indicator
-  description: 'The tested indicator '
+  description: The tested indicator
   type: string
 - contextPath: DBotScore.Type
   description: The type of the indicator
