@@ -34,9 +34,6 @@ script: |+
       }
       requestObj.Headers = headersJs;
   }
-  if (args.saveAsFile === 'yes') {
-      requestObj.SaveToFile = true;
-  }
 
   var insecure = (args.insecure === 'true');
   var proxy = (args.proxy === 'true');
@@ -53,7 +50,7 @@ script: |+
   if (args.saveAsFile === 'yes') {
       return {
           Type: 3,
-          FileID: res.Path,
+          FileID: saveFile(res.Body),
           File: fileName,
           Contents: fileName
       };
@@ -119,5 +116,4 @@ outputs:
 - contextPath: HttpRequest.Response
   description: The response for the http request
 scripttarget: 0
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0
