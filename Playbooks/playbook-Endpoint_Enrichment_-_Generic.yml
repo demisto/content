@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f230eff0-2d80-484c-8e21-9bfd2154cb52
+    taskid: 2aadae56-45ae-4e11-832a-f627bfd77f07
     type: start
     task:
-      id: f230eff0-2d80-484c-8e21-9bfd2154cb52
+      id: 2aadae56-45ae-4e11-832a-f627bfd77f07
       version: -1
       name: ""
       iscommand: false
@@ -23,15 +23,15 @@ tasks:
       {
         "position": {
           "x": 1962.5,
-          "y": 50
+          "y": 48
         }
       }
   "1":
     id: "1"
-    taskid: 782d6f42-a782-4fd7-8cb0-8e48c65161b4
+    taskid: 57b61cf4-9764-4072-8397-2ef81ce7ad75
     type: title
     task:
-      id: 782d6f42-a782-4fd7-8cb0-8e48c65161b4
+      id: 57b61cf4-9764-4072-8397-2ef81ce7ad75
       version: -1
       name: Endpoint Products
       type: title
@@ -54,12 +54,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 4a58e336-a0e7-4488-8cbc-036d68c64043
+    taskid: 0223a9a6-eaca-4b2d-8f99-1b89c2427074
     type: condition
     task:
-      id: 4a58e336-a0e7-4488-8cbc-036d68c64043
+      id: 0223a9a6-eaca-4b2d-8f99-1b89c2427074
       version: -1
       name: Is ePO enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -70,23 +71,22 @@ tasks:
       - "5"
     scriptarguments:
       value:
-        simple: ${modules(val.brand=="epo" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: epo
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: epo
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -96,10 +96,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 996acbdc-53bd-4201-8f29-58b89f070e32
+    taskid: d656ca90-8307-45d7-8854-a0052c2843be
     type: condition
     task:
-      id: 996acbdc-53bd-4201-8f29-58b89f070e32
+      id: d656ca90-8307-45d7-8854-a0052c2843be
       version: -1
       name: Is there an Endpoint Hostname to run on?
       type: condition
@@ -130,10 +130,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 74695f99-6693-467f-802b-1e1f256a5c28
+    taskid: 291509d3-03b4-4b9a-8e8f-174f33903161
     type: title
     task:
-      id: 74695f99-6693-467f-802b-1e1f256a5c28
+      id: 291509d3-03b4-4b9a-8e8f-174f33903161
       version: -1
       name: Done
       type: title
@@ -149,10 +149,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 15d53f8b-374f-438a-81cc-063f6ea3a975
+    taskid: a7e8f084-8022-4135-8509-14aeaedced7e
     type: regular
     task:
-      id: 15d53f8b-374f-438a-81cc-063f6ea3a975
+      id: a7e8f084-8022-4135-8509-14aeaedced7e
       version: -1
       name: Get host info from ePO
       scriptName: EPOFindSystem
@@ -175,12 +175,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 60ef3196-0e3d-4d3a-8e53-debae7758d16
+    taskid: 49215025-f200-45c8-8c30-f45832f29560
     type: condition
     task:
-      id: 60ef3196-0e3d-4d3a-8e53-debae7758d16
+      id: 49215025-f200-45c8-8c30-f45832f29560
       version: -1
       name: Is SentinelOne enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -191,23 +192,22 @@ tasks:
       - "7"
     scriptarguments:
       value:
-        simple: ${modules(val.brand=="sentinelOne" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: sentinelOne
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: sentinelOne
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -217,10 +217,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 1e52dc68-d13e-4a3a-8354-271af1861fc3
+    taskid: 74111b99-2ca2-4ecf-8616-14f90f466289
     type: regular
     task:
-      id: 1e52dc68-d13e-4a3a-8354-271af1861fc3
+      id: 74111b99-2ca2-4ecf-8616-14f90f466289
       version: -1
       name: Get host info from SentinelOne
       script: sentinelOne|||so-agents-query
@@ -280,12 +280,13 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: cb7a5edf-af65-43ba-81fa-259b4e345a24
+    taskid: dffadc70-1144-4b0f-8f43-281ad8d2ffa7
     type: condition
     task:
-      id: cb7a5edf-af65-43ba-81fa-259b4e345a24
+      id: dffadc70-1144-4b0f-8f43-281ad8d2ffa7
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -296,23 +297,22 @@ tasks:
       - "9"
     scriptarguments:
       value:
-        simple: ${modules(val.brand==="carbonblack" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: active
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: carbonblack
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -322,10 +322,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 9294dbba-9048-4494-8ed8-fb8d0ff799b7
+    taskid: dd5f38b9-9d4c-4274-8806-443ba0925aa8
     type: regular
     task:
-      id: 9294dbba-9048-4494-8ed8-fb8d0ff799b7
+      id: dd5f38b9-9d4c-4274-8806-443ba0925aa8
       version: -1
       name: Get host info from Carbon Black Enterprise Response
       script: carbonblack|||cb-sensor-info
@@ -390,12 +390,13 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: ea57935f-b29e-4b51-8b47-34879b62c6c4
+    taskid: 2a6519e7-447e-4cf1-878b-c45681908d95
     type: condition
     task:
-      id: ea57935f-b29e-4b51-8b47-34879b62c6c4
+      id: 2a6519e7-447e-4cf1-878b-c45681908d95
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -406,23 +407,22 @@ tasks:
       - "11"
     scriptarguments:
       value:
-        simple: ${modules(val.brand=="FalconHost" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: FalconHost
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: FalconHost
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -432,10 +432,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 59b2058d-0342-4de5-8032-0cb791cb02aa
+    taskid: 9942861d-4f94-4c0a-85fd-823f27f6ddf4
     type: regular
     task:
-      id: 59b2058d-0342-4de5-8032-0cb791cb02aa
+      id: 9942861d-4f94-4c0a-85fd-823f27f6ddf4
       version: -1
       name: Get device ID
       script: FalconHost|||cs-device-search
@@ -460,7 +460,7 @@ tasks:
       encrypted_applications: {}
       extend-context: {}
       filter:
-        simple: ${inputs.Hostname}
+        simple: hostname:"${inputs.Hostname}"
       group_id: {}
       group_id__in: {}
       groupid: {}
@@ -504,10 +504,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 2c098ac3-bf65-4fb9-816a-6e659009d246
+    taskid: 3f67b4b3-5452-4af5-81be-d8e21993cda1
     type: condition
     task:
-      id: 2c098ac3-bf65-4fb9-816a-6e659009d246
+      id: 3f67b4b3-5452-4af5-81be-d8e21993cda1
       version: -1
       name: Was a device ID found?
       type: condition
@@ -538,10 +538,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 56bd97e2-4a66-460d-817f-90f630c776e7
+    taskid: 8bd9842c-d9ca-48e4-8642-ca9dc9f6c7ce
     type: regular
     task:
-      id: 56bd97e2-4a66-460d-817f-90f630c776e7
+      id: 8bd9842c-d9ca-48e4-8642-ca9dc9f6c7ce
       version: -1
       name: Get host info from CrowdStrike Falcon Host
       script: FalconHost|||cs-device-details
@@ -558,18 +558,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
+          "x": 1403,
           "y": 1330
         }
       }
   "14":
     id: "14"
-    taskid: ebed2f55-a4c6-482a-806f-8b3c69ca6144
+    taskid: 7dd84e4a-1859-4227-894f-2aec51e94d1d
     type: condition
     task:
-      id: ebed2f55-a4c6-482a-806f-8b3c69ca6144
+      id: 7dd84e4a-1859-4227-894f-2aec51e94d1d
       version: -1
       name: Is Cylance Protect enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -580,23 +581,22 @@ tasks:
       - "15"
     scriptarguments:
       value:
-        simple: ${modules(val.brand=="Cylance Protect" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: Cylance Protect
+          - - operator: string.isEqual
+              left:
+                value: modules.state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: Cylance Protect
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -606,10 +606,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 05932c70-14a2-4597-8429-7669aefc3ee2
+    taskid: 11e910f4-5067-4bf9-8af8-9c59a1a8947f
     type: regular
     task:
-      id: 05932c70-14a2-4597-8429-7669aefc3ee2
+      id: 11e910f4-5067-4bf9-8af8-9c59a1a8947f
       version: -1
       name: Get host info from Cylance Protect
       script: Cylance Protect|||cylance-protect-get-devices
@@ -621,7 +621,7 @@ tasks:
       - "4"
     scriptarguments:
       filters:
-        simple: '[{"Field":"device_name","Operator":"IsEqualTo","Value":""}]${inputs.Hostname}'
+        simple: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"${inputs.Hostname}"}]'
       headers: {}
       page_number: {}
       page_size: {}
@@ -638,10 +638,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 9e7073a2-8e09-453f-8acd-5ecfb1b267a1
+    taskid: 86053c92-99d8-4b79-8b6d-0185e050f730
     type: title
     task:
-      id: 9e7073a2-8e09-453f-8acd-5ecfb1b267a1
+      id: 86053c92-99d8-4b79-8b6d-0185e050f730
       version: -1
       name: ePO
       type: title
@@ -660,10 +660,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 51265580-ef92-4790-8618-b88c5f3096df
+    taskid: e1c09b5f-a35f-49a6-8199-d3df1031612f
     type: title
     task:
-      id: 51265580-ef92-4790-8618-b88c5f3096df
+      id: e1c09b5f-a35f-49a6-8199-d3df1031612f
       version: -1
       name: Sentinel One
       type: title
@@ -682,10 +682,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 1f6a62fc-669f-4fed-808c-4b58901ff20d
+    taskid: eda63af2-7cf1-4069-812a-67f60a9c2dfa
     type: title
     task:
-      id: 1f6a62fc-669f-4fed-808c-4b58901ff20d
+      id: eda63af2-7cf1-4069-812a-67f60a9c2dfa
       version: -1
       name: Carbon Black Enterprise Response
       type: title
@@ -704,10 +704,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 4089bbab-fb0a-493d-8a46-33c9c09412ea
+    taskid: 17990776-9803-4d5c-85fe-e7327e27ef51
     type: title
     task:
-      id: 4089bbab-fb0a-493d-8a46-33c9c09412ea
+      id: 17990776-9803-4d5c-85fe-e7327e27ef51
       version: -1
       name: Cylance Protect
       type: title
@@ -726,10 +726,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 9a4ef581-d32c-42f3-85d8-cc3ace018d60
+    taskid: 10af1189-7397-4173-813e-9cc0efa2abdb
     type: title
     task:
-      id: 9a4ef581-d32c-42f3-85d8-cc3ace018d60
+      id: 10af1189-7397-4173-813e-9cc0efa2abdb
       version: -1
       name: CrowdStrike Falcon Host
       type: title
@@ -748,10 +748,10 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: e11330b1-2211-4d91-8fe5-997e41407384
+    taskid: ed808cd8-4465-41b6-82d2-540c81f03f0e
     type: title
     task:
-      id: e11330b1-2211-4d91-8fe5-997e41407384
+      id: ed808cd8-4465-41b6-82d2-540c81f03f0e
       version: -1
       name: Enrich Endpoint by Hostname
       type: title
@@ -771,12 +771,13 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: e2e88067-d74c-4234-8a34-d2c0b65e627d
+    taskid: 7a7dcd9a-ee50-4154-8421-62333f636178
     type: condition
     task:
-      id: e2e88067-d74c-4234-8a34-d2c0b65e627d
+      id: 7a7dcd9a-ee50-4154-8421-62333f636178
       version: -1
       name: Is Active Directory enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -786,26 +787,23 @@ tasks:
       "yes":
       - "23"
     scriptarguments:
-      left: {}
-      right: {}
       value:
-        simple: ${modules(val.brand=="activedir" && val.state==="active").brand}
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value: brand
+                iscontext: true
+              right:
+                value: activedir
+          - - operator: string.isEqual
+              left:
+                value: state
+                iscontext: true
+              right:
+                value: active
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: modules.brand
-            iscontext: true
-          right:
-            value: activedir
-      - - operator: string.isEqual
-          left:
-            value: modules.state
-            iscontext: true
-          right:
-            value: active
     view: |-
       {
         "position": {
@@ -815,10 +813,10 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: a25b08f1-cd45-4118-851d-8a502f3ca0ae
+    taskid: 372efbf5-d3e1-4a40-85ab-6c00cb154cdf
     type: regular
     task:
-      id: a25b08f1-cd45-4118-851d-8a502f3ca0ae
+      id: 372efbf5-d3e1-4a40-85ab-6c00cb154cdf
       version: -1
       name: Get host info from Active Directory
       scriptName: ADGetComputer
@@ -847,10 +845,10 @@ tasks:
       }
   "24":
     id: "24"
-    taskid: 32e6f8bb-6262-4500-8a4b-2456acbd62cf
+    taskid: 7d07aa94-b375-4088-836b-b1b2e453c12d
     type: title
     task:
-      id: 32e6f8bb-6262-4500-8a4b-2456acbd62cf
+      id: 7d07aa94-b375-4088-836b-b1b2e453c12d
       version: -1
       name: Active Directory
       type: title
@@ -872,10 +870,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1520,
+        "height": 1522,
         "width": 2865,
         "x": 50,
-        "y": 50
+        "y": 48
       }
     }
   }
@@ -885,4 +883,19 @@ inputs:
     simple: ${Endpoint.Hostname}
   required: false
   description: The hostname to enrich
-outputs: []
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Endpoint hostname
+  type: string
+- contextPath: Endpoint.Mac
+  description: Endpoint mac addresses
+  type: unknown
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: Endpoint ip addresses
+  type: unknown
+- contextPath: Endpoint.Domain
+  description: Endpoint domain
+  type: string
