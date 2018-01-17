@@ -60,10 +60,17 @@ def json_remove_releaseNote_record(file_path):
 
         elif consider_multiline_notes:
             # not a releaseNote title (right after a releaseNote block (single or multi line)
-            if line.strip() and line.strip()[0] == '"':
-                # line
-                consider_multiline_notes = False
-                new_lines.append(line)
+            if line.strip():
+                if line.strip()[0] == '"': # regular line
+                    consider_multiline_notes = False
+                    new_lines.append(line)
+                elif line == '}': # releaseNote was at end of dict
+                    # needs to remove ',' from last line
+                    idx = new_lines[-1].rfind(',')
+                    new_lines[-1] = new_lines[-1][:idx] + new_lines[-1][idx+1:]
+                    consider_multiline_notes = False
+                    new_lines.append(line)
+                    pass
             else:
                 # line is part of a multiline releaseNote: ignore it
                 pass

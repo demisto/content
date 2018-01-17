@@ -19,7 +19,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -71,12 +72,6 @@
                 "byoi": false
             },
             "playbookID": "CB-Response-Test",
-            "nightly": true
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500,
             "nightly": true
         },
         {
@@ -195,6 +190,11 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
         }
     ]
 }
