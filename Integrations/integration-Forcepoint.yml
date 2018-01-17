@@ -424,7 +424,7 @@ script:
             body['Category IDs'] = ids;
         }
         else if (names) {
-            body['Category Name'] = names;
+            body['Category Names'] = names;
         }
         var res = transactionFlowRequest(url, 'DELETE', body);
         if (res.StatusCode !== 200) {
