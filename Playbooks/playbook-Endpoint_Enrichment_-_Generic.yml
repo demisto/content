@@ -280,10 +280,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: dffadc70-1144-4b0f-8f43-281ad8d2ffa7
+    taskid: 6aa63056-9b5b-4752-8966-472c21c79246
     type: condition
     task:
-      id: dffadc70-1144-4b0f-8f43-281ad8d2ffa7
+      id: 6aa63056-9b5b-4752-8966-472c21c79246
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       scriptName: Exists
@@ -305,7 +305,7 @@ tasks:
                 value: brand
                 iscontext: true
               right:
-                value: active
+                value: carbonblack
           - - operator: string.isEqual
               left:
                 value: state
