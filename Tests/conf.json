@@ -19,8 +19,7 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
+            "playbookID": "Qualys-Test"
         },
         {
             "integrations": {
