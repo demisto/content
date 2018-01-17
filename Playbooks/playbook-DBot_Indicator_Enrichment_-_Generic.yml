@@ -31,12 +31,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 0c3ee56f-c205-48f6-8799-ba3c069026c5
+    taskid: 5afc1cd3-d846-4353-8977-95adfe1c70a5
     type: condition
     task:
-      id: 0c3ee56f-c205-48f6-8799-ba3c069026c5
+      id: 5afc1cd3-d846-4353-8977-95adfe1c70a5
       version: -1
       name: Do we have MD5 hashes?
+      description: Checks if there's any MD5 indicators to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -109,12 +110,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: be679135-f68f-4da0-8aa5-6d35a88a1a84
+    taskid: ca10b1e8-fb57-42ca-8443-df8e39f3630c
     type: condition
     task:
-      id: be679135-f68f-4da0-8aa5-6d35a88a1a84
+      id: ca10b1e8-fb57-42ca-8443-df8e39f3630c
       version: -1
       name: Is there an Email address to check?
+      description: Checks if there's any Email indicators to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -170,12 +172,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 0751f425-fe00-44b2-8a28-45d2f3d93b73
+    taskid: 236e4b6d-3833-4b6c-8b4b-760976caed6e
     type: condition
     task:
-      id: 0751f425-fe00-44b2-8a28-45d2f3d93b73
+      id: 236e4b6d-3833-4b6c-8b4b-760976caed6e
       version: -1
       name: Do we have URLs?
+      description: Checks if there's any URL indicators to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -231,12 +234,13 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 8b33f580-9420-44dd-8a5d-7127372d17e6
+    taskid: eb495689-5df3-44b3-8272-d2cc2dc36d51
     type: condition
     task:
-      id: 8b33f580-9420-44dd-8a5d-7127372d17e6
+      id: eb495689-5df3-44b3-8272-d2cc2dc36d51
       version: -1
       name: Do we have IP Addresses?
+      description: Checks if there's any IP indicators to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -314,12 +318,13 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 81b92541-4de7-4d56-84c2-b22841b13208
+    taskid: a6ee34a5-0587-4d40-8e83-752e3261bbd1
     type: condition
     task:
-      id: 81b92541-4de7-4d56-84c2-b22841b13208
+      id: a6ee34a5-0587-4d40-8e83-752e3261bbd1
       version: -1
       name: Do we have SHA256 hashes?
+      description: Checks if there's any SHA256 indicators to enrich
       type: condition
       iscommand: false
       brand: ""
@@ -375,12 +380,13 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 96d3e06c-7866-46e5-837d-07341ed4aa96
+    taskid: 525d4fb2-26b9-4d8f-8960-b8c12362ee4f
     type: condition
     task:
-      id: 96d3e06c-7866-46e5-837d-07341ed4aa96
+      id: 525d4fb2-26b9-4d8f-8960-b8c12362ee4f
       version: -1
       name: Do we have SHA1 hashes?
+      description: Checks if there's any SHA1 indicators to enrich
       type: condition
       iscommand: false
       brand: ""
