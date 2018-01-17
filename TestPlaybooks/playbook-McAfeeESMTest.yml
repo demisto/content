@@ -1,5 +1,5 @@
 id: McAfeeESMTest
-version: 7
+version: 9
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:
@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "4"
     view: |-
       {
         "position": {
@@ -602,9 +602,6 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "4"
     scriptarguments:
       customEnd: {}
       customStart: {}
@@ -619,8 +616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 316,
+          "y": 180
         }
       }
 view: |-
@@ -629,7 +626,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3710,
-        "width": 380,
+        "width": 646,
         "x": 50,
         "y": 50
       }
