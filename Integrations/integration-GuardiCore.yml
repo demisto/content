@@ -604,7 +604,7 @@ script:
                 );
 
                 var fileName = 'incident_' + incidentId + '.pcap';
-                entry = {Type: 3, FileID: saveFile(pcapFile), File: fileName, Contents: fileName};
+                entry = {Type: 3, FileID: pcapFile, File: fileName, Contents: fileName};
                 break;
 
             case 'guardicore-get-incident-attachments':
@@ -628,7 +628,7 @@ script:
                     );
 
                     var fileName = 'attachment_' + incidentId + '_' + attachments.filesData[i].path;
-                    entry.push({Type: 3, FileID: saveFile(attachment), File: fileName, Contents: fileName});
+                    entry.push({Type: 3, FileID: attachment, File: fileName, Contents: fileName});
                 }
                 break;
 
@@ -715,7 +715,8 @@ script:
             {
                 Method: method,
                 Headers: headers,
-                Body: body
+                Body: body,
+                SaveToFile: isRawOutput ? true : false
             },
             params.insecure,
             params.proxy
@@ -730,7 +731,7 @@ script:
         }
 
         if (isRawOutput) {
-            return res.Body;
+            return res.Path;
         } else {
             return JSON.parse(res.Body);
         }
@@ -856,3 +857,5 @@ script:
     - name: uuid
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
+fromversion: 3.5.0
+releaseNotes: "-"

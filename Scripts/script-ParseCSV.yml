@@ -192,4 +192,3 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
-releaseNotes: "ParseCSV by default will parse the whole csv"

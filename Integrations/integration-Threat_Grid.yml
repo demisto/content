@@ -77,7 +77,7 @@ script:
         }
         // If file name is provided, we should save to file
         return filename ?
-            {Type: 9, FileID: saveFile(res.Body), File: filename, Contents: filename} :
+            {Type: 9, FileID: saveFile(res.Bytes), File: filename, Contents: filename} :
             JSON.parse(res.Body);
     }
 
@@ -925,3 +925,5 @@ script:
       defaultValue: json
     description: Gets a specific threat feed
 hidden: false
+fromversion: 3.5.0
+releaseNotes: "-"

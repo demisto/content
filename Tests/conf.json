@@ -74,12 +74,6 @@
             "nightly": true
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -155,11 +149,19 @@
             "playbookID": "LanguageDetect-Test"
         },
         {
-            "playbookID": "TestParseCSV"
+            "playbookID": "TestWordFileToIOC"
         },
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
+        },
+        {
+            "integrations": "Forcepoint",
+            "playbookID": "forcepoint test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "GeneratePassword-Test"
         }
     ],
     "skipped": [
@@ -175,6 +177,23 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
         }
     ]
 }

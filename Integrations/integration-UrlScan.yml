@@ -47,19 +47,20 @@ script:
         var requestUrl;
         var res;
 
-        if(img !== undefined) {
+        if (img) {
             requestUrl = img;
 
             var res = http(
                 requestUrl,
                 {
-                    Method: method
+                    Method: method,
+                    SaveToFile: true
                 },
                 params.insecure,
                 params.proxy
             );
 
-            return res.Body;
+            return res.Path;
 
         } else {
             requestUrl = url + arg;
@@ -170,9 +171,8 @@ script:
         }
         var img = scanRes.task.screenshotURL;
         var res = sendRequest('GET', '', '','' , img);
-        var fileId = saveFile(res);
 
-        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': fileId };
+        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res };
     };
 
     var searchIP = function(ip) {
@@ -491,3 +491,5 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
+fromversion: 3.5.0
+releaseNotes: "-"

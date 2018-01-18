@@ -1,0 +1,871 @@
+commonfields:
+  id: ProtectWise
+  version: -1
+name: ProtectWise
+display: ProtectWise
+category: Network Security
+image: data:image/png;base64,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
+description: Cloud based Security Network DVR
+configuration:
+- display: Url
+  name: url
+  defaultvalue: https://api.protectwise.com/api/v1/
+  type: 0
+  required: true
+- display: Email
+  name: email
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Do not validate certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Only fetch events with this text in the name
+  name: messageFilter
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Filter by threat category
+  name: threatCategory
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Filter by killchain stage
+  name: killChainStage
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Filter by LOW , MEDIUM , or HIGH threatLevel
+  name: threatLevel
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var DEFAULT_EVENT_HEADERS = ['message','id','type','sensorId','threatScore','killChainStage','confidence','startedAt','observedAt','endedAt','observationCount','netflowCount','observedStage'];
+    var DEFAULT_NETFLOW_HEADERS = ['key', 'id.srcIp', 'id.dstIp', 'id.srcPort', 'id.dstPort', 'id.layer4Proto'];
+    var DEFAULT_OBSERVATION_HEADERS = ['id','killChainStage','source','sensorId','threatScore','severity','confidence','occurredAt','observedAt','endedAt','netflowId','observedStage'];
+    var DEFAULT_SENSOR_HEADERS = ['id', 'friendly_name', 'ip_address', 'last_seen', 'customer_id', 'enabled'];
+    var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
+
+    var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
+
+    var getToken = function() {
+        var token = '';
+        if ((params.token) && (params.token.length > 0)) {
+            token = params.token;
+        }
+        if (token.length === 0) {
+            if (params.email.length === 0 || params.password.length === 0){
+                throw 'If token configuration is empty , you must provide email+password configuration params for auth';
+            }
+            var tokResult = http(
+                serverUrl + 'token',
+                {
+                    Headers: {'Content-Type': ['application/json']},
+                    Method: 'POST',
+                    Body: JSON.stringify({'email': params.email, 'password': params.password}),
+                },
+                params.insecure,
+                params.proxy
+            );
+            if (tokResult.StatusCode !== 200 && tokResult.StatusCode !== 201) {
+                throw 'Failed to create token, request status code: ' + tokResult.StatusCode + ', body: ' + tokResult.Body;
+            }
+            try {
+                var body = JSON.parse(tokResult.Body);
+            } catch (ex) {
+                throw 'Error parsing token - ' + tokResult.Body + ' - ' + ex;
+            }
+
+            return body.token;
+        }
+        return token;
+    };
+
+    // If value for any argument is empty remove it
+    var cleanArgs = function(args) {
+        return Object.keys(args).filter(function(k) {return args[k];}).reduce(function(clean, k) {clean[k] = args[k]; return clean;}, {});
+    };
+
+    var doReq = function(url, token, raw, args) {
+        if (args) {
+            url += encodeToURLQuery(cleanArgs(args));
+        }
+        var res = http(
+            url,
+            {
+                Headers: {'X-Access-Token': [ token ]},
+                Method: 'GET'
+            },
+            params.insecure,
+            params.proxy
+            );
+        if (res.StatusCode !== 200) {
+            throw 'Failed to execute ' + url + ' : ' + res.StatusCode + ', body: ' + res.Body;
+        }
+        try {
+            return (raw ? res.Body : JSON.parse(res.Body));
+        } catch (ex) {
+            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
+        }
+    };
+
+    var filterClone = function(src, filter) {
+        if (src && Array.isArray(src) && filter && Array.isArray(filter)) {
+            var items = [];
+            src.forEach(function(s) {
+                var item = {};
+                filter.forEach(function( col ) {
+                   item[col] =  dq(s, col);
+                });
+                items.push(item);
+            });
+            return items;
+        } else return undefined;
+    };
+
+    var parseTime = function(time) {
+        if ((typeof time === 'string' || time instanceof String) && (time.indexOf("-") >= 0 || time.indexOf("/") >= 0 )){
+            var d = new Date(time);
+            return d.getTime();
+        }
+        return time;
+    };
+
+    var eventsSearch = function(start, end, eventType, killChainStage, threatLevel, threatCategory, observationStage, ip, expandDetails, minLimit, maxLimit, reverseOrder, nextPage, token) {
+        return doReq(serverUrl + 'events', token, true, {start: parseTime(start), end: parseTime(end),
+            eventType: eventType, killChainStage: killChainStage, threatLevel: threatLevel, threatCategory: threatCategory, observationStage: observationStage,
+            ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit, reverseOrder: reverseOrder, nextPage: nextPage});
+    };
+
+    var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
+        return doReq(serverUrl + 'observations', token, true, {sensorId: sensorId, start: parseTime(start), end: parseTime(end), type: type, killChainStage: killChainStage,
+            threatLevel: threatLevel, threatCategory: threatCategory, hasKillChain: hasKillChain, ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit,
+            reverseOrder: reverseOrder, nextPage: nextPage, signatureId: signatureId});
+    };
+
+    var createIncidentFromEvent = function(event) {
+        var keys = Object.keys(event);
+        var labels = [];
+        for (var i = 0; i<keys.length; i++) {
+            val = event[keys[i]];
+            if (TIME_FIELDS.indexOf(keys[i]) > -1) {
+                val = convertTimestampToString(val);
+            }
+            labels.push({'type': keys[i], 'value': String(val)});
+        }
+        return {
+            "name": event.message,
+            "labels": labels,
+            "rawJSON": JSON.stringify(event)
+        };
+    };
+
+    var token = getToken();
+    switch (command) {
+        case 'test-module':
+            if (token && token.length > 0) {
+                return true;
+            }
+            return false;
+        case 'fetch-incidents':
+            var lastRun = getLastRun();
+            var now = (new Date()).getTime();
+            if (!lastRun || !lastRun.time) {
+                // First time, retrieve events from the last 10 min
+                lastRun = {time: now - 10 * 60 * 1000};
+            }
+            var data = eventsSearch(lastRun.time , now , params.eventType, params.killChainStage, params.threatLevel,
+                params.threatCategory, null, null, null, null, null, null, null, token);
+            try {
+                var res = JSON.parse(data).events;
+            } catch (ex) {
+                throw 'Error parsing event fetch - ' + data + ' - ' + ex;
+            }
+            var incidents = [];
+            for (var i = 0; i < res.length; i++) {
+                var skip = true;
+                if (params.messageFilter && res[i].message) {
+                    filters = params.messageFilter.split(',');
+                    for (var j = 0; j < filters.length; j++) {
+                        if (filters[j] && filters[j].length > 0 && res[i].message.toLowerCase().indexOf(filters[j].toLowerCase()) > -1) {
+                            skip = false;
+                            break;
+                        }
+                    }
+                } else {
+                    skip = false;
+                }
+                if(!skip) {
+                    incidents.push(createIncidentFromEvent(res[i]));
+                }
+            }
+            setLastRun({time: now});
+            return JSON.stringify(incidents);
+        case 'sensors':
+        case 'protectwise-show-sensors':
+            var url = serverUrl + 'sensors';
+            if (args.sensorId && args.sensorId.length > 0 ) {
+                url = url + '/' + args.sensorId;
+            }
+            var headers = args.headers ? args.headers : DEFAULT_SENSOR_HEADERS;
+
+            var res = doReq(url, token);
+            var items = [];
+
+            if (!Array.isArray(res)) {
+                res = [res];
+            }
+            items = filterClone(res, headers);
+
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown('Protectwise sensors', items, headers),
+                EntryContext: {'Protectwise.Sensor(val.id == obj.id)': items}
+            };
+        case 'search':
+        case 'protectwise-search-events':
+            var raw = eventsSearch(args.start, args.end, args.eventType, args.killChainStage, args.threatLevel,
+                args.threatCategory, args.observationStage, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, token);
+            try {
+                var res = JSON.parse(raw).events;
+            } catch (ex) {
+                throw 'Error parsing event search - ' + raw + ' - ' + ex;
+            }
+            var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
+            var items = [];
+            if (!Array.isArray(res)) {
+                res = [res];
+            }
+            items = filterClone(res, eventHeaders);
+            items.forEach(function(item) {
+               TIME_FIELDS.forEach(function (timeKey) {
+                   if (item[timeKey]) {
+                       item[timeKey] = convertTimestampToString(item[timeKey]);
+                   }
+               });
+            });
+
+            return {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown('Protectwise Event Search', items, eventHeaders),
+                EntryContext: {'Protectwise.Event(val.id == obj.id)': items}
+            };
+        case 'pw-event-get':
+        case 'protectwise-event-info':
+            var url = serverUrl + 'events/' + args.id;
+            var eventHeaders = args.headers ? args.headers : DEFAULT_EVENT_HEADERS;
+            var res = doReq(url, token);
+            var event = {};
+            eventHeaders.forEach(function( col ) {
+               event[col] = res[col];
+            });
+
+            TIME_FIELDS.forEach(function (timeKey) {
+               if (event[timeKey]) {
+                   event[timeKey] = convertTimestampToString(event[timeKey]);
+               }
+            });
+
+            var md = tableToMarkdown('Protectwise Event ' + res.id, [event], eventHeaders);
+
+            if (res.netflows && res.netflows.length > 0) {
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                event['Netflows'] = nf;
+                md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
+            }
+
+            if (res.observations && res.observations.length > 0) {
+                var obs = filterClone(res.observations, DEFAULT_OBSERVATION_HEADERS);
+                obs.forEach(function(item) {
+                    TIME_FIELDS.forEach(function (timeKey) {
+                       if (item[timeKey]) {
+                           item[timeKey] = convertTimestampToString(item[timeKey]);
+                       }
+                   });
+                });
+                event['Observations'] = obs;
+                md += '\n' + tableToMarkdown('Related Observations', obs, DEFAULT_OBSERVATION_HEADERS);
+            }
+
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {'Protectwise.Event(val.id == obj.id)': event}
+            };
+        case 'observation-search':
+        case 'protectwise-search-observations':
+            var raw = observationSearch(args.sensorId, args.start, args.end, args.type, args.killChainStage, args.threatLevel,
+                args.threatCategory, args.hasKillChain, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, args.signatureId, token);
+            try {
+                var res = JSON.parse(raw).observations;
+            } catch (ex) {
+                throw 'Error parsing observation search - ' + raw + ' - ' + ex;
+            }
+            var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
+            var items = [];
+            if (!Array.isArray(res)) {
+                res = [res];
+            }
+            items = filterClone(res, headers);
+            items.forEach(function(item) {
+                TIME_FIELDS.forEach(function (timeKey) {
+                   if (item[timeKey]) {
+                       item[timeKey] = convertTimestampToString(item[timeKey]);
+                   }
+               });
+            });
+
+            return {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown('Protectwise Observation Search', items, headers),
+                EntryContext: {'Protectwise.Observation(val.id == obj.id)': items}
+            };
+        case 'pw-observation-get':
+        case 'protectwise-observation-info':
+            var url = serverUrl + 'observations/' + args.id;
+            var headers = args.headers ? args.headers : DEFAULT_OBSERVATION_HEADERS;
+            var res = doReq(url, token, false, {'sensorId': args.sensorId});
+            var obj = {};
+            headers.forEach(function( col ) {
+               obj[col] = res[col];
+            });
+            TIME_FIELDS.forEach(function (timeKey) {
+               if (obj[timeKey]) {
+                   obj[timeKey] = convertTimestampToString(obj[timeKey]);
+               }
+            });
+
+            var md = tableToMarkdown('Protectwise Observation ' + res.id, [obj], headers);
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {'Protectwise.Observation(val.id == obj.id)': obj}
+            };
+        case 'event-pcap-download':
+        case 'protectwise-event-pcap-download':
+            var filename = (args.filename && args.filename.length > 0) ? args.filename : (args.eventId + '.pcap');
+
+            var url = serverUrl + 'pcaps/events/' + args.eventId;
+            res = saveFile(doReq(url, token, true, {filename: filename}));
+            return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
+        case 'event-pcap-info':
+        case 'protectwise-event-pcap-info':
+            var url = serverUrl + 'pcaps/events/'+ args.eventId + '/info';
+            var res = doReq(url, token);
+            var md = '### Protectwise PCAP for Event ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
+            if (res.netflows && res.netflows.length > 0) {
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
+            }
+
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {'Protectwise.Event(val.id == obj.id)': {'id': res.id, 'PCAPSize': res.estimatedSize}}
+            };
+        case 'observation-pcap-download':
+        case 'protectwise-observation-pcap-download':
+            var filename = (args.filename && args.filename.length > 0) ? args.filename : ( args.sensorId+'-'+args.id + '.pcap');
+            var url = serverUrl + 'pcaps/observations/' + args.sensorId + '/' + args.id;
+            res = saveFile(doReq(url, token, true, {filename: filename}));
+            return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
+        case 'observation-pcap-info':
+        case 'protectwise-observation-pcap-info':
+            var url = serverUrl + 'pcaps/observations/' + args.sensorId + '/' + args.id + '/info';
+            var res = doReq(url, token);
+            var md = '### Protectwise PCAP for Observation ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
+            if (res.netflows && res.netflows.length > 0) {
+                var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
+            }
+
+            return {
+                Type: entryTypes.note,
+                Contents: res,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {'Protectwise.Observation(val.id == obj.id && val.sensorId == obj.sensorId)': {'id': args.id, 'sensorId': args.sensorId, 'PCAPSize': res.estimatedSize}}
+            };
+        case 'get-token':
+            return token;
+        default:
+            return 'The Protectwise integration has no command "' + command + '"';
+    }
+  type: javascript
+  commands:
+  - name: sensors
+    deprecated: true
+    arguments:
+    - name: sensorId
+      default: true
+      description: The id of the individual sensor (if not provided will query all
+        available sensors)
+    description: Collection of all available sensors
+  - name: protectwise-show-sensors
+    arguments:
+    - name: sensorId
+      default: true
+      description: The id of the individual sensor (if not provided will query all
+        available sensors)
+    outputs:
+    - contextPath: Protectwise.Sensor.id
+      description: Sensor ID
+    - contextPath: Protectwise.Sensor.friendly_name
+      description: Sensor Name
+    - contextPath: Protectwise.Sensor.ip_address
+      description: Sensor IP address
+    - contextPath: Protectwise.Sensor.last_seen
+      description: Time when sensor was last seen
+    - contextPath: Protectwise.Sensor.customer_id
+      description: Sensor's Customer ID
+    - contextPath: Protectwise.Sensor.enabled
+      description: Is the sensor enabled
+    description: Collection of all available sensors
+  - name: search
+    deprecated: true
+    arguments:
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: eventType
+      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: observationStage
+      description: Filter by Realtime or Retrospective
+    - name: ip
+      description: Filter by events that are affected by a specific IP address
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    description: search Events ,Events are resources that describe a threat and contains
+      a collection of observations.
+  - name: protectwise-search-events
+    arguments:
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: eventType
+      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: observationStage
+      description: Filter by Realtime or Retrospective
+    - name: ip
+      description: Filter by events that are affected by a specific IP address
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    outputs:
+    - contextPath: Protectwise.Event.message
+      description: Name of the event
+    - contextPath: Protectwise.Event.id
+      description: Protectwise event ID
+    - contextPath: Protectwise.Event.type
+      description: Event type
+    - contextPath: Protectwise.Event.sensorId
+      description: Detecting sensor's ID
+    - contextPath: Protectwise.Event.threatScore
+      description: Threat score 0-100
+    - contextPath: Protectwise.Event.killChainStage
+      description: Killchain Stage
+    - contextPath: Protectwise.Event.confidence
+      description: Confidence level 0-100
+    - contextPath: Protectwise.Event.startedAt
+      description: Event time started
+    - contextPath: Protectwise.Event.observedAt
+      description: Event time observed
+    - contextPath: Protectwise.Event.endedAt
+      description: Event time ended
+    - contextPath: Protectwise.Event.observationCount
+      description: Number of observations related to this event
+    - contextPath: Protectwise.Event.netflowCount
+      description: Number of netflows related to this event
+    - contextPath: Protectwise.Event.observedStage
+      description: Observed stage (Realtime or Retrospective)
+    description: search Events ,Events are resources that describe a threat and contains
+      a collection of observations.
+  - name: pw-event-get
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: event id
+    description: Lookup a single event and its associated observations for ProtectWise
+  - name: protectwise-event-info
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: event id
+    outputs:
+    - contextPath: Protectwise.Event.message
+      description: Name of the event
+    - contextPath: Protectwise.Event.id
+      description: Protectwise event ID
+    - contextPath: Protectwise.Event.type
+      description: Event type
+    - contextPath: Protectwise.Event.sensorId
+      description: Detecting sensor's ID
+    - contextPath: Protectwise.Event.threatScore
+      description: Threat score 0-100
+    - contextPath: Protectwise.Event.killChainStage
+      description: Killchain Stage
+    - contextPath: Protectwise.Event.confidence
+      description: Confidence level 0-100
+    - contextPath: Protectwise.Event.startedAt
+      description: Event time started
+    - contextPath: Protectwise.Event.observedAt
+      description: Event time observed
+    - contextPath: Protectwise.Event.endedAt
+      description: Event time ended
+    - contextPath: Protectwise.Event.observationCount
+      description: Number of observations related to this event
+    - contextPath: Protectwise.Event.netflowCount
+      description: Number of netflows related to this event
+    - contextPath: Protectwise.Event.observedStage
+      description: Observed stage (Realtime or Retrospective)
+    - contextPath: Protectwise.Event.Netflows.key
+      description: Netflow key
+    - contextPath: Protectwise.Event.Netflows.id.srcIp
+      description: Netflow Source IP
+    - contextPath: Protectwise.Event.Netflows.id.dstIp
+      description: Netflow Dst IP
+    - contextPath: Protectwise.Event.Netflows.id.srcPort
+      description: Netflow Source Port
+    - contextPath: Protectwise.Event.Netflows.id.dstPort
+      description: Netflow Dst Port
+    - contextPath: Protectwise.Event.Netflows.id.layer4Proto
+      description: Netflow Layer 4 Protocol
+    - contextPath: Protectwise.Event.Observations.id
+      description: Observation ID
+    - contextPath: Protectwise.Event.Observations.killChainStage
+      description: Observation Killchain Stage
+    - contextPath: Protectwise.Event.Observations.source
+      description: Observation Source
+    - contextPath: Protectwise.Event.Observations.sensorId
+      description: Observation's Sensor ID
+    - contextPath: Protectwise.Event.Observations.threatScore
+      description: Observation Threat Score
+    - contextPath: Protectwise.Event.Observations.severity
+      description: Observation Severity
+    - contextPath: Protectwise.Event.Observations.confidence
+      description: Observation confidence level (0-100)
+    - contextPath: Protectwise.Event.Observations.occurredAt
+      description: Observation - time occurred
+    - contextPath: Protectwise.Event.Observations.observedAt
+      description: Observation - time observed
+    - contextPath: Protectwise.Event.Observations.endedAt
+      description: Observation - time ended
+    - contextPath: Protectwise.Event.Observations.netflowId
+      description: ID of related Netflow for this observation
+    - contextPath: Protectwise.Event.Observations.observedStage
+      description: Observation - Observed stage
+    description: Lookup a single event and its associated observations for ProtectWise
+  - name: observation-search
+    deprecated: true
+    arguments:
+    - name: sensorId
+      required: true
+      description: the sensor id or a comma-separated list of sensor ids
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: type
+      description: Filter by observation type (ids http iprep urlrep protocol file
+        )
+    - name: hasKillChain
+      description: Search for observations in every kill chain stage (true false)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: ip
+      description: Filter observations by IP address in the src/dst fields
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: signatureId
+      description: 'Filter by threat signature (find observations of the same type
+        of threat) -  Example: 69020504'
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    description: search observations in ProtectWise
+  - name: protectwise-search-observations
+    arguments:
+    - name: sensorId
+      required: true
+      description: the sensor id or a comma-separated list of sensor ids
+    - name: start
+      required: true
+      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: end
+      required: true
+      description: 'Timestamp of the end of the event, Example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+    - name: type
+      description: Filter by observation type (ids http iprep urlrep protocol file
+        )
+    - name: hasKillChain
+      description: Search for observations in every kill chain stage (true false)
+    - name: killChainStage
+      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+    - name: ip
+      description: Filter observations by IP address in the src/dst fields
+    - name: threatLevel
+      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+    - name: threatCategory
+      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+    - name: signatureId
+      description: 'Filter by threat signature (find observations of the same type
+        of threat) -  Example: 69020504'
+    - name: minLimit
+      description: Try to return at least this many results per page
+    - name: maxLimit
+      description: Do not return more than this many results
+    - name: reverseOrder
+      description: Return results sorted by descending timestamp (default = true)
+    - name: nextPage
+      description: An identifier to fetch the next page in the result set
+    outputs:
+    - contextPath: Protectwise.Observation.id
+      description: "Observation ID"
+    - contextPath: Protectwise.Observation.killChainStage
+      description: "Observation's Killchain Stage"
+    - contextPath: Protectwise.Observation.source
+      description: "Observation Source"
+    - contextPath: Protectwise.Observation.sensorId
+      description: "ID of the Protectwise sensor that generated the Observation"
+    - contextPath: Protectwise.Observation.threatScore
+      description: "Observation's Threat Score"
+    - contextPath: Protectwise.Observation.severity
+      description: "Observation's Severity"
+    - contextPath: Protectwise.Observation.confidence
+      description: "Observation's Confidence level"
+    - contextPath: Protectwise.Observation.occurredAt
+      description: "Observation - Time Occurred"
+    - contextPath: Protectwise.Observation.observedAt
+      description: "Observation - Time Observed"
+    - contextPath: Protectwise.Observation.endedAt
+      description: "Observation - Time Ended"
+    - contextPath: Protectwise.Observation.netflowId
+      description: "ID of the Netflow tied to this Observation"
+    - contextPath: Protectwise.Observation.observedStage
+      description: "Attack stage reflected by the observation"
+    description: search observations in ProtectWise
+  - name: pw-observation-get
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Observation id
+    - name: sensorId
+      required: true
+      description: the sensor id or comma-separated list of ids
+    description: Lookup a single observation for ProtectWise
+  - name: protectwise-observation-info
+    arguments:
+    - name: id
+      required: true
+      description: Observation id
+    - name: sensorId
+      required: true
+      description: the sensor id or comma-separated list of ids
+    outputs:
+    - contextPath: Protectwise.Observation.id
+      description: "Observation ID"
+    - contextPath: Protectwise.Observation.killChainStage
+      description: "Observation's Killchain Stage"
+    - contextPath: Protectwise.Observation.source
+      description: "Observation Source"
+    - contextPath: Protectwise.Observation.sensorId
+      description: "ID of the Protectwise sensor that generated the Observation"
+    - contextPath: Protectwise.Observation.threatScore
+      description: "Observation's Threat Score"
+    - contextPath: Protectwise.Observation.severity
+      description: "Observation's Severity"
+    - contextPath: Protectwise.Observation.confidence
+      description: "Observation's Confidence level"
+    - contextPath: Protectwise.Observation.occurredAt
+      description: "Observation - Time Occurred"
+    - contextPath: Protectwise.Observation.observedAt
+      description: "Observation - Time Observed"
+    - contextPath: Protectwise.Observation.endedAt
+      description: "Observation - Time Ended"
+    - contextPath: Protectwise.Observation.netflowId
+      description: "ID of the Netflow tied to this Observation"
+    - contextPath: Protectwise.Observation.observedStage
+      description: "Attack stage reflected by the observation"
+    description: Lookup a single observation for ProtectWise
+  - name: event-pcap-download
+    deprecated: true
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Event Pcap Download
+  - name: protectwise-event-pcap-download
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Event Pcap Download
+  - name: event-pcap-info
+    deprecated: true
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    description: Get ProtectWise Event Pcap info
+  - name: protectwise-event-pcap-info
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event ID
+    outputs:
+    - contextPath: Protectwise.Event.id
+      description: Event ID
+    - contextPath: Protectwise.Event.PCAPSize
+      description: Estimated PCAP size in bytes
+    description: Get ProtectWise Event Pcap info
+  - name: observation-pcap-download
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Observation Pcap Download
+  - name: protectwise-observation-pcap-download
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    - name: filename
+      description: Optionally provide a filename for the download
+    description: Observation Pcap Download
+  - name: observation-pcap-info
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    description: Get ProtectWise Observation Pcap info
+  - name: protectwise-observation-pcap-info
+    arguments:
+    - name: id
+      required: true
+      description: The observation ID
+    - name: sensorId
+      required: true
+      description: the sensor id
+    outputs:
+    - contextPath: Protectwise.Observation.id
+      description: Observation ID
+    - contextPath: Protectwise.Observation.sensorId
+      description: Observation Sensor ID
+    - contextPath: Protectwise.Observation.PCAPSize
+      description: Estimated PCAP size in bytes
+    description: Get ProtectWise Observation Pcap info
+  - name: get-token
+    deprecated: true
+    arguments: []
+    description: Get API token, to use in integration configuration
+  isfetch: true
+toversion: 3.1.0

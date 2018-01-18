@@ -825,4 +825,5 @@ script:
     - contextPath: IntSights.IOCs
       description: IOCs details
     description: Get all the IOCs
+  isfetch: true
 hidden: false
