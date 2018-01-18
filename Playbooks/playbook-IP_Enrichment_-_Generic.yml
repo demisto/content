@@ -1,4 +1,4 @@
-id: IP Enrichment - Generic
+id: ip_enrichment_generic
 version: -1
 fromversion: "3.5.0"
 name: IP Enrichment - Generic
@@ -13,6 +13,7 @@ tasks:
       id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,7 +35,7 @@ tasks:
       id: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
       version: -1
       name: Do we have External IP Addresses?
-      description: Checks if given IPs are not in the internal ranges.
+      description: Checks if given IPs are not in the internal ranges using the output from the internal ranges check.
       type: condition
       iscommand: false
       brand: ""
@@ -80,7 +81,7 @@ tasks:
       id: 259ecf36-471d-4423-88cd-f236af47abed
       version: -1
       name: Check IP reputation
-      description: Invoke IP related engines to get their corresponding DBot Score.
+      description: Invoke IP related engines to get their DBot Score.
       scriptName: IPReputation
       type: regular
       iscommand: false
@@ -120,6 +121,7 @@ tasks:
       id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -139,7 +141,7 @@ tasks:
       id: 5a37438b-fde1-4fde-81c5-607a54f36a34
       version: -1
       name: Check each IP address against internal ranges
-      description: Determines wether the given IPs are in range of the given internal ranges - either from the input or from a defined set of private subnets.
+      description: Determines wether the given IPs are in range of the given internal ranges - either from the input or from a default set of private subnets.
       scriptName: IsIPInRanges_update
       type: regular
       iscommand: false
@@ -170,6 +172,7 @@ tasks:
       id: 3ec45acd-e3a8-4f70-8ae0-47d32bd25c9a
       version: -1
       name: Check internal IP addresses
+      description: ""
       type: title
       iscommand: false
       brand: ""
