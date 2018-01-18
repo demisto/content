@@ -56,10 +56,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: a4ab0b58-9f99-477e-8f49-7116880b6df7
+    taskid: ece68928-93e3-49ff-8439-e1f2a4dfb0c8
     type: playbook
     task:
-      id: a4ab0b58-9f99-477e-8f49-7116880b6df7
+      id: ece68928-93e3-49ff-8439-e1f2a4dfb0c8
       version: -1
       name: IP Enrichment - Generic
       description: Enrich IP using one or more integrations
@@ -72,7 +72,7 @@ tasks:
       - "9"
     scriptarguments:
       IP:
-        simple: ${IP.Address}
+        simple: ${Test.Address}
       InternalRange: {}
     separatecontext: false
     loop:
@@ -148,10 +148,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 15903e3d-a4ce-4e06-8e85-846c17abe73d
+    taskid: 976463d4-e7b8-46e9-89b7-de92a0355ff2
     type: regular
     task:
-      id: 15903e3d-a4ce-4e06-8e85-846c17abe73d
+      id: 976463d4-e7b8-46e9-89b7-de92a0355ff2
       version: -1
       name: Set IP Address
       description: Sets a value into the context with the given context key
@@ -165,7 +165,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: IP.Address
+        simple: Test.Address
       value:
         simple: '["1.2.3.4", "10.0.0.1"]'
     separatecontext: false
@@ -178,13 +178,14 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 2c5f089c-c8c9-4ad2-8d08-e1018086d6a0
+    taskid: 726af3a3-ea23-441f-87b9-eb347f6e97da
     type: regular
     task:
-      id: 2c5f089c-c8c9-4ad2-8d08-e1018086d6a0
+      id: 726af3a3-ea23-441f-87b9-eb347f6e97da
       version: -1
       name: Verify DBotScore content
-      description: Verify that the DBotScore contains the correct indicator
+      description: Verify that the DBotScore contains the correct indicator(the external
+        one).
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -217,4 +218,3 @@ view: |-
   }
 inputs: []
 outputs: []
-
