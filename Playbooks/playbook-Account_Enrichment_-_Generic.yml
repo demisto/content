@@ -1,7 +1,7 @@
-id: 51af557d-bd76-483c-81b8-658c4a1e09e9
+id: account_enrichment_-_generic
 version: -1
 name: Account Enrichment - Generic
-fromversion: 3.5.0
+fromversion: "3.5.0"
 description: Enrich Accounts using one or more integrations
 starttaskid: "0"
 tasks:
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -28,10 +29,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 74203dd2-67aa-449e-8d3b-0a37453a0426
+    taskid: c9efda34-5c97-4be8-8dab-f0e318355a29
     type: condition
     task:
-      id: 74203dd2-67aa-449e-8d3b-0a37453a0426
+      id: c9efda34-5c97-4be8-8dab-f0e318355a29
       version: -1
       name: Is there a username to query?
       description: Checks if there's a username to query
@@ -69,6 +70,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -91,6 +93,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -101,10 +104,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 6c3ba5ac-1b64-4fd4-83cd-93ac117384d5
+    taskid: 19f64d77-18f2-45a6-8ec5-9d2203d9637a
     type: condition
     task:
-      id: 6c3ba5ac-1b64-4fd4-83cd-93ac117384d5
+      id: 19f64d77-18f2-45a6-8ec5-9d2203d9637a
       version: -1
       name: Is Active Directory enabled?
       description: Checks if there's an active "Active Directory" instance
@@ -144,10 +147,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: b0499f55-88a6-426b-8a96-cbff52eb0148
+    taskid: a1e1dfa5-6bb7-47d7-89ae-2d4c47266c04
     type: regular
     task:
-      id: b0499f55-88a6-426b-8a96-cbff52eb0148
+      id: a1e1dfa5-6bb7-47d7-89ae-2d4c47266c04
       version: -1
       name: Get Account info from Active Directory
       description: Query "Active Directory" for the username's info
