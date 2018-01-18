@@ -1,0 +1,76 @@
+commonfields:
+  id: GetStringsDistance
+  version: -1
+name: GetStringsDistance
+script: |-
+  import re
+
+  def levenshtein(s1, s2):
+      l1 = len(s1)
+      l2 = len(s2)
+      matrix = [range(l1 + 1)] * (l2 + 1)
+      for zz in range(l2 + 1):
+          matrix[zz] = range(zz,zz + l1 + 1)
+      for zz in range(0,l2):
+          for sz in range(0,l1):
+              if s1[sz] == s2[zz]:
+                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz])
+              else:
+                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz] + 1)
+      return matrix[l2][l1]
+
+  res = []
+  found = False
+
+  closeDistance = demisto.get(demisto.args(), 'distance')
+  closeDistanceInt = int(closeDistance) if closeDistance else 3
+
+  compareString = argToList(demisto.get(demisto.args(), 'compareString'))
+  if not compareString:
+      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString from arguments'})
+  else:
+      inputString = demisto.get(demisto.args(), 'inputString')
+      if inputString:
+          distances = []
+          for curString in compareString:
+              levenshteinDistance = levenshtein(curString, inputString)
+              distances.append({'StringA' : inputString,
+                              'StringB' : curString,
+                              'LevenshteinDistance' : levenshteinDistance,
+                              'TooClose' : levenshteinDistance > 0 and levenshteinDistance < closeDistanceInt
+                              })
+          res.append({'Type' : entryTypes['note'],
+                          'Contents': {'Distances' : distances},
+                          'ContentsFormat' : formats['json'],
+                          'HumanReadable': tblToMd('Distances', distances, ['StringA','StringB','LevenshteinDistance','TooClose']),
+                          'ReadableContentsFormat' : formats['markdown']})
+
+      else:
+          res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract inputString - ' + inputString})
+      demisto.results(res)
+type: python
+tags:
+- server
+- phishing
+- Condition
+comment: Get the string distance between inputString and compareString (could be a
+  comma separated list) based on Levenshtein Distance algorithm.
+system: true
+args:
+- name: compareString
+  required: true
+  default: true
+  description: The string(s) to compare with the input string. (could be multiple
+    strings with a comma separator)
+- name: inputString
+  required: true
+  description: The input string to compare
+- name: distance
+  description: Distance that is considered close
+  defaultValue: "3"
+outputs:
+- contextPath: LevenshteinDistance
+  description: The closeness of the sender domain to our configured domains
+scripttarget: 0
+runonce: false
+sensitive: true
