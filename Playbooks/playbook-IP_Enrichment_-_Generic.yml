@@ -1,6 +1,6 @@
 id: IP Enrichment - Generic
 version: -1
-fromVersion: "3.5.0"
+fromversion: "3.5.0"
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
 starttaskid: "0"
@@ -34,6 +34,7 @@ tasks:
       id: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
       version: -1
       name: Do we have External IP Addresses?
+      description: Checks if given IPs are not in the internal ranges.
       type: condition
       iscommand: false
       brand: ""
@@ -79,6 +80,7 @@ tasks:
       id: 259ecf36-471d-4423-88cd-f236af47abed
       version: -1
       name: Check IP reputation
+      description: Invoke IP related engines to get their corresponding DBot Score.
       scriptName: IPReputation
       type: regular
       iscommand: false
@@ -137,6 +139,7 @@ tasks:
       id: 5a37438b-fde1-4fde-81c5-607a54f36a34
       version: -1
       name: Check each IP address against internal ranges
+      description: Determines wether the given IPs are in range of the given internal ranges - either from the input or from a defined set of private subnets.
       scriptName: IsIPInRanges_update
       type: regular
       iscommand: false
@@ -211,6 +214,7 @@ tasks:
       id: a8edb516-2ce9-4898-8467-78d619d42ba7
       version: -1
       name: Do we have IP Addresses?
+      description: Determine wether the playbook's input contains IP addresses.
       type: condition
       iscommand: false
       brand: ""
@@ -262,3 +266,4 @@ outputs:
 - contextPath: DBotScore
   description: DBotScore
   type: unknown
+
