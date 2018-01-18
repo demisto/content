@@ -1,6 +1,6 @@
 id: DBot Indicator Enrichment - Generic
 version: -1
-name: DBot Indicator Enrichment - Generic
+name: dbot_indicator_enrichment_-_generic
 description: Get indicators internal Dbot score
 starttaskid: "0"
 fromversion: 3.5.0
