@@ -53,14 +53,13 @@ script:
             var res = http(
                 requestUrl,
                 {
-                    Method: method,
-                    SaveToFile: true
+                    Method: method
                 },
                 params.insecure,
                 params.proxy
             );
 
-            return res.Path;
+            return res.Body;
 
         } else {
             requestUrl = url + arg;
@@ -171,8 +170,9 @@ script:
         }
         var img = scanRes.task.screenshotURL;
         var res = sendRequest('GET', '', '','' , img);
+        var fileId = saveFile(res);
 
-        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res };
+        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': fileId };
     };
 
     var searchIP = function(ip) {
@@ -491,5 +491,4 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Submit an url to scan
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0
