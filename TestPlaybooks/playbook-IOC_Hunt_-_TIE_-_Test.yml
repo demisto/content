@@ -1,0 +1,291 @@
+id: IOC Hunt - TIE - Test
+version: 61
+name: IOC Hunt - TIE - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bea0fd5c-6b21-44dd-8c40-1c741127a7da
+    type: start
+    task:
+      id: bea0fd5c-6b21-44dd-8c40-1c741127a7da
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3677515b-0cc8-49a8-8221-967fbb8d21a4
+    type: regular
+    task:
+      id: 3677515b-0cc8-49a8-8221-967fbb8d21a4
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ee05fa91-164e-4597-88f5-835682bb470e
+    type: regular
+    task:
+      id: ee05fa91-164e-4597-88f5-835682bb470e
+      version: -1
+      name: Create testFile1
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ' '
+      entryId: {}
+      filename:
+        simple: testFile1.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 371
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 1b7469a5-8847-43e0-81a0-03bd78c55ba4
+    type: regular
+    task:
+      id: 1b7469a5-8847-43e0-81a0-03bd78c55ba4
+      version: -1
+      name: Create testFile2
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      data:
+        simple: a
+      entryId: {}
+      filename:
+        simple: testFile2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 371
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 2392d403-3b46-4d1a-800f-2dada6933fe3
+    type: regular
+    task:
+      id: 2392d403-3b46-4d1a-800f-2dada6933fe3
+      version: -1
+      name: Verify AgentGuid
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: File
+          filters:
+          - - operator: general.isExists
+              left:
+                value: References
+                iscontext: true
+          - - operator: general.isNotEmpty
+              left:
+                value: References.AgentGuid
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 738
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 3147e58b-d801-4927-806b-0747414e621b
+    type: condition
+    task:
+      id: 3147e58b-d801-4927-806b-0747414e621b
+      version: -1
+      name: Is hostname found?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 922
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a44c5bc1-d4e6-4c00-842b-133a0cd91d8a
+    type: playbook
+    task:
+      id: a44c5bc1-d4e6-4c00-842b-133a0cd91d8a
+      version: -1
+      name: IOC Hunt - TIE
+      description: |-
+        Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+        Input:
+        * Hash (default, takes all deferent hashes from context)
+
+        Output:
+        * All agents that files with "Hash" has been executed on (TIE)
+        * Enrich Agents info from ePO
+      playbookName: IOC Hunt - TIE
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Hash:
+        simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+          b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 561
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 80f9eb5f-3a34-45f7-8ee6-4b9e6110c92b
+    type: title
+    task:
+      id: 80f9eb5f-3a34-45f7-8ee6-4b9e6110c92b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1308
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 0e9fa03b-2634-4fdb-8967-6401750afb19
+    type: regular
+    task:
+      id: 0e9fa03b-2634-4fdb-8967-6401750afb19
+      version: -1
+      name: Verify Hostname
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: general.isExists
+              left:
+                value: Hostname
+                iscontext: true
+          - - operator: general.isNotEmpty
+              left:
+                value: Hostname
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 308,
+          "y": 1121
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1323,
+        "width": 848,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
