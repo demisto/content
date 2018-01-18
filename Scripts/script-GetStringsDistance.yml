@@ -73,4 +73,3 @@ outputs:
   description: The closeness of the sender domain to our configured domains
 scripttarget: 0
 runonce: false
-sensitive: true
