@@ -1,14 +1,14 @@
 id: IOC Hunt - TIE - Test
-version: 61
+version: -1
 name: IOC Hunt - TIE - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bea0fd5c-6b21-44dd-8c40-1c741127a7da
+    taskid: 17f445d3-d6ac-4ac2-8058-7e24ed14f960
     type: start
     task:
-      id: bea0fd5c-6b21-44dd-8c40-1c741127a7da
+      id: 17f445d3-d6ac-4ac2-8058-7e24ed14f960
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3677515b-0cc8-49a8-8221-967fbb8d21a4
+    taskid: 203a2a38-bf89-4300-8304-fed3d2a03393
     type: regular
     task:
-      id: 3677515b-0cc8-49a8-8221-967fbb8d21a4
+      id: 203a2a38-bf89-4300-8304-fed3d2a03393
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -53,10 +53,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: ee05fa91-164e-4597-88f5-835682bb470e
+    taskid: 83ec3c4b-fac8-4fdb-8a01-549f89eb1461
     type: regular
     task:
-      id: ee05fa91-164e-4597-88f5-835682bb470e
+      id: 83ec3c4b-fac8-4fdb-8a01-549f89eb1461
       version: -1
       name: Create testFile1
       scriptName: FileCreateAndUpload
@@ -82,10 +82,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 1b7469a5-8847-43e0-81a0-03bd78c55ba4
+    taskid: 0771f233-f7f8-4f42-8024-bdb5116fcabc
     type: regular
     task:
-      id: 1b7469a5-8847-43e0-81a0-03bd78c55ba4
+      id: 0771f233-f7f8-4f42-8024-bdb5116fcabc
       version: -1
       name: Create testFile2
       scriptName: FileCreateAndUpload
@@ -111,10 +111,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 2392d403-3b46-4d1a-800f-2dada6933fe3
+    taskid: e1d52bf5-6003-4dd9-8261-f64c63ca96c7
     type: regular
     task:
-      id: 2392d403-3b46-4d1a-800f-2dada6933fe3
+      id: e1d52bf5-6003-4dd9-8261-f64c63ca96c7
       version: -1
       name: Verify AgentGuid
       scriptName: VerifyContext
@@ -144,15 +144,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 738
+          "y": 729
         }
       }
   "8":
     id: "8"
-    taskid: 3147e58b-d801-4927-806b-0747414e621b
+    taskid: ee50cacf-709e-4e42-8e6f-9f87732f3829
     type: condition
     task:
-      id: 3147e58b-d801-4927-806b-0747414e621b
+      id: ee50cacf-709e-4e42-8e6f-9f87732f3829
       version: -1
       name: Is hostname found?
       scriptName: Exists
@@ -161,7 +161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+      - "12"
       "yes":
       - "11"
     scriptarguments:
@@ -175,15 +175,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 922
+          "y": 908
         }
       }
   "9":
     id: "9"
-    taskid: a44c5bc1-d4e6-4c00-842b-133a0cd91d8a
+    taskid: b5c456e1-7370-4c81-8b85-eb6cfbb6ef55
     type: playbook
     task:
-      id: a44c5bc1-d4e6-4c00-842b-133a0cd91d8a
+      id: b5c456e1-7370-4c81-8b85-eb6cfbb6ef55
       version: -1
       name: IOC Hunt - TIE
       description: |-
@@ -220,10 +220,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 80f9eb5f-3a34-45f7-8ee6-4b9e6110c92b
+    taskid: 25e98f57-0cfc-4e34-8bc0-f220bf95de88
     type: title
     task:
-      id: 80f9eb5f-3a34-45f7-8ee6-4b9e6110c92b
+      id: 25e98f57-0cfc-4e34-8bc0-f220bf95de88
       version: -1
       name: Done
       type: title
@@ -234,15 +234,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1308
+          "y": 1708
         }
       }
   "11":
     id: "11"
-    taskid: 0e9fa03b-2634-4fdb-8967-6401750afb19
+    taskid: f6388297-5689-485e-84ae-5128de6f7e5d
     type: regular
     task:
-      id: 0e9fa03b-2634-4fdb-8967-6401750afb19
+      id: f6388297-5689-485e-84ae-5128de6f7e5d
       version: -1
       name: Verify Hostname
       scriptName: VerifyContext
@@ -271,8 +271,67 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 308,
-          "y": 1121
+          "x": 50,
+          "y": 1525
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 11658618-0d69-41e8-80e9-45a16a299b2c
+    type: regular
+    task:
+      id: 11658618-0d69-41e8-80e9-45a16a299b2c
+      version: -1
+      name: Add a fake hostname
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint
+      value:
+        simple: '{ "Hostname": "someHostname1" }'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -225,
+          "y": 1118
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 160666ec-95a4-4684-84d0-0002bee20faa
+    type: regular
+    task:
+      id: 160666ec-95a4-4684-84d0-0002bee20faa
+      version: -1
+      name: Add another fake hostname
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint
+      value:
+        simple: '{ "Hostname": "someHostname2" }'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -225,
+          "y": 1286
         }
       }
 view: |-
@@ -280,9 +339,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1323,
-        "width": 848,
-        "x": -160,
+        "height": 1723,
+        "width": 865,
+        "x": -225,
         "y": 50
       }
     }
