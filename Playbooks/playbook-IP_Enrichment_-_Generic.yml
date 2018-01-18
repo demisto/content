@@ -23,28 +23,31 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 50
+          "x": 162.5,
+          "y": -153
         }
       }
   "15":
     id: "15"
-    taskid: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
+    taskid: ce49aa58-e77d-4c81-8546-ebf2c679562f
     type: condition
     task:
-      id: 110e898b-4b4a-4c27-8fa9-f8e327c92c89
+      id: ce49aa58-e77d-4c81-8546-ebf2c679562f
       version: -1
       name: Do we have External IP Addresses?
-      description: Checks if given IPs are not in the internal ranges using the output from the internal ranges check.
+      description: Checks if given IPs are not in the internal ranges using the output
+        from the internal ranges check.
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "24"
       "yes":
       - "19"
     scriptarguments:
+      extend-context: {}
       value:
         complex:
           root: IP
@@ -57,28 +60,19 @@ tasks:
                 value: "no"
           accessor: Address
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value: IP.InRange
-            iscontext: true
-          right:
-            value: "no"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 692
+          "x": -467,
+          "y": 559
         }
       }
   "19":
     id: "19"
-    taskid: 259ecf36-471d-4423-88cd-f236af47abed
+    taskid: 98bb2a4c-a10e-4451-8a9d-e1e2b682eb74
     type: regular
     task:
-      id: 259ecf36-471d-4423-88cd-f236af47abed
+      id: 98bb2a4c-a10e-4451-8a9d-e1e2b682eb74
       version: -1
       name: Check IP reputation
       description: Invoke IP related engines to get their DBot Score.
@@ -109,8 +103,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -76,
-          "y": 883
+          "x": -552,
+          "y": 785
         }
       }
   "24":
@@ -129,39 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1040
-        }
-      }
-  "25":
-    id: "25"
-    taskid: 5a37438b-fde1-4fde-81c5-607a54f36a34
-    type: regular
-    task:
-      id: 5a37438b-fde1-4fde-81c5-607a54f36a34
-      version: -1
-      name: Check each IP address against internal ranges
-      description: Determines wether the given IPs are in range of the given internal ranges - either from the input or from a default set of private subnets.
-      scriptName: IsIPInRanges_update
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-      - "26"
-    scriptarguments:
-      ip:
-        simple: ${inputs.IP}
-      ipRanges: {}
-      left: {}
-      right: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 267,
-          "y": 370
+          "x": 162.5,
+          "y": 1034
         }
       }
   "26":
@@ -183,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 545
+          "x": 518,
+          "y": 344
         }
       }
   "27":
@@ -195,6 +158,7 @@ tasks:
       id: c57e91b0-706a-40a2-8a30-e2fb9cfabba6
       version: -1
       name: Check external IP addresses
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -205,16 +169,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": -467,
+          "y": 344
         }
       }
   "28":
     id: "28"
-    taskid: a8edb516-2ce9-4898-8467-78d619d42ba7
+    taskid: 76f39bb7-4c99-42e2-86b2-8eee249405a0
     type: condition
     task:
-      id: a8edb516-2ce9-4898-8467-78d619d42ba7
+      id: 76f39bb7-4c99-42e2-86b2-8eee249405a0
       version: -1
       name: Do we have IP Addresses?
       description: Determine wether the playbook's input contains IP addresses.
@@ -225,7 +189,7 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "25"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -237,22 +201,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 195
+          "x": 162.5,
+          "y": 3
+        }
+      }
+  "29":
+    id: "29"
+    taskid: d3975b15-7b3e-44a0-8efd-9117fd6e395e
+    type: regular
+    task:
+      id: d3975b15-7b3e-44a0-8efd-9117fd6e395e
+      version: -1
+      name: Check if IPs are in internal ranges
+      description: Returns yes if ip is in one of the ranges provided, returns no
+        otherwise.
+      scriptName: IsIPInRanges_update
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "26"
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -56,
+          "y": 169
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {
-      "15_19_yes": 0.51,
-      "15_24_no": 0.49
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1055,
-        "width": 1058.5,
-        "x": -76,
-        "y": 50
+        "height": 1252,
+        "width": 1450,
+        "x": -552,
+        "y": -153
       }
     }
   }
@@ -262,6 +254,10 @@ inputs:
     simple: ${IP.Address}
   required: true
   description: The IP addresses to enrich
+- key: InternalRange
+  value: {}
+  required: false
+  description: The internal range to check against the IPs
 outputs:
 - contextPath: IP.Address
   description: The IP addresses
@@ -269,4 +265,3 @@ outputs:
 - contextPath: DBotScore
   description: DBotScore
   type: unknown
-
