@@ -475,46 +475,55 @@ inputs:
   required: false
   description: The email addresses to enrich
 outputs:
-- contextPath: DBotScore.Type
-  description: The Indicator Type
-  type: string
+outputs:
 - contextPath: DBotScore.Vendor
   description: The DBot score vendor
   type: string
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
 - contextPath: Account.Email.Address
   description: The Email account full address
+  type: string
 - contextPath: Account.Email.Domain
   description: The Email account domain
+  type: string
 - contextPath: Account.Email.Distance
   description: The email address distance compare to the domains in query
   type: number
 - contextPath: Account.Email.Username
   description: The Email account username
+  type: string
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain
   type: string
-- contextPath: Account.Email
-  description: An email account
 - contextPath: Account.Email.Distance.Value
   description: 'The distance between the email domain and the compared domain '
   type: number
-- contextPath: DBotScore.Indicator
-  description: The Indicator
+- contextPath: DBotScore.Type
+  description: The Indicator Type
   type: string
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
 - contextPath: Account.Type
   description: Type of the Account entity
+  type: number
 - contextPath: Account.ID
   description: The unique Account DN (Distinguished Name)
+  type: string
 - contextPath: Account.Username
   description: The Account username
+  type: string
 - contextPath: Account.Groups
   description: The groups the Account is part of
+  type: string
 - contextPath: Account.DisplayName
   description: The Account display name
+  type: string
 - contextPath: Account.Manager
   description: The Account's manager
+  type: string
 - contextPath: Account.Email.NetworkType
   description: The Email account NetworkType (could be Internal/External)
+  type: string
