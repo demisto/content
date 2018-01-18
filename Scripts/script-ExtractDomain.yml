@@ -88,7 +88,6 @@ script: |-
           allDomains.push(rootDomain);
       }
       if (allDomains.indexOf(hostname) < 0) {
-          domains.push(hostname);
           allDomains.push(hostname);
       }
       for (var j=0; j < domains.length; j++) {
@@ -160,4 +159,4 @@ outputs:
 - contextPath: Domain.Name
   description: Extracted domains
 scripttarget: 0
-releaseNotes: "-"
+releaseNotes: Ignore wwww. in domains Extract
