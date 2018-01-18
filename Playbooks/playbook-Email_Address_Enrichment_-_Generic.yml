@@ -472,7 +472,7 @@ inputs:
 - key: Email
   value:
     simple: ${Account.Email.Address}
-  required: true
+  required: false
   description: The email addresses to enrich
 outputs:
 - contextPath: DBotScore.Type
