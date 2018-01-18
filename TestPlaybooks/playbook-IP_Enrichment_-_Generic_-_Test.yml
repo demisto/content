@@ -64,6 +64,7 @@ tasks:
       name: IP Enrichment - Generic
       description: Enrich IP using one or more integrations
       playbookName: IP Enrichment - Generic
+      playbookId: ip_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
