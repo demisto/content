@@ -35,6 +35,7 @@ tasks:
       name: Domain Enrichment - Generic
       description: Enrich Domain using one or more integrations
       playbookName: Domain Enrichment - Generic
+      playbookId: domain_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
