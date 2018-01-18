@@ -1,4 +1,4 @@
-id: Domain Enrichment - Generic
+id: domain_enrichment_generic
 version: -1
 fromversion: "3.5.0"
 name: Domain Enrichment - Generic
@@ -13,6 +13,7 @@ tasks:
       id: 3f6b8522-c653-4608-800d-f7da232392fb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -97,6 +98,7 @@ tasks:
       id: f6da103d-6baa-4afb-8b7d-65740714dcf2
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -135,3 +137,4 @@ outputs:
 - contextPath: DBotScore
   description: DBotScore
   type: unknown
+
