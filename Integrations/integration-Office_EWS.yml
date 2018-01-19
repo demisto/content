@@ -65,6 +65,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: NTLM negotiate unicdoe
+  name: negotiateUnicdoe
+  defaultvalue: "true"
+  type: 8
+  required: false
 - display: Maximum number of emails to fetch each time
   name: pageSize
   defaultvalue: "100"
@@ -657,6 +662,7 @@ script:
                 Domain: params.domain,
                 AuthProtocol: [params.authType],
                 Body: buildBody(command, args),
+                DoNotUnicodeNegotiate: !params.negotiateUnicdoe,
             };
         var res = http(server, httpParams, params.insecure, params.proxy);
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
