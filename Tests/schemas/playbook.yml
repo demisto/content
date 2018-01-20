@@ -208,7 +208,7 @@ schema;arg_filter_schema:
       type: map
       mapping:
         value:
-          type: map
+          type: any
           required: yes
         iscontext:
           type: bool
