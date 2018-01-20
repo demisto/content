@@ -215,14 +215,19 @@ script:
 
         reader = results.ResultsReader(oneshotsearch_results)
         res = []
+        dbot_scores = []
         for item in reader:
             if isinstance(item, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(item.message)})
             elif isinstance(item, dict):
+                if demisto.get(item, 'host'):
+                    dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
                 # Normal events are returned as dicts
                 res.append(item)
         ec = {};
         ec['Splunk.Result'] = res
+        if len(dbot_scores) > 0:
+            ec['DBotScore'] = dbot_scores
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'splunk-job-create':
@@ -409,3 +414,4 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: 'Added hostname indicator to splunk search results'

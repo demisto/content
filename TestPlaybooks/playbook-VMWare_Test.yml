@@ -1,0 +1,330 @@
+id: VMWare Test
+version: -1
+name: VMWare Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 933e7df3-433d-47b5-8be4-17d62d976abd
+    type: start
+    task:
+      id: 933e7df3-433d-47b5-8be4-17d62d976abd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 8ebc80e9-20b4-4837-8cd2-1d54b6ea71c2
+    type: regular
+    task:
+      id: 8ebc80e9-20b4-4837-8cd2-1d54b6ea71c2
+      version: -1
+      name: Get VMs
+      description: Returns all virtual machines on a system.
+      script: VMware|||vmware-get-vms
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "11"
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f3bf48bd-fbd3-46ab-81f4-ce4bab93f332
+    type: regular
+    task:
+      id: f3bf48bd-fbd3-46ab-81f4-ce4bab93f332
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 624ff3c4-a9d6-40ce-8539-f12a43e0365c
+    type: regular
+    task:
+      id: 624ff3c4-a9d6-40ce-8539-f12a43e0365c
+      version: -1
+      name: VM PowerOff
+      description: Powers off a powered-on or suspended virtual machine.
+      script: VMware|||vmware-poweroff
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 7dcd771d-c65b-4b90-8f92-b0185f246450
+    type: regular
+    task:
+      id: 7dcd771d-c65b-4b90-8f92-b0185f246450
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: ba519d8b-c2c1-4d4f-878a-b29247f61bce
+    type: regular
+    task:
+      id: ba519d8b-c2c1-4d4f-878a-b29247f61bce
+      version: -1
+      name: VM Suspend
+      description: Suspends a powered-on virtual machine.
+      script: VMware|||vmware-suspend
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0fe402bf-9a16-4876-8835-c33976f23503
+    type: regular
+    task:
+      id: 0fe402bf-9a16-4876-8835-c33976f23503
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 8ad03596-abb5-4b2f-8a83-3d19ed590582
+    type: regular
+    task:
+      id: 8ad03596-abb5-4b2f-8a83-3d19ed590582
+      version: -1
+      name: VM Hard Reboot
+      description: Reboots a powered-on virtual machine.
+      script: VMware|||vmware-hard-reboot
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 1415a74e-5bfc-44ab-83a7-89264fb42a96
+    type: regular
+    task:
+      id: 1415a74e-5bfc-44ab-83a7-89264fb42a96
+      version: -1
+      name: Create VM Snapshot
+      description: 'Creates VM snapshot '
+      script: VMware|||vmware-create-snapshot
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      description: {}
+      memory:
+        simple: "False"
+      name:
+        simple: Test Snapshot
+      quiesce: {}
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 05a9428e-f1ed-4f7a-8817-c47e134160e2
+    type: regular
+    task:
+      id: 05a9428e-f1ed-4f7a-8817-c47e134160e2
+      version: -1
+      name: Revert To Snapshot
+      description: Reverts VM to snapshot
+      script: VMware|||vmware-revert-snapshot
+      type: regular
+      iscommand: true
+      brand: VMware
+    scriptarguments:
+      snapshot-name:
+        simple: Test Snapshot
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 96421ad2-5fc2-49eb-80d3-d6c3719be834
+    type: regular
+    task:
+      id: 96421ad2-5fc2-49eb-80d3-d6c3719be834
+      version: -1
+      name: vmware-get-events
+      description: Gets events of VM
+      script: VMware|||vmware-get-events
+      type: regular
+      iscommand: true
+      brand: VMware
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 32b10716-0834-4f84-86ac-569f3c259082
+    type: condition
+    task:
+      id: 32b10716-0834-4f84-86ac-569f3c259082
+      version: -1
+      name: Check VM power state
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      left:
+        simple: ${VMWare.[1].State}
+      right:
+        simple: poweredOff
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

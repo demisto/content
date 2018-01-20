@@ -110,7 +110,7 @@ script:
         return Object.keys(args).filter(function(k) {return args[k];}).reduce(function(clean, k) {clean[k] = args[k]; return clean;}, {});
     };
 
-    var doReq = function(url, token, raw, args) {
+    var doReq = function(url, token, raw, args, saveToFile) {
         if (args) {
             url += encodeToURLQuery(cleanArgs(args));
         }
@@ -118,7 +118,8 @@ script:
             url,
             {
                 Headers: {'X-Access-Token': [ token ]},
-                Method: 'GET'
+                Method: 'GET',
+                SaveToFile: saveToFile ? true : false
             },
             params.insecure,
             params.proxy
@@ -127,7 +128,7 @@ script:
             throw 'Failed to execute ' + url + ' : ' + res.StatusCode + ', body: ' + res.Body;
         }
         try {
-            return (raw ? res.Body : JSON.parse(res.Body));
+            return (raw ? (saveToFile ? res.Path : res.Body) : JSON.parse(res.Body));
         } catch (ex) {
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
@@ -380,7 +381,7 @@ script:
             var filename = (args.filename && args.filename.length > 0) ? args.filename : (args.eventId + '.pcap');
 
             var url = serverUrl + 'pcaps/events/' + args.eventId;
-            res = saveFile(doReq(url, token, true, {filename: filename}));
+            res = doReq(url, token, true, {filename: filename}, true);
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'event-pcap-info':
         case 'protectwise-event-pcap-info':
@@ -403,7 +404,7 @@ script:
         case 'protectwise-observation-pcap-download':
             var filename = (args.filename && args.filename.length > 0) ? args.filename : ( args.sensorId+'-'+args.id + '.pcap');
             var url = serverUrl + 'pcaps/observations/' + args.sensorId + '/' + args.id;
-            res = saveFile(doReq(url, token, true, {filename: filename}));
+            res = doReq(url, token, true, {filename: filename}, true);
             return {Type: 3, FileID: res, File: filename, Contents: 'we must have contents for an entry'};
         case 'observation-pcap-info':
         case 'protectwise-observation-pcap-info':
@@ -868,3 +869,5 @@ script:
     arguments: []
     description: Get API token, to use in integration configuration
   isfetch: true
+fromversion: 3.5.0
+releaseNotes: "-"

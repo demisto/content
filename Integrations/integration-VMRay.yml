@@ -105,4 +105,3 @@ script:
       description: Job sample id
     description: Get all jobs details about a specific sample.
   dockerimage: demisto/vmray
-releaseNotes: 'Fix VMRay fetching file issue - with using upload_sample command with war room file'

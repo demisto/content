@@ -1,5 +1,5 @@
 id: TestCommonPython
-version: 4
+version: 8
 name: TestCommonPython
 starttaskid: "0"
 tasks:
@@ -15,54 +15,86 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 2f964c10-f69d-45a8-880c-c7094d412816
+  "2":
+    id: "2"
+    taskid: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
     type: regular
     task:
-      id: 2f964c10-f69d-45a8-880c-c7094d412816
+      id: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
       version: -1
-      name: TestXml2JSON
+      name: Test DQ
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      test_type:
+        simple: DQ
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+    type: regular
+    task:
+      id: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+      version: -1
+      name: Test MarkDown
+      scriptName: TestPYCommonServer
+      description: 'Tests for common functions createEntry and TableToMarkDown'
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      test_type:
+        simple: MD
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: b41c3542-9a1b-4114-80fb-e761d369fae1
+    type: regular
+    task:
+      id: b41c3542-9a1b-4114-80fb-e761d369fae1
+      version: -1
+      name: Test XML JSON relations
+      scriptName: TestPYCommonServer
       description: 'Tests for common functions xml2json and json2xml '
-      scriptName: TestXml2JSON
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      test_type:
+        simple: XML
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 9184e0ff-2492-4d46-8b65-94591120a37e
-    type: regular
-    task:
-      id: 9184e0ff-2492-4d46-8b65-94591120a37e
-      version: -1
-      name: TestDQ
-      scriptName: TestDQ
-      type: regular
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 439,
-          "y": 431
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -70,9 +102,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 476,
-        "width": 391,
-        "x": 439,
+        "height": 590,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
