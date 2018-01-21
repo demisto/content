@@ -1258,5 +1258,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-  runonce: false
 releaseNotes: add support to version 10.2
