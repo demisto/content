@@ -4,7 +4,7 @@ commonfields:
 fromversion: 3.5.0
 name: GenerateInvestigationSummaryReport
 script: 'return executeCommand("generateSummaryReport", {name: args.name, type: args.type,
-  id: args.incidentId})'
+  incidentId: args.incidentId})'
 type: javascript
 tags:
 - post-processing
