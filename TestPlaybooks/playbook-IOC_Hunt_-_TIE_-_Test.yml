@@ -3,6 +3,7 @@ version: -1
 name: IOC Hunt - TIE - Test
 description: A test playbook for "IOC Hunt - TIE"
 starttaskid: "0"
+fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
