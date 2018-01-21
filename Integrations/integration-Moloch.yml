@@ -43,19 +43,19 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
-        return res.Body;
+        return res;
     }
 
     var urlDict = {
         'moloch_connections_json': 'connections.json',
         'moloch_connections_csv': 'connections.csv',
-        'moloch_files_json': 'files.json',
+        'moloch_files_json': 'file/list',
         'moloch_sessions_json': 'sessions.json',
         'moloch_sessions_csv': 'sessions.csv',
         'moloch_sessions_pcap': 'sessions.pcap',
         'moloch_spigraph_json': 'spigraph.json',
         'moloch_spiview_json': 'spiview.json',
-        'moloch_unique_json': 'unique.txt',
+        'moloch_unique_json': 'unique.txt'
     }
 
     var prToName = {
@@ -109,7 +109,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            if (sendRequest(urlDict['moloch_connections_json'], 'Test')) {
+            if (sendRequest(urlDict['moloch_connections_json'], 'Test').Body) {
                 return 'ok';
             }
 
@@ -123,20 +123,20 @@ script:
             }
 
             var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
-            if (!res) {
+            if (!res || !res.Body) {
                 return 'empty';
             }
 
             if (jsonResponses.indexOf(command) !== -1) {
                 if (command == 'moloch_sessions_json') {
-                    return parseSessions(JSON.parse(res));
+                    return parseSessions(JSON.parse(res.Body));
                 } else {
-                    return JSON.parse(res);
+                    return JSON.parse(res.Body);
                 }
             } else if (csvResponses.indexOf(command) !== -1) {
-                return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.csv',  Contents: 'we must have contents for an entry'};
+                return {Type: 9, FileID: saveFile(res.Bytes), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.csv',  Contents: 'we must have contents for an entry'};
             } else if (pcapResponses.indexOf(command) !== -1) {
-                return {Type: 9, FileID: saveFile(res), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.pcap',  Contents: 'we must have contents for an entry'};
+                return {Type: 9, FileID: saveFile(res.Bytes), File: command + encodeToURLQuery(args).substr(1) + '_at_' + currentTime.getTime() + '.pcap',  Contents: 'we must have contents for an entry'};
             }
 
             return res;
@@ -381,3 +381,5 @@ script:
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
 hidden: false
+fromversion: 3.5.0
+releaseNotes: "-"

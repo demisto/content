@@ -458,4 +458,3 @@ script:
       description: The actual score
     description: Check if sender address is malicious
 hidden: false
-releaseNotes: 'Added Threat IDs and last published date to output'

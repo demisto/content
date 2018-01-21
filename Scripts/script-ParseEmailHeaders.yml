@@ -2,7 +2,6 @@ commonfields:
   id: ParseEmailHeader
   version: -1
 name: ParseEmailHeaders
-releaseNotes: Support multi values headers (e.g. Received header)
 script: |-
   from email.parser import HeaderParser
 

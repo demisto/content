@@ -1,4 +1,5 @@
 {
+  "releaseNotes": "-",
   "name": "reputations",
   "reputations": [
     {
@@ -7,7 +8,12 @@
       "version": -1,
       "regex": "",
       "details": "File enhancement scripts",
-      "enhancementScriptNames": ["Strings", "CYFileRep", "SandboxDetonateFile", "ParseEmailFile"]
+      "enhancementScriptNames": [
+        "Strings",
+        "CYFileRep",
+        "SandboxDetonateFile",
+        "ParseEmailFile"
+      ]
     },
     {
       "id": "ipRep",
@@ -15,7 +21,10 @@
       "regex": "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b",
       "reputationScriptName": "DataIPReputation",
       "details": "IP",
-      "enhancementScriptNames": ["IPReputation", "SplunkSearch"],
+      "enhancementScriptNames": [
+        "IPReputation",
+        "SplunkSearch"
+      ],
       "toVersion": "3.0.1"
     },
     {
@@ -24,7 +33,10 @@
       "regex": "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b",
       "reputationCommand": "ip",
       "details": "IP",
-      "enhancementScriptNames": ["IPReputation", "SplunkSearch"],
+      "enhancementScriptNames": [
+        "IPReputation",
+        "SplunkSearch"
+      ],
       "fromVersion": "3.1.0"
     },
     {
@@ -33,7 +45,11 @@
       "regex": "\\b[a-fA-F\\d]{32}\\b",
       "reputationScriptName": "DataHashReputation",
       "details": "File MD5",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "toVersion": "3.0.1"
     },
     {
@@ -42,7 +58,11 @@
       "regex": "\\b[a-fA-F\\d]{32}\\b",
       "reputationCommand": "file",
       "details": "File MD5",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "fromVersion": "3.1.0"
     },
     {
@@ -51,7 +71,11 @@
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationScriptName": "DataHashReputation",
       "details": "File SHA1",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "toVersion": "3.0.1"
     },
     {
@@ -60,7 +84,11 @@
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationCommand": "file",
       "details": "File SHA1",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "fromVersion": "3.1.0"
     },
     {
@@ -69,7 +97,11 @@
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationScriptName": "DataHashReputation",
       "details": "File SHA256",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "toVersion": "3.0.1"
     },
     {
@@ -78,7 +110,11 @@
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationCommand": "file",
       "details": "File SHA256",
-      "enhancementScriptNames": ["FileReputation", "SplunkSearch", "WildfireReport"],
+      "enhancementScriptNames": [
+        "FileReputation",
+        "SplunkSearch",
+        "WildfireReport"
+      ],
       "fromVersion": "3.1.0"
     },
     {
@@ -86,7 +122,9 @@
       "version": -1,
       "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
       "details": "Email",
-      "enhancementScriptNames": ["EmailReputation"]
+      "enhancementScriptNames": [
+        "EmailReputation"
+      ]
     },
     {
       "id": "urlRep",
@@ -94,7 +132,10 @@
       "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
       "reputationScriptName": "DataURLReputation",
       "details": "URL",
-      "enhancementScriptNames": ["URLReputation", "SplunkSearch"],
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
       "toVersion": "3.0.1"
     },
     {
@@ -103,7 +144,10 @@
       "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
       "reputationCommand": "url",
       "details": "URL",
-      "enhancementScriptNames": ["URLReputation", "SplunkSearch"],
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
       "fromVersion": "3.1.0"
     },
     {
@@ -112,7 +156,10 @@
       "regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))\\\\[\\\\\\w\\}\\{\\.\\-\\ \\*]+",
       "reputationScriptName": "RegPathReputationBasicLists",
       "details": "Registry Path Reputation",
-      "enhancementScriptNames": ["RegCollectValues", "CBEvents"]
+      "enhancementScriptNames": [
+        "RegCollectValues",
+        "CBEvents"
+      ]
     },
     {
       "id": "cveScore",
@@ -120,7 +167,9 @@
       "regex": "CVE-\\d{4}-\\d{4,7}",
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
-      "enhancementScriptNames": ["cveSearch"]
+      "enhancementScriptNames": [
+        "cveSearch"
+      ]
     },
     {
       "id": "hostnameRep",
@@ -128,8 +177,9 @@
       "regex": "",
       "reputationScriptName": "",
       "details": "hostname",
-      "enhancementScriptNames": ["ADGetComputer"]
+      "enhancementScriptNames": [
+        "ADGetComputer"
+      ]
     }
-  ],
-  "releaseNotes":"Add new user type reputation to use for manual indicator and in automation's"
+  ]
 }

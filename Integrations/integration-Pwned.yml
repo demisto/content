@@ -181,4 +181,3 @@ script:
       related: ""
     description: Check if an email has been compromised as part of past breaches
 hidden: false
-releaseNotes: "-"
