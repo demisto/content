@@ -310,4 +310,8 @@ inputs:
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
-outputs: []
+outputs:
+- contextPath: File.References.AgentGuid
+  description: The GUID of the system that referenced the file
+- contextPath: Endpoint.Hostname
+  description: Hostname
