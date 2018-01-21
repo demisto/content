@@ -31,4 +31,3 @@ args:
   default: true
   description: Entry ID where EmailAskUser will complete when user replies
 scripttarget: 0
-releaseNotes: "Ignore multi-line scripts and style sections in email body"

@@ -1,46 +1,100 @@
 id: TestCommonPython
-version: 3
+version: 8
 name: TestCommonPython
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83976a03-17b3-4637-83a2-dc8a789944e8
+    taskid: c3abef67-7252-42da-8ebb-f76e0f0c8620
     type: start
     task:
-      id: 83976a03-17b3-4637-83a2-dc8a789944e8
+      id: c3abef67-7252-42da-8ebb-f76e0f0c8620
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+  "2":
+    id: "2"
+    taskid: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
     type: regular
     task:
-      id: 26e36fd4-850f-4887-80c1-1b5fd17d4eca
+      id: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
       version: -1
-      name: TestXml2JSON
-      description: 'Tests for common functions xml2json and json2xml '
-      scriptName: TestXml2JSON
+      name: Test DQ
+      scriptName: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      test_type:
+        simple: DQ
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+    type: regular
+    task:
+      id: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+      version: -1
+      name: Test MarkDown
+      scriptName: TestPYCommonServer
+      description: 'Tests for common functions createEntry and TableToMarkDown'
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      test_type:
+        simple: MD
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: b41c3542-9a1b-4114-80fb-e761d369fae1
+    type: regular
+    task:
+      id: b41c3542-9a1b-4114-80fb-e761d369fae1
+      version: -1
+      name: Test XML JSON relations
+      scriptName: TestPYCommonServer
+      description: 'Tests for common functions xml2json and json2xml '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      test_type:
+        simple: XML
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -48,9 +102,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 590,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }

@@ -106,7 +106,7 @@
           "fontSize": 12,
           "marginBottom:": 12
         },
-        "format": "MMMM Do YYYY, h:mm:ss a"
+        "format": "MMMM Do YYYY, h:mm:ss a z"
       }
     },
     {

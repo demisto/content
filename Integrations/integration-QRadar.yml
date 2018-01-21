@@ -502,4 +502,3 @@ script:
         in brackets and multiple fields in the same object are separated by commas
     description: Retrieve a note for an offense
   isfetch: true
-releaseNotes: "Support for offense notes"
