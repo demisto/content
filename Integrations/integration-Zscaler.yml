@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAAHgoC9OAAAAAXN
 description: Zscaler is a cloud security solution built for performance and flexible
   scalability.
 configuration:
-- display: Cloud Name (i.e. admin.zscalertwo.net)
+- display: Cloud Name (i.e. https://admin.zscalertwo.net)
   name: cloud
   defaultvalue: ""
   type: 0
@@ -33,6 +33,7 @@ script:
     ''' IMPORTS '''
     import requests
     import time
+    import json
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -40,11 +41,11 @@ script:
     CLOUD_NAME=demisto.params()['cloud']
     USERNAME=demisto.params()['credentials']['identifier']
     PASSWORD=demisto.params()['credentials']['password']
-    API_KEY=str(demisto.params()['port'])
+    API_KEY=str(demisto.params()['key'])
     BASE_URL=CLOUD_NAME + '/api/v1'
     USE_SSL = not demisto.params().get('insecure', False)
     DEFAULT_HEADERS = {
-        'content-Type': 'application/json'
+        'content-type': 'application/json'
     }
 
     ''' HELPER FUNCTIONS '''
@@ -59,30 +60,43 @@ script:
                 data=data,
                 headers=headers
             )
+
             if res.status_code not in (200, 204):
                 raise Exception('Your request failed with the following error: ' + res.reason)
         except Exception, e:
             LOG(e)
             raise
-        return res.json()
+        return res
 
     ''' FUNCTIONS '''
-
     def login():
         cmd_url = '/authenticatedSession'
+
+        def obfuscateApiKey(seed) :
+            now = str(long(time.time() * 1000))
+            n = now[-6:]
+            r = str(int(n) >> 1).zfill(6)
+            key = ""
+            for i in range(0, len(n), 1):
+                key += seed[int(n[i])]
+            for j in range(0, len(r), 1):
+                key += seed[int(r[j])+2]
+            return now, key
+
+        ts, key = obfuscateApiKey(API_KEY)
         data = {
             'username': USERNAME,
+            'timestamp': ts,
             'password': PASSWORD,
-            'apiKey': API_KEY,
-            'timestamp': int(round(time.time() * 1000))
+            'apiKey': key
         }
-        http_request('POST', cmd_url, data, DEFAULT_HEADERS)
-
+        jsondata = json.dumps(data)
+        result = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        return result.headers['Set-Cookie']
 
     def logout():
         cmd_url = '/authenticatedSession'
-        http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
-
+        result = http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
     def blacklist_url(url):
         cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
@@ -90,26 +104,28 @@ script:
         data = {
             'blacklistUrls': blacklistUrls
         }
-        http_request('POST', cmd_url, data, DEFAULT_HEADERS)
+        jsondata = json.dumps(data)
+        http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
         listOfUrls = ''
         for url in blacklistUrls:
             listOfUrls += '- ' + url + '\n'
         return 'Added the following URL to the blacklist successfully:\n' + listOfUrls
 
     ''' EXECUTION CODE '''
-
-    login()
+    auth = login()
+    jsession_id = auth[:auth.index(';')]
+    DEFAULT_HEADERS['cookie'] = jsession_id
 
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
             demisto.results('ok')
         elif demisto.command() == 'zcaler-blacklist-url':
-            demisto.results(blacklist_url(args.url))
+            demisto.results(blacklist_url(demisto.args()['url']))
     except Exception, e:
-            LOG(e.message)
-            LOG.print_log()
-            raise
+        LOG(e.message)
+        LOG.print_log()
+        raise
     finally:
         logout()
   type: python
