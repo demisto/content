@@ -34,10 +34,10 @@ args:
   required: true
   description: The regex to match and extract
 - name: group
-  description: The matching group to return (if not provided will return the full
-    match)
+  description: The matching group to return (if not provided the full match will be returned), group value should start at 1
 - name: contextKey
   description: The context key to populate with the result
 - name: flags
-  description: The regex flags for the match - i is the default
+  description: The regex flags to match. Default is - i.
 scripttarget: 0
+releaseNotes: '-'

@@ -174,8 +174,7 @@ script:
             {
                 Method: 'GET',
                 Username: username,
-                Password: password,
-                SaveToFile: true
+                Password: password
             },
             qParams.insecure,
             qParams.proxy
@@ -189,7 +188,7 @@ script:
         }
         return {
             Type: 3,
-            FileID: res.Path,
+            FileID: saveFile(parseResponse(res)),
             File: filename,
             Contents: filename
         };
@@ -952,5 +951,4 @@ script:
     description: Returns details on the analysis machine associated with the given
       name.
 hidden: false
-fromversion: 3.5.0
-releaseNotes: "-"
+toversion: 3.1.0
