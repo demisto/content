@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+    taskid: e1e44eb5-24eb-498c-8622-0b504f195009
     type: start
     task:
-      id: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+      id: e1e44eb5-24eb-498c-8622-0b504f195009
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 00b2946d-c870-4855-80bf-30985ea9cb50
+    taskid: 6d6bbe2e-1311-4d30-845f-ad58228d5864
     type: condition
     task:
-      id: 00b2946d-c870-4855-80bf-30985ea9cb50
+      id: 6d6bbe2e-1311-4d30-845f-ad58228d5864
       version: -1
       name: Is TIE enabled?
       scriptName: Exists
@@ -59,16 +59,20 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: brand
+                value:
+                  simple: brand
                 iscontext: true
               right:
-                value: McAfee Threat Intelligence Exchange
+                value:
+                  simple: McAfee Threat Intelligence Exchange
           - - operator: string.isEqual
               left:
-                value: state
+                value:
+                  simple: state
                 iscontext: true
               right:
-                value: active
+                value:
+                  simple: active
     separatecontext: false
     view: |-
       {
@@ -79,10 +83,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 4d69d95f-486f-4626-8faf-0a5970560cd0
+    taskid: f2bb62a3-8d5e-4f4e-8abd-be2f04afccda
     type: condition
     task:
-      id: 4d69d95f-486f-4626-8faf-0a5970560cd0
+      id: f2bb62a3-8d5e-4f4e-8abd-be2f04afccda
       version: -1
       name: Is ePO enabled?
       scriptName: Exists
@@ -103,16 +107,20 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: brand
+                value:
+                  simple: brand
                 iscontext: true
               right:
-                value: epo
+                value:
+                  simple: epo
           - - operator: string.isEqual
               left:
-                value: state
+                value:
+                  simple: state
                 iscontext: true
               right:
-                value: active
+                value:
+                  simple: active
     separatecontext: false
     view: |-
       {
@@ -123,10 +131,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 225d5520-43cb-4467-8d54-0ba67aeaf12d
+    taskid: c8654391-d0f7-465a-8891-9e3e3d7953ef
     type: regular
     task:
-      id: 225d5520-43cb-4467-8d54-0ba67aeaf12d
+      id: c8654391-d0f7-465a-8891-9e3e3d7953ef
       version: -1
       name: List all agents that the Hash has been executed on
       script: McAfee Threat Intelligence Exchange|||tie-file-references
@@ -151,10 +159,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: c283821d-46ac-4b77-8728-9bc136f0c729
+    taskid: af68874c-c139-4ac9-8b6e-28f19ad712bb
     type: title
     task:
-      id: c283821d-46ac-4b77-8728-9bc136f0c729
+      id: af68874c-c139-4ac9-8b6e-28f19ad712bb
       version: -1
       name: Done
       type: title
@@ -170,10 +178,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: a5df50b4-9b92-4f72-87e8-1d359544adc8
+    taskid: 5e53746c-5121-484f-8f9a-dd6761501d12
     type: condition
     task:
-      id: a5df50b4-9b92-4f72-87e8-1d359544adc8
+      id: 5e53746c-5121-484f-8f9a-dd6761501d12
       version: -1
       name: Did we find any relevant agents?
       scriptName: Exists
@@ -200,10 +208,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: a86b773c-048b-469d-8aff-5665e58e562a
+    taskid: 8da781a9-244e-465d-8ec3-a171f353d525
     type: regular
     task:
-      id: a86b773c-048b-469d-8aff-5665e58e562a
+      id: 8da781a9-244e-465d-8ec3-a171f353d525
       version: -1
       name: Get Agent info from ePO
       scriptName: EPOFindSystem
@@ -229,10 +237,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
+    taskid: 5b545856-6f67-47d7-8d47-16d53fe4d78d
     type: title
     task:
-      id: a08baee9-a402-4bc8-8cae-77c4c144d889
+      id: 5b545856-6f67-47d7-8d47-16d53fe4d78d
       version: -1
       name: Hunt HASH in TIE
       type: title
@@ -251,10 +259,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+    taskid: 7e96a5a1-45dd-42bf-8bcd-8028ba0df592
     type: title
     task:
-      id: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+      id: 7e96a5a1-45dd-42bf-8bcd-8028ba0df592
       version: -1
       name: Enrich in ePO
       type: title
@@ -296,8 +304,4 @@ inputs:
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
-outputs:
-- contextPath: File.References.AgentGuid
-  description: The GUID of the system that referenced the file
-- contextPath: Endpoint.Hostname
-  description: Hostname
+outputs: []
