@@ -128,7 +128,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "10"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -151,39 +151,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 729
-        }
-      }
-  "8":
-    id: "8"
-    taskid: 34c793ba-88de-43b0-88f4-4931ec5a39b2
-    type: condition
-    task:
-      id: 34c793ba-88de-43b0-88f4-4931ec5a39b2
-      version: -1
-      name: Is hostname found?
-      description: Did epo returned a hostname?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "11"
-    scriptarguments:
-      extend-context: {}
-      value:
-        complex:
-          root: Endpoint
-          accessor: Hostname
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 908
+          "y": 737
         }
       }
   "9":
@@ -192,9 +160,9 @@ tasks:
     type: playbook
     task:
       id: a0be541a-b0db-4c1e-80e2-d65983c31686
+      playbookId: 11d14ecb-be98-4cb1-8e69-7bb8d3e05f98
       version: -1
       name: IOC Hunt - TIE
-      playbookId: 11d14ecb-be98-4cb1-8e69-7bb8d3e05f98
       description: |-
         Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
 
@@ -243,109 +211,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1708
-        }
-      }
-  "11":
-    id: "11"
-    taskid: e1ed5dbb-1f2b-489b-8400-15757ab7dbca
-    type: regular
-    task:
-      id: e1ed5dbb-1f2b-489b-8400-15757ab7dbca
-      version: -1
-      name: Verify Hostname
-      description: Verify hostnames are hot empty
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        complex:
-          root: Endpoint
-          filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: Hostname
-                iscontext: true
-          - - operator: general.isNotEmpty
-              left:
-                value:
-                  simple: Hostname
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1525
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 410dcadc-07f5-4934-8e0d-4b35f5d4ef53
-    type: regular
-    task:
-      id: 410dcadc-07f5-4934-8e0d-4b35f5d4ef53
-      version: -1
-      name: Add a fake hostname
-      description: Create a fake hostname for the test
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Endpoint
-      value:
-        simple: '{ "Hostname": "someHostname1" }'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -225,
-          "y": 1118
-        }
-      }
-  "13":
-    id: "13"
-    taskid: 6c7caf18-2cc4-4b3a-85b0-6a1bffeea0f7
-    type: regular
-    task:
-      id: 6c7caf18-2cc4-4b3a-85b0-6a1bffeea0f7
-      version: -1
-      name: Add another fake hostname
-      description: Create another fake hostname for the test
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint
-      value:
-        simple: '{ "Hostname": "someHostname2" }'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -225,
-          "y": 1286
+          "y": 919
         }
       }
 view: |-
@@ -353,9 +219,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1723,
-        "width": 864,
-        "x": -225,
+        "height": 934,
+        "width": 799,
+        "x": -160,
         "y": 50
       }
     }
