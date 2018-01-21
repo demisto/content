@@ -11,6 +11,7 @@ description: |-
   * All agents that files with "Hash" has been executed on (TIE)
   * Enrich Agents info from ePO
 starttaskid: "0"
+fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
