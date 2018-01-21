@@ -1,9 +1,7 @@
-id: Detonate files
+id: WildFire - Detonate file
 version: -1
-name: Detonate files
-system: true
-fromversion: 2.5.0
-description: Detonate files found under File context if they are PDFs or executables
+name: WildFire - Detonate file
+description: Detonate files through WildFire
 starttaskid: "0"
 tasks:
   "0":
@@ -13,6 +11,7 @@ tasks:
     task:
       id: 089f0d6b-2af7-4990-8013-ba815b38bca8
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -22,57 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": -126
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 5bbe4786-d995-40bd-8445-db8b9517c2f2
-    type: condition
-    task:
-      id: 5bbe4786-d995-40bd-8445-db8b9517c2f2
-      version: -1
-      name: Do we have relevant files?
-      description: Check if the type or info of files is either executable or pdf
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "4"
-    scriptarguments:
-      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 77b32f7e-005d-478f-88f7-cc686a89a711
-    type: regular
-    task:
-      id: 77b32f7e-005d-478f-88f7-cc686a89a711
-      version: -1
-      name: Print that there are no relevant files to detonate
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value: There are no relevant files to detonate
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 50
         }
       }
   "4":
@@ -88,6 +38,9 @@ tasks:
       type: regular
       iscommand: true
       brand: WildFire
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       delay: ""
       entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
@@ -103,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -122,15 +75,36 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "6"
       "yes":
-      - "1"
+      - "4"
     scriptarguments:
       value: ${modules(val.brand == 'WildFire' && val.state == 'active')}
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 28
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 48bff149-dda3-493c-89a7-ab76925eb0a6
+    type: title
+    task:
+      id: 48bff149-dda3-493c-89a7-ab76925eb0a6
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
         }
       }
 view: |-
@@ -138,13 +112,16 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 591,
-        "width": 810,
+        "height": 560,
+        "width": 492.5,
         "x": 50,
-        "y": -126
+        "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: EntryID
+  value: ${File.EntryID}
+  description: EntryID of file to be uploaded
 outputs: []
 releaseNotes: "Detonating files using the new command for it in WildFire"
