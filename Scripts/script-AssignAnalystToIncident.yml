@@ -1,7 +1,7 @@
 commonfields:
-  id: AssignAnalystToIncidentcopy
+  id: AssignAnalystToIncident
   version: -1
-name: AssignAnalystToIncidentcopy
+name: AssignAnalystToIncident
 system: true
 releaseNotes: "Return proper error entry if script fails"
 script: |
