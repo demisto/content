@@ -21,7 +21,7 @@ import shutil
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts']
 BUNDLE_PRE = 'bundle_l'
-ZIP_PRE = 'content_pre'
+ZIP_PRE = 'content'
 BUNDLE_POST = 'bundle_g'
 ZIP_POST = 'content_post'
 
