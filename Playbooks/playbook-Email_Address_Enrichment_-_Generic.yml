@@ -91,7 +91,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.Email
+            value:
+              simple: inputs.Email
             iscontext: true
     view: |-
       {
@@ -123,10 +124,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: Account.Email.NetworkType
+                value:
+                  simple: Account.Email.NetworkType
                 iscontext: true
               right:
-                value: External
+                value:
+                  simple: External
           accessor: Email.Address
     continueonerror: true
     separatecontext: false
@@ -139,12 +142,12 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: a44610e8-9bf6-4ace-850b-86faac55ff2c
+    taskid: 550ff29a-79f5-4274-847f-fabf4193d2a7
     type: regular
     task:
-      id: a44610e8-9bf6-4ace-850b-86faac55ff2c
+      id: 550ff29a-79f5-4274-847f-fabf4193d2a7
       version: -1
-      name: Mark Email addresses as internal or external?
+      name: Mark Email addresses as internal or external
       description: Add to each email address a NetworkType attribute
       scriptName: IsEmailAddressInternal
       type: regular
@@ -246,10 +249,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: Account.Email.NetworkType
+                value:
+                  simple: Account.Email.NetworkType
                 iscontext: true
               right:
-                value: Internal
+                value:
+                  simple: Internal
           accessor: Email.Address
       headers: {}
       limit: {}
@@ -290,10 +295,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: Account.Email.NetworkType
+                value:
+                  simple: Account.Email.NetworkType
                 iscontext: true
               right:
-                value: External
+                value:
+                  simple: External
           accessor: Email
     separatecontext: false
     view: |-
@@ -328,10 +335,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: Account.Email.NetworkType
+                value:
+                  simple: Account.Email.NetworkType
                 iscontext: true
               right:
-                value: Internal
+                value:
+                  simple: Internal
           accessor: Email
     separatecontext: false
     view: |-
@@ -369,10 +378,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: Account.Email.NetworkType
+                value:
+                  simple: Account.Email.NetworkType
                 iscontext: true
               right:
-                value: External
+                value:
+                  simple: External
           accessor: Email.Address
       threshold: {}
     separatecontext: false
@@ -431,16 +442,20 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: modules.brand
+                value:
+                  simple: modules.brand
                 iscontext: true
               right:
-                value: activedir
+                value:
+                  simple: activedir
           - - operator: string.isEqual
               left:
-                value: modules.state
+                value:
+                  simple: modules.state
                 iscontext: true
               right:
-                value: active
+                value:
+                  simple: active
           accessor: brand
     separatecontext: false
     view: |-
@@ -475,48 +490,26 @@ inputs:
   required: false
   description: The email addresses to enrich
 outputs:
-outputs:
-- contextPath: DBotScore.Vendor
-  description: The DBot score vendor
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The Indicator
-  type: string
 - contextPath: Account.Email.Address
   description: The Email account full address
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is part of
   type: string
 - contextPath: Account.Email.Domain
   description: The Email account domain
   type: string
-- contextPath: Account.Email.Distance
-  description: The email address distance compare to the domains in query
-  type: number
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
 - contextPath: Account.Email.Username
   description: The Email account username
   type: string
-- contextPath: Account.Email.Distance.Domain
-  description: The compared domain
-  type: string
-- contextPath: Account.Email.Distance.Value
-  description: 'The distance between the email domain and the compared domain '
-  type: number
-- contextPath: DBotScore.Type
-  description: The Indicator Type
-  type: string
-- contextPath: DBotScore.Score
-  description: The DBot score
-  type: number
-- contextPath: Account.Type
-  description: Type of the Account entity
-  type: number
 - contextPath: Account.ID
   description: The unique Account DN (Distinguished Name)
-  type: string
-- contextPath: Account.Username
-  description: The Account username
-  type: string
-- contextPath: Account.Groups
-  description: The groups the Account is part of
   type: string
 - contextPath: Account.DisplayName
   description: The Account display name
@@ -524,6 +517,21 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
   type: string
-- contextPath: Account.Email.NetworkType
-  description: The Email account NetworkType (could be Internal/External)
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain
   type: string
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain '
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
