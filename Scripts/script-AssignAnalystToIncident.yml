@@ -61,7 +61,11 @@ script: |
       if (!isError(res[0])) {
           return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
       } else {
-          return 'Failed to assign user: \'' + userToAssign + '\', error: ' + res[0].Contents;
+          return {
+            ContentsFormat: formats.text,
+            Type: entryTypes.error,
+            Contents: 'Failed to assign user: \'' + userToAssign + '\', error: ' + res[0].Contents
+          }
       }
   } else {
       return 'No user found.';
