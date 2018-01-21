@@ -322,3 +322,4 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: Hostname
   type: string
+releaseNotes: "-"
