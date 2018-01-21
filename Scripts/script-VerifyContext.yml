@@ -10,14 +10,14 @@ script: |-
   var verifyFields = function(obj) {
       fields.forEach(function (field) {
           var value = dq(obj, field.trim());
-          if (value === undefined || value === null) {
+          if (!value) {
               throw 'Field ' + field + ' is missing from ' + JSON.stringify(obj) + '.';
           }
       });
   }
 
   var contextObject = dq(invContext, path);
-  if (contextObject === undefined || contextObject === null) {
+  if (!contextObject) {
         throw 'Path ' + path + ' is not in context.';
   }
 
@@ -62,3 +62,4 @@ args:
   description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
     ''{"a": 1, "b": ["hello", "world" ]}'
 scripttarget: 0
+releaseNotes: Fix script to handle null values.
