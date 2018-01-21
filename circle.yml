@@ -12,20 +12,7 @@ test:
     - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM bb700a16b67f8697208cbbfc10085b79bdeb836e 3.1.0
 
     # create content bundle
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp Dashboards/* bundle/
-    - cp Widgets/* bundle/
-    - cp content-descriptor.json bundle/
-    - cp $(find Scripts -type f -print) bundle/
-
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-    - cp release-notes.txt $CIRCLE_ARTIFACTS/
+    - python content_creator.py 3.5 $CIRCLE_ARTIFACTS
   override:
     - chmod +x ./Tests/scripts/*
 
