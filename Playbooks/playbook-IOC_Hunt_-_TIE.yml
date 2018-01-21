@@ -313,5 +313,7 @@ inputs:
 outputs:
 - contextPath: File.References.AgentGuid
   description: The GUID of the system that referenced the file
+  type: string
 - contextPath: Endpoint.Hostname
   description: Hostname
+  type: string
