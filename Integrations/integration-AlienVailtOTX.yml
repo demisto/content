@@ -428,7 +428,7 @@ script:
       description: Indicator type
     - contextPath: DBotScore.Vendor
       description: AlienVault vendor
-    - contextPath: IP.Malicious.PulseIDs
+    - contextPath: File.Malicious.PulseIDs
       description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
   - name: alienvault-query-file
@@ -515,3 +515,4 @@ script:
     description: Query url in AlienVault OTX
 hidden: false
 toversion: 3.0.1
+releaseNotes: "-"
