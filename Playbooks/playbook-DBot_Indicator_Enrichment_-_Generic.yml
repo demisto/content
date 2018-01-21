@@ -53,7 +53,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.MD5
+            value:
+              simple: inputs.MD5
             iscontext: true
     view: |-
       {
@@ -133,7 +134,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.Email
+            value:
+              simple: inputs.Email
             iscontext: true
     view: |-
       {
@@ -195,7 +197,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.URL
+            value:
+              simple: inputs.URL
             iscontext: true
     view: |-
       {
@@ -257,7 +260,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.IP
+            value:
+              simple: inputs.IP
             iscontext: true
     view: |-
       {
@@ -342,7 +346,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.SHA256
+            value:
+              simple: inputs.SHA256
             iscontext: true
     view: |-
       {
@@ -404,7 +409,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.SHA1
+            value:
+              simple: inputs.SHA1
             iscontext: true
     view: |-
       {
