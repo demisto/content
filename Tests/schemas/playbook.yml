@@ -165,7 +165,6 @@ schema;output_schema:
       required: yes
     type:
       type: text
-      required: yes
     description:
       type: str
       required: yes
