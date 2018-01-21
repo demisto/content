@@ -165,6 +165,9 @@
         },
         {
             "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
+            "playbookID": "IOC Hunt - TIE - Test"
         }
     ],
     "skipped": [
