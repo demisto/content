@@ -2,10 +2,10 @@ commonfields:
   id: SlackAskUser
   version: -1
 name: SlackAskUser
-fromversion: 3.5.0
-releaseNotes: Add the option to use persistent entitlement in order to support adding artifacts to the war room by multiple external users
+toversion: 3.1.0
+releaseNotes: add toVersion
 script: |-
-  res = demisto.executeCommand('addEntitlement', {'persistent': true, 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+  res = demisto.executeCommand('addOneTimeEntitlement', {})
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
@@ -40,8 +40,6 @@ args:
   description: Second option for the user reply. "no" is the default.
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
-- name: replyEntriesTag
-  description: Tag to add on email reply entries
 scripttarget: 0
 dependson:
   must:
