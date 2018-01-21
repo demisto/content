@@ -2,8 +2,8 @@ commonfields:
   id: EmailAskUser
   version: -1
 name: EmailAskUser
-toversion: 3.1.0
-releaseNotes: add toVersion
+fromversion: 3.5.0
+releaseNotes: Add the option to use persistent entitlement in order to support adding artifacts to the war room by multiple external users
 script: |-
   // email body type
   var bodyType = 'text';
@@ -12,7 +12,7 @@ script: |-
   }
 
   // Get entitlement
-  res = executeCommand('addOneTimeEntitlement', {});
+  res = executeCommand('addEntitlement', {'persistent': true, 'replyEntriesTag': args.replyEntriesTag})
   if (res[0].Type === entryTypes.error) {
       return res;
   }
@@ -130,4 +130,6 @@ args:
   defaultValue: text
 - name: replyAddress
   description: Address of reply for html links
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
 scripttarget: 0
