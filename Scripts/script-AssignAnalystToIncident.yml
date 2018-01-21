@@ -1,7 +1,7 @@
 commonfields:
-  id: AssignAnalystToIncident
+  id: AssignAnalystToIncidentcopy
   version: -1
-name: AssignAnalystToIncident
+name: AssignAnalystToIncidentcopy
 system: true
 releaseNotes: "Return proper error entry if script fails"
 script: |
@@ -72,7 +72,7 @@ script: |
       return {
         ContentsFormat: formats.text,
         Type: entryTypes.error,
-        Contents: 'return 'No user found.'
+        Contents: 'No user found.'
       };
   }
 type: javascript
