@@ -135,7 +135,13 @@ script:
 
         ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'PhishMe', Score: dbotScore};
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return {
+            'ContentsFormat': formats.json,
+            'Type': entryTypes.note,
+            'Contents': res,
+            'HumanReadable': md,
+            'EntryContext': ec
+            }
     };
 
     var extractedString = function(str,limit) {
@@ -172,7 +178,13 @@ script:
             md += 'No information found for this string';
         }
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
+        return {
+            'ContentsFormat': formats.json,
+            'Type': entryTypes.note,
+            'Contents': res,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
     };
 
     var checkEmail = function(sender_name) {
@@ -209,7 +221,13 @@ script:
 
         ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'PhishMe', Score: dbotScore};
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return {
+            'ContentsFormat': formats.json,
+            'Type': entryTypes.note,
+            'Contents': res,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
     };
 
     var checkMD5 = function(str) {
@@ -246,7 +264,13 @@ script:
 
         ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'PhishMe', Score: dbotScore};
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return {
+            'ContentsFormat': formats.json,
+            'Type': entryTypes.note,
+            'Contents': res,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
     }
 
     var checkIP = function(ip) {
@@ -284,7 +308,13 @@ script:
 
         ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'PhishMe', Score: dbotScore};
 
-        return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        return {
+            'ContentsFormat': formats.json,
+            'Type': entryTypes.note,
+            'Contents': res,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
     }
 
     var calcVerdict = function (dbotScore) {
@@ -316,7 +346,7 @@ script:
         var report = sendRequest('GET', endpoint);
         var fileName = 'Threat ID ' + threatID + ' report.pdf';
         return {
-            Type: 3,
+            entryTypes.file,
             FileID: saveFile(report, null, true),
             File: fileName,
             Contents: fileName
@@ -478,4 +508,4 @@ script:
       default: true
       description: Thread ID to retrieve report of.
     description: 'Retrieves individual PhishMe Intelligence reports.'
-releaseNotes: 'Added new command to retrieve reports from PhishMe'
+releaseNotes: 'Added new command "phishme-get-report" to retrieve reports from PhishMe'
