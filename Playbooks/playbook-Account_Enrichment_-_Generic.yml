@@ -178,7 +178,7 @@ tasks:
       nestedSearch: {}
       userAccountControlOut: {}
       username:
-        simple: ${Account.Username}
+        simple: ${inputs.Username}
     separatecontext: false
     view: |-
       {
