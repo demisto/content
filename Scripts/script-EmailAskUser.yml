@@ -12,7 +12,7 @@ script: |-
   }
 
   // Get entitlement
-  res = executeCommand('addEntitlement', {'persistent': args.persistnentEntitlement, 'replyEntriesTag': args.replyEntriesTag})
+  res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
   if (res[0].Type === entryTypes.error) {
       return res;
   }
@@ -132,7 +132,7 @@ args:
   description: Address of reply for html links
 - name: replyEntriesTag
   description: Tag to add on email reply entries
-- name: persistnentEntitlement
+- name: persistent
   description: Indicates wether to use one-time entitlement or a persistent one
   auto: PREDEFINED
   predefined:
