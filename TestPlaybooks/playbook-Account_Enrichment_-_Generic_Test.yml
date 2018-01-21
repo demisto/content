@@ -43,9 +43,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: DisplayName, Username, Type, Manager, Groups
+        simple: Type,ID
       path:
-        simple: ${Account}
+        simple: Account
     separatecontext: false
     view: |-
       {
