@@ -17,6 +17,10 @@ validateFilesStructure() {
      # iterate all files in dir
     for entry in $dir/*
     do
+        if [ -d $entry ]
+        then continue
+        fi
+
         filename=$(basename $entry)
         if ! [[ $filename == $prefix* ]]
         then
