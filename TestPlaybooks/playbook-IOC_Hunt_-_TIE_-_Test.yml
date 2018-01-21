@@ -138,11 +138,13 @@ tasks:
           filters:
           - - operator: general.isExists
               left:
-                value: References
+                value:
+                  simple: References
                 iscontext: true
           - - operator: general.isNotEmpty
               left:
-                value: References.AgentGuid
+                value:
+                  simple: References.AgentGuid
                 iscontext: true
     separatecontext: false
     view: |-
@@ -268,11 +270,13 @@ tasks:
           filters:
           - - operator: general.isExists
               left:
-                value: Hostname
+                value:
+                  simple: Hostname
                 iscontext: true
           - - operator: general.isNotEmpty
               left:
-                value: Hostname
+                value:
+                  simple: Hostname
                 iscontext: true
     separatecontext: false
     view: |-
