@@ -19,8 +19,7 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
+            "playbookID": "Qualys-Test"
         },
         {
             "integrations": {
@@ -163,6 +162,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "playbookID": "endpoint_enrichment_-_generic_test"
         }
     ],
     "skipped": [
