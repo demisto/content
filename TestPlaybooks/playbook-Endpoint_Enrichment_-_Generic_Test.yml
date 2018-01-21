@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 06f33f0f-43b8-4260-862c-c700fe7278dd
+    taskid: 966b661f-9af1-4f84-86b0-3db66c2c9292
     type: start
     task:
-      id: 06f33f0f-43b8-4260-862c-c700fe7278dd
+      id: 966b661f-9af1-4f84-86b0-3db66c2c9292
       version: -1
       name: ""
       iscommand: false
@@ -29,13 +29,12 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: b0904425-5a15-4511-8cf6-762d02e244c1
+    taskid: 0f29412a-5dfe-4f4b-8049-172dea4ed660
     type: playbook
     task:
-      id: b0904425-5a15-4511-8cf6-762d02e244c1
+      id: 0f29412a-5dfe-4f4b-8049-172dea4ed660
       version: -1
       name: Endpoint Enrichment - Generic
-      description: Enrich an Endpoint Hostname using one or more integrations
       playbookName: Endpoint Enrichment - Generic
       type: playbook
       iscommand: false
@@ -56,15 +55,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
   "5":
     id: "5"
-    taskid: fc2ab457-693b-4673-887d-9eb89583eb94
+    taskid: 45c6e0d5-2318-479c-8d01-8493c0a436fc
     type: regular
     task:
-      id: fc2ab457-693b-4673-887d-9eb89583eb94
+      id: 45c6e0d5-2318-479c-8d01-8493c0a436fc
       version: -1
       name: Verify context endpoint key
       scriptName: VerifyContext
@@ -83,15 +82,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
   "6":
     id: "6"
-    taskid: 6d21f234-ad71-4c57-822a-8278ebabe962
+    taskid: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
     type: regular
     task:
-      id: 6d21f234-ad71-4c57-822a-8278ebabe962
+      id: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
       version: -1
       name: Delete context (all)
       scriptName: DeleteContext
@@ -116,10 +115,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 70e0c51c-f979-47c9-8d1b-638c4cf6717e
+    taskid: d2049fa6-c576-4554-8339-5cbd3dc157ca
     type: regular
     task:
-      id: 70e0c51c-f979-47c9-8d1b-638c4cf6717e
+      id: d2049fa6-c576-4554-8339-5cbd3dc157ca
       version: -1
       name: 'add hostname #1'
       scriptName: Set
@@ -147,10 +146,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 63f6ec04-9335-4c37-88a9-eec0010a724c
+    taskid: 53f539f8-7b8d-443e-8579-f8abe584b469
     type: regular
     task:
-      id: 63f6ec04-9335-4c37-88a9-eec0010a724c
+      id: 53f539f8-7b8d-443e-8579-f8abe584b469
       version: -1
       name: 'add hostname #2'
       scriptName: Set
@@ -160,7 +159,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -176,12 +175,43 @@ tasks:
           "y": 545
         }
       }
+  "9":
+    id: "9"
+    taskid: b1f66095-e679-4ed4-82ce-d1ebe77ce59a
+    type: regular
+    task:
+      id: b1f66095-e679-4ed4-82ce-d1ebe77ce59a
+      version: -1
+      name: 'add hostname #3'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: CentOS70
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50
