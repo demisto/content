@@ -37,7 +37,7 @@ script: |-
       sys.exit(0)
   allowReply = demisto.get(demisto.args(), 'allowReply')
   if allowReply:
-      res = demisto.executeCommand('addEntitlement', {'persistent': true, 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag'})
+      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistnentEntitlement', 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag'})
       if isError(res[0]):
           demisto.results(res)
           sys.exit(0)
@@ -89,6 +89,13 @@ args:
     body. If none is provided, incident details will be taken.
 - name: replyEntriesTag
   description: Tag to add on email reply entries
+- name: persistnentEntitlement
+  description: Indicates wether to use one-time entitlement or a persistent one
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
 scripttarget: 0
 dependson:
   must:
