@@ -167,6 +167,8 @@ schema;output_schema:
       type: bool
     importantDescription:
       type: str
+    type:
+      type: str
 
 # integration->script->command->important
 schema;important_schema:

@@ -1,0 +1,25 @@
+{
+  "id": "ac1ad9bd-f96f-4951-adaa-80ae27c4223a",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Incidents Dropped in Preprocessing",
+  "dataType": "system",
+  "widgetType": "trend",
+  "query": "object:notcreated",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 7,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "params": {
+    "systemType": "audits"
+  }
+}

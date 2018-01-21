@@ -137,7 +137,7 @@ script:
     # FUNCTIONS
     def test():
         now = datetime.datetime.utcnow()
-        getIncidentsList(isoformat(now))
+        get_incidents_list_request(isoformat(now), None, None, 1)
         demisto.results("ok")
 
 

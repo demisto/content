@@ -567,4 +567,3 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
-releaseNotes: Fixed parsing of paths for grr_get_files
