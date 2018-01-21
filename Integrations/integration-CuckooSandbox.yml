@@ -123,13 +123,12 @@ script:
                 return resp.Body;
             }
         } else {
-          err = resp.Status;
-          if (resp.Body) {
-              err += '\n' + resp.Body;
-          }
-          throw err;
+            err = resp.Status;
+            if (resp.Body) {
+                err += '\n' + resp.Body;
+            }
+            throw err;
         }
-
     };
 
     var cuckooGet = function(qArgs, qParams, suffix) {
@@ -175,17 +174,25 @@ script:
             {
                 Method: 'GET',
                 Username: username,
-                Password: password
+                Password: password,
+                SaveToFile: true
             },
             qParams.insecure,
             qParams.proxy
         );
+        if (res.StatusCode !== 200) {
+            err = res.Status;
+            if (res.Body) {
+                err += '\n' + res.Body;
+            }
+            throw err;
+        }
         return {
-                    Type: 3,
-                    FileID: saveFile(parseResponse(res)),
-                    File: filename,
-                    Contents: filename
-                };
+            Type: 3,
+            FileID: res.Path,
+            File: filename,
+            Contents: filename
+        };
     };
 
     var cuckooPost = function(qArgs, qParams, suffix) {
@@ -945,3 +952,5 @@ script:
     description: Returns details on the analysis machine associated with the given
       name.
 hidden: false
+fromversion: 3.5.0
+releaseNotes: "-"

@@ -48,4 +48,3 @@ args:
   description: If false then then the context key will be overwritten. If set to true
     then the script will append to existing context key
 scripttarget: 0
-releaseNotes: "If object passed as string, Set will parse the value to JSON then set to context"

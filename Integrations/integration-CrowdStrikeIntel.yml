@@ -58,7 +58,7 @@ script:
             params.insecure,
             params.useproxy
         );
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
@@ -402,12 +402,13 @@ script:
                     'X-CSIX-CUSTKEY': [params.key],
                     'Accept': ['application/pdf']
                 },
-                Method: 'GET'
+                Method: 'GET',
+                SaveToFile: true
             },
             params.insecure,
             params.useproxy
         );
-        if (result.StatusCode < 200 && result.StatusCode > 299) {
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to retrieve PDF, status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         // Try to extract the filename
@@ -425,7 +426,7 @@ script:
                 }
             }
         }
-        return {Type: entryTypes.entryInfoFile, FileID: saveFile(result.Body), File: filename, Contents: filename};
+        return {Type: entryTypes.entryInfoFile, FileID: result.Path, File: filename, Contents: filename};
     }
 
     switch (command) {
@@ -797,4 +798,5 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
 hidden: false
-fromversion: 2.5.0
+fromversion: 3.5.0
+releaseNotes: "-"

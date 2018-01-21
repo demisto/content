@@ -283,4 +283,3 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
-releaseNotes: "Creating user type indicator when using ADGetUser automation"

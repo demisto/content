@@ -1,0 +1,12 @@
+commonfields:
+  id: 76c044f3-999e-4585-8274-59e9f677bdf0
+  version: 6
+name: TestCreateDuplicates
+script: |
+  incident = demisto.incidents()[0]
+  demisto.executeCommand("createNewIncident", {'name': 'ThisIsATestForDuplicate', 'occurred': incident['occurred'], 'labels': incident['labels']})
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
