@@ -8,31 +8,30 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b914ae63-e755-4b4b-8d46-da635ed2605b
+    taskid: 089f0d6b-2af7-4990-8013-ba815b38bca8
     type: start
     task:
-      id: b914ae63-e755-4b4b-8d46-da635ed2605b
+      id: 089f0d6b-2af7-4990-8013-ba815b38bca8
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -126
         }
       }
   "1":
     id: "1"
-    taskid: 6705f964-a6a7-470b-8336-76be42147afa
+    taskid: 5bbe4786-d995-40bd-8445-db8b9517c2f2
     type: condition
     task:
-      id: 6705f964-a6a7-470b-8336-76be42147afa
+      id: 5bbe4786-d995-40bd-8445-db8b9517c2f2
       version: -1
       name: Do we have relevant files?
       description: Check if the type or info of files is either executable or pdf
@@ -47,7 +46,7 @@ tasks:
       - "4"
     scriptarguments:
       value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
     view: |-
       {
         "position": {
@@ -57,13 +56,12 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 12cc937e-cdd5-47df-85af-11301187d67d
+    taskid: 77b32f7e-005d-478f-88f7-cc686a89a711
     type: regular
     task:
-      id: 12cc937e-cdd5-47df-85af-11301187d67d
+      id: 77b32f7e-005d-478f-88f7-cc686a89a711
       version: -1
       name: Print that there are no relevant files to detonate
-      description: ""
       scriptName: Print
       type: regular
       iscommand: false
@@ -79,10 +77,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: b442b416-304c-4b54-871a-f7d16c5c7c90
+    taskid: ab4f7c4b-4afe-4d19-8156-7da0508cefd4
     type: regular
     task:
-      id: b442b416-304c-4b54-871a-f7d16c5c7c90
+      id: ab4f7c4b-4afe-4d19-8156-7da0508cefd4
       version: -1
       name: DetonateFile (WildFire)
       description: Detonate the file in WildFire.
@@ -93,14 +91,14 @@ tasks:
     scriptarguments:
       delay: ""
       entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       format: ""
       hash: ""
       interval: ""
       md5: ""
       timeout: ""
       upload: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-          >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       verbose: ""
     view: |-
       {
@@ -109,15 +107,41 @@ tasks:
           "y": 370
         }
       }
+  "5":
+    id: "5"
+    taskid: f47ddd4c-20b8-4803-8521-ba5134aa0375
+    type: condition
+    task:
+      id: f47ddd4c-20b8-4803-8521-ba5134aa0375
+      version: -1
+      name: Is WildFire enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      value: ${modules(val.brand == 'WildFire' && val.state == 'active')}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 28
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 415,
+        "height": 591,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": -126
       }
     }
   }
