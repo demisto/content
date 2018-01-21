@@ -3,6 +3,9 @@
     "testInterval": 30,
     "tests": [
         {
+            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -165,9 +168,6 @@
         },
         {
             "playbookID": "endpoint_enrichment_-_generic_test"
-        },
-        {
-            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         }
     ],
     "skipped": [
