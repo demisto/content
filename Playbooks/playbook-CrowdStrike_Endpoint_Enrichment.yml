@@ -1,0 +1,165 @@
+id: crowdstrike_endpoint_enrichment
+version: -1
+name: CrowdStrike Endpoint Enrichment
+fromversion: "3.5.0"
+starttaskid: "0"
+description: Enrich Endpoint with CrowdStrike
+tasks:
+  "0":
+    id: "0"
+    taskid: 2b875687-5a9b-4dfa-85f7-b27f1494bacd
+    type: start
+    task:
+      id: 2b875687-5a9b-4dfa-85f7-b27f1494bacd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 51
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 5f2ea18b-e197-4107-8e2f-64b7c7678d40
+    type: regular
+    task:
+      id: 5f2ea18b-e197-4107-8e2f-64b7c7678d40
+      version: -1
+      name: Get device ID
+      description: Search for CrowdStrike device id given the hostname
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs
+          accessor: Hostname
+          transformers:
+          - operator: string.Concat
+            args:
+              prefix: hostname:"
+              suffix: '"'
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 4ff131b2-c637-489e-814a-322e40afbda5
+    type: title
+    task:
+      id: 4ff131b2-c637-489e-814a-322e40afbda5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5aee696e-21eb-4e71-8bee-04d0b849a374
+    type: condition
+    task:
+      id: 5aee696e-21eb-4e71-8bee-04d0b849a374
+      version: -1
+      name: Was device found?
+      description: Check if there was any machine match to the hostname
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a59caf13-ddae-4b8b-87b7-e1d6e27c8455
+    type: regular
+    task:
+      id: a59caf13-ddae-4b8b-87b7-e1d6e27c8455
+      version: -1
+      name: Get host information from CrowdStrike Falcon Host
+      description: Get host information from CrowdStrike Falcon Host
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context: {}
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 299,
+          "y": 550
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 734,
+        "width": 629,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: The hostname to enrich
+outputs: []
