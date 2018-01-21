@@ -1,0 +1,146 @@
+id: CrowdStrike Falcon Sandbox - Detonate file
+version: -1
+name: CrowdStrike Falcon Sandbox - Detonate file
+description: Detonate file through CrowdStrike Falcon Sandbox
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d9854b0-a067-494e-8eee-05588a4d2994
+    type: start
+    task:
+      id: 9d9854b0-a067-494e-8eee-05588a4d2994
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 682fdc23-51ea-4066-8b3d-513830c3df49
+    type: regular
+    task:
+      id: 682fdc23-51ea-4066-8b3d-513830c3df49
+      version: -1
+      name: DetonateFile (CS Falcon Sandbox)
+      description: Detonate the file in CS Falcon Sandbox.
+      script: VxStream|||vx-detonate-file
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      delay: {}
+      entryId:
+        simple: ${inputs.EntryID}
+      environmentID: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 9d7cfb3b-dfcb-46eb-8f68-36817b7fe43e
+    type: condition
+    task:
+      id: 9d7cfb3b-dfcb-46eb-8f68-36817b7fe43e
+      version: -1
+      name: Is CS Falcon Sandbox enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: VxStream
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: bdc2392d-c9c8-4b4b-8ca3-76ea82eb2efd
+    type: title
+    task:
+      id: bdc2392d-c9c8-4b4b-8ca3-76ea82eb2efd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: Entry ID of file to be detonated
+outputs: []
