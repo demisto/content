@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5445cceb-f26f-4cf3-8eb1-3fbb234f3acd
+    taskid: 1875f506-1599-4613-8a51-e221b71c9d96
     type: start
     task:
-      id: 5445cceb-f26f-4cf3-8eb1-3fbb234f3acd
+      id: 1875f506-1599-4613-8a51-e221b71c9d96
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: d0b09e9e-88e3-4dad-8237-91e9324e00cf
+    taskid: 8e217bcd-0c4b-4716-809f-206d26ad7fec
     type: regular
     task:
-      id: d0b09e9e-88e3-4dad-8237-91e9324e00cf
+      id: 8e217bcd-0c4b-4716-809f-206d26ad7fec
       version: -1
       name: Clear context
       description: Clear the context before starting
@@ -55,10 +55,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 9a16ec30-2598-4507-81a4-f5336f4aa382
+    taskid: f52675a0-36f5-4cc3-827a-1e78553ef613
     type: regular
     task:
-      id: 9a16ec30-2598-4507-81a4-f5336f4aa382
+      id: f52675a0-36f5-4cc3-827a-1e78553ef613
       version: -1
       name: Create testFile1
       description: Create a file with a known hash
@@ -85,10 +85,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 31360047-8ddf-4063-83b3-ebd9a692a28b
+    taskid: 8380ad12-c856-439b-85a2-8d1cca0bd45f
     type: regular
     task:
-      id: 31360047-8ddf-4063-83b3-ebd9a692a28b
+      id: 8380ad12-c856-439b-85a2-8d1cca0bd45f
       version: -1
       name: Create testFile2
       description: Create another file with a known hash
@@ -115,10 +115,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 06f79862-24f5-46e0-88d2-fb180ed2172d
+    taskid: a8604972-e68e-48e4-8042-c20d9bd51970
     type: regular
     task:
-      id: 06f79862-24f5-46e0-88d2-fb180ed2172d
+      id: a8604972-e68e-48e4-8042-c20d9bd51970
       version: -1
       name: Verify AgentGuid
       description: Verify AgentGuid exists
@@ -156,10 +156,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 0205d5e7-bc56-489b-8dfb-f25982a7a395
+    taskid: 34c793ba-88de-43b0-88f4-4931ec5a39b2
     type: condition
     task:
-      id: 0205d5e7-bc56-489b-8dfb-f25982a7a395
+      id: 34c793ba-88de-43b0-88f4-4931ec5a39b2
       version: -1
       name: Is hostname found?
       description: Did epo returned a hostname?
@@ -188,10 +188,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 8be08976-e2fc-45a3-8ce4-8675887c7d9c
+    taskid: a0be541a-b0db-4c1e-80e2-d65983c31686
     type: playbook
     task:
-      id: 8be08976-e2fc-45a3-8ce4-8675887c7d9c
+      id: a0be541a-b0db-4c1e-80e2-d65983c31686
       version: -1
       name: IOC Hunt - TIE
       description: |-
@@ -228,10 +228,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 978786d7-2c20-417d-8290-654e1d26e2e0
+    taskid: fb84c63a-c4b9-4e90-83bc-9eae0caf6328
     type: title
     task:
-      id: 978786d7-2c20-417d-8290-654e1d26e2e0
+      id: fb84c63a-c4b9-4e90-83bc-9eae0caf6328
       version: -1
       name: Done
       type: title
@@ -247,10 +247,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: eafa44ec-f9d1-4cd6-8920-8cc3295a0ec8
+    taskid: e1ed5dbb-1f2b-489b-8400-15757ab7dbca
     type: regular
     task:
-      id: eafa44ec-f9d1-4cd6-8920-8cc3295a0ec8
+      id: e1ed5dbb-1f2b-489b-8400-15757ab7dbca
       version: -1
       name: Verify Hostname
       description: Verify hostnames are hot empty
@@ -288,10 +288,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 98efd474-f5a5-4b1a-83d2-96602a1a60ae
+    taskid: 410dcadc-07f5-4934-8e0d-4b35f5d4ef53
     type: regular
     task:
-      id: 98efd474-f5a5-4b1a-83d2-96602a1a60ae
+      id: 410dcadc-07f5-4934-8e0d-4b35f5d4ef53
       version: -1
       name: Add a fake hostname
       description: Create a fake hostname for the test
@@ -318,10 +318,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: d43c695c-d4a2-43c6-818b-ad5d2974435d
+    taskid: 6c7caf18-2cc4-4b3a-85b0-6a1bffeea0f7
     type: regular
     task:
-      id: d43c695c-d4a2-43c6-818b-ad5d2974435d
+      id: 6c7caf18-2cc4-4b3a-85b0-6a1bffeea0f7
       version: -1
       name: Add another fake hostname
       description: Create another fake hostname for the test

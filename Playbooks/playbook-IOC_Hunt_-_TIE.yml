@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e1e44eb5-24eb-498c-8622-0b504f195009
+    taskid: 81f502a8-6bf0-480e-858e-8183d676a0cb
     type: start
     task:
-      id: e1e44eb5-24eb-498c-8622-0b504f195009
+      id: 81f502a8-6bf0-480e-858e-8183d676a0cb
       version: -1
       name: ""
       iscommand: false
@@ -35,12 +35,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 6d6bbe2e-1311-4d30-845f-ad58228d5864
+    taskid: 85df1f35-fe50-4718-8a89-9980c243173d
     type: condition
     task:
-      id: 6d6bbe2e-1311-4d30-845f-ad58228d5864
+      id: 85df1f35-fe50-4718-8a89-9980c243173d
       version: -1
       name: Is TIE enabled?
+      description: Is the integration configured & active?
       scriptName: Exists
       type: condition
       iscommand: false
@@ -83,12 +84,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: f2bb62a3-8d5e-4f4e-8abd-be2f04afccda
+    taskid: ac9c1d4a-1f0b-4580-880f-e635dae5de8c
     type: condition
     task:
-      id: f2bb62a3-8d5e-4f4e-8abd-be2f04afccda
+      id: ac9c1d4a-1f0b-4580-880f-e635dae5de8c
       version: -1
       name: Is ePO enabled?
+      description: Is ePo configured and active?
       scriptName: Exists
       type: condition
       iscommand: false
@@ -131,12 +133,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: c8654391-d0f7-465a-8891-9e3e3d7953ef
+    taskid: 3d8b54c7-4821-47ed-8b0b-c49c0c1316e5
     type: regular
     task:
-      id: c8654391-d0f7-465a-8891-9e3e3d7953ef
+      id: 3d8b54c7-4821-47ed-8b0b-c49c0c1316e5
       version: -1
       name: List all agents that the Hash has been executed on
+      description: get all Agent Guids for these hashes
       script: McAfee Threat Intelligence Exchange|||tie-file-references
       type: regular
       iscommand: true
@@ -159,10 +162,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: af68874c-c139-4ac9-8b6e-28f19ad712bb
+    taskid: 037c09ff-b1db-4064-8547-5eb7ec154569
     type: title
     task:
-      id: af68874c-c139-4ac9-8b6e-28f19ad712bb
+      id: 037c09ff-b1db-4064-8547-5eb7ec154569
       version: -1
       name: Done
       type: title
@@ -178,12 +181,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 5e53746c-5121-484f-8f9a-dd6761501d12
+    taskid: 9f3efd5f-2f98-4b12-8382-573aa82f20d6
     type: condition
     task:
-      id: 5e53746c-5121-484f-8f9a-dd6761501d12
+      id: 9f3efd5f-2f98-4b12-8382-573aa82f20d6
       version: -1
       name: Did we find any relevant agents?
+      description: Did any Guids return?
       scriptName: Exists
       type: condition
       iscommand: false
@@ -194,6 +198,7 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
+      extend-context: {}
       value:
         complex:
           root: File
@@ -208,12 +213,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 8da781a9-244e-465d-8ec3-a171f353d525
+    taskid: 9433ab36-7e10-41ca-85e2-d7e88e52fac4
     type: regular
     task:
-      id: 8da781a9-244e-465d-8ec3-a171f353d525
+      id: 9433ab36-7e10-41ca-85e2-d7e88e52fac4
       version: -1
       name: Get Agent info from ePO
+      description: Get hostnames for the Guids
       scriptName: EPOFindSystem
       type: regular
       iscommand: false
@@ -237,10 +243,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 5b545856-6f67-47d7-8d47-16d53fe4d78d
+    taskid: 6ce19051-8a2d-4bdd-81fb-e943643096a5
     type: title
     task:
-      id: 5b545856-6f67-47d7-8d47-16d53fe4d78d
+      id: 6ce19051-8a2d-4bdd-81fb-e943643096a5
       version: -1
       name: Hunt HASH in TIE
       type: title
@@ -259,10 +265,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 7e96a5a1-45dd-42bf-8bcd-8028ba0df592
+    taskid: 2ff39268-9b09-4d89-8ecb-c696eb335295
     type: title
     task:
-      id: 7e96a5a1-45dd-42bf-8bcd-8028ba0df592
+      id: 2ff39268-9b09-4d89-8ecb-c696eb335295
       version: -1
       name: Enrich in ePO
       type: title
