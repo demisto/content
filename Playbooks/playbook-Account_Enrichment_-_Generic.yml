@@ -29,10 +29,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: c9efda34-5c97-4be8-8dab-f0e318355a29
+    taskid: 8dcf9277-f035-41b2-8165-8ea8d70541a4
     type: condition
     task:
-      id: c9efda34-5c97-4be8-8dab-f0e318355a29
+      id: 8dcf9277-f035-41b2-8165-8ea8d70541a4
       version: -1
       name: Is there a username to query?
       description: Checks if there's a username to query
@@ -50,7 +50,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.Username
+            value:
+              simple: inputs.Username
             iscontext: true
     view: |-
       {
@@ -61,10 +62,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: ecd2967b-740c-4806-8a1e-77ff1b093991
+    taskid: 97aaf60a-4203-4577-8548-a61287d8b988
     type: title
     task:
-      id: ecd2967b-740c-4806-8a1e-77ff1b093991
+      id: 97aaf60a-4203-4577-8548-a61287d8b988
       version: -1
       name: Active Directory
       type: title
@@ -104,10 +105,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 19f64d77-18f2-45a6-8ec5-9d2203d9637a
+    taskid: e20b8aa1-b0b6-4052-8f18-ae8ad93b446f
     type: condition
     task:
-      id: 19f64d77-18f2-45a6-8ec5-9d2203d9637a
+      id: e20b8aa1-b0b6-4052-8f18-ae8ad93b446f
       version: -1
       name: Is Active Directory enabled?
       description: Checks if there's an active "Active Directory" instance
@@ -127,16 +128,20 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: brand
+                value:
+                  simple: brand
                 iscontext: true
               right:
-                value: activedir
+                value:
+                  simple: activedir
           - - operator: string.isEqual
               left:
-                value: state
+                value:
+                  simple: state
                 iscontext: true
               right:
-                value: active
+                value:
+                  simple: active
     separatecontext: false
     view: |-
       {
@@ -147,10 +152,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: a1e1dfa5-6bb7-47d7-89ae-2d4c47266c04
+    taskid: 03d20c71-9bee-4a97-8a4d-47135ec38828
     type: regular
     task:
-      id: a1e1dfa5-6bb7-47d7-89ae-2d4c47266c04
+      id: 03d20c71-9bee-4a97-8a4d-47135ec38828
       version: -1
       name: Get Account info from Active Directory
       description: Query "Active Directory" for the username's info
@@ -212,10 +217,8 @@ outputs:
   type: string
 - contextPath: Account.Email
   description: The email address associated with the Account
-  type: string
 - contextPath: Account.Groups
   description: The groups the Account is part of
-  type: unknown
 - contextPath: Account.DisplayName
   description: The Account display name
   type: string
