@@ -1,0 +1,34 @@
+commonfields:
+  id: 72c5e93a-228d-4756-898b-6e4aa38a9ad3
+  version: 5
+name: IndicatorSet
+script: |-
+  var res = executeCommand("findIndicators", {"query": args.indicator});
+  if (!(res && res[0] && res[0].Contents[0])) {
+      return {ContentsFormat: formats.text, Type: entryTypes.error,
+          Contents: "Found no indicator with value: " + args.indicator };
+  } else{
+      var indicator = res[0].Contents[0];
+      return executeCommand("setIndicator", {"id":indicator.id, "reputation": args.reputation});
+  }
+type: javascript
+tags: []
+comment: Modify indicator reputation
+enabled: true
+args:
+- name: indicator
+  required: true
+  default: true
+  description: indicator value, eg 8.8.8.8, www.demisto.com
+- name: reputation
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Bad
+  - Suspicious
+  - Good
+  - None
+  description: reputation to set
+scripttarget: 0
+runonce: false
+sensitive: true
