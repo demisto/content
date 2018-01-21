@@ -161,7 +161,7 @@ tasks:
     type: playbook
     task:
       id: a0be541a-b0db-4c1e-80e2-d65983c31686
-      playbookId: 11d14ecb-be98-4cb1-8e69-7bb8d3e05f98
+      playbookId: TIE - IOC Hunt
       version: -1
       name: IOC Hunt - TIE
       description: |-
