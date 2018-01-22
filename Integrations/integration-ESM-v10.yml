@@ -47,11 +47,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Version 10.0 (leave empty if newer version)
-  name: isZeroVersion
-  defaultvalue: ""
-  type: 8
-  required: false
+- display: 'Version: (one of 10.0, 10.1, 10.2)'
+  name: version
+  defaultvalue: "10.2"
+  type: 0
+  required: true
 script:
   script: |-
     import base64
@@ -70,8 +70,9 @@ script:
     # by default filters only "Closed" cases
     filtered_out_statuses = [2, ]
     verify =  demisto.params()['insecure'] == False
-    isZeroVersion =  demisto.params()['isZeroVersion']
     requests.packages.urllib3.disable_warnings()
+    VERSION = demisto.params()['version']
+
 
     def throw_error(error_str):
         if should_stop_on_error:
@@ -192,7 +193,7 @@ script:
                 else:
                     try:
                         res = self.result.json()
-                        if not isZeroVersion:
+                        if VERSION != '10.0' and not cmd.startswith('v2'):
                             res = res['return']
                         return res
                     except:
@@ -202,25 +203,26 @@ script:
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
-            cmd = 'qryExecuteDetail?reverse=false&type=' + query_type
+            cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if VERSION=='10.2' else '', query_type, )
+
             if (time_range == 'CUSTOM'):
                cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
 
             q = {
                 'config': {
                     'timeRange': time_range,
-                    'filters': filters
+                    'filters': filters,
                 }
             }
             if fields is not None:
-                q['config']['fields'] = json.loads(fields)
+                q['config']['fields'] = [{'name':v} for v in argToList(fields)]
             query = json.dumps(q)
 
             res = self.cmdquery(cmd, query)
             return res['resultID']
 
         def get_query_result(self, resultID):
-            cmd = 'qryGetStatus'
+            cmd = '%sqryGetStatus' % ('v2/' if VERSION=='10.2' else '', )
             query = json.dumps({ 'resultID': resultID })
 
             res = self.cmdquery(cmd, query)
@@ -247,7 +249,8 @@ script:
             throw_error('Waited more {} min for query results : {}'.format(max_wait, resultID))
 
         def fetch_results(self, resultID):
-            cmd = 'qryGetResults?startPos=0&reverse=false&numRows=' + str(sys.maxint)
+            cmd = '%sqryGetResults?startPos=0&reverse=false&numRows=10000' % ('v2/' if VERSION=='10.2' else '', )
+
             query = json.dumps({ 'resultID': resultID })
 
             res = self.cmdquery(cmd, query)
@@ -275,7 +278,7 @@ script:
 
         def fetchAllFields(self):
             self.login()
-            res = self.cmdquery('qryGetFilterFields')
+            res = self.cmdquery('%sqryGetFilterFields' % ('v2/' if VERSION=='10.2' else '', ))
 
             # convert to an appropriate table
             for x in res:
@@ -791,8 +794,11 @@ script:
 
 
     elif demisto.command() == 'test-module':
-        esm.fetchAllFields()
-        final_result = 'ok'
+        if VERSION not in ['10.0', '10.1', '10.2']:
+            final_result = 'version must be one of 10.x, got %s' % (VERSION, )
+        else:
+            esm.fetchAllFields()
+            final_result = 'ok'
 
     elif demisto.command() == 'esm-fetch-fields':
         res = esm.fetchAllFields()
@@ -915,6 +921,7 @@ script:
         args = demisto.args()
         res = esm.delete_alarms(argToList(demisto.get(args, 'alarmIds')))
         final_result = res
+
 
     esm.logout()
     demisto.results(final_result)
@@ -1251,4 +1258,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-releaseNotes: "Added support in fields parameter to search command"
+releaseNotes: add support to version 10.2
