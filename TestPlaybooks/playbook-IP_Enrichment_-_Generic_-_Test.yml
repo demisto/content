@@ -89,12 +89,12 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 9c602c46-4025-4d71-827f-b7f8a90b7046
+    taskid: 3ab19aee-e6dd-4861-8916-eb396b7cafd9
     type: regular
     task:
-      id: 9c602c46-4025-4d71-827f-b7f8a90b7046
+      id: 3ab19aee-e6dd-4861-8916-eb396b7cafd9
       version: -1
-      name: Verify IP Address
+      name: Verify IP Object
       description: Verify that the context contains the IP Address
       scriptName: VerifyContext
       type: regular
@@ -105,8 +105,7 @@ tasks:
       - "11"
     scriptarguments:
       expectedValue: {}
-      fields:
-        simple: Address
+      fields: {}
       path:
         simple: IP
     separatecontext: false
@@ -119,10 +118,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 2ab9187a-b918-4fc1-8b67-a46a5504ed41
+    taskid: 44b60ed4-8726-4677-8813-af6e82197a01
     type: regular
     task:
-      id: 2ab9187a-b918-4fc1-8b67-a46a5504ed41
+      id: 44b60ed4-8726-4677-8813-af6e82197a01
       version: -1
       name: Verify DBotScore
       description: Verify that the context contains the DBotScore
