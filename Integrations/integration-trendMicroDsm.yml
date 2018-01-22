@@ -382,3 +382,4 @@ script:
       description: event ID operator
     description: Get anti malware events
   isfetch: true
+releaseNotes: "-"
