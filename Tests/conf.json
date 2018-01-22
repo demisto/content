@@ -163,6 +163,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "playbookID": "endpoint_enrichment_-_generic_test"
         }
     ],
     "skipped": [

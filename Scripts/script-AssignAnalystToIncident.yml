@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: AssignAnalystToIncident
 system: true
+releaseNotes: "Return proper error entry if script fails"
 script: |
   if (args.email && args.username) {
       throw 'Please provide either username or email';
@@ -61,10 +62,18 @@ script: |
       if (!isError(res[0])) {
           return 'User \'' + userToAssign + '\' assigned to be the incident owner.';
       } else {
-          return 'User \'' + userToAssign + '\' was not found.';
+          return {
+            ContentsFormat: formats.text,
+            Type: entryTypes.error,
+            Contents: 'Failed to assign user: \'' + userToAssign + '\', error: ' + res[0].Contents
+          };
       }
   } else {
-      return 'No user found.';
+      return {
+        ContentsFormat: formats.text,
+        Type: entryTypes.error,
+        Contents: 'No user found.'
+      };
   }
 type: javascript
 tags:
