@@ -1,6 +1,6 @@
-id: test_-_dbot_indicator_enrichment_-_generic
+id: dbot_indicator_enrichment_-_generic_-_test
 version: -1
-name: Test - DBot Indicator Enrichment - Generic
+name: DBot Indicator Enrichment - Generic - Test
 description: Test "DBot Indicator Enrichment" playbook
 starttaskid: "0"
 tasks:
