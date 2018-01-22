@@ -179,10 +179,10 @@ tasks:
       }
   "28":
     id: "28"
-    taskid: 76f39bb7-4c99-42e2-86b2-8eee249405a0
+    taskid: 769422b8-e388-4be4-8bd9-911fb17421f4
     type: condition
     task:
-      id: 76f39bb7-4c99-42e2-86b2-8eee249405a0
+      id: 769422b8-e388-4be4-8bd9-911fb17421f4
       version: -1
       name: Do we have IP Addresses?
       description: Determine wether the playbook's input contains IP addresses.
@@ -264,9 +264,9 @@ inputs:
   required: false
   description: The internal range to check against the IPs
 outputs:
-- contextPath: IP.Address
-  description: The IP addresses
-  type: string
+- contextPath: IP
+  description: The IP objects
+  type: unknown
 - contextPath: DBotScore
-  description: The DBotScore
+  description: Indicator, Score, Type, Vendor
   type: unknown
