@@ -166,6 +166,10 @@
         },
         {
             "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "IOC Hunt - TIE - Test"
         }
     ],
     "skipped": [
