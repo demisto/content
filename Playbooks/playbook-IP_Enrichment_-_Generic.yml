@@ -54,10 +54,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: IP.InRange
+                value:
+                  simple: IP.InRange
                 iscontext: true
               right:
-                value: "no"
+                value:
+                  simple: "no"
           accessor: Address
     separatecontext: false
     view: |-
@@ -93,10 +95,12 @@ tasks:
           filters:
           - - operator: string.isEqual
               left:
-                value: IP.InRange
+                value:
+                  simple: IP.InRange
                 iscontext: true
               right:
-                value: "no"
+                value:
+                  simple: "no"
           accessor: Address
     continueonerror: true
     separatecontext: false
@@ -196,7 +200,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.IP
+            value:
+              simple: inputs.IP
             iscontext: true
     view: |-
       {
@@ -263,5 +268,5 @@ outputs:
   description: The IP addresses
   type: string
 - contextPath: DBotScore
-  description: DBotScore
+  description: The DBotScore
   type: unknown
