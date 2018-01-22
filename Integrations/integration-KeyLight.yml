@@ -211,7 +211,7 @@ script:
                     getUrl(command, args),
                     buildBodyForCommand(command, args),
                     loginCookies).
-                Body);
+                Bytes);
             break;
         default:
             result = sendRequestAndParse(
@@ -443,3 +443,5 @@ script:
       description: ID for the individual attachment within the component
     description: Deletes the specified attachments from the provided document fields
       on a specific record
+fromversion: 3.5.0
+releaseNotes: "-"
