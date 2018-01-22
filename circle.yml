@@ -17,25 +17,25 @@ test:
     - chmod +x ./Tests/scripts/*
 
     # ensure file name
-    - ./Tests/scripts/validate_files_structure.sh
+    #- ./Tests/scripts/validate_files_structure.sh
 
     # get installer from server
-    - ./Tests/scripts/server_get_artifact.sh
+    #- ./Tests/scripts/server_get_artifact.sh
 
     # run demisto instance
-    - ./Tests/scripts/create_instance.sh
+    #- ./Tests/scripts/create_instance.sh
 
     # download conf file
-    - ./Tests/scripts/download_demisto_conf.sh
+    #- ./Tests/scripts/download_demisto_conf.sh
 
     # run installer
-    - ./Tests/scripts/run_installer_on_instance.sh
+    #- ./Tests/scripts/run_installer_on_instance.sh
 
     # wait until server is ready
-    - ./Tests/scripts/wait_until_server_ready.sh
+    #- ./Tests/scripts/wait_until_server_ready.sh
 
     # run tests
-    - ./Tests/scripts/run_tests.sh
+    #- ./Tests/scripts/run_tests.sh
 
     # terminate instance
-    - ./Tests/scripts/destroy_instances.sh
+    #- ./Tests/scripts/destroy_instances.sh

@@ -57,14 +57,15 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post):
         ver = yml_info.get('fromversion', '0')
         if is_ge_version(version_num, ver):
             print 'marked as post: %s (%s)' % (ver, path, )
-            post_files += 1
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
+            post_files += 1
         else:
+            # add the file to both bundles
             print 'marked as pre: %s (%s)' % (ver, path, )
-        # add the file to both bundles
-        shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
+            shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
+            shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
 
-    print post_files
+    print 'total post files: %d' % (post_files, )
 
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post):
     # handle *.json files
