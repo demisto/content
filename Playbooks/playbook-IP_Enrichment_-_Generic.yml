@@ -215,7 +215,7 @@ tasks:
       name: Check if IPs are in internal ranges
       description: Returns yes if ip is in one of the ranges provided, returns no
         otherwise.
-      scriptName: IsIPInRanges_update
+      scriptName: IsIPInRanges
       type: regular
       iscommand: false
       brand: ""
