@@ -19,6 +19,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -43,6 +44,7 @@ tasks:
       - "14"
       - "15"
       - "17"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -70,6 +72,7 @@ tasks:
       file:
         simple: ${inputs.MD5}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -89,6 +92,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -116,12 +120,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.MD5}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.MD5
+            value:
+              simple: File.MD5
             iscontext: true
     view: |-
       {
@@ -150,12 +156,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.SHA256
+            value:
+              simple: File.SHA256
             iscontext: true
     view: |-
       {
@@ -184,6 +192,7 @@ tasks:
       file:
         simple: ${inputs.SHA256}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -211,12 +220,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.SHA1
+            value:
+              simple: File.SHA1
             iscontext: true
     view: |-
       {
@@ -245,6 +256,7 @@ tasks:
       file:
         simple: ${inputs.SHA1}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
