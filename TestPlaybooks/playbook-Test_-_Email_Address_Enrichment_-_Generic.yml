@@ -1,5 +1,5 @@
-id: test_-_email_address_enrichment_-_generic
-name: Test - Email Address Enrichment - Generic
+id: email_address_enrichment_-_generic_-_test
+name: Email Address Enrichment - Generic - Test
 starttaskid: "0"
 tasks:
   "0":
