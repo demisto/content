@@ -132,9 +132,9 @@ inputs:
   required: true
   description: The domain name to enrich
 outputs:
-- contextPath: Domain.Name
-  description: The domain name
-  type: string
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
 - contextPath: DBotScore
-  description: The DBotScore
+  description: Indicator, Score, Type, Vendor
   type: unknown
