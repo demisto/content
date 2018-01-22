@@ -8,31 +8,33 @@ script: |-
 
   parts = email.split('@',1)
 
-  networkType = "Unknown"
-  inDomain = "no"
+  network_type = "Unknown"
+  in_domain = "no"
 
   if len(parts) > 1:
       if parts[1].lower() in domains:
-          inDomain = "yes"
-          networkType = "Internal"
+          in_domain = "yes"
+          network_type = "Internal"
       else:
-          networkType = "External"
+          network_type = "External"
 
-      emailObj = {
+      email_obj = {
           "Account(val.Email && val.Email.Address && val.Email.Address === obj.Email.Address)": {
               "Email": {
                   "Address": email,
                   "Domain" : parts[1],
                   "Username": parts[0],
-                  "NetworkType" : networkType
+                  "NetworkType" : network_type
               }
           }
       }
-      demisto.results({ "Type" : entryTypes["note"],
-                      "ContentsFormat" : formats["json"],
-                      "Contents" : inDomain,
-                      "HumanReadable" : inDomain,
-                      "EntryContext" : emailObj })
+      demisto.results({
+          "Type" : entryTypes["note"],
+          "ContentsFormat" : formats["json"],
+          "Contents" : in_domain,
+          "HumanReadable" : in_domain,
+          "EntryContext" : email_obj
+      })
 
   else:
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Email address "{0}" is not valid' })

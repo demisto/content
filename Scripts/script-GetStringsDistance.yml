@@ -22,31 +22,42 @@ script: |-
   res = []
   found = False
 
-  closeDistance = demisto.get(demisto.args(), 'distance')
-  closeDistanceInt = int(closeDistance) if closeDistance else 3
+  close_distance = demisto.get(demisto.args(), 'distance')
+  close_distance_int = int(close_distance) if close_distance else 3
 
-  compareString = argToList(demisto.get(demisto.args(), 'compareString'))
-  if not compareString:
+  compare_string = argToList(demisto.get(demisto.args(), 'compareString'))
+  if not compare_string:
       res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString from arguments'})
   else:
-      inputString = demisto.get(demisto.args(), 'inputString')
-      if inputString:
+      input_string = demisto.get(demisto.args(), 'inputString')
+      if input_string:
           distances = []
-          for curString in compareString:
-              levenshteinDistance = levenshtein(curString, inputString)
-              distances.append({'StringA' : inputString,
-                              'StringB' : curString,
-                              'LevenshteinDistance' : levenshteinDistance,
-                              'TooClose' : levenshteinDistance > 0 and levenshteinDistance < closeDistanceInt
-                              })
-          res.append({'Type' : entryTypes['note'],
-                          'Contents': {'Distances' : distances},
-                          'ContentsFormat' : formats['json'],
-                          'HumanReadable': tblToMd('Distances', distances, ['StringA','StringB','LevenshteinDistance','TooClose']),
-                          'ReadableContentsFormat' : formats['markdown']})
+          for cur_string in compare_string:
+              levenshtein_distance = levenshtein(cur_string, input_string)
+              distances.append(
+                  {
+                      'StringA' : input_string,
+                      'StringB' : cur_string,
+                      'LevenshteinDistance' : levenshtein_distance,
+                      'TooClose' : levenshtein_distance > 0 and levenshtein_distance < close_distance_int
+                  })
+          res.append(
+              {
+                  'Type' : entryTypes['note'],
+                  'Contents': {'Distances' : distances},
+                  'ContentsFormat' : formats['json'],
+                  'HumanReadable': tblToMd('Distances', distances, ['StringA','StringB','LevenshteinDistance','TooClose']),
+                  'ReadableContentsFormat' : formats['markdown']
+              })
 
       else:
-          res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract inputString - ' + inputString})
+          res.append(
+              {
+                  'Type': entryTypes['error'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': 'Unable to extract inputString - ' + input_string
+              })
+              
       demisto.results(res)
 type: python
 tags:
