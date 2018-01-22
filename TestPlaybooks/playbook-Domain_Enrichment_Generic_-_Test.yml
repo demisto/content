@@ -60,13 +60,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: e3732a7a-3ea1-4bda-8044-1f0322a46797
+    taskid: 6bf75fe8-8731-4aa3-8e53-e3078f3ad13b
     type: regular
     task:
-      id: e3732a7a-3ea1-4bda-8044-1f0322a46797
+      id: 6bf75fe8-8731-4aa3-8e53-e3078f3ad13b
       version: -1
-      name: Verify Domain
-      description: Verify if the context contains the domain
+      name: Verify Domain Objects
+      description: Verify the domain object
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -76,8 +76,7 @@ tasks:
       - "3"
     scriptarguments:
       expectedValue: {}
-      fields:
-        simple: Name
+      fields: {}
       path:
         simple: ${Domain}
     separatecontext: false
@@ -90,13 +89,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
+    taskid: bcf27b2e-3bc3-4b76-8e97-10e2c6b94648
     type: regular
     task:
-      id: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
+      id: bcf27b2e-3bc3-4b76-8e97-10e2c6b94648
       version: -1
       name: Verify DBotScore
-      description: Verify if the context contains the DBotScore
+      description: Verify the DBotScore object
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -120,13 +119,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: a576bf16-3652-448b-80b9-790bb3045658
+    taskid: f23e993b-c68d-4b39-84f0-cc14c4d92158
     type: regular
     task:
-      id: a576bf16-3652-448b-80b9-790bb3045658
+      id: f23e993b-c68d-4b39-84f0-cc14c4d92158
       version: -1
       name: Clear Context
-      description: ""
+      description: Clear the context
       scriptName: DeleteContext
       type: regular
       iscommand: false
