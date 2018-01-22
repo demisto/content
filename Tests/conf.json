@@ -39,7 +39,8 @@
         },
         {
             "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook"
+            "playbookID": "Archer-Test-Playbook",
+            "nightly": true
         },
         {
             "integrations": "ThreatExchange",
@@ -167,6 +168,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "playbookID": "endpoint_enrichment_-_generic_test"
         }
     ],
     "skipped": [
