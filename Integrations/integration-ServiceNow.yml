@@ -1545,3 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
+releaseNotes: "-"

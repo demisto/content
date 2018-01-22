@@ -925,3 +925,4 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
+releaseNotes: "-"

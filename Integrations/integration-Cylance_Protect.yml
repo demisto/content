@@ -284,7 +284,7 @@ script:
         var incident = {
             name: threat.priority + ' ' + threat.name,
             labels: [],
-            rawJSON: JSON.stringify(threat),
+            rawJSON: JSON.stringify(threat)
         };
         delete(threat.name);
         var keys = Object.keys(threat);
@@ -1110,3 +1110,4 @@ script:
       is retrieved
   isfetch: true
 hidden: false
+releaseNotes: "-"
