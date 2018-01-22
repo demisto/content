@@ -164,7 +164,8 @@
         {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "playbookID": "GeneratePassword-Test"
