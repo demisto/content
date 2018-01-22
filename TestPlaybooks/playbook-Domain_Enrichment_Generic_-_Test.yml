@@ -12,6 +12,7 @@ tasks:
       id: 4cda480e-8fe1-4795-8b8f-e78ee8e84375
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -65,6 +66,7 @@ tasks:
       id: e3732a7a-3ea1-4bda-8044-1f0322a46797
       version: -1
       name: Verify Domain
+      description: Verify if the context contains the domain
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -94,6 +96,7 @@ tasks:
       id: 38790b1c-aa86-4fc3-87e6-35b9b79e415d
       version: -1
       name: Verify DBotScore
+      description: Verify if the context contains the DBotScore
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -123,6 +126,7 @@ tasks:
       id: a576bf16-3652-448b-80b9-790bb3045658
       version: -1
       name: Clear Context
+      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
