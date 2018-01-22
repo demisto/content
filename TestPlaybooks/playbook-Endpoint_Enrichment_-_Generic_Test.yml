@@ -29,12 +29,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 0f29412a-5dfe-4f4b-8049-172dea4ed660
+    taskid: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
     type: playbook
     task:
-      id: 0f29412a-5dfe-4f4b-8049-172dea4ed660
+      id: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
       version: -1
       name: Endpoint Enrichment - Generic
+      description: Enrich an Endpoint Hostname using one or more integrations
       playbookName: Endpoint Enrichment - Generic
       type: playbook
       iscommand: false
@@ -45,7 +46,7 @@ tasks:
       - "5"
     scriptarguments:
       Hostname:
-        simple: ${Endpoint.Hostname}
+        simple: ${exampleEndpoint.Hostname}
     separatecontext: false
     loop:
       iscommand: false
@@ -60,10 +61,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 45c6e0d5-2318-479c-8d01-8493c0a436fc
+    taskid: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
     type: regular
     task:
-      id: 45c6e0d5-2318-479c-8d01-8493c0a436fc
+      id: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
       version: -1
       name: Verify context endpoint key
       scriptName: VerifyContext
@@ -74,9 +75,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Hostname,Mac,IP,OS
+        simple: Hostname
       path:
-        simple: ${Endpoint}
+        simple: Endpoint
     separatecontext: false
     view: |-
       {
@@ -115,10 +116,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: d2049fa6-c576-4554-8339-5cbd3dc157ca
+    taskid: 91cb1640-cc0c-4f32-8632-5297dc122894
     type: regular
     task:
-      id: d2049fa6-c576-4554-8339-5cbd3dc157ca
+      id: 91cb1640-cc0c-4f32-8632-5297dc122894
       version: -1
       name: 'add hostname #1'
       scriptName: Set
@@ -133,7 +134,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: exampleEndpoint.Hostname
       value:
         simple: AMAZON-39D8D1E7
     separatecontext: false
@@ -146,10 +147,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 53f539f8-7b8d-443e-8579-f8abe584b469
+    taskid: 08d6b69d-6a76-4363-8030-5241a624f53b
     type: regular
     task:
-      id: 53f539f8-7b8d-443e-8579-f8abe584b469
+      id: 08d6b69d-6a76-4363-8030-5241a624f53b
       version: -1
       name: 'add hostname #2'
       scriptName: Set
@@ -164,7 +165,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: exampleEndpoint.Hostname
       value:
         simple: acAir2
     separatecontext: false
@@ -172,15 +173,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 544
         }
       }
   "9":
     id: "9"
-    taskid: b1f66095-e679-4ed4-82ce-d1ebe77ce59a
+    taskid: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
     type: regular
     task:
-      id: b1f66095-e679-4ed4-82ce-d1ebe77ce59a
+      id: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
       version: -1
       name: 'add hostname #3'
       scriptName: Set
@@ -195,7 +196,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: exampleEndpoint.Hostname
       value:
         simple: CentOS70
     separatecontext: false
