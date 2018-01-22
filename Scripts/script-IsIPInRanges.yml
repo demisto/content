@@ -27,9 +27,15 @@ script: |
   ipObj.Address = ip;
   ipObj.InRange = isInRange ? 'yes' : 'no';
 
-  var ec = {"IP(val.Address == obj.Address)" : ipObj};
+  var ec = {'IP(val.Address == obj.Address)' : ipObj};
 
-  return {Type: entryTypes.note, Contents: isInRange ? 'yes' : 'no', ContentsFormat: formats.json, HumanReadable: isInRange ? 'yes' : 'no', EntryContext: ec};
+  return {
+    Type: entryTypes.note,
+    Contents: isInRange ? 'yes' : 'no',
+    ContentsFormat: formats.json,
+    HumanReadable: isInRange ? 'yes' : 'no',
+    EntryContext: ec
+  };
 type: javascript
 tags:
 - ip
