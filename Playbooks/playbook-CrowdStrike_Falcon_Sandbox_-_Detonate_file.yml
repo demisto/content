@@ -143,4 +143,19 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: Entry ID of file to be detonated
-outputs: []
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
