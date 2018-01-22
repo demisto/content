@@ -34,18 +34,22 @@ script: |-
       score = entry["score"]
       source = entry["source"]
 
-      ec["DBotScore"].append({ "Indicator" : indicator,
-                              "Type": INDICATOR_TYPE_DICTIONARY[indicator_type],
-                              "Vendor": source,
-                              "Score": score})
+      ec["DBotScore"].append({
+          "Indicator" : indicator,
+          "Type": INDICATOR_TYPE_DICTIONARY[indicator_type],
+          "Vendor": source,
+          "Score": score
+      })
 
   md = tableToMarkdown("Indicator DBot Score",ec["DBotScore"])
 
-  demisto.results({"Type" : entryTypes["note"],
-                  "ContentsFormat" : formats["json"],
-                  "Contents" : ec,
-                  "HumanReadable" : md,
-                  "EntryContext" : ec })
+  demisto.results({
+      "Type" : entryTypes["note"],
+      "ContentsFormat" : formats["json"],
+      "Contents" : ec,
+      "HumanReadable" : md,
+      "EntryContext" : ec
+  })
 type: python
 tags:
 - DBot
