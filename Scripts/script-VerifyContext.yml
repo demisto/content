@@ -10,14 +10,14 @@ script: |-
   var verifyFields = function(obj) {
       fields.forEach(function (field) {
           var value = dq(obj, field.trim());
-          if (!value) {
+          if (value === undefined || value === null) {
               throw 'Field ' + field + ' is missing from ' + JSON.stringify(obj) + '.';
           }
       });
   }
 
   var contextObject = dq(invContext, path);
-  if (!contextObject) {
+  if (contextObject === undefined || contextObject === null) {
         throw 'Path ' + path + ' is not in context.';
   }
 
