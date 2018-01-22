@@ -1,6 +1,6 @@
 commonfields:
-  id: 72c5e93a-228d-4756-898b-6e4aa38a9ad3
-  version: 5
+  id: IndicatorSet
+  version: -1
 name: IndicatorSet
 script: |-
   var res = executeCommand("findIndicators", {"query": args.indicator});
@@ -14,7 +14,7 @@ script: |-
 type: javascript
 tags: []
 comment: Modify indicator reputation
-enabled: true
+system: true
 args:
 - name: indicator
   required: true
