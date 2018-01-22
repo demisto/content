@@ -4,29 +4,13 @@ import yaml
 import glob
 import shutil
 
-# original commands:
-# - mkdir bundle
-# - cd Tools/ && for i in */; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-# - cp Integrations/* bundle/
-# - cp Misc/* bundle/
-# - cp Playbooks/* bundle/
-# - cp Reports/* bundle/
-# - cp Dashboards/* bundle/
-# - cp Widgets/* bundle/
-# - cp content-descriptor.json bundle/
-# - cp $(find Scripts -type f -print) bundle/
-
-# - cd bundle/ && zip ../content.zip *
-# - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-# - cp release-notes.txt $CIRCLE_ARTIFACTS/
-
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts']
 # temp folder names
-BUNDLE_PRE = 'bundle_l'
-BUNDLE_POST = 'bundle_g'
+BUNDLE_PRE = 'bundle_pre'
+BUNDLE_POST = 'bundle_post'
 # zip files names (the extension will be added later - shutil demands file name without extension)
-ZIP_PRE = 'content'
-ZIP_POST = 'content_future'
+ZIP_PRE = 'content_yml'
+ZIP_POST = 'content_new'
 
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
@@ -43,7 +27,6 @@ def is_ge_version(ver1, ver2):
 
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
-        print d
         shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
 
 
@@ -56,16 +39,16 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post):
 
         ver = yml_info.get('fromversion', '0')
         if is_ge_version(version_num, ver):
-            print 'marked as post: %s (%s)' % (ver, path, )
+            print ' - marked as post: %s (%s)' % (ver, path, )
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
             post_files += 1
         else:
             # add the file to both bundles
-            print 'marked as pre: %s (%s)' % (ver, path, )
+            print ' - marked as pre: %s (%s)' % (ver, path, )
             shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
 
-    print 'total post files: %d' % (post_files, )
+    print ' - total post files: %d' % (post_files, )
 
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post):
     # handle *.json files
@@ -82,23 +65,34 @@ def copy_dir_files(*args):
     copy_dir_yml(*args)
 
 
-def main(version_num, circle_artifacts):
+def main(circle_artifacts):
+    print 'starting create content artifact ...'
+
+    # version that separate post bundle from pre bundle
+    # e.i. any yml with "fromversion" of <version_num> or more will be only on post bundle
+    version_num = "3.5"
+
+    print 'creating dir for bundles ...'
     for b in [BUNDLE_PRE, BUNDLE_POST]:
         os.mkdir(b)
         add_tools_to_bundle(b)
 
     for d in CONTENT_DIRS:
-        print d
+        print 'copying dir %s to bundles ...' % (d,)
         copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST)
 
+    print 'copying content descriptor to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST]:
         shutil.copyfile('content-descriptor.json', os.path.join(b, 'content-descriptor.json'))
 
+    print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
     shutil.make_archive(ZIP_PRE, 'zip', BUNDLE_PRE)
     shutil.copyfile(ZIP_PRE + '.zip', os.path.join(circle_artifacts, ZIP_PRE + '.zip'))
     shutil.copyfile(ZIP_POST + '.zip', os.path.join(circle_artifacts, ZIP_POST + '.zip'))
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
+
+    print 'finished create content artifact'
 
 
 def test_version_compare(version_num):
