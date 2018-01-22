@@ -23,7 +23,19 @@ script: |
       return isIPInSubnet(ip, iprange);
   });
 
-  return isInRange ? 'yes' : 'no';
+  var ipObj = {};
+  ipObj.Address = ip;
+  ipObj.InRange = isInRange ? 'yes' : 'no';
+
+  var ec = {'IP(val.Address == obj.Address)' : ipObj};
+
+  return {
+    Type: entryTypes.note,
+    Contents: isInRange ? 'yes' : 'no',
+    ContentsFormat: formats.json,
+    HumanReadable: isInRange ? 'yes' : 'no',
+    EntryContext: ec
+  };
 type: javascript
 tags:
 - ip
@@ -43,4 +55,9 @@ outputs:
   description: if given value is an IP range
 - contextPath: "no"
   description: if given value is not a IP range
+- contextPath: IP.Address
+  description: The IP Address
+- contextPath: IP.InRange
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
+releaseNotes: "-"
