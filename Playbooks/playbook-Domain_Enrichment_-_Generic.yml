@@ -50,7 +50,8 @@ tasks:
       condition:
       - - operator: general.isExists
           left:
-            value: inputs.Domain
+            value:
+              simple: inputs.Domain
             iscontext: true
     view: |-
       {
@@ -132,9 +133,8 @@ inputs:
   description: The domain name to enrich
 outputs:
 - contextPath: Domain.Name
-  description: Domain name
+  description: The domain name
   type: string
 - contextPath: DBotScore
-  description: DBotScore
+  description: The DBotScore
   type: unknown
-
