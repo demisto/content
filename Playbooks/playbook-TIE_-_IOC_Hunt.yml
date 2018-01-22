@@ -21,6 +21,7 @@ tasks:
       id: 9329911b-7aca-4410-8284-205fd24ea39e
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -169,6 +170,7 @@ tasks:
       id: ac91afe9-aabf-48fb-89d3-bac2afaa5b4e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -250,6 +252,7 @@ tasks:
       id: 353a94d6-2b5e-405d-8620-e08f4704a1cc
       version: -1
       name: Hunt HASH in TIE
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -272,6 +275,7 @@ tasks:
       id: 394ab728-5dfe-4cb8-88e1-1cfc81374e18
       version: -1
       name: Enrich in ePO
+      description: ""
       type: title
       iscommand: false
       brand: ""
