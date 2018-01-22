@@ -128,4 +128,31 @@ inputs:
     simple: ${File.EntryID}
   required: true
   description: Entry ID of file to be detonated
-outputs: []
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
