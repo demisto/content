@@ -37,7 +37,8 @@
         },
         {
             "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook"
+            "playbookID": "Archer-Test-Playbook",
+            "nightly": true
         },
         {
             "integrations": "ThreatExchange",
