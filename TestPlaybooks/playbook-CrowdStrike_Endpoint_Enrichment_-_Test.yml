@@ -1,0 +1,191 @@
+id: crowdstrike_endpoint_enrichment_-_test
+version: -1
+name: CrowdStrike Endpoint Enrichment - Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ffefeeb7-1aef-471d-84b0-2cabfe4702aa
+    type: start
+    task:
+      id: ffefeeb7-1aef-471d-84b0-2cabfe4702aa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 47bbd788-45d3-449a-84e6-05b4c91d6c6e
+    type: regular
+    task:
+      id: 47bbd788-45d3-449a-84e6-05b4c91d6c6e
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1cd96aa6-9c3e-47c0-8754-a5ecc0842a0b
+    type: playbook
+    task:
+      id: 1cd96aa6-9c3e-47c0-8754-a5ecc0842a0b
+      version: -1
+      name: CrowdStrike Endpoint Enrichment
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "3":
+    id: "3"
+    taskid: fb3b71c9-afca-4e87-86b3-dca060fcd45b
+    type: regular
+    task:
+      id: fb3b71c9-afca-4e87-86b3-dca060fcd45b
+      version: -1
+      name: Verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Hostname,OS
+      path:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8b995f1f-5e53-400f-898e-bdc064a7d14c
+    type: regular
+    task:
+      id: 8b995f1f-5e53-400f-898e-bdc064a7d14c
+      version: -1
+      name: 'Add hostname #1'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: CentOS70
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: d3c82587-adf6-4b22-8f19-867601c73b62
+    type: regular
+    task:
+      id: d3c82587-adf6-4b22-8f19-867601c73b62
+      version: -1
+      name: 'Add hostname #2'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: CYPHORT-CS-PC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 548
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

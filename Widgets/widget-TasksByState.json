@@ -1,11 +1,11 @@
 {
-  "id": "incident-types-by-severity",
+  "id": "tasks-state",
   "version": -1,
-  "fromVersion": "3.5.0",
-  "name": "Incident Types by Severity",
-  "dataType": "incidents",
-  "widgetType": "bar",
-  "query": "-category:job and -status:archived and -status:closed",
+  "modified": "2018-01-14T22:59:42.479686738Z",
+  "name": "Tasks By State",
+  "dataType": "tasks",
+  "widgetType": "column",
+  "query": "replaced:f" ,
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -16,13 +16,11 @@
       "toValue": null,
       "fromValue": 7,
       "field": ""
-    },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
+    }
   },
   "params": {
     "groupBy": [
-      "type",
-      "severity"
+      "state"
     ]
   }
 }
