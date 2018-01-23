@@ -6,6 +6,9 @@
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
+            "playbookID": "email_test"
+        },
+        {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
