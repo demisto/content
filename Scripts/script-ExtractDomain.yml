@@ -167,7 +167,7 @@ script: |
       if (allDomains.indexOf(hostname) < 0) {
           allDomains.push(hostname);
       }
-      addToContextAndMD(domains,ec,md);
+      md = addToContextAndMD(domains,ec,md);
   }
   return { Type: entryTypes.note, Contents: ec[outputPaths.domain], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
