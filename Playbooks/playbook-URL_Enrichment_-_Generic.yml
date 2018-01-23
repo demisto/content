@@ -228,6 +228,9 @@ inputs:
   required: true
   description: url to enrich
 outputs:
+- contextPath: URL
+  description: The URL object
+  type: unknown
 - contextPath: URL.Address
   description: The enriched URL
   type: string
