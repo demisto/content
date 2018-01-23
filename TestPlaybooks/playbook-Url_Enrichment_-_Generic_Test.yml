@@ -1,0 +1,97 @@
+id: url_enrichment_-_generic_test
+version: 2
+name: Url_Enrichment_-_Generic_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6ccd48cb-7b21-45db-879c-051e43330bd6
+    type: start
+    task:
+      id: 6ccd48cb-7b21-45db-879c-051e43330bd6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: f5d85813-b947-42a6-88d5-1583f817e62e
+    type: regular
+    task:
+      id: f5d85813-b947-42a6-88d5-1583f817e62e
+      version: -1
+      name: Add URL to context
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: URL.Data=.
+      value:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f2749293-6be3-4e9d-8440-4c57a0a3d719
+    type: playbook
+    task:
+      id: f2749293-6be3-4e9d-8440-4c57a0a3d719
+      version: -1
+      name: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 380
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
+fromversion: "3.5.0"
