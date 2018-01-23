@@ -1,17 +1,18 @@
 id: url_enrichment_-_generic
-version: 26
+version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a6ecbf94-fe1f-4095-8ce5-8cd971535735
+    taskid: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
     type: start
     task:
-      id: a6ecbf94-fe1f-4095-8ce5-8cd971535735
+      id: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -27,10 +28,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 7c409776-f203-439a-8137-d00a94980451
+    taskid: 4ec7894b-38ed-43ed-8e02-dd5f77e4328b
     type: condition
     task:
-      id: 7c409776-f203-439a-8137-d00a94980451
+      id: 4ec7894b-38ed-43ed-8e02-dd5f77e4328b
       version: -1
       name: Do we have URLs?
       description: do we have a url to check
@@ -57,10 +58,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 26c73be8-4ca0-40cb-8365-de1582b46a8a
+    taskid: d9879036-d5c5-491b-87e6-c4dc748c4bb3
     type: regular
     task:
-      id: 26c73be8-4ca0-40cb-8365-de1582b46a8a
+      id: d9879036-d5c5-491b-87e6-c4dc748c4bb3
       version: -1
       name: Get URLs reputation
       description: Run reputation for the given url
@@ -88,12 +89,13 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: 173d4bc7-468c-4751-8137-50e8adb50220
+    taskid: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
     type: title
     task:
-      id: 173d4bc7-468c-4751-8137-50e8adb50220
+      id: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
       version: -1
       name: URL Indicators
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -110,12 +112,13 @@ tasks:
       }
   "24":
     id: "24"
-    taskid: b3f42dba-eebb-4744-8929-879c0427bbf7
+    taskid: ffb0e416-85ae-486b-8cea-2979aca56172
     type: title
     task:
-      id: b3f42dba-eebb-4744-8929-879c0427bbf7
+      id: ffb0e416-85ae-486b-8cea-2979aca56172
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -129,10 +132,10 @@ tasks:
       }
   "25":
     id: "25"
-    taskid: 7805ced2-6142-4f98-8a34-d36b3df4a36c
+    taskid: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
     type: condition
     task:
-      id: 7805ced2-6142-4f98-8a34-d36b3df4a36c
+      id: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
       version: -1
       name: 'Is Rasterize integration enabled? '
       description: Check if we can use rasterize
@@ -176,10 +179,10 @@ tasks:
       }
   "26":
     id: "26"
-    taskid: eabb6065-b788-45b2-8a74-99f2598a7484
+    taskid: 99803edc-2cd2-4a80-8372-92a49953a1d4
     type: regular
     task:
-      id: eabb6065-b788-45b2-8a74-99f2598a7484
+      id: 99803edc-2cd2-4a80-8372-92a49953a1d4
       version: -1
       name: Get URL screenshot
       description: Get the screenshot of the url page
@@ -231,5 +234,14 @@ outputs:
 - contextPath: DBotScore
   description: The DBotScore
   type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
 releaseNotes: "-"
 fromversion: "3.5.0"
