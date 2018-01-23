@@ -159,4 +159,3 @@ outputs:
 - contextPath: Domain.Name
   description: Extracted domains
 scripttarget: 0
-releaseNotes: Ignore wwww. in domains Extract

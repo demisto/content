@@ -382,4 +382,3 @@ script:
     description: Retrieve the unique data for a field in json format
 hidden: false
 fromversion: 3.5.0
-releaseNotes: "-"
