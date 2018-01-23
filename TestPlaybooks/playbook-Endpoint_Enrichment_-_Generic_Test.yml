@@ -12,10 +12,10 @@ tasks:
     task:
       id: 966b661f-9af1-4f84-86b0-3db66c2c9292
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -40,7 +40,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -66,16 +65,16 @@ tasks:
     task:
       id: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
       version: -1
+      description: ""
       name: Verify context endpoint key
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Hostname,IP,MAC
+        simple: Hostname
       path:
         simple: Endpoint
     separatecontext: false
@@ -93,12 +92,12 @@ tasks:
     task:
       id: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
       version: -1
+      description: ""
       name: Delete context (all)
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "7"
@@ -121,12 +120,12 @@ tasks:
     task:
       id: 91cb1640-cc0c-4f32-8632-5297dc122894
       version: -1
+      description: ""
       name: 'add hostname #1'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -152,12 +151,12 @@ tasks:
     task:
       id: 08d6b69d-6a76-4363-8030-5241a624f53b
       version: -1
+      description: ""
       name: 'add hostname #2'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -183,12 +182,12 @@ tasks:
     task:
       id: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
       version: -1
+      description: ""
       name: 'add hostname #3'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
