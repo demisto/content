@@ -6,12 +6,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 089f0d6b-2af7-4990-8013-ba815b38bca8
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
     type: start
     task:
-      id: 089f0d6b-2af7-4990-8013-ba815b38bca8
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -21,16 +20,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 152.5,
           "y": 50
         }
       }
   "4":
     id: "4"
-    taskid: ab4f7c4b-4afe-4d19-8156-7da0508cefd4
+    taskid: 3b9613c2-336f-4934-8c0d-935b95580d42
     type: regular
     task:
-      id: ab4f7c4b-4afe-4d19-8156-7da0508cefd4
+      id: 3b9613c2-336f-4934-8c0d-935b95580d42
       version: -1
       name: DetonateFile (WildFire)
       description: Detonate the file in WildFire.
@@ -56,16 +55,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 71,
+          "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: f47ddd4c-20b8-4803-8521-ba5134aa0375
+    taskid: ca3bc370-80b9-4b97-80c6-ed99a5b851f5
     type: condition
     task:
-      id: f47ddd4c-20b8-4803-8521-ba5134aa0375
+      id: ca3bc370-80b9-4b97-80c6-ed99a5b851f5
       version: -1
       name: Is WildFire enabled?
       description: Check if a given value exists in the context. Will return 'no'
@@ -78,33 +77,85 @@ tasks:
       "no":
       - "6"
       "yes":
-      - "4"
+      - "7"
     scriptarguments:
       value: ${modules(val.brand == 'WildFire' && val.state == 'active')}
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 152.5,
           "y": 195
         }
       }
   "6":
     id: "6"
-    taskid: 48bff149-dda3-493c-89a7-ab76925eb0a6
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
     type: title
     task:
-      id: 48bff149-dda3-493c-89a7-ab76925eb0a6
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 71,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 0469d0c7-99b4-4495-8d6c-05c1803bd4d4
+    type: condition
+    task:
+      id: 0469d0c7-99b4-4495-8d6c-05c1803bd4d4
+      version: -1
+      name: Is file type supported?
+      description: Check if file type is supported
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "4"
+    scriptarguments:
+      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
+    view: |-
+      {
+        "position": {
+          "x": 26,
+          "y": 378
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4312a9b3-70fc-462f-8846-fac07a824d41
+    type: regular
+    task:
+      id: 4312a9b3-70fc-462f-8846-fac07a824d41
+      version: -1
+      name: File type is not supported
+      description: Prints text to war room that file type is not supported
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value: File type is not supported for detonation through WildFire
+    view: |-
+      {
+        "position": {
+          "x": -369,
+          "y": 548
         }
       }
 view: |-
@@ -112,16 +163,16 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 492.5,
-        "x": 50,
+        "height": 735,
+        "width": 901.5,
+        "x": -369,
         "y": 50
       }
     }
   }
 inputs:
-- key: EntryID
-  value: ${File.EntryID}
-  description: EntryID of file to be uploaded
+- key: File
+  value: ${File}
+  description: File object of file to be uploaded
 outputs: []
 releaseNotes: "Detonating files using the new command for it in WildFire"
