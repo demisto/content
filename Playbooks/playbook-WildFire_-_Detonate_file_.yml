@@ -13,6 +13,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -95,6 +96,7 @@ tasks:
       id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
