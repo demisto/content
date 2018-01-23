@@ -6,6 +6,10 @@
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
+            "integrations": "OpenPhish",
+            "playbookID": "email_test"
+        },
+        {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
