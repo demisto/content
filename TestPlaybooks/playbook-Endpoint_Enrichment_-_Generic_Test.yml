@@ -75,7 +75,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Hostname
+        simple: Hostname,IP,MAC
       path:
         simple: Endpoint
     separatecontext: false
