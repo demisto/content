@@ -46,7 +46,7 @@ tasks:
       - "3"
     scriptarguments:
       EntryID:
-        simple: ${inputs.EntryID}
+        simple: ${inputs.File}
     separatecontext: true
     loop:
       iscommand: false
@@ -128,6 +128,11 @@ inputs:
     simple: ${File.EntryID}
   required: true
   description: Entry ID of file to be detonated
+- key: File
+  value:
+    simple: ${File}
+  required: true
+  description: File object of file to be detonated
 outputs:
 - contextPath: File.SHA256
   description: SHA256 of the file
