@@ -1,0 +1,155 @@
+id: Carbon black Protection Rapid IOC Hunting - Test
+version: -1
+name: Carbon black Protection Rapid IOC Hunting - Test
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+    type: start
+    task:
+      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 92cb999f-47bc-45e0-8e81-a87f161555ad
+    type: playbook
+    task:
+      id: 92cb999f-47bc-45e0-8e81-a87f161555ad
+      version: -1
+      name: Carbon black Protection Rapid IOC Hunting
+      description: Hunt for endpoint activity involving hash and domain IOCs, using
+        Carbon black Protection (Bit9).
+      playbookName: Carbon black Protection Rapid IOC Hunting
+      playbookId: playbook17
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hash:
+        simple: df9d0ca7409a2967bb338014b043a062
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6b6dcb5f-83c0-4dc3-8e5e-0da4364077c7
+    type: regular
+    task:
+      id: 6b6dcb5f-83c0-4dc3-8e5e-0da4364077c7
+      version: -1
+      name: Verify found hashes
+      description: Verify found hashes
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: subplaybook-1
+          accessor: found_hashes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
+    type: title
+    task:
+      id: ade05085-d22e-470a-8a44-b2b2707c48d3
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: be90f285-665c-4094-862f-af5e3c519135
+    type: regular
+    task:
+      id: be90f285-665c-4094-862f-af5e3c519135
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"

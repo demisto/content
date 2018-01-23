@@ -1,5 +1,5 @@
 id: playbook17
-fromversion: 2.5.0
+fromversion: 3.5.0
 system: true
 version: -1
 name: Carbon black Protection Rapid IOC Hunting
@@ -9,19 +9,20 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
+    taskid: beabda04-030d-4f10-84f1-b1db9cf9e2b0
     type: start
     task:
-      id: a68f66e4-9f00-4be5-82d5-66a604a8e127
+      id: beabda04-030d-4f10-84f1-b1db9cf9e2b0
       version: -1
-      description: ""
       name: start_task
+      description: ""
       type: start
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "10"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -31,13 +32,13 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+    taskid: 1cd3a55a-f365-447a-8492-bedec09c2f00
     type: regular
     task:
-      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+      id: 1cd3a55a-f365-447a-8492-bedec09c2f00
       version: -1
-      description: "Searching The Bit9 file catalog for the hashes"
-      name: Search observed hashes in the Bit9 file catalog
+      name: Search hashes in the file catalog
+      description: Searching The Bit9 file catalog for the hashes
       scriptName: CBPCatalogFindHash
       type: regular
       iscommand: false
@@ -46,7 +47,11 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      md5: ${File.MD5}
+      md5:
+        complex:
+          root: inputs
+          accessor: Hash
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -56,13 +61,16 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+    taskid: 37bc6180-791e-482f-83ec-51b6ad2db9b6
     type: regular
     task:
-      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+      id: 37bc6180-791e-482f-83ec-51b6ad2db9b6
       version: -1
-      description: "If the hashes have been approved or blocked in the past, they will be in existing rules. It is useful to see whether the hash was in some blacklist or whitelist or a person marked them as such, possibly with a comment explaining their reasons."
-      name: Check if the hashes are included in any Bit9 rules
+      name: Check if the hashes are included in any rules
+      description: If the hashes have been approved or blocked in the past, they will
+        be in existing rules. It is useful to see whether the hash was in some blacklist
+        or whitelist or a person marked them as such, possibly with a comment explaining
+        their reasons.
       scriptName: CBPFindRule
       type: regular
       iscommand: false
@@ -71,7 +79,11 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      hash: ${File.MD5}
+      hash:
+        complex:
+          root: inputs
+          accessor: Hash
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -81,15 +93,14 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
+    taskid: 4b401c8c-4ef1-44f2-8cac-d4ab87d7a013
     type: condition
     task:
-      id: ec572e1b-78cf-4daf-8185-688d7b04041b
+      id: 4b401c8c-4ef1-44f2-8cac-d4ab87d7a013
       version: -1
       name: Is CarbonBlack Protection enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -99,26 +110,62 @@ tasks:
       "yes":
       - "12"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+      value:
+        simple: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: carbonblackprotection
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 196
         }
       }
   "11":
     id: "11"
-    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
+    taskid: 93a2df6f-0ee2-4693-8a43-327297f25cb0
     type: title
     task:
-      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
+      id: 93a2df6f-0ee2-4693-8a43-327297f25cb0
       version: -1
-      description: "Done"
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -128,15 +175,14 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+    taskid: fe930938-3663-4da7-89f6-017dee5784d1
     type: condition
     task:
-      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+      id: fe930938-3663-4da7-89f6-017dee5784d1
       version: -1
       name: Do we have files to hunt?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -146,7 +192,19 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      value: ${File.MD5}
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: Hash
+            iscontext: true
     view: |-
       {
         "position": {
@@ -169,4 +227,16 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 Hash to hunt for
+outputs:
+- contextPath: found_hashes
+  description: The existing hashes that were found
+  type: string
+releaseNotes: "-"
