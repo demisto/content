@@ -7,15 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ffefeeb7-1aef-471d-84b0-2cabfe4702aa
+    taskid: c1b2203d-9117-4a02-8a65-35e2ff8a3148
     type: start
     task:
-      id: ffefeeb7-1aef-471d-84b0-2cabfe4702aa
+      id: c1b2203d-9117-4a02-8a65-35e2ff8a3148
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -29,17 +29,17 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 47bbd788-45d3-449a-84e6-05b4c91d6c6e
+    taskid: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
     type: regular
     task:
-      id: 47bbd788-45d3-449a-84e6-05b4c91d6c6e
+      id: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
       version: -1
+      description: ""
       name: Delete context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -55,50 +55,19 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
-    taskid: 1cd96aa6-9c3e-47c0-8754-a5ecc0842a0b
-    type: playbook
-    task:
-      id: 1cd96aa6-9c3e-47c0-8754-a5ecc0842a0b
-      version: -1
-      name: CrowdStrike Endpoint Enrichment
-      playbookName: CrowdStrike Endpoint Enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Hostname:
-        simple: ${Endpoint.Hostname}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
   "3":
     id: "3"
-    taskid: fb3b71c9-afca-4e87-86b3-dca060fcd45b
+    taskid: e538ff03-ee16-44cc-8642-7414ce2e51b7
     type: regular
     task:
-      id: fb3b71c9-afca-4e87-86b3-dca060fcd45b
+      id: e538ff03-ee16-44cc-8642-7414ce2e51b7
       version: -1
+      description: ""
       name: Verify context
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     scriptarguments:
       expectedValue: {}
       fields:
@@ -115,17 +84,17 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 8b995f1f-5e53-400f-898e-bdc064a7d14c
+    taskid: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
     type: regular
     task:
-      id: 8b995f1f-5e53-400f-898e-bdc064a7d14c
+      id: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
       version: -1
+      description: ""
       name: 'Add hostname #1'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -146,20 +115,20 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: d3c82587-adf6-4b22-8f19-867601c73b62
+    taskid: 759fe9ee-1d3b-4e02-844d-2207862d71c3
     type: regular
     task:
-      id: d3c82587-adf6-4b22-8f19-867601c73b62
+      id: 759fe9ee-1d3b-4e02-844d-2207862d71c3
       version: -1
+      description: ""
       name: 'Add hostname #2'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       append:
         simple: "true"
@@ -172,7 +141,38 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 548
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 665dc402-46bb-4f28-80eb-eacbae6f97e6
+    type: playbook
+    task:
+      id: 665dc402-46bb-4f28-80eb-eacbae6f97e6
+      version: -1
+      description: ""
+      name: CrowdStrike Endpoint Enrichment
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
 view: |-

@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ad3b3bef-6c79-4dba-8b25-5b0374aa7674
+    taskid: 7cfa3cf6-82b0-452f-8c52-85355d20008a
     type: start
     task:
-      id: ad3b3bef-6c79-4dba-8b25-5b0374aa7674
+      id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
       version: -1
       description: ""
       name: ""
@@ -24,15 +24,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 51
         }
       }
   "3":
     id: "3"
-    taskid: 468064a1-c0dd-4a19-83f7-c8c43d06d768
+    taskid: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
     type: title
     task:
-      id: 468064a1-c0dd-4a19-83f7-c8c43d06d768
+      id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
       version: -1
       description: ""
       name: Done
@@ -49,10 +49,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 5b390dfa-ac7e-49e9-8faa-c8ed6ec4ec98
+    taskid: 6b7bfc47-d31a-4296-8cc5-0522912daa56
     type: condition
     task:
-      id: 5b390dfa-ac7e-49e9-8faa-c8ed6ec4ec98
+      id: 6b7bfc47-d31a-4296-8cc5-0522912daa56
       version: -1
       name: Was device found?
       description: Check if there was any machine match to the hostname
@@ -82,10 +82,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 77e64fb3-5cde-4bea-82bf-f93d239c9185
+    taskid: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
     type: regular
     task:
-      id: 77e64fb3-5cde-4bea-82bf-f93d239c9185
+      id: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
       version: -1
       name: Get host information from CrowdStrike Falcon Host
       description: Get host information from CrowdStrike Falcon Host
@@ -104,16 +104,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 296,
-          "y": 555
+          "x": 299,
+          "y": 550
         }
       }
   "6":
     id: "6"
-    taskid: 10ebd215-fd84-4a73-8f1b-3f9ab5c1d50b
+    taskid: c5e5f2e9-8731-4367-8e19-5535f6f00139
     type: regular
     task:
-      id: 10ebd215-fd84-4a73-8f1b-3f9ab5c1d50b
+      id: c5e5f2e9-8731-4367-8e19-5535f6f00139
       version: -1
       name: Get Device ID
       description: Get CrowdStrike device id by hostname.
@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 210
         }
       }
 view: |-
@@ -150,10 +150,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 626,
+        "height": 734,
+        "width": 629,
         "x": 50,
-        "y": 50
+        "y": 51
       }
     }
   }
