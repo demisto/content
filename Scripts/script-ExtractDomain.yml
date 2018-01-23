@@ -3,18 +3,9 @@ commonfields:
   version: -1
 name: ExtractDomain
 script: |
-  var markAsIndicator = true;
-  if ((args.markAsIndicator) && (args.markAsIndicator === 'false')){
-      markAsIndicator = false;
-  }
-  var calcReputation = true;
-  if ((args.calcReputation) && (args.calcReputation === 'false')){
-      calcReputation = false;
-  }
-  var extractFromEmails = true;
-  if ((args.extractFromEmails) && (args.extractFromEmails === 'false')){
-      extractFromEmails = false;
-  }
+  var markAsIndicator = (args.markAsIndicator === 'true');
+  var calcReputation = (args.calcReputation === 'true');
+  var extractFromEmails = (args.extractFromEmails === 'true');
 
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -28,7 +19,7 @@ script: |
       return false;
   };
 
-  var addToContextAndMD = function(domains,ec,md) {
+  var addToContextAndMD = function(domains, ec, md) {
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
           domain = handleDomain(domain);
@@ -189,8 +180,10 @@ args:
   - "true"
   - "false"
   description: Create a new indicator for each new domain found, default is true
+  defaultValue: "true"
 - name: calcReputation
   auto: PREDEFINED
+  defaultValue: "true"
   predefined:
   - "true"
   - "false"
@@ -201,6 +194,7 @@ args:
     looking for domains
 - name: extractFromEmails
   auto: PREDEFINED
+  defaultValue: "true"
   predefined:
   - "true"
   - "false"
