@@ -6,6 +6,9 @@
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
+            "playbookID": "email_test"
+        },
+        {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
@@ -169,9 +172,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "playbookID": "endpoint_enrichment_-_generic_test"
         }
     ],
     "skipped": [
