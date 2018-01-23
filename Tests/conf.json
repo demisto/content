@@ -172,6 +172,10 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "CrowdStrike Rapid IOC Hunting - Test"
         }
     ],
     "skipped": [
