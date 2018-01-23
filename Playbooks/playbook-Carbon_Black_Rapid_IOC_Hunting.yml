@@ -1,5 +1,5 @@
 id: Carbon Black Rapid IOC Hunting
-fromversion: 2.5.0
+fromversion: 3.5.0
 system: true
 version: -1
 name: Carbon Black Rapid IOC Hunting
@@ -8,18 +8,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+    taskid: edc8b672-13e8-48fa-87c9-594118876ac4
     type: start
     task:
-      id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+      id: edc8b672-13e8-48fa-87c9-594118876ac4
       version: -1
-      description: "Playbook start point"
       name: ""
+      description: Playbook start point
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -29,10 +30,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
+    taskid: 8522b27b-705f-4411-8612-aaf14ab1ef38
     type: regular
     task:
-      id: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
+      id: 8522b27b-705f-4411-8612-aaf14ab1ef38
       version: -1
       name: CBFindHash
       description: Search Carbon Black for connection to specified md5 hash(es).
@@ -44,9 +45,13 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      md5: ${File.MD5}
+      md5:
+        complex:
+          root: inputs
+          accessor: Hash
     results:
     - found_file_locations
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -56,15 +61,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: c687c04f-ba90-4572-800a-923193bacc32
+    taskid: 6cc1eea9-726e-41f4-806a-0ed419347119
     type: condition
     task:
-      id: c687c04f-ba90-4572-800a-923193bacc32
+      id: 6cc1eea9-726e-41f4-806a-0ed419347119
       version: -1
       name: Is Carbon Black enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -74,7 +78,43 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+      value:
+        simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: carbonblack
+                accessor: brand
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
@@ -84,16 +124,17 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 189b725f-2b0a-42cc-8148-95395f810983
+    taskid: 108ba97d-b9da-4162-808d-025b5f6b7986
     type: title
     task:
-      id: 189b725f-2b0a-42cc-8148-95395f810983
+      id: 108ba97d-b9da-4162-808d-025b5f6b7986
       version: -1
-      description: "Done"
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -103,15 +144,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: a4a842fc-727c-4a64-883d-873968708ded
+    taskid: b9d04fe4-581a-43bf-8eee-0b7cb145c6ed
     type: condition
     task:
-      id: a4a842fc-727c-4a64-883d-873968708ded
+      id: b9d04fe4-581a-43bf-8eee-0b7cb145c6ed
       version: -1
       name: Do we have files to hunt?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -121,7 +161,21 @@ tasks:
       "yes":
       - "1"
     scriptarguments:
-      value: ${File.MD5}
+      value:
+        complex:
+          root: inputs
+          accessor: Hash
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: Hash
+            iscontext: true
     view: |-
       {
         "position": {
@@ -143,4 +197,19 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 Hash
+outputs:
+- contextPath: found_file_locations
+  description: Found file locations
+  type: string
+- contextPath: found_hashes
+  description: Found hashes
+  type: string
+releaseNotes: "-"

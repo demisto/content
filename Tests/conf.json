@@ -172,6 +172,10 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "carbonblack",
+            "playbookID": "Carbon Black Rapid IOC Hunting - Test"
         }
     ],
     "skipped": [
