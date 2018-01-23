@@ -286,4 +286,3 @@ script:
       description: ID of the entry containing the file to upload
     description: Upload file to WildFire for analysis.
 hidden: false
-releaseNotes: "-"
