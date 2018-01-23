@@ -27,7 +27,7 @@ script: |-
   if (ips && (!Array.isArray(ips) || ips.length > 0)) {
       return 'yes';
   }
-  var indicatorsRes = executeCommand("findIndicators", {"query":"(reputation:Bad or reputation:Suspicious)  and incident.id:"+investigation.id,"size":1});
+  var indicatorsRes = executeCommand("findIndicators", {"query":"(reputation:Bad or reputation:Suspicious)  and investigationIDs:"+investigation.id,"size":1});
   if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
       // we have results, so we found a maliciuos indicator for this investigation
       return 'yes'
