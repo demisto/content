@@ -6,9 +6,6 @@
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
-            "playbookID": "dbot_indicator_enrichment_-_generic_-_test"
-        },
-        {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
