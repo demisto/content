@@ -7,75 +7,38 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+    taskid: ad3b3bef-6c79-4dba-8b25-5b0374aa7674
     type: start
     task:
-      id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+      id: ad3b3bef-6c79-4dba-8b25-5b0374aa7674
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 51
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 8969423c-000c-475a-8b67-f4f3e7ed6709
-    type: regular
-    task:
-      id: 8969423c-000c-475a-8b67-f4f3e7ed6709
-      version: -1
-      name: Get device ID
-      description: Search for CrowdStrike device id given the hostname
-      script: FalconHost|||cs-device-search
-      type: regular
-      iscommand: true
-      brand: FalconHost
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      filter:
-        complex:
-          root: inputs
-          accessor: Hostname
-          transformers:
-          - operator: string.Concat
-            args:
-              prefix: hostname:"
-              suffix: '"'
-      limit: {}
-      offset: {}
-      query: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
+          "y": 50
         }
       }
   "3":
     id: "3"
-    taskid: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+    taskid: 468064a1-c0dd-4a19-83f7-c8c43d06d768
     type: title
     task:
-      id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+      id: 468064a1-c0dd-4a19-83f7-c8c43d06d768
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -86,10 +49,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+    taskid: 5b390dfa-ac7e-49e9-8faa-c8ed6ec4ec98
     type: condition
     task:
-      id: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+      id: 5b390dfa-ac7e-49e9-8faa-c8ed6ec4ec98
       version: -1
       name: Was device found?
       description: Check if there was any machine match to the hostname
@@ -119,10 +82,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
+    taskid: 77e64fb3-5cde-4bea-82bf-f93d239c9185
     type: regular
     task:
-      id: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
+      id: 77e64fb3-5cde-4bea-82bf-f93d239c9185
       version: -1
       name: Get host information from CrowdStrike Falcon Host
       description: Get host information from CrowdStrike Falcon Host
@@ -141,8 +104,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 299,
-          "y": 550
+          "x": 296,
+          "y": 555
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 10ebd215-fd84-4a73-8f1b-3f9ab5c1d50b
+    type: regular
+    task:
+      id: 10ebd215-fd84-4a73-8f1b-3f9ab5c1d50b
+      version: -1
+      name: Get Device ID
+      description: Get CrowdStrike device id by hostname.
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs
+          accessor: Hostname
+          transformers:
+          - operator: string.concat
+            args:
+              prefix: hostname:"
+              suffix: '"'
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -150,10 +150,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 734,
-        "width": 629,
+        "height": 735,
+        "width": 626,
         "x": 50,
-        "y": 51
+        "y": 50
       }
     }
   }
