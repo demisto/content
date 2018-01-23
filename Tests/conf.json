@@ -17,6 +17,11 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
@@ -162,7 +167,8 @@
         {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "playbookID": "GeneratePassword-Test"
@@ -196,11 +202,6 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
         }
     ]
 }
