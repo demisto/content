@@ -1,6 +1,6 @@
 id: TIE - IOC Hunt
 version: -1
-name: IOC Hunt - TIE
+name: TIE - IOC Hunt
 description: |-
   Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
 
