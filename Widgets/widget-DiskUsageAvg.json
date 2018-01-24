@@ -1,0 +1,14 @@
+{
+  "id": "disk-usage-avg",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Disk usage average",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "disk.usedPercent",
+  "isPredefined": true,
+  "params": {
+    "currencySign": "%"
+  },
+  "size": 0
+}
