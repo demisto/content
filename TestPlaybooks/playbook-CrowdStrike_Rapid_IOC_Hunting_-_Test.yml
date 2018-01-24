@@ -25,37 +25,6 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    id: "2"
-    taskid: cffe5029-715e-4924-8125-6d375b3bede7
-    type: regular
-    task:
-      id: cffe5029-715e-4924-8125-6d375b3bede7
-      version: -1
-      name: Verify found hashes
-      description: Verify found hashes
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        complex:
-          root: subplaybook-5
-          accessor: FalconHostDevices
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
   "3":
     id: "3"
     taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
@@ -64,7 +33,6 @@ tasks:
       id: ade05085-d22e-470a-8a44-b2b2707c48d3
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -73,7 +41,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
   "4":
@@ -111,15 +79,14 @@ tasks:
     task:
       id: e4502e7d-24b6-4e69-80fb-617590474104
       version: -1
-      name: CrowdStrike Rapid IOC Hunting
-      playbookId: playbook16
-      playbookName: CrowdStrike Rapid IOC Hunting
+      name: CrowdStrike Rapid IOC Hunting 1
+      playbookName: CrowdStrike Rapid IOC Hunting 1
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       MD5Hash:
         simple: 36bd4be7042f6de7e332c05cef287d05
@@ -136,7 +103,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 375
+          "y": 370
         }
       }
 view: |-
@@ -144,7 +111,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50
@@ -153,3 +120,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
