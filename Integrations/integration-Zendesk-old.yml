@@ -900,5 +900,4 @@ script:
       description: Locale. Defaults to en-us
     description: Get Zendesk Help Center article
   isfetch: true
-releaseNotes: "-"
 toversion: 3.1.0

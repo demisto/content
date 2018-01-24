@@ -3,7 +3,6 @@ commonfields:
   version: 1
 name: SendEmailToManager
 toversion: 3.1.0
-releaseNotes: add toVersion
 script: |-
   email = demisto.get(demisto.args(), 'email')
   if not email:
