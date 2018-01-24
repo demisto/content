@@ -1,0 +1,127 @@
+id: Get File Endpoint History - Generic - Test
+version: -1
+name: Get File Endpoint History - Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dee39df6-13a5-478c-896a-10346bd28cb3
+    type: start
+    task:
+      id: dee39df6-13a5-478c-896a-10346bd28cb3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: dd50fb3b-b6fe-4f9a-8d7a-0f2bdb8351fb
+    type: regular
+    task:
+      id: dd50fb3b-b6fe-4f9a-8d7a-0f2bdb8351fb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: eaf80db4-bab9-499c-8ac8-80f47b43693f
+    type: playbook
+    task:
+      id: eaf80db4-bab9-499c-8ac8-80f47b43693f
+      version: -1
+      name: Hunt for bad IOCs_copy
+      description: Assume that malicious IOCs are in the right place in the context
+        and start hunting using available tools
+      playbookName: Get File Endpoint History - Generic
+      playbookId: Hunt for bad IOCs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      MD5Hash:
+        simple: '[\"0cc175b9c0f1b6a831c399e269772661\", \"36bd4be7042f6de7e332c05cef287d05\",
+          \"df9d0ca7409a2967bb338014b043a062\", \"05ED91DAA77FF31F7F4E61314C2A3122\"]'
+      SHA1Hash:
+        simple: '[\"2fb8b65be05606697e019391d99e28c79c946725\"]'
+      SHA256Hash:
+        simple: '[\"56cdfe418592b3fd68cea60da9689fb51a9bd90409b747d02fa08ed90db81e37\"]'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 414dc5dc-bcdd-4b0b-8605-8e09028122ed
+    type: title
+    task:
+      id: 414dc5dc-bcdd-4b0b-8605-8e09028122ed
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
