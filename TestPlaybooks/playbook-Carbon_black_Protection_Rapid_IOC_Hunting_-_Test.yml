@@ -61,10 +61,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 6b6dcb5f-83c0-4dc3-8e5e-0da4364077c7
+    taskid: 52b060ee-8e3e-439e-80c6-c825ea6507e0
     type: regular
     task:
-      id: 6b6dcb5f-83c0-4dc3-8e5e-0da4364077c7
+      id: 52b060ee-8e3e-439e-80c6-c825ea6507e0
       version: -1
       name: Verify found hashes
       description: Verify found hashes
@@ -81,7 +81,12 @@ tasks:
       path:
         complex:
           root: subplaybook-1
-          accessor: found_hashes
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: subplaybook-1.found_hashes
+                iscontext: true
     separatecontext: false
     view: |-
       {
