@@ -104,7 +104,7 @@ tasks:
       extend-context: {}
       fields: {}
       path:
-        simple: ${Account.Email}
+        simple: Account.Email
     separatecontext: false
     view: |-
       {
@@ -130,7 +130,7 @@ tasks:
       fields:
         simple: Indicator, Score, Vendor, Type
       path:
-        simple: ${DBotScore}
+        simple: DBotScore
     separatecontext: false
     view: |-
       {
