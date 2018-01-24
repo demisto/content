@@ -79,8 +79,9 @@ tasks:
     task:
       id: e4502e7d-24b6-4e69-80fb-617590474104
       version: -1
-      name: CrowdStrike Rapid IOC Hunting 1
-      playbookName: CrowdStrike Rapid IOC Hunting 1
+      name: CrowdStrike Rapid IOC Hunting
+      playbookId: playbook16
+      playbookName: CrowdStrike Rapid IOC Hunting
       type: playbook
       iscommand: false
       brand: ""
