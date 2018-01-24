@@ -2,7 +2,7 @@
   "id": "disk-usage-avg",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Disk usage average",
+  "name": "Disk Usage Average",
   "dataType": "system",
   "widgetType": "number",
   "query": "disk.usedPercent",
