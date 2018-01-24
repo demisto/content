@@ -1,8 +1,8 @@
 {
-  "id": "memory-usage-avg",
+  "id": "memory-current-usage",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Memory Usage Average",
+  "name": "Memory Current Usage",
   "dataType": "system",
   "widgetType": "number",
   "query": "memory.usedPercent",
