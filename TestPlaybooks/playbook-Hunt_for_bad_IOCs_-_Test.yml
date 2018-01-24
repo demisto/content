@@ -70,7 +70,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     scriptarguments:
       MD5Hash:
         simple: '[\"0cc175b9c0f1b6a831c399e269772661\", \"36bd4be7042f6de7e332c05cef287d05\",
@@ -108,7 +108,148 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1245
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ef7538c3-efde-443f-8b3d-53903eba202e
+    type: regular
+    task:
+      id: ef7538c3-efde-443f-8b3d-53903eba202e
+      version: -1
+      name: VerifyContext - Falcon Host Devices
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: eeb842b5-5d39-4383-8485-f4009e048b7f
+    type: regular
+    task:
+      id: eeb842b5-5d39-4383-8485-f4009e048b7f
+      version: -1
+      name: VerifyContext - Found File Locations
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: found_file_locations
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4e984156-7368-4aac-8490-79134e96db60
+    type: regular
+    task:
+      id: 4e984156-7368-4aac-8490-79134e96db60
+      version: -1
+      name: VerifyContext - Found Hashes
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: found_hashes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 87ec56e1-fe54-480c-8b01-c02b5bf7a258
+    type: regular
+    task:
+      id: 87ec56e1-fe54-480c-8b01-c02b5bf7a258
+      version: -1
+      name: VerifyContext - Agent Guids
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: File
+          accessor: References.AgentGuid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
 view: |-
@@ -116,7 +257,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -125,3 +266,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
