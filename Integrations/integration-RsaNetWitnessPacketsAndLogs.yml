@@ -2145,4 +2145,3 @@ For regular expressions, change “keyword” to “regex”
         default is zero (all nodes)
     description: 'Fires notifications when the node changes security.roles: everyone'
 fromversion: 3.5.0
-releaseNotes: "-"
