@@ -2,6 +2,7 @@ id: WildFire - Detonate file
 version: -1
 name: WildFire - Detonate file
 toversion: 3.0.1
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: 47b6de2e-e418-4386-8888-860bc6d48175
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -85,6 +87,7 @@ tasks:
       id: 20ef69c7-2840-4c83-854b-ea213c875e4b
       version: -1
       name: 'Is Wildfire Available? '
+      description: ""
       scriptName: Exists
       type: condition
       iscommand: false
@@ -111,6 +114,7 @@ tasks:
       id: 294e47a9-3554-41ba-8e46-315ff451a574
       version: -1
       name: 'End '
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -166,3 +170,4 @@ inputs:
 - key: ReportFormat
   value: xml
   description: ""
+releaseNotes: "-"
