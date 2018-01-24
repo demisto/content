@@ -580,4 +580,3 @@ outputs:
 scripttarget: 0
 dockerimage: demisto/machine-learning:latest
 fromversion: 3.5.0
-releaseNotes: Find incidents dedup candidates automation by machine learning
