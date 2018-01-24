@@ -1,7 +1,8 @@
 id: playbook5
 version: -1
 system: true
-fromversion: 3.5.0
+fromversion: 2.5.0
+toversion: 3.0.1
 name: Phishing Playbook - Automated
 description: |-
   This is an automated playbook to investigate suspected Phishing attempts.
@@ -738,7 +739,7 @@ tasks:
       version: -1
       description: ""
       name: ""
-      playbookName: Detonate File - Generic
+      playbookName: Detonate files
       type: playbook
       iscommand: false
       brand: ""
