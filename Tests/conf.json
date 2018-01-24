@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "activedir",
+            "playbookID": "account_enrichment_-_generic_test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -173,10 +177,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "account_enrichment_-_generic_test"
         }
     ],
     "skipped": [
