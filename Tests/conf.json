@@ -3,7 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "carbonblack",
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
             "playbookID": "Carbon Black Rapid IOC Hunting - Test"
         },
         {
