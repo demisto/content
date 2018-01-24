@@ -2,7 +2,7 @@
   "id": "memory-usage-avg",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Memory usage average",
+  "name": "Memory Usage Average",
   "dataType": "system",
   "widgetType": "number",
   "query": "memory.usedPercent",
