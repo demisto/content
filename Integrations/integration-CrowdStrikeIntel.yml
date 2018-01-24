@@ -799,4 +799,3 @@ script:
     description: Retrieve the Falcon Intel Report PDF
 hidden: false
 fromversion: 3.5.0
-releaseNotes: "-"

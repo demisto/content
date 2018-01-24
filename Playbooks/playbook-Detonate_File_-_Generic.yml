@@ -2,7 +2,7 @@ id: Detonate File - Generic
 version: -1
 name: Detonate File - Generic
 description: Detonate file through active integration that support file detonation
-fromversion: "3.5.0"
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
