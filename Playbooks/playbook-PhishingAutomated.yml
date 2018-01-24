@@ -738,7 +738,7 @@ tasks:
       version: -1
       description: ""
       name: ""
-      playbookName: Detonate files
+      playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
       brand: ""
