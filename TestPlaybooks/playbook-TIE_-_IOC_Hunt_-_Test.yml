@@ -7,17 +7,17 @@ fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
-    taskid: 2cfe76f3-9e13-4507-80f2-71574f8e5b71
+    taskid: 066f0346-5546-4ce7-840d-52444dec212e
     type: start
     task:
-      id: 2cfe76f3-9e13-4507-80f2-71574f8e5b71
+      id: 066f0346-5546-4ce7-840d-52444dec212e
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -26,22 +26,22 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    id: "2"
-    taskid: cd75bb5c-f152-44b0-8285-c032e65ca522
+  "1":
+    id: "1"
+    taskid: 3b86fa59-f5bd-483d-8648-d73cb79c668b
     type: regular
     task:
-      id: cd75bb5c-f152-44b0-8285-c032e65ca522
+      id: 3b86fa59-f5bd-483d-8648-d73cb79c668b
       version: -1
-      name: Clear context
-      description: Clear the context before starting
+      name: DeleteContext
+      description: Delete all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,22 +54,23 @@ tasks:
           "y": 195
         }
       }
-  "3":
-    id: "3"
-    taskid: 52dfe8df-500d-4c54-894d-bbb4bf6a08f9
+  "2":
+    id: "2"
+    taskid: f0a75cf5-dd71-4864-84aa-9adf93ee2324
     type: regular
     task:
-      id: 52dfe8df-500d-4c54-894d-bbb4bf6a08f9
+      id: f0a75cf5-dd71-4864-84aa-9adf93ee2324
       version: -1
-      name: Create testFile1
-      description: Create a file with a known hash
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
       scriptName: FileCreateAndUpload
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "3"
     scriptarguments:
       data:
         simple: ' '
@@ -84,28 +85,29 @@ tasks:
           "y": 370
         }
       }
-  "4":
-    id: "4"
-    taskid: 09d89477-4416-47ca-86ea-4ee46d9c10eb
+  "3":
+    id: "3"
+    taskid: 8e770017-6125-46a0-8852-9d0e865f85d2
     type: regular
     task:
-      id: 09d89477-4416-47ca-86ea-4ee46d9c10eb
+      id: 8e770017-6125-46a0-8852-9d0e865f85d2
       version: -1
-      name: Create testFile2
-      description: Create another file with a known hash
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
       scriptName: FileCreateAndUpload
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "4"
     scriptarguments:
       data:
         simple: a
       entryId: {}
       filename:
-        simple: testFile2
+        simple: testFile2.tzt
     separatecontext: false
     view: |-
       {
@@ -114,53 +116,12 @@ tasks:
           "y": 545
         }
       }
-  "7":
-    id: "7"
-    taskid: b37f5046-3c58-46bb-8061-5b5b7535915f
-    type: regular
-    task:
-      id: b37f5046-3c58-46bb-8061-5b5b7535915f
-      version: -1
-      name: Verify AgentGuid
-      description: Verify AgentGuid exists
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        complex:
-          root: File
-          filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: References
-                iscontext: true
-          - - operator: general.isNotEmpty
-              left:
-                value:
-                  simple: References.AgentGuid
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 62d51b99-1ded-46f7-8595-283138319603
+  "4":
+    id: "4"
+    taskid: 8bfb3388-fd14-4a4a-88fa-f89d917a0a06
     type: playbook
     task:
-      id: 62d51b99-1ded-46f7-8595-283138319603
+      id: 8bfb3388-fd14-4a4a-88fa-f89d917a0a06
       version: -1
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
@@ -179,7 +140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
       Hash:
         simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
@@ -193,26 +154,46 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 718
         }
       }
-  "10":
-    id: "10"
-    taskid: 7f19a477-c115-40ab-8f03-ce7187966ca4
-    type: title
+  "5":
+    id: "5"
+    taskid: 9469b3df-6167-4d9b-8eb1-986f993e8fc8
+    type: regular
     task:
-      id: 7f19a477-c115-40ab-8f03-ce7187966ca4
+      id: 9469b3df-6167-4d9b-8eb1-986f993e8fc8
       version: -1
-      name: Done
-      type: title
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        complex:
+          root: File
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: File.References.AgentGuid
+                iscontext: true
+          accessor: References
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
 view: |-
@@ -220,7 +201,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 940,
         "width": 380,
         "x": 50,
         "y": 50
@@ -229,3 +210,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
