@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "carbonblackprotection",
+            "playbookID": "Carbon black Protection Rapid IOC Hunting - Test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -173,10 +177,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "Carbon black Protection Rapid IOC Hunting - Test"
         }
     ],
     "skipped": [
