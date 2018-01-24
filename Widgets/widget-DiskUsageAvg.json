@@ -1,8 +1,8 @@
 {
-  "id": "disk-usage-avg",
+  "id": "disk-current-usage",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Disk Usage Average",
+  "name": "Disk Current Usage",
   "dataType": "system",
   "widgetType": "number",
   "query": "disk.usedPercent",
