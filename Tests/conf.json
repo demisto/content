@@ -7,7 +7,7 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": ["FalconHost", "Cylance Protect"],
+            "integrations": "Cylance Protect",
             "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
