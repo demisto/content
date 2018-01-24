@@ -2,7 +2,7 @@
   "id": "cpu-usage-avg",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "CPU usage average",
+  "name": "CPU Usage Average",
   "dataType": "system",
   "widgetType": "number",
   "query": "cpu.usedPercent",
