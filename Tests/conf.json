@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "FalconHost",
+            "playbookID": "CrowdStrike Rapid IOC Hunting - Test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
@@ -172,10 +176,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "CrowdStrike Rapid IOC Hunting - Test"
         }
     ],
     "skipped": [
