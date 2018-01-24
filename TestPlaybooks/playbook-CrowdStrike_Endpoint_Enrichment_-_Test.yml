@@ -55,43 +55,12 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
-    taskid: 95c114bc-0c1c-4b9a-849d-b589068927b0
-    type: playbook
-    task:
-      id: 95c114bc-0c1c-4b9a-849d-b589068927b0
-      version: -1
-      description: ""
-      name: CrowdStrike Endpoint Enrichment
-      playbookName: CrowdStrike Endpoint Enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Hostname:
-        simple: ${Endpoint.Hostname}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
   "3":
     id: "3"
-    taskid: e538ff03-ee16-44cc-8642-7414ce2e51b7
+    taskid: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
     type: regular
     task:
-      id: e538ff03-ee16-44cc-8642-7414ce2e51b7
+      id: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
       version: -1
       description: ""
       name: Verify context
@@ -101,10 +70,9 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue: {}
-      fields:
-        simple: Hostname,OS
+      fields: {}
       path:
-        simple: Endpoint
+        simple: FalconHostDevices
     separatecontext: false
     view: |-
       {
@@ -159,7 +127,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       append:
         simple: "true"
@@ -172,7 +140,38 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 548
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+    type: playbook
+    task:
+      id: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+      version: -1
+      name: CrowdStrike Endpoint Enrichment
+      description: Enrich Endpoint with CrowdStrike
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
 view: |-
