@@ -28,10 +28,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: cfa7965c-0179-41d6-8802-380ad370c314
+    taskid: 69513a5a-c5de-4faa-8681-139a075a2b08
     type: regular
     task:
-      id: cfa7965c-0179-41d6-8802-380ad370c314
+      id: 69513a5a-c5de-4faa-8681-139a075a2b08
       version: -1
       name: Verify found hashes
       description: Verify found hashes
@@ -48,7 +48,12 @@ tasks:
       path:
         complex:
           root: subplaybook-5
-          accessor: found_hashes
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: subplaybook-5.found_hashes
+                iscontext: true
     separatecontext: false
     view: |-
       {
@@ -138,10 +143,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 1ec23e64-3ebc-40e7-8ab5-f1016d09c54e
+    taskid: 11d35d3c-fe9b-4901-891f-c51d4d9a5372
     type: regular
     task:
-      id: 1ec23e64-3ebc-40e7-8ab5-f1016d09c54e
+      id: 11d35d3c-fe9b-4901-891f-c51d4d9a5372
       version: -1
       name: Verify file locations
       description: Verify found hashes
@@ -158,7 +163,12 @@ tasks:
       path:
         complex:
           root: subplaybook-5
-          accessor: found_file_locations
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: subplaybook-5.found_file_locations
+                iscontext: true
     separatecontext: false
     view: |-
       {
