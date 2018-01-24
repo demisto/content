@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": ["FalconHost", "carbonblack", "carbonblackprotection", "McAfee Threat Intelligence Exchange"],
+            "playbookID": "Get File Endpoint History - Generic - Test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
