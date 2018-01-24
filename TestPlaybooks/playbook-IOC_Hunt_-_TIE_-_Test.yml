@@ -163,6 +163,7 @@ tasks:
       id: 62d51b99-1ded-46f7-8595-283138319603
       version: -1
       name: IOC Hunt - TIE
+      playbookId: TIE - IOC Hunt
       description: |-
         Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
 
