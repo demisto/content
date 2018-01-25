@@ -1,6 +1,11 @@
 {
   "id": "last30DaysClosedIncidentsReport",
+  "name": "Last 30 days closed incidents",
+  "description": "All closed incidents in the last 30 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
+  "releaseNotes": "-",
   "fromVersion": "3.5",
+  "tags": [],
+  "createdBy": "DBot",
   "version": 4,
   "modified": "2018-01-24T10:28:18.810557421Z",
   "startDate": "0001-01-01T00:00:00Z",
@@ -11,8 +16,6 @@
   "cronView": false,
   "scheduled": false,
   "type": "pdf",
-  "name": "Last 30 days closed incidents",
-  "description": "All closed incidents in the last 30 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
   "system": false,
   "locked": false,
   "sections": [
@@ -291,7 +294,7 @@
       "title": "last24HoursClosedIncidentsReport Headline"
     }
   ],
-  "recipients": null,
+  "recipients": [],
   "orientation": "",
   "paperSize": "",
   "runOnce": false,
