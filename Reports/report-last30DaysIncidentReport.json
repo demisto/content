@@ -834,5 +834,6 @@
   "type": "pdf",
   "id": "last30DaysIncidentReport",
   "fromVersion": "3.5",
-  "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents."
+  "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents.",
+  "releaseNotes": "-"
 }

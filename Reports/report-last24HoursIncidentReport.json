@@ -1,6 +1,7 @@
 {
   "id": "last24HoursIncidentReport",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "version": 10,
   "modified": "2018-01-24T09:59:09.482396647Z",
   "startDate": "0001-01-01T00:00:00Z",
