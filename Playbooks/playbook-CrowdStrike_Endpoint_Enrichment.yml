@@ -12,56 +12,19 @@ tasks:
     task:
       id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
           "y": 51
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 8969423c-000c-475a-8b67-f4f3e7ed6709
-    type: regular
-    task:
-      id: 8969423c-000c-475a-8b67-f4f3e7ed6709
-      version: -1
-      name: Get device ID
-      description: Search for CrowdStrike device id given the hostname
-      script: FalconHost|||cs-device-search
-      type: regular
-      iscommand: true
-      brand: FalconHost
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      filter:
-        complex:
-          root: inputs
-          accessor: Hostname
-          transformers:
-          - operator: string.Concat
-            args:
-              prefix: hostname:"
-              suffix: '"'
-      limit: {}
-      offset: {}
-      query: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
         }
       }
   "3":
@@ -71,11 +34,11 @@ tasks:
     task:
       id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -145,6 +108,43 @@ tasks:
           "y": 550
         }
       }
+  "6":
+    id: "6"
+    taskid: c5e5f2e9-8731-4367-8e19-5535f6f00139
+    type: regular
+    task:
+      id: c5e5f2e9-8731-4367-8e19-5535f6f00139
+      version: -1
+      name: Get device ID
+      description: Get CrowdStrike device id
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs
+          accessor: Hostname
+          transformers:
+          - operator: string.concat
+            args:
+              prefix: hostname:"
+              suffix: '"'
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
@@ -177,3 +177,4 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+releaseNotes: add new playbook
