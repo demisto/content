@@ -3,8 +3,7 @@ version: -1
 name: Hunt for bad IOCs
 fromversion: 3.5.0
 system: true
-description: Assume that malicious IOCs are in the right place in the context and
-  start hunting using available tools
+description: Hunt using available tools
 starttaskid: "0"
 tasks:
   "0":
@@ -73,10 +72,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 9f3311f1-fd41-4b15-8537-53495b0f6cef
+    taskid: 5937d882-8964-48b8-834d-1e6f3d83b189
     type: playbook
     task:
-      id: 9f3311f1-fd41-4b15-8537-53495b0f6cef
+      id: 5937d882-8964-48b8-834d-1e6f3d83b189
       version: -1
       name: Carbon Black Rapid IOC Hunting
       playbookId: Carbon Black Rapid IOC Hunting
@@ -106,10 +105,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 89429b18-8ecd-4b23-86c0-30a33afd22b9
+    taskid: 912e992b-d3bd-4353-8177-5ea207ef2ac6
     type: playbook
     task:
-      id: 89429b18-8ecd-4b23-86c0-30a33afd22b9
+      id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
       version: -1
       name: Carbon black Protection Rapid IOC Hunting
       playbookId: playbook17
@@ -186,10 +185,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 5c43d38d-83e0-46d2-8e1b-cb059f73612e
+    taskid: 05df1d6e-f77e-4b06-8c62-2750064f5b00
     type: condition
     task:
-      id: 5c43d38d-83e0-46d2-8e1b-cb059f73612e
+      id: 05df1d6e-f77e-4b06-8c62-2750064f5b00
       version: -1
       name: Is MD5 hash?
       description: Is MD5 hash?
