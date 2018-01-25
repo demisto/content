@@ -446,4 +446,3 @@ script:
       Emulation sandbox outputs, and more. The request must have the ID of the file
       to download'
 fromversion: 3.5.0
-releaseNotes: '-'
