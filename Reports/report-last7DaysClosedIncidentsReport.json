@@ -1,6 +1,7 @@
 {
   "id": "last7DaysClosedIncidentsReport",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "version": 3,
   "modified": "2018-01-24T10:26:16.063341264Z",
   "startDate": "0001-01-01T00:00:00Z",

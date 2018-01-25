@@ -834,5 +834,6 @@
   "type": "pdf",
   "id": "last7DaysIncidentReport",
   "fromVersion": "3.5",
-  "description": "Last 7 days summary of incidents statistics, followed by a list of all current open incidents."
+  "description": "Last 7 days summary of incidents statistics, followed by a list of all current open incidents.",
+  "releaseNotes": "-"
 }
