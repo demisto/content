@@ -12,10 +12,10 @@ tasks:
     task:
       id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -34,11 +34,11 @@ tasks:
     task:
       id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
       version: -1
+      description: ""
       name: Endpoint Products
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "16"
@@ -61,13 +61,12 @@ tasks:
     task:
       id: 69d20bc5-f201-440f-8d93-6054c33af852
       version: -1
+      description: ""
       name: Is ePO enabled?
-      description: Check if there is any active instance of this brand
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -109,12 +108,11 @@ tasks:
     task:
       id: e7395d7d-a2cf-44f2-8c9c-399c1fe1e390
       version: -1
+      description: ""
       name: Is there an Endpoint Hostname to run on?
-      description: Validate playbook input has hostname
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -147,11 +145,11 @@ tasks:
     task:
       id: b95011d0-fd23-4e65-8ea9-560c5aead197
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -512,10 +510,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 959398ee-d572-4a7e-813f-15a09ead5a5a
+    taskid: 9c2a5d9a-05dd-4d63-8acd-af890eebbab5
     type: regular
     task:
-      id: 959398ee-d572-4a7e-813f-15a09ead5a5a
+      id: 9c2a5d9a-05dd-4d63-8acd-af890eebbab5
       version: -1
       name: Get host information from Cylance Protect
       description: ' Cylance Protect: Get host information'
@@ -532,7 +530,7 @@ tasks:
           root: inputs
           accessor: Hostname
           transformers:
-          - operator: string.Concat
+          - operator: string.concat
             args:
               prefix: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
               suffix: '"}]'
@@ -557,11 +555,11 @@ tasks:
     task:
       id: 24d57109-73e3-4b01-822d-b40cb89af9e8
       version: -1
+      description: ""
       name: ePO
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -580,11 +578,11 @@ tasks:
     task:
       id: 589ec412-b56a-42a2-87c1-09e279e28535
       version: -1
+      description: ""
       name: Sentinel One
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -603,11 +601,11 @@ tasks:
     task:
       id: 6cf08862-644d-479e-89ce-f9e173a8c562
       version: -1
+      description: ""
       name: Carbon Black Enterprise Response
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -626,11 +624,11 @@ tasks:
     task:
       id: 7c2eb34e-c326-438b-8a53-d57dc8872f92
       version: -1
+      description: ""
       name: Cylance Protect
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "14"
@@ -649,11 +647,11 @@ tasks:
     task:
       id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
       version: -1
+      description: ""
       name: CrowdStrike Falcon Host
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -752,11 +750,11 @@ tasks:
     task:
       id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
       version: -1
+      description: ""
       name: Active Directory
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "22"
@@ -775,12 +773,12 @@ tasks:
     task:
       id: b743dbf9-c2c0-4529-8dad-92ffe5647134
       version: -1
+      description: ""
       name: CrowdStrike Endpoint Enrichment
       playbookName: CrowdStrike Endpoint Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -831,3 +829,4 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+releaseNotes: add new playbook
