@@ -3,6 +3,7 @@
   "name": "Unknown severity incidents",
   "description": "Report about all unknown severity incidents that may need the analyst attention.",
   "fromVersion": "2.5.0",
+  "toVersion": "3.1",
   "tags": [],
   "createdBy": "DBot",
   "type": "pdf",

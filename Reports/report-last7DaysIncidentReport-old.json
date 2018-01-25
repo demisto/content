@@ -3,6 +3,7 @@
   "name": "Last 7 days incidents",
   "description": "Last 7 days summary of incidents statistics, followed by a list of all current open incidents.",
   "fromVersion": "2.5.0",
+  "toVersion": "3.1",
   "tags": [],
   "createdBy": "DBot",
   "type": "pdf",
