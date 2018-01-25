@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: EmailAskUser
 toversion: 3.1.0
-releaseNotes: add toVersion
 script: |-
   // email body type
   var bodyType = 'text';
