@@ -30,13 +30,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 8522b27b-705f-4411-8612-aaf14ab1ef38
+    taskid: 255509e0-b2e6-483c-8379-1968871458dc
     type: regular
     task:
-      id: 8522b27b-705f-4411-8612-aaf14ab1ef38
+      id: 255509e0-b2e6-483c-8379-1968871458dc
       version: -1
       name: CBFindHash
-      description: Search Carbon Black for connection to specified md5 hash(es).
+      description: Search Carbon Black for connection to specified MD5 hash(es).
       scriptName: CBFindHash
       type: regular
       iscommand: false
@@ -55,20 +55,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 356,
+          "y": 605
         }
       }
   "2":
     id: "2"
-    taskid: 6cc1eea9-726e-41f4-806a-0ed419347119
+    taskid: 504da0d8-d8f5-4273-8954-d5d333dc5ca1
     type: condition
     task:
-      id: 6cc1eea9-726e-41f4-806a-0ed419347119
+      id: 504da0d8-d8f5-4273-8954-d5d333dc5ca1
       version: -1
       name: Is Carbon Black enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Is Carbon Black enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -139,19 +138,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 769
         }
       }
   "4":
     id: "4"
-    taskid: b9d04fe4-581a-43bf-8eee-0b7cb145c6ed
+    taskid: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
     type: condition
     task:
-      id: b9d04fe4-581a-43bf-8eee-0b7cb145c6ed
+      id: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
       version: -1
       name: Do we have files to hunt?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Do we have files to hunt?
       type: condition
       iscommand: false
       brand: ""
@@ -179,19 +177,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 356,
+          "y": 371
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "2_3_#default#": 0.27
+      "2_3_#default#": 0.3,
+      "2_4_yes": 0.5,
+      "4_1_yes": 0.5,
+      "4_3_#default#": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 492.5,
+        "height": 784,
+        "width": 686,
         "x": 50,
         "y": 50
       }

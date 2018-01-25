@@ -1,6 +1,7 @@
 id: Carbon Black Rapid IOC Hunting - Test
 version: -1
 name: Carbon Black Rapid IOC Hunting - Test
+description: A test playbook for Carbon Black Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -77,13 +78,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 790b6cfa-d3bb-4574-88c3-2e739e4c68e6
+    taskid: edf3efa9-ce94-4e6b-8f5a-9a2ea590e54a
     type: regular
     task:
-      id: 790b6cfa-d3bb-4574-88c3-2e739e4c68e6
+      id: edf3efa9-ce94-4e6b-8f5a-9a2ea590e54a
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Clear Context
+      description: Clear all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -110,9 +111,8 @@ tasks:
     task:
       id: 581ab08b-c4a7-4604-8d56-b4e08955fc9f
       version: -1
-      name: Carbon Black Rapid IOC Hunting
-      playbookName: Carbon Black Rapid IOC Hunting
-      playbookId: Carbon Black Rapid IOC Hunting
+      name: Carbon Black Rapid IOC Hunting_copy_2
+      playbookName: Carbon Black Rapid IOC Hunting_copy_2
       type: playbook
       iscommand: false
       brand: ""
@@ -136,13 +136,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: a0df8ef1-c1c2-4da4-875c-3089b6278077
+    taskid: 5577d85e-a838-4327-80a5-139318021b77
     type: regular
     task:
-      id: a0df8ef1-c1c2-4da4-875c-3089b6278077
+      id: 5577d85e-a838-4327-80a5-139318021b77
       version: -1
       name: Verify file locations
-      description: Verify found hashes
+      description: Verify file locations
       scriptName: VerifyContext
       type: regular
       iscommand: false
