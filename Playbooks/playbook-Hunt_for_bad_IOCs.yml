@@ -39,6 +39,7 @@ tasks:
       name: CrowdStrike Rapid IOC Hunting
       playbookId: playbook16
       playbookName: CrowdStrike Rapid IOC Hunting
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -80,6 +81,7 @@ tasks:
       name: Carbon Black Rapid IOC Hunting
       playbookId: Carbon Black Rapid IOC Hunting
       playbookName: Carbon Black Rapid IOC Hunting
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -113,6 +115,7 @@ tasks:
       name: Carbon black Protection Rapid IOC Hunting
       playbookId: playbook17
       playbookName: Carbon black Protection Rapid IOC Hunting
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -249,6 +252,7 @@ tasks:
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
       playbookName: TIE - IOC Hunt
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
