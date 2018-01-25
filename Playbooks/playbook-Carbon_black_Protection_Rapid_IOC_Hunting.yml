@@ -3,8 +3,7 @@ fromversion: 3.5.0
 system: true
 version: -1
 name: Carbon black Protection Rapid IOC Hunting
-description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
-  black Protection (Bit9).
+description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
 starttaskid: "0"
 tasks:
   "0":
@@ -26,19 +25,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 50
         }
       }
   "8":
     id: "8"
-    taskid: 1cd3a55a-f365-447a-8492-bedec09c2f00
+    taskid: 4d7028b4-bd69-48b5-85d0-df111c25ecd9
     type: regular
     task:
-      id: 1cd3a55a-f365-447a-8492-bedec09c2f00
+      id: 4d7028b4-bd69-48b5-85d0-df111c25ecd9
       version: -1
       name: Search hashes in the file catalog
-      description: Searching The Bit9 file catalog for the hashes
+      description: Searching The file catalog for the hashes
       scriptName: CBPCatalogFindHash
       type: regular
       iscommand: false
@@ -55,16 +54,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -197,
           "y": 572
         }
       }
   "9":
     id: "9"
-    taskid: 37bc6180-791e-482f-83ec-51b6ad2db9b6
+    taskid: 14dcdb77-91ae-44a4-858b-d3fa88abe992
     type: regular
     task:
-      id: 37bc6180-791e-482f-83ec-51b6ad2db9b6
+      id: 14dcdb77-91ae-44a4-858b-d3fa88abe992
       version: -1
       name: Check if the hashes are included in any rules
       description: If the hashes have been approved or blocked in the past, they will
@@ -87,20 +86,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 734
+          "x": -197,
+          "y": 745
         }
       }
   "10":
     id: "10"
-    taskid: 4b401c8c-4ef1-44f2-8cac-d4ab87d7a013
+    taskid: 4224a038-730f-4a9c-81b8-b9f0bc60394b
     type: condition
     task:
-      id: 4b401c8c-4ef1-44f2-8cac-d4ab87d7a013
+      id: 4224a038-730f-4a9c-81b8-b9f0bc60394b
       version: -1
-      name: Is CarbonBlack Protection enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      name: Is Carbon Black Protection enabled?
+      description: Is Carbon Black Protection enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -149,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 196
+          "x": 275,
+          "y": 195
         }
       }
   "11":
@@ -169,20 +167,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 902
+          "x": 244,
+          "y": 927
         }
       }
   "12":
     id: "12"
-    taskid: fe930938-3663-4da7-89f6-017dee5784d1
+    taskid: 2f76a11d-dc6b-4895-83e1-db0645837ac9
     type: condition
     task:
-      id: fe930938-3663-4da7-89f6-017dee5784d1
+      id: 2f76a11d-dc6b-4895-83e1-db0645837ac9
       version: -1
       name: Do we have files to hunt?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Do we have files to hunt?
       type: condition
       iscommand: false
       brand: ""
@@ -208,21 +205,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 382
+          "x": -50,
+          "y": 380
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
       "10_11_#default#": 0.36,
-      "12_11_#default#": 0.16
+      "12_11_#default#": 0.32
     },
     "paper": {
       "dimensions": {
-        "height": 917,
-        "width": 380,
-        "x": 50,
+        "height": 942,
+        "width": 852,
+        "x": -197,
         "y": 50
       }
     }

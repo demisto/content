@@ -1,6 +1,7 @@
 id: Carbon black Protection Rapid IOC Hunting - Test
 version: -1
 name: Carbon black Protection Rapid IOC Hunting - Test
+description: A test playbook for Carbon Black Protection Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -61,10 +62,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 46862203-08f0-447c-8773-d39d09fa6347
+    taskid: 9f730645-5088-4d38-8b45-7d74bdad2c23
     type: regular
     task:
-      id: 46862203-08f0-447c-8773-d39d09fa6347
+      id: 9f730645-5088-4d38-8b45-7d74bdad2c23
       version: -1
       name: Verify found hashes
       description: Verify found hashes
@@ -110,13 +111,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: be90f285-665c-4094-862f-af5e3c519135
+    taskid: d3473d01-4bae-46c7-89e7-65471ab321ac
     type: regular
     task:
-      id: be90f285-665c-4094-862f-af5e3c519135
+      id: d3473d01-4bae-46c7-89e7-65471ab321ac
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Clear Context
+      description: Clear all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
