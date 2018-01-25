@@ -20,8 +20,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
       - "9"
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -242,10 +242,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 5930cd65-e812-4ac7-8976-660487fdea01
+    taskid: eb65bf58-3d48-456d-8c75-b9fd0c79e22f
     type: playbook
     task:
-      id: 5930cd65-e812-4ac7-8976-660487fdea01
+      id: eb65bf58-3d48-456d-8c75-b9fd0c79e22f
       version: -1
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
@@ -256,11 +256,19 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    scriptarguments:
+      Hash:
+        simple: ${.=Object.keys(inputs).map(function(f) {return inputs[f];}).reduce(function(a,
+          b){return a.concat(b);}, [])}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 498,
+          "x": 496,
           "y": 604
         }
       }
