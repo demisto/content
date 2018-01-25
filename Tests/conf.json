@@ -181,12 +181,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "account_enrichment_-_generic_test"
         }
-
     ],
     "skipped": [
         {
