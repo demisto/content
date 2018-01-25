@@ -85,10 +85,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: db77eaae-79b6-4b53-8423-a2b6bed8a3b3
+    taskid: b5a0b0d7-58b7-4a0a-80f3-923cebffa31e
     type: regular
     task:
-      id: db77eaae-79b6-4b53-8423-a2b6bed8a3b3
+      id: b5a0b0d7-58b7-4a0a-80f3-923cebffa31e
       version: -1
       name: Verify email
       scriptName: VerifyContext
@@ -99,12 +99,11 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      expectedValue:
-        simple: ${input.Email}
+      expectedValue: {}
       extend-context: {}
       fields: {}
       path:
-        simple: Account.Email
+        simple: Account.Email.Address
     separatecontext: false
     view: |-
       {
@@ -115,10 +114,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: ff76ef5b-0c20-4830-8b1a-80b70030f960
+    taskid: 0453ac84-36a7-4f83-82b0-db3353dd05c7
     type: regular
     task:
-      id: ff76ef5b-0c20-4830-8b1a-80b70030f960
+      id: 0453ac84-36a7-4f83-82b0-db3353dd05c7
       version: -1
       name: Verify DBotScore
       scriptName: VerifyContext
@@ -136,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1072
         }
       }
   "5":
