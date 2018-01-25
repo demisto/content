@@ -3,6 +3,7 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "ThreatExchange",
             "playbookID": "extract_indicators_-_generic_-_test"
         },
         {
