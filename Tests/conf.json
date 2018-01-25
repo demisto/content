@@ -3,6 +3,13 @@
     "testInterval": 30,
     "tests": [
         {
+          "integrations": {
+                "name": "activedir",
+                "byoi": false
+            },
+            "playbookID": "account_enrichment_-_generic_test"
+        },
+        {
             "integrations": "FalconHost",
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
