@@ -1,0 +1,191 @@
+id: get_file_sample_from_path_-_generic_-_test
+version: -1
+name: Get File Sample From Path - Generic - Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d1d7711f-3ce2-48fd-8bde-8703380282e4
+    type: start
+    task:
+      id: d1d7711f-3ce2-48fd-8bde-8703380282e4
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 76332cca-d0c0-432e-8859-ff7ec551cdcb
+    type: regular
+    task:
+      id: 76332cca-d0c0-432e-8859-ff7ec551cdcb
+      version: -1
+      description: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 347b0aba-0d9d-43c9-881d-bea1e27c889a
+    type: regular
+    task:
+      id: 347b0aba-0d9d-43c9-881d-bea1e27c889a
+      version: -1
+      description: ""
+      name: Carbon black list sensors
+      script: carbonblack|||cb-list-sensors
+      type: regular
+      iscommand: true
+      brand: carbonblack
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: cb06e38c-0cf5-43cb-8263-48e83b3567ab
+    type: regular
+    task:
+      id: cb06e38c-0cf5-43cb-8263-48e83b3567ab
+      version: -1
+      description: ""
+      name: Verify file exist
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: C:\\Windows\\System32\\calc.exe
+      fields: {}
+      path:
+        simple: File.[0].Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 898
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 60d7a7ec-7779-4e8b-8b00-71e9d7f6cdce
+    type: playbook
+    task:
+      id: 60d7a7ec-7779-4e8b-8b00-71e9d7f6cdce
+      version: -1
+      name: Get File Sample From Path - Generic
+      description: |-
+        Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+
+        inputs:
+        * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)
+      playbookName: Get File Sample From Path - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.[0:2].Hostname}
+      Path:
+        simple: ${File.Path}
+      UseD2:
+        simple: "no"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 723
+        }
+      }
+  "7":
+    id: "7"
+    taskid: cbda56dd-30d0-45aa-8cd7-e7ff8ddcc268
+    type: regular
+    task:
+      id: cbda56dd-30d0-45aa-8cd7-e7ff8ddcc268
+      version: -1
+      description: ""
+      name: add file path
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File.Path
+      value:
+        simple: C:\\Windows\\System32\\calc.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 548
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 943,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
