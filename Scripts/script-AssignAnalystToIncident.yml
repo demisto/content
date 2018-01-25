@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: AssignAnalystToIncident
 system: true
-releaseNotes: "Return proper error entry if script fails"
 script: |
   if (args.email && args.username) {
       throw 'Please provide either username or email';
