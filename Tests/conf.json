@@ -3,11 +3,17 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "carbonblack",
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
             "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test"
         },
         {
-            "integrations": "carbonblack",
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
             "playbookID": "get_file_sample_from_path_-_generic_-_test"
         },
         {
