@@ -1,7 +1,7 @@
 id: IOC Hunt - TIE - Test
 version: -1
 name: IOC Hunt - TIE - Test
-description: A test playbook for "IOC Hunt - TIE"
+description: A test playbook for IOC Hunt - TIE
 starttaskid: "0"
 fromversion: 3.5.0
 tasks:
@@ -28,13 +28,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 3b86fa59-f5bd-483d-8648-d73cb79c668b
+    taskid: b1cd7dc5-47f3-43c7-8cf8-71306f41a6a6
     type: regular
     task:
-      id: 3b86fa59-f5bd-483d-8648-d73cb79c668b
+      id: b1cd7dc5-47f3-43c7-8cf8-71306f41a6a6
       version: -1
-      name: DeleteContext
-      description: Delete all context
+      name: Clear Context
+      description: Clear all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -45,6 +45,7 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      extend-context: {}
       key: {}
     separatecontext: false
     view: |-
@@ -56,18 +57,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: e4aa1f5f-32be-4359-803c-3eaf099ace04
+    taskid: f8208b45-3fc1-4e65-80dd-8ad86c8c0060
     type: regular
     task:
-      id: e4aa1f5f-32be-4359-803c-3eaf099ace04
+      id: f8208b45-3fc1-4e65-80dd-8ad86c8c0060
       version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: Verify Context - AgentGuid
+      description: Verify Context - AgentGuid
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -87,12 +83,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 3b19c594-3647-4f9d-8f85-a157dd54ed4d
+    taskid: 73db95ad-1bb5-4204-841f-9e4ed6f12f60
     type: regular
     task:
-      id: 3b19c594-3647-4f9d-8f85-a157dd54ed4d
+      id: 73db95ad-1bb5-4204-841f-9e4ed6f12f60
       version: -1
       name: Create hashes for test
+      description: Create dummy hashes for test purposes
       scriptName: Set
       type: regular
       iscommand: false
@@ -123,15 +120,7 @@ tasks:
       version: -1
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
-      description: |-
-        Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
-
-        Input:
-        * Hash (default, takes all deferent hashes from context)
-
-        Output:
-        * All agents that files with "Hash" has been executed on (TIE)
-        * Enrich Agents info from ePO
+      description: ""
       playbookName: TIE - IOC Hunt
       type: playbook
       iscommand: false
