@@ -151,7 +151,7 @@ tasks:
     task:
       id: e70f5c75-4cb1-430c-8660-b01ad288ddec
       version: -1
-      name: ""
+      name: "MAR - Endpoint data collection"
       playbookName: MAR - Endpoint data collection
       type: playbook
       iscommand: false
@@ -183,3 +183,4 @@ inputs:
 - key: UseD2
   value: "False"
   description: ""
+releaseNotes: "-"
