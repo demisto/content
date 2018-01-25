@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 06f33f0f-43b8-4260-862c-c700fe7278dd
+    taskid: 966b661f-9af1-4f84-86b0-3db66c2c9292
     type: start
     task:
-      id: 06f33f0f-43b8-4260-862c-c700fe7278dd
+      id: 966b661f-9af1-4f84-86b0-3db66c2c9292
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: b0904425-5a15-4511-8cf6-762d02e244c1
+    taskid: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
     type: playbook
     task:
-      id: b0904425-5a15-4511-8cf6-762d02e244c1
+      id: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
       version: -1
       name: Endpoint Enrichment - Generic
       description: Enrich an Endpoint Hostname using one or more integrations
@@ -46,7 +46,7 @@ tasks:
       - "5"
     scriptarguments:
       Hostname:
-        simple: ${Endpoint.Hostname}
+        simple: ${exampleEndpoint.Hostname}
     separatecontext: false
     loop:
       iscommand: false
@@ -56,15 +56,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
   "5":
     id: "5"
-    taskid: fc2ab457-693b-4673-887d-9eb89583eb94
+    taskid: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
     type: regular
     task:
-      id: fc2ab457-693b-4673-887d-9eb89583eb94
+      id: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
       version: -1
       name: Verify context endpoint key
       scriptName: VerifyContext
@@ -75,23 +75,23 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Hostname,Mac,IP,OS
+        simple: Hostname
       path:
-        simple: ${Endpoint}
+        simple: Endpoint
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
   "6":
     id: "6"
-    taskid: 6d21f234-ad71-4c57-822a-8278ebabe962
+    taskid: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
     type: regular
     task:
-      id: 6d21f234-ad71-4c57-822a-8278ebabe962
+      id: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
       version: -1
       name: Delete context (all)
       scriptName: DeleteContext
@@ -116,10 +116,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 70e0c51c-f979-47c9-8d1b-638c4cf6717e
+    taskid: 91cb1640-cc0c-4f32-8632-5297dc122894
     type: regular
     task:
-      id: 70e0c51c-f979-47c9-8d1b-638c4cf6717e
+      id: 91cb1640-cc0c-4f32-8632-5297dc122894
       version: -1
       name: 'add hostname #1'
       scriptName: Set
@@ -134,7 +134,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: exampleEndpoint.Hostname
       value:
         simple: AMAZON-39D8D1E7
     separatecontext: false
@@ -147,12 +147,43 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 63f6ec04-9335-4c37-88a9-eec0010a724c
+    taskid: 08d6b69d-6a76-4363-8030-5241a624f53b
     type: regular
     task:
-      id: 63f6ec04-9335-4c37-88a9-eec0010a724c
+      id: 08d6b69d-6a76-4363-8030-5241a624f53b
       version: -1
       name: 'add hostname #2'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: exampleEndpoint.Hostname
+      value:
+        simple: acAir2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 544
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+    type: regular
+    task:
+      id: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+      version: -1
+      name: 'add hostname #3'
       scriptName: Set
       type: regular
       iscommand: false
@@ -165,15 +196,15 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: exampleEndpoint.Hostname
       value:
-        simple: acAir2
+        simple: CentOS70
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
 view: |-
@@ -181,7 +212,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50

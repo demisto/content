@@ -926,4 +926,3 @@ script:
     description: Gets a specific threat feed
 hidden: false
 fromversion: 3.5.0
-releaseNotes: "-"
