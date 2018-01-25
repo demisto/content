@@ -111,8 +111,9 @@ tasks:
     task:
       id: 581ab08b-c4a7-4604-8d56-b4e08955fc9f
       version: -1
-      name: Carbon Black Rapid IOC Hunting_copy_2
-      playbookName: Carbon Black Rapid IOC Hunting_copy_2
+      name: Carbon Black Rapid IOC Hunting
+      playbookName: Carbon Black Rapid IOC Hunting
+      playbookId: Carbon Black Rapid IOC Hunting
       type: playbook
       iscommand: false
       brand: ""
