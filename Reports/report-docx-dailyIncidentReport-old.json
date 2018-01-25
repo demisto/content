@@ -2,6 +2,7 @@
   "id": "docxDailyIncidentReport",
   "name": "Daily incidents",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
+  "releaseNotes": "-",
   "fromVersion": "2.5.0",
   "toVersion": "3.1",
   "tags": [],
