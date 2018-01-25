@@ -3,6 +3,14 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "FalconHost",
+            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+        },
+        {
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
