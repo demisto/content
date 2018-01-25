@@ -18,11 +18,6 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
@@ -192,6 +187,11 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
         {
