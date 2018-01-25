@@ -858,4 +858,3 @@ script:
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
 fromversion: 3.5.0
-releaseNotes: "-"

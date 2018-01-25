@@ -152,7 +152,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      ip: 158.85.81.123
+      ip: 103.225.52.112
       long: ""
       threshold: ""
       url: https://www.demisto.com
