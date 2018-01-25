@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b2acb73e-f19b-4720-8e0e-03f4767aeae9
+    taskid: 29bcd70f-1953-4061-84ce-4cde781ad9f7
     type: start
     task:
-      id: b2acb73e-f19b-4720-8e0e-03f4767aeae9
+      id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
       version: -1
       description: ""
       name: ""
@@ -29,10 +29,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: b88e8246-b819-4b0b-8ec0-efc1f2262656
+    taskid: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
     type: title
     task:
-      id: b88e8246-b819-4b0b-8ec0-efc1f2262656
+      id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
       version: -1
       description: ""
       name: Endpoint Products
@@ -56,10 +56,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 4c4ac7b4-7259-442c-886d-462accd31438
+    taskid: 69d20bc5-f201-440f-8d93-6054c33af852
     type: condition
     task:
-      id: 4c4ac7b4-7259-442c-886d-462accd31438
+      id: 69d20bc5-f201-440f-8d93-6054c33af852
       version: -1
       description: ""
       name: Is ePO enabled?
@@ -103,10 +103,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 67f9e78d-54ed-4cda-86ef-cc4993634602
+    taskid: e7395d7d-a2cf-44f2-8c9c-399c1fe1e390
     type: condition
     task:
-      id: 67f9e78d-54ed-4cda-86ef-cc4993634602
+      id: e7395d7d-a2cf-44f2-8c9c-399c1fe1e390
       version: -1
       description: ""
       name: Is there an Endpoint Hostname to run on?
@@ -140,10 +140,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 47694916-e14f-4d67-8ad5-09180a8b7af8
+    taskid: b95011d0-fd23-4e65-8ea9-560c5aead197
     type: title
     task:
-      id: 47694916-e14f-4d67-8ad5-09180a8b7af8
+      id: b95011d0-fd23-4e65-8ea9-560c5aead197
       version: -1
       description: ""
       name: Done
@@ -160,10 +160,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 39035710-09b8-4b7c-867b-e9e70494dec4
+    taskid: c91a3fdb-160c-42d9-87ef-5fb240ad2565
     type: regular
     task:
-      id: 39035710-09b8-4b7c-867b-e9e70494dec4
+      id: c91a3fdb-160c-42d9-87ef-5fb240ad2565
       version: -1
       name: Get host information from ePO
       description: 'ePO: Get host information'
@@ -187,10 +187,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: ffd40404-8b46-4d0d-809a-7814893b79aa
+    taskid: 7a3a4170-f604-471b-8962-87590bb2d505
     type: condition
     task:
-      id: ffd40404-8b46-4d0d-809a-7814893b79aa
+      id: 7a3a4170-f604-471b-8962-87590bb2d505
       version: -1
       name: Is SentinelOne enabled?
       description: Check if there is any active instance of this brand
@@ -234,10 +234,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: cf334489-ab5a-40cc-86a4-55e1800e99fb
+    taskid: 1b8c3de7-7fc1-4ff9-8a90-34c4750087ef
     type: regular
     task:
-      id: cf334489-ab5a-40cc-86a4-55e1800e99fb
+      id: 1b8c3de7-7fc1-4ff9-8a90-34c4750087ef
       version: -1
       name: Get host information from SentinelOne
       description: 'SentinelOne: Get host information'
@@ -298,10 +298,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 55bdf46d-73ee-4a16-8e02-75183006074e
+    taskid: 2b7a6a53-6c8d-4dce-8ce6-56ae0da3a917
     type: condition
     task:
-      id: 55bdf46d-73ee-4a16-8e02-75183006074e
+      id: 2b7a6a53-6c8d-4dce-8ce6-56ae0da3a917
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Check if there is any active instance of this brand
@@ -345,10 +345,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 414dafaf-bcb9-400c-87af-e1f8362bc8b1
+    taskid: 2cf9473e-32de-4e15-8784-59b357c85c4e
     type: regular
     task:
-      id: 414dafaf-bcb9-400c-87af-e1f8362bc8b1
+      id: 2cf9473e-32de-4e15-8784-59b357c85c4e
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: 'Carbon Black Enterprise Response: Get host information '
@@ -415,10 +415,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 981c68a7-0ddf-4618-88db-ffebb297b5d9
+    taskid: 86a1a174-c652-4d82-8f00-2f72d718ac7f
     type: condition
     task:
-      id: 981c68a7-0ddf-4618-88db-ffebb297b5d9
+      id: 86a1a174-c652-4d82-8f00-2f72d718ac7f
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
       description: Check if there is any active instance of this brand
@@ -463,10 +463,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 536d3e49-6ee4-4f43-887c-4811bb372bf7
+    taskid: feb95688-7d7c-4ed4-8eb8-5a37ed9101cf
     type: condition
     task:
-      id: 536d3e49-6ee4-4f43-887c-4811bb372bf7
+      id: feb95688-7d7c-4ed4-8eb8-5a37ed9101cf
       version: -1
       name: Is Cylance Protect enabled?
       description: Check if there is any active instance of this brand
@@ -478,7 +478,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "26"
+      - "15"
     scriptarguments:
       value:
         complex:
@@ -508,12 +508,52 @@ tasks:
           "y": 660
         }
       }
+  "15":
+    id: "15"
+    taskid: 9c2a5d9a-05dd-4d63-8acd-af890eebbab5
+    type: regular
+    task:
+      id: 9c2a5d9a-05dd-4d63-8acd-af890eebbab5
+      version: -1
+      name: Get host information from Cylance Protect
+      description: ' Cylance Protect: Get host information'
+      script: Cylance Protect|||cylance-protect-get-devices
+      type: regular
+      iscommand: true
+      brand: Cylance Protect
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs
+          accessor: Hostname
+          transformers:
+          - operator: string.concat
+            args:
+              prefix: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
+              suffix: '"}]'
+      headers: {}
+      page_number: {}
+      page_size: {}
+      searchText:
+        simple: ${inputs.Hostname}
+      sorts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 906
+        }
+      }
   "16":
     id: "16"
-    taskid: 0de1f82b-b009-4851-8b21-879f20185b86
+    taskid: 24d57109-73e3-4b01-822d-b40cb89af9e8
     type: title
     task:
-      id: 0de1f82b-b009-4851-8b21-879f20185b86
+      id: 24d57109-73e3-4b01-822d-b40cb89af9e8
       version: -1
       description: ""
       name: ePO
@@ -533,10 +573,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: e1f06a6e-589c-4ba5-855c-fb4ff8227502
+    taskid: 589ec412-b56a-42a2-87c1-09e279e28535
     type: title
     task:
-      id: e1f06a6e-589c-4ba5-855c-fb4ff8227502
+      id: 589ec412-b56a-42a2-87c1-09e279e28535
       version: -1
       description: ""
       name: Sentinel One
@@ -556,10 +596,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 425ed28d-6f1d-49dd-8fdf-80af51ea6dae
+    taskid: 6cf08862-644d-479e-89ce-f9e173a8c562
     type: title
     task:
-      id: 425ed28d-6f1d-49dd-8fdf-80af51ea6dae
+      id: 6cf08862-644d-479e-89ce-f9e173a8c562
       version: -1
       description: ""
       name: Carbon Black Enterprise Response
@@ -579,10 +619,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 6b426785-8b42-431d-825e-0a528371f322
+    taskid: 7c2eb34e-c326-438b-8a53-d57dc8872f92
     type: title
     task:
-      id: 6b426785-8b42-431d-825e-0a528371f322
+      id: 7c2eb34e-c326-438b-8a53-d57dc8872f92
       version: -1
       description: ""
       name: Cylance Protect
@@ -602,10 +642,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 0536265f-61ec-4c76-8ebb-2cdb0cc1f35e
+    taskid: 5d371f29-3a4c-43c5-8f71-b383db2e5320
     type: title
     task:
-      id: 0536265f-61ec-4c76-8ebb-2cdb0cc1f35e
+      id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
       version: -1
       description: ""
       name: CrowdStrike Falcon Host
@@ -625,10 +665,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: 30ea0e89-9f55-43c2-80d9-72ef4a793082
+    taskid: f9ed7e73-031c-41e3-8da7-ec396363d74e
     type: condition
     task:
-      id: 30ea0e89-9f55-43c2-80d9-72ef4a793082
+      id: f9ed7e73-031c-41e3-8da7-ec396363d74e
       version: -1
       name: Is Active Directory enabled?
       description: Check if there is any active instance of this brand
@@ -672,10 +712,10 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: 2e3c4846-df71-4cbf-8e76-1ad007709902
+    taskid: b73cced2-42a6-4e86-8b30-3c0f21e44dfa
     type: regular
     task:
-      id: 2e3c4846-df71-4cbf-8e76-1ad007709902
+      id: b73cced2-42a6-4e86-8b30-3c0f21e44dfa
       version: -1
       name: Get host information from Active Directory
       description: 'Active Directory: Get host information'
@@ -705,10 +745,10 @@ tasks:
       }
   "24":
     id: "24"
-    taskid: 9e893bcb-5daf-456a-80ae-786591c1f382
+    taskid: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
     type: title
     task:
-      id: 9e893bcb-5daf-456a-80ae-786591c1f382
+      id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
       version: -1
       description: ""
       name: Active Directory
@@ -728,10 +768,10 @@ tasks:
       }
   "25":
     id: "25"
-    taskid: 48121c45-6c2e-497f-8f14-065f9058b42d
+    taskid: b743dbf9-c2c0-4529-8dad-92ffe5647134
     type: playbook
     task:
-      id: 48121c45-6c2e-497f-8f14-065f9058b42d
+      id: b743dbf9-c2c0-4529-8dad-92ffe5647134
       version: -1
       description: ""
       name: CrowdStrike Endpoint Enrichment
@@ -742,50 +782,19 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    separatecontext: true
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
           "x": 2300,
-          "y": 1052
-        }
-      }
-  "26":
-    id: "26"
-    taskid: b0c0a905-5078-4c2e-8423-d846849425d1
-    type: regular
-    task:
-      id: b0c0a905-5078-4c2e-8423-d846849425d1
-      version: -1
-      name: Get host information from Cylance Protect
-      description: 'Cylance Protect: Get host information.'
-      script: Cylance Protect|||cylance-protect-get-devices
-      type: regular
-      iscommand: true
-      brand: Cylance Protect
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      filters:
-        complex:
-          root: inputs
-          accessor: Hostname
-          transformers:
-          - operator: string.concat
-            args:
-              prefix: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
-              suffix: '"}]'
-      headers: {}
-      page_number: {}
-      page_size: {}
-      sorts: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1851,
-          "y": 914
+          "y": 1001
         }
       }
 view: |-
