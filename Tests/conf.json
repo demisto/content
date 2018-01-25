@@ -7,6 +7,20 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
+          "integrations": [
+              "MISP",
+              "urlscan.io",
+              "ThreatExchange",
+              "VirusTotal",
+              "XFE",
+              "AlienVault OTX",
+              "TCPIPUtils",
+              "Phishme Intelligence",
+              "ipinfo"
+          ],
+            "playbookID": "ip_enrichment_generic_test"
+        },
+        {
             "integrations": "Cylance Protect",
             "playbookID": "endpoint_enrichment_-_generic_test"
         },

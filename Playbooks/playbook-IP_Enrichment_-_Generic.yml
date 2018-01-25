@@ -1,6 +1,6 @@
 id: ip_enrichment_generic
 version: -1
-fromversion: "3.5.0"
+fromversion: 3.5.0
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
 starttaskid: "0"
