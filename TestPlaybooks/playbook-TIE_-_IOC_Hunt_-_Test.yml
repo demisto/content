@@ -41,7 +41,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,29 +54,58 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
-    taskid: f0a75cf5-dd71-4864-84aa-9adf93ee2324
+  "5":
+    id: "5"
+    taskid: e4aa1f5f-32be-4359-803c-3eaf099ace04
     type: regular
     task:
-      id: f0a75cf5-dd71-4864-84aa-9adf93ee2324
+      id: e4aa1f5f-32be-4359-803c-3eaf099ace04
       version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File.References.AgentGuid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 3b19c594-3647-4f9d-8f85-a157dd54ed4d
+    type: regular
+    task:
+      id: 3b19c594-3647-4f9d-8f85-a157dd54ed4d
+      version: -1
+      name: Create hashes for test
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
-      data:
-        simple: ' '
-      entryId: {}
-      filename:
-        simple: testFile1.txt
+      append: {}
+      key:
+        simple: Hashes
+      value:
+        simple: '["0cc175b9c0f1b6a831c399e269772661", "7215ee9c7d9dc229d2921a40e899ec5f"]'
     separatecontext: false
     view: |-
       {
@@ -85,43 +114,12 @@ tasks:
           "y": 370
         }
       }
-  "3":
-    id: "3"
-    taskid: 8e770017-6125-46a0-8852-9d0e865f85d2
-    type: regular
-    task:
-      id: 8e770017-6125-46a0-8852-9d0e865f85d2
-      version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      data:
-        simple: a
-      entryId: {}
-      filename:
-        simple: testFile2.tzt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 8bfb3388-fd14-4a4a-88fa-f89d917a0a06
+  "7":
+    id: "7"
+    taskid: 296d1092-4e4d-4af5-8680-f123f22abab1
     type: playbook
     task:
-      id: 8bfb3388-fd14-4a4a-88fa-f89d917a0a06
+      id: 296d1092-4e4d-4af5-8680-f123f22abab1
       version: -1
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
@@ -143,9 +141,9 @@ tasks:
       - "5"
     scriptarguments:
       Hash:
-        simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
-          b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
-    separatecontext: false
+        complex:
+          root: Hashes
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -154,46 +152,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 718
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 9469b3df-6167-4d9b-8eb1-986f993e8fc8
-    type: regular
-    task:
-      id: 9469b3df-6167-4d9b-8eb1-986f993e8fc8
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        complex:
-          root: File
-          filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: File.References.AgentGuid
-                iscontext: true
-          accessor: References
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
+          "y": 545
         }
       }
 view: |-
@@ -201,7 +160,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
