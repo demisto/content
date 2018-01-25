@@ -120,4 +120,3 @@ outputs:
   description: The response for the http request
 scripttarget: 0
 fromversion: 3.5.0
-releaseNotes: "-"
