@@ -3,6 +3,14 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "carbonblack",
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test"
+        },
+        {
+            "integrations": "carbonblack",
+            "playbookID": "get_file_sample_from_path_-_generic_-_test"
+        },
+        {
             "integrations": "FalconHost",
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
