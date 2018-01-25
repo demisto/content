@@ -10,6 +10,8 @@
   "runningUser": "",
   "locked": false,
   "name": "Last 24 hours closed incidents",
+  "tags": [],
+  "createdBy": "DBot",
   "timezoneOffset": 0,
   "runOnce": false,
   "scheduled": false,

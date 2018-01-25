@@ -142,7 +142,6 @@
   "modified": "2018-01-24T13:15:40.700979853Z",
   "runningUser": "",
   "locked": false,
-  "name": "Open Incidents",
   "timezoneOffset": 0,
   "runOnce": false,
   "scheduled": false,
@@ -779,10 +778,13 @@
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
   "version": 2,
-  "recipients": null,
+  "recipients": [],
   "type": "docx",
-  "id": "docxOpenIncidentsReport",
+  "tags": [],
+  "createdBy": "DBot",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance.",
-  "releaseNotes": "-"
+  "name": "Open Incidents",
+  "id": "docxOpenIncidentsReport"
 }

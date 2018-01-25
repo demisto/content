@@ -830,10 +830,12 @@
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
   "version": 2,
-  "recipients": null,
+  "recipients": [],
   "type": "pdf",
-  "id": "last30DaysIncidentReport",
+  "tags": [],
+  "createdBy": "DBot",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents.",
-  "releaseNotes": "-"
+  "id": "last30DaysIncidentReport"
 }
