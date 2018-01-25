@@ -814,5 +814,6 @@
   "type": "pdf",
   "id": "dailyIncidentReport",
   "fromVersion": "3.5",
-  "description": "Daily summary of incidents statistics, followed by a list of all current open incidents."
+  "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
+  "releaseNotes": "-"
 }
