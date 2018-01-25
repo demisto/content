@@ -1,11 +1,11 @@
 {
-  "id": "3873d737-11bd-43af-a5cd-c2bc15933a5a",
+  "id": "late-tasks-number",
   "version": -1,
   "fromVersion": "3.5.0",
   "name": "Late Tasks",
   "dataType": "tasks",
   "widgetType": "number",
-  "query": "late",
+  "query": "currentLate",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
