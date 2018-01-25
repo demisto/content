@@ -2,7 +2,6 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
-releaseNotes: "-"
 script: |-
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
@@ -306,4 +305,3 @@ scripttarget: 0
 dependson:
   must:
   - ad-search
-releaseNotes: 'ADGetUser to be enhancement script for username too'
