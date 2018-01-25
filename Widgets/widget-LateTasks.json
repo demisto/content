@@ -5,7 +5,7 @@
   "name": "Late Tasks by User",
   "dataType": "tasks",
   "widgetType": "bar",
-  "query": "currentLate",
+  "query": "replaced:f and dueDate:<now",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",

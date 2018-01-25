@@ -5,7 +5,7 @@
   "name": "Late Tasks",
   "dataType": "tasks",
   "widgetType": "number",
-  "query": "currentLate",
+  "query": "replaced:f and dueDate:<now",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -27,7 +27,7 @@
           "value": 0
         },
         "#FAC100": {
-          "value": 10
+            "value": 10
         },
         "#FF1B15": {
           "value": 25
