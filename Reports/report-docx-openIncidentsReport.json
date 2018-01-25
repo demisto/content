@@ -783,5 +783,6 @@
   "type": "docx",
   "id": "docxOpenIncidentsReport",
   "fromVersion": "3.5",
-  "description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance."
+  "description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance.",
+  "releaseNotes": "-"
 }
