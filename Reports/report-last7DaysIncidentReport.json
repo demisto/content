@@ -832,8 +832,10 @@
   "version": 6,
   "recipients": null,
   "type": "pdf",
-  "id": "last7DaysIncidentReport",
+  "tags": [],
+  "createdBy": "DBot",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "description": "Last 7 days summary of incidents statistics, followed by a list of all current open incidents.",
-  "releaseNotes": "-"
+  "id": "last7DaysIncidentReport"
 }

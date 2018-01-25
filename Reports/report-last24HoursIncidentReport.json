@@ -1,7 +1,9 @@
 {
   "id": "last24HoursIncidentReport",
-  "fromVersion": "3.5",
+  "name": "Last 24 hours incidents",
+  "description": "Last 24 hours summary of incidents statistics, followed by a list of all current open incidents.",
   "releaseNotes": "-",
+  "fromVersion": "3.5",
   "version": 10,
   "modified": "2018-01-24T09:59:09.482396647Z",
   "startDate": "0001-01-01T00:00:00Z",
@@ -11,9 +13,9 @@
   "timezoneOffset": 0,
   "cronView": false,
   "scheduled": false,
+  "tags": [],
+  "createdBy": "DBot",
   "type": "pdf",
-  "name": "Last 24 hours incidents",
-  "description": "Last 24 hours summary of incidents statistics, followed by a list of all current open incidents.",
   "system": false,
   "locked": false,
   "sections": [

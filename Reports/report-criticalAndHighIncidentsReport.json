@@ -1,7 +1,12 @@
 {
   "id": "criticalAndHighIncidentsReport",
+  "name": "Critical and High incidents",
+  "description": "All critical and high severity incidents that may need the analyst attention.",
   "releaseNotes": "-",
   "fromVersion": "3.5",
+  "tags": [],
+  "createdBy": "DBot",
+  "type": "pdf",
   "version": 7,
   "modified": "2018-01-24T15:27:36.431127302Z",
   "startDate": "0001-01-01T00:00:00Z",
@@ -11,9 +16,6 @@
   "timezoneOffset": 0,
   "cronView": false,
   "scheduled": false,
-  "type": "pdf",
-  "name": "Critical and High incidents",
-  "description": "All critical and high severity incidents that may need the analyst attention.",
   "system": false,
   "locked": false,
   "sections": [

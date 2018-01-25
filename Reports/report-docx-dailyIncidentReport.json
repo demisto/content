@@ -142,7 +142,6 @@
   "modified": "2018-01-25T10:15:41.179419708Z",
   "runningUser": "",
   "locked": false,
-  "name": "Daily incidents",
   "timezoneOffset": 0,
   "runOnce": false,
   "scheduled": false,
@@ -810,10 +809,13 @@
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
   "version": 6,
-  "recipients": null,
+  "recipients": [],
   "type": "docx",
-  "id": "docxDailyIncidentReport",
+  "tags": [],
+  "createdBy": "DBot",
   "fromVersion": "3.5",
+  "releaseNotes": "-",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
-  "releaseNotes": "-"
+  "name": "Daily incidents",
+  "id": "docxDailyIncidentReport"
 }

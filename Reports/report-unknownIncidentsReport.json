@@ -1,5 +1,7 @@
 {
   "id": "unknownIncidentsReport",
+  "name": "Unknown severity incidents",
+  "description": "Report about all unknown severity incidents that may need the analyst attention.",
   "fromVersion": "3.5",
   "releaseNotes": "-",
   "version": 3,
@@ -11,9 +13,9 @@
   "timezoneOffset": 0,
   "cronView": false,
   "scheduled": false,
+  "tags": [],
+  "createdBy": "DBot",
   "type": "pdf",
-  "name": "Unknown severity incidents",
-  "description": "Report about all unknown severity incidents that may need the analyst attention.",
   "system": false,
   "locked": false,
   "sections": [
