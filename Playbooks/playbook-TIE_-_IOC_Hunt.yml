@@ -15,10 +15,10 @@ fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
-    taskid: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+    taskid: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
     type: start
     task:
-      id: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+      id: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
       version: -1
       name: ""
       description: ""
@@ -37,10 +37,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 7d6bbf27-cbb1-4766-81f9-ce96403a6190
+    taskid: 4267c141-4e26-42ac-8e3e-319f21b98c2f
     type: condition
     task:
-      id: 7d6bbf27-cbb1-4766-81f9-ce96403a6190
+      id: 4267c141-4e26-42ac-8e3e-319f21b98c2f
       version: -1
       name: Is TIE enabled?
       description: Is the integration active?
@@ -99,10 +99,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 08329ca6-0fc5-433c-8ec0-86047d6bb1c1
+    taskid: ef3ee4a1-06b8-471a-8ee2-900fcc693279
     type: condition
     task:
-      id: 08329ca6-0fc5-433c-8ec0-86047d6bb1c1
+      id: ef3ee4a1-06b8-471a-8ee2-900fcc693279
       version: -1
       name: Is ePO enabled?
       description: Is the integration active?
@@ -180,10 +180,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 0b0bbca0-86c6-411e-8aed-90bc5641660d
+    taskid: 056330fa-3260-41b6-8b05-22fc6ae903a7
     type: regular
     task:
-      id: 0b0bbca0-86c6-411e-8aed-90bc5641660d
+      id: 056330fa-3260-41b6-8b05-22fc6ae903a7
       version: -1
       name: List all agents that the Hash has been executed on
       description: Get Agent GUIDS for the given hashes
@@ -209,10 +209,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: c283821d-46ac-4b77-8728-9bc136f0c729
+    taskid: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
     type: title
     task:
-      id: c283821d-46ac-4b77-8728-9bc136f0c729
+      id: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
       version: -1
       name: Done
       description: ""
@@ -229,10 +229,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 2d39c3e4-e65f-4f14-82c1-057a08162227
+    taskid: 5f1dbb77-12f1-468f-88a9-ea61a008cfe3
     type: condition
     task:
-      id: 2d39c3e4-e65f-4f14-82c1-057a08162227
+      id: 5f1dbb77-12f1-468f-88a9-ea61a008cfe3
       version: -1
       name: Did we find any relevant agents?
       description: Did we get any Agent GUIDS?
@@ -269,10 +269,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: a4f50e6a-370e-48ba-83bb-a7b863c15036
+    taskid: 1daed919-4f5e-4502-873f-3f31c6b8998f
     type: regular
     task:
-      id: a4f50e6a-370e-48ba-83bb-a7b863c15036
+      id: 1daed919-4f5e-4502-873f-3f31c6b8998f
       version: -1
       name: Get Agent info from ePO
       description: Get hostnames for the Agent GUIDS
@@ -299,13 +299,12 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
+    taskid: ef3c7391-412b-4976-8fc4-f66cbe2607c4
     type: title
     task:
-      id: a08baee9-a402-4bc8-8cae-77c4c144d889
+      id: ef3c7391-412b-4976-8fc4-f66cbe2607c4
       version: -1
       name: Hunt HASH in TIE
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -322,10 +321,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+    taskid: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
     type: title
     task:
-      id: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+      id: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
       version: -1
       name: Enrich in ePO
       description: ""
