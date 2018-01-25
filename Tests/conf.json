@@ -23,6 +23,15 @@
             "timeout": 500
         },
         {
+          "integrations": [
+              "XFE",
+              "VirusTotal",
+              "ThreatExchange",
+              "AlienVault OTX"
+          ],
+            "playbookID": "domain_enrichment_generic_test"
+        },
+        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
