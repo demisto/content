@@ -305,6 +305,7 @@ tasks:
       id: ef3c7391-412b-4976-8fc4-f66cbe2607c4
       version: -1
       name: Hunt HASH in TIE
+      description: ""
       type: title
       iscommand: false
       brand: ""
