@@ -2,6 +2,7 @@ commonfields:
   id: EmailAskUser
   version: -1
 name: EmailAskUser
+fromversion: 3.5.0
 script: |-
   // email body type
   var bodyType = 'text';
@@ -10,7 +11,7 @@ script: |-
   }
 
   // Get entitlement
-  res = executeCommand('addOneTimeEntitlement', {});
+  res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
   if (res[0].Type === entryTypes.error) {
       return res;
   }
@@ -128,4 +129,13 @@ args:
   defaultValue: text
 - name: replyAddress
   description: Address of reply for html links
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
+- name: persistent
+  description: Indicates wether to use one-time entitlement or a persistent one
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
 scripttarget: 0
