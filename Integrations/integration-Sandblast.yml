@@ -526,4 +526,3 @@ script:
       and quota status of the API Key that you use
 hidden: false
 fromversion: 3.5.0
-releaseNotes: '-'
