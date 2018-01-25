@@ -28,13 +28,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: dd50fb3b-b6fe-4f9a-8d7a-0f2bdb8351fb
+    taskid: 530f5d8d-9054-4da1-8a39-97d802711a09
     type: regular
     task:
-      id: dd50fb3b-b6fe-4f9a-8d7a-0f2bdb8351fb
+      id: 530f5d8d-9054-4da1-8a39-97d802711a09
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Clear Context
+      description: Clear all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -61,11 +61,10 @@ tasks:
     task:
       id: 83395f0b-e00d-4163-8363-f74627b9e64f
       version: -1
-      name: Hunt for bad IOCs
+      name: Get File Endpoint History - Generic
       description: Assume that malicious IOCs are in the right place in the context
         and start hunting using available tools
-      playbookName: Hunt for bad IOCs
-      playbookId: Hunt for bad IOCs
+      playbookName: Get File Endpoint History - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -115,18 +114,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: e1af6de9-3698-4e3b-8ceb-8d901a1f42b0
+    taskid: 2fbbb3fa-e7ba-4d73-8115-4194d6b28f0b
     type: regular
     task:
-      id: e1af6de9-3698-4e3b-8ceb-8d901a1f42b0
+      id: 2fbbb3fa-e7ba-4d73-8115-4194d6b28f0b
       version: -1
-      name: VerifyContext - Falcon Host Devices
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: Verify Context - Falcon Host Devices
+      description: Verify Context - Falcon Host Devices
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -149,18 +143,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 3e2c67c9-6838-4e2b-8f80-89a3c0987941
+    taskid: f577b6e0-cec2-4547-8bf4-7b810d65415f
     type: regular
     task:
-      id: 3e2c67c9-6838-4e2b-8f80-89a3c0987941
+      id: f577b6e0-cec2-4547-8bf4-7b810d65415f
       version: -1
-      name: VerifyContext - Found File Locations
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: Verify Context - Found File Locations
+      description: Verify Context - Found File Locations
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -183,18 +172,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 4e087e30-035d-4f81-8074-302e2f865596
+    taskid: e13f882a-4ff1-4131-8444-441fca18eca4
     type: regular
     task:
-      id: 4e087e30-035d-4f81-8074-302e2f865596
+      id: e13f882a-4ff1-4131-8444-441fca18eca4
       version: -1
-      name: VerifyContext - Found Hashes
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: Verify Context - Found Hashes
+      description: Verify Context - Found Hashes
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -217,18 +201,13 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 794eac9a-79f5-423b-8984-e27bc38e3ed0
+    taskid: 18d94c36-a511-4d6e-8b9b-28171ba77108
     type: regular
     task:
-      id: 794eac9a-79f5-423b-8984-e27bc38e3ed0
+      id: 18d94c36-a511-4d6e-8b9b-28171ba77108
       version: -1
-      name: VerifyContext - Agent Guids
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: Verify Context - Agent GUIDS
+      description: Verify Context - Agent GUIDS
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -251,10 +230,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 13f70d86-c111-4f71-82e6-f9af5e83e1d7
+    taskid: b83d17c2-e4e5-45f3-8d25-c67443126933
     type: regular
     task:
-      id: 13f70d86-c111-4f71-82e6-f9af5e83e1d7
+      id: b83d17c2-e4e5-45f3-8d25-c67443126933
       version: -1
       name: Set test MD5 Hashes
       description: Set test MD5 Hashes
