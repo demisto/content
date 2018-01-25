@@ -37,13 +37,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 4267c141-4e26-42ac-8e3e-319f21b98c2f
+    taskid: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
     type: condition
     task:
-      id: 4267c141-4e26-42ac-8e3e-319f21b98c2f
+      id: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
       version: -1
       name: Is TIE enabled?
-      description: Is the integration active?
+      description: Is TIE enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -99,13 +99,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: ef3ee4a1-06b8-471a-8ee2-900fcc693279
+    taskid: 66b478c8-4b31-47a6-8832-1b45e71a331d
     type: condition
     task:
-      id: ef3ee4a1-06b8-471a-8ee2-900fcc693279
+      id: 66b478c8-4b31-47a6-8832-1b45e71a331d
       version: -1
       name: Is ePO enabled?
-      description: Is the integration active?
+      description: Is ePO enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -180,10 +180,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 056330fa-3260-41b6-8b05-22fc6ae903a7
+    taskid: 26ba9604-ced2-4c35-8e13-075d3ed04042
     type: regular
     task:
-      id: 056330fa-3260-41b6-8b05-22fc6ae903a7
+      id: 26ba9604-ced2-4c35-8e13-075d3ed04042
       version: -1
       name: List all agents that the Hash has been executed on
       description: Get Agent GUIDS for the given hashes
@@ -229,10 +229,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 5f1dbb77-12f1-468f-88a9-ea61a008cfe3
+    taskid: c7e628c9-cb07-408a-8667-8f4bb2c6d944
     type: condition
     task:
-      id: 5f1dbb77-12f1-468f-88a9-ea61a008cfe3
+      id: c7e628c9-cb07-408a-8667-8f4bb2c6d944
       version: -1
       name: Did we find any relevant agents?
       description: Did we get any Agent GUIDS?
@@ -269,10 +269,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 1daed919-4f5e-4502-873f-3f31c6b8998f
+    taskid: fa9d8260-b398-4147-8fa8-a494905a09d3
     type: regular
     task:
-      id: 1daed919-4f5e-4502-873f-3f31c6b8998f
+      id: fa9d8260-b398-4147-8fa8-a494905a09d3
       version: -1
       name: Get Agent info from ePO
       description: Get hostnames for the Agent GUIDS
