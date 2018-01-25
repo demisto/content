@@ -3,7 +3,7 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "McAfee Threat Intelligence Exchange",
+            "integrations": ["McAfee Threat Intelligence Exchange", "epo"],
             "playbookID": "IOC Hunt - TIE - Test"
         },
         {
