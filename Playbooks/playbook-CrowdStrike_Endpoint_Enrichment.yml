@@ -115,8 +115,8 @@ tasks:
     task:
       id: c5e5f2e9-8731-4367-8e19-5535f6f00139
       version: -1
-      name: Get Device ID
-      description: Get CrowdStrike device id by hostname.
+      name: Get device ID
+      description: Get CrowdStrike device id
       script: FalconHost|||cs-device-search
       type: regular
       iscommand: true

@@ -3,6 +3,14 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "FalconHost",
+            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+        },
+        {
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
@@ -19,11 +27,6 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
         },
         {
             "integrations": "PostgreSQL",
@@ -195,6 +198,11 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
         {
