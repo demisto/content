@@ -1,6 +1,7 @@
 id: CrowdStrike Rapid IOC Hunting - Test
 version: -1
 name: CrowdStrike Rapid IOC Hunting - Test
+description: A test playbook for CrowdStrike Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -47,13 +48,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: be90f285-665c-4094-862f-af5e3c519135
+    taskid: d20d4e24-01d3-4528-8442-789b96db9711
     type: regular
     task:
-      id: be90f285-665c-4094-862f-af5e3c519135
+      id: d20d4e24-01d3-4528-8442-789b96db9711
       version: -1
-      name: DeleteContext
-      description: Delete field from context
+      name: Clear Context
+      description: Clear all context
       scriptName: DeleteContext
       type: regular
       iscommand: false
