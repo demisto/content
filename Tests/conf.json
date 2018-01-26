@@ -18,9 +18,6 @@
             "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
-            "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
