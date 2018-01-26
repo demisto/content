@@ -3,7 +3,7 @@
   "name": "Critical and High incidents",
   "description": "All critical and high severity incidents that may need the analyst attention.",
   "releaseNotes": "-",
-  "fromVersion": "3.5",
+  "fromVersion": "3.5.0",
   "tags": [],
   "createdBy": "DBot",
   "recipients": [],
