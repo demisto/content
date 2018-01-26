@@ -27,6 +27,6 @@ outputs:
 - contextPath: Report.FileID
   description: File ID of the report
   type: string
-releaseNotes:"-"
+releaseNotes: "-"
 scripttarget: 0
 
