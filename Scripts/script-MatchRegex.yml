@@ -40,4 +40,3 @@ args:
 - name: flags
   description: The regex flags to match. Default is - i.
 scripttarget: 0
-releaseNotes: '-'
