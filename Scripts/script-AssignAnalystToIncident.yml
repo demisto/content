@@ -34,7 +34,12 @@ script: |
             var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
             var usersList = usersRes[0].Contents.map(function (u) { return u.username });
             userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
-            break;        
+            break;
+        case 'current':
+          var usersRes = executeCommand('getUsers', { current: true });
+          var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+          userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+          break;
         case 'random':
             var usersRes = executeCommand('getUsers', { roles: args.roles });
             var usersList = usersRes[0].Contents.map(function (u) { return u.username });
@@ -77,6 +82,7 @@ comment: |-
   top-user: The user that is most commonly owns this type of incident
   less-busy-user: The less busy analyst will be picked to be the incident owner.
   online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+  current: The user that executed the command
 enabled: true
 args:
 - name: roles
@@ -91,7 +97,8 @@ args:
   - top-user
   - less-busy-user
   - online
-  description: '(default: random) You can pick how to assign the owner - by random, online, 
+  - current
+  description: '(default: random) You can pick how to assign the owner - by random, online, current,
     machine-learning, top-user or less-busy-user.'
 - name: username
   description: When specified, the provided user will be assigned as the incident owner (optional).
