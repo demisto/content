@@ -86,6 +86,7 @@ tasks:
       id: af2e86ff-6413-4cd8-8d5f-799edb0770e6
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
