@@ -33,9 +33,9 @@ tasks:
     task:
       id: b32c7c37-4872-487f-80e4-1bc86972232d
       version: -1
-      name: Get File Sample By Hash - Cylance Protect - Update
+      name: Get File Sample By Hash - Cylance Protect
       description: ""
-      playbookName: Get File Sample By Hash - Cylance Protect - Update
+      playbookName: Get File Sample By Hash - Cylance Protect
       type: playbook
       iscommand: false
       brand: ""
