@@ -4,14 +4,14 @@
     "tests": [
         {
             "integrations":"Cylance Protect",
-            "playbookID": "get_file_sample_from_hash_-_cylance_protect_-_test"
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test"
         },
         {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
             },
-            "playbookID": "get_file_sample_from_hash_-_carbon_black_enterprise_Response_-_test"
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
           "integrations": {

@@ -1,6 +1,6 @@
-id: get_file_sample_from_hash_-_carbon_black_enterprise_Response_-_test
+id: get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test
 version: -1
-name: Get File Sample From Hash - Carbon Black Enterprise Response - Test
+name: Get File Sample By Hash - Carbon Black Enterprise Response - Test
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -61,12 +61,12 @@ tasks:
     task:
       id: 1966d91d-c0ca-4a97-8125-f07ba51573c0
       version: -1
-      name: Get File Sample From Hash - Carbon Black Enterprise Response - Update
+      name: Get File Sample By Hash - Carbon Black Enterprise Response - Update
       description: |-
         Returns to the war-room a file sample correlating to MD5 hashes in the context using Carbon Black Enterprise Response integration
 
         * MD5 context path - ${File.MD5}
-      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response -
+      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response -
         Update
       type: playbook
       iscommand: false
