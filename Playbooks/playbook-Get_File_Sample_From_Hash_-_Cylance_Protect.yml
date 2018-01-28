@@ -2,6 +2,7 @@ id: get_file_sample_from_hash_-_cylance_protect
 version: -1
 name: Get File Sample From Hash - Cylance Protect
 fromversion: 3.5.0
+releaseNotes: "-"
 description: |-
   Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
 starttaskid: "0"
