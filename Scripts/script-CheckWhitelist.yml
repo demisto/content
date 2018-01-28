@@ -25,8 +25,9 @@ args:
   default: true
   description: Item to check
 - name: whitelistname
-  required: true
+  defaultValue: Indicators Whitelist
   description: Name of whitelist to check
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Indicator whitelist is now default white list
