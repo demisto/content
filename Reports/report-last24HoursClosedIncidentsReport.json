@@ -640,7 +640,6 @@
   },
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
-  "version": 8,
   "recipients": null,
   "type": "pdf",
   "id": "last24HoursClosedIncidentsReport",

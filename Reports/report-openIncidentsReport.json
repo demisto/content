@@ -778,7 +778,6 @@
   },
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
-  "version": 2,
   "recipients": null,
   "tags": [],
   "createdBy": "DBot",
