@@ -61,13 +61,12 @@ tasks:
     task:
       id: 1e0e74a2-8f3f-48ad-8216-989ab4c34076
       version: -1
-      name: Get File Sample From Hash - Carbon Black Enterprise Response - Update
+      name: Get File Sample From Hash - Carbon Black Enterprise Response
       description: |-
         Returns to the war-room a file sample correlating to MD5 hashes in the context using Carbon Black Enterprise Response integration
 
         * MD5 context path - ${File.MD5}
-      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response -
-        Update
+      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
       brand: ""
