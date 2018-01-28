@@ -38,13 +38,8 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-          "integrations": [
-              "XFE",
-              "VirusTotal",
-              "ThreatExchange",
-              "AlienVault OTX"
-          ],
-            "playbookID": "domain_enrichment_generic_test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
