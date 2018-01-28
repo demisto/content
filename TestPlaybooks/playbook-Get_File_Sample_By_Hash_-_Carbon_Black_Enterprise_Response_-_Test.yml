@@ -41,7 +41,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -56,17 +56,18 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 1966d91d-c0ca-4a97-8125-f07ba51573c0
+    taskid: 1e0e74a2-8f3f-48ad-8216-989ab4c34076
     type: playbook
     task:
-      id: 1966d91d-c0ca-4a97-8125-f07ba51573c0
+      id: 1e0e74a2-8f3f-48ad-8216-989ab4c34076
       version: -1
-      name: Get File Sample By Hash - Carbon Black Enterprise Response
+      name: Get File Sample From Hash - Carbon Black Enterprise Response - Update
       description: |-
         Returns to the war-room a file sample correlating to MD5 hashes in the context using Carbon Black Enterprise Response integration
 
         * MD5 context path - ${File.MD5}
-      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
+      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response -
+        Update
       type: playbook
       iscommand: false
       brand: ""
@@ -75,7 +76,7 @@ tasks:
       - "3"
     scriptarguments:
       MD5:
-        simple: BF5DD160FB98A4412512223AB9EECF52
+        simple: ${testinput.MD5}
     separatecontext: true
     loop:
       iscommand: false
@@ -85,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
   "3":
@@ -111,6 +112,67 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 73ecbc9d-21cf-4292-8e49-bcf25b57d8ee
+    type: regular
+    task:
+      id: 73ecbc9d-21cf-4292-8e49-bcf25b57d8ee
+      version: -1
+      name: Set hash to context
+      description: ""
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: testinput.MD5
+      value:
+        simple: 6A9650BDC13F1A770F20E7B99D29EE3D
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 9a3f7aaa-0359-443e-8a1d-2dee2650c378
+    type: regular
+    task:
+      id: 9a3f7aaa-0359-443e-8a1d-2dee2650c378
+      version: -1
+      name: Set hash to context
+      description: ""
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: testinput.MD5
+      value:
+        simple: BF5DD160FB98A4412512223AB9EECF52
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 545
         }
       }
@@ -119,7 +181,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 940,
         "width": 380,
         "x": 50,
         "y": 50
