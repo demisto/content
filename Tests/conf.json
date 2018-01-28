@@ -15,6 +15,13 @@
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
             "integrations": "FalconHost",
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
@@ -171,10 +178,12 @@
             "timeout": 300
         },
         {
-            "playbookID": "LanguageDetect-Test"
+            "playbookID": "LanguageDetect-Test",
+            "timeout": 300
         },
         {
-            "playbookID": "TestWordFileToIOC"
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
         },
         {
             "integrations": "ArcSight Logger",
