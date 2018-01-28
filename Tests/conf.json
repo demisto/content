@@ -178,10 +178,12 @@
             "timeout": 300
         },
         {
-            "playbookID": "LanguageDetect-Test"
+            "playbookID": "LanguageDetect-Test",
+            "timeout": 300
         },
         {
-            "playbookID": "TestWordFileToIOC"
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
         },
         {
             "integrations": "ArcSight Logger",
