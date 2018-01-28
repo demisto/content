@@ -190,7 +190,10 @@
             "playbookID": "GeneratePassword-Test"
         },
         {
-            "integrations": "urlscan.io",
+            "integrations": [
+            "AlienVault OTX",
+            "urlscan.io"
+            ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
         }
