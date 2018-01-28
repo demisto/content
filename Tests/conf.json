@@ -3,6 +3,17 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
+        },
+        {
           "integrations": {
                 "name": "activedir",
                 "byoi": false
