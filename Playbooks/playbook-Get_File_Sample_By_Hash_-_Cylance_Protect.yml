@@ -282,10 +282,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 66c048e6-cb07-47f1-8db0-71b334e30ab8
+    taskid: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
     type: regular
     task:
-      id: 66c048e6-cb07-47f1-8db0-71b334e30ab8
+      id: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
       version: -1
       name: Unzip File
       description: Unzip a file using fileName or entryID to specify a file. Files
@@ -316,7 +316,9 @@ tasks:
       fileName: {}
       lastZipFileInWarroom: {}
       password:
-        simple: '{ENCRYPTED}C7Ys6tRXRJd4mVpCVLz7lUPsKGCzLxZMPI2NsUHIYg4bVTA3ykY9ybDTiwYFPf5o7e2aroZUrRmT2kOxVI0NWg=='
+        complex:
+          root: inputs
+          accessor: ZipPassword
     separatecontext: false
     view: |-
       {
@@ -342,9 +344,14 @@ inputs:
   value:
     complex:
       root: File
-      accessor: MD5
+      accessor: SHA256
   required: false
   description: The SHA256 hash of the file we want to download
+- key: ZipPassword
+  value:
+    simple: infected
+  required: true
+  description: The password for the zip file
 outputs:
 - contextPath: File
   description: The sample file

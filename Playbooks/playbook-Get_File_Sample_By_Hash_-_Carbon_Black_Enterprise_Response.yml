@@ -181,7 +181,9 @@ view: |-
 inputs:
 - key: MD5
   value:
-    simple: ${File.MD5}
+    complex:
+      root: File
+      accessor: MD5
   required: false
   description: 'Get file sample from input MD5 '
 outputs:
