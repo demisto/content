@@ -8,7 +8,6 @@ script: |
       demisto.results(res)
   else:
       whitelist = res[0]['Contents']
-      demisto.log(str(whitelist))
       if demisto.args()['item'] in whitelist:
           answer = 'yes'
       else:
