@@ -247,4 +247,4 @@ outputs:
   description: additional info on the url
   type: string
 releaseNotes: "-"
-fromversion: "3.5.0"
+fromversion: 3.5.0
