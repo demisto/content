@@ -3,6 +3,25 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "activedir",
+                "byoi": false
+            },
+            "playbookID": "account_enrichment_-_generic_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -174,10 +193,12 @@
             "timeout": 300
         },
         {
-            "playbookID": "LanguageDetect-Test"
+            "playbookID": "LanguageDetect-Test",
+            "timeout": 300
         },
         {
-            "playbookID": "TestWordFileToIOC"
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
         },
         {
             "integrations": "ArcSight Logger",
@@ -191,6 +212,11 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
         }
     ],
     "skipped": [
