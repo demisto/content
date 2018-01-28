@@ -1,0 +1,127 @@
+id: get_file_sample_from_hash_-_cylance_protect_-_test
+version: -1
+name: Get File Sample From Hash - Cylance Protect - Test
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0c43151f-f3ae-48f6-8d80-5684a8f1fae6
+    type: start
+    task:
+      id: 0c43151f-f3ae-48f6-8d80-5684a8f1fae6
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b32c7c37-4872-487f-80e4-1bc86972232d
+    type: playbook
+    task:
+      id: b32c7c37-4872-487f-80e4-1bc86972232d
+      version: -1
+      name: Get File Sample From Hash - Cylance Protect - Update
+      description: ""
+      playbookName: Get File Sample From Hash - Cylance Protect - Update
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      SHA256:
+        simple: 5da547e87d6ef12349fb4dbba9cf3146a358e284f72361dd07bbabfc95b0bac3
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: db735076-5e5b-4ba2-8953-a67cc80a48c3
+    type: regular
+    task:
+      id: db735076-5e5b-4ba2-8953-a67cc80a48c3
+      version: -1
+      name: Verify output
+      description: ""
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 7d55e110-6f1b-4694-8a7f-c67cca0e6019
+    type: regular
+    task:
+      id: 7d55e110-6f1b-4694-8a7f-c67cca0e6019
+      version: -1
+      name: Clear Context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

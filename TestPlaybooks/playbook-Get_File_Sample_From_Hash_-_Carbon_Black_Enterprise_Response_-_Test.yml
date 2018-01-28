@@ -1,0 +1,131 @@
+id: get_file_sample_from_hash_-_carbon_black_enterprise_Response_-_test
+version: -1
+name: Get File Sample From Hash - Carbon Black Enterprise Response - Test
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b50122ef-2e75-4c6b-8a9d-f0558910618b
+    type: start
+    task:
+      id: b50122ef-2e75-4c6b-8a9d-f0558910618b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 673c0b29-d9d0-4651-88a5-196ce2b66816
+    type: regular
+    task:
+      id: 673c0b29-d9d0-4651-88a5-196ce2b66816
+      version: -1
+      name: Clear Context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1966d91d-c0ca-4a97-8125-f07ba51573c0
+    type: playbook
+    task:
+      id: 1966d91d-c0ca-4a97-8125-f07ba51573c0
+      version: -1
+      name: Get File Sample From Hash - Carbon Black Enterprise Response - Update
+      description: |-
+        Returns to the war-room a file sample correlating to MD5 hashes in the context using Carbon Black Enterprise Response integration
+
+        * MD5 context path - ${File.MD5}
+      playbookName: Get File Sample From Hash - Carbon Black Enterprise Response -
+        Update
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      MD5:
+        simple: BF5DD160FB98A4412512223AB9EECF52
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 2b0d259c-47a6-48da-8b98-423e2fe76fe9
+    type: regular
+    task:
+      id: 2b0d259c-47a6-48da-8b98-423e2fe76fe9
+      version: -1
+      name: Verify Context
+      description: ""
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
