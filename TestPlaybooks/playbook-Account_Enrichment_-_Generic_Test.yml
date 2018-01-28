@@ -1,24 +1,24 @@
-id: crowdstrike_endpoint_enrichment_-_test
+id: account_enrichment_-_generic_test
 version: -1
-name: CrowdStrike Endpoint Enrichment - Test
+name: Account Enrichment - Generic Test
 description: ""
 fromversion: "3.5.0"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+    taskid: f25242cf-a32c-4bab-887e-0e60ef1df2cc
     type: start
     task:
-      id: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+      id: f25242cf-a32c-4bab-887e-0e60ef1df2cc
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -27,22 +27,49 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+  "3":
+    id: "3"
+    taskid: 04fad9d5-8b71-408a-8268-d999637113f9
     type: regular
     task:
-      id: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+      id: 04fad9d5-8b71-408a-8268-d999637113f9
       version: -1
-      description: ""
+      name: Verify account fields
+      description: '-'
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Type,ID
+      path:
+        simple: Account
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 60331414-cfec-4bfb-8b92-f5ecace8c187
+    type: regular
+    task:
+      id: 60331414-cfec-4bfb-8b92-f5ecace8c187
+      version: -1
       name: Delete context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,55 +82,29 @@ tasks:
           "y": 195
         }
       }
-  "3":
-    id: "3"
-    taskid: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+  "5":
+    id: "5"
+    taskid: 61172af1-2c47-407e-84f7-2b9e6aa9e4de
     type: regular
     task:
-      id: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+      id: 61172af1-2c47-407e-84f7-2b9e6aa9e4de
       version: -1
-      description: ""
-      name: Verify context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: FalconHostDevices
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-    type: regular
-    task:
-      id: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-      version: -1
-      description: ""
-      name: 'Add hostname #1'
+      name: 'add username #1'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: ExampleAccount.Username
       value:
-        simple: CentOS70
+        simple: admin
     separatecontext: false
     view: |-
       {
@@ -112,29 +113,29 @@ tasks:
           "y": 370
         }
       }
-  "5":
-    id: "5"
-    taskid: 759fe9ee-1d3b-4e02-844d-2207862d71c3
+  "6":
+    id: "6"
+    taskid: 0496f253-92ec-474f-872b-ef3901241fd0
     type: regular
     task:
-      id: 759fe9ee-1d3b-4e02-844d-2207862d71c3
+      id: 0496f253-92ec-474f-872b-ef3901241fd0
       version: -1
-      description: ""
-      name: 'Add hostname #2'
+      name: 'add username #2'
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     scriptarguments:
       append:
         simple: "true"
       key:
-        simple: Endpoint.Hostname
+        simple: ExampleAccount.Username
       value:
-        simple: CYPHORT-CS-PC
+        simple: administrator
     separatecontext: false
     view: |-
       {
@@ -143,25 +144,25 @@ tasks:
           "y": 545
         }
       }
-  "6":
-    id: "6"
-    taskid: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+  "7":
+    id: "7"
+    taskid: 9f90f181-6c3f-4917-8943-1a329005daef
     type: playbook
     task:
-      id: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+      id: 9f90f181-6c3f-4917-8943-1a329005daef
       version: -1
-      name: CrowdStrike Endpoint Enrichment
-      description: Enrich Endpoint with CrowdStrike
-      playbookName: CrowdStrike Endpoint Enrichment
+      name: Account Enrichment - Generic
+      playbookName: Account Enrichment - Generic
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      Hostname:
-        simple: ${Endpoint.Hostname}
+      Username:
+        simple: ${ExampleAccount.Username}
     separatecontext: false
     loop:
       iscommand: false
@@ -171,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 725
         }
       }
 view: |-
