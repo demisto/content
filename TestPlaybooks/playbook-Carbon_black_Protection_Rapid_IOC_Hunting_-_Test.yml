@@ -1,6 +1,6 @@
 id: Carbon black Protection Rapid IOC Hunting - Test
 version: -1
-name: Carbon black Protection Rapid IOC Hunting - Test
+name: Carbon Black Protection Rapid IOC Hunting - Test
 description: A test playbook for Carbon Black Protection Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
@@ -34,10 +34,10 @@ tasks:
     task:
       id: 92cb999f-47bc-45e0-8e81-a87f161555ad
       version: -1
-      name: Carbon black Protection Rapid IOC Hunting
+      name: Carbon Black Protection Rapid IOC Hunting
       description: Hunt for endpoint activity involving hash and domain IOCs, using
         Carbon black Protection (Bit9).
-      playbookName: Carbon black Protection Rapid IOC Hunting
+      playbookName: Carbon Black Protection Rapid IOC Hunting
       playbookId: playbook17
       type: playbook
       iscommand: false
@@ -62,12 +62,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 9f730645-5088-4d38-8b45-7d74bdad2c23
+    taskid: b528d165-fae7-4db3-8b3f-55488c5c19e2
     type: regular
     task:
-      id: 9f730645-5088-4d38-8b45-7d74bdad2c23
+      id: b528d165-fae7-4db3-8b3f-55488c5c19e2
       version: -1
-      name: Verify found hashes
+      name: Verify hostname
       description: Verify found hashes
       scriptName: VerifyContext
       type: regular
@@ -80,7 +80,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: found_hashes
+        simple: Endpoint.Hostname
     separatecontext: false
     view: |-
       {
