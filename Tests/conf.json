@@ -22,8 +22,19 @@
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
             "integrations": "FalconHost",
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+        },
+        {
+          "integrations": "AlienVault OTX",
+          "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -43,6 +54,10 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
+        },
+        {
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -178,10 +193,12 @@
             "timeout": 300
         },
         {
-            "playbookID": "LanguageDetect-Test"
+            "playbookID": "LanguageDetect-Test",
+            "timeout": 300
         },
         {
-            "playbookID": "TestWordFileToIOC"
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
         },
         {
             "integrations": "ArcSight Logger",
@@ -195,6 +212,11 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
         }
     ],
     "skipped": [
