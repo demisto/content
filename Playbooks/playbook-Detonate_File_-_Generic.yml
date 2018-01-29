@@ -1,0 +1,164 @@
+id: Detonate File - Generic
+version: -1
+name: Detonate File - Generic
+description: Detonate file through active integration that support file detonation
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+    type: start
+    task:
+      id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 4478bd7c-8d70-42af-8f51-ab856b2afa0b
+    type: playbook
+    task:
+      id: 4478bd7c-8d70-42af-8f51-ab856b2afa0b
+      version: -1
+      name: WildFire - Detonate file
+      description: Detonate files through WildFire
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.File}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 91073260-3908-43e5-879a-055439764bec
+    type: playbook
+    task:
+      id: 91073260-3908-43e5-879a-055439764bec
+      version: -1
+      name: CrowdStrike Falcon Sandbox - Detonate file
+      description: ""
+      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.EntryID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9db19651-009c-468f-80b3-c58efea96ed2
+    type: title
+    task:
+      id: 9db19651-009c-468f-80b3-c58efea96ed2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: true
+  description: Entry ID of file to be detonated
+- key: File
+  value:
+    simple: ${File}
+  required: true
+  description: File object of file to be detonated
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+releaseNotes: "-"
