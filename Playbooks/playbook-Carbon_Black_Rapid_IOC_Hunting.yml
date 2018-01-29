@@ -30,20 +30,20 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 255509e0-b2e6-483c-8379-1968871458dc
+    taskid: ad7dff09-2373-43ba-8a87-645fa98ca5cb
     type: regular
     task:
-      id: 255509e0-b2e6-483c-8379-1968871458dc
+      id: ad7dff09-2373-43ba-8a87-645fa98ca5cb
       version: -1
-      name: CBFindHash
-      description: Search Carbon Black for connection to specified MD5 hash(es).
+      name: Hunt MD5 Hash
+      description: Search Carbon Black for the specified MD5 hash(es)
       scriptName: CBFindHash
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       md5:
         complex:
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 356,
-          "y": 605
+          "y": 611
         }
       }
   "2":
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 769
+          "y": 937
         }
       }
   "4":
@@ -181,6 +181,46 @@ tasks:
           "y": 371
         }
       }
+  "5":
+    id: "5"
+    taskid: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+    type: regular
+    task:
+      id: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+      version: -1
+      name: Set hostname
+      description: Set hostname
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          root: found_file_locations
+          transformers:
+          - operator: string.replaceMatch
+            args:
+              regex:
+                value:
+                  simple: '{".*": \[".*", "(.*)"]}'
+              replaceWith:
+                value:
+                  simple: $1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 356,
+          "y": 772
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -191,7 +231,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 784,
+        "height": 952,
         "width": 686,
         "x": 50,
         "y": 50
@@ -207,10 +247,7 @@ inputs:
   required: false
   description: MD5 Hash
 outputs:
-- contextPath: found_file_locations
-  description: Found file locations
-  type: string
-- contextPath: found_hashes
-  description: Found hashes
+- contextPath: Endpoint.Hostname
+  description: The device hostname
   type: string
 releaseNotes: "-"

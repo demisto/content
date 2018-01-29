@@ -29,12 +29,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 947253c7-3eea-467a-86ef-a1bd97fe8f7c
+    taskid: 6c5d50e9-0f06-4a9a-88da-37d19613ede8
     type: regular
     task:
-      id: 947253c7-3eea-467a-86ef-a1bd97fe8f7c
+      id: 6c5d50e9-0f06-4a9a-88da-37d19613ede8
       version: -1
-      name: Verify found hashes
+      name: Verify hostname
       description: Verify found hashes
       scriptName: VerifyContext
       type: regular
@@ -42,12 +42,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "3"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
-        simple: found_hashes
+        simple: Endpoint.Hostname
     separatecontext: false
     view: |-
       {
@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 735
         }
       }
   "4":
@@ -135,41 +135,12 @@ tasks:
           "y": 370
         }
       }
-  "6":
-    id: "6"
-    taskid: 5577d85e-a838-4327-80a5-139318021b77
-    type: regular
-    task:
-      id: 5577d85e-a838-4327-80a5-139318021b77
-      version: -1
-      name: Verify file locations
-      description: Verify file locations
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: found_file_locations
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 750,
         "width": 380,
         "x": 50,
         "y": 50
