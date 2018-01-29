@@ -43,7 +43,6 @@ tasks:
       name: ""
       description: ""
       playbookName: IP Enrichment - Generic
-      playbookId: ip_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -68,7 +67,6 @@ tasks:
       name: ""
       description: ""
       playbookName: URL Enrichment - Generic
-      playbookId: url_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -93,7 +91,6 @@ tasks:
       name: ""
       description: ""
       playbookName: Email Address Enrichment - Generic
-      playbookId: email_address_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -118,7 +115,6 @@ tasks:
       name: ""
       description: ""
       playbookName: Endpoint Enrichment - Generic
-      playbookId: endpoint_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -143,7 +139,6 @@ tasks:
       name: ""
       description: ""
       playbookName: Domain Enrichment - Generic
-      playbookId: domain_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -168,7 +163,6 @@ tasks:
       name: ""
       description: ""
       playbookName: Account Enrichment - Generic
-      playbookId: account_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -193,7 +187,6 @@ tasks:
       name: ""
       description: ""
       playbookName: File Enrichment - Generic
-      playbookId: File Enrichment - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -218,7 +211,6 @@ tasks:
       name: ""
       description: ""
       playbookName: DBot Indicator Enrichment - Generic
-      playbookId: dbot_indicator_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
