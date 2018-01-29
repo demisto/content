@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
   "3":
@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 735
+          "y": 895
         }
       }
   "4":
@@ -91,7 +91,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       all:
         simple: "yes"
@@ -106,10 +106,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 581ab08b-c4a7-4604-8d56-b4e08955fc9f
+    taskid: 620a8cbc-a578-4723-8eed-97c7a898eb5b
     type: playbook
     task:
-      id: 581ab08b-c4a7-4604-8d56-b4e08955fc9f
+      id: 620a8cbc-a578-4723-8eed-97c7a898eb5b
       version: -1
       name: Carbon Black Rapid IOC Hunting
       playbookName: Carbon Black Rapid IOC Hunting
@@ -132,6 +132,36 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 2aff3623-607c-473c-8e17-bf9921baeaa7
+    type: regular
+    task:
+      id: 2aff3623-607c-473c-8e17-bf9921baeaa7
+      version: -1
+      name: Create MD5 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: MD5Hashes
+      value:
+        simple: '["0cc175b9c0f1b6a831c399e269772661", "36bd4be7042f6de7e332c05cef287d05",
+          "df9d0ca7409a2967bb338014b043a062", "05ED91DAA77FF31F7F4E61314C2A3122"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 370
         }
       }
@@ -140,7 +170,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 750,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50
