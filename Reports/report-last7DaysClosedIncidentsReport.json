@@ -15,7 +15,7 @@
   "cronView": false,
   "scheduled": false,
   "type": "pdf",
-  "system": false,
+  "system": true,
   "locked": false,
   "sections": [
     {
