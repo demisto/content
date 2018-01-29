@@ -112,9 +112,9 @@ tasks:
     task:
       id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
       version: -1
-      name: Carbon Black Protection Rapid IOC Hunting
+      name: Carbon black Protection Rapid IOC Hunting
       playbookId: playbook17
-      playbookName: Carbon Black Protection Rapid IOC Hunting
+      playbookName: Carbon black Protection Rapid IOC Hunting
       description: ""
       type: playbook
       iscommand: false
@@ -261,8 +261,8 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(inputs).map(function(f) {return inputs[f];}).reduce(function(a,
-          b){return a.concat(b);}, [])}
+        complex:
+          root: JoinedHashes
     separatecontext: true
     loop:
       iscommand: false
