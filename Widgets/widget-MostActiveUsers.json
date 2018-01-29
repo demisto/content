@@ -3,6 +3,7 @@
   "version": -1,
   "name": "Most Active Users",
   "dataType": "entries",
+  "category": "others",
   "widgetType": "bar",
   "size": 5,
   "query": "category:chat and (format:text or format:markdown)",
