@@ -2,7 +2,7 @@ id: playbook17
 fromversion: 3.5.0
 system: true
 version: -1
-name: Carbon Black Protection Rapid IOC Hunting
+name: Carbon black Protection Rapid IOC Hunting
 description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
 starttaskid: "0"
 tasks:
@@ -11,7 +11,7 @@ tasks:
     taskid: 9b42ebf8-2133-4457-83ed-1d281ed7887f
     type: start
     task:
-      id: 9b42ebf8-2133-4457-83ed-1sd281ed7887f
+      id: 9b42ebf8-2133-4457-83ed-1d281ed7887f
       version: -1
       name: start_task
       description: ""
