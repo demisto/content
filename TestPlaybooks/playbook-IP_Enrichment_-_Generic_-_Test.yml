@@ -1,6 +1,6 @@
 id: ip_enrichment_generic_test
 version: -1
-fromversion: "3.5.0"
+fromversion: 3.5.0
 name: IP Enrichment - Generic - Test
 starttaskid: "0"
 tasks:
@@ -129,15 +129,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
     scriptarguments:
       expectedValue: {}
       fields:
         simple: Indicator, Score, Type, Vendor
       path:
-        simple: ${DBotScore}
+        simple: DBotScore
     separatecontext: false
     view: |-
       {
@@ -176,34 +173,6 @@ tasks:
           "y": 400
         }
       }
-  "13":
-    id: "13"
-    taskid: 726af3a3-ea23-441f-87b9-eb347f6e97da
-    type: regular
-    task:
-      id: 726af3a3-ea23-441f-87b9-eb347f6e97da
-      version: -1
-      name: Verify DBotScore content
-      description: Verify that the DBotScore contains the correct indicator(the external
-        one).
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: 1.2.3.4
-      path:
-        simple: ${DBotScore.Indicator}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1114
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
@@ -218,3 +187,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
