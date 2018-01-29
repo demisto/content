@@ -20,7 +20,6 @@
         },
         {
             "integrations": {
-
                 "name": "activedir",
                 "byoi": false
             },
