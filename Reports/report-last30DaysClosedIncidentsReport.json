@@ -294,8 +294,8 @@
     }
   ],
   "recipients": [],
-  "orientation": "",
-  "paperSize": "",
+  "orientation": "portrait",
+  "paperSize": "A4",
   "runOnce": false,
   "latestReportName": "",
   "latestReportTime": "0001-01-01T00:00:00Z",
