@@ -225,7 +225,7 @@ view: |-
 inputs:
 - key: url
   value: {}
-  required: true
+  required: false
   description: url to enrich
 outputs:
 - contextPath: URL
