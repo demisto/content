@@ -2,6 +2,8 @@ id: Get File Sample From Hash - Carbon Black Enterprise Response
 version: -1
 name: Get File Sample From Hash - Carbon Black Enterprise Response
 fromversion: 2.5.0
+toversion: 3.1.0
+releaseNotes: "-"
 description: |-
   Returns to the war-room a file sample correlating to MD5 hashes in the context using Carbon Black Enterprise Response integration
 
