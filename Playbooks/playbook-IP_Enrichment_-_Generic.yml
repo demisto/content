@@ -1,6 +1,6 @@
 id: ip_enrichment_generic
 version: -1
-fromversion: "3.5.0"
+fromversion: 3.5.0
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
 starttaskid: "0"
@@ -257,7 +257,7 @@ inputs:
 - key: IP
   value:
     simple: ${IP.Address}
-  required: true
+  required: false
   description: The IP addresses to enrich
 - key: InternalRange
   value: {}
@@ -270,3 +270,4 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
+releaseNotes: "-"
