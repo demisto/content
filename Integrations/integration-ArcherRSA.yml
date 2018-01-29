@@ -1170,4 +1170,4 @@ script:
       description: ID of the field
     description: Returns mapping from list value name to list value id
   isfetch: true
-  runonce: false
+releaseNotes: "Login method now communicates using SOAP protocol."
