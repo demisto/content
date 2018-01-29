@@ -532,8 +532,12 @@ tasks:
           transformers:
           - operator: string.concat
             args:
-              prefix: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
-              suffix: '"}]'
+              prefix:
+                value:
+                  simple: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
+              suffix:
+                value:
+                  simple: '"}]'
       headers: {}
       page_number: {}
       page_size: {}
