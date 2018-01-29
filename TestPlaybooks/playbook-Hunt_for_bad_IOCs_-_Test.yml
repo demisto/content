@@ -70,7 +70,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       MD5Hash:
         complex:
@@ -109,105 +109,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 2fbbb3fa-e7ba-4d73-8115-4194d6b28f0b
-    type: regular
-    task:
-      id: 2fbbb3fa-e7ba-4d73-8115-4194d6b28f0b
-      version: -1
-      name: Verify Context - Falcon Host Devices
-      description: Verify Context - Falcon Host Devices
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: FalconHostDevices
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "5":
-    id: "5"
-    taskid: f577b6e0-cec2-4547-8bf4-7b810d65415f
-    type: regular
-    task:
-      id: f577b6e0-cec2-4547-8bf4-7b810d65415f
-      version: -1
-      name: Verify Context - Found File Locations
-      description: Verify Context - Found File Locations
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: found_file_locations
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 1245
-        }
-      }
-  "6":
-    id: "6"
-    taskid: e13f882a-4ff1-4131-8444-441fca18eca4
-    type: regular
-    task:
-      id: e13f882a-4ff1-4131-8444-441fca18eca4
-      version: -1
-      name: Verify Context - Found Hashes
-      description: Verify Context - Found Hashes
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: found_hashes
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
         }
       }
   "7":
     id: "7"
-    taskid: 18d94c36-a511-4d6e-8b9b-28171ba77108
+    taskid: 3cc1be15-e74b-4424-8fa5-3c6b69f73282
     type: regular
     task:
-      id: 18d94c36-a511-4d6e-8b9b-28171ba77108
+      id: 3cc1be15-e74b-4424-8fa5-3c6b69f73282
       version: -1
-      name: Verify Context - Agent GUIDS
-      description: Verify Context - Agent GUIDS
+      name: VerifyContext - Hostname
+      description: VerifyContext - Hostname
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -219,13 +132,15 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: File.References.AgentGuid
+        complex:
+          root: Endpoint
+          accessor: Hostname
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1070
         }
       }
   "8":
@@ -324,7 +239,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50

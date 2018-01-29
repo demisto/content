@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 604
+          "x": 53,
+          "y": 817
         }
       }
   "7":
@@ -101,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1229,
-          "y": 604
+          "x": 1202,
+          "y": 817
         }
       }
   "8":
@@ -112,9 +112,9 @@ tasks:
     task:
       id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
       version: -1
-      name: Carbon black Protection Rapid IOC Hunting
+      name: Carbon Black Protection Rapid IOC Hunting
       playbookId: playbook17
-      playbookName: Carbon black Protection Rapid IOC Hunting
+      playbookName: Carbon Black Protection Rapid IOC Hunting
       description: ""
       type: playbook
       iscommand: false
@@ -135,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1643,
-          "y": 604
+          "x": 1644,
+          "y": 817
         }
       }
   "9":
@@ -177,7 +177,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-      - "13"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -238,16 +238,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 697,
-          "y": 884
+          "x": 726,
+          "y": 1032
         }
       }
   "13":
     id: "13"
-    taskid: eb65bf58-3d48-456d-8c75-b9fd0c79e22f
+    taskid: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
     type: playbook
     task:
-      id: eb65bf58-3d48-456d-8c75-b9fd0c79e22f
+      id: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
       version: -1
       name: TIE - IOC Hunt
       playbookId: TIE - IOC Hunt
@@ -271,8 +271,107 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 496,
-          "y": 604
+          "x": 492,
+          "y": 817
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 0c2b727f-1b0e-4db5-8f98-03680e38ddf5
+    type: regular
+    task:
+      id: 0c2b727f-1b0e-4db5-8f98-03680e38ddf5
+      version: -1
+      name: Join MD5 Hashes
+      description: Join MD5 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: JoinedHashes
+      value:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 561,
+          "y": 347
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 2a9b02c2-97a5-4a84-8b3f-7afec532b79f
+    type: regular
+    task:
+      id: 2a9b02c2-97a5-4a84-8b3f-7afec532b79f
+      version: -1
+      name: Join SHA1 Hashes
+      description: Join SHA1 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: JoinedHashes
+      value:
+        complex:
+          root: inputs
+          accessor: SHA1Hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 561,
+          "y": 500
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 564a98be-1134-44e8-8dc4-7f2c102813d1
+    type: regular
+    task:
+      id: 564a98be-1134-44e8-8dc4-7f2c102813d1
+      version: -1
+      name: Join SHA256 Hashes
+      description: Join SHA256 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: JoinedHashes
+      value:
+        complex:
+          root: inputs
+          accessor: SHA256Hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 561,
+          "y": 652
         }
       }
 view: |-
@@ -284,9 +383,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 899,
-        "width": 1963,
-        "x": 60,
+        "height": 1047,
+        "width": 1971,
+        "x": 53,
         "y": 50
       }
     }
@@ -314,19 +413,7 @@ inputs:
   required: false
   description: SHA256 Hash
 outputs:
-- contextPath: FalconHostDevices
-  description: Device IDs found by device IOC search
-  type: string
-- contextPath: File.References.AgentGuid
-  description: The GUID of the system that referenced the file
-  type: string
 - contextPath: Endpoint.Hostname
-  description: Hostname
-  type: string
-- contextPath: found_file_locations
-  description: Found file locations
-  type: string
-- contextPath: found_hashes
-  description: Found hashes
+  description: Device hostname
   type: string
 releaseNotes: "-"
