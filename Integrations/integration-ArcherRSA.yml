@@ -528,10 +528,11 @@ script:
 
         var soap = getContentSoapRequest(token, applicationId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/GetRecordById';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.GetRecordByIdResponse.GetRecordByIdResult');
@@ -665,10 +666,11 @@ script:
 
         var soap = createContentSoapRequest(token, appId, fields);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
@@ -708,10 +710,11 @@ script:
 
         var soap = updateContentSoapRequest(token,appId,contentId,fields);
         var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var result = dq(response, 'Envelope.Body.UpdateRecordResponse.UpdateRecordResult');
@@ -751,10 +754,11 @@ script:
         var contentId = dataArgs.contentId;
         var soap =  deleteContentSoapRequest(token, appId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var result = dq(response, 'Envelope.Body.DeleteRecordResponse.DeleteRecordResult');
@@ -812,12 +816,12 @@ script:
         }
 
         var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
-
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var output = parseRecordsXml(response, reversemapping);
@@ -999,10 +1003,13 @@ script:
                                                             params.credentials.identifier,
                                                             params.credentials.password);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateUserSessionFromInstance';
-        var response = JSON.parse(x2j(sendSoapRequest('login', soap, SOAPAction)));
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw 'Login failed. Result = ' + response;
+        var rawResponse = sendSoapRequest('login', soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
+
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Login failed. Request = " + soap + " Response = " + rawResponse;
         }
+
         var token = dq(response, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult');
         return token;
     }
