@@ -1,0 +1,128 @@
+id: url_enrichment_-_generic_test
+version: -1
+name: UrlEnrichmentTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+    type: start
+    task:
+      id: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
+    type: regular
+    task:
+      id: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
+      version: -1
+      name: Add URL to context
+      description: ""
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: URL.Data=.
+      value:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+    type: playbook
+    task:
+      id: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+      version: -1
+      name: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c71c0142-c736-4828-85be-45a552e8bbba
+    type: regular
+    task:
+      id: c71c0142-c736-4828-85be-45a552e8bbba
+      version: -1
+      name: Assert
+      description: validate the context was updated correctly
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      path:
+        simple: URL.Address
+      value:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 546
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 591,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
+fromversion: "3.5.0"
