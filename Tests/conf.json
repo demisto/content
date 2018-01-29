@@ -41,6 +41,10 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
+          "integrations": "AlienVault OTX",
+          "playbookID": "ip_enrichment_generic_test"
+        },
+        {
             "integrations": "Cylance Protect",
             "playbookID": "endpoint_enrichment_-_generic_test"
         },
@@ -58,6 +62,10 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test"
+        },
+        {
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
