@@ -7,11 +7,9 @@
             "playbookID": "IOC Hunt - TIE - Test"
         },
         {
-          "integrations": {
-              "integrations": "ThreatExchange",
-              "playbookID": "extract_indicators_-_generic_-_test",
-              "timeout": 240
-          }
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
         },
         {
             "integrations": {
@@ -32,8 +30,8 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "ip_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -55,8 +53,8 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "domain_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
