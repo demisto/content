@@ -49,6 +49,10 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
+        },
+        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
