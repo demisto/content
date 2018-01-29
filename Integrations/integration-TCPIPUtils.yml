@@ -110,3 +110,4 @@ script:
       description: WHOIS result for the IP
     description: Get information about IP (ASN, WHOIS, country, city). When information
       is available, returns a JSON with details)
+releaseNotes: fix test command
