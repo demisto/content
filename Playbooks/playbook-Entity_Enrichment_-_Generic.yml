@@ -41,6 +41,7 @@ tasks:
       id: 58b5aa90-9f07-439c-8da2-e3310d073186
       version: -1
       name: ""
+      description: ""
       playbookName: IP Enrichment - Generic
       playbookId: ip_enrichment_generic
       type: playbook
@@ -65,6 +66,7 @@ tasks:
       id: 32757cd7-b535-4034-8e2b-aa1eface8b02
       version: -1
       name: ""
+      description: ""
       playbookName: URL Enrichment - Generic
       playbookId: url_enrichment_-_generic
       type: playbook
@@ -89,6 +91,7 @@ tasks:
       id: 101fb77a-f388-45aa-8057-4f7a06b49407
       version: -1
       name: ""
+      description: ""
       playbookName: Email Address Enrichment - Generic
       playbookId: email_address_enrichment_-_generic
       type: playbook
@@ -113,6 +116,7 @@ tasks:
       id: 3fb85b6e-5bf8-47b4-8563-5b702c3d7926
       version: -1
       name: ""
+      description: ""
       playbookName: Endpoint Enrichment - Generic
       playbookId: endpoint_enrichment_-_generic
       type: playbook
@@ -137,6 +141,7 @@ tasks:
       id: b21a640c-e6ab-4391-86a5-971ac6547eaf
       version: -1
       name: ""
+      description: ""
       playbookName: Domain Enrichment - Generic
       playbookId: domain_enrichment_generic
       type: playbook
@@ -161,6 +166,7 @@ tasks:
       id: b7c48112-223c-4e7b-84ad-390cc8496d8e
       version: -1
       name: ""
+      description: ""
       playbookName: Account Enrichment - Generic
       playbookId: account_enrichment_-_generic
       type: playbook
@@ -185,6 +191,7 @@ tasks:
       id: 1aa9f4cb-5946-4167-875c-8483828e3abe
       version: -1
       name: ""
+      description: ""
       playbookName: File Enrichment - Generic
       playbookId: File Enrichment - Generic
       type: playbook
@@ -209,6 +216,7 @@ tasks:
       id: bfdb7313-42f8-428d-8b5f-132c40808518
       version: -1
       name: ""
+      description: ""
       playbookName: DBot Indicator Enrichment - Generic
       playbookId: dbot_indicator_enrichment_-_generic
       type: playbook
