@@ -292,7 +292,7 @@
       "title": "Unknown Incidents"
     }
   ],
-  "recipients": null,
+  "recipients": [],
   "orientation": "portrait",
   "paperSize": "A4",
   "runOnce": false,
