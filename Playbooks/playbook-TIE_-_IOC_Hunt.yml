@@ -269,10 +269,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: fa9d8260-b398-4147-8fa8-a494905a09d3
+    taskid: 101e3e85-0246-4bd4-80be-2df713ee96e6
     type: regular
     task:
-      id: fa9d8260-b398-4147-8fa8-a494905a09d3
+      id: 101e3e85-0246-4bd4-80be-2df713ee96e6
       version: -1
       name: Get Agent info from ePO
       description: Get hostnames for the Agent GUIDS
@@ -405,9 +405,6 @@ inputs:
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
 outputs:
-- contextPath: File.References.AgentGuid
-  description: The GUID of the system that referenced the file
-  type: string
 - contextPath: Endpoint.Hostname
   description: Hostname
   type: string
