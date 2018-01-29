@@ -114,10 +114,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 3cc1be15-e74b-4424-8fa5-3c6b69f73282
+    taskid: 70d3d942-cd91-4ca2-8d25-a3ecd9f68282
     type: regular
     task:
-      id: 3cc1be15-e74b-4424-8fa5-3c6b69f73282
+      id: 70d3d942-cd91-4ca2-8d25-a3ecd9f68282
       version: -1
       name: VerifyContext - Hostname
       description: VerifyContext - Hostname
@@ -132,9 +132,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        complex:
-          root: Endpoint
-          accessor: Hostname
+        simple: Endpoint.Hostname
     separatecontext: false
     view: |-
       {
