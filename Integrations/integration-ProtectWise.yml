@@ -870,4 +870,3 @@ script:
     description: Get API token, to use in integration configuration
   isfetch: true
 fromversion: 3.5.0
-releaseNotes: "-"
