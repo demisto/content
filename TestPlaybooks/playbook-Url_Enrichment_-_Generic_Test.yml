@@ -27,10 +27,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 38118d8e-96d7-4953-802b-8316b44b4a99
+    taskid: 3212e888-8112-4bfc-8493-5c94c6eb530b
     type: playbook
     task:
-      id: 38118d8e-96d7-4953-802b-8316b44b4a99
+      id: 3212e888-8112-4bfc-8493-5c94c6eb530b
       version: -1
       name: URL Enrichment - Generic
       description: Enrich URL using one or more integrations
@@ -44,7 +44,7 @@ tasks:
       - "6"
     scriptarguments:
       url:
-        simple: ${Test.URL}
+        simple: ${Test.url}
     separatecontext: false
     loop:
       iscommand: false
@@ -87,10 +87,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 339a8531-e880-481c-834f-748a8ab8d4d7
+    taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
     type: regular
     task:
-      id: 339a8531-e880-481c-834f-748a8ab8d4d7
+      id: 55310715-a100-4d29-8423-9cf7946fc1ff
       version: -1
       name: Set URL
       description: Sets a value into the context with the given context key
@@ -104,7 +104,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: Test.URL
+        simple: Test.url
       value:
         simple: google.com
     separatecontext: false
