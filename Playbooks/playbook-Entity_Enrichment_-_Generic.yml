@@ -1,0 +1,239 @@
+id: entity_enrichment_generic
+version: -1
+fromversion: 3.5.0
+name: Entity Enrichment - Generic
+description: Enrich entities using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fe5bf2ea-3d68-4bee-81e6-856ebb188a44
+    type: start
+    task:
+      id: fe5bf2ea-3d68-4bee-81e6-856ebb188a44
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "9"
+      - "10"
+      - "12"
+      - "11"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 65
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 58b5aa90-9f07-439c-8da2-e3310d073186
+    type: playbook
+    task:
+      id: 58b5aa90-9f07-439c-8da2-e3310d073186
+      version: -1
+      name: ""
+      playbookName: IP Enrichment - Generic
+      playbookId: ip_enrichment_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 32757cd7-b535-4034-8e2b-aa1eface8b02
+    type: playbook
+    task:
+      id: 32757cd7-b535-4034-8e2b-aa1eface8b02
+      version: -1
+      name: ""
+      playbookName: URL Enrichment - Generic
+      playbookId: url_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 386
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 101fb77a-f388-45aa-8057-4f7a06b49407
+    type: playbook
+    task:
+      id: 101fb77a-f388-45aa-8057-4f7a06b49407
+      version: -1
+      name: ""
+      playbookName: Email Address Enrichment - Generic
+      playbookId: email_address_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 386
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 3fb85b6e-5bf8-47b4-8563-5b702c3d7926
+    type: playbook
+    task:
+      id: 3fb85b6e-5bf8-47b4-8563-5b702c3d7926
+      version: -1
+      name: ""
+      playbookName: Endpoint Enrichment - Generic
+      playbookId: endpoint_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b21a640c-e6ab-4391-86a5-971ac6547eaf
+    type: playbook
+    task:
+      id: b21a640c-e6ab-4391-86a5-971ac6547eaf
+      version: -1
+      name: ""
+      playbookName: Domain Enrichment - Generic
+      playbookId: domain_enrichment_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 709
+        }
+      }
+  "12":
+    id: "12"
+    taskid: b7c48112-223c-4e7b-84ad-390cc8496d8e
+    type: playbook
+    task:
+      id: b7c48112-223c-4e7b-84ad-390cc8496d8e
+      version: -1
+      name: ""
+      playbookName: Account Enrichment - Generic
+      playbookId: account_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 1aa9f4cb-5946-4167-875c-8483828e3abe
+    type: playbook
+    task:
+      id: 1aa9f4cb-5946-4167-875c-8483828e3abe
+      version: -1
+      name: ""
+      playbookName: File Enrichment - Generic
+      playbookId: File Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "14":
+    id: "14"
+    taskid: bfdb7313-42f8-428d-8b5f-132c40808518
+    type: playbook
+    task:
+      id: bfdb7313-42f8-428d-8b5f-132c40808518
+      version: -1
+      name: ""
+      playbookName: DBot Indicator Enrichment - Generic
+      playbookId: dbot_indicator_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 926
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 956,
+        "width": 810,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
