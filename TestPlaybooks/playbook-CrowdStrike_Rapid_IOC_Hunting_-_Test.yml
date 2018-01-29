@@ -1,8 +1,7 @@
-id: CrowdStrike Rapid IOC Hunting - Test
-version: -1
+id: b7341b2a-c899-4a28-8c57-7932d46da0c8
+version: 8
 name: CrowdStrike Rapid IOC Hunting - Test
 description: A test playbook for CrowdStrike Rapid IOC Hunting
-fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -13,7 +12,6 @@ tasks:
       id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -81,9 +79,8 @@ tasks:
     task:
       id: e4502e7d-24b6-4e69-80fb-617590474104
       version: -1
-      name: CrowdStrike Rapid IOC Hunting
-      playbookId: playbook16
-      playbookName: CrowdStrike Rapid IOC Hunting
+      name: CrowdStrike Rapid IOC Hunting 1
+      playbookName: CrowdStrike Rapid IOC Hunting 1
       type: playbook
       iscommand: false
       brand: ""
@@ -123,4 +120,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"

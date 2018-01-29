@@ -255,7 +255,7 @@ tasks:
       id: 461f7122-3239-492d-8a80-d4a37a18c645
       version: -1
       description: ""
-      name: Get device details and email
+      name: Get device details
       type: title
       iscommand: false
       brand: ""
@@ -268,39 +268,6 @@ tasks:
         "position": {
           "x": 725,
           "y": 894
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 76c1c1eb-c0ec-483e-826c-2494fc71a2a4
-    type: regular
-    task:
-      id: 76c1c1eb-c0ec-483e-826c-2494fc71a2a4
-      version: -1
-      name: Get device details
-      description: Get device details
-      script: FalconHost|||cs-device-search
-      type: regular
-      iscommand: true
-      brand: FalconHost
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      filter: {}
-      limit: {}
-      offset: {}
-      query:
-        complex:
-          root: FalconHostDevices
-      value:
-        simple: ${FalconHostDevices}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1330,
-          "y": 1170
         }
       }
   "14":
@@ -319,7 +286,7 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "11"
+      - "18"
     scriptarguments:
       value:
         complex:
@@ -338,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 725,
-          "y": 1009
+          "y": 1013
         }
       }
   "15":
@@ -348,7 +315,6 @@ tasks:
     task:
       id: 0be18d12-04e5-4109-89ff-b8f917d9bc38
       version: -1
-      description: ""
       name: Done
       type: title
       iscommand: false
@@ -358,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 1062.5,
-          "y": 1344
+          "y": 1391
         }
       }
   "16":
@@ -465,11 +431,41 @@ tasks:
           "y": 370
         }
       }
+  "18":
+    id: "18"
+    taskid: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+    type: regular
+    task:
+      id: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+      version: -1
+      name: Get device hostnames
+      description: Get device hostnames
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: Endpoint.Hostname=resources.hostname
+      ids:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 599,
+          "y": 1232
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
-      "14_11_yes": 0.18,
-      "14_15_#default#": 0.14,
+      "14_15_#default#": 0.71,
+      "14_18_yes": 0.54,
       "16_15_#default#": 0.1,
       "2_6_yes": 0.54,
       "2_9_#default#": 0.27,
@@ -480,7 +476,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1359,
+        "height": 1406,
         "width": 1393.5,
         "x": 499,
         "y": 50
@@ -510,7 +506,7 @@ inputs:
   required: false
   description: SHA256 Hash
 outputs:
-- contextPath: FalconHostDevices
-  description: Device IDs found by device IOC search
+- contextPath: Endpoint.Hostname
+  description: Device hostname
   type: string
 releaseNotes: "-"
