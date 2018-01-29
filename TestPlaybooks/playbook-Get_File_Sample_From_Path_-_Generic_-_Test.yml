@@ -70,7 +70,7 @@ tasks:
       brand: carbonblack
     nexttasks:
       '#none#':
-      - "7"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -103,15 +103,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 898
+          "y": 720
         }
       }
   "6":
     id: "6"
-    taskid: 60d7a7ec-7779-4e8b-8b00-71e9d7f6cdce
+    taskid: 5a56e8ef-4c85-4af2-8e22-13ae8a06ade3
     type: playbook
     task:
-      id: 60d7a7ec-7779-4e8b-8b00-71e9d7f6cdce
+      id: 5a56e8ef-4c85-4af2-8e22-13ae8a06ade3
       version: -1
       name: Get File Sample From Path - Generic
       description: |-
@@ -130,7 +130,7 @@ tasks:
       Hostname:
         simple: ${Endpoint.[0:2].Hostname}
       Path:
-        simple: ${File.Path}
+        simple: C:\\Windows\\System32\\calc.exe
       UseD2:
         simple: "no"
     separatecontext: false
@@ -142,37 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 723
-        }
-      }
-  "7":
-    id: "7"
-    taskid: cbda56dd-30d0-45aa-8cd7-e7ff8ddcc268
-    type: regular
-    task:
-      id: cbda56dd-30d0-45aa-8cd7-e7ff8ddcc268
-      version: -1
-      description: ""
-      name: add file path
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File.Path
-      value:
-        simple: C:\\Windows\\System32\\calc.exe
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 548
+          "y": 545
         }
       }
 view: |-
@@ -180,7 +150,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 943,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
