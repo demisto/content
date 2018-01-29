@@ -2,16 +2,16 @@ id: playbook17
 fromversion: 3.5.0
 system: true
 version: -1
-name: Carbon black Protection Rapid IOC Hunting
+name: Carbon Black Protection Rapid IOC Hunting
 description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: beabda04-030d-4f10-84f1-b1db9cf9e2b0
+    taskid: 9b42ebf8-2133-4457-83ed-1d281ed7887f
     type: start
     task:
-      id: beabda04-030d-4f10-84f1-b1db9cf9e2b0
+      id: 9b42ebf8-2133-4457-83ed-1sd281ed7887f
       version: -1
       name: start_task
       description: ""
@@ -31,10 +31,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 4d7028b4-bd69-48b5-85d0-df111c25ecd9
+    taskid: 0891cd8c-8331-42ee-80d8-ec78652b7ad2
     type: regular
     task:
-      id: 4d7028b4-bd69-48b5-85d0-df111c25ecd9
+      id: 0891cd8c-8331-42ee-80d8-ec78652b7ad2
       version: -1
       name: Search hashes in the file catalog
       description: Searching The file catalog for the hashes
@@ -46,6 +46,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      extend-context:
+        simple: ComputerId=computerId
       md5:
         complex:
           root: inputs
@@ -55,15 +57,15 @@ tasks:
       {
         "position": {
           "x": -197,
-          "y": 572
+          "y": 573
         }
       }
   "9":
     id: "9"
-    taskid: 14dcdb77-91ae-44a4-858b-d3fa88abe992
+    taskid: 255f2625-68d4-4475-81a2-663da89a39d6
     type: regular
     task:
-      id: 14dcdb77-91ae-44a4-858b-d3fa88abe992
+      id: 255f2625-68d4-4475-81a2-663da89a39d6
       version: -1
       name: Check if the hashes are included in any rules
       description: If the hashes have been approved or blocked in the past, they will
@@ -76,8 +78,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
+      extend-context:
+        simple: ComputerId=computerId
       hash:
         complex:
           root: inputs
@@ -92,10 +96,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 4224a038-730f-4a9c-81b8-b9f0bc60394b
+    taskid: e499031a-b17c-4c20-8e8d-2747e29d329d
     type: condition
     task:
-      id: 4224a038-730f-4a9c-81b8-b9f0bc60394b
+      id: e499031a-b17c-4c20-8e8d-2747e29d329d
       version: -1
       name: Is Carbon Black Protection enabled?
       description: Is Carbon Black Protection enabled?
@@ -153,10 +157,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 93a2df6f-0ee2-4693-8a43-327297f25cb0
+    taskid: e5069a6c-2c37-4f0d-8a7b-571fdd1aa9ac
     type: title
     task:
-      id: 93a2df6f-0ee2-4693-8a43-327297f25cb0
+      id: e5069a6c-2c37-4f0d-8a7b-571fdd1aa9ac
       version: -1
       name: Done
       description: Done
@@ -167,16 +171,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 244,
-          "y": 927
+          "x": 253,
+          "y": 1316
         }
       }
   "12":
     id: "12"
-    taskid: 2f76a11d-dc6b-4895-83e1-db0645837ac9
+    taskid: 57f5bcda-24a1-4387-8566-94fa8eed1155
     type: condition
     task:
-      id: 2f76a11d-dc6b-4895-83e1-db0645837ac9
+      id: 57f5bcda-24a1-4387-8566-94fa8eed1155
       version: -1
       name: Do we have files to hunt?
       description: Do we have files to hunt?
@@ -209,6 +213,77 @@ tasks:
           "y": 380
         }
       }
+  "13":
+    id: "13"
+    taskid: 0174e70d-e14f-47cc-8c65-0b36c142ae52
+    type: regular
+    task:
+      id: 0174e70d-e14f-47cc-8c65-0b36c142ae52
+      version: -1
+      name: Get hostname and workgroup
+      description: Get hostname and workgroup
+      script: carbonblackprotection|||cbp-computer-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context: {}
+      headers: {}
+      id:
+        complex:
+          root: ComputerId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -197,
+          "y": 928
+        }
+      }
+  "14":
+    id: "14"
+    taskid: accc2606-97d8-45e7-8382-8fa3a8799240
+    type: regular
+    task:
+      id: accc2606-97d8-45e7-8382-8fa3a8799240
+      version: -1
+      name: Get hostname
+      description: Get hostname
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: string.replaceMatch
+            args:
+              regex:
+                value:
+                  simple: .*\\(.*)
+              replaceWith:
+                value:
+                  simple: $1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -197,
+          "y": 1107
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -217,7 +292,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 942,
+        "height": 1331,
         "width": 852,
         "x": -197,
         "y": 50
@@ -233,7 +308,7 @@ inputs:
   required: false
   description: The MD5 Hash to hunt for
 outputs:
-- contextPath: found_hashes
-  description: The existing hashes that were found
+- contextPath: Endpoint.Hostname
+  description: The device hostname
   type: string
 releaseNotes: "-"
