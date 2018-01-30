@@ -3,7 +3,12 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "AlienVault OTX",
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
