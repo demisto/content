@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+          "integrations": "McAfee Threat Intelligence Exchange",
+          "playbookID": "IOC Hunt - TIE - Test"
+        },
+        {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
