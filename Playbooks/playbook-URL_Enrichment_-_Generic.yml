@@ -28,14 +28,13 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 4ec7894b-38ed-43ed-8e02-dd5f77e4328b
+    taskid: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
     type: condition
     task:
-      id: 4ec7894b-38ed-43ed-8e02-dd5f77e4328b
+      id: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
       version: -1
       name: Do we have URLs?
       description: do we have a url to check
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -47,8 +46,16 @@ tasks:
       - "25"
     scriptarguments:
       value:
-        simple: ${URL.Data}
+        simple: inputs.url
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
     view: |-
       {
         "position": {
@@ -58,10 +65,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: d9879036-d5c5-491b-87e6-c4dc748c4bb3
+    taskid: 22884d3e-bf75-482f-8dcf-514787f23c6f
     type: regular
     task:
-      id: d9879036-d5c5-491b-87e6-c4dc748c4bb3
+      id: 22884d3e-bf75-482f-8dcf-514787f23c6f
       version: -1
       name: Get URLs reputation
       description: Run reputation for the given url
@@ -77,7 +84,7 @@ tasks:
         simple: ${File.SHA256}
       ip: {}
       url:
-        simple: ${URL.Data}
+        simple: ${inputs.url}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -179,10 +186,10 @@ tasks:
       }
   "26":
     id: "26"
-    taskid: 99803edc-2cd2-4a80-8372-92a49953a1d4
+    taskid: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
     type: regular
     task:
-      id: 99803edc-2cd2-4a80-8372-92a49953a1d4
+      id: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
       version: -1
       name: Get URL screenshot
       description: Get the screenshot of the url page
@@ -197,7 +204,7 @@ tasks:
       height: {}
       type: {}
       url:
-        simple: ${URL.Data}
+        simple: ${inputs.url}
       width: {}
     separatecontext: false
     view: |-
@@ -228,9 +235,6 @@ inputs:
   required: false
   description: url to enrich
 outputs:
-- contextPath: URL
-  description: The URL object
-  type: unknown
 - contextPath: URL.Address
   description: The enriched URL
   type: string
@@ -247,4 +251,4 @@ outputs:
   description: additional info on the url
   type: string
 releaseNotes: "-"
-fromversion: "3.5.0"
+fromversion: 3.5.0
