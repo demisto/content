@@ -3,11 +3,16 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
             },
-            "playbookID": "Carbon Black Rapid IOC Hunting - Test"
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
             "integrations": "ThreatExchange",

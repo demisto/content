@@ -1,0 +1,14 @@
+{
+  "id": "memory-current-usage",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Memory Current Usage",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "memory.usedPercent",
+  "isPredefined": true,
+  "params": {
+    "currencySign": "%"
+  },
+  "size": 0
+}
