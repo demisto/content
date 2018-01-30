@@ -4,6 +4,7 @@
   "fromVersion": "3.5.0",
   "name": "Incidents Dropped in Preprocessing",
   "dataType": "audit",
+  "category": "incidents",
   "widgetType": "number",
   "query": "",
   "isPredefined": true,

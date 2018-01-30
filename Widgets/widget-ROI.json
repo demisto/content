@@ -4,6 +4,7 @@
   "fromVersion": "3.5.0",
   "name": "Return On Investment (ROI)",
   "dataType": "roi",
+  "category": "others",
   "widgetType": "number",
   "size": 5,
   "query": "",
