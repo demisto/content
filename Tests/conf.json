@@ -220,11 +220,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
         }
     ],
     "skipped": [
@@ -257,6 +252,14 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
         }
     ]
 }
