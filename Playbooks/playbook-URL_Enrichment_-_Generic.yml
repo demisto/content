@@ -231,9 +231,10 @@ view: |-
   }
 inputs:
 - key: url
-  value: {}
-  required: false
-  description: url to enrich
+   value:
+      simple: ${URL.Data}
+    required: false
+    description: The url to enrich
 outputs:
 - contextPath: URL.Address
   description: The enriched URL
