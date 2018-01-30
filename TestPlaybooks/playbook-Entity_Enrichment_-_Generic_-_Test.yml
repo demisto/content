@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8a535e70-6f01-4233-89bb-5a7dbf3b3308
+    taskid: 465ed533-9ff9-4377-8f85-e3f71a95b756
     type: start
     task:
-      id: 8a535e70-6f01-4233-89bb-5a7dbf3b3308
+      id: 465ed533-9ff9-4377-8f85-e3f71a95b756
       version: -1
       name: ""
       description: ""
@@ -28,10 +28,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 9297e0a8-2ef7-4df2-8d14-c0b271dad2ca
+    taskid: bc954f05-5238-40ff-8020-027a1097ad1a
     type: regular
     task:
-      id: 9297e0a8-2ef7-4df2-8d14-c0b271dad2ca
+      id: bc954f05-5238-40ff-8020-027a1097ad1a
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -56,10 +56,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: c2d8289a-4510-4cb5-8a43-3a6d8fa8d106
+    taskid: f7759517-fbbd-44cb-899a-7e068045585e
     type: regular
     task:
-      id: c2d8289a-4510-4cb5-8a43-3a6d8fa8d106
+      id: f7759517-fbbd-44cb-899a-7e068045585e
       version: -1
       name: Set IP
       description: Sets a value into the context with the given context key
@@ -75,7 +75,7 @@ tasks:
       key:
         simple: Test.Address
       value:
-        simple: 1.2.3.4
+        simple: 10.0.0.1
     separatecontext: false
     view: |-
       {
@@ -86,10 +86,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 643ddb12-30ef-4f59-80ac-6737ca5502dd
+    taskid: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
     type: regular
     task:
-      id: 643ddb12-30ef-4f59-80ac-6737ca5502dd
+      id: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
       version: -1
       name: Set Account
       description: Sets a value into the context with the given context key
@@ -116,10 +116,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 8b49d3a2-fc4a-46cb-8b34-489afac3b7b0
+    taskid: a18fa053-ba81-48f0-8339-bd3d6a09d03a
     type: regular
     task:
-      id: 8b49d3a2-fc4a-46cb-8b34-489afac3b7b0
+      id: a18fa053-ba81-48f0-8339-bd3d6a09d03a
       version: -1
       name: Verify IP Object
       description: |-
@@ -150,10 +150,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 68349f3c-0e15-4ede-8adb-4c18249a82fc
+    taskid: 5cb139be-bdaf-4409-82d2-424c2ba0775f
     type: regular
     task:
-      id: 68349f3c-0e15-4ede-8adb-4c18249a82fc
+      id: 5cb139be-bdaf-4409-82d2-424c2ba0775f
       version: -1
       name: Verify DBotScore
       description: |-
@@ -182,10 +182,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 963e0eea-9f48-4424-8b67-a0907a909637
+    taskid: ae6f1249-d1ca-4084-8447-559fb483ab1b
     type: regular
     task:
-      id: 963e0eea-9f48-4424-8b67-a0907a909637
+      id: ae6f1249-d1ca-4084-8447-559fb483ab1b
       version: -1
       name: Verify Account fields
       description: |-
@@ -217,10 +217,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: be9c041a-ac2f-4d4a-8333-1e6e935e5364
+    taskid: eebeda4c-9655-4d21-8194-27313c1e3357
     type: playbook
     task:
-      id: be9c041a-ac2f-4d4a-8333-1e6e935e5364
+      id: eebeda4c-9655-4d21-8194-27313c1e3357
       version: -1
       name: Entity Enrichment - Generic
       description: Enrich entities using one or more integrations
@@ -261,7 +261,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 692
+          "y": 702
         }
       }
 view: |-
