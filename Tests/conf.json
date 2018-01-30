@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "AlienVault OTX",
-            "playbookID": "entity_enrichment_generic_test"
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
         },
         {
             "integrations": "ThreatExchange",
