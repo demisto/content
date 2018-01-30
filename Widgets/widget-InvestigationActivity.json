@@ -3,6 +3,7 @@
   "version": -1,
   "name": "Investigation Activity Timeline",
   "dataType": "entries",
+  "category": "others",
   "widgetType": "line",
   "size": 5,
   "query": "",

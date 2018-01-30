@@ -1,6 +1,8 @@
 id: Get File Sample From Hash - Generic
 version: -1
 name: Get File Sample From Hash - Generic
+toversion: 3.1.0
+releaseNotes: "-"
 description: Returns to the war-room a file sample correlating from a hash using one
   or more products
 starttaskid: "0"
