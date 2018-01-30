@@ -8,8 +8,10 @@ script: |-
       throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
   }
   var entryIDs = args.entryIDs;
+  var entryTags = args.tags;
   var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
   entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
+  entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
 
   for (var i=0;i<entryIDs.length;i++) {
       var entryID = entryIDs[i];
@@ -17,7 +19,7 @@ script: |-
       if (isValidRes(entries)) {
           for (var j=0;j<entries.length;j++){
               var ent=entries[j];
-              var res = executeCommand('markAsEvidence', {'id': entryID, 'description': desc});
+              var res = executeCommand('markAsEvidence', { 'id': entryID, 'description': desc, when: args.occurred, tags: entryTags });
               if (!isValidRes(res)) {
                   return res;
               }
@@ -46,4 +48,9 @@ args:
   deprecated: true
 - name: description
   description: Description to add to Evidence Board
+- name: occurred
+  description: "Occurred time of the evidence (time format: 2008-01-02T15:04:05)"
+- name: tags
+  description: Evidence tags
 scripttarget: 0
+releaseNotes: The ability to provide evidence occurred time and tags

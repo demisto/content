@@ -129,7 +129,7 @@ inputs:
 - key: Domain
   value:
     simple: ${Domain.Name}
-  required: true
+  required: false
   description: The domain name to enrich
 outputs:
 - contextPath: Domain
