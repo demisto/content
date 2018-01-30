@@ -3,8 +3,16 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "IOC Hunt - TIE - Test"
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
             "integrations": "ThreatExchange",
@@ -30,8 +38,8 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": "AlienVault OTX",
-            "playbookID": "ip_enrichment_generic_test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -53,8 +61,8 @@
             "playbookID": "Google Safe Browsing Test"
         },
         {
-            "integrations": "AlienVault OTX",
-            "playbookID": "domain_enrichment_generic_test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
