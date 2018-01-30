@@ -190,5 +190,7 @@ inputs:
     simple: ${File.Path}
   required: false
   description: The file path
-outputs: []
-releaseNotes: "add new playbook"
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown

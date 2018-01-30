@@ -29,10 +29,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: cfc3e141-35c5-4eaa-8ccc-945a372e3963
+    taskid: 96384d6b-ac26-4cd9-87f9-8c001bcea8fb
     type: playbook
     task:
-      id: cfc3e141-35c5-4eaa-8ccc-945a372e3963
+      id: 96384d6b-ac26-4cd9-87f9-8c001bcea8fb
       version: -1
       name: Get File Sample From Path - D2
       description: |-
@@ -56,7 +56,7 @@ tasks:
         simple: 34.242.204.193
       Path:
         simple: C:\Windows\System32\calc.exe
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
