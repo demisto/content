@@ -3,6 +3,7 @@
   "version": -1,
   "name": "Most Active Integrations",
   "dataType": "entries",
+  "category": "others",
   "widgetType": "bar",
   "size": 5,
   "query": "-brand:Builtin and -brand:Service and -brand:none and -category:text",

@@ -1,6 +1,6 @@
 id: url_enrichment_-_generic_test
 version: -1
-name: UrlEnrichmentTest
+name: Url Enrichment Generic - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -25,53 +25,26 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
-    type: regular
-    task:
-      id: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
-      version: -1
-      name: Add URL to context
-      description: ""
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      extend-context:
-        simple: URL.Data=.
-      value:
-        simple: www.google.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 200
-        }
-      }
   "2":
     id: "2"
-    taskid: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+    taskid: 3212e888-8112-4bfc-8493-5c94c6eb530b
     type: playbook
     task:
-      id: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+      id: 3212e888-8112-4bfc-8493-5c94c6eb530b
       version: -1
       name: URL Enrichment - Generic
+      description: Enrich URL using one or more integrations
       playbookName: URL Enrichment - Generic
+      playbookId: url_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     scriptarguments:
       url:
-        simple: ${URL.Data}
+        simple: ${Test.url}
     separatecontext: false
     loop:
       iscommand: false
@@ -80,34 +53,133 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 380
+          "x": 450,
+          "y": 563
         }
       }
-  "3":
-    id: "3"
-    taskid: c71c0142-c736-4828-85be-45a552e8bbba
+  "4":
+    id: "4"
+    taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
     type: regular
     task:
-      id: c71c0142-c736-4828-85be-45a552e8bbba
+      id: d3eb1773-d77b-4590-8128-83b65bf6e083
       version: -1
-      name: Assert
-      description: validate the context was updated correctly
-      scriptName: ContextContains
+      name: Clear Context
+      description: Clear the context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
-      path:
-        simple: URL.Address
-      value:
-        simple: www.google.com
+      all:
+        simple: "yes"
+      key: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 546
+          "x": 450,
+          "y": 201
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
+    type: regular
+    task:
+      id: 55310715-a100-4d29-8423-9cf7946fc1ff
+      version: -1
+      name: Set URL
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test.url
+      value:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 381
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8362ebe6-8622-420c-8ab7-881abed983ab
+    type: regular
+    task:
+      id: 8362ebe6-8622-420c-8ab7-881abed983ab
+      version: -1
+      name: Verify URL
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 746
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 62559528-c212-46ef-82ae-03c3d21d9fe1
+    type: regular
+    task:
+      id: 62559528-c212-46ef-82ae-03c3d21d9fe1
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Score,Type,Vendor
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 926
         }
       }
 view: |-
@@ -115,9 +187,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 591,
-        "width": 390,
-        "x": 440,
+        "height": 971,
+        "width": 380,
+        "x": 450,
         "y": 50
       }
     }
@@ -125,4 +197,4 @@ view: |-
 inputs: []
 outputs: []
 releaseNotes: "-"
-fromversion: "3.5.0"
+fromversion: 3.5.0
