@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 465ed533-9ff9-4377-8f85-e3f71a95b756
+    taskid: 8a535e70-6f01-4233-89bb-5a7dbf3b3308
     type: start
     task:
-      id: 465ed533-9ff9-4377-8f85-e3f71a95b756
+      id: 8a535e70-6f01-4233-89bb-5a7dbf3b3308
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -28,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: bc954f05-5238-40ff-8020-027a1097ad1a
+    taskid: 9297e0a8-2ef7-4df2-8d14-c0b271dad2ca
     type: regular
     task:
-      id: bc954f05-5238-40ff-8020-027a1097ad1a
+      id: 9297e0a8-2ef7-4df2-8d14-c0b271dad2ca
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -56,10 +55,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 11ce7ce4-c833-4432-8e27-a284f18335f1
+    taskid: c2d8289a-4510-4cb5-8a43-3a6d8fa8d106
     type: regular
     task:
-      id: 11ce7ce4-c833-4432-8e27-a284f18335f1
+      id: c2d8289a-4510-4cb5-8a43-3a6d8fa8d106
       version: -1
       name: Set IP
       description: Sets a value into the context with the given context key
@@ -86,10 +85,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
+    taskid: 643ddb12-30ef-4f59-80ac-6737ca5502dd
     type: regular
     task:
-      id: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
+      id: 643ddb12-30ef-4f59-80ac-6737ca5502dd
       version: -1
       name: Set Account
       description: Sets a value into the context with the given context key
@@ -116,10 +115,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: a18fa053-ba81-48f0-8339-bd3d6a09d03a
+    taskid: 8b49d3a2-fc4a-46cb-8b34-489afac3b7b0
     type: regular
     task:
-      id: a18fa053-ba81-48f0-8339-bd3d6a09d03a
+      id: 8b49d3a2-fc4a-46cb-8b34-489afac3b7b0
       version: -1
       name: Verify IP Object
       description: |-
@@ -150,10 +149,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 5cb139be-bdaf-4409-82d2-424c2ba0775f
+    taskid: 68349f3c-0e15-4ede-8adb-4c18249a82fc
     type: regular
     task:
-      id: 5cb139be-bdaf-4409-82d2-424c2ba0775f
+      id: 68349f3c-0e15-4ede-8adb-4c18249a82fc
       version: -1
       name: Verify DBotScore
       description: |-
@@ -182,10 +181,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: ae6f1249-d1ca-4084-8447-559fb483ab1b
+    taskid: 963e0eea-9f48-4424-8b67-a0907a909637
     type: regular
     task:
-      id: ae6f1249-d1ca-4084-8447-559fb483ab1b
+      id: 963e0eea-9f48-4424-8b67-a0907a909637
       version: -1
       name: Verify Account fields
       description: |-
@@ -217,14 +216,14 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 337ff1ed-615e-435b-8e24-da49f543a852
+    taskid: be9c041a-ac2f-4d4a-8333-1e6e935e5364
     type: playbook
     task:
-      id: 337ff1ed-615e-435b-8e24-da49f543a852
+      id: be9c041a-ac2f-4d4a-8333-1e6e935e5364
       version: -1
       name: Entity Enrichment - Generic
+      description: Enrich entities using one or more integrations
       playbookName: Entity Enrichment - Generic
-      playbookId: entity_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
@@ -232,7 +231,31 @@ tasks:
       '#none#':
       - "10"
       - "8"
+    scriptarguments:
+      Domain:
+        simple: ${Domain.Name}
+      Email:
+        simple: ${Account.Email.Address}
+      Hostname:
+        simple: ${Endpoint.Hostname}
+      IP:
+        simple: ${Test.Address}
+      InternalRange: {}
+      MD5:
+        simple: ${File.MD5}
+      SHA1:
+        simple: ${File.SHA1}
+      SHA256:
+        simple: ${File.SHA256}
+      Username:
+        simple: ${Test.Username}
+      url:
+        simple: ${URL.Data}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
