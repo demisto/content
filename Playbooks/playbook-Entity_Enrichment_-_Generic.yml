@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5da9b365-f082-4c0b-8d9d-4192f4f60600
+    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
     type: start
     task:
-      id: 5da9b365-f082-4c0b-8d9d-4192f4f60600
+      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
       version: -1
       name: ""
       description: ""
@@ -35,10 +35,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 9147f8c1-f1f0-4712-834d-9fd5d28a5308
+    taskid: 92a63802-d111-4add-8e92-03f485d20bab
     type: playbook
     task:
-      id: 9147f8c1-f1f0-4712-834d-9fd5d28a5308
+      id: 92a63802-d111-4add-8e92-03f485d20bab
       version: -1
       name: IP Enrichment - Generic
       description: Enrich IP using one or more integrations
@@ -67,10 +67,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: f37c42dc-519b-48c6-8f14-141e896089f1
+    taskid: 427040f6-9903-4122-8537-bd72d6fcdab2
     type: playbook
     task:
-      id: f37c42dc-519b-48c6-8f14-141e896089f1
+      id: 427040f6-9903-4122-8537-bd72d6fcdab2
       version: -1
       name: URL Enrichment - Generic
       description: Enrich URL using one or more integrations
@@ -98,10 +98,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 23989fe6-2b96-4a3b-816c-0e7aff48a8a6
+    taskid: 7ea079dc-c904-4088-878d-908e7b5b1ab3
     type: playbook
     task:
-      id: 23989fe6-2b96-4a3b-816c-0e7aff48a8a6
+      id: 7ea079dc-c904-4088-878d-908e7b5b1ab3
       version: -1
       name: Email Address Enrichment - Generic
       description: Get email address reputation using one or more integrations
@@ -130,10 +130,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 69dd9494-da06-47e5-8aa5-2bf549df2ba9
+    taskid: 06158760-6f5f-466e-8e57-d37f7ec29066
     type: playbook
     task:
-      id: 69dd9494-da06-47e5-8aa5-2bf549df2ba9
+      id: 06158760-6f5f-466e-8e57-d37f7ec29066
       version: -1
       name: Endpoint Enrichment - Generic
       description: Enrich an Endpoint Hostname using one or more integrations
@@ -161,10 +161,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 065ae30d-9a18-4af0-8167-f018f80a64f7
+    taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
     type: playbook
     task:
-      id: 065ae30d-9a18-4af0-8167-f018f80a64f7
+      id: 5799a021-f77c-457b-85bc-e362b7ff4b43
       version: -1
       name: Domain Enrichment - Generic
       description: Enrich Domain using one or more integrations
@@ -192,10 +192,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 53c64bc6-e40c-44b3-81e1-7cbcfedb8122
+    taskid: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
     type: playbook
     task:
-      id: 53c64bc6-e40c-44b3-81e1-7cbcfedb8122
+      id: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
       version: -1
       name: Account Enrichment - Generic
       description: Enrich Accounts using one or more integrations
@@ -223,10 +223,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 34e5d858-d114-46a7-8d47-998be6e6f295
+    taskid: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
     type: playbook
     task:
-      id: 34e5d858-d114-46a7-8d47-998be6e6f295
+      id: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
       version: -1
       name: File Enrichment - Generic
       description: Get file reputation using one or more integrations
@@ -258,16 +258,20 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 92a496cf-6c70-443f-8eb6-0fc78d81d1d6
+    taskid: a362425a-64c2-4d6c-8f5e-fcd9db4c4870
     type: playbook
     task:
-      id: 92a496cf-6c70-443f-8eb6-0fc78d81d1d6
+      id: a362425a-64c2-4d6c-8f5e-fcd9db4c4870
       version: -1
       name: ""
+      description: "Get indicators internal Dbot score"
       playbookName: DBot Indicator Enrichment - Generic
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -276,12 +280,32 @@ tasks:
           "y": 926
         }
       }
+  "15":
+    id: "15"
+    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
+    type: title
+    task:
+      id: 38007764-1687-47b1-8490-0f3cded9dc95
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1106
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 954,
+        "height": 1104,
         "width": 810,
         "x": 50,
         "y": 67
