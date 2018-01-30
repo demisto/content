@@ -1,0 +1,358 @@
+id: get_file_sample_by_hash_-_cylance_protect
+version: -1
+name: Get File Sample By Hash - Cylance Protect
+fromversion: 3.5.0
+releaseNotes: "-"
+description: |-
+  Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d947a1c1-7312-4f99-8f56-bfcb4b0c3dfe
+    type: start
+    task:
+      id: d947a1c1-7312-4f99-8f56-bfcb4b0c3dfe
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c7ac9a5c-a5c1-4d97-8c8a-17bb763b6bc1
+    type: condition
+    task:
+      id: c7ac9a5c-a5c1-4d97-8c8a-17bb763b6bc1
+      version: -1
+      name: Is Cylance Protect enabled?
+      description: Checks if the the "Cylance Protect" integration is enabled
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cylance Protect
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: af2e86ff-6413-4cd8-8d5f-799edb0770e6
+    type: title
+    task:
+      id: af2e86ff-6413-4cd8-8d5f-799edb0770e6
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1420
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b17b16b8-78a7-4522-89ce-890839581757
+    type: condition
+    task:
+      id: b17b16b8-78a7-4522-89ce-890839581757
+      version: -1
+      name: Do we have a SHA256?
+      description: Checks for SHA256 in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs
+          accessor: SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 7423c51e-e44c-4032-8367-fd7a8d61bfba
+    type: regular
+    task:
+      id: 7423c51e-e44c-4032-8367-fd7a8d61bfba
+      version: -1
+      name: Get download link from HASH
+      description: Query Cylance Protect for HASH's link
+      script: Cylance Protect|||cylance-protect-download-threat
+      type: regular
+      iscommand: true
+      brand: Cylance Protect
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: DownloadLink=url
+      filters: {}
+      headers: {}
+      page_number: {}
+      page_size: {}
+      sha256:
+        complex:
+          root: inputs
+          accessor: SHA256
+      sorts: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 48dcc1b9-1421-4626-80a8-fa0a364253a3
+    type: condition
+    task:
+      id: 48dcc1b9-1421-4626-80a8-fa0a364253a3
+      version: -1
+      name: Did we get a download link?
+      description: Checks for a download link in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    scriptarguments:
+      extend-context: {}
+      left: {}
+      right: {}
+      value:
+        complex:
+          root: DownloadLink
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 2de88281-102e-4a58-8fea-cd3072417d05
+    type: regular
+    task:
+      id: 2de88281-102e-4a58-8fea-cd3072417d05
+      version: -1
+      name: Download File (ZIP format)
+      description: Send an HTTP request to download the zip file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: ${inputs.SHA256}.zip
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      url:
+        complex:
+          root: DownloadLink
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 917958d1-9c25-4f8d-84f3-5e272848d939
+    type: condition
+    task:
+      id: 917958d1-9c25-4f8d-84f3-5e272848d939
+      version: -1
+      name: Did we successfully download the ZIP file?
+      description: Checks for ZIP file format in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
+    type: regular
+    task:
+      id: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
+      version: -1
+      name: Unzip File
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+              ignorecase: true
+          accessor: EntryID
+      extend-context: {}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        complex:
+          root: inputs
+          accessor: ZipPassword
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The SHA256 hash of the file we want to download
+- key: ZipPassword
+  value:
+    simple: infected
+  required: true
+  description: The password for the zip file
+outputs:
+- contextPath: File
+  description: The sample file
+  type: unknown
