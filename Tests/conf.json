@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "AlienVault OTX",
+            "playbookID": "entity_enrichment_generic_test"
+        },
+        {
             "integrations": "ThreatExchange",
             "playbookID": "extract_indicators_-_generic_-_test",
             "timeout": 240
