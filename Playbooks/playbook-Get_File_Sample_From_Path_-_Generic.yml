@@ -158,10 +158,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: df587b28-f0ec-4407-803e-325590df1acc
+    taskid: 6689a943-ee94-437a-868b-0c6971de86f4
     type: playbook
     task:
-      id: df587b28-f0ec-4407-803e-325590df1acc
+      id: 6689a943-ee94-437a-868b-0c6971de86f4
       version: -1
       name: Get File Sample From Path - Carbon Black Enterprise Response
       description: Returns a file sample to the war-room from a path on an endpoint
@@ -178,7 +178,7 @@ tasks:
         simple: ${inputs.Hostname}
       Path:
         simple: ${inputs.Path}
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -218,5 +218,7 @@ inputs:
     simple: ${File.Path}
   required: false
   description: ""
-outputs: []
-releaseNotes: "add new playbook"
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown

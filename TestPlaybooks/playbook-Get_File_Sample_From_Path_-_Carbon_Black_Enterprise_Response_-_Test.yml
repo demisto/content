@@ -81,10 +81,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: e1905cd8-c2d8-4dc8-8801-a593de7a8ca6
+    taskid: 87ddf822-2a0f-456a-8688-306a1ddf794e
     type: playbook
     task:
-      id: e1905cd8-c2d8-4dc8-8801-a593de7a8ca6
+      id: 87ddf822-2a0f-456a-8688-306a1ddf794e
       version: -1
       name: Get File Sample From Path - Carbon Black Enterprise Response
       description: Returns a file sample to the war-room from a path on an endpoint
@@ -101,7 +101,7 @@ tasks:
         simple: ${Endpoint.[0:2].Hostname}
       Path:
         simple: C:\\Windows\\System32\\calc.exe
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""

@@ -188,5 +188,7 @@ inputs:
     simple: ${File.Path}
   required: false
   description: Path of the file on the endpoint
-outputs: []
-releaseNotes: "add new playbook"
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
