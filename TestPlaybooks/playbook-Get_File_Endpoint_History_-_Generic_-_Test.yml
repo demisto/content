@@ -1,6 +1,6 @@
-id: Hunt for bad IOCs - Test
+id: get_file_endpoint_history_-_generic_-_test
 version: -1
-name: Hunt for bad IOCs - Test
+name: Get File Endpoint History - Generic - Test
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -65,6 +65,7 @@ tasks:
       description: Assume that malicious IOCs are in the right place in the context
         and start hunting using available tools
       playbookName: Get File Endpoint History - Generic
+      playbookId: get_file_endpoint_history_-_generic
       type: playbook
       iscommand: false
       brand: ""
