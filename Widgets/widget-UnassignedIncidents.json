@@ -1,6 +1,7 @@
 {
   "id": "unassigned-incidents",
   "version": -1,
+  "fromVersion": "3.5.0",
   "name": "Unassigned Incidents",
   "dataType": "incidents",
   "widgetType": "list",
