@@ -3,11 +3,14 @@
     "testInterval": 30,
     "tests": [
         {
-            "integrations": {
-                "name": "carbonblackprotection",
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
                 "byoi": false
-            },
-            "playbookID": "Carbon black Protection Rapid IOC Hunting - Test"
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
         },
         {
             "integrations":"Cylance Protect",
