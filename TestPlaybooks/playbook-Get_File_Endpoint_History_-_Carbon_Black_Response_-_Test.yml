@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+    taskid: 466068d5-0dc8-4858-8bfc-ff8f151f034b
     type: start
     task:
-      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+      id: 466068d5-0dc8-4858-8bfc-ff8f151f034b
       version: -1
       name: ""
       description: ""
@@ -29,10 +29,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 6c5d50e9-0f06-4a9a-88da-37d19613ede8
+    taskid: ca29f522-9854-4491-8b56-df4ad91f0b83
     type: regular
     task:
-      id: 6c5d50e9-0f06-4a9a-88da-37d19613ede8
+      id: ca29f522-9854-4491-8b56-df4ad91f0b83
       version: -1
       name: Verify hostname
       description: Verify found hashes
@@ -58,10 +58,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
+    taskid: 8d7106cf-cdd6-4202-8c54-8c246161e911
     type: title
     task:
-      id: ade05085-d22e-470a-8a44-b2b2707c48d3
+      id: 8d7106cf-cdd6-4202-8c54-8c246161e911
       version: -1
       name: Done
       description: ""
@@ -78,10 +78,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: edf3efa9-ce94-4e6b-8f5a-9a2ea590e54a
+    taskid: 833f2c45-9826-4d3f-82df-6d1d131705e2
     type: regular
     task:
-      id: edf3efa9-ce94-4e6b-8f5a-9a2ea590e54a
+      id: 833f2c45-9826-4d3f-82df-6d1d131705e2
       version: -1
       name: Clear Context
       description: Clear all context
@@ -106,12 +106,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 620a8cbc-a578-4723-8eed-97c7a898eb5b
+    taskid: 4b976fdf-747f-40d5-8e83-be22f73215bc
     type: playbook
     task:
-      id: 620a8cbc-a578-4723-8eed-97c7a898eb5b
+      id: 4b976fdf-747f-40d5-8e83-be22f73215bc
       version: -1
       name: Get File Endpoint History - Carbon Black Response
+      description: Hunt for malicious indicators using Carbon Black
       playbookName: Get File Endpoint History - Carbon Black Response
       playbookId: get_file_endpoint_history_-_carbon_black_response
       type: playbook
@@ -122,7 +123,8 @@ tasks:
       - "2"
     scriptarguments:
       Hash:
-        simple: 05ED91DAA77FF31F7F4E61314C2A3122
+        complex:
+          root: MD5Hashes
     separatecontext: true
     loop:
       iscommand: false
@@ -137,10 +139,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 2aff3623-607c-473c-8e17-bf9921baeaa7
+    taskid: 4d064b47-a8a0-47d6-8181-a0f62b6219b8
     type: regular
     task:
-      id: 2aff3623-607c-473c-8e17-bf9921baeaa7
+      id: 4d064b47-a8a0-47d6-8181-a0f62b6219b8
       version: -1
       name: Create MD5 Hashes
       scriptName: Set
