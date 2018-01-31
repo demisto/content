@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
