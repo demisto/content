@@ -1,6 +1,6 @@
-id: CrowdStrike Rapid IOC Hunting - Test
+id: get_file_endpoint_history_-_crowdstrike_-_test
 version: -1
-name: CrowdStrike Rapid IOC Hunting - Test
+name: Get File Endpoint History - CrowdStrike - Test
 fromversion: 3.5.0
 description: A test playbook for CrowdStrike Rapid IOC Hunting
 starttaskid: "0"
@@ -81,9 +81,9 @@ tasks:
     task:
       id: e4502e7d-24b6-4e69-80fb-617590474104
       version: -1
-      name: CrowdStrike Rapid IOC Hunting
-      playbookId: playbook16
-      playbookName: CrowdStrike Rapid IOC Hunting
+      name: Get File Endpoint History - CrowdStrike
+      playbookId: get_file_endpoint_history_-_crowdstrike
+      playbookName: Get File Endpoint History - CrowdStrike
       type: playbook
       iscommand: false
       brand: ""

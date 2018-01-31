@@ -45,7 +45,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "CrowdStrike Rapid IOC Hunting - Test"
+            "playbookID": "Get File Endpoint History - CrowdStrike"
         },
         {
             "integrations": "FalconHost",
