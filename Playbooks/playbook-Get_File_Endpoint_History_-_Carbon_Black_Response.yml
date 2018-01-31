@@ -250,4 +250,7 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: The device hostname
   type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
 releaseNotes: "-"
