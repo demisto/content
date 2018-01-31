@@ -3,6 +3,13 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_endpoint_history_-_carbon_black_response_-_test"
+        },
+        {
             "integrations": [
               "AlienVault OTX",
               {

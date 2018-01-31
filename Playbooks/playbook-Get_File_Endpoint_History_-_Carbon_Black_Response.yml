@@ -1,8 +1,8 @@
-id: Carbon Black Rapid IOC Hunting
+id: get_file_endpoint_history_-_carbon_black_response
 fromversion: 3.5.0
 system: true
 version: -1
-name: Carbon Black Rapid IOC Hunting
+name: Get File Endpoint History - Carbon Black Response
 description: Hunt for malicious indicators using Carbon Black
 starttaskid: "0"
 tasks:
