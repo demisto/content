@@ -10,6 +10,10 @@
             "playbookID": "get_file_endpoint_history_-_carbon_black_protection_-_test"
         },
         {
+          "integrations": "McAfee Threat Intelligence Exchange",
+          "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
             "integrations": [
               "AlienVault OTX",
               {
