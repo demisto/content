@@ -4,6 +4,21 @@
     "tests": [
         {
             "integrations": [
+              "FalconHost",
+              "McAfee Threat Intelligence Exchange",
+              {
+                  "name": "carbonblack",
+                  "byoi": false
+              },
+              {
+                  "name": "carbonblackprotection",
+                  "byoi": false
+              }
+            ],
+            "playbookID": "get_file_endpoint_history_-_generic_-_test"
+        },
+        {
+            "integrations": [
               "AlienVault OTX",
               {
                 "name": "activedir",
