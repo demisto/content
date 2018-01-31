@@ -207,7 +207,8 @@
             "timeout": 1200
         },
         {
-            "playbookID": "ProofpointDecodeURL-Test"
+            "playbookID": "ProofpointDecodeURL-Test",
+            "timeout": 300
         },
         {
             "playbookID": "listExecutedCommands-Test"
