@@ -1,6 +1,6 @@
-id: Carbon Black Rapid IOC Hunting - Test
+id: get_file_endpoint_history_-_carbon_black_response_-_test
 version: -1
-name: Carbon Black Rapid IOC Hunting - Test
+name: Get File Endpoint History - Carbon Black Response - Test
 description: A test playbook for Carbon Black Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
@@ -111,9 +111,9 @@ tasks:
     task:
       id: 620a8cbc-a578-4723-8eed-97c7a898eb5b
       version: -1
-      name: Carbon Black Rapid IOC Hunting
-      playbookName: Carbon Black Rapid IOC Hunting
-      playbookId: Carbon Black Rapid IOC Hunting
+      name: Get File Endpoint History - Carbon Black Response
+      playbookName: Get File Endpoint History - Carbon Black Response
+      playbookId: get_file_endpoint_history_-_carbon_black_response
       type: playbook
       iscommand: false
       brand: ""
