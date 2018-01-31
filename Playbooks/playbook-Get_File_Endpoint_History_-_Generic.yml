@@ -416,4 +416,7 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: Device hostname
   type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
 releaseNotes: "-"
