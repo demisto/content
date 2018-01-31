@@ -4,18 +4,25 @@
     "tests": [
         {
             "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                }
-            ],
-            "playbookID": "Get File Endpoint History - Generic - Test"
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
             "integrations": "ThreatExchange",
