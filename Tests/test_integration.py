@@ -1,4 +1,4 @@
-import time
+import time, json
 from pprint import pformat
 import uuid
 import urllib
@@ -127,22 +127,26 @@ def __create_incident_with_playbook(client, name, playbook_id):
     try:
         r = client.CreateIncident(name, None, None, None, None,
                          None, None, **kwargs)
+        response_json = r.json()
+        if response_json['status'] != 200:
+            print_error("creating incident error: %s" % json.dumps(response_json))
+            return False
     except RuntimeError as err:
         print_error(str(err))
 
-    response_json = r.json()
     inc_id = response_json['id']
 
     # get incident
     incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
 
     # poll up to 1 second
-    timeout = time.time() + 3
+    timeout = time.time() + 5
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
             print_error('failed to get incident with id:' + inc_id)
             return False
+        time.sleep(0.5)
 
     return incidents['data'][0]
 
