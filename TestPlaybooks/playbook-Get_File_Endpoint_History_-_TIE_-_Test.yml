@@ -1,7 +1,7 @@
-id: IOC Hunt - TIE - Test
+id: get_file_endpoint_history_-_tie_-_test
 version: -1
-name: IOC Hunt - TIE - Test
-description: A test playbook for IOC Hunt - TIE
+name: Get File Endpoint History - TIE - Test
+description: A test playbook for Get File Endpoint History - TIE
 starttaskid: "0"
 fromversion: 3.5.0
 tasks:
@@ -92,10 +92,10 @@ tasks:
     task:
       id: cabf545c-538f-4187-8424-1a4ef27c1a52
       version: -1
-      name: TIE - IOC Hunt
-      playbookId: TIE - IOC Hunt
+      name: Get File Endpoint History - TIE
+      playbookId: get_file_endpoint_history_-_tie
       description: ""
-      playbookName: TIE - IOC Hunt
+      playbookName: Get File Endpoint History - TIE
       type: playbook
       iscommand: false
       brand: ""
