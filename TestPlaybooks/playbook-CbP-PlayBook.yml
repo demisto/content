@@ -1,0 +1,365 @@
+id: 67b0f25f-b061-4468-8613-43ab13147173
+version: 135
+name: CbP-PlayBook
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 45a4a05a-91cb-4b77-8ee9-b75165485899
+    type: start
+    task:
+      id: 45a4a05a-91cb-4b77-8ee9-b75165485899
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -119
+        }
+      }
+  "1":
+    id: "1"
+    taskid: fe24e15b-0a75-43e6-8b95-4f6563cfde52
+    type: regular
+    task:
+      id: fe24e15b-0a75-43e6-8b95-4f6563cfde52
+      version: -1
+      name: cbp-connector-search
+      description: commands.server.cbp.ConnectorSearch.description
+      script: carbonblackprotection|||cbp-connector-search
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      group: ""
+      limit: ""
+      offset: ""
+      query: id:2
+      sort: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 58a0f47e-24f7-4e31-8632-10e1afecee2e
+    type: regular
+    task:
+      id: 58a0f47e-24f7-4e31-8632-10e1afecee2e
+      version: -1
+      name: cbp-connector-get
+      description: commands.server.cbp.ConnectorGet.description
+      script: carbonblackprotection|||cbp-connector-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id: ${CbP.Connector.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b6ae3a2e-e081-44f1-8893-23b8ed7951f2
+    type: regular
+    task:
+      id: b6ae3a2e-e081-44f1-8893-23b8ed7951f2
+      version: -1
+      name: cbp-fileAnalysis-createOrUpdate
+      description: commands.server.cbp.fileAnalysisPost.description
+      script: carbonblackprotection|||cbp-fileAnalysis-createOrUpdate
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      analysisStatus: ""
+      analysisTarget: ""
+      computerId: ""
+      connectorId: ${CbP.Connector.ID}
+      fileCatalogId: "26866"
+      priority: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f3274781-90b6-4d1b-8330-07d28f077f47
+    type: regular
+    task:
+      id: f3274781-90b6-4d1b-8330-07d28f077f47
+      version: -1
+      name: cbp-fileAnalysis-get
+      description: commands.server.cbp.fileAnalysisGet.description
+      script: carbonblackprotection|||cbp-fileAnalysis-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id: ${CbP.FileAnalysis.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a2891578-b066-4260-84ad-68d861cc2393
+    type: regular
+    task:
+      id: a2891578-b066-4260-84ad-68d861cc2393
+      version: -1
+      name: cbp-fileUpload-createOrUpdate
+      description: commands.server.cbp.FileUploadPost.description
+      script: carbonblackprotection|||cbp-fileUpload-createOrUpdate
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      computerId: ""
+      fileCatalogId: "26866"
+      priority: ""
+      uploadStatus: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    taskid: e21bddaf-9ab4-4d5b-89b3-f29370e7d11c
+    type: regular
+    task:
+      id: e21bddaf-9ab4-4d5b-89b3-f29370e7d11c
+      version: -1
+      name: cbp-fileUpload-get
+      description: commands.server.cbp.FileUploadGet.description
+      script: carbonblackprotection|||cbp-fileUpload-get
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id: ${CbP.FileUpload.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 0b2bc6d0-7be8-44c7-888a-f5284f0c55a2
+    type: regular
+    task:
+      id: 0b2bc6d0-7be8-44c7-888a-f5284f0c55a2
+      version: -1
+      name: cbp-fileUpload-download
+      description: commands.server.cbp.FileUploadGet.description
+      script: carbonblackprotection|||cbp-fileUpload-download
+      type: regular
+      iscommand: true
+      brand: carbonblackprotection
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id: ${CbP.FileUpload.ID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 467b294a-ee03-414b-8e15-6b9b41bd591a
+    type: regular
+    task:
+      id: 467b294a-ee03-414b-8e15-6b9b41bd591a
+      description: ""
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: ""
+      fields: ID,FileName,PathName,FileCatalogId,AnalysisResult,AnalysisStatus,ConnectorId,AnalysisTarget,ComputerId,DateModified,DateCreated,Priority
+      isArray: "true"
+      path: CbP.FileAnalysis
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 920
+        }
+      }
+  "10":
+    id: "10"
+    taskid: bda3897f-fcc7-421d-8720-43ddef120428
+    type: regular
+    task:
+      id: bda3897f-fcc7-421d-8720-43ddef120428
+      description: ""
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fields: ID,FileName,PathName,UploadStatus,FileCatalogId,ComputerId,UploadedFileSize,UploadPath,CreatedBy,CreatedByUserId,DateCreated,DateModified,Priority
+      isArray: "true"
+      path: CbP.FileUpload
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1419
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b60ab382-88ec-40ed-89ea-1f5f2207c69f
+    type: regular
+    task:
+      id: b60ab382-88ec-40ed-89ea-1f5f2207c69f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 41c51402-b33f-4099-80f0-8d63da3aefd3
+    type: regular
+    task:
+      id: 41c51402-b33f-4099-80f0-8d63da3aefd3
+      version: -1
+      description: ""
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      fields: Size,SHA1,SHA256,Name,SSDeep,EntryID
+      isArray: "true"
+      path: File
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1943
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 7c5e8b54-fabc-46da-83da-fb5e7a203067
+    type: regular
+    task:
+      id: 7c5e8b54-fabc-46da-83da-fb5e7a203067
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: ${CbP.Connector.ID}${CbP.Connector.Enabled}${CbP.Connector.ConnectorVersion}${CbP.Connector.CanAnalyze}${CbP.Connector.AnalysisTargets}${CbP.Connector.AnalysisName}${CbP.Connector.AnalysisEnabled}
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 369
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2157,
+        "width": 760,
+        "x": 50,
+        "y": -119
+      }
+    }
+  }
+inputs: []
