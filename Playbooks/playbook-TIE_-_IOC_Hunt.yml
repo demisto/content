@@ -11,23 +11,21 @@ description: |-
   * All agents that files with "Hash" has been executed on (TIE)
   * Enrich Agents info from ePO
 starttaskid: "0"
-fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
-    taskid: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+    taskid: b79d975a-a6dc-4a66-8515-c8f4177b0a40
     type: start
     task:
-      id: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+      id: b79d975a-a6dc-4a66-8515-c8f4177b0a40
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "7"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -37,59 +35,26 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+    taskid: 1bf80041-9e03-4daf-861c-a709df537687
     type: condition
     task:
-      id: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+      id: 1bf80041-9e03-4daf-861c-a709df537687
       version: -1
       name: Is TIE enabled?
-      description: Is TIE enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
-      - "9"
+      - "3"
     scriptarguments:
-      left: {}
-      right: {}
-      value: {}
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: McAfee Threat Intelligence Exchange
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      left: ""
+      right: ""
+      value: ${modules(val.brand=="McAfee Threat Intelligence Exchange")}
     view: |-
       {
         "position": {
@@ -99,220 +64,145 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 66b478c8-4b31-47a6-8832-1b45e71a331d
+    taskid: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
     type: condition
     task:
-      id: 66b478c8-4b31-47a6-8832-1b45e71a331d
+      id: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
       version: -1
       name: Is ePO enabled?
-      description: Is ePO enabled?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "6"
     scriptarguments:
-      left: {}
-      right: {}
-      value:
-        complex:
-          root: modules
-          filters:
-          - - operator: string.isEqual
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: epo
-          - - operator: string.isEqual
-              left:
-                value:
-                  simple: modules.state
-                iscontext: true
-              right:
-                value:
-                  simple: active
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: epo
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      left: ""
+      right: ""
+      value: ${modules(val.brand=="epo")}
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 1288
+          "y": 1080
         }
       }
   "3":
     id: "3"
-    taskid: 26ba9604-ced2-4c35-8e13-075d3ed04042
+    taskid: c906e63c-45c5-4540-8f42-b74db1943725
     type: regular
     task:
-      id: 26ba9604-ced2-4c35-8e13-075d3ed04042
+      id: c906e63c-45c5-4540-8f42-b74db1943725
       version: -1
       name: List all agents that the Hash has been executed on
-      description: Get Agent GUIDS for the given hashes
       script: McAfee Threat Intelligence Exchange|||tie-file-references
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
+      description: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
-      file:
-        complex:
-          root: inputs
-          accessor: Hash
-    separatecontext: false
+      file: ${inputs.Hash}
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 737
+          "y": 519
         }
       }
   "4":
     id: "4"
-    taskid: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+    taskid: c283821d-46ac-4b77-8728-9bc136f0c729
     type: title
     task:
-      id: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+      id: c283821d-46ac-4b77-8728-9bc136f0c729
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
-    separatecontext: false
+      description: ""
     view: |-
       {
         "position": {
-          "x": 138,
-          "y": 1793
+          "x": 135,
+          "y": 1492
         }
       }
   "5":
     id: "5"
-    taskid: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+    taskid: adfc3709-ca91-4ac0-8c2b-179c44d30403
     type: condition
     task:
-      id: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+      id: adfc3709-ca91-4ac0-8c2b-179c44d30403
       version: -1
       name: Did we find any relevant agents?
-      description: Did we get any Agent GUIDS?
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "8"
     scriptarguments:
-      value:
-        complex:
-          root: File
-          accessor: References.AgentGuid
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: References.AgentGuid
-            iscontext: true
+      value: ${File.References.AgentGuid}
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 910
+          "y": 703
         }
       }
   "6":
     id: "6"
-    taskid: 101e3e85-0246-4bd4-80be-2df713ee96e6
+    taskid: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
     type: regular
     task:
-      id: 101e3e85-0246-4bd4-80be-2df713ee96e6
+      id: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
       version: -1
       name: Get Agent info from ePO
-      description: Get hostnames for the Agent GUIDS
       scriptName: EPOFindSystem
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      searchText:
-        complex:
-          root: File
-          accessor: References.AgentGuid
-      taskID: {}
-    separatecontext: false
+      searchText: ${File.References.AgentGuid}
+      taskID: ""
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 1587
+          "y": 1326
         }
       }
   "7":
     id: "7"
-    taskid: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+    taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
     type: title
     task:
-      id: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+      id: a08baee9-a402-4bc8-8cae-77c4c144d889
       version: -1
       name: Hunt HASH in TIE
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -322,60 +212,24 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+    taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
     type: title
     task:
-      id: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+      id: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
       version: -1
       name: Enrich in ePO
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
-    separatecontext: false
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 1145
-        }
-      }
-  "9":
-    id: "9"
-    taskid: c8baebe6-606d-4e83-88ab-09ac98b1be34
-    type: condition
-    task:
-      id: c8baebe6-606d-4e83-88ab-09ac98b1be34
-      version: -1
-      name: Do we have any files to hunt?
-      description: Do we have any files to hunt?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs
-                accessor: Hash
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 507
+          "y": 956
         }
       }
 view: |-
@@ -383,29 +237,21 @@ view: |-
     "linkLabelsPosition": {
       "1_4_#default#": 0.1,
       "2_4_#default#": 0.17,
-      "5_4_#default#": 0.11,
-      "9_4_#default#": 0.12
+      "5_4_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 1808,
-        "width": 672,
-        "x": 138,
+        "height": 1507,
+        "width": 675,
+        "x": 135,
         "y": 50
       }
     }
   }
 inputs:
 - key: Hash
-  value:
-    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
-      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
-  required: false
+  value: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+    b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
-outputs:
-- contextPath: Endpoint.Hostname
-  description: Hostname
-  type: string
-releaseNotes: "-"
