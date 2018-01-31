@@ -7,7 +7,7 @@
                 "name": "carbonblackprotection",
                 "byoi": false
             },
-            "playbookID": "Carbon black Protection Rapid IOC Hunting - Test"
+            "playbookID": "get_file_endpoint_history_-_carbon_black_protection_-_test"
         },
         {
             "integrations": [
