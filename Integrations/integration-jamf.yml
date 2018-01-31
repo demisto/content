@@ -30,250 +30,159 @@ configuration:
   required: false
 script:
   script: |-
-    baseUrl = params.server.replace(/[\/]+$/, '') + '/JSSResource/';
-    commandDictionary = {
-        'jamf-get-computers': {
-            url: 'computers',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computers result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                    ]
-                }
-            ],
-        },
-        'jamf-get-computers-match': {
-            url: 'computers/match/%match%',
-            method: 'GET',
-            extended: true,
-            argsToURLEncode: ['match'],
-            translator: [
-                {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computer match result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                        {to: 'AltMAC', from: 'alt_mac_address'},
-                        {to: 'MAC', from: 'mac_address'},
-                        {to: 'Serial', from: 'serial_number'},
-                        {to: 'UDID', from: 'udid'},
-                        {to: 'AssetTag', from: 'asset_tag'},
-                        {to: 'BarCode-1', from: 'bar_code_1'},
-                        {to: 'BarCode-2', from: 'bar_code_2'},
-                        {to: 'Building', from: 'building'},
-                        {to: 'BuildingName', from: 'building_name'},
-                        {to: 'Department', from: 'department'},
-                        {to: 'DepartmentName', from: 'department_name'},
-                        {to: 'Email', from: 'email'},
-                        {to: 'EmailAddress', from: 'email_address'},
-                        {to: 'Position', from: 'position'},
-                        {to: 'Username', from: 'username'},
-                        {to: 'Realname', from: 'realname'},
-                        {to: 'Room', from: 'room'},
-                    ]
-                }
-            ],
-        },
-        'test-module': {
-            url: 'computers',
-            method: 'GET',
-        },
-    };
+    import requests
+    from requests.auth import HTTPBasicAuth
+    import re
+    import os
 
-    function createContext(data, id) {
-        var createContextSingle = function(obj) {
-            var res = {};
-            var keys = Object.keys(obj);
-            keys.forEach(function(k) {
-                var values = k.split('-');
-                var current = res;
-                for (var j = 0; j<values.length - 1; j++) {
-                    if (!current[values[j]]) {
-                        current[values[j]] = {};
-                    }
-                    current = current[values[j]];
-                }
-                current[values[j]] = obj[k];
-            });
-            if (!res.ID && id) {
-                res.ID = id;
-            }
-            return res;
-        };
-        if (data instanceof Array) {
-            var res = [];
-            for (var j=0; j < data.length; j++) {
-                res.push(createContextSingle(data[j]));
-            }
-            return res;
-        }
-        return createContextSingle(data);
-    }
+    HEADERS = {"Accept":"application/json"}
 
-    function mapObjFunction(mapFields, filter) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-                result = dq(obj, f.from);
-                console.log(result)
-                if (result || result === false) {
-                    res[f.to] = result;
-                }
-            });
-            if (filter && !filter(res)) {
-                return undefined;
-            }
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    var current = transformSingleObj(obj[j]);
-                    if (current) {
-                        res.push(current);
-                    }
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        };
-    }
+    base_url = demisto.params()['server']
+    user = demisto.params()['credentials']['identifier']
+    password = demisto.params()['credentials']['password']
+    auth = HTTPBasicAuth(user,password)
 
 
-    var sendRequest = function(url, method, args) {
-        var httpParams = {
-           Method: method,
-           Headers: {
-                'Content-Type': ['application/json'],
-                'Accept': ['application/json']
-           },
-           Username: params.credentials.identifier,
-           Password: params.credentials.password,
-           Body: method !== 'GET' ? JSON.stringify(args) : undefined
-        };
-        var res = http(
-                baseUrl + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
-                httpParams,
-                params.insecure,
-                params.proxy
-            );
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        if (!res.Body) {
-            return 'Done';
-        }
-        try {
-            return JSON.parse(res.Body);
-        }
-        catch (ex) {
-            throw 'Failed to create JSON from response ' + res.Body + ', exception is ' + ex;
-        }
-    }
+    def jamf_get_computers():
+        endpoint = "/JSSResource/computers"
+        try:
+            contents = requests.get(base_url + endpoint,auth=auth,headers=HEADERS).json()
+            contents = [{"ID": item["id"], "Name":item["name"]} for item in contents['computers']]
 
-    currentCommand = commandDictionary[command];
-    if (currentCommand.defaultArgs) {
-        keys = Object.keys(currentCommand.defaultArgs);
-        for (var k in keys) {
-            if (!args[keys[k]] && args[keys[k]] !== false) {
-                args[keys[k]] = currentCommand.defaultArgs[keys[k]];
-            }
-        }
-    }
-    if (currentCommand.argsToURLEncode) {
-        for (var k in currentCommand.argsToURLEncode) {
-            args[currentCommand.argsToURLEncode[k]] = encodeURIComponent(args[currentCommand.argsToURLEncode[k]]);
-        }
-    }
-    var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
-    if (command === 'test-module') {
-        return 'ok';
-    }
-    var entries = [];
-    if (currentCommand.extended) {
-        for (var j in currentCommand.translator) {
-            var current = currentCommand.translator[j];
-            var entry = {
-                Type: entryTypes.note,
-                Contents: result,
-                ContentsFormat: formats.json,
-            };
-            var currentContent = current.innerPath ? dq(result, current.innerPath) : result;
-            var translated = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent) : currentContent);
-            entry.ReadableContentsFormat = formats.markdown;
-            entry.HumanReadable = tableToMarkdown(current.title,translated);
-            entry.EntryContext = {};
-            var context = createContext(translated);
-            entry.EntryContext[current.contextPath] = context;
-            entries.push(entry);
-        }
-    } else {
-        return result;
-    }
-    return entries;
-  type: javascript
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "HumanReadable": tableToMarkdown("table", contents)})
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : str(e) })
+            sys.exit(0)
+
+    def jamf_get_computers_match(match):
+        endpoint = "/JSSResource/computers/match/{match}"
+        try:
+            contents = requests.get(base_url + endpoint.format(match=match),auth=auth,headers=HEADERS).json()
+            contents = [
+                {"ID": item["id"],
+                "Name": item["name"],
+                "AltMAC": item["alt_mac_address"],
+                "MAC": item["mac_address"],
+                "Serial": item["serial_number"],
+                "UDID": item["udid"],
+                "AssetTag": item["asset_tag"],
+                "BarCode-1": item["bar_code_1"],
+                "BarCode-2": item["bar_code_2"],
+                "Building": item["building"],
+                "BuildingName": item["building_name"],
+                "Department": item["department"],
+                "DepartmentName": item["department_name"],
+                "Email": item["email"],
+                "EmailAddress": item["email_address"],
+                "Position": item["position"],
+                "Username": item["username"],
+                "Realname": item["realname"],
+                "Room": item["room"]}
+                for item in contents["computers"]
+            ]
+
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "HumanReadable": tableToMarkdown("table", contents)})
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to login.  Please check credentials and/or proxy settings" })
+            sys.exit(0)
+
+    if demisto.command() == 'test-module':
+        try:
+            endpoint = "/JSSResource/users"
+            contents = requests.get(base_url + endpoint,auth=auth,headers=HEADERS).json()
+            demisto.results('ok')
+            sys.exit(0)
+        except Exception, e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unable to login.  Please check credentials and/or proxy settings.'})
+            sys.exit(0)
+
+    if demisto.command() == 'jamf-get-computers':
+        jamf_get_computers()
+
+    if demisto.command() == 'jamf-get-computers-match':
+        jamf_get_computers_match(demisto.args()['match'])
+  type: python
   commands:
   - name: jamf-get-computers
-    description: Get a list of managed computers
     arguments: []
     outputs:
-    - contextPath: Jamf.Computers.ID
+    - contentPath: ID
+      contextPath: Jamf.Computers.ID
       description: Computer ID
-    - contextPath: Jamf.Computers.Name
+    - contentPath: Name
+      contextPath: Jamf.Computers.Name
       description: Computer name
+    description: Get a list of managed computers
   - name: jamf-get-computers-match
-    description: Get a list of managed computers that matches inputs query
     arguments:
     - name: match
       required: true
-      description: Match criteria. e.g. to retrieve all computers associated with a user use $UserID
+      description: Match criteria. e.g. to retrieve all computers associated with
+        a user use $UserID
     outputs:
-    - contextPath: Jamf.Computers.ID
+    - contentPath: ID
+      contextPath: Jamf.Computers.ID
       description: Computer ID
-    - contextPath: Jamf.Computers.Name
+    - contentPath: Name
+      contextPath: Jamf.Computers.Name
       description: Computer name
-    - contextPath: Jamf.Computers.AltMAC
+    - contentPath: AltMAC
+      contextPath: Jamf.Computers.AltMAC
       description: Computer alternative MAC
-    - contextPath: Jamf.Computers.MAC
+    - contentPath: MAC
+      contextPath: Jamf.Computers.MAC
       description: Computer MAC
-    - contextPath: Jamf.Computers.Serial
+    - contentPath: Serial
+      contextPath: Jamf.Computers.Serial
       description: Computer serial
-    - contextPath: Jamf.Computers.UDID
+    - contentPath: UDID
+      contextPath: Jamf.Computers.UDID
       description: Computer UDID
-    - contextPath: Jamf.Computers.AssetTag
+    - contentPath: AssetTag
+      contextPath: Jamf.Computers.AssetTag
       description: Computer asset tag
-    - contextPath: Jamf.Computers.BarCode.1
+    - contentPath: BarCode-1
+      contextPath: Jamf.Computers.BarCode.1
       description: Computer barcode 1
-    - contextPath: Jamf.Computers.BarCode.2
+    - contentPath: BarCode-2
+      contextPath: Jamf.Computers.BarCode.2
       description: Computer barcode 2
-    - contextPath: Jamf.Computers.Building
+    - contentPath: Building
+      contextPath: Jamf.Computers.Building
       description: Computer building
-    - contextPath: Jamf.Computers.BuildingName
+    - contentPath: BuildingName
+      contextPath: Jamf.Computers.BuildingName
       description: Computer building name
-    - contextPath: Jamf.Computers.Department
+    - contentPath: Department
+      contextPath: Jamf.Computers.Department
       description: Computer department
-    - contextPath: Jamf.Computers.DepartmentName
+    - contentPath: DepartmentName
+      contextPath: Jamf.Computers.DepartmentName
       description: Computer department name
-    - contextPath: Jamf.Computers.Email
+    - contentPath: Email
+      contextPath: Jamf.Computers.Email
       description: Computer email
-    - contextPath: Jamf.Computers.EmailAddress
+    - contentPath: EmailAddress
+      contextPath: Jamf.Computers.EmailAddress
       description: Computer email address
-    - contextPath: Jamf.Computers.Position
+    - contentPath: Position
+      contextPath: Jamf.Computers.Position
       description: Computer position
-    - contextPath: Jamf.Computers.Username
+    - contentPath: Username
+      contextPath: Jamf.Computers.Username
       description: Computer username
-    - contextPath: Jamf.Computers.Realname
+    - contentPath: Realname
+      contextPath: Jamf.Computers.Realname
       description: Computer real name
-    - contextPath: Jamf.Computers.Room
+    - contentPath: Room
+      contextPath: Jamf.Computers.Room
       description: Computer room
+    description: Get a list of managed computers that matches inputs query
 hidden: false
+releaseNotes: 'Converted integration to Python'
