@@ -3,6 +3,21 @@
     "testInterval": 30,
     "tests": [
         {
+            "playbookID": "process_email_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_endpoint_history_-_carbon_black_response_-_test"
+        },
+        {
             "integrations": [
               "AlienVault OTX",
               {
@@ -57,6 +72,10 @@
                 "byoi": false
             },
             "playbookID": "get_file_sample_from_path_-_generic_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "Get File Endpoint History - CrowdStrike"
         },
         {
             "integrations": "FalconHost",
@@ -208,7 +227,8 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300
+            "timeout": 300,
+            "interval": 20
         },
         {
             "playbookID": "listExecutedCommands-Test"
