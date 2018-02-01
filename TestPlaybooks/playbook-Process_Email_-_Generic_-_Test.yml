@@ -1,0 +1,181 @@
+id: process_email_-_generic_-_test
+version: -1
+name: Process Email - Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1b02ec4b-5673-406a-85a8-5f6a5ab070cc
+    type: start
+    task:
+      id: 1b02ec4b-5673-406a-85a8-5f6a5ab070cc
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 90fa0e7b-ae47-42ab-86a1-2daad557faba
+    type: regular
+    task:
+      id: 90fa0e7b-ae47-42ab-86a1-2daad557faba
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://www.phpclasses.org/browse/download/1/file/14672/name/message.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e853bb76-5e03-4ca4-85fe-e78e886a4aef
+    type: regular
+    task:
+      id: e853bb76-5e03-4ca4-85fe-e78e886a4aef
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 3c2fd6cb-c9e3-4236-857b-d7b8344bcc8d
+    type: title
+    task:
+      id: 3c2fd6cb-c9e3-4236-857b-d7b8344bcc8d
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 4f66938b-1d07-4187-8c19-f4263965c16b
+    type: playbook
+    task:
+      id: 4f66938b-1d07-4187-8c19-f4263965c16b
+      version: -1
+      name: Process Email - Generic
+      description: ""
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0785145c-9c5c-4480-8b75-645aeacddb8d
+    type: regular
+    task:
+      id: 0785145c-9c5c-4480-8b75-645aeacddb8d
+      version: -1
+      name: Verify context
+      description: ""
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
