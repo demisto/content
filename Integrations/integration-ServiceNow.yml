@@ -493,7 +493,7 @@ script:
                 "labels": labels,
                 "details" : JSON.stringify(incident),
                 "severity" : severity,
-                "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"')
+                "rawJSON": JSON.stringify(incident)
             });
 
             sertime = incident.opened_at;
@@ -1545,3 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
+releaseNotes: "-"
