@@ -81,7 +81,7 @@ script:
         return {
             "name": incident.id + ' ' + incident.type_vname,
             "labels": labels,
-            "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"'),
+            "rawJSON": JSON.stringify(incident)
         };
     };
 
@@ -925,3 +925,4 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
+releaseNotes: "-"
