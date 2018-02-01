@@ -243,7 +243,7 @@ script:
                 "name": 'LightCyber: ' + entity['Entity Type'] + ' {' + eid + '} - ' + entity['Final Status'],
                 "labels": labels,
                 "details": JSON.stringify(entity),
-                "rawJSON": JSON.stringify(entity).replace(/\\"/g, '"'),
+                "rawJSON": JSON.stringify(entity)
             };
         };
 
@@ -581,3 +581,4 @@ script:
     description: Returns all installed autoruns programs in this host
   isfetch: true
 hidden: false
+releaseNotes: "-"
