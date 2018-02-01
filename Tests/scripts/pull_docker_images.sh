@@ -1,5 +1,11 @@
 #!/bin/bash
-farm_hosts=(
+
+USER="centos"
+
+# collect log file to artifacts
+PUBLIC_IP=$(cat public_ip)
+
+images=(
     "demisto/python3" 
     "demisto/bs4" 
     "demisto/dxl" 
@@ -23,7 +29,6 @@ farm_hosts=(
     "demisto/unrar:1.4"
 )
 
-for i in ${farm_hosts[@]}; do
-    foo="docker pull ${i}"
-    eval "$foo"
+for i in ${images[@]}; do
+    ssh -t ${USER}@${PUBLIC_IP} "sudo docker pull ${i}"
 done
