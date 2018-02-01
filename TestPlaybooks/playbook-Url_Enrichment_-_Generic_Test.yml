@@ -44,7 +44,7 @@ tasks:
       - "6"
     scriptarguments:
       Rasterize:
-        simple: "false"
+        simple: "true"
       url:
         simple: ${Test.url}
     separatecontext: false
