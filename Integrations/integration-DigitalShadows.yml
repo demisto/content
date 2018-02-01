@@ -754,7 +754,10 @@ script:
         if (parsed_res && parsed_res.content){
             parsed_res.content.forEach(function(inc){
                 inc['origin'] = name;
-                incidents.push({name: name, rawJSON: JSON.stringify(inc).replace(/\\"/g, '"')});
+                incidents.push({
+                  name: name, 
+                  rawJSON: JSON.stringify(inc)
+                });
             });
         }
         return incidents;
@@ -2869,3 +2872,4 @@ script:
       description: Determines whether the tag descriptions will be included.
     description: Batch retrieve specic tags by their ids
   isfetch: true
+releaseNotes: "-"
