@@ -128,10 +128,6 @@ def main():
         else:
             # run test
             succeed = test_integration(c, integrations, playbook_id, test_options)
-            if not succeed:
-                print 'Trying to run the playbook second time after failure'
-                # try one more time to run the same test if failed
-                succeed = test_integration(c, integrations, playbook_id, test_options)
 
             # use results
             if succeed:
