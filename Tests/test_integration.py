@@ -137,12 +137,13 @@ def __create_incident_with_playbook(client, name, playbook_id):
     incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
 
     # poll up to 1 second
-    timeout = time.time() + 3
+    timeout = time.time() + 10
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
             print_error('failed to get incident with id:' + inc_id)
             return False
+        time.sleep(1)
 
     return incidents['data'][0]
 
