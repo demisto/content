@@ -7,6 +7,10 @@
             "timeout": 240
         },
         {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
             "integrations": [
               "AlienVault OTX",
               {
@@ -46,6 +50,10 @@
                 "byoi": false
             },
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "Get File Endpoint History - CrowdStrike"
         },
         {
             "integrations": "FalconHost",
