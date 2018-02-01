@@ -344,7 +344,7 @@ script:
             "labels": labels,
             "details": issue.fields.description,
             "severity": severity,
-            "rawJSON": JSON.stringify(issue).replace(/\\"/g, '"'),
+            "rawJSON": JSON.stringify(issue)
         };
     };
 
@@ -615,3 +615,4 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
+releaseNotes: "-"

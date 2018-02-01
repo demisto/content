@@ -69,7 +69,7 @@ script:
         return {
             "name": incident.id + ' ' + incident.description,
             "labels": labels,
-            "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"'),
+            "rawJSON": JSON.stringify(incident)
         }
     }
 
@@ -502,3 +502,4 @@ script:
         in brackets and multiple fields in the same object are separated by commas
     description: Retrieve a note for an offense
   isfetch: true
+releaseNotes: "-"
