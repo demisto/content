@@ -128,11 +128,9 @@ def __create_incident_with_playbook(client, name, playbook_id):
         r = client.CreateIncident(name, None, None, None, None,
                          None, None, **kwargs)
         response_json = r.json()
-        if response_json['status'] != 200:
-            print_error("creating incident error: %s" % json.dumps(response_json))
-            return False
     except RuntimeError as err:
         print_error(str(err))
+        return False
 
     inc_id = response_json['id']
 
