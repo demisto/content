@@ -8,7 +8,7 @@
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
+            "timeout": 500
         },
         {
             "playbookID": "process_email_-_generic_-_test",
