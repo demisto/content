@@ -210,12 +210,13 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: d99d6bf0-72c8-434b-87f7-93907712dcf6
+    taskid: 2a00cf4e-b0f2-4785-8131-a8303f9468a5
     type: playbook
     task:
-      id: d99d6bf0-72c8-434b-87f7-93907712dcf6
+      id: 2a00cf4e-b0f2-4785-8131-a8303f9468a5
       version: -1
       name: URL Enrichment - Generic
+      description: Enrich URL using one or more integrations
       playbookName: URL Enrichment - Generic
       type: playbook
       iscommand: false
@@ -225,7 +226,7 @@ tasks:
       - "6"
     scriptarguments:
       url:
-        simple: ${URL.Data}
+        simple: ${Test.url}
     separatecontext: true
     loop:
       iscommand: false
