@@ -222,6 +222,7 @@ tasks:
       id: 61c10bbe-5860-48d3-8092-81136481d4ef
       version: -1
       name: Rasterize?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
