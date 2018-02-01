@@ -176,7 +176,6 @@ view: |-
 inputs:
 - key: File
   value: ${File}
-  required: true
   description: File object of file to be uploaded
 outputs: []
 releaseNotes: "Detonating files using the new command for it in WildFire"
