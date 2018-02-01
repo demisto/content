@@ -11,6 +11,10 @@
             "timeout": 400
         },
         {
+            "playbookID": "process_email_-_generic_-_test",
+            "timeout": 240
+        },
+        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "get_file_endpoint_history_-_tie_-_test"
         },
