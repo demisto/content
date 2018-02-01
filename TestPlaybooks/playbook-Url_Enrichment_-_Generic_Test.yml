@@ -25,40 +25,6 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    id: "2"
-    taskid: a3c67db7-6877-45ad-81ca-3739774f0c62
-    type: playbook
-    task:
-      id: a3c67db7-6877-45ad-81ca-3739774f0c62
-      version: -1
-      name: URL Enrichment - Generic-dev
-      description: Enrich URL using one or more integrations
-      playbookName: URL Enrichment - Generic
-      playbookId: url_enrichment_-_generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      Rasterize:
-        simple: "true"
-      url:
-        simple: ${Test.url}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 563
-        }
-      }
   "4":
     id: "4"
     taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
@@ -102,7 +68,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       append: {}
       key:
@@ -149,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 746
+          "y": 1101
         }
       }
   "7":
@@ -181,7 +147,95 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 926
+          "y": 1291
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 7afa92bd-b1ca-424f-815f-4dce6767ac41
+    type: regular
+    task:
+      id: 7afa92bd-b1ca-424f-815f-4dce6767ac41
+      version: -1
+      name: Rasterize
+      description: Initialize the docker image for the sub playbook
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: google.com
+      width: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 562
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a21d37a3-f2e3-479c-8074-2b1592f4aad6
+    type: regular
+    task:
+      id: a21d37a3-f2e3-479c-8074-2b1592f4aad6
+      version: -1
+      name: Sleep
+      description: Wait for the docker image
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d99d6bf0-72c8-434b-87f7-93907712dcf6
+    type: playbook
+    task:
+      id: d99d6bf0-72c8-434b-87f7-93907712dcf6
+      version: -1
+      name: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 921
         }
       }
 view: |-
@@ -189,7 +243,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 971,
+        "height": 1336,
         "width": 380,
         "x": 450,
         "y": 50

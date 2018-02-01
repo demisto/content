@@ -43,7 +43,7 @@ tasks:
       - "24"
       "yes":
       - "20"
-      - "27"
+      - "25"
     scriptarguments:
       value:
         simple: inputs.url
@@ -134,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1115
+          "y": 863
         }
       }
   "25":
@@ -180,8 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 496,
-          "y": 711
+          "x": 362.5,
+          "y": 511
         }
       }
   "26":
@@ -210,48 +210,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 496,
-          "y": 940
+          "x": 488,
+          "y": 698
         }
       }
-  "27":
-    id: "27"
-    taskid: 61c10bbe-5860-48d3-8092-81136481d4ef
-    type: condition
-    task:
-      id: 61c10bbe-5860-48d3-8092-81136481d4ef
-      version: -1
-      name: Rasterize?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value:
-              complex:
-                root: inputs
-                accessor: Rasterize
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-    view: |-
-      {
-        "position": {
-          "x": 496,
-          "y": 511
-        }
-      }
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -259,8 +222,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1130,
-        "width": 1153,
+        "height": 878,
+        "width": 1145,
         "x": -277,
         "y": 50
       }
@@ -272,11 +235,6 @@ inputs:
     simple: ${URL.Data}
   required: false
   description: url to enrich
-- key: Rasterize
-  value:
-    simple: "true"
-  required: false
-  description: Whether to rasterize the url
 outputs:
 - contextPath: URL.Address
   description: The enriched URL
