@@ -1,0 +1,139 @@
+id: get_file_sample_from_path_-_d2_-_test
+version: -1
+name: Get File Sample From Path - D2 - Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8f2d80a6-6f1b-433c-89ed-b1ba2908e252
+    type: start
+    task:
+      id: 8f2d80a6-6f1b-433c-89ed-b1ba2908e252
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -78
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 96384d6b-ac26-4cd9-87f9-8c001bcea8fb
+    type: playbook
+    task:
+      id: 96384d6b-ac26-4cd9-87f9-8c001bcea8fb
+      version: -1
+      name: Get File Sample From Path - D2
+      description: |-
+        Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+
+        Input:
+        * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+        * ${Endpoint.Hostname} - deploy agent on target endpoint
+        * ${File.Path} - file's path to collect
+      playbookName: Get File Sample From Path - D2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Credentials:
+        simple: d2_test
+      Hostname:
+        simple: 34.242.204.193
+      Path:
+        simple: C:\Windows\System32\calc.exe
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4c8907f7-f408-4b90-8076-a6e8b74ac0b9
+    type: regular
+    task:
+      id: 4c8907f7-f408-4b90-8076-a6e8b74ac0b9
+      version: -1
+      description: ""
+      name: Verify file exist
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: calc.exe
+      fields: {}
+      path:
+        simple: File.[0].Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 423
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 456da4a8-5219-4b93-88e8-1f09638c167f
+    type: regular
+    task:
+      id: 456da4a8-5219-4b93-88e8-1f09638c167f
+      version: -1
+      description: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 62
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 596,
+        "width": 381,
+        "x": 449,
+        "y": -78
+      }
+    }
+  }
+inputs: []
+outputs: []
