@@ -373,6 +373,13 @@ script:
       description: Host name of VM
     - contextPath: VMWare.MACAddress
       description: MAC Address of VM
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Returns all virtual machines on a system.
   - name: vmware-poweron
     arguments:
@@ -384,6 +391,13 @@ script:
       description: VM instance UUID
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Powers on a powered-off or suspended virtual machine.
     execution: true
   - name: vmware-poweroff
@@ -396,6 +410,13 @@ script:
       description: VM instance UUID
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Powers off a powered-on or suspended virtual machine.
     execution: true
   - name: vmware-hard-reboot
@@ -408,6 +429,13 @@ script:
       description: VM instance UUID
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Reboots a powered-on virtual machine.
     execution: true
   - name: vmware-suspend
@@ -420,6 +448,13 @@ script:
       description: VM instance UUID
     - contextPath: VMWare.State
       description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Suspends a powered-on virtual machine.
     execution: true
   - name: vmware-soft-reboot
@@ -466,6 +501,13 @@ script:
       description: VM instance UUID
     - contextPath: VMWare.Snapshot
       description: Name of the snapshot reverted to.
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.Snapshot
+      description: Name of the snapshot reverted to.
+      related: ""
     description: Reverts VM to snapshot
     execution: true
   - name: vmware-get-events
