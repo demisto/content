@@ -515,6 +515,4 @@ script:
       description: Table headers
     description: Retrieve a note for an offense
   isfetch: true
-releaseNotes: "Fixed 'Script failed to run' exception when using 'range' parameter with 'qradar-get-closing-reasons' command.
-  -- Added 'headers' parameter to 'qradar-get-note' and 'qradar-create-note' commands.
-  -- Removed 'fields' parameter from 'qradar-get-search' and 'qradar-searches' commands as it is not supported by the QRadar API."
+releaseNotes: "Fixed 'Script failed to run' exception when using 'range' parameter with 'qradar-get-closing-reasons' command."
