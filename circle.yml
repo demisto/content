@@ -34,6 +34,9 @@ test:
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
 
+    # pull all non default docker images
+    #- ./Tests/scripts/pull_docker_images.sh
+
     # run tests
     - ./Tests/scripts/run_tests.sh
 
