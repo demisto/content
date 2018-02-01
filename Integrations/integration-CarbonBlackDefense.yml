@@ -70,7 +70,7 @@ script:
             var AuthToken = replaceInTemplates(authTemplate, params);
             var SiemToken = replaceInTemplates(authSiemTemplate, params);
             function addAuthToHeaders(headerObj, token) {
-                 if (headerObj === 'undifiend') {
+                 if (headerObj === 'undefined') {
                     return { 'X-Auth-Token': [token] };
                 }
                 headerObj['X-Auth-Token'] = [token];
@@ -736,7 +736,7 @@ script:
                     i++;
                 }
                 if (!(obj && obj[keysArr[i]])) {
-                    throw 'field path ' + path + ' is not defiend in the policy object';
+                    throw 'field path ' + path + ' is not defined in the policy object';
                 }
                 obj[keysArr[i]] = val;
             }
