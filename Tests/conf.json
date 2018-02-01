@@ -10,8 +10,19 @@
             "playbookID": "get_file_endpoint_history_-_carbon_black_protection_-_test"
         },
         {
-          "integrations": "McAfee Threat Intelligence Exchange",
-          "playbookID": "get_file_endpoint_history_-_tie_-_test"
+            "playbookID": "process_email_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_endpoint_history_-_carbon_black_response_-_test"
         },
         {
             "integrations": [
@@ -53,6 +64,10 @@
                 "byoi": false
             },
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "Get File Endpoint History - CrowdStrike"
         },
         {
             "integrations": "FalconHost",
@@ -203,7 +218,9 @@
             "timeout": 1200
         },
         {
-            "playbookID": "ProofpointDecodeURL-Test"
+            "playbookID": "ProofpointDecodeURL-Test",
+            "timeout": 300,
+            "interval": 20
         },
         {
             "playbookID": "listExecutedCommands-Test"
