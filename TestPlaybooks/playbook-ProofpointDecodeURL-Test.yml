@@ -55,7 +55,7 @@ tasks:
     task:
       id: ad1da714-9bdb-4b32-8534-57cd4235d92c
       version: -1
-      name: Sleep for 10 seconds (for downloading docker)
+      name: Sleep for 1 minute (for downloading docker)
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -64,7 +64,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      seconds: "10"
+      seconds: "60"
     view: |-
       {
         "position": {
