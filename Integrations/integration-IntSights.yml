@@ -414,8 +414,8 @@ script:
 
     var createIncidentFromAlert = function(alert) {
         return {
-            'name': 'IntSights alert ' + alert._id,
-            'rawJSON': JSON.stringify(alert).replace(/\\"/g, '"')
+            name: 'IntSights alert ' + alert._id,
+            rawJSON: JSON.stringify(alert)
         }
     }
 
@@ -827,3 +827,4 @@ script:
     description: Get all the IOCs
   isfetch: true
 hidden: false
+releaseNotes: "-"
