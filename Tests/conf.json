@@ -11,6 +11,27 @@
             "timeout": 400
         },
         {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "get_file_endpoint_history_-_tie_-_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_endpoint_history_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
@@ -40,6 +61,10 @@
                 "byoi": false
             },
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "Get File Endpoint History - CrowdStrike"
         },
         {
             "integrations": "FalconHost",
@@ -190,7 +215,9 @@
             "timeout": 1200
         },
         {
-            "playbookID": "ProofpointDecodeURL-Test"
+            "playbookID": "ProofpointDecodeURL-Test",
+            "timeout": 300,
+            "interval": 20
         },
         {
             "playbookID": "listExecutedCommands-Test"
