@@ -37,7 +37,6 @@ tasks:
       id: f4b71101-7ae3-4ce8-87b7-10eeb13c1a79
       version: -1
       name: Get File Endpoint History - CrowdStrike
-      playbookId: get_file_endpoint_history_-_crowdstrike
       playbookName: Get File Endpoint History - CrowdStrike
       description: ""
       type: playbook
@@ -79,7 +78,6 @@ tasks:
       id: 5937d882-8964-48b8-834d-1e6f3d83b189
       version: -1
       name: Get File Endpoint History - Carbon Black Response
-      playbookId: get_file_endpoint_history_-_carbon_black_response
       playbookName: Get File Endpoint History - Carbon Black Response
       description: ""
       type: playbook
@@ -113,7 +111,6 @@ tasks:
       id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
       version: -1
       name: Get File Endpoint History - Carbon Black Protection
-      playbookId: get_file_endpoint_history_-_carbon_black_protection
       playbookName: Get File Endpoint History - Carbon Black Protection
       description: ""
       type: playbook
@@ -250,7 +247,6 @@ tasks:
       id: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
       version: -1
       name: Get File Endpoint History - TIE
-      playbookId: get_file_endpoint_history_-_tie
       playbookName: Get File Endpoint History - TIE
       description: ""
       type: playbook
