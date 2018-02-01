@@ -53,18 +53,20 @@ script:
         endpoint = "/JSSResource/computers"
         try:
             contents = requests.get(base_url + endpoint,auth=auth,headers=HEADERS).json()
-            contents = [{"ID": item["id"], "Name":item["name"]} for item in contents['computers']]
+            ec = {}
+            ec["JAMF"] = [{"ID": item["id"], "Name":item["name"]} for item in contents['computers']]
 
-            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "HumanReadable": tableToMarkdown("table", contents)})
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("table", ec["JAMF"])})
         except Exception,e:
-            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : str(e) })
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
             sys.exit(0)
 
     def jamf_get_computers_match(match):
         endpoint = "/JSSResource/computers/match/{match}"
         try:
             contents = requests.get(base_url + endpoint.format(match=match),auth=auth,headers=HEADERS).json()
-            contents = [
+            ec = {}
+            ec["JAMF"] = [
                 {"ID": item["id"],
                 "Name": item["name"],
                 "AltMAC": item["alt_mac_address"],
@@ -87,9 +89,10 @@ script:
                 for item in contents["computers"]
             ]
 
-            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "HumanReadable": tableToMarkdown("table", contents)})
+
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("table", ec["JAMF"])})
         except Exception,e:
-            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to login.  Please check credentials and/or proxy settings" })
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
             sys.exit(0)
 
     if demisto.command() == 'test-module':
@@ -112,11 +115,9 @@ script:
   - name: jamf-get-computers
     arguments: []
     outputs:
-    - contentPath: ID
-      contextPath: Jamf.Computers.ID
+    - contextPath: Jamf.Computers.ID
       description: Computer ID
-    - contentPath: Name
-      contextPath: Jamf.Computers.Name
+    - contextPath: Jamf.Computers.Name
       description: Computer name
     description: Get a list of managed computers
   - name: jamf-get-computers-match
@@ -126,62 +127,43 @@ script:
       description: Match criteria. e.g. to retrieve all computers associated with
         a user use $UserID
     outputs:
-    - contentPath: ID
-      contextPath: Jamf.Computers.ID
+    - contextPath: Jamf.Computers.ID
       description: Computer ID
-    - contentPath: Name
-      contextPath: Jamf.Computers.Name
+    - contextPath: Jamf.Computers.Name
       description: Computer name
-    - contentPath: AltMAC
-      contextPath: Jamf.Computers.AltMAC
+    - contextPath: Jamf.Computers.AltMAC
       description: Computer alternative MAC
-    - contentPath: MAC
-      contextPath: Jamf.Computers.MAC
+    - contextPath: Jamf.Computers.MAC
       description: Computer MAC
-    - contentPath: Serial
-      contextPath: Jamf.Computers.Serial
+    - contextPath: Jamf.Computers.Serial
       description: Computer serial
-    - contentPath: UDID
-      contextPath: Jamf.Computers.UDID
+    - contextPath: Jamf.Computers.UDID
       description: Computer UDID
-    - contentPath: AssetTag
-      contextPath: Jamf.Computers.AssetTag
+    - contextPath: Jamf.Computers.AssetTag
       description: Computer asset tag
-    - contentPath: BarCode-1
-      contextPath: Jamf.Computers.BarCode.1
+    - contextPath: Jamf.Computers.BarCode.1
       description: Computer barcode 1
-    - contentPath: BarCode-2
-      contextPath: Jamf.Computers.BarCode.2
+    - contextPath: Jamf.Computers.BarCode.2
       description: Computer barcode 2
-    - contentPath: Building
-      contextPath: Jamf.Computers.Building
+    - contextPath: Jamf.Computers.Building
       description: Computer building
-    - contentPath: BuildingName
-      contextPath: Jamf.Computers.BuildingName
+    - contextPath: Jamf.Computers.BuildingName
       description: Computer building name
-    - contentPath: Department
-      contextPath: Jamf.Computers.Department
+    - contextPath: Jamf.Computers.Department
       description: Computer department
-    - contentPath: DepartmentName
-      contextPath: Jamf.Computers.DepartmentName
+    - contextPath: Jamf.Computers.DepartmentName
       description: Computer department name
-    - contentPath: Email
-      contextPath: Jamf.Computers.Email
+    - contextPath: Jamf.Computers.Email
       description: Computer email
-    - contentPath: EmailAddress
-      contextPath: Jamf.Computers.EmailAddress
+    - contextPath: Jamf.Computers.EmailAddress
       description: Computer email address
-    - contentPath: Position
-      contextPath: Jamf.Computers.Position
+    - contextPath: Jamf.Computers.Position
       description: Computer position
-    - contentPath: Username
-      contextPath: Jamf.Computers.Username
+    - contextPath: Jamf.Computers.Username
       description: Computer username
-    - contentPath: Realname
-      contextPath: Jamf.Computers.Realname
+    - contextPath: Jamf.Computers.Realname
       description: Computer real name
-    - contentPath: Room
-      contextPath: Jamf.Computers.Room
+    - contextPath: Jamf.Computers.Room
       description: Computer room
     description: Get a list of managed computers that matches inputs query
 hidden: false
