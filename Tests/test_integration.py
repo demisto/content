@@ -127,11 +127,12 @@ def __create_incident_with_playbook(client, name, playbook_id):
     try:
         r = client.CreateIncident(name, None, None, None, None,
                          None, None, **kwargs)
-        response_json = r.json()
+
     except RuntimeError as err:
         print_error(str(err))
         return False
 
+    response_json = r.json()
     inc_id = response_json['id']
 
     # get incident
