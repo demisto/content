@@ -7,15 +7,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d9854b0-a067-494e-8eee-05588a4d2994
+    taskid: 99639e9f-c42f-4241-849e-205318e76136
     type: start
     task:
-      id: 9d9854b0-a067-494e-8eee-05588a4d2994
+      id: 99639e9f-c42f-4241-849e-205318e76136
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -23,16 +22,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
   "4":
     id: "4"
-    taskid: 682fdc23-51ea-4066-8b3d-513830c3df49
+    taskid: 74b3c9f2-12c2-4d14-8088-fcf09067c209
     type: regular
     task:
-      id: 682fdc23-51ea-4066-8b3d-513830c3df49
+      id: 74b3c9f2-12c2-4d14-8088-fcf09067c209
       version: -1
       name: DetonateFile (CS Falcon Sandbox)
       description: Detonate the file in CS Falcon Sandbox.
@@ -54,15 +53,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: 9d7cfb3b-dfcb-46eb-8f68-36817b7fe43e
+    taskid: 1b506876-b5d6-4890-84c1-98684630107c
     type: condition
     task:
-      id: 9d7cfb3b-dfcb-46eb-8f68-36817b7fe43e
+      id: 1b506876-b5d6-4890-84c1-98684630107c
       version: -1
       name: Is CS Falcon Sandbox enabled?
       description: Check if a given value exists in the context. Will return 'no'
@@ -75,7 +74,7 @@ tasks:
       "no":
       - "6"
       "yes":
-      - "4"
+      - "7"
     scriptarguments:
       value:
         complex:
@@ -101,28 +100,56 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
   "6":
     id: "6"
-    taskid: bdc2392d-c9c8-4b4b-8ca3-76ea82eb2efd
+    taskid: 54bc8e82-f709-4686-8a24-43b6cbe9986b
     type: title
     task:
-      id: bdc2392d-c9c8-4b4b-8ca3-76ea82eb2efd
+      id: 54bc8e82-f709-4686-8a24-43b6cbe9986b
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 6b7fbff0-e88f-4977-8b2e-c29dc8c6033d
+    type: condition
+    task:
+      id: 6b7fbff0-e88f-4977-8b2e-c29dc8c6033d
+      version: -1
+      name: Is there file to detonate?
+      description: Checks if there is a file to detonate through CS Faclon Sandbox.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${inputs.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 357
         }
       }
 view: |-
@@ -130,9 +157,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 492.5,
-        "x": 50,
+        "height": 735,
+        "width": 550,
+        "x": -120,
         "y": 50
       }
     }
@@ -141,7 +168,7 @@ inputs:
 - key: EntryID
   value:
     simple: ${File.EntryID}
-  required: true
+  required: false
   description: Entry ID of file to be detonated
 outputs:
 - contextPath: File.SHA256
