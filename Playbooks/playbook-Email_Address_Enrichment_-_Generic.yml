@@ -1,6 +1,7 @@
 id: email_address_enrichment_-_generic
 version: -1
 name: Email Address Enrichment - Generic
+releaseNotes: "-"
 description: Get email address reputation using one or more integrations
 starttaskid: "0"
 fromversion: 3.5.0
@@ -136,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -515,
-          "y": 1077
+          "x": -589,
+          "y": 960
         }
       }
   "9":
@@ -213,13 +214,13 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-      - "15"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 895
+          "x": -294,
+          "y": 732
         }
       }
   "12":
@@ -390,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -90,
-          "y": 1077
+          "x": -322,
+          "y": 1167
         }
       }
   "16":
@@ -465,6 +466,37 @@ tasks:
           "y": 1040
         }
       }
+  "18":
+    id: "18"
+    taskid: 2a3f300c-f84f-43ac-8ec7-c98afd558416
+    type: condition
+    task:
+      id: 2a3f300c-f84f-43ac-8ec7-c98afd558416
+      version: -1
+      name: Is there a domain list input?
+      description: ""
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs
+          accessor: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -147,
+          "y": 960
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -473,8 +505,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1402,
-        "width": 1937.5,
-        "x": -515,
+        "width": 2011.5,
+        "x": -589,
         "y": 50
       }
     }
