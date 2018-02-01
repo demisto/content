@@ -27,12 +27,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3212e888-8112-4bfc-8493-5c94c6eb530b
+    taskid: a3c67db7-6877-45ad-81ca-3739774f0c62
     type: playbook
     task:
-      id: 3212e888-8112-4bfc-8493-5c94c6eb530b
+      id: a3c67db7-6877-45ad-81ca-3739774f0c62
       version: -1
-      name: URL Enrichment - Generic
+      name: URL Enrichment - Generic-dev
       description: Enrich URL using one or more integrations
       playbookName: URL Enrichment - Generic
       playbookId: url_enrichment_-_generic
@@ -43,6 +43,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      Rasterize:
+        simple: "false"
       url:
         simple: ${Test.url}
     separatecontext: false
