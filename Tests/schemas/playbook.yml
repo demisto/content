@@ -193,6 +193,8 @@ schema;arg_filter_schema:
     operator:
       type: str
       required: yes
+    ignorecase:
+      type: bool
     left:
       type: map
       required: yes
