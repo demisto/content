@@ -495,8 +495,8 @@ script:
                     queryArgs[arg] = commadArgs[arg];
                     delete commadArgs[arg];
                 }
-            return queryArgs;
             }
+            return queryArgs;
         }
 
         var sendRequest = function(fullurl, method, headers, body) {
