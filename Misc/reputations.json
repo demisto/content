@@ -190,5 +190,6 @@
         "ADGetUser"
       ]
     }
-  ]
+  ],
+  "releaseNotes": "Using ParseEmailFiles enhancement script on files"
 }
