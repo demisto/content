@@ -3,6 +3,7 @@
   "version": -1,
   "name": "Most Active Investigations",
   "dataType": "entries",
+  "category": "others",
   "widgetType": "bar",
   "size": 5,
   "query": "",

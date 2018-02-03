@@ -1,6 +1,6 @@
 id: domain_enrichment_generic_test
 version: -1
-fromversion: "3.5.0"
+fromversion: 3.5.0
 name: Domain Enrichment Generic - Test
 starttaskid: "0"
 tasks:
@@ -100,15 +100,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       expectedValue: {}
       fields:
         simple: Indicator, Vendor, Type, Score
       path:
-        simple: ${DBotScore}
+        simple: DBotScore
     separatecontext: false
     view: |-
       {
@@ -175,33 +172,6 @@ tasks:
           "y": 423
         }
       }
-  "6":
-    id: "6"
-    taskid: 384ca74e-9588-42c2-8bd6-57d7f2598b1b
-    type: regular
-    task:
-      id: 384ca74e-9588-42c2-8bd6-57d7f2598b1b
-      version: -1
-      name: Verify DBotScore content
-      description: Verify that the DBotScore contains both domains
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: '"demisto.com,github.com"'
-      path:
-        simple: ${DBotScore.Indicator}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1212
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
@@ -216,3 +186,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
