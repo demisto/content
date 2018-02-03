@@ -169,19 +169,27 @@ script:
 
     function tableFromEnvironments(response) {
         var environments = response.backend.global_environment;
-        var tableMapper = {
-           VMs_busy: 'busy VMS',
-           VMs_total: 'total VMS',
-           analysisMode: 'analysis mode',
-           groupicon: 'group icon'
-        };
-
-        var table = environments.map(mapObject(tableMapper));
-
+        var environmentsKeys = Object.keys(environments);
+        var table=[];
+        var envContext = [];
+        for (var i = 0; i < environmentsKeys.length; i++){
+            var currentEnvironment = environments[environmentsKeys[i]];
+            envContext[i] = environments[environmentsKeys[i]];
+            table[i] = {
+                ID: currentEnvironment.ID,
+                description: currentEnvironment.description,
+                architecture: currentEnvironment.architecture,
+                'total VMS': currentEnvironment.VMs_busy,
+                'busy VMS': currentEnvironment.VMs_total,
+                'analysis mode': currentEnvironment.analysisMode,
+                'group icon': currentEnvironment.groupicon ? currentEnvironment.groupicon : ''
+            }
+        }
         // create context from environments
         var context = {
-            'VX.Environment(val.ID && val.ID == obj.ID)': environments
+            'VX.Environment(val.ID && val.ID == obj.ID)': envContext
         };
+
 
         return createTableEntry('All Environments:', response, table, context, ['ID', 'description', 'architecture', 'total VMS', 'busy VMS', 'analysis mode', 'group icon']);
     }
