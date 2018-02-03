@@ -132,8 +132,12 @@ tasks:
           transformers:
           - operator: string.concat
             args:
-              prefix: hostname:"
-              suffix: '"'
+              prefix:
+                value:
+                  simple: hostname:"
+              suffix:
+                value:
+                  simple: '"'
       limit: {}
       offset: {}
       query: {}

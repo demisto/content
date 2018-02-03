@@ -153,7 +153,12 @@ script:
                 labels.push({type: keys[j], value: alert[keys[j]]});
             }
         }
-        return {name: 'DAM Event - ' + alert.id, labels: labels, details: alert.operation, rawJSON: JSON.stringify(alert).replace(/\\"/g, '"')};
+        return {
+          name: 'DAM Event - ' + alert.id, 
+          labels: labels, 
+          details: alert.operation, 
+          rawJSON: JSON.stringify(alert)
+        };
     };
     var alertsToIncident = function(alerts) {
         var incidents = [];
@@ -370,3 +375,4 @@ script:
     description: Get latest DAM alerts by rule name
   isfetch: true
 hidden: false
+releaseNotes: "-"

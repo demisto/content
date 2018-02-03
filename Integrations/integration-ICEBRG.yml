@@ -134,7 +134,10 @@ script:
                     if (ind.EntryContext) {
                         inc['Indicators'] = ind.EntryContext['Icebrg.ReportIndicators'];
                     }
-                    incidents.push({name: 'Reports', rawJSON: JSON.stringify(inc).replace(/\\"/g, '"')});
+                    incidents.push({
+                      name: 'Reports', 
+                      rawJSON: JSON.stringify(inc)
+                    });
                 }
             });
         }
@@ -393,3 +396,4 @@ script:
       description: Assets of Report UUID
     description: Gets impacted assets for a report
   isfetch: true
+releaseNotes: "-"

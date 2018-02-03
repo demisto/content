@@ -1,0 +1,200 @@
+id: url_enrichment_-_generic_test
+version: -1
+name: Url Enrichment Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+    type: start
+    task:
+      id: 6f1ce801-3dd7-47ef-8ef9-6472a6525afa
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3212e888-8112-4bfc-8493-5c94c6eb530b
+    type: playbook
+    task:
+      id: 3212e888-8112-4bfc-8493-5c94c6eb530b
+      version: -1
+      name: URL Enrichment - Generic
+      description: Enrich URL using one or more integrations
+      playbookName: URL Enrichment - Generic
+      playbookId: url_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: ${Test.url}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 563
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
+    type: regular
+    task:
+      id: d3eb1773-d77b-4590-8128-83b65bf6e083
+      version: -1
+      name: Clear Context
+      description: Clear the context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 201
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
+    type: regular
+    task:
+      id: 55310715-a100-4d29-8423-9cf7946fc1ff
+      version: -1
+      name: Set URL
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test.url
+      value:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 381
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8362ebe6-8622-420c-8ab7-881abed983ab
+    type: regular
+    task:
+      id: 8362ebe6-8622-420c-8ab7-881abed983ab
+      version: -1
+      name: Verify URL
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 746
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 62559528-c212-46ef-82ae-03c3d21d9fe1
+    type: regular
+    task:
+      id: 62559528-c212-46ef-82ae-03c3d21d9fe1
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Score,Type,Vendor
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 926
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 971,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
+fromversion: 3.5.0
