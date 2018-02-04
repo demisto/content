@@ -235,7 +235,7 @@ inputs:
   required: false
   description: url to enrich
 outputs:
-- contextPath: URL.Address
+- contextPath: URL.Data
   description: The enriched URL
   type: string
 - contextPath: DBotScore
@@ -250,3 +250,5 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
+fromversion: 3.5.0
+releaseNotes: "-"

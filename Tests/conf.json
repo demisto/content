@@ -4,6 +4,14 @@
     "tests": [
         {
             "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
+            "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
                 {
