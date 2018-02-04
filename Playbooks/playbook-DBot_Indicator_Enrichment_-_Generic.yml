@@ -3,6 +3,7 @@ version: -1
 name: DBot Indicator Enrichment - Generic
 description: Get indicators internal Dbot score
 starttaskid: "0"
+releaseNotes: "-"
 fromversion: 3.5.0
 tasks:
   "0":
