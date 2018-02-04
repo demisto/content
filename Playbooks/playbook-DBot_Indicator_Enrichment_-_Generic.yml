@@ -493,6 +493,9 @@ inputs:
   required: false
   description: SHA256 to enrich with Dbot Score
 outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The Indicator
   type: string

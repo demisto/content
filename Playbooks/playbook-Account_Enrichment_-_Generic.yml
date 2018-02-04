@@ -206,6 +206,9 @@ inputs:
   required: false
   description: The Username to enrich
 outputs:
+- contextPath: Account
+  description: Account object
+  type: unknown
 - contextPath: Account.Type
   description: Type of the Account entity
   type: string
