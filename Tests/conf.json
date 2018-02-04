@@ -52,16 +52,6 @@
             "timeout": 240
         },
         {
-            "integrations": [
-              "AlienVault OTX",
-              {
-                "name": "activedir",
-                "byoi": false
-              }],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
@@ -91,21 +81,6 @@
                 "byoi": false
             },
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -329,6 +304,31 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test"
+        },
+        {
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
         },
         {
             "integrations": [
