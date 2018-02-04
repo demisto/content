@@ -363,12 +363,18 @@ inputs:
   required: false
   description: The domain name to enrich
 outputs:
+- contextPath: Account
+  description: The Account's object
+  type: unknown
 - contextPath: Account.ID
   description: The unique Account DN (Distinguished Name)
   type: string
 - contextPath: Domain
   description: The domain objects
-  type: string
+  type: uknown
+- contextPath: URL
+  description: The URL's object
+  type: unknown
 - contextPath: URL.Malicious
   description: whether url was detected as malicious
   type: unknown
@@ -419,6 +425,9 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
   type: string
+- contextPath: File
+  description: The File's object
+  type: unknown
 - contextPath: File.MD5
   description: MD5 hash of the file
   type: string
@@ -431,6 +440,9 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
 - contextPath: Endpoint.Hostname
   description: The hostname to enrich
   type: string
@@ -444,6 +456,9 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The Indicator
   type: string
