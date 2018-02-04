@@ -126,12 +126,12 @@ inputs:
 - key: EntryID
   value:
     simple: ${File.EntryID}
-  required: true
+  required: false
   description: Entry ID of file to be detonated
 - key: File
   value:
     simple: ${File}
-  required: true
+  required: false
   description: File object of file to be detonated
 outputs:
 - contextPath: File.SHA256
