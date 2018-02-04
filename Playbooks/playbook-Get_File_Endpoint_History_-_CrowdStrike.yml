@@ -1,8 +1,8 @@
-id: get_file_endpoint_history_-_crowdstrike
+id: search_endpoints_by_hash_-_crowdstrike
 fromversion: 3.5.0
 system: true
 version: -1
-name: Get File Endpoint History - CrowdStrike
+name: Search Endpoints By Hash - CrowdStrike
 description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
 starttaskid: "0"
 tasks:

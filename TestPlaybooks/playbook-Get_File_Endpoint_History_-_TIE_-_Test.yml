@@ -1,7 +1,7 @@
-id: get_file_endpoint_history_-_tie_-_test
+id: search_endpoints_by_hash_-_tie_-_test
 version: -1
-name: Get File Endpoint History - TIE - Test
-description: A test playbook for Get File Endpoint History - TIE
+name: Search Endpoints By Hash - TIE - Test
+description: A test playbook for Search Endpoints By Hash - TIE
 starttaskid: "0"
 fromversion: 3.5.0
 tasks:
@@ -92,10 +92,10 @@ tasks:
     task:
       id: cabf545c-538f-4187-8424-1a4ef27c1a52
       version: -1
-      name: Get File Endpoint History - TIE
-      playbookId: get_file_endpoint_history_-_tie
+      name: Search Endpoints By Hash - TIE
+      playbookId: search_endpoints_by_hash_-_tie
       description: ""
-      playbookName: Get File Endpoint History - TIE
+      playbookName: Search Endpoints By Hash - TIE
       type: playbook
       iscommand: false
       brand: ""
