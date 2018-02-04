@@ -25,38 +25,6 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    id: "2"
-    taskid: 3212e888-8112-4bfc-8493-5c94c6eb530b
-    type: playbook
-    task:
-      id: 3212e888-8112-4bfc-8493-5c94c6eb530b
-      version: -1
-      name: URL Enrichment - Generic
-      description: Enrich URL using one or more integrations
-      playbookName: URL Enrichment - Generic
-      playbookId: url_enrichment_-_generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      url:
-        simple: ${Test.url}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 563
-        }
-      }
   "4":
     id: "4"
     taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
@@ -100,7 +68,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "9"
     scriptarguments:
       append: {}
       key:
@@ -147,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 746
+          "y": 891
         }
       }
   "7":
@@ -179,7 +147,69 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 926
+          "y": 1086
+        }
+      }
+  "8":
+    id: "8"
+    taskid: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
+    type: playbook
+    task:
+      id: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
+      version: -1
+      name: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic
+      playbookId: url_enrichment_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: ${Test.url}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 716
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 82983881-8c77-418c-82ab-c4aeb4b525d1
+    type: regular
+    task:
+      id: 82983881-8c77-418c-82ab-c4aeb4b525d1
+      version: -1
+      name: Rasterize
+      description: Pull a docker image for the sub playbook so it doesn't timeout
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: google.com
+      width: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 554
         }
       }
 view: |-
@@ -187,7 +217,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 971,
+        "height": 1131,
         "width": 380,
         "x": 450,
         "y": 50
