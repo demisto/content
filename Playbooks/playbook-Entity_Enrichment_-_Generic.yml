@@ -371,7 +371,7 @@ outputs:
   type: string
 - contextPath: Domain
   description: The domain objects
-  type: string
+  type: uknown
 - contextPath: URL
   description: The URL's object
   type: unknown
