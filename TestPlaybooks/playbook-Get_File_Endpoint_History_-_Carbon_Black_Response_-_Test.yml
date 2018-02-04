@@ -1,6 +1,6 @@
-id: get_file_endpoint_history_-_carbon_black_response_-_test
+id: search_endpoints_by_hash_-_carbon_black_response_-_test
 version: -1
-name: Get File Endpoint History - Carbon Black Response - Test
+name: Search Endpoints By Hash - Carbon Black Response - Test
 description: A test playbook for Carbon Black Rapid IOC Hunting
 fromversion: 3.5.0
 starttaskid: "0"
@@ -111,10 +111,10 @@ tasks:
     task:
       id: 4b976fdf-747f-40d5-8e83-be22f73215bc
       version: -1
-      name: Get File Endpoint History - Carbon Black Response
+      name: Search Endpoints By Hash - Carbon Black Response
       description: Hunt for malicious indicators using Carbon Black
-      playbookName: Get File Endpoint History - Carbon Black Response
-      playbookId: get_file_endpoint_history_-_carbon_black_response
+      playbookName: Search Endpoints By Hash - Carbon Black Response
+      playbookId: search_endpoints_by_hash_-_carbon_black_response
       type: playbook
       iscommand: false
       brand: ""

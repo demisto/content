@@ -1,8 +1,8 @@
-id: get_file_endpoint_history_-_carbon_black_protection
+id: search_endpoints_by_hash_-_carbon_black_protection
 fromversion: 3.5.0
 system: true
 version: -1
-name: Get File Endpoint History - Carbon Black Protection
+name: Search Endpoints By Hash - Carbon Black Protection
 description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
 starttaskid: "0"
 tasks:
