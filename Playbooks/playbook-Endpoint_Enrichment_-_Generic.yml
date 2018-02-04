@@ -820,6 +820,9 @@ inputs:
   required: false
   description: The hostname to enrich
 outputs:
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
 - contextPath: Endpoint.Hostname
   description: The hostname to enrich
   type: string

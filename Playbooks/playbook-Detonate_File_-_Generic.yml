@@ -134,6 +134,9 @@ inputs:
   required: false
   description: File object of file to be detonated
 outputs:
+- contextPath: File
+  description: The File's object
+  type: unknown
 - contextPath: File.SHA256
   description: SHA256 of the file
   type: string
@@ -149,6 +152,9 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The indicator we tested
   type: string
