@@ -20,13 +20,14 @@ tasks:
     task:
       id: 3eded69b-617e-4212-86b7-2537474285f3
       version: -1
-      description: ""
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -41,14 +42,15 @@ tasks:
     task:
       id: 5d35b08e-ffa6-43f6-85c9-2e71151c47ec
       version: -1
-      description: ""
       name: Check indicators
+      description: ""
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -56,66 +58,85 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
-    taskid: 236ea4d7-76ba-4755-805c-0f31c337a97c
+  "3":
+    id: "3"
+    taskid: f7e27994-5d98-4b80-8a0c-341830fdc0af
     type: condition
     task:
-      id: 236ea4d7-76ba-4755-805c-0f31c337a97c
+      id: f7e27994-5d98-4b80-8a0c-341830fdc0af
       version: -1
-      name: Do we have indicator reputation?
-      description: Check if we have indicators with reputation scores
-      scriptName: Exists
+      name: Change severity based on indicators reputation
+      description: Calculate the highest severity out of all of the indicators
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "7"
-      "yes":
-      - "3"
-    scriptarguments:
-      value: ${.=val.DBotScore.reduce(function(max, c) {return Math.max(max, c.Score)},
-        0)}
+      High:
+      - "6"
+      Low:
+      - "4"
+      Medium:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: number.greaterThan
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: number.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 397.5,
-          "y": 340
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 0ad04484-3751-4f73-8d31-b542a6ed8ffa
-    type: condition
-    task:
-      id: 0ad04484-3751-4f73-8d31-b542a6ed8ffa
-      version: -1
-      name: Change severity based on indicators reputation
-      description: Calculate the highest severity out of all of the indicators
-      scriptName: Print
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "1":
-      - "4"
-      "2":
-      - "5"
-      "3":
-      - "6"
-    scriptarguments:
-      left: ""
-      right: ""
-      value: ${.=val.DBotScore.reduce(function(max, c) {return Math.max(max, c.Score)},
-        0)}
-    view: |-
-      {
-        "position": {
-          "x": 725,
-          "y": 515
+          "y": 394
         }
       }
   "4":
@@ -136,50 +157,52 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      addLabels: ""
-      arcsightcaseid: ""
-      attachmentitem: ""
-      backupowner: ""
-      blah: ""
-      booltest: ""
-      customFields: ""
-      daysbetweenreportcreation: ""
-      details: ""
-      eventid: ""
-      falses: ""
-      fetchid: ""
-      fetchtype: ""
-      id: ""
-      important: ""
-      importantfield: ""
-      killchain: ""
-      labels: ""
-      lob: ""
-      name: ""
-      occurred: ""
-      owner: ""
-      phase: ""
-      queues: ""
-      replacePlaybook: ""
-      reporteduser: ""
-      screenshot: ""
-      screenshot2: ""
-      selector: ""
-      severity: low
-      single: ""
-      single2: ""
-      sla: ""
-      source: ""
-      systems: ""
-      team: ""
-      test: ""
-      test2: ""
-      testfield: ""
-      timeassignedtolevel2: ""
-      timefield1: ""
-      timelevel1: ""
-      type: ""
-      username: ""
+      addLabels: {}
+      arcsightcaseid: {}
+      attachmentitem: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      customFields: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: low
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -205,50 +228,52 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      addLabels: ""
-      arcsightcaseid: ""
-      attachmentitem: ""
-      backupowner: ""
-      blah: ""
-      booltest: ""
-      customFields: ""
-      daysbetweenreportcreation: ""
-      details: ""
-      eventid: ""
-      falses: ""
-      fetchid: ""
-      fetchtype: ""
-      id: ""
-      important: ""
-      importantfield: ""
-      killchain: ""
-      labels: ""
-      lob: ""
-      name: ""
-      occurred: ""
-      owner: ""
-      phase: ""
-      queues: ""
-      replacePlaybook: ""
-      reporteduser: ""
-      screenshot: ""
-      screenshot2: ""
-      selector: ""
-      severity: medium
-      single: ""
-      single2: ""
-      sla: ""
-      source: ""
-      systems: ""
-      team: ""
-      test: ""
-      test2: ""
-      testfield: ""
-      timeassignedtolevel2: ""
-      timefield1: ""
-      timelevel1: ""
-      type: ""
-      username: ""
+      addLabels: {}
+      arcsightcaseid: {}
+      attachmentitem: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      customFields: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: medium
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -274,50 +299,52 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      addLabels: ""
-      arcsightcaseid: ""
-      attachmentitem: ""
-      backupowner: ""
-      blah: ""
-      booltest: ""
-      customFields: ""
-      daysbetweenreportcreation: ""
-      details: ""
-      eventid: ""
-      falses: ""
-      fetchid: ""
-      fetchtype: ""
-      id: ""
-      important: ""
-      importantfield: ""
-      killchain: ""
-      labels: ""
-      lob: ""
-      name: ""
-      occurred: ""
-      owner: ""
-      phase: ""
-      queues: ""
-      replacePlaybook: ""
-      reporteduser: ""
-      screenshot: ""
-      screenshot2: ""
-      selector: ""
-      severity: high
-      single: ""
-      single2: ""
-      sla: ""
-      source: ""
-      systems: ""
-      team: ""
-      test: ""
-      test2: ""
-      testfield: ""
-      timeassignedtolevel2: ""
-      timefield1: ""
-      timelevel1: ""
-      type: ""
-      username: ""
+      addLabels: {}
+      arcsightcaseid: {}
+      attachmentitem: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      customFields: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: high
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -332,8 +359,8 @@ tasks:
     task:
       id: 75a46609-7bfd-4575-8945-2f9efd0cf549
       version: -1
-      description: ""
       name: Check for critical entities
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -341,6 +368,7 @@ tasks:
       '#none#':
       - "8"
       - "12"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -367,7 +395,9 @@ tasks:
       "yes":
       - "9"
     scriptarguments:
-      value: ${Account.Username}
+      value:
+        simple: ${Account.Username}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -394,11 +424,14 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      left: ""
-      right: ""
-      string: '"${inputs.CriticalUsers}"'
-      substring: ${Account.Username}
-      substringSeperator: ""
+      left: {}
+      right: {}
+      string:
+        simple: '"${inputs.CriticalUsers}"'
+      substring:
+        simple: ${Account.Username}
+      substringSeperator: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -413,11 +446,12 @@ tasks:
     task:
       id: 483350d5-ab17-44cd-87b3-0e2360ce3577
       version: -1
-      description: ""
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -432,7 +466,6 @@ tasks:
     task:
       id: c4b5f8e7-8133-4122-8e88-ea69e15f0803
       version: -1
-      description: ""
       name: Set severity to "Critical"
       description: Set incident's severity to Critical - Some entity is part of a
         critical group
@@ -444,47 +477,49 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: ""
-      arcsightcaseid: ""
-      attachmentitem: ""
-      backupowner: ""
-      blah: ""
-      booltest: ""
-      customFields: ""
-      daysbetweenreportcreation: ""
-      details: ""
-      eventid: ""
-      falses: ""
-      fetchid: ""
-      fetchtype: ""
-      id: ""
-      important: ""
-      importantfield: ""
-      labels: ""
-      name: ""
-      occurred: ""
-      owner: ""
-      phase: ""
-      replacePlaybook: ""
-      reporteduser: ""
-      screenshot: ""
-      screenshot2: ""
-      selector: ""
-      severity: critical
-      single: ""
-      single2: ""
-      sla: ""
-      source: ""
-      systems: ""
-      team: ""
-      test: ""
-      test2: ""
-      testfield: ""
-      timeassignedtolevel2: ""
-      timefield1: ""
-      timelevel1: ""
-      type: ""
-      username: ""
+      addLabels: {}
+      arcsightcaseid: {}
+      attachmentitem: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      customFields: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: critical
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -512,7 +547,9 @@ tasks:
       "yes":
       - "13"
     scriptarguments:
-      value: ${Endpoint.Hostname}
+      value:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -540,11 +577,14 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      left: ""
-      right: ""
-      string: '"${inputs.CriticalEndpoints}"'
-      substring: ${Endpoint.Hostname}
-      substringSeperator: ""
+      left: {}
+      right: {}
+      string:
+        simple: '"${inputs.CriticalEndpoints}"'
+      substring:
+        simple: ${Endpoint.Hostname}
+      substringSeperator: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -572,11 +612,14 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      left: ""
-      right: ""
-      string: '"${inputs.CriticalGroups}"'
-      substring: ${Account.Groups}
-      substringSeperator: ""
+      left: {}
+      right: {}
+      string:
+        simple: '"${inputs.CriticalGroups}"'
+      substring:
+        simple: ${Account.Groups}
+      substringSeperator: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -604,11 +647,14 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      left: ""
-      right: ""
-      string: '"${inputs.CriticalGroups}"'
-      substring: ${Endpoint.Groups}
-      substringSeperator: ""
+      left: {}
+      right: {}
+      string:
+        simple: '"${inputs.CriticalGroups}"'
+      substring:
+        simple: ${Endpoint.Groups}
+      substringSeperator: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -635,7 +681,9 @@ tasks:
       "yes":
       - "16"
     scriptarguments:
-      value: ${Endpoint.Groups}
+      value:
+        simple: ${Endpoint.Groups}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -662,7 +710,9 @@ tasks:
       "yes":
       - "15"
     scriptarguments:
-      value: ${Account.Groups}
+      value:
+        simple: ${Account.Groups}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -679,9 +729,7 @@ view: |-
       "15_11_yes": 0.15,
       "16_10_#default#": 0.36,
       "16_11_yes": 0.16,
-      "2_3_yes": 0.19,
-      "2_7_#default#": 0.16,
-      "3_5_2": 0.5,
+      "3_5_Medium": 0.5,
       "3_7_#default#": 0.29,
       "8_10_#default#": 0.16,
       "9_11_yes": 0.1
