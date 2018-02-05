@@ -746,11 +746,15 @@ view: |-
   }
 inputs:
 - key: CriticalUsers
-  value: ""
+  value: {}
+  required: false
   description: Critical users' usernames
 - key: CriticalEndpoints
-  value: ""
+  value: {}
+  required: false
   description: Critical endpoints' hostnames
 - key: CriticalGroups
-  value: ""
+  value: {}
+  required: false
   description: Critical active directory groups DN
+outputs: []
