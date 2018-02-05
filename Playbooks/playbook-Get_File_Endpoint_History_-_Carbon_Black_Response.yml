@@ -47,8 +47,7 @@ tasks:
     scriptarguments:
       md5:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     results:
     - found_file_locations
     separatecontext: false
@@ -161,8 +160,7 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     separatecontext: false
     conditions:
     - label: "yes"
@@ -171,8 +169,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: Hash
+                root: inputs.Hash
             iscontext: true
     view: |-
       {

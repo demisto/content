@@ -99,8 +99,7 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: inputs
-          accessor: MD5
+          root: inputs.MD5
     separatecontext: false
     view: |-
       {
@@ -149,8 +148,7 @@ tasks:
       facet: {}
       md5:
         complex:
-          root: inputs
-          accessor: MD5
+          root: inputs.MD5
       pid: {}
       query: {}
       rows: {}
