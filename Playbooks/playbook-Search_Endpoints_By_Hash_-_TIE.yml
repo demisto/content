@@ -1,6 +1,6 @@
-id: get_file_endpoint_history_-_tie
+id: search_endpoints_by_hash_-_tie
 version: -1
-name: Get File Endpoint History - TIE
+name: Search Endpoints By Hash - TIE
 description: |-
   Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
 
@@ -197,8 +197,7 @@ tasks:
     scriptarguments:
       file:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -368,8 +367,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: Hash
+                root: inputs.Hash
             iscontext: true
     view: |-
       {

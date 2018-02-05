@@ -1,6 +1,6 @@
-id: get_file_endpoint_history_-_generic_-_test
+id: search_endpoints_by_hash_-_generic_-_test
 version: -1
-name: Get File Endpoint History - Generic - Test
+name: Search Endpoints By Hash - Generic - Test
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -61,11 +61,11 @@ tasks:
     task:
       id: 83395f0b-e00d-4163-8363-f74627b9e64f
       version: -1
-      name: Get File Endpoint History - Generic
+      name: Search Endpoints By Hash - Generic
       description: Assume that malicious IOCs are in the right place in the context
         and start hunting using available tools
-      playbookName: Get File Endpoint History - Generic
-      playbookId: get_file_endpoint_history_-_generic
+      playbookName: Search Endpoints By Hash - Generic
+      playbookId: search_endpoints_by_hash_-_generic
       type: playbook
       iscommand: false
       brand: ""

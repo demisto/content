@@ -161,12 +161,10 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
       email:
         complex:
-          root: inputs
-          accessor: Email
+          root: inputs.Email
       extend-context: {}
     separatecontext: false
     view: |-
@@ -371,8 +369,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
       email:
         complex:
           root: Account
@@ -487,8 +484,7 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
     separatecontext: false
     view: |-
       {
@@ -522,6 +518,9 @@ inputs:
   required: false
   description: The email addresses to enrich
 outputs:
+- contextPath: Account
+  description: The Account's object
+  type: unknown  
 - contextPath: Account.Email.Address
   description: The Email account full address
   type: string
@@ -558,6 +557,9 @@ outputs:
 - contextPath: DBotScore.Indicator
   description: The Indicator
   type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
 - contextPath: DBotScore.Type
   description: The Indicator Type
   type: string
