@@ -1,6 +1,6 @@
-id: get_file_endpoint_history_-_generic
+id: search_endpoints_by_hash_-_generic
 version: -1
-name: Get File Endpoint History - Generic
+name: Search Endpoints By Hash - Generic
 fromversion: 3.5.0
 system: true
 description: Hunt using available tools
@@ -36,8 +36,8 @@ tasks:
     task:
       id: f4b71101-7ae3-4ce8-87b7-10eeb13c1a79
       version: -1
-      name: Get File Endpoint History - CrowdStrike
-      playbookName: Get File Endpoint History - CrowdStrike
+      name: Search Endpoints By Hash - CrowdStrike
+      playbookName: Search Endpoints By Hash - CrowdStrike
       description: ""
       type: playbook
       iscommand: false
@@ -77,8 +77,8 @@ tasks:
     task:
       id: 5937d882-8964-48b8-834d-1e6f3d83b189
       version: -1
-      name: Get File Endpoint History - Carbon Black Response
-      playbookName: Get File Endpoint History - Carbon Black Response
+      name: Search Endpoints By Hash - Carbon Black Response
+      playbookName: Search Endpoints By Hash - Carbon Black Response
       description: ""
       type: playbook
       iscommand: false
@@ -110,8 +110,8 @@ tasks:
     task:
       id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
       version: -1
-      name: Get File Endpoint History - Carbon Black Protection
-      playbookName: Get File Endpoint History - Carbon Black Protection
+      name: Search Endpoints By Hash - Carbon Black Protection
+      playbookName: Search Endpoints By Hash - Carbon Black Protection
       description: ""
       type: playbook
       iscommand: false
@@ -246,8 +246,8 @@ tasks:
     task:
       id: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
       version: -1
-      name: Get File Endpoint History - TIE
-      playbookName: Get File Endpoint History - TIE
+      name: Search Endpoints By Hash - TIE
+      playbookName: Search Endpoints By Hash - TIE
       description: ""
       type: playbook
       iscommand: false
