@@ -59,8 +59,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: MD5Hash
+                root: inputs.MD5Hash
             iscontext: true
     view: |-
       {
@@ -100,8 +99,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: SHA1Hash
+                root: inputs.SHA1Hash
             iscontext: true
     view: |-
       {
@@ -141,8 +139,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: SHA256Hash
+                root: inputs.SHA256Hash
             iscontext: true
     view: |-
       {
@@ -172,8 +169,7 @@ tasks:
         simple: md5
       value:
         complex:
-          root: inputs
-          accessor: MD5Hash
+          root: inputs.MD5Hash
     continueonerror: true
     separatecontext: false
     view: |-
@@ -204,8 +200,7 @@ tasks:
         simple: sha1
       value:
         complex:
-          root: inputs
-          accessor: SHA1Hash
+          root: inputs.SHA1Hash
     continueonerror: true
     separatecontext: false
     view: |-
@@ -236,8 +231,7 @@ tasks:
         simple: sha256
       value:
         complex:
-          root: inputs
-          accessor: SHA256Hash
+          root: inputs.SHA256Hash
     continueonerror: true
     separatecontext: false
     view: |-
