@@ -61,7 +61,6 @@ configuration:
 script:
   script: |-
     var CBDefence = function() {
-
         var client = (function() {
             var urlTemplae = '%url%/integrationServices/%version%/';
             var authTemplate = '%key%/%connectorId%';
@@ -185,7 +184,42 @@ script:
             },
             'cbd-change-device-status': {
                 path: 'device/%deviceId%',
-                method: 'PATCH'
+                method: 'PATCH',
+                content: {'policyName' : null},
+                extended: true,
+                translator:[
+                    {
+                        contextPath: 'CarbonBlackDefense.ChangeDeviceStatus.DeviceInfo(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Change Device Status',
+                        innerPath: 'deviceInfo',
+                        data: [
+                            { to: 'Name', from: 'name'},
+                            { to: 'LastReportedTime', from: 'lastReportedTime'},
+                            { to: 'PolicyId', from: 'policyId'},
+                            { to: 'LastShutdownTime', from: 'lastShutdownTime'},
+                            { to: 'LastContact', from: 'lastContact'},
+                            { to: 'LastExternalIpAddress', from: 'lastExternalIpAddress'},
+                            { to: 'AvStatus', from: 'avStatus'},
+                            { to: 'RegisteredTime', from: 'registeredTime'},
+                            { to: 'TargetPriorityType', from: 'targetPriorityType'},
+                            { to: 'OrganizationId', from: 'organizationId'},
+                            { to: 'DeviceOwnerId', from: 'deviceOwnerId'},
+                            { to: 'Email', from: 'email'},
+                            { to: 'SensorVersion', from: 'sensorVersion'},
+                            { to: 'Status', from: 'status'},
+                            { to: 'TestId', from: 'testId'},
+                            { to: 'DeviceId', from: 'deviceId'},
+                            { to: 'SensorStates', from: 'sensorStates'},
+                            { to: 'PolicyName', from: 'policyName'},
+                            { to: 'SensorOutOfDate', from: 'sensorOutOfDate'},
+                            { to: 'LastLocation', from: 'lastLocation'},
+                            { to: 'DeviceType', from: 'deviceType'},
+                            { to: 'OsVersion', from: 'osVersion'},
+                            { to: 'LastInternalIpAddress', from: 'lastInternalIpAddress'},
+                            { to: 'OrganizationName', from: 'organizationName'}
+                        ]
+                    }
+                    ]
             },
             'cbd-find-events': {
                 path: 'event',
@@ -531,7 +565,6 @@ script:
                         data: policyData
                     }
                 ]
-
             },
             'cbd-get-policy': {
                 path: 'policy/%policyId%',
@@ -652,7 +685,6 @@ script:
             }
             return entry;
         };
-
         function addContextToEntry(result, entry, translator) {
             var content = translator.innerPath ? dq(result, translator.innerPath) : result;
             var translatedContext = mapObjFunction(translator.data) (content);
@@ -679,7 +711,6 @@ script:
                 parameters: seperateQueryParams
             };
         };
-
         function sendRequest(fullurl, method, headers, body) {
             var req = {
                     Method: method,
@@ -691,7 +722,6 @@ script:
             var res = http(fullurl, req, params.insecure, params.proxy);
             return res;
         }
-
         function pathify(cmd) {
             return replaceInTemplates(cmd.path,args);
         }
@@ -751,7 +781,6 @@ script:
             var query = generateQuery(cmd);
             var uniquePath = pathify(cmd);
             var url = client.url + uniquePath + query.str;
-
             var headers = {};
             var body;
             if (cmd.content) {
@@ -773,7 +802,6 @@ script:
             var cmd = commands[cmdName];
             var res = executeCommand(cmd);
             var body = parseBody(res);
-
             if (!cmd.extended) {
                 return {
                     Type: entryTypes.note,
@@ -834,18 +862,14 @@ script:
             }
             return JSON.stringify(incidents);
         };
-
         return {
             execute: executeAndShowResult,
             runTest: runTest,
             getNotifications: getNotifications,
             setPolicy: setPolicy
         };
-
     };
-
     var cbd = CBDefence();
-
     switch (command) {
         case 'test-module':
             return cbd.runTest();
@@ -1011,9 +1035,11 @@ script:
       description: Policy id.
     - name: policyName
       description: Policy name.
-    description: Change status of an individual device by its device ID. The requested
+    description: 'Change status of an individual device by its device ID. The requested
       security policy can be indicated either as a policy ID (policyId) or policy
-      name (policyName).
+      name (policyName).The current revision of the Cb Defense backend only allows
+      one element to be changed with this call: the security policy assigned to the
+      device. For example policyName=Restrictive_Windows_Workstation'
   - name: cbd-find-events
     arguments:
     - name: hostName
@@ -1461,6 +1487,7 @@ script:
       required: true
       description: The ID of the policy to replace.
     - name: policy
+      required: true
       description: The JSON object containing the policy details. The JSON object
         containing the policy details. Make sure a valid policy object is passed.
         You may use 'get-policy' in order to receive the policy object you wish to
@@ -1501,6 +1528,7 @@ script:
       required: true
       description: Application value.
     - name: policyId
+      required: true
       description: The policy id.
     description: Add a new rule to an existing policy. Please note that system policies
       cannot be modified.
@@ -1558,4 +1586,3 @@ script:
     description: Re-set policy fields.
   isfetch: true
 releaseNotes: "-"
-
