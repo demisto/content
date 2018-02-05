@@ -88,7 +88,7 @@ tasks:
       - "7"
     scriptarguments:
       assignBy:
-        simple: machine-learning
+        simple: random
       email: {}
       roles: {}
       username: {}
