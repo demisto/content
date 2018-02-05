@@ -408,4 +408,3 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
-releaseNotes: "Added file and remote-file detonation commands"

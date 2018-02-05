@@ -1,7 +1,6 @@
 id: email_address_enrichment_-_generic
 version: -1
 name: Email Address Enrichment - Generic
-releaseNotes: "-"
 description: Get email address reputation using one or more integrations
 starttaskid: "0"
 fromversion: 3.5.0
