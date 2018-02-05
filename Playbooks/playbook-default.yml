@@ -56,8 +56,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: Enrich
+                root: inputs.Enrich
             iscontext: true
           right:
             value:

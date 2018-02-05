@@ -80,8 +80,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
     continueonerror: true
     separatecontext: false
     view: |-

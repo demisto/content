@@ -197,8 +197,7 @@ tasks:
     scriptarguments:
       file:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -368,8 +367,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: Hash
+                root: inputs.Hash
             iscontext: true
     view: |-
       {

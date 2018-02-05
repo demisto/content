@@ -127,8 +127,7 @@ tasks:
     scriptarguments:
       filter:
         complex:
-          root: inputs
-          accessor: Hostname
+          root: inputs.Hostname
           transformers:
           - operator: string.concat
             args:
