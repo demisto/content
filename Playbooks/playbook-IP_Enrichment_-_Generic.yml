@@ -270,4 +270,3 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
-releaseNotes: "-"
