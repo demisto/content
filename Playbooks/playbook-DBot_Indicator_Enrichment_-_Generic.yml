@@ -165,8 +165,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: Email
+          root: inputs.Email
     separatecontext: false
     view: |-
       {
@@ -228,8 +227,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: URL
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -377,8 +375,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -440,8 +437,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: SHA1
+          root: inputs.SHA1
     separatecontext: false
     view: |-
       {
