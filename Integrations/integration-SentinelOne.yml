@@ -495,8 +495,8 @@ script:
                     queryArgs[arg] = commadArgs[arg];
                     delete commadArgs[arg];
                 }
-            return queryArgs;
             }
+            return queryArgs;
         }
 
         var sendRequest = function(fullurl, method, headers, body) {
@@ -2714,3 +2714,4 @@ script:
       default: true
       description: The ID of the threat
     description: Resolve threats
+releaseNotes: "-"

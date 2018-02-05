@@ -23,7 +23,7 @@
                     "byoi": false
                 }
             ],
-            "playbookID": "get_file_endpoint_history_-_generic_-_test",
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 240
         },
         {
@@ -31,7 +31,7 @@
                 "name": "carbonblackprotection",
                 "byoi": false
             },
-            "playbookID": "get_file_endpoint_history_-_carbon_black_protection_-_test",
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 240
         },
         {
@@ -40,7 +40,7 @@
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "get_file_endpoint_history_-_tie_-_test",
+            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 240
         },
         {
@@ -48,17 +48,7 @@
                 "name": "carbonblack",
                 "byoi": false
             },
-            "playbookID": "get_file_endpoint_history_-_carbon_black_response_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-              "AlienVault OTX",
-              {
-                "name": "activedir",
-                "byoi": false
-              }],
-            "playbookID": "entity_enrichment_generic_test",
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
             "timeout": 240
         },
         {
@@ -93,23 +83,8 @@
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test"
-        },
-        {
             "integrations": "FalconHost",
-            "playbookID": "Get File Endpoint History - CrowdStrike"
+            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -219,10 +194,6 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
-        },
-        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
@@ -297,6 +268,10 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ],
     "skipped": [
@@ -329,6 +304,31 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test"
+        },
+        {
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
         },
         {
             "integrations": [
