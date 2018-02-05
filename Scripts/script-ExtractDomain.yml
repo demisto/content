@@ -203,4 +203,3 @@ outputs:
 - contextPath: Domain.Name
   description: Extracted domains
 scripttarget: 0
-releaseNotes: "Ignore www. in domains Extract, Take into account emails for domain extraction"

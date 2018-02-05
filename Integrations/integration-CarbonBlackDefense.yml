@@ -1557,5 +1557,3 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
-releaseNotes: "-"
-
