@@ -48,16 +48,13 @@ tasks:
     scriptarguments:
       MD5Hash:
         complex:
-          root: inputs
-          accessor: MD5Hash
+          root: inputs.MD5Hash
       SHA1Hash:
         complex:
-          root: inputs
-          accessor: SHA1Hash
+          root: inputs.SHA1Hash
       SHA256Hash:
         complex:
-          root: inputs
-          accessor: SHA256Hash
+          root: inputs.SHA256Hash
     separatecontext: true
     loop:
       iscommand: false
@@ -89,8 +86,7 @@ tasks:
     scriptarguments:
       Hash:
         complex:
-          root: inputs
-          accessor: MD5Hash
+          root: inputs.MD5Hash
     separatecontext: true
     loop:
       iscommand: false
@@ -122,8 +118,7 @@ tasks:
     scriptarguments:
       Hash:
         complex:
-          root: inputs
-          accessor: MD5Hash
+          root: inputs.MD5Hash
     separatecontext: true
     loop:
       iscommand: false
@@ -209,8 +204,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: MD5Hash
+                root: inputs.MD5Hash
             iscontext: true
     view: |-
       {
@@ -294,8 +288,7 @@ tasks:
         simple: JoinedHashes
       value:
         complex:
-          root: inputs
-          accessor: MD5Hash
+          root: inputs.MD5Hash
     separatecontext: false
     view: |-
       {
@@ -327,8 +320,7 @@ tasks:
         simple: JoinedHashes
       value:
         complex:
-          root: inputs
-          accessor: SHA1Hash
+          root: inputs.SHA1Hash
     separatecontext: false
     view: |-
       {
@@ -360,8 +352,7 @@ tasks:
         simple: JoinedHashes
       value:
         complex:
-          root: inputs
-          accessor: SHA256Hash
+          root: inputs.SHA256Hash
     separatecontext: false
     view: |-
       {
