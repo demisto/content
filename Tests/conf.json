@@ -268,6 +268,10 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ],
     "skipped": [
@@ -300,10 +304,6 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
         },
         {
             "integrations": {
