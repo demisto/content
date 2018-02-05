@@ -46,8 +46,7 @@ tasks:
     scriptarguments:
       SHA256:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
     separatecontext: true
     loop:
       iscommand: false
@@ -76,8 +75,7 @@ tasks:
     scriptarguments:
       MD5:
         complex:
-          root: inputs
-          accessor: MD5
+          root: inputs.MD5
     separatecontext: true
     loop:
       iscommand: false
