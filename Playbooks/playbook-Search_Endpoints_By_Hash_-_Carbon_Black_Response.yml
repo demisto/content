@@ -250,4 +250,3 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
-releaseNotes: "-"
