@@ -50,8 +50,7 @@ tasks:
         simple: ComputerId=computerId
       md5:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -84,8 +83,7 @@ tasks:
         simple: ComputerId=computerId
       hash:
         complex:
-          root: inputs
-          accessor: Hash
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -203,8 +201,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs
-                accessor: Hash
+                root: inputs.Hash
             iscontext: true
     view: |-
       {
