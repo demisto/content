@@ -902,7 +902,7 @@ script:
         var lastRun = getLastRun();
         if (!lastRun || !lastRun.lastTime) {
             lastRun = {
-                lastId: [],
+                lastId: '',
                 lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
             }
         }
@@ -910,7 +910,7 @@ script:
           //Folder was changed, we need to reset lastRun
           lastRun = {
               folderId: params.folder,
-              lastId: [],
+              lastId: '',
               lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
           }
         }
@@ -959,7 +959,20 @@ script:
 
         var fetchArgs = {};
         setImpersonation(fetchArgs);
-
+        if (lastRun.lastId) {
+            lastItemOp = '                    <t:IsNotEqualTo>' +
+    '                        <t:FieldURI FieldURI="item:ItemId" />' +
+    '                        <t:FieldURIOrConstant>' +
+    '                            <t:Constant Value="%last_item%"/>' +
+    '                        </t:FieldURIOrConstant>' +
+    '                    </t:IsNotEqualTo>';
+            opArgs = {};
+            opArgs.last_item = lastRun.lastId;
+            readyIdOp = replaceInTemplates(lastItemOp, opArgs);
+            fetchArgs.last_item_op = readyIdOp;
+        } else {
+            fetchArgs.last_item_op = "";
+        }
         fetchArgs.last_time = new Date(lastRun.lastTime).toISOString();
         fetchArgs['target-mailbox'] = getDefaultTargetMailbox();
         if (lastRun.folderId) {
@@ -997,7 +1010,7 @@ script:
                 //Now create an incident from each item
                 for (var i = 0 ; i < actualMessages.length; i++) {
                     // if fetched incident is the same as the one in lastRun - ignore it
-                    if (lastRun.lastId.indexOf(actualMessages[i].Items.Message.ItemId["-Id"]))> -1) {
+                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
                       continue;
                     }
 
@@ -1008,13 +1021,9 @@ script:
                         incident.details = message.Items.Message.Body['#text'];
                         incident.name = message.Items.Message.Subject;
                         incident.occurred = new Date(Date.parse(message.Items.Message.DateTimeReceived));
-                        console.log(lastRun.lastTime, incident.occurred.getTime())
                         if (lastRun.lastTime < incident.occurred.getTime()) {
                             lastRun.lastTime = incident.occurred.getTime();
-                            lastRun.lastId = [message.Items.Message.ItemId["-Id"]];
-                            setLastRun(lastRun);
-                        } else if (lastRun.lastTime === incident.occurred.getTime()) {
-                            lastRun.lastId.push(message.Items.Message.ItemId["-Id"]);
+                            lastRun.lastId = message.Items.Message.ItemId["-Id"];
                             setLastRun(lastRun);
                         }
                         labels = [];
