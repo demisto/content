@@ -3,10 +3,17 @@ commonfields:
   version: -1
 name: SentinelOne
 display: SentinelOne
-fromversion: 3.1.0
 category: Endpoint
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAApCAYAAAD+tu2AAAAgAElEQVR4nO18d3Rc133md+9rM286ZlCJDgIESBAECIAUKYpNEkVFXkuyXGjL8npjuShR3DbrJCcbrxOnWIrjTRyXxFLiuEgKVSxZxSItS5TYSYgkSBCd6MAAM4MBpr957d79gxgeVUfyke2TrL5z5gzOmTd3fu/33fvrD4RxjgIIgGiGQzc5BAAeB8FMlMElEZh5QFZM6Fla7BSFUC7FiwUOLwwiKQrR7Cx3CITYxIKoOJF2FJEoTGQEBTHKkWZLwJP3PYEtd3WipCUEZnIQEOQyOUiyBKfbCcuyYOQNqG4VoiSCv0K2AiilSCQSePzxx7Ft2zbU1NSAc45EIoGf/vSn6O7uhm3bUBQFkiQhFotBkiQYhoH29nYYhgEAkCQJAwMDOH36NDo7O+F2uzEyMgJCCCorK1FcXIxIJILR0VFQSpHJZHDdddfB5XLB4XBckY0QgmQyCV3XoaoqKKVIJpNIJBIQRREvvfQS3G43XnzxRYTDYezYsQM33ngjRkZGoCgK4vE4brrpJiSTSfzoRz+CpmkIBoNoa2tDOBzGnj17AACHDh2C3+/HzTffDEEQIMsyjh49CsYYHnvsMezbtw+lpaU4fPgwnE4nKisrsW3bNoiv0+AbgBCAA+7FGLYSCzUpnQcyEb5aZARcY4poE9PjI1Fo3OFwkkwmzt1OD+IiJXlHkM86K8ggLExalsXySU02TVMjAtUJCKMiBSHkrYjxLn4F/IcEEwIQgoqFmP1eYooVloaQpSFgZEiQaFxhGRL0qlhylhNby3I5MYouhRCbx0GoBlGnJKMJ0Fw1OL2mo2lx6PHR6qmHZoJqSF32rfH0uze4ez0VnhkHdabfJfqdx5sSTAhACWCY2PzyJfsTiUXeTnReFlBINOQnE1TmrkApXUzOwAsD7swS6qwM3IE16BcsEuc5bkgSLBbGaiuGWu0SdjWwNtayqfVxrSrxcDyyWJUaSHVbQ1Zrfl3+Yq5LO+Mv901SSvXfpAL+q+MNCaaXyZXOTdh3zkf4TkNHDQEpLy0mfTBAI2G2zu8iEUODi1lY5XAQnZkkIMlEYRpKoXPmLSGLuUmYRMKCWIJ+awq1uRyKrHn6RU97UVOws+gH+W7thfmZcGf+uH5NNp4NmVuME4G6QD8hJPfLhH73pL91vI5gSgDd4sGeKfsPUxmyVuYkJFIoFuUxm4HYBmoEkfgtC4tExUh5C55WVb5gZbibG8RjLyNk6KjiE1hnR3mNBLJJFJASy3EJizCU9Xg6N4Bt2iC6neXOZyv31ty/+MHoWOpQ6j3mMfvqBE3Y6lr1oiiJxhsFWQDAGPu1K+a/CsTCWSiokhCoQzH2ybk0doomd9qc+LUUYwEHTWU1XqWKGGxqJz8QOLno8pBMLsbr81nekouiUXUjAQk5ZxnOiZycXw5bOyyZ512W7DISWI8URH4SiiiCS36U52fxPvoP4obQ3aVfEPfSx5eeTH5YO6N3JUsSkVBF8RxnryeYE47jx48jm82+e5LfAkRr5TAQAtiMi3NptuVChH+s1E15uZfy6TF7yeUmGYnwWEmQnKivpL8gQFbPoS65yIMihSSpJFu+jjzsCmHW4SWaNgs5OwaffzOZP7t/7g8rm9XeYNC3QHXleq7AI1ThAEx4HdtRox1CtfaA8Hf4pON/2uuXn8dL/APZyVydr8ScF6nAOAc4OMABURSRSqWQSCR+u1r7TwQxY15mmBIgY6BsYJHd4ZSIyG0iLi7ZESLwGLMgOZ3obawXnrFNGLrGV2tZlEsUGYdKz7h9mDKzMMEJJBWIS8tIubRFdzUZa3KqU6OP6F8y6mJDVRtC/+ykjnX5CeylAgbJHI7bArZbedQkvkv/9UwmPhYs41rFgK+1uN14mUhK3rY4REkAFQiSqSRmZ2chSdLbusl38qQLggBRfHWOLssygMu5tSAIEAThl/7+b9LyiATkcp7LuTCaZHvmc/wqArCcyV0yYecdMgk4ZVysXkW/JUjwx5d4p63DozowEQzRU5YGjXMAnIATG+d7+2FzE2JQcP700YNrSkvKXf72Nf0Lo55GOUBOVriLT4irZK4NYLeVQZAIWJbXYd4/621pyTV1nB8djGamlmod3a5jlXVlAwCxRemy0hLLCYTDYYjif5y+E0JACAGlFAC8oiimFEUBIQScc1D69vNvQRAwNTWFXC53RQZBEMSLFy9+NxaLNVRXV3+Jc/6yoiiorq6GJEmQJAmc8yoA1QAcABYJIaOSJOV+E0SLOYtDosB0lnf2xtlHOWCDEp+Lsp+XeYSwbWJmTRn9oZbjVZEYb3IoyATL6Bktzac4BwMnADgEbxaWpCMWj5LwXPizvb29dy8uLq4+mT0FURagwG03ultCt5R+5Puh5KoJ9w6yXxtCZ34WTQLBNCpxpgIlm4RGO3zh0FBr7Ixxtdefz7p9jjAhyAOXq1ivPB0FEl/5mSRJoJTCsixQSjEwMPBXPT09t2/ZsuXbAP7WMAxIkoTy8nKYpvm2SJZlGf39/chms1i1ahUsy4Isy3RoaGjnzMzM6nw+XyyKIjZu3AhFUTA9Pb373LlzX4hGo1s0TQtyznH69GlzZGRkqqmpaf/atWv/nlK6+I4y+hqIOjhMBvQuW+8VCFFDHhoemrdDQQ9JWiBqfQl+yDiKQLBKkpAuCtBxt5tM5lKcExAwYsKgSRBqQaYOTE5M3vPMM8/8L6/Xy5qamh51u91TBCQ0NnlpZyKcbRZvkkZMkiXmmGsLcZKsYx1mchF0e7fw+/JJUlbmLxOH3QMkNWY3pBt4rdhomKpLngdgvZYM0zShaRoIIUin07Vzc3N/cPjw4UWHw/E3JSUlKC4upjMzMzdFo9Gac+fO/c74+Pjf2raN6upqcM5hGMbbPsWcc3i9Xng8HiQSiULZMLdiHezW1la0trZi//79//vpp5/+i2w2SyilVzZeMpmU4vH46snJyT8dHBy85dprr32/IAhD7yCnr4JY6xLQl7A2jGdZ17oi2bGU5KTKTw67JZLxqxhwysTM5nkRITA9HjLv95ExxsABClAbUwu9MO08REFCIpFoO3LkyBcDgUDmwx/+8K2EkF9kshns3L4LubS1ZvJY6obll7HD9zv6flFRefo8qZZ90IUgMrkpskHtwpH8FGlu6lwfQVv2RHYajYrPXlZVIyMp0vLg0OAVUgghyOfzV0z2yMjIrt7e3i9WV1c/HggEEAwG0dDQwLZv3/7FsbGx2zZv3vx9v98PwzCumOdf1URyzlFcXAxN017liwkh6OrqwunTp+/ev3//Vyml8Hg89pYtW77tcrke6e3tzW3atOmqQ4cOfWlpaalmampq3bFjxx697rrrthFCfi2RI83ZnMzkWYcsUXU8yUMM3GwO0henM7xFlTDOOGAzqERAVpEwYjPOLBsAtTEzewmgFmRJgaIoSKfTVycSCaG5ufnw7t27fyGKImpr6uDz++BS1WjV+tALPCcFk9F8yNFoXXDX45g2i82mwpdzObbaSsFv5uDw+kuWA76A5K2Who0FpUJLWx4AmJycBKVULAQ6BR8bj8dBCMkKggBVVTMtLS2glGJ4eBiU0heuuuqq3+/o6Hi5oaEBhJArgRClFKIoQhAEKggCLZyy16JwvSiKEqUUlFIEg8ErZhq4nJuXlJTo8/PzZffff/9frbgLfvfdd3+qq6vrcz6f76gsy2eLi4u/s2/fvuuqqqqmBUHA4ODguoMHD37etu0rARxjDIQQSJIEURQlURQdoii+oWyKohS+5yhcVwj6AEBcMnlwTuc1gkgcxOLUsnluUScl3M5oZR7Pubkk3SoCVpGHTqoOGIYFUAq4/Sbm5hMA6OU21AoIIdB13V/oivi8fhACSAo1qWrl1Goylp5FvRXk5y9lRoJH4j8PzE2N3wQCWhGubdhSt7enpa7p9NKC3Hgh//ONM6OR7lvLb/6judhUy/Dw0Kd6e3vXy7KcLS4ufkaSpHsNwyA9PT1/HolENoiiiGw2uzUcDv+TZVliKBT6cSKRCDHGbshkMo/Ztn1gYGDgdqfTuUMQhK9TSvnc3NwfDw4ObpMkyaioqDhSWlp6jyAIU68kN5VK7RsdHf3db3zjG03JZDJfXV394vLy8j80NzcPzs/Pg3MOzjkcDofe09NzRyQS8QqCgO7u7p9u2LDhX8fGxgAAmqahra0Na9asuVRaWvonX/7ylx8QBAHHjh27vb29/cFEIvFn8Xg8cNVVV31HFMX+s2fPfvnEiRObOecCgNE9e/b8tSzLJxljEAQBTqcTZ8+e/cjMzMzHv/GNb1TLskwIIXNtbW3/WlNT82NCCMS0zVVGiJuDk1UqGZ5eYnyS047R8TFMlTV0BLxFaW7bdrGPhF+5c4jNr+zewg72eDzHfT4fHxwc3PrQQw/9+YYNG/4yHo+boByV5VWGKGqm5OWLubBU8uzhJz/15MFHvqDIDrvWvy6jGzo/Hz285uLi8YYP6F9wda/f/PPen53/zHi0b5XjefqlE+cOvd/lcuku1ZWIRqONMzMz7Q6HY+M111zzhbGxsX3xeDwkCAKSyWTd0NDQ/+CcU03TTo2MjHSlUqk7q6qqFlRVPTA2NrYlm81+UpZlq7+//0OGYRR5PJ7wwsJCxcTERGtVVdXOpqam6wkhc7IsC+Pj498dHBz8ZDAYXHI4HGdVVS3v6+v79Nzc3Ps+/elPX19SUnKeMQZKKfL5vPvo0aM3FtK4Xbt2/UhVVXR0dGBmZuaKxRkfH4ff73+yrKxsLhKJrJqdna2Px+Nd0Wj0PRMTE/76+nrlzJkzqwcHB2tXonBQSptjsdju5ubmPa2trcez2Sx97rnnvvfYY499AgDcbjcMw4Cu602Dg4O7CCGtbW1tfyzc9adfrhrKse0ekfpk8PR4hpVVyPbYzMS4WBIsSgY97mR1kFwQBWJcLjoAIIBl2XC5XCgqKkJRURECgQBqamoihmFIg4OD28fGxnbE4/G9AMzx8fHJNWuaswSCw85Ivgvn+9/75InvfboiWL1w57Vf+V6rsLeku2XHkYb6NSfPDZ/onkkNV23dsnP/wFjf1YvJudD07MTa7dt2/+DWW265ZUP7hq9TSs+nUqkbR0ZG1tbX1/e1tbV9vqKiYr6vr29vfX39k9u3b9+7du3abxUVFZ0cHh5+D2Oso62t7Tmfz3d4YWGhK5vN7pqcnOwuLi5+fsuWLTfdfPPNf71mzZqfLy4uXj82NtZQWlpKOzs7D54+ffqzzz///J+2tLQ8d9ttt+3OZDL/tHHjxu/W1NRkXn755VsSicT6lpaWBy5evPiJZDJZ1tHR8dzFixdvXlpaKgoGg7lbb731K7ZtL2ezWZSVlaGyshLJZBLxeByWZRnxeHzX1NRUE+ectLW1nR8dHW3Vdd03OTlZr+u6b9euXf+0atWqn5mmWWcYhj+VSsnhcLjiqquueuDZZ5/93H333fcnLpcLu3bt+meXy/Wp97znPf+mKErD7Oxs3fDw8LampqYX6bxu188ZrMIlE2YTuMo94qJbNMMBnzej6YZDVZB0SiQDXGlCgABQFPmKzyj4KMYY2tvb//e+ffs+V1paOj84ONh94MCB75/uOd3z5JM//T1BEAzGGb8QfnEnFQj/7x/75BdCatmyWIbRvIlAY9GGhY6a64YjiSn38Pz5FlmWs6apo7Fu3bn33/SRP2uoaZqVRDl1yy237O/u7n6Ac44XX3zxWsuyIsXFxREA0HU9Mz09PWsYxlRPT0/OMAxaCKY452CMUcMwsGrVqvG77rrrw7W1tZfy+XwuGAwe7urq+ktKKQYHB7f19fX5T5w48fmioqLk9ddf/9F8Ph+rqKiAoih8y5YtX29paTk3PDx89fz8fIcoijqlFNFo1GkYhiwIAnRdzz3xxBPRRx99FI888ggOHDiAxsZGNDc3o7m5GS0tLfD7/clCXX15ebn4sogcsiyz3bt3f2rHjh2/5/P5vrJz587bVFXNSZKEhYWFjp6ensannnrqs4QQdHZ2/rylpeUzExMT5yYmJk7eeeedHykpKUnlcjkcOnToDjHPIVORSi4Bc7pAqFchDm5LtkMRctPxdLVfsSYsi+KVkx8FnysIAizLwisVaJomWltbv1laWvrw9PT0bWfOnLlzZmam/bHHH/t2OpXduHntjT+JpsdXed2BRdOwtYnF8FoqcxsijIVLtFskLouAYDo8vo4IxLYZQ11Z81nCqc25TSpKK7noIGhubj789NNPfyoUCpV3dXXh5MmTAgBQSmkul8PRo0cRDochSRJs235VYMI5R2lp6fFIJJLJ5/OwLAszMzOwLKvH7/cjnU4XLSws7IhGo7W1tbWnU6lUUTabLV3xxxgYGLB8Pt+4ZVkdsVhsI6XUfO36oijSxsZGUZZl2LYNURShaRpM0wTnHIQQ2LZ9Jal3uVxpAMSyLFRWVkY+/vGPP5TL5cAYg8/nOzM0NDRw/vz5rkwm4xkfH78hFovVOBwOWJYV+eEPf3hrLpejBw4cQDKZ5D6fL7mwsOCdnp5eLxICRgjnhCClykRe1DlimlEccArRtEkD3MobtuAA46/u4BBCIMnKq/xwQfCVYsJCbW3tt0VRvK+zs/PzBw4c+NpLR174hMC9giALhpbLhv7xvr95ggDctkEoBQgljNk2ZTbH0tJypWURUaACZNGpgTDicCp8dm4WZ3p7EI1Gl0RRhGmazpXGw5UdSClFLpd7w6izIDshRJufn79Cvsvlgm3bbKXSZUej0XpBEDAzM7PpkUceGXztGoZhwLZtpNPpICGEMcZQW1ubdjqd2krq5CkvL6/xer3Ltm1DlmUkk0mMjo4CuFw0mZ2drS5kAz6fb5pzTgghyGazmccffzzndruxefNmOJ1OKIqirVgg68KFC1WMMSqKIk6dOnUH5/yOQqHn2LFjEAQBnHPMz89XiGnTdJcq4qLBWW40w/YwTkdrHGTSVshyDtS9mMyVV5U4xl97g5QQmParSWeMwTAMWJZ1ZcfKsmxs3br13mg0uuXY8aO39PX33sBsWyguKR5vb/hvZ5fmsaGogozn0rzUNrisqDTpDmCorKRq9MBzj3+aEIATm0lOQXO4ZcTiUfzgB/8Gt9tDVoKZN+wpvhm5r7zklTXlFeWRFYJ5LpeTLctCQ0NDz6ZNm+7nnAuc8yv5AqXUFkWRu93uU08//fTNnHPouh4JBoNjly5daorH41I4HN6xY8eO3nA4jPHxcbhcLlRXV6Ourg4LCws1Dz744IYVcpNFRUVDtm1LK4Ei7r//flRUVKCzsxO2beOVv80YIwBg2zaampqG/X5/FIDwyjkxy7JIeXn5iEgkkeR17lAEGieiEEjm7WCR15lajsu2qLPc5JJWV+TVoz63M2PbHJQAps2gWxZs9vpTbZomGGPo7++HYRjYsmULLMtCaWnpWdu2bnE4nSkpL3nyOcvfsnrnRV4lLKl+LKSWUJdeRq2kYGHVarxk2CAW0zhAQGVmqF45yTngcCpQVRcURbkyQPca8EJUW3h/O1gxr0JTU9Pc6dOnQQjJrVu37nuFyLiwpmVZsCwLS0tL4JzLK8N3Wnd39yMnT568URRFPPfcc5/ZunXrv8zOzmaSySRUVUU6nYZpmjh79uzdiUTCBQCNjY2HA4HAIGNMXtk8cLvdUFX1dbJRSoXm5ubYzMwM8vk8du/e/e8f+MAHvjI7Owu32w0AyGazAAC/3w8qU0SHDbsxw7nglekSF+DKcOJhsuSs89DhhSyriiWzFZmcLlEK5E0TpmUDICArpBaS/8K0nyAIyGQyiEQiOH78OMLhMCYnJ7cQCgQ9qxdcYlUmsjhbNBJ+qcGSIWZ0+KmbZ4iLW/4qnGYSWN40XYpTzDKLwV+iLsmqYBMCDA6+zloWTC7lnEMQBMnr9cLn88Hlcv1KwwG6rss+n+/lUCi0OD09vXVgYGDrhQsXcOTIEUxMTODUqVNYXl7GhQsXEIvFZEEQ+Mq0p7O1tfWhpqamSc45RkZGmu+9994fzM/Pl3o8HrjdbhBC8PDDD9/1xBNPfK5gnm+77bavezwew7btX1paW6kxyC6X61RRUdG8IAh46qmn7nzhhRc2mKaJBx98ED/5yU+Qy+WQTqdRXl4OsVKmYzVOYeCSaddKICYICYzprLnW7Tlbr2ZGBhPYMJs0qhUpp6kOedayGecckOjlStByKgXLsiBJEoaHh+84d+7cDW1tbfcTQvoVRTEMwyg7ceLEH1y8eOFGrztoFDu6ZmnAk4tmz9148PkffvSqLhzt3rTpKGdOpylaep7HzeVYpra8pPqcrlmqJIuIJyKxU6dOwbZtnDlz5g3bhZzzJc45crncNX6/vz0SiUy3tbVlz5w5w9/kpL+pEg3DkDKZzKXt27d/88EHH/yLn/3sZw+2tLTcbRjGkUAgkFlYWFC9Xm+DZVlEUZQLhdgjnU5LlmXlb7/99t+75557Htc0TTl//vz7otHopra2tgM+ny/R39+/aXR0dHvBh995551fXbdu3eHp6elVb6V0apqmHIvFRq+//vq/v+++++4Jh8OrvvOd7xzZuXPnvx8+fHhEkiTk8/maSCTSsLi4+FHRTekSgRmL2LzeLzDNoqhOMpSmFFdNQDBTFZY5PZWyVnsVPeWQMpZDkRZW3BQEQUAoFAJjDA6HAwcPHtx94sSJ2/v6+m6XJElTFCWbzqRDeS2HolBp9pruD/0oM47Sq2+8Zr93jOQPH/rx7xw6+n+vOddX3q04gpauG85EYnpvbX3t6I61n+XJqFmnOGSMXhqVxifGkc/nMT8/X2jBFVj25PN5lJSUHF+9evXY6Ohow9LS0llJkjJVVVV3yLLMVkyWY+X6wrv6Ou0BAgCIougbHx9Xd+3ade/OnTsbT506dceRI0eeKioqisVisWgymQwdPXq0tKur66ndu3e/lzHmWdkcUl9fHxobG5/dt2/f+48cOfLNiYmJuqmpqcrJyck7C+bd4XDA4/Ekbrvttr/60Ic+9PVEIgHGmADAvyKH9w1k8wCXg7Pe3l7Pnj17/u7mm2+ue/755z+TSCQ8Dz300CedTicYY3jggQfg9XrR3t5eLxLCUw6KjE/CvEJg2zKpSmh2xQQTFNPtDlSaycm0YfkGFvX1AoFd5FYEv8sZIYSYHBwWEaDIl2u4W7du/RNK6eGpqalrJVGszet5ob6u9kT96paL9c3bL+jzcM1K2XYS8Ia2XH3TTyzSWBZfOOFZiMzWKpKlO1zuROv61r7mdesPLw1qAW+Q37OQgiqKYm+hl1uIEAGMAvhHANOEEJSVlS3v2bPnZlVV/8iyrNWKomiKoszatv0sgByAIyuKemmF3BNvoMQFAP9IKU0tLy9bkUhEv+aaaz7m8/keTSaTH4zH4/WWZYk1NTV9NTU1+6+++upHfD4fOOffA1AhCMLY4uIiKKVobGx8urOz8/gzzzzzkUwmc00sFqsDQAKBwLQgCKcqKioe7ejoGDcMA7lcDoSQFIB7ATgBxN5Atn8DUC8IAhYWFpIDAwP23r177/L7/Y/29/e/X5bl1bquSw6Hw0qn09NNTU1Hr7322lFxjSwabU52dsqw610gzpctlvE5BTWXt80jhuP9t/msvzR5dmgixRpHkvbaalt3GCZzhnzqgiwJacY4bAoQm8HpcC74vJ7vb+zo+H5pRRVkpxfB4mqf3+8qyWoILBCjLhDwLygOtjQ6y3f5ypqWSqqbtNCipXk9AltXx77KBU17+vDAHTs69C/PZDwzs+fe1IcOAPgsgCutP1EU+9vb2z8mCAL8fj+Wl5fBGDsD4LFXfO/ZldcbYbawZsFcGoYBv9//5LZt254cHh6GZVmora3F8vIy3G53Ic36WmGBQi3ANE2IorhUVVX1rdbW1m8dP35cAICOjg67p6cHoigin89fSS0BJAD80ZvdLIC/L/xR6Ibpug6Xy/V8W1vb86tXr0Y0GkVJSQmmp6dRSM1EiwM1Ih1+STN2tEvCkCKiSuVcNWRh/aDBrz8rqz3NLvtEI9WHwzleOafxuuV8vihrmO6Qxxl1KlJEoNQybAuu4gpUbrwOTgpIalByy3SVRKHGknZoYp5tW0yjPuRisxmdqFyGmzG7fFljNlOob009u8fhSEUeOTL6+7q9EG/fsH1WVW/AufO9bzlQKii3kK69U9OXtm0jn8/DNE1YlgVd13/p+oXNwRiDZVmFAocNAPl8vpD2vCOyMcZgmiby+TwMw7jyXvhMzHOOKlEYLJeEOYvwWLlMeQ2lIyOEyV6HUL5Mye+OC66ZUieNriLarMfgydEls2U2qVeXufRwmUucqyvxXfI6pSXITiiGS1EoSqltu7K6BZGSYCTDmrM2Lwn4yGxpsTA3M6/foDFaaguiTRSeaSxLPaFIubPHR/QPu1Q+vaO55lnTZLy2rg4f+OAH8XJPz5UdW2irvYu3BjEHDoXA7lKEF57VzI+4OOk/mMcm1eLzTJJDMZ1tHoP01S1O6c/KGEsqtmasD4m9sZxdHM2xip65TN3p6eS26oBzvKE8OB5w+TKWxYWszVx5k9SKlNOJBNvIbaIwCc6oxW/pi5kNQZcrVum3DlAjOuFT+cmBOX2Hx00v+SWyvLa+asjv94NzjvfdeitcqnplTDadTmN5efldkt8iRA+9nM9ulKXeGZuv7TfsjSJhEykCxbLMOT8Rqz0iaerV+NfWOgP/4hWds/m84fQIetpGLg5QktRY8IVL8Zt+fHqi9po1lSc7m1cPZExSGcuwqmiaN1FC/D4HzcznsHYskXEW+R2LRQ79ELMSE2Vefmpsye6WHWrWjdRcWcA/UxQIJDj4lQG5vXv3XhE4Ho/j4MGDcDqdvz2t/SeCqKx0DgQCs0sSnp1jdokF4gYBKyf0pUnd2hGAKEAkq07l2B8LTJ4QiRyWqSuXUby+IpUsl0ok6qliyxdjRvO0xW6SEnZdQDjp/KcAAAOkSURBVCazaY7VhkjqnSIxc0QIJawk0rnoYp2/+GHFTodVmYf749gWcIjhIlmbECzLqK+uGSOUvKoA+coSXGdnJw4ePPjb0NV/SlDGAcYBiwPlghC9XpF/YhFo89FwJcwcdvuU7xXLdLjSQUuWwZxpsBoN6MoSsn6BkeYIpw2LRKwVnIoge5zJUNDdxyUYCya5dpnTLoeTGqLMk4adGhxfvrSg5bWwk+bDecb4UIJcVeqVRstVc0CwNLO+snzcrTpztm2DMfa617t4+7gyYMwBqISgXRLHHG7hm19TpK99bWDgrk80NOxvCpUcndJso0whlXmL+1I2F00LVdVuMZyzeemCzXwGMOtyECttkk1BJy3JG8RWiHU+xNNnR5LmamZmeIjnFruqqp+Jm9xlMUlqLrIPe0kmSiwLNeUlEwG/N/La+vZr8U5Fn/+/4FUT5AyXT3OTgJHP1tZ81pXLfnVserzVnUnaZYHiCbfqOudWRHlUs9sFgSNlcTcBp4RQT5TTdpuiVHWSZNqyjzko5nxiKjqeZqtTsBwT0zOrakThQgqi6kc+UuY0x1XCM6osaWWh4nlFkZeYzYB3g6d3FG/4iECOA37w2f9TWX7Xt03jz0csc11ublL2O91pw+HyiW4/MQQpOGuyBlkUZb9tpFychGXC+5yWuZjVNNeQhia/RD3J5JKzv2+4fhUxLzU31pypw9JQscsRdSlK1uVyZv0ed1ySpHxe1yHQd8l9p/GGBIsA3AQo8Qfyn6/hf3EkHL7ugurYGDWNooqUNhwwtZxAKFlHhfwyhGKTccFinAYpliTOmCoh5bP0UNbIqyV2wlhbTl+6tq39FyXBQESRJZMDtizLukCoSVbaeu/i14PXEcxxueJeQgg4gEAwmN1OyIvVy0uTYwoaorpenrN1xcmRFQUh2SDQSackaQ5R0AkhtmZBjeaNsgAxIvUKiYfKg/F1mzsueLzenGVaoIIAXTdAKMAYB33Xp/5a8aZPcRXUzjmHx+dLVjA2606nstzn64taVsmibhTrhMh5QGUcok1F6fJTSjYqFHHWKZG8QohRXhSccbk9OdO0Lp/UldwW/Fd7quBdvD28pf+yYzOGgN8fFyhl8USiuFQUIxVed9hiXLJXWmwE4OAckEROwLlDVPNFXu+iJEm51w69vYvfHN4SwcDlwrXL5VqWZTmTyeWKdMNwyJRqVKBMoIINAgIOLlJqK5KkOxQlK4qibZgm6LuR8W8N/w8m4yK4y7hsoQAAAABJRU5ErkJggg==
 description: End point protection
+detaileddescription: "SentinelOne Integrations allows you to retrieve data without
+  the need to verify user credentials with each request. \nTo do so, provide the API
+  token in the instance settings.\nTo generate an API token go to SentinelOne UI ->
+  Settings -> Users and revoke/regenerate a new token.\nIt is recommended to use this
+  option for better performance.
+
+  Note that all time arguments should be passed in the format of unix timestamp.
+  "
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -28,7 +35,8 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Token
+- display: API Token. Use this to avoid verification of user credentials with each
+    request.
   name: token
   defaultvalue: ""
   type: 4
@@ -44,20 +52,59 @@ script:
             var createQueryString = function(queryArgs) {
                 return encodeToURLQuery(queryArgs);
             };
-            var buildRequestBody = function(bodyArgs) {
-                return JSON.stringify(bodyArgs);
-            };
             var buildPATH = function(pathTemlate, pathArgs) {
                 return replaceInTemplatesAndRemove(pathTemlate, pathArgs);
             };
             return {
                 url: buildURL,
-                body: buildRequestBody,
                 path: buildPATH,
                 queryString: createQueryString
             };
         })();
 
+        var policy_translator = [
+            {to: 'Name', from: 'name'},
+            {to: 'CloudValidationOn', from: 'cloud_validation_on'},
+            {to: 'AutoMitigationAction', from: 'auto_mitigation_action'},
+            {to: 'NetworkQuarantineOn', from: 'network_quarantine_on'},
+            {to: 'AutoImmune', from: 'auto_immune_on'},
+            {to: 'AutoDecommissionOn', from: 'auto_decommission_on'},
+            {to: 'AutoDecommissionDays', from: 'auto_decommission_days'},
+            {to: 'ResearchOn', from: 'research_on'},
+            {to: 'Source', from: 'source'},
+            {to: 'Id', from: 'id'},
+            {to: 'ExclusionListId', from: 'exclusion_list_id'},
+            {to: 'IsDefault', from: 'is_default'},
+            {to: 'MitigationMode', from: 'mitigation_mode'},
+            {to: 'MitigationModeSuspicious', from: 'mitigation_mode_suspicious'},
+            {to: 'AgentNotification', from: 'agent_notification'},
+            {to: 'ScanNewAgents', from: 'scan_new_agents'},
+            {to: 'AntiTamperingOn', from: 'anti_tampering_on'},
+            {to: 'SnapshotsOn', from: 'snapshots_on'},
+            {to: 'AgentLogginOn', from: 'agent_logging_on'},
+            {to: 'MonitorOnExecute', from: 'monitor_on_execute'},
+            {to: 'MonitorOnWrite', from: 'monitor_on_write'},
+            /*
+            {to: 'EnginesReputation', from: 'engines.reputation'},
+            {to: 'EnginesPreExecution', from: 'engines.pre_execution'},
+            {to: 'EnginesPreExecutionSuspicious', from: 'engines.pre_execution_suspicious'},
+            {to: 'EnginesPreExecutionSuspicious', from: 'engines.pre_execution_suspicious'},
+            {to: 'EnginesExecutables', from: 'engines.executables'},
+            {to: 'EnginesDataFiles', from: 'engines.data_files'},
+            {to: 'EnginesExploits', from: 'engines.exploits'},
+            {to: 'EnginesPenetration', from: 'penetration.exploits'},
+            {to: 'EnginesPup', from: 'engines.pup'},
+            {to: 'EnginesLateral_movement', from: 'engines.lateral_movement'},
+            {to: 'IocAttributesDNS', from: 'ioc_attributes.dns'},
+            {to: 'IocAttributesFile', from: 'ioc_attributes.file'},
+            {to: 'IocAttributesHeaders', from: 'ioc_attributes.headers'},
+            {to: 'IocAttributesIP', from: 'ioc_attributes.ip'},
+            {to: 'IocAttributesProcess', from: 'ioc_attributes.process'},
+            {to: 'IocAttributesURL', from: 'ioc_attributes.url'},
+            */
+            {to: 'CreatedAt', from: 'meta_data.created_at'},
+            {to: 'UpdatedAt', from: 'meta_data.updated_at'}
+        ];
         var group_translator = [
             {to: 'Id' , from: 'id'},
             {to: 'Name', from: 'name'},
@@ -164,12 +211,28 @@ script:
             {to: 'UpdatedAt', from: 'meta_data.updated_at'}
         ];
 
+        function fillRequestBody(body, args) {
+            for (var key in body) {
+                if (body[key] !== null && typeof body[key] === 'object') {
+                  body[key] = fillRequestBody(body[key], args);
+                  continue;
+                }
+                if (args[key]){
+                  body[key] = args[key].indexOf(',') == -1 ? args[key] : args[key].split(',');
+                  delete args[key];
+                } else {
+                  // optional argument
+                  delete body[key];
+                }
+            }
+          return body;
+        }
         var commands = {
             'so-activities': {
                 path: "activities",
                 method: 'GET',
                 extended: true,
-                title: 'Sentinel One Activities',
+                title: 'Sentinel One List Of Activities',
                 contextPath: 'SentinelOne.Activities(obj.Id==val.Id)',
                 translator: activities_translator
             },
@@ -190,7 +253,7 @@ script:
                 path: "agents/%agent_id%",
                 method: 'GET',
                 extended: true,
-                title: 'Sentinel One Agent',
+                title: 'Sentinel One Get Agent',
                 contextPath: 'SentinelOne.Agents(obj.Id==val.Id)',
                 translator: agent_translator
                 },
@@ -198,7 +261,7 @@ script:
                 path: "agents",
                 method: 'GET',
                 extended: true,
-                title: 'Sentinel One Agents',
+                title: 'Sentinel One Agents List',
                 contextPath: 'SentinelOne.Agents(obj.Id==val.Id)',
                 translator: agent_translator
             },
@@ -225,7 +288,10 @@ script:
             //Agents action
             'so-agents-broadcast': {
                 path: "agents/broadcast",
-                method: 'POST'
+                method: 'POST',
+                requestBody: {
+                  message: null
+                }
             },
             'so-agents-connect': {
                 path: "agents/connect",
@@ -253,16 +319,25 @@ script:
             },
             'so-agents-upgrade-software': {
                 path: "agents/update-software",
-                method: 'POST'
+                method: 'POST',
+                requestBody: {
+                  use_recent: null,
+                  package_name: null,
+                  os_type: null
+                }
             },
             //Exclusion list
             'so-create-exclusion-list': {
                 path: "exclusion-lists",
                 method: "POST",
                 extended: true,
-                title: 'Sentinel One create exclusion list',
+                title: 'Sentinel One Create Exclusion List',
                 contextPath: 'SentinelOne.ExclusionLists(val.Id==obj.Id)',
-                translator: exclusion_list_translator
+                translator: exclusion_list_translator,
+                requestBody: {
+                  name: null,
+                  policies: null
+                }
             },
             'so-delete-exclusion-list': {
                 path: "exclusion-lists/%list_id%",
@@ -272,7 +347,7 @@ script:
                 path: "exclusion-lists/%list_id%",
                 method: 'GET',
                 extended: true,
-                title: 'Sentinel One create get list',
+                title: 'Sentinel One Get Exclusion List Details',
                 contextPath: 'SentinelOne.ExclusionLists(val.Id==obj.Id)',
                 translator: exclusion_list_translator
             },
@@ -280,19 +355,23 @@ script:
                 path: "exclusion-lists",
                 method: 'GET',
                 extended: true,
-                title: 'Sentinel One get exclusion lists',
+                title: 'Sentinel One Get Exclusion Lists',
                 contextPath: 'SentinelOne.ExclusionLists(val.Id==obj.Id)',
                 translator: exclusion_list_translator
             },
             'so-update-exclusion-list': {
                 path: "exclusion-lists/%list_id%",
-                method: 'PUT'
+                method: 'PUT',
+                requestBody: {
+                  name: null,
+                  policies: null
+                }
             },
             //Group
             'so-get-groups': {
-                path: "groups?policy_id=%policy_id%",
+                path: "groups",
                 method: 'GET',
-                title: 'Sentinel One create groups',
+                title: 'Sentinel One Get Groups',
                 extended: true,
                 translator: group_translator,
                 contextPath: 'SentinelOne.Groups(val.Id==obj.Id)'
@@ -300,15 +379,22 @@ script:
             'so-create-group': {
                 path: "groups",
                 method: 'POST',
-                title: 'Sentinel One create group',
+                title: 'Sentinel One Create Group',
                 extended: true,
                 translator: group_translator,
-                contextPath: 'SentinelOne.Groups(val.Id==obj.Id)'
+                contextPath: 'SentinelOne.Groups(val.Id==obj.Id)',
+                requestBody: {
+                  name: null,
+                  policy_id: null,
+                  filter_id: null,
+                  ad_query: null,
+                  rank: null
+                }
             },
             'so-get-group': {
                 path: "groups/%group_id%",
                 method: 'GET',
-                title: 'Sentinel One get group',
+                title: 'Sentinel One Get Group',
                 extended: true,
                 translator: group_translator,
                 contextPath: 'SentinelOne.Groups(val.Id==obj.Id)'
@@ -319,7 +405,14 @@ script:
                 title: 'Sentinel One update group',
                 extended: true,
                 translator: group_translator,
-                contextPath: 'SentinelOne.Groups(val.Id==obj.Id)'
+                contextPath: 'SentinelOne.Groups(val.Id==obj.Id)',
+                requestBody: {
+                  name: null,
+                  policy_id: null,
+                  filter_id: null,
+                  ad_query: null,
+                  rank: null
+                }
             },
             'so-delete-group': {
                 path: "groups/%group_id%",
@@ -332,7 +425,12 @@ script:
             //System configuration
             'so-set-cloud-intelligence': {
                 path: "settings/agents/mode/options",
-                method: 'PUT'
+                method: 'PUT',
+                requestBody: {
+                  cloud_intelligence_on: null,
+                  global_two_fa_enabled : null,
+                  remember_me_length  : null
+                }
             },
             //Hash
             'so-create-hash': {
@@ -341,7 +439,13 @@ script:
                 extended: true,
                 title: 'Sentinel One create hash',
                 contextPath: 'SentinelOne.Hashes(val.Id==obj.Id)',
-                translator: hash_translator
+                translator: hash_translator,
+                requestBody: {
+                  hash: null,
+                  os_family: null,
+                  is_black: null,
+                  description: null
+                }
             },
             'so-delete-hash':{
                 path: "hashes/%hash_id%",
@@ -369,24 +473,124 @@ script:
             },
             'so-update-hash': {
                 path: "hashes/%hash%",
-                method: 'PUT'
+                method: 'PUT',
+                requestBody: {
+                    hash: null,
+                    os_family: null,
+                    is_black: null,
+                    description: null
+                }
             },
             //Policies
             'so-get-policies': {
                 path: "policies",
-                method: 'GET'
+                method: 'GET',
+                title: 'Sentinel One Get Policies',
+                extended: true,
+                translator: policy_translator,
+                contextPath: 'SentinelOne.Policies(val.Id==obj.Id)',
             },
             'so-create-policy': {
                 path: "policies",
-                method: 'POST'
+                method: 'POST',
+                title: 'Sentinel One Create Policies',
+                extended: true,
+                translator: policy_translator,
+                contextPath: 'SentinelOne.Policies(val.Id==obj.Id)',
+                requestBody: {
+                    name: null,
+                    cloud_validation_on: null,
+                    auto_mitigation_action: null,
+                    network_quarantine_on: null,
+                    auto_immune_on: null,
+                    auto_decommission_on: null,
+                    auto_decommission_days: null,
+                    research_on: null,
+                    exclusion_list_id: null,
+                    mitigation_mode: null,
+                    agent_notification: null,
+                    scan_new_agents: null,
+                    anti_tampering_on: null,
+                    agent_ui_on: null,
+                    snapshots_on: null,
+                    agent_logging_on: null,
+                    monitor_on_write: null,
+                    monitor_on_execute: null,
+                    engines: {
+                        reputation: null,
+                        pre_execution_suspicious: null,
+                        pre_execution: null,
+                        executables: null,
+                        data_files: null,
+                        exploits: null,
+                        penetration: null,
+                        pup: null,
+                        lateral_movement: null,
+                    },
+                    ioc_attribute: {
+                        url: null,
+                        headers: null,
+                        dns: null,
+                        process: null,
+                        file: null,
+                        ip: null
+                    }
+                }
             },
             'so-get-policy': {
                 path: "policies/%policy_id%",
-                method: 'GET'
+                method: 'GET',
+                title: 'Sentinel One Get Policy',
+                extended: true,
+                translator: policy_translator,
+                contextPath: 'SentinelOne.Policies(val.Id==obj.Id)'
             },
             'so-update-policy': {
                 path: "policies/%policy_id%",
-                method: 'PUT'
+                method: 'PUT',
+                title: 'Sentinel One Update Policies',
+                extended: true,
+                translator: policy_translator,
+                contextPath: 'SentinelOne.Policies(val.Id==obj.Id)',
+                requestBody: {
+                    name: null,
+                    cloud_validation_on: null,
+                    auto_mitigation_action: null,
+                    network_quarantine_on: null,
+                    auto_immune_on: null,
+                    auto_decommission_on: null,
+                    auto_decommission_days: null,
+                    research_on: null,
+                    exclusion_list_id: null,
+                    mitigation_mode: null,
+                    agent_notification: null,
+                    scan_new_agents: null,
+                    anti_tampering_on: null,
+                    agent_ui_on: null,
+                    snapshots_on: null,
+                    agent_logging_on: null,
+                    monitor_on_write: null,
+                    monitor_on_execute: null,
+                    engines: {
+                        reputation: null,
+                        pre_execution_suspicious: null,
+                        pre_execution: null,
+                        executables: null,
+                        data_files: null,
+                        exploits: null,
+                        penetration: null,
+                        pup: null,
+                        lateral_movement: null,
+                    },
+                    ioc_attribute: {
+                        url: null,
+                        headers: null,
+                        dns: null,
+                        process: null,
+                        file: null,
+                        ip: null
+                    }
+                }
             },
             'so-delete-policy': {
                 path: "policies/%policy_id%",
@@ -415,7 +619,11 @@ script:
             },
             'so-mark-as-threat': {
                 path: 'threats/%threat_id%/mark-as-threat',
-                method: 'POST'
+                method: 'POST',
+                requestBody: {
+                  annotation: null,
+                  annotation_url: null
+                }
             },
             'so-mitigate-threat': {
                 path: 'threats/%threat_id%/mitigate/%action%',
@@ -426,78 +634,18 @@ script:
                 method: 'POST'
             }
         };
-
-        var queryMap = {
-            content_hash: true,
-            mitigation_status: true,
-            activity_type__in: true,
-            activity_type__nin: true,
-            resolved: true,
-            hidden: true,
-            display_name: true,
-            created_at__lt: true,
-            created_at__gt: true,
-            created_at__lte: true,
-            created_at__gte: true,
-            updated_at__lt: true,
-            updated_at__gt: true,
-            updated_at__lte: true,
-            updated_at__gte: true,
-            skip: true,
-            limit: true,
-            participating_fields: true,
-            query: true,
-            registered_at__lt: true,
-            registered_at__gt: true,
-            last_active_date__lt: true,
-            ast_active_date__gt: true,
-            total_memory__lte: true,
-            total_memory__gte: true,
-            core_count__lte: true,
-            core_count__gte: true,
-            cpu_count__lte: true,
-            cpu_count__gte: true,
-            is_active: true,
-            infected: true,
-            is_pending_uninstall: true,
-            is_decommissioned: true,
-            is_up_to_date: true,
-            encrypted_applications: true,
-            id__in: true,
-            id__nin: true,
-            group_id: true,
-            group_id__in: true,
-            policy_id__in: true,
-            computer_name__like: true,
-            agent_version__in: true,
-            os_type__in: true,
-            machine_type__in: true,
-            domain__in: true
-        };
-
         var urlTemplate = "%url%/web/api/v%version%/";
         var loginPath = 'users/login';
         var logoutPath = 'users/logout';
-        var statusLBound = 200;
-        var statusUBound = 300;
         var apiToken = params.token;
         var userToken;
-        var fail = false;
-        var success = true;
-        var insecure = params.insecure;
-
         var url = builder.url(urlTemplate, params);
+        // 200 success
+        // 204 success with no content returned
+        // 201 object created succesfully at server
+        var statusLBound = 200;
+        var statusUBound= 300;
 
-        function getqueryArgs(commadArgs) {
-            var queryArgs = {};
-            for (var arg in commadArgs) {
-                if (queryMap[arg]) {
-                    queryArgs[arg] = commadArgs[arg];
-                    delete commadArgs[arg];
-                }
-            }
-            return queryArgs;
-        }
 
         var sendRequest = function(fullurl, method, headers, body) {
             var req = {
@@ -508,79 +656,44 @@ script:
                 req.Body = body;
             }
             var res = http(fullurl, req, params.insecure);
-            var resBody;
-            try {
-                resBody = JSON.parse(res.Body);
-            } catch (err) {
-                resBody = res.Body;
-            }
-            if (res.StatusCode < statusLBound || res.StatusCode >= statusUBound) {
-                throw 'Request Failed.\nStatus code: ' + res.StatusCode +'.\nBody: ' + JSON.stringify(res) + '.';
-            }
-            return {status: success, body: resBody, statusCode: res.StatusCode};
-        };
-
-        var login = function(){
-            if(apiToken){
-                return {status : 'Success'};
-            }
-            if(!params.credentials.identifier){
-                throw 'Must provide username and password or API Token in order to login';
-            }
-            var body = builder.body({username: params.credentials.identifier, password: params.credentials.password});
-            var headers = {'Content-Type': ['application/json']};
-            var res = sendRequest(url + loginPath, 'POST', headers, body);
-            if (!res.status) {
-                var m = (typeof res.body.message) === 'string' ? res.body.message : JSON.stringify(res.body.message);
-                res.message = 'Failed to login.\n' + m;
-            } else if (res.body.token) {
-                userToken = res.body.token;
-                res.message = 'Logged in successfully.';
-            } else {
-                res.status = fail;
-                res.message = 'Failed to login. No token in response';
+            //204 success with no content returned
+            if (res.StatusCode >= statusUBound  || res.StatusCode < statusLBound) {
+                throw 'Request Failed with status code: ' + res.StatusCode + '\n' + res.Body;
             }
             return res;
         };
 
+        var login = function(){
+            if(apiToken){
+                return;
+            }
+            if(!params.credentials.identifier){
+                throw 'Must provide username and password or API Token in order to login';
+            }
+            var body = JSON.stringify({username: params.credentials.identifier, password: params.credentials.password});
+            var headers = {'Content-Type': ['application/json']};
+            var res = sendRequest(url + loginPath, 'POST', headers, body);
+            userToken = body.token;
+        };
+
         var logout = function() {
             if(apiToken){
-                return {status : 'No need to logout'};
+                return;
             }
             if (!userToken) {
-                return { status: fail, body: null, message: 'Failed to logout from SentinelOne, login token is missing'};
+                throw 'Failed to logout from SentinelOne, login token is missing';
             }
             var headers = {
                 'Content-Type': ['application/json'],
                 'Authorization': ['Token ' + userToken]
             };
             var res = sendRequest(url + logoutPath, 'POST', headers);
-            if (!res.status) {
-                throw 'Failed to logout. \n: ' +  JSON.stringify(res);
-            }
-            return res;
-        };
-
-        var logErr = function(logRes, output) {
-            var oRes = output.concat('.Response');
-            var oMes = output.concat('.ErrorMessage');
-            return {
-                Type: entryTypes.error,
-                Contents: logRes.message,
-                ContentsFormat: formats.text,
-            };
         };
 
         var testLog = function() {
             if(!apiToken){
-                var loginRes = login();
-                if (!loginRes.status) {
-                    return logErr(loginRes, 'Test.Login');
-                }
-            }
-            var logoutRes = logout();
-            if (!logoutRes.status) {
-                return logoutRes;
+                login();
+                logout();
             }
             return 'ok';
         };
@@ -596,43 +709,46 @@ script:
 
         var executeCommand = function(commandName){
             if (!apiToken){
-                var loginRes = login();
-                if (!loginRes.status) {
-                    return logErr(loginRes, 'ExecuteCommand.Login.Response');
-                }
+                login();
             }
-
             var cmd = commands[commandName];
-            if(commandName !== 'so-agents-upgrade-software'){
-                queryMap['os_type'] = true;
+            var body;
+            if (cmd.requestBody) {
+              //fill body - will also delete the args used for the request body
+              body = JSON.stringify(fillRequestBody(cmd.requestBody, args));
             }
-            var full = url + builder.path(cmd.path, args) + builder.queryString(getqueryArgs(args));
+            //remaining args are used as query parameters
+            var full = url + builder.path(cmd.path, args) + builder.queryString(args);
             var method = cmd.method;
             var headers = {
                 'Content-Type': ['application/json'],
                 'Authorization': (apiToken? ['APIToken ' + apiToken] : ['Token ' + userToken])
             };
-            if(commandName === 'so-update-group' && !args.ad_query){
-                args.ad_query = '';
-            }
+            var res;
             try {
-                var res = sendRequest(full, method, headers, JSON.stringify(args));
+                res = sendRequest(full, method, headers, body);
             }
             catch(err) {
                 logout();
                 throw err;
             }
-            if(res.statusCode === 204){
-                return 'Command executed successfully';
+            //successful response with no content
+            if(res.Body === 204){
+                return {
+                Type: entryTypes.note,
+                Contents: "request was successful",
+                ContentsFormat: formats.text,
+                };
             }
+            var resBody = JSON.parse(res.Body);
             var entry = {
                 Type: entryTypes.note,
-                Contents: res.body,
+                Contents: resBody,
                 ContentsFormat: formats.json,
                 HumanReadableFormat: formats.markdown
             };
             if (cmd.extended) {
-                var translated = mapObjFunction(cmd.translator)(res.body);
+                var translated = mapObjFunction(cmd.translator)(resBody);
                 entry.ReadableContentsFormat = formats.markdown;
                 entry.HumanReadable = tableToMarkdown(cmd.title, translated, undefined, undefined, camelToCapital);
                 if(cmd.contextPath){
@@ -641,15 +757,16 @@ script:
                 }
             }
             else{
-                entry.HumanReadable = tableToMarkdown(cmd.title, res.body, undefined, undefined, underscoreToCapital);
+                entry.HumanReadable = tableToMarkdown(cmd.title, resBody, undefined, undefined, underscoreToCapital);
             }
             return entry;
         };
         return {
             runTest: testLog,
-            execute: executeCommand
+            execute: executeCommand,
         };
     };
+
 
     var sentinelOne = SentinelOne();
 
@@ -668,13 +785,13 @@ script:
     - name: activity_type__nin
       description: Excluded Activity types list (by comma separator).
     - name: created_at__lt
-      description: Reported date (less than).
+      description: Reported date as unix timestamp  (less than).
     - name: created_at__gt
-      description: Reported date (greater than).
+      description: Reported date as unix timestamp (greater than).
     - name: created_at__lte
-      description: Reported date (less than or equal).
+      description: Reported date as unix timestamp (less than or equal).
     - name: created_at__gte
-      description: Reported date (greater than or equal).
+      description: Reported date as unix timestamp (greater than or equal).
     - name: skip
       description: Skip a number of items.
     - name: limit
@@ -819,7 +936,13 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query
-    - name: network_status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
       description: The agent network status
     description: Count agent by filters
   - name: so-agents-count
@@ -933,7 +1056,13 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
       description: The agent network status
     description: Count agents
   - name: so-agent-decommission
@@ -1061,8 +1190,14 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     outputs:
     - contextPath: SentinelOne.Agents.NetworkStatus
       description: The agent network status
@@ -1257,8 +1392,14 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     description: Boadcast
   - name: so-agents-connect
     arguments:
@@ -1371,8 +1512,14 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     description: Connect to network
   - name: so-agent-quarentine
     arguments:
@@ -1491,8 +1638,14 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     description: Decommission
   - name: so-agents-disconnect
     arguments:
@@ -1605,9 +1758,14 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
-    description: Disconnect From Network
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
   - name: so-agents-fetch-logs
     arguments:
     - name: query
@@ -1719,63 +1877,26 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     description: Fetch log
   - name: so-agents-shutdown
     arguments:
-    - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
-    - name: created_at__lt
-      description: Created date (less than).
-    - name: created_at__gt
-      description: Created date (greater than).
-    - name: registered_at__lt
-      description: Registered date (less than).
-    - name: registerd_at__gt
-      description: Registered date (greater than).
-    - name: last_active_date__lt
-      description: Last active date (less than).
-    - name: last_active_date__gt
-      description: Last active date (greater than).
-    - name: total_memory__lte
-      description: Total memory (less than or equal).
-    - name: total_memory__gte
-      description: Total memory (greater than or equal).
-    - name: core_count__lte
-      description: Cores count (less than or equal).
-    - name: core_count__gte
-      description: Cores count (greater than or equal).
-    - name: cpu_count__lte
-      description: CPU count (less than or equal).
-    - name: cpu_count__gte
-      description: CPU count (greater than or equal)
-    - name: is_active
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent status.
-    - name: infected
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent infection status.
-    - name: is_pending_uninstall
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent with pending uninstall requests.
-    - name: include_decommissioned
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+    - name: id__in
+      description: List of agents IDs sperated by a comma. Do not list more then ten
+        IDs.
+    - name: group_id
+      description: Related group id.
+    - name: group_id__in
+      description: Group ids list (by comma separator)
+    - name: filter_id
+      description: Saved filter ID to filter by.
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1788,108 +1909,18 @@ script:
       - "false"
       - "true"
       description: is uninstalled agent
-    - name: is_up_to_date
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent version status
-    - name: encrypted_applications
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent disk encryption status
-    - name: id__in
-      description: Agents ids list (by comma separator)
-    - name: id__nin
-      description: Excluded agents ids list (by comma separator)
-    - name: group_id
-      description: Related group id.
-    - name: group_id__in
-      description: Group ids list (by comma separator)
-    - name: policy_id__in
-      description: Policy ids list (by comma separator)
-    - name: computer_name__like
-      description: Agent computer name (contains).
-    - name: agent_version__in
-      description: Agent with any of given versions (contains).
-    - name: os_type__in
-      description: Agent of specific os type (contains).
-    - name: os_type
-      auto: PREDEFINED
-      predefined:
-      - unknown
-      - osx
-      - windows
-      - android
-      - linux
-      description: Agent of specific os type.
-    - name: machine_type__in
-      description: Agent of specific machine type (contains).
-    - name: domain__in
-      description: Agent of a specific domain (contains).
-    - name: skip
-      description: Skip a number of items
-    - name: limit
-      description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
-    description: Shutdown agents
+    description: Uninsatll agents
   - name: so-agents-uninstall
     arguments:
-    - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
-    - name: created_at__lt
-      description: Created date (less than).
-    - name: created_at__gt
-      description: Created date (greater than).
-    - name: registered_at__lt
-      description: Registered date (less than).
-    - name: registerd_at__gt
-      description: Registered date (greater than).
-    - name: last_active_date__lt
-      description: Last active date (less than).
-    - name: last_active_date__gt
-      description: Last active date (greater than).
-    - name: total_memory__lte
-      description: Total memory (less than or equal).
-    - name: total_memory__gte
-      description: Total memory (greater than or equal).
-    - name: core_count__lte
-      description: Cores count (less than or equal).
-    - name: core_count__gte
-      description: Cores count (greater than or equal).
-    - name: cpu_count__lte
-      description: CPU count (less than or equal).
-    - name: cpu_count__gte
-      description: CPU count (greater than or equal)
-    - name: is_active
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent status.
-    - name: infected
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent infection status.
-    - name: is_pending_uninstall
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent with pending uninstall requests.
-    - name: include_decommissioned
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+    - name: id__in
+      description: List of agents IDs sperated by a comma. Do not list more then ten
+        IDs.
+    - name: group_id
+      description: Related group id.
+    - name: group_id__in
+      description: Group ids list (by comma separator)
+    - name: filter_id
+      description: Saved filter ID to filter by.
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1902,53 +1933,6 @@ script:
       - "false"
       - "true"
       description: is uninstalled agent
-    - name: is_up_to_date
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent version status
-    - name: encrypted_applications
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Agent disk encryption status
-    - name: id__in
-      description: Agents ids list (by comma separator)
-    - name: id__nin
-      description: Excluded agents ids list (by comma separator)
-    - name: group_id
-      description: Related group id.
-    - name: group_id__in
-      description: Group ids list (by comma separator)
-    - name: policy_id__in
-      description: Policy ids list (by comma separator)
-    - name: computer_name__like
-      description: Agent computer name (contains).
-    - name: agent_version__in
-      description: Agent with any of given versions (contains).
-    - name: os_type__in
-      description: Agent of specific os type (contains).
-    - name: os_type
-      auto: PREDEFINED
-      predefined:
-      - unknown
-      - osx
-      - windows
-      - android
-      - linux
-      description: Agent of specific os type.
-    - name: machine_type__in
-      description: Agent of specific machine type (contains).
-    - name: domain__in
-      description: Agent of a specific domain (contains).
-    - name: skip
-      description: Skip a number of items
-    - name: limit
-      description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
     description: Uninsatll agents
   - name: so-agents-upgrade-software
     arguments:
@@ -2080,14 +2064,23 @@ script:
       description: Skip a number of items
     - name: limit
       description: Limit a number of items in the query.
-    - name: network_status
-      description: The agent network status
+    - name: network_status__in
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+      - connecting
+      - disconnecting
+      description: Comma seprated list of agent network status
     description: Upgrade agents software
   - name: so-create-exclusion-list
     arguments:
     - name: name
       required: true
       description: The list name
+    - name: policies
+      required: true
+      description: comma separated list of policy IDs
     outputs:
     - contextPath: SentinelOne.ExclusionLists.CreateExclusionList.Id
       description: The list id.
@@ -2139,12 +2132,16 @@ script:
     - name: name
       required: true
       description: The group name
+    - name: policies
+      required: true
+      description: comma separated list of policies IDs
     description: Update exclusion list
   - name: so-get-groups
     arguments:
     - name: policy_id
-      required: true
       description: The group policy id.
+    - name: filter_id
+      description: The group filter id (in case of a dynamic group).
     outputs:
     - contextPath: SentinelOne.Groups.GetGroups.Id
       description: The group id.
@@ -2166,20 +2163,21 @@ script:
       description: The group source
     - contextPath: SentinelOne.Groups.GetGroups.AdQuery
       description: AD query
-    description: Get groups
+    description: Get a list of groups associated with the policy
   - name: so-create-group
     arguments:
     - name: name
       required: true
       description: The group name.
     - name: policy_id
+      required: true
       description: The group policy id.
     - name: ad_query
-      required: true
       description: The dynamic group ad query.
     - name: rank
-      required: true
-      description: The group ramk
+      description: The group rank
+    - name: filter_id
+      description: The group filter id (in case of a dynamic group)
     outputs:
     - contextPath: SentinelOne.Groups.CreateGroups.Id
       description: The group id.
@@ -2228,7 +2226,7 @@ script:
       description: The group source
     - contextPath: SentinelOne.Groups.GetGroup.AdQuery
       description: AD query
-    description: Get groups
+    description: Get group details
   - name: so-update-group
     arguments:
     - name: group_id
@@ -2429,12 +2427,59 @@ script:
     description: Create hash.
   - name: so-get-policies
     arguments: []
+    outputs:
+    - contextPath: SentinelOne.Policies.Name
+      description: Policy name
+    - contextPath: SentinelOne.Policies.CloudValidationOn
+      description: Cloud validation on
+    - contextPath: SentinelOne.Policies.AutoMitigationAction
+      description: Auto mitigation action
+    - contextPath: SentinelOne.Policies.NetworkQuarantineOn
+      description: Network quarantine on
+    - contextPath: SentinelOne.Policies.AutoImmune
+      description: Auto immune
+    - contextPath: SentinelOne.Policies.AutoDecommissionOn
+      description: Auto decommissionOn
+    - contextPath: SentinelOne.Policies.AutoDecommissionDays
+      description: Auto decommission days
+    - contextPath: SentinelOne.Policies.ResearchOn
+      description: ResearchOn
+    - contextPath: SentinelOne.Policies.Id
+      description: Policy id
+    - contextPath: SentinelOne.Policies.ExclusionListId
+      description: Exclusion list id
+    - contextPath: SentinelOne.Policies.IsDefault
+      description: Is default
+    - contextPath: SentinelOne.Policies.MitigationMode
+      description: Mitigation mode
+    - contextPath: SentinelOne.Policies.MitigationModeSuspicious
+      description: Mitigation mode suspicious
+    - contextPath: SentinelOne.Policies.AgentNotification
+      description: Agent notification
+    - contextPath: SentinelOne.Policies.ScanNewAgents
+      description: Scan new agents
+    - contextPath: SentinelOne.Policies.AntiTamperingOn
+      description: Anti tampering on
+    - contextPath: SentinelOne.Policies.SnapshotsOn
+      description: Snapshots on
+    - contextPath: SentinelOne.Policies.AgentLogginOn
+      description: Agent loggin on
+    - contextPath: SentinelOne.Policies.MonitorOnExecute
+      description: MonitorOnExecute
+    - contextPath: SentinelOne.Policies.MonitorOnWrite
+      description: Monitor on write
+    - contextPath: SentinelOne.Policies.UpdatedAt
+      description: Last updated time
+    - contextPath: SentinelOne.Policies.CreatedAt
+      description: Policy creation time
     description: Get Policies list.
   - name: so-create-policy
     arguments:
     - name: name
       required: true
       description: The policy name.
+    - name: exclusion_list_id
+      description: id for the exclusion list attached to the policy
     - name: cloud_validation_on
       required: true
       auto: PREDEFINED
@@ -2475,7 +2520,7 @@ script:
       description: Automatic decommission on/off.
     - name: auto_decommission_days
       required: true
-      description: Automatic decommission period in days.
+      description: Automatic decommission period in days. Range 1-99.
     - name: research_on
       required: true
       auto: PREDEFINED
@@ -2483,28 +2528,285 @@ script:
       - "false"
       - "true"
       description: Share data with SentinelOne.
-    - name: show_suspicious_on
+    - name: mitigation_mode
       required: true
-      description: Show suspicious activities
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - protect
+      description: Mitigation mode.
+    - name: agent_notification
+      required: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: Show end point notification on suspicious.
+    - name: scan_new_agents
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: will/will not initiate full disk scan upon first registration.
+    - name: anti_tampering_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Anti tampering on/off.
+    - name: agent_ui_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Show/hide Agent UI.
+    - name: snapshots_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Snapshots on/off.
+    - name: agent_logging_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Agent logging on/off.
+    - name: monitor_on_write
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: on/off.
+    - name: monitor_on_execute
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: on/off.
+    - name: reputation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable reputation engine.
+    - name: pre_execution_suspicious
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable pre_execution_suspicious engine.
+    - name: pre_execution
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable pre-execution engine.
+    - name: executables
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable executables engine.
+    - name: data_files
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable data files engine.
+    - name: exploits
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable exploits engine.
+    - name: data_files
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable data files engine.
+    - name: penetration
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable penetration engine.
+    - name: pup
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable potentially unwanted applications (PUP) engine.
+    - name: lateral_movement
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable lateral movement engine.
+    - name: headers
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - headrs.
+    - name: url
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ioc uri.
+    - name: dns
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - dns.
+    - name: process
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: process creation event.
+    - name: file
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: file event.
+    - name: ip
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - ip.
+    outputs:
+    - contextPath: SentinelOne.Policies.Name
+      description: Policy name
+    - contextPath: SentinelOne.Policies.CloudValidationOn
+      description: Cloud validation on
+    - contextPath: SentinelOne.Policies.AutoMitigationAction
+      description: Auto mitigation action
+    - contextPath: SentinelOne.Policies.NetworkQuarantineOn
+      description: Network quarantine on
+    - contextPath: SentinelOne.Policies.AutoImmune
+      description: Auto immune
+    - contextPath: SentinelOne.Policies.AutoDecommissionOn
+      description: Auto decommissionOn
+    - contextPath: SentinelOne.Policies.AutoDecommissionDays
+      description: Auto decommission days
+    - contextPath: SentinelOne.Policies.ResearchOn
+      description: ResearchOn
+    - contextPath: SentinelOne.Policies.Id
+      description: Policy id
+    - contextPath: SentinelOne.Policies.ExclusionListId
+      description: Exclusion list id
+    - contextPath: SentinelOne.Policies.IsDefault
+      description: Is default
+    - contextPath: SentinelOne.Policies.MitigationMode
+      description: Mitigation mode
+    - contextPath: SentinelOne.Policies.MitigationModeSuspicious
+      description: Mitigation mode suspicious
+    - contextPath: SentinelOne.Policies.AgentNotification
+      description: Agent notification
+    - contextPath: SentinelOne.Policies.ScanNewAgents
+      description: Scan new agents
+    - contextPath: SentinelOne.Policies.AntiTamperingOn
+      description: Anti tampering on
+    - contextPath: SentinelOne.Policies.SnapshotsOn
+      description: Snapshots on
+    - contextPath: SentinelOne.Policies.AgentLogginOn
+      description: Agent loggin on
+    - contextPath: SentinelOne.Policies.MonitorOnExecute
+      description: MonitorOnExecute
+    - contextPath: SentinelOne.Policies.MonitorOnWrite
+      description: Monitor on write
+    - contextPath: SentinelOne.Policies.UpdatedAt
+      description: Last updated time
+    - contextPath: SentinelOne.Policies.CreatedAt
+      description: Policy creation time
     description: Create Policy.
   - name: so-get-policy
     arguments:
     - name: policy_id
       required: true
       description: The policy id.
+    outputs:
+    - contextPath: SentinelOne.Policies.Name
+      description: Policy name
+    - contextPath: SentinelOne.Policies.CloudValidationOn
+      description: Cloud validation on
+    - contextPath: SentinelOne.Policies.AutoMitigationAction
+      description: Auto mitigation action
+    - contextPath: SentinelOne.Policies.NetworkQuarantineOn
+      description: Network quarantine on
+    - contextPath: SentinelOne.Policies.AutoImmune
+      description: Auto immune
+    - contextPath: SentinelOne.Policies.AutoDecommissionOn
+      description: Auto decommissionOn
+    - contextPath: SentinelOne.Policies.AutoDecommissionDays
+      description: Auto decommission days
+    - contextPath: SentinelOne.Policies.ResearchOn
+      description: ResearchOn
+    - contextPath: SentinelOne.Policies.Id
+      description: Policy id
+    - contextPath: SentinelOne.Policies.ExclusionListId
+      description: Exclusion list id
+    - contextPath: SentinelOne.Policies.IsDefault
+      description: Is default
+    - contextPath: SentinelOne.Policies.MitigationMode
+      description: Mitigation mode
+    - contextPath: SentinelOne.Policies.MitigationModeSuspicious
+      description: Mitigation mode suspicious
+    - contextPath: SentinelOne.Policies.AgentNotification
+      description: Agent notification
+    - contextPath: SentinelOne.Policies.ScanNewAgents
+      description: Scan new agents
+    - contextPath: SentinelOne.Policies.AntiTamperingOn
+      description: Anti tampering on
+    - contextPath: SentinelOne.Policies.SnapshotsOn
+      description: Snapshots on
+    - contextPath: SentinelOne.Policies.AgentLogginOn
+      description: Agent loggin on
+    - contextPath: SentinelOne.Policies.MonitorOnExecute
+      description: MonitorOnExecute
+    - contextPath: SentinelOne.Policies.MonitorOnWrite
+      description: Monitor on write
+    - contextPath: SentinelOne.Policies.UpdatedAt
+      description: Last updated time
+    - contextPath: SentinelOne.Policies.CreatedAt
+      description: Policy creation time
     description: Get policy
   - name: so-update-policy
     arguments:
-    - name: policy_id
-      required: true
-      description: The policy id.
     - name: name
       required: true
       description: The policy name.
+    - name: exclusion_list_id
+      description: id for the exclusion list attached to the policy
     - name: cloud_validation_on
       required: true
       auto: PREDEFINED
@@ -2529,7 +2831,7 @@ script:
       - "false"
       - "true"
       description: Automatic network quarantine on/off.
-    - name: auto_immune
+    - name: auto_immune_on
       required: true
       auto: PREDEFINED
       predefined:
@@ -2545,7 +2847,7 @@ script:
       description: Automatic decommission on/off.
     - name: auto_decommission_days
       required: true
-      description: Automatic decommission period in days.
+      description: Automatic decommission period in days. Range 1-99.
     - name: research_on
       required: true
       auto: PREDEFINED
@@ -2553,7 +2855,227 @@ script:
       - "false"
       - "true"
       description: Share data with SentinelOne.
-    description: Create Policy.
+    - name: mitigation_mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - detect
+      - protect
+      description: Mitigation mode.
+    - name: agent_notification
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Show end point notification on suspicious.
+    - name: scan_new_agents
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: will/will not initiate full disk scan upon first registration.
+    - name: anti_tampering_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Anti tampering on/off.
+    - name: agent_ui_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Show/hide Agent UI.
+    - name: snapshots_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Snapshots on/off.
+    - name: agent_logging_on
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Agent logging on/off.
+    - name: monitor_on_write
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: on/off.
+    - name: monitor_on_execute
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: on/off.
+    - name: reputation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable reputation engine.
+    - name: pre_execution_suspicious
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable pre_execution_suspicious engine.
+    - name: pre_execution
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable pre-execution engine.
+    - name: executables
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable executables engine.
+    - name: data_files
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable data files engine.
+    - name: exploits
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable exploits engine.
+    - name: data_files
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable data files engine.
+    - name: penetration
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable penetration engine.
+    - name: pup
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable potentially unwanted applications (PUP) engine.
+    - name: lateral_movement
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "on"
+      - "off"
+      description: Enable/disable lateral movement engine.
+    - name: headers
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - headrs.
+    - name: url
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ioc uri.
+    - name: dns
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - dns.
+    - name: process
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: process creation event.
+    - name: file
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: file event.
+    - name: ip
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: network event - ip.
+    outputs:
+    - contextPath: SentinelOne.Policies.Name
+      description: Policy name
+    - contextPath: SentinelOne.Policies.CloudValidationOn
+      description: Cloud validation on
+    - contextPath: SentinelOne.Policies.AutoMitigationAction
+      description: Auto mitigation action
+    - contextPath: SentinelOne.Policies.NetworkQuarantineOn
+      description: Network quarantine on
+    - contextPath: SentinelOne.Policies.AutoImmune
+      description: Auto immune
+    - contextPath: SentinelOne.Policies.AutoDecommissionOn
+      description: Auto decommissionOn
+    - contextPath: SentinelOne.Policies.AutoDecommissionDays
+      description: Auto decommission days
+    - contextPath: SentinelOne.Policies.ResearchOn
+      description: ResearchOn
+    - contextPath: SentinelOne.Policies.Id
+      description: Policy id
+    - contextPath: SentinelOne.Policies.ExclusionListId
+      description: Exclusion list id
+    - contextPath: SentinelOne.Policies.IsDefault
+      description: Is default
+    - contextPath: SentinelOne.Policies.MitigationMode
+      description: Mitigation mode
+    - contextPath: SentinelOne.Policies.MitigationModeSuspicious
+      description: Mitigation mode suspicious
+    - contextPath: SentinelOne.Policies.AgentNotification
+      description: Agent notification
+    - contextPath: SentinelOne.Policies.ScanNewAgents
+      description: Scan new agents
+    - contextPath: SentinelOne.Policies.AntiTamperingOn
+      description: Anti tampering on
+    - contextPath: SentinelOne.Policies.SnapshotsOn
+      description: Snapshots on
+    - contextPath: SentinelOne.Policies.AgentLogginOn
+      description: Agent loggin on
+    - contextPath: SentinelOne.Policies.MonitorOnExecute
+      description: MonitorOnExecute
+    - contextPath: SentinelOne.Policies.MonitorOnWrite
+      description: Monitor on write
+    - contextPath: SentinelOne.Policies.UpdatedAt
+      description: Last updated time
+    - contextPath: SentinelOne.Policies.CreatedAt
+      description: Policy creation time
+    description: Update policy
   - name: so-delete-policy
     arguments:
     - name: policy_id
@@ -2654,7 +3176,7 @@ script:
       description: System creation date (greater than or equal).
     - name: updated_at__lt
       description: ystem update date (less than).
-    - name: updated_at__gt
+    - name: updated_at__g
       description: System update date (greater than).
     - name: updated_at__lte
       description: ystem update date (less than or equal).
@@ -2679,7 +3201,15 @@ script:
     - name: limit
       description: Limit a number of items in the query. Default is 50
       defaultValue: "50"
-    description: Get threats
+    - name: from_scan
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Indicate threats coming from disk scan
+    - name: malicious_group_id__in
+      description: Threat's malicious group ID (comma separated list).
+    description: Get a list of threats
   - name: so-threat-summary
     arguments: []
     description: Threats summary
@@ -2687,15 +3217,20 @@ script:
     arguments:
     - name: threat_id
       required: true
-      default: true
       description: ID of threat
+    - name: annotation
+      required: true
+      description: annotation
+    - name: annotation_url
+      required: true
+      description: annotation url
     description: Mark as Threat
   - name: so-mitigate-threat
     arguments:
     - name: threat_id
-      description: The threat id
       required: true
       default: true
+      description: The threat id
     - name: action
       required: true
       auto: PREDEFINED
@@ -2714,3 +3249,4 @@ script:
       default: true
       description: The ID of the threat
     description: Resolve threats
+releaseNotes: "add context and command arguments"
