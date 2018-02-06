@@ -120,7 +120,7 @@ script:
     try:
         if demisto.command() == 'test-module':
             demisto.results('ok')
-        elif demisto.command() == 'zcaler-blacklist-url':
+        elif demisto.command() == 'zscaler-blacklist-url':
             demisto.results(blacklist_url(demisto.args()['url']))
     except Exception, e:
         LOG(e.message)
@@ -130,10 +130,11 @@ script:
         logout()
   type: python
   commands:
-  - name: zcaler-blacklist-url
+  - name: zscaler-blacklist-url
     arguments:
     - name: url
       required: true
       default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Adds URL to the blacklist.
+releaseNotes: "-"

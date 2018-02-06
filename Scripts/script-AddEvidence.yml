@@ -53,4 +53,3 @@ args:
 - name: tags
   description: Evidence tags
 scripttarget: 0
-releaseNotes: The ability to provide evidence occurred time and tags

@@ -782,7 +782,6 @@
   "tags": [],
   "createdBy": "DBot",
   "fromVersion": "3.5.0",
-  "releaseNotes": "-",
   "description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance.",
   "name": "Open Incidents",
   "id": "docxOpenIncidentsReport"
