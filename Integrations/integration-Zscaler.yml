@@ -137,4 +137,3 @@ script:
       default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Adds URL to the blacklist.
-releaseNotes: "-"
