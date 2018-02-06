@@ -13,13 +13,19 @@ script: |-
   entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
   entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
   
-  // Get the month, day, and year. Sample output: "2008-01-02T15:04:05"
+  // Add zeros to single-digit date values for proper formatting.
   function addZero(i) {
       if (i < 10) {
           i = "0" + i;
       }
       return i;
   }
+  
+  // If statement to see if an occurred time is manually set. If not, use the current time.
+  if (args.occurred) {
+      now = args.occurred;
+  } else {
+  // Get the current month, day, and year. Sample output: "2008-01-02T15:04:05"
   var d = new Date();
   var year = d.getFullYear();
   var month = addZero(d.getMonth());
@@ -28,6 +34,7 @@ script: |-
   var minutes = addZero(d.getMinutes());
   var seconds = addZero(d.getSeconds());
   var now = year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds;
+  }
   
   for (var i=0;i<entryIDs.length;i++) {
       var entryID = entryIDs[i];
@@ -66,4 +73,6 @@ args:
   description: Description to add to Evidence Board
 - name: tags
   description: Evidence tags
+- name: occurred
+  description: Timestamp of when the evidence was added. If not specified, default to the current time.
 scripttarget: 0
