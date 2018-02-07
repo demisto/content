@@ -268,10 +268,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
         }
     ],
     "skipped": [
@@ -337,6 +333,10 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ]
 }

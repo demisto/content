@@ -396,4 +396,3 @@ script:
       description: Assets of Report UUID
     description: Gets impacted assets for a report
   isfetch: true
-releaseNotes: "-"
