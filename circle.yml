@@ -9,7 +9,7 @@ test:
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 516afb358677001bc13e0f868946984a701bb828 18.2.2
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 03c0c9b149954ea647590ec6c909cd4aeb83e6a2 18.2.3
 
     # create content bundle
     - python content_creator.py $CIRCLE_ARTIFACTS
