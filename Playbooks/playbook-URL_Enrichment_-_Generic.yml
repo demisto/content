@@ -254,4 +254,3 @@ outputs:
   description: additional info on the url
   type: string
 fromversion: 3.5.0
-releaseNotes: "-"
