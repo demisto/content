@@ -4,7 +4,7 @@ commonfields:
 name: CBLiveGetFile
 script: |-
   import time
-  secTimeout = 60
+  secTimeout = 120
 
   # find sensor ID
   if not demisto.get(demisto.args(), 'ip') and not demisto.get(demisto.args(), 'hostname'):
@@ -147,4 +147,5 @@ dependson:
   - cb-command-create
   - cb-command-info
   - cb-file-get
-timeout: 0s
+timeout: 300ns
+releaseNotes: "-"
