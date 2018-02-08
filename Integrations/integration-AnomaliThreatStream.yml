@@ -243,6 +243,20 @@ script:
             entry.EntryContext[contextKey] = contexts;
         }
 
+        var dbotScore = 1;
+        if (output['Threat Score'] >= args.threshold) {
+            dbotScore = 3;
+        } else if (output['Threat Score'] > 0) {
+            dbotScore = 2;
+        }
+
+        entry.EntryContext.DBotScore = {
+            Indicator: args.value,
+            Type: args.type,
+            Vendor: 'ThreatStream',
+            Score: dbotScore
+        };
+
         var entries = [entry];
         if (mapEntry) {
             entries.push(mapEntry);
@@ -402,6 +416,19 @@ script:
         to intelligence on ThreatStream
     - name: value
       description: Value of the indicator
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: To retrieve threat intelligence from the ThreatStream cloud
   - name: domain
     arguments:
@@ -412,6 +439,19 @@ script:
       description: If ThreatScore is greater or equal than the threshold, then domain
         will be considered malicious
       defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Checks the reputation of the given IP or domain name
   - name: file
     arguments:
@@ -422,6 +462,19 @@ script:
       description: If ThreatScore is greater or equal than the threshold, then file
         will be considered malicious
       defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Checks the reputation of the given checksum
   - name: threatstream-email-reputation
     arguments:
@@ -432,6 +485,19 @@ script:
       description: If ThreatScore is greater or equal than the threshold, then email
         will be considered malicious
       defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Checks the reputation of the given email
   - name: ip
     arguments:
@@ -442,5 +508,19 @@ script:
       description: If ThreatScore is greater or equal than the threshold, then ip
         will be considered malicious
       defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Checks the reputation of the given IP
 hidden: false
+releaseNotes: "Added DBot Score support"
