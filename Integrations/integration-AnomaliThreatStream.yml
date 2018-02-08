@@ -251,10 +251,10 @@ script:
         }
 
         entry.EntryContext.DBotScore = {
-                                        Indicator: args.value,
-                                        Type: args.type,
-                                        Vendor: 'ThreatStream',
-                                        Score: dbotScore
+            Indicator: args.value,
+            Type: args.type,
+            Vendor: 'ThreatStream',
+            Score: dbotScore
         };
 
         var entries = [entry];
