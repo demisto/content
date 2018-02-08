@@ -2,6 +2,7 @@ id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
 fromversion: 3.5.0
+releaseNotes: "-"
 description: |-
   Calculate incident severity by indicators reputation and user/endpoint membership in critical groups.
 
@@ -31,7 +32,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 725,
           "y": 50
         }
       }
@@ -49,12 +50,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 725,
           "y": 195
         }
       }
@@ -136,7 +137,7 @@ tasks:
       {
         "position": {
           "x": 397.5,
-          "y": 394
+          "y": 515
         }
       }
   "4":
@@ -206,7 +207,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
+          "x": 135.5,
           "y": 690
         }
       }
@@ -277,7 +278,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 612.5,
           "y": 690
         }
       }
@@ -348,7 +349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1105,
           "y": 690
         }
       }
@@ -372,7 +373,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 612.5,
           "y": 865
         }
       }
@@ -435,7 +436,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -82.5,
+          "x": 50,
           "y": 1185
         }
       }
@@ -455,8 +456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 1885
+          "x": 612.5,
+          "y": 1889
         }
       }
   "11":
@@ -523,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
+          "x": 735,
           "y": 1710
         }
       }
@@ -553,7 +554,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1072.5,
+          "x": 1185,
           "y": 1010
         }
       }
@@ -588,7 +589,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1172,
+          "x": 1185,
           "y": 1185
         }
       }
@@ -623,8 +624,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1535
+          "x": 50,
+          "y": 1554
         }
       }
   "16":
@@ -687,7 +688,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
+          "x": 1185,
           "y": 1360
         }
       }
@@ -716,8 +717,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 1360
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 7c533dd7-9f3d-4e6e-8336-e2e68df5e9c8
+    type: condition
+    task:
+      id: 7c533dd7-9f3d-4e6e-8336-e2e68df5e9c8
+      version: -1
+      name: Check if an indicator's score exists
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 340
         }
       }
 view: |-
@@ -729,16 +764,16 @@ view: |-
       "15_11_yes": 0.15,
       "16_10_#default#": 0.36,
       "16_11_yes": 0.16,
-      "3_5_Medium": 0.5,
+      "3_5_Medium": 0.57,
       "3_7_#default#": 0.29,
       "8_10_#default#": 0.16,
       "9_11_yes": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 1900,
-        "width": 1760,
-        "x": -82.5,
+        "height": 1904,
+        "width": 1515,
+        "x": 50,
         "y": 50
       }
     }
