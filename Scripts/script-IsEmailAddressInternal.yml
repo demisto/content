@@ -4,7 +4,7 @@ commonfields:
 name: IsEmailAddressInternal
 script: |-
   email = demisto.args()['email']
-  domains = argToList(demisto.args()['domain'].lower())
+  domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]
 
   parts = email.split('@',1)
 
@@ -50,7 +50,6 @@ args:
   default: true
   description: The email address to check
 - name: domain
-  required: true
   description: List of internal domains to check, comma separated
 outputs:
 - contextPath: Account.Email.Address

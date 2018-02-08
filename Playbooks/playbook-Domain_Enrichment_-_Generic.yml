@@ -80,8 +80,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
     continueonerror: true
     separatecontext: false
     view: |-
@@ -138,4 +137,3 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
-releaseNotes: "-"
