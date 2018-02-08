@@ -100,6 +100,24 @@ script:
             md = md + ' | '.join(r.replace('|', '\\|') for r in row['values']) + '\n'
 
         return md
+    def search_results_to_context(res):
+        columns = res['columns']
+        rows = res['rows']
+        fixed_searches = []
+        for row in rows:
+            values = row['values']
+            i = 0
+            for column in columns:
+                if (len(values[i]) != 0):
+                    column_string = column['name'].replace(".", "")
+                    column_string = column_string.replace(")", "")
+                    column_string = column_string.replace("(", "")
+                    fixed_searches.append({
+                    column_string : values[i]
+                    })
+                i += 1
+        context = {'SearchResults(val.ID && val.ID == obj.ID)' : fixed_searches}
+        return context
 
     def severity_to_level(severity):
         if severity > 65:
@@ -268,12 +286,15 @@ script:
             res = self.fetch_results(resultID)
 
             table = search_result_to_md(res)
+            context = search_results_to_context(res)
+
             return {
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
                 'Contents': res,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': table,
+                'EntryContext': context
             }
 
         def fetchAllFields(self):
@@ -677,13 +698,14 @@ script:
                 'Name' : organization['name'],
             })
 
+        context = {'Organizations(val.ID && val.ID == obj.ID)' : fixed_organizations}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': fixed_organizations,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tblToMd('Case Events:', fixed_organizations, headers),
-            'EntryContext': {}
+            'EntryContext': context
        }
 
     def events_to_entry(events):
