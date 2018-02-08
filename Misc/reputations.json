@@ -1,5 +1,4 @@
 {
-  "releaseNotes": "-",
   "name": "reputations",
   "reputations": [
     {
@@ -12,7 +11,7 @@
         "Strings",
         "CYFileRep",
         "SandboxDetonateFile",
-        "ParseEmailFile"
+        "ParseEmailFiles"
       ]
     },
     {
@@ -179,6 +178,16 @@
       "details": "hostname",
       "enhancementScriptNames": [
         "ADGetComputer"
+      ]
+    },
+    {
+      "id": "usernameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "username",
+      "enhancementScriptNames": [
+        "ADGetUser"
       ]
     }
   ]

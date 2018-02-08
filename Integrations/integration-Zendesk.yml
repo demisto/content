@@ -546,13 +546,13 @@ script:
         var attachBin = http(res.attachment.content_url,{
                     Method: 'GET',
                     Username: params.username + '/token',
-                    Password: params.api
+                    Password: params.api,
+                    SaveToFile: true
                 },
                 params.insecure,
                 params.proxy);
 
-        var createdFileID = saveFile(attachBin.Body);
-        return ({Type: 3, FileID: createdFileID, File: res.attachment.file_name, Contents: res.attachment.file_name});
+        return ({Type: 3, FileID: attachBin.Path, File: res.attachment.file_name, Contents: res.attachment.file_name});
     };
 
     var listAgents = function() {
@@ -900,3 +900,4 @@ script:
       description: Locale. Defaults to en-us
     description: Get Zendesk Help Center article
   isfetch: true
+fromversion: 3.5.0
