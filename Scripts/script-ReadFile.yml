@@ -10,7 +10,7 @@ script: |-
       maxFileSize = 1024**2
   res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
   with open(res[0]['Contents']['path'], 'r') as f:
-      data = f.read(maxFileSize)
+      data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
   if data:
       message = 'Read %d bytes from file.' % (len(data))
       demisto.results({"Type" : entryTypes["note"],

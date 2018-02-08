@@ -127,8 +127,7 @@ tasks:
     scriptarguments:
       filter:
         complex:
-          root: inputs
-          accessor: Hostname
+          root: inputs.Hostname
           transformers:
           - operator: string.concat
             args:
@@ -181,4 +180,3 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-releaseNotes: add new playbook

@@ -1,0 +1,14 @@
+{
+  "id": "disk-current-usage",
+  "version": -1,
+  "fromVersion": "3.5.0",
+  "name": "Disk Current Usage",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "disk.usedPercent",
+  "isPredefined": true,
+  "params": {
+    "currencySign": "%"
+  },
+  "size": 0
+}

@@ -164,8 +164,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: Email
+          root: inputs.Email
     separatecontext: false
     view: |-
       {
@@ -227,8 +226,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: URL
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -376,8 +374,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -439,8 +436,7 @@ tasks:
     scriptarguments:
       indicator:
         complex:
-          root: inputs
-          accessor: SHA1
+          root: inputs.SHA1
     separatecontext: false
     view: |-
       {
@@ -493,6 +489,9 @@ inputs:
   required: false
   description: SHA256 to enrich with Dbot Score
 outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The Indicator
   type: string

@@ -2,7 +2,6 @@ id: get_file_sample_by_hash_-_cylance_protect
 version: -1
 name: Get File Sample By Hash - Cylance Protect
 fromversion: 3.5.0
-releaseNotes: "-"
 description: |-
   Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
 starttaskid: "0"
@@ -119,8 +118,7 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -154,8 +152,7 @@ tasks:
       page_size: {}
       sha256:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
       sorts: {}
     continueonerror: true
     separatecontext: false
@@ -317,8 +314,7 @@ tasks:
       lastZipFileInWarroom: {}
       password:
         complex:
-          root: inputs
-          accessor: ZipPassword
+          root: inputs.ZipPassword
     separatecontext: false
     view: |-
       {

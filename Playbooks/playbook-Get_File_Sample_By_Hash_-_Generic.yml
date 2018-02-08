@@ -2,7 +2,6 @@ id: get_file_sample_by_hash_-_generic
 version: -1
 name: Get File Sample By Hash - Generic
 fromversion: 3.5.0
-releaseNotes: "-"
 description: Returns to the war-room a file sample correlating from a hash using one
   or more products
 starttaskid: "0"
@@ -46,8 +45,7 @@ tasks:
     scriptarguments:
       SHA256:
         complex:
-          root: inputs
-          accessor: SHA256
+          root: inputs.SHA256
     separatecontext: true
     loop:
       iscommand: false
@@ -76,8 +74,7 @@ tasks:
     scriptarguments:
       MD5:
         complex:
-          root: inputs
-          accessor: MD5
+          root: inputs.MD5
     separatecontext: true
     loop:
       iscommand: false

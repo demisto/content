@@ -39,7 +39,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "24"
       "yes":
       - "20"
@@ -217,8 +217,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "16_20_yes": 0.79,
-      "16_24_no": 0.15
+      "16_20_yes": 0.79
     },
     "paper": {
       "dimensions": {
@@ -231,11 +230,15 @@ view: |-
   }
 inputs:
 - key: url
-  value: {}
+  value:
+    simple: ${URL.Data}
   required: false
   description: url to enrich
 outputs:
-- contextPath: URL.Address
+- contextPath: URL
+  description: The URL's object
+  type: uknown
+- contextPath: URL.Data
   description: The enriched URL
   type: string
 - contextPath: DBotScore
@@ -250,5 +253,4 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
-releaseNotes: "-"
 fromversion: 3.5.0
