@@ -214,20 +214,13 @@ script:
 
     var endpointsInfo = function(token) {
         jsonRes = doGet(token, false, 'sepm/api/v1/computers');
-        filteredJsonRes = jsonRes.content;
+        filteredJsonRes = jsonRes.content[0];
 
+        // Set the war room result
         md = '## Endpoints Information';
 
         if (args.computerName) {
-            // Set the war room result
             md += ', filtered for hostname: ' + args.computerName;
-            /*
-            jsonRes.content.forEach(function(h) {
-                if (h.computerName == args.hostname) {
-                    filteredJsonRes = h;
-                }
-            });
-            */
         }
         if(args.lastUpdate) {
             md += ', filtered for last updated status: ' + args.lastUpdate;
@@ -252,10 +245,7 @@ script:
         };
 
         md += '\n';
-        //entryContext = {};
 
-
-        // Set the war room result
         if (args.columns) {
             if (args.columns == 'all' || args.columns == '*') {
                 columnsList = [];
