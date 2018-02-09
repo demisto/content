@@ -213,11 +213,10 @@ script:
     }
 
     var endpointsInfo = function(token) {
-        jsonRes = doGet(token, false, 'sepm/api/v1/computers');
-        filteredJsonRes = jsonRes.content[0];
+        var jsonRes = doGet(token, false, 'sepm/api/v1/computers');
 
         // Set the war room result
-        md = '## Endpoints Information';
+        var md = '## Endpoints Information';
 
         if (args.computerName) {
             md += ', filtered for hostname: ' + args.computerName;
@@ -232,23 +231,36 @@ script:
             md += ', page size: ' + args.pageSize;
         }
 
-        // Set the entry context
+        var entryContext = {};
         entryContext = {
-            'SEPM.Endpoint.Hostname': filteredJsonRes.computerName,
-            'SEPM.Endpoint.Domain': filteredJsonRes.domainOrWorkgroup,
-            'SEPM.Endpoint.IPAddresses': filteredJsonRes.ipAddresses,
-            'SEPM.Endpoint.OS': filteredJsonRes.operatingSystem + ' | ' + filteredJsonRes.osBitness,
-            'SEPM.Endpoint.Description': filteredJsonRes.description,
-            'SEPM.Endpoint.MACAddress': filteredJsonRes.macAddress,
-            'SEPM.Endpoint.BIOSVersion': filteredJsonRes.biosVersion,
-            'SEPM.Endpoint.DHCPServer': filteredJsonRes.dhcpServer
+            'SEPM.Endpoint.Hostname': [],
+            'SEPM.Endpoint.Domain': [],
+            'SEPM.Endpoint.IPAddresses': [],
+            'SEPM.Endpoint.OS': [],
+            'SEPM.Endpoint.Description': [],
+            'SEPM.Endpoint.MACAddress': [],
+            'SEPM.Endpoint.BIOSVersion': [],
+            'SEPM.Endpoint.DHCPServer': []
         };
+        var filteredJsonRes = [];
+       jsonRes.content.forEach(function(content) {
+           filteredJsonRes.push(content);
+           // Set the entry context
+           entryContext['SEPM.Endpoint.Hostname'].push(content.computerName);
+           entryContext['SEPM.Endpoint.Domain'].push(content.domainOrWorkgroup);
+           entryContext['SEPM.Endpoint.IPAddresses'].push(content.ipAddresses);
+           entryContext['SEPM.Endpoint.OS'].push(content.operatingSystem + ' | ' + content.osBitness);
+           entryContext['SEPM.Endpoint.Description'].push(content.description);
+           entryContext['SEPM.Endpoint.MACAddress'].push(content.macAddress);
+           entryContext['SEPM.Endpoint.BIOSVersion'].push(content.biosVersion);
+           entryContext['SEPM.Endpoint.DHCPServer'].push(content.dhcpServer);
+       });
 
         md += '\n';
 
         if (args.columns) {
             if (args.columns == 'all' || args.columns == '*') {
-                columnsList = [];
+                var columnsList = [];
             } else {
                 columnsList = argToList(args.columns);
             }

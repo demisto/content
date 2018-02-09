@@ -1,5 +1,5 @@
 id: sep_-_test_endpoint_search
-version: 8
+version: -1
 name: SEP - Test endpoint search
 starttaskid: "0"
 tasks:
@@ -88,10 +88,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 0e93d7f8-4def-4679-877a-db3ba0e7454c
+    taskid: 32e3fd14-af8e-4c01-83f3-b17a903232f8
     type: regular
     task:
-      id: 0e93d7f8-4def-4679-877a-db3ba0e7454c
+      id: 32e3fd14-af8e-4c01-83f3-b17a903232f8
       version: -1
       name: VerifyContext
       description: |-
@@ -106,7 +106,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: SEPClient
+        simple: '["SEPClient"]'
       fields: {}
       path:
         simple: SEPM.Endpoint.Hostname
