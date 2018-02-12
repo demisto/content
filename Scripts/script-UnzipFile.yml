@@ -1,10 +1,12 @@
 commonfields:
   id: UnzipFile
-  version: -1
+  version: 16
 name: UnzipFile
 script: |-
   import zipfile
   import os
+  from os.path import isdir
+  from os.path import isfile
 
   filePath = None
   fileEntryID = ''
@@ -66,47 +68,63 @@ script: |-
   password = demisto.args().get('password', None)
 
   filenames = []
-  with zipfile.ZipFile(filePath,"r") as zip_ref:
-      zip_ref.extractall(pwd=password)
-      for name in zip_ref.namelist():
-          if name == os.path.basename(name):
-              filenames.append(name)
+  excludedFiles = [f for f in os.listdir('.') if isfile(f)]
+  excludedDirs = [d for d in os.listdir('.') if isdir(d)]
 
-  results = []
-  for filename in filenames:
-      demisto.results(file_result_existing_file(filename))
+  with zipfile.ZipFile(filePath, "r") as zip_ref:
+      zip_ref.extractall(pwd=None)
 
-  results.append(
-      {
-          'Type': entryTypes['note'],
-          'ContentsFormat': formats['json'],
-          'Contents': { 'extractedFiles': filenames },
-          'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unzipped': True },
-          'ReadableContentsFormat' : formats['markdown'],
-          'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
+  for root, directories, files in os.walk('.'):
+      directories[:] = [d for d in directories if d not in excludedDirs]
+      for f in files:
+          if f not in excludedFiles and isfile(os.path.join(root, f)):
+              filenames.append(os.path.join(root,f))
+
+  if len(filenames) == 0:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'Could not find files in archive'
       })
+  else:
+      results = []
+      for filename in filenames:
+          demisto.results(file_result_existing_file(filename))
 
-  demisto.results(results)
+      results.append(
+          {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': {'extractedFiles': filenames},
+              'EntryContext': {'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True},
+              'ReadableContentsFormat': formats['markdown'],
+              'HumanReadable': tableToMarkdown('Extracted Files', [{'name': x} for x in filenames])
+          })
+
+      demisto.results(results)
 type: python
 tags:
 - Utility
 - file
 comment: Unzip a file using fileName or entryID to specify a file. Files unzipped
   will be pushed to the war room and names will be pushed to the context.
+enabled: true
 args:
 - name: fileName
+  deprecated: true
   default: true
   description: output filename
-  deprecated: true
 - name: password
   secret: true
   description: optional password which zip file protected by
 - name: entryID
   description: entry id of the attached zip file in the warroom
 - name: lastZipFileInWarroom
-  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
   deprecated: true
+  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from zip
 scripttarget: 0
+runonce: false
+releasenotes: "-"
