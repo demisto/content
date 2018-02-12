@@ -91,7 +91,7 @@ script: |-
               'Type': entryTypes['note'],
               'ContentsFormat': formats['json'],
               'Contents': { 'extractedFiles': files_base_names },
-              'EntryContext': { 'ExtractedFiles': files_base_names, 'File(val.EntryID=="' + fileEntryID + '").Unzipped': True },
+              'EntryContext': { 'ExtractedFiles': files_base_names, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True },
               'ReadableContentsFormat' : formats['markdown'],
               'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': file_name , 'path': file_path } for file_path, file_name in files_dic.items()])
           })
