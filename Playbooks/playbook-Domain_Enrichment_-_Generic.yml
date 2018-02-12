@@ -80,8 +80,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs
-          accessor: Domain
+          root: inputs.Domain
     continueonerror: true
     separatecontext: false
     view: |-
@@ -129,7 +128,7 @@ inputs:
 - key: Domain
   value:
     simple: ${Domain.Name}
-  required: true
+  required: false
   description: The domain name to enrich
 outputs:
 - contextPath: Domain
@@ -138,4 +137,3 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
-releaseNotes: "-"

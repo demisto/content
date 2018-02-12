@@ -3,6 +3,83 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                {
+                    "name": "carbonblack",
+                    "byoi": false
+                },
+                {
+                    "name": "carbonblackprotection",
+                    "byoi": false
+                }
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblackprotection",
+                "byoi": false
+            },
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
+            "timeout": 240
+        },
+        {
+            "playbookID": "process_email_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
+        },
+        {
             "integrations": "ThreatExchange",
             "playbookID": "extract_indicators_-_generic_-_test",
             "timeout": 240
@@ -20,6 +97,10 @@
                 "byoi": false
             },
             "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -129,10 +210,6 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
-        },
-        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
@@ -170,7 +247,9 @@
             "timeout": 1200
         },
         {
-            "playbookID": "ProofpointDecodeURL-Test"
+            "playbookID": "ProofpointDecodeURL-Test",
+            "timeout": 300,
+            "interval": 20
         },
         {
             "playbookID": "listExecutedCommands-Test"
@@ -205,11 +284,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "urlscan.io",
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
         }
     ],
     "skipped": [
@@ -242,6 +316,28 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ]
 }

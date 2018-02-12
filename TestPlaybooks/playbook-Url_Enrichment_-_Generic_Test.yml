@@ -1,6 +1,6 @@
 id: url_enrichment_-_generic_test
 version: -1
-name: UrlEnrichmentTest
+name: Url Enrichment Generic - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -25,54 +25,151 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
+  "4":
+    id: "4"
+    taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
     type: regular
     task:
-      id: 310e27f4-01d1-48c5-8a52-22dc8702e7c6
+      id: d3eb1773-d77b-4590-8128-83b65bf6e083
       version: -1
-      name: Add URL to context
-      description: ""
-      scriptName: Print
+      name: Clear Context
+      description: Clear the context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     scriptarguments:
-      extend-context:
-        simple: URL.Data=.
-      value:
-        simple: www.google.com
+      all:
+        simple: "yes"
+      key: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 200
+          "x": 450,
+          "y": 201
         }
       }
-  "2":
-    id: "2"
-    taskid: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+  "5":
+    id: "5"
+    taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
+    type: regular
+    task:
+      id: 55310715-a100-4d29-8423-9cf7946fc1ff
+      version: -1
+      name: Set URL
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test.url
+      value:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 381
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8362ebe6-8622-420c-8ab7-881abed983ab
+    type: regular
+    task:
+      id: 8362ebe6-8622-420c-8ab7-881abed983ab
+      version: -1
+      name: Verify URL
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 891
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 62559528-c212-46ef-82ae-03c3d21d9fe1
+    type: regular
+    task:
+      id: 62559528-c212-46ef-82ae-03c3d21d9fe1
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Score,Type,Vendor
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1086
+        }
+      }
+  "8":
+    id: "8"
+    taskid: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
     type: playbook
     task:
-      id: 64370ec7-d46f-47d2-899c-f2d3a50ef818
+      id: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
       version: -1
       name: URL Enrichment - Generic
       playbookName: URL Enrichment - Generic
+      playbookId: url_enrichment_-_generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     scriptarguments:
       url:
-        simple: ${URL.Data}
-    separatecontext: false
+        simple: ${Test.url}
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -80,34 +177,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 380
+          "x": 450,
+          "y": 716
         }
       }
-  "3":
-    id: "3"
-    taskid: c71c0142-c736-4828-85be-45a552e8bbba
+  "9":
+    id: "9"
+    taskid: 82983881-8c77-418c-82ab-c4aeb4b525d1
     type: regular
     task:
-      id: c71c0142-c736-4828-85be-45a552e8bbba
+      id: 82983881-8c77-418c-82ab-c4aeb4b525d1
       version: -1
-      name: Assert
-      description: validate the context was updated correctly
-      scriptName: ContextContains
+      name: Rasterize
+      description: Pull a docker image for the sub playbook so it doesn't timeout
+      script: Rasterize|||rasterize
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
-      path:
-        simple: URL.Address
-      value:
-        simple: www.google.com
+      height: {}
+      type: {}
+      url:
+        simple: google.com
+      width: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 546
+          "x": 450,
+          "y": 554
         }
       }
 view: |-
@@ -115,9 +217,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 591,
-        "width": 390,
-        "x": 440,
+        "height": 1131,
+        "width": 380,
+        "x": 450,
         "y": 50
       }
     }
@@ -125,4 +227,4 @@ view: |-
 inputs: []
 outputs: []
 releaseNotes: "-"
-fromversion: "3.5.0"
+fromversion: 3.5.0

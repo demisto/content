@@ -55,4 +55,3 @@ outputs:
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP in the investigation
 scripttarget: 0
-releaseNotes: "Take into account indicators (from indicators DB) for IsMalicious"

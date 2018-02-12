@@ -296,6 +296,9 @@ inputs:
   required: false
   description: File SHA1 to enrich
 outputs:
+- contextPath: File
+  description: The file's object
+  type: unknown
 - contextPath: File.MD5
   description: MD5 hash of the file
   type: string
@@ -308,6 +311,9 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The tested indicator
   type: string
