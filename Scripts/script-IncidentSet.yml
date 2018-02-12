@@ -77,4 +77,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added support for unkown incident severity set"
+releaseNotes: "Added support for unknown incident severity set"
