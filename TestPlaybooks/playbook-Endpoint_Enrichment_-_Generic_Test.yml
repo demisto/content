@@ -1,0 +1,222 @@
+id: endpoint_enrichment_-_generic_test
+version: -1
+name: Endpoint Enrichment - Generic Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 966b661f-9af1-4f84-86b0-3db66c2c9292
+    type: start
+    task:
+      id: 966b661f-9af1-4f84-86b0-3db66c2c9292
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
+    type: playbook
+    task:
+      id: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
+      version: -1
+      name: Endpoint Enrichment - Generic
+      description: Enrich an Endpoint Hostname using one or more integrations
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Hostname:
+        simple: ${exampleEndpoint.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
+    type: regular
+    task:
+      id: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
+      version: -1
+      description: ""
+      name: Verify context endpoint key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Hostname
+      path:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
+    type: regular
+    task:
+      id: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
+      version: -1
+      description: ""
+      name: Delete context (all)
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 91cb1640-cc0c-4f32-8632-5297dc122894
+    type: regular
+    task:
+      id: 91cb1640-cc0c-4f32-8632-5297dc122894
+      version: -1
+      description: ""
+      name: 'add hostname #1'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: exampleEndpoint.Hostname
+      value:
+        simple: AMAZON-39D8D1E7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 08d6b69d-6a76-4363-8030-5241a624f53b
+    type: regular
+    task:
+      id: 08d6b69d-6a76-4363-8030-5241a624f53b
+      version: -1
+      description: ""
+      name: 'add hostname #2'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: exampleEndpoint.Hostname
+      value:
+        simple: acAir2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 544
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+    type: regular
+    task:
+      id: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+      version: -1
+      description: ""
+      name: 'add hostname #3'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: exampleEndpoint.Hostname
+      value:
+        simple: CentOS70
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

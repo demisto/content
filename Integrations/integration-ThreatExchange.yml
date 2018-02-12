@@ -2,6 +2,7 @@ commonfields:
   id: ThreatExchange
   version: -1
 name: ThreatExchange
+releaseNotes: "-"
 display: ThreatExchange
 fromversion: 2.5.0
 category: Data Enrichment
@@ -116,7 +117,7 @@ script:
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', score: dbotScore});
+            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', Score: dbotScore});
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };

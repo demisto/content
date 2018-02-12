@@ -3,6 +3,7 @@ version: -1
 name: File Enrichment - Generic
 fromversion: 3.5.0
 description: Get file reputation using one or more integrations
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +20,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -43,6 +45,7 @@ tasks:
       - "14"
       - "15"
       - "17"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -70,6 +73,7 @@ tasks:
       file:
         simple: ${inputs.MD5}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -89,6 +93,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -116,12 +121,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.MD5}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.MD5
+            value:
+              simple: File.MD5
             iscontext: true
     view: |-
       {
@@ -150,12 +157,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.SHA256
+            value:
+              simple: File.SHA256
             iscontext: true
     view: |-
       {
@@ -184,6 +193,7 @@ tasks:
       file:
         simple: ${inputs.SHA256}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -211,12 +221,14 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
+    separatecontext: false
     conditions:
     - label: "yes"
       condition:
       - - operator: general.isExists
           left:
-            value: File.SHA1
+            value:
+              simple: File.SHA1
             iscontext: true
     view: |-
       {
@@ -245,6 +257,7 @@ tasks:
       file:
         simple: ${inputs.SHA1}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -284,6 +297,9 @@ inputs:
   required: false
   description: File SHA1 to enrich
 outputs:
+- contextPath: File
+  description: The file's object
+  type: unknown
 - contextPath: File.MD5
   description: MD5 hash of the file
   type: string
@@ -296,6 +312,9 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
 - contextPath: DBotScore.Indicator
   description: The tested indicator
   type: string

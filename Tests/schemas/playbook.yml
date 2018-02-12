@@ -165,7 +165,6 @@ schema;output_schema:
       required: yes
     type:
       type: text
-      required: yes
     description:
       type: str
       required: yes
@@ -194,12 +193,14 @@ schema;arg_filter_schema:
     operator:
       type: str
       required: yes
+    ignorecase:
+      type: bool
     left:
       type: map
       required: yes
       mapping:
         value:
-          type: str
+          type: any
           required: yes
         iscontext:
           type: bool
@@ -208,7 +209,7 @@ schema;arg_filter_schema:
       type: map
       mapping:
         value:
-          type: str
+          type: any
           required: yes
         iscontext:
           type: bool

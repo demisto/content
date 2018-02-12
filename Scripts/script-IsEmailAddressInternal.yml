@@ -1,0 +1,69 @@
+commonfields:
+  id: IsEmailAddressInternal
+  version: -1
+name: IsEmailAddressInternal
+releaseNotes: "-"
+script: |-
+  email = demisto.args()['email']
+  domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]
+
+  parts = email.split('@',1)
+
+  network_type = "Unknown"
+  in_domain = "no"
+
+  if len(parts) > 1:
+      if parts[1].lower() in domains:
+          in_domain = "yes"
+          network_type = "Internal"
+      else:
+          network_type = "External"
+
+      email_obj = {
+          "Account(val.Email && val.Email.Address && val.Email.Address === obj.Email.Address)": {
+              "Email": {
+                  "Address": email,
+                  "Domain" : parts[1],
+                  "Username": parts[0],
+                  "NetworkType" : network_type
+              }
+          }
+      }
+      demisto.results({
+          "Type" : entryTypes["note"],
+          "ContentsFormat" : formats["json"],
+          "Contents" : in_domain,
+          "HumanReadable" : in_domain,
+          "EntryContext" : email_obj
+      })
+
+  else:
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Email address "{0}" is not valid' })
+      sys.exit(0)
+type: python
+tags:
+- email
+comment: Checks if the email address in part of the internal domains
+system: true
+args:
+- name: email
+  required: true
+  default: true
+  description: The email address to check
+- name: domain
+  description: List of internal domains to check, comma separated
+outputs:
+- contextPath: Account.Email.Address
+  description: The Email account full address
+  type: string
+- contextPath: Account.Email.Username
+  description: The Email account username
+  type: string
+- contextPath: Account.Email.Domain
+  description: The Email account domain
+  type: string
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+scripttarget: 0
+runonce: false
