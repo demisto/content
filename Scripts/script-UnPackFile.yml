@@ -120,4 +120,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/unrar:1.4
-releasenotes: "-"
+releaseNotes: "-"
