@@ -76,7 +76,7 @@ script: |-
       # removing the previously existing dirs from the search
       directories[:] = [d for d in directories if d not in excludedDirs]
       for f in files:
-          # skipping previously existing files and verifying that the current file is a file and then adding to the extracted files list
+          # skipping previously existing files and verifying that the current file is a file and then adding it to the extracted files list
           if f not in excludedFiles and isfile(os.path.join(root, f)):
               filenames.append(os.path.join(root,f))
   if len(filenames) == 0:
