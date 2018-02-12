@@ -34,10 +34,10 @@ tasks:
       version: -1
       name: Run command with arguments
       description: Get information about endpoints.
-      script: Symantec Endpoint Protection_copy|||sep-endpoints-info
+      script: Symantec Endpoint Protection|||sep-endpoints-info
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection_copy
+      brand: Symantec Endpoint Protection
     nexttasks:
       '#none#':
       - "3"
