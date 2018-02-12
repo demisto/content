@@ -1,0 +1,184 @@
+id: extract_indicators_-_generic_-_test
+version: -1
+name: Extract Indicators - Generic - Test
+starttaskid: "0"
+fromversion: 3.5.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 51459ac5-98bb-45f5-8761-e310b7553e2a
+    type: start
+    task:
+      id: 51459ac5-98bb-45f5-8761-e310b7553e2a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 0a7acc45-5844-4b3b-8ec7-8e02f4408a9c
+    type: regular
+    task:
+      id: 0a7acc45-5844-4b3b-8ec7-8e02f4408a9c
+      version: -1
+      name: Add Labels to the Incident
+      description: Add indicators to the incidents, for the sub playbook to extract.
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      extend-context: {}
+      labels:
+        simple: '[{"url": "https://www.threathq.com"}, {"ip": "123.57.77.130"}, {"hash":
+          "666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c"}]'
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: bf9d2db9-6476-4f30-8c2c-6115d3a0d93d
+    type: playbook
+    task:
+      id: bf9d2db9-6476-4f30-8c2c-6115d3a0d93d
+      version: -1
+      name: Extract Indicators - Generic
+      playbookName: Extract Indicators - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: dbe64c77-8f94-4883-847a-fd15e8d9a901
+    type: regular
+    task:
+      id: dbe64c77-8f94-4883-847a-fd15e8d9a901
+      version: -1
+      name: Verify indicators were extracted
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: URL.Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: c561f70b-88dc-44fd-8b08-4f2033972358
+    type: regular
+    task:
+      id: c561f70b-88dc-44fd-8b08-4f2033972358
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 17a056ba-b5b5-4265-857c-339d5dc61bd5
+    type: regular
+    task:
+      id: 17a056ba-b5b5-4265-857c-339d5dc61bd5
+      version: -1
+      name: Verify indicators were extracted
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: IP.Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

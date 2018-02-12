@@ -1,0 +1,257 @@
+id: url_enrichment_-_generic
+version: -1
+name: URL Enrichment - Generic
+description: Enrich URL using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
+    type: start
+    task:
+      id: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "16":
+    id: "16"
+    taskid: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
+    type: condition
+    task:
+      id: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
+      version: -1
+      name: Do we have URLs?
+      description: do we have a url to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+      - "25"
+    scriptarguments:
+      value:
+        simple: inputs.url
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 22884d3e-bf75-482f-8dcf-514787f23c6f
+    type: regular
+    task:
+      id: 22884d3e-bf75-482f-8dcf-514787f23c6f
+      version: -1
+      name: Get URLs reputation
+      description: Run reputation for the given url
+      scriptName: URLReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      file:
+        simple: ${File.SHA256}
+      ip: {}
+      url:
+        simple: ${inputs.url}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -277,
+          "y": 511
+        }
+      }
+  "23":
+    id: "23"
+    taskid: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
+    type: title
+    task:
+      id: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
+      version: -1
+      name: URL Indicators
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "24":
+    id: "24"
+    taskid: ffb0e416-85ae-486b-8cea-2979aca56172
+    type: title
+    task:
+      id: ffb0e416-85ae-486b-8cea-2979aca56172
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 863
+        }
+      }
+  "25":
+    id: "25"
+    taskid: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
+    type: condition
+    task:
+      id: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
+      version: -1
+      name: 'Is Rasterize integration enabled? '
+      description: Check if we can use rasterize
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Rasterize
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 362.5,
+          "y": 511
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
+    type: regular
+    task:
+      id: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
+      version: -1
+      name: Get URL screenshot
+      description: Get the screenshot of the url page
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: ${inputs.url}
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 488,
+          "y": 698
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_20_yes": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 878,
+        "width": 1145,
+        "x": -277,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: url to enrich
+outputs:
+- contextPath: URL
+  description: The URL's object
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
+fromversion: 3.5.0
+releaseNotes: "-"

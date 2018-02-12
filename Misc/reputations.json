@@ -1,5 +1,4 @@
 {
-  "releaseNotes": "-",
   "name": "reputations",
   "reputations": [
     {
@@ -12,7 +11,7 @@
         "Strings",
         "CYFileRep",
         "SandboxDetonateFile",
-        "ParseEmailFile"
+        "ParseEmailFiles"
       ]
     },
     {
@@ -180,6 +179,17 @@
       "enhancementScriptNames": [
         "ADGetComputer"
       ]
+    },
+    {
+      "id": "usernameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "username",
+      "enhancementScriptNames": [
+        "ADGetUser"
+      ]
     }
-  ]
+  ],
+  "releaseNotes": "Using ParseEmailFiles enhancement script on files"
 }
