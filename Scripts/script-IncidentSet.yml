@@ -48,7 +48,14 @@ args:
 - name: details
   description: Incident details
 - name: severity
-  description: The severity to set. Can be "low","medium","high" or "critical".
+  auto: PREDEFINED
+  predefined:
+  - unkown
+  - low
+  - medium
+  - high
+  - critical
+  description: The severity to set. Can be "unkown", "low","medium","high" or "critical".
 - name: type
   description: Incident type
 - name: name
@@ -64,6 +71,7 @@ args:
   description: 'Add to the list of labels for the incident. Labels expected format
     is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
 - name: customFieldName
+- releaseNotes: "Added support for unkown incident severity set"
   description: Name for a custom field you want to change
 - name: customFieldValue
   description: The value you want to set for the field specified in customFieldName
