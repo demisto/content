@@ -65,13 +65,18 @@ script: |-
   filePath = res[0]['Contents']['path']
 
   filenames = []
-
+  # remembering which files and dirs we currently have so we add them later as newly extracted files.
   excludedFiles = [f for f in os.listdir('.') if isfile(f)]
   excludedDirs = [d for d in os.listdir('.') if isdir(d)]
+
+  # extracting the archive file
   Archive(filePath).extractall_patool('.', None)
+  # recursing over the file system top down
   for root, directories, files in os.walk('.'):
+      # removing the previously existing dirs from the search
       directories[:] = [d for d in directories if d not in excludedDirs]
       for f in files:
+          # skipping previously existing files and verifying that the current file is a file and then adding to the extracted files list
           if f not in excludedFiles and isfile(os.path.join(root, f)):
               filenames.append(os.path.join(root,f))
   if len(filenames) == 0:
@@ -82,6 +87,7 @@ script: |-
       })
   else:
       results = []
+      # extracted files can be in sub directories so we save the base names of the files and also the full path of the file
       files_base_names = [os.path.basename(file_path) for file_path in filenames]
       files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
       for file_path, file_name in files_dic.items():
