@@ -40,7 +40,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      calcReputation: {}
+      calcReputation:
+        simple: "false"
       extractFromEmails: {}
       markAsIndicator: {}
       text:
