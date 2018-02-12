@@ -5,17 +5,114 @@ name: ZipFile
 script: |
   import zipfile
   import os
+  from os.path import isfile
+  try: # in order to support compression of the file
+      import zlib
+      compression = zipfile.ZIP_DEFLATED
+  except:
+      compression = zipfile.ZIP_STORED
+  filePath = None
+  fileEntryID = ''
+  zipName = None
+  # preparation for later version which will support several inputs
+  # if demisto.args().has_key('fileName'):
+  #   entries = demisto.executeCommand('getEntries', {})
+  #   for entry in entries:
+  #       fn = demisto.get(entry, 'File')
 
-  res = demisto.executeCommand('getFilePath', {'id': demisto.args()["EntryID"]})
-  os.system('cp ' + res[0]['Contents']['path'] + ' ' + res[0]['Contents']['name'])
+  #       is_text = type(fn) in [unicode, str]
+  #       is_correct_file = demisto.args().get('fileName', '').lower() == fn.lower()
+  #       if is_text:
+  #           if demisto.args().has_key('fileName') and is_correct_file:
+  #               fileEntryID = entry['ID']
+  #               break
+  #       if fileEntryID == '':
+  #           errorMessage = ''
+  #           if demisto.args().has_key('fileName'):
+  #               demisto.results({
+  #                   'Type': entryTypes['error'],
+  #                   'ContentsFormat': formats['text'],
+  #                   'Contents': demisto.args().has_key('fileName') + ' not such file in war room'
+  #               })
+  #           sys.exit(0)
 
-  zipFilename = res[0]['Contents']['name'] + '.zip'
-  zipfile.ZipFile(zipFilename, mode='w').write(res[0]['Contents']['name'])
+  if demisto.args().has_key('entryID'):
+    fileEntryID = demisto.args().get('entryID')
 
-  with open(zipFilename, 'rb') as f:
-      data = f.read()
+  if demisto.args().has_key('zipName'):
+    zipName = demisto.args().get('zipName') + '.zip'
 
-  demisto.results(fileResult(zipFilename,data))
+  if not fileEntryID:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'You must set an entryID when using the zip script'
+    })
+    sys.exit(0)
+
+  if not zipName:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'You must set a zipName when using the zip script'
+    })
+    sys.exit(0)
+
+  res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+  if res[0]['Type'] == entryTypes['error']:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Failed to get the file path for entry: ' + fileEntryID
+    })
+    sys.exit(0)
+
+  filePath = res[0]['Contents']['path']
+  fileCurrentName = res[0]['Contents']['name']
+  if not isfile(filePath): #in case that the user will send a directory
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': fileEntryID + 'is not a file. Please recheck your input'
+    })
+    sys.exit(0)
+
+  # copying the file to current location
+  os.system('cp ' + filePath + ' ' + fileCurrentName)
+
+  # zipping the file
+  zf = zipfile.ZipFile(zipName, mode='w')
+  try:
+      zf.write(fileCurrentName, compress_type=compression)
+      # testing for file integrity
+      ret = zf.testzip()
+      if ret is not None:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'There was a problem with the zipping, file: ' + ret + 'is corrupted'
+        })
+        sys.exit(0)
+  finally:
+      zf.close()
+
+  with open(zipName, 'rb') as f:
+      file_data = f.read()
+
+  demisto.results(fileResult(zipName,file_data))
+
+  results = []
+  results.append(
+    {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': { 'zippedFiles': zipName },
+        'EntryContext': { 'zippedFiles': zipName, 'File(val.EntryID=="' + fileEntryID + '").zipped': True },
+        'ReadableContentsFormat' : formats['markdown'],
+        'HumanReadable': tableToMarkdown('Zipped Files', [ { 'original name': fileCurrentName , 'zipped file': zipName }])
+    })
+
+  demisto.results(results)
 type: python
 tags:
 - Utility
@@ -23,9 +120,13 @@ tags:
 comment: Zip a file and upload to war room
 enabled: true
 args:
-- name: EntryID
+- name: entryID
   required: true
-  description: entry id of file to zip
-outputs:
-- description: ""
+  description: entry id of the file we want to zip
+- name: zipName
+  required: true
+  description: 'Name of the output file, for example: zipName="test" would result
+    in output file "test.zip"'
 scripttarget: 0
+runonce: false
+releaseNotes: "-"
