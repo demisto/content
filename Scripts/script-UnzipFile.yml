@@ -1,6 +1,6 @@
 commonfields:
   id: UnzipFile
-  version: 16
+  version: -1
 name: UnzipFile
 script: |-
   import zipfile
@@ -88,17 +88,18 @@ script: |-
       })
   else:
       results = []
-      for filename in filenames:
-          demisto.results(file_result_existing_file(filename))
-
+      files_base_names = [os.path.basename(file_path) for file_path in filenames]
+      files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
+      for file_path, file_name in files_dic.items():
+          demisto.results(file_result_existing_file(file_path, file_name))
       results.append(
           {
               'Type': entryTypes['note'],
               'ContentsFormat': formats['json'],
-              'Contents': {'extractedFiles': filenames},
-              'EntryContext': {'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True},
-              'ReadableContentsFormat': formats['markdown'],
-              'HumanReadable': tableToMarkdown('Extracted Files', [{'name': x} for x in filenames])
+              'Contents': { 'extractedFiles': files_base_names },
+              'EntryContext': { 'ExtractedFiles': files_base_names, 'File(val.EntryID=="' + fileEntryID + '").Unzipped': True },
+              'ReadableContentsFormat' : formats['markdown'],
+              'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': file_name , 'path': file_path } for file_path, file_name in files_dic.items()])
           })
 
       demisto.results(results)
