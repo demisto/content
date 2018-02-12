@@ -72,7 +72,7 @@ script: |-
   excludedDirs = [d for d in os.listdir('.') if isdir(d)]
 
   with zipfile.ZipFile(filePath, "r") as zip_ref:
-      zip_ref.extractall(pwd=None)
+      zip_ref.extractall(pwd=password)
 
   for root, directories, files in os.walk('.'):
       directories[:] = [d for d in directories if d not in excludedDirs]
