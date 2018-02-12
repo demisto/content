@@ -1,12 +1,12 @@
 commonfields:
   id: UnPackFile
-  version: -1
+  version: 6
 name: UnPackFile
 script: |-
   from pyunpack import Archive
   import os
   from os.path import isfile
-  import subprocess
+  from os.path import isdir
 
   filePath = None
   fileEntryID = ''
@@ -65,13 +65,15 @@ script: |-
   filePath = res[0]['Contents']['path']
 
   filenames = []
+
   excludedFiles = [f for f in os.listdir('.') if isfile(f)]
+  excludedDirs = [d for d in os.listdir('.') if isdir(d)]
   Archive(filePath).extractall_patool('.', None)
   for root, directories, files in os.walk('.'):
-      for name in files:
-          if not name in str(excludedFiles) and isfile(name):
-              filenames.append(name)
-
+      directories[:] = [d for d in directories if d not in excludedDirs]
+      for f in files:
+          if f not in excludedFiles and isfile(os.path.join(root, f)):
+              filenames.append(os.path.join(root,f))
   if len(filenames) == 0:
       demisto.results({
           'Type': entryTypes['error'],
@@ -110,9 +112,12 @@ args:
 - name: entryID
   description: entry id of the attached packed file in the warroom
 - name: lastPackedFileInWarroom
-  description: Set to package file extension to look for the last of its kind in the war room
+  description: Set to package file extension to look for the last of its kind in the
+    war room
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from package
 scripttarget: 0
+runonce: false
 dockerimage: demisto/unrar:1.4
+releasenotes: "-"
