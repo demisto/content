@@ -180,4 +180,3 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-releaseNotes: add new playbook

@@ -3,6 +3,22 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test",
+            "timeout": 300
+        },
+        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -309,21 +325,6 @@
             "playbookID": "VMWare Test"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test"
-        },
-        {
             "integrations": [
               "AlienVault OTX",
               {
@@ -340,6 +341,10 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ]
 }
