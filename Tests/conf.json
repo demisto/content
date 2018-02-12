@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "Symantec Endpoint Protection",
+            "playbookID": "sep_-_test_endpoint_search"
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -284,10 +288,6 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
         }
     ],
     "skipped": [
