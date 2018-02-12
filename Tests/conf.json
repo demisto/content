@@ -336,6 +336,9 @@
             "timeout": 400
         },
         {
+            "playbookID": "ExtractDomainTest"
+        },
+        {
             "integrations": "VxStream",
             "playbookID": "VxStream Test"
         }
