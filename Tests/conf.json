@@ -284,6 +284,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "playbookID": "ExtractDomainTest"
         }
     ],
     "skipped": [
@@ -334,9 +337,6 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
-        },
-        {
-            "playbookID": "ExtractDomainTest"
         },
         {
             "integrations": "VxStream",
