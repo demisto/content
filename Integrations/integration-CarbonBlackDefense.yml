@@ -61,7 +61,6 @@ configuration:
 script:
   script: |-
     var CBDefence = function() {
-
         var client = (function() {
             var urlTemplae = '%url%/integrationServices/%version%/';
             var authTemplate = '%key%/%connectorId%';
@@ -70,7 +69,7 @@ script:
             var AuthToken = replaceInTemplates(authTemplate, params);
             var SiemToken = replaceInTemplates(authSiemTemplate, params);
             function addAuthToHeaders(headerObj, token) {
-                 if (headerObj === 'undifiend') {
+                 if (headerObj === 'undefined') {
                     return { 'X-Auth-Token': [token] };
                 }
                 headerObj['X-Auth-Token'] = [token];
@@ -185,7 +184,42 @@ script:
             },
             'cbd-change-device-status': {
                 path: 'device/%deviceId%',
-                method: 'PATCH'
+                method: 'PATCH',
+                content: {'policyName' : null},
+                extended: true,
+                translator:[
+                    {
+                        contextPath: 'CarbonBlackDefense.ChangeDeviceStatus.DeviceInfo(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Change Device Status',
+                        innerPath: 'deviceInfo',
+                        data: [
+                            { to: 'Name', from: 'name'},
+                            { to: 'LastReportedTime', from: 'lastReportedTime'},
+                            { to: 'PolicyId', from: 'policyId'},
+                            { to: 'LastShutdownTime', from: 'lastShutdownTime'},
+                            { to: 'LastContact', from: 'lastContact'},
+                            { to: 'LastExternalIpAddress', from: 'lastExternalIpAddress'},
+                            { to: 'AvStatus', from: 'avStatus'},
+                            { to: 'RegisteredTime', from: 'registeredTime'},
+                            { to: 'TargetPriorityType', from: 'targetPriorityType'},
+                            { to: 'OrganizationId', from: 'organizationId'},
+                            { to: 'DeviceOwnerId', from: 'deviceOwnerId'},
+                            { to: 'Email', from: 'email'},
+                            { to: 'SensorVersion', from: 'sensorVersion'},
+                            { to: 'Status', from: 'status'},
+                            { to: 'TestId', from: 'testId'},
+                            { to: 'DeviceId', from: 'deviceId'},
+                            { to: 'SensorStates', from: 'sensorStates'},
+                            { to: 'PolicyName', from: 'policyName'},
+                            { to: 'SensorOutOfDate', from: 'sensorOutOfDate'},
+                            { to: 'LastLocation', from: 'lastLocation'},
+                            { to: 'DeviceType', from: 'deviceType'},
+                            { to: 'OsVersion', from: 'osVersion'},
+                            { to: 'LastInternalIpAddress', from: 'lastInternalIpAddress'},
+                            { to: 'OrganizationName', from: 'organizationName'}
+                        ]
+                    }
+                    ]
             },
             'cbd-find-events': {
                 path: 'event',
@@ -432,11 +466,10 @@ script:
                     {
                         contextPath: 'CarbonBlackDefense.GetAlertDetails.DeviceInfo(val.DeviceId==obj.DeviceId)',
                         title: 'Carbon Black Defense Get Alert Details',
-                        innerPath: 'deviceInfo',
                         data: [
                             { to: 'DeviceInfo.DeviceType', from: 'deviceInfo.deviceType'},
-                            { to: 'DeviceInfo.Group', from: 'deviceInfo.group'},
-                            { to: 'DeviceInfo.GroupId', from: 'deviceInfo.groupId'},
+                            { to: 'DeviceInfo.Group', from: 'deviceInfo.adGroupName'},
+                            { to: 'DeviceInfo.GroupId', from: 'deviceInfo.adGroupId'},
                             { to: 'DeviceInfo.RegisteredTime', from: 'deviceInfo.registeredTime'},
                             { to: 'DeviceInfo.DeviceId', from: 'deviceInfo.deviceId'},
                             { to: 'DeviceInfo.DeviceName', from: 'deviceInfo.deviceName'},
@@ -532,7 +565,6 @@ script:
                         data: policyData
                     }
                 ]
-
             },
             'cbd-get-policy': {
                 path: 'policy/%policyId%',
@@ -653,7 +685,6 @@ script:
             }
             return entry;
         };
-
         function addContextToEntry(result, entry, translator) {
             var content = translator.innerPath ? dq(result, translator.innerPath) : result;
             var translatedContext = mapObjFunction(translator.data) (content);
@@ -680,7 +711,6 @@ script:
                 parameters: seperateQueryParams
             };
         };
-
         function sendRequest(fullurl, method, headers, body) {
             var req = {
                     Method: method,
@@ -692,7 +722,6 @@ script:
             var res = http(fullurl, req, params.insecure, params.proxy);
             return res;
         }
-
         function pathify(cmd) {
             return replaceInTemplates(cmd.path,args);
         }
@@ -737,7 +766,7 @@ script:
                     i++;
                 }
                 if (!(obj && obj[keysArr[i]])) {
-                    throw 'field path ' + path + ' is not defiend in the policy object';
+                    throw 'field path ' + path + ' is not defined in the policy object';
                 }
                 obj[keysArr[i]] = val;
             }
@@ -752,7 +781,6 @@ script:
             var query = generateQuery(cmd);
             var uniquePath = pathify(cmd);
             var url = client.url + uniquePath + query.str;
-
             var headers = {};
             var body;
             if (cmd.content) {
@@ -773,46 +801,26 @@ script:
         var executeAndShowResult = function (cmdName) {
             var cmd = commands[cmdName];
             var res = executeCommand(cmd);
-            var evRes = evaluateRes(res);
-            var entry = {
-                Type: entryTypes.note,
-                ContentsFormat: formats.text
-            }
-            //request failed
-            if (!evRes.success) {
-                entry.Contents = evRes.message
-                return entry;
-            }
+            var body = parseBody(res);
             if (!cmd.extended) {
-                entry.Contents = 'Request Success';
-                return entry;
+                return {
+                    Type: entryTypes.note,
+                    ContentsFormat: formats.text,
+                    Contents: 'Request Success'
+                };
             }
             var entries = [];
             for (var i = 0; i < cmd.translator.length; i++) {
-                entries.push(createEntry(evRes.body, cmd.translator[i]));
+                entries.push(createEntry(body, cmd.translator[i]));
             }
             return entries;
         };
-        function evaluateRes(httpResponse) {
-            var body;
-            try {
-                body = JSON.parse(httpResponse.Body);
-            } catch(err) {
-                return {
-                    success: false,
-                    message: 'Request failed: ' + httpResponse.Status + ".\n" + 'Failed to parse response body.'
-                };
-            }
+        function parseBody(httpResponse) {
+            var body = JSON.parse(httpResponse.Body);
             if (httpResponse.StatusCode !== 200) {
-                return {
-                    success: false,
-                    message: 'Request failed: ' + httpResponse.Status + ".\n" + body.message
-                };
+                throw 'Request failed: ' + httpResponse.Status + ".\n" + body.message
             }
-            return {
-                success: true,
-                body: body
-            };
+            return body;
         }
         var runTest = function() {
             args = { rows: '0' };
@@ -821,9 +829,9 @@ script:
                 return 'ok';
             }
             if (res.StatusCode === 401) {
-                return 'Test failed. Make sure that the Connector ID and API key are valid.';
+                throw 'Test failed. Make sure that the Connector ID and API key are valid.';
             }
-            return 'Test failed for unknown reason';
+            throw 'Test failed for unknown reason';
         };
         function createIncidentsFromNotification(notification) {
             return {
@@ -854,18 +862,14 @@ script:
             }
             return JSON.stringify(incidents);
         };
-
         return {
             execute: executeAndShowResult,
             runTest: runTest,
             getNotifications: getNotifications,
             setPolicy: setPolicy
         };
-
     };
-
     var cbd = CBDefence();
-
     switch (command) {
         case 'test-module':
             return cbd.runTest();
@@ -892,13 +896,14 @@ script:
       description: Query parameter. Filter on hostnames based on a case insensitive
         token search.
     - name: hostNameExact
-      description: 'Query parameter. Filter on the exact hostname'
+      description: Query parameter. Filter on the exact hostname
     - name: ownerName
       description: Query parameter. Filter on owner name case insensitively.
     - name: ownerNameExact
-      description: 'Query parameter. Same as ownerName but with case sensitivity'
+      description: Query parameter. Same as ownerName but with case sensitivity
     - name: ipAddress
-      description: Query parameter. Filter on devices with a given external or internal IP address
+      description: Query parameter. Filter on devices with a given external or internal
+        IP address
     - name: start
       description: Wanted first row number from the result (starting from 1).
     - name: rows
@@ -1030,9 +1035,11 @@ script:
       description: Policy id.
     - name: policyName
       description: Policy name.
-    description: Change status of an individual device by its device ID. The requested
+    description: 'Change status of an individual device by its device ID. The requested
       security policy can be indicated either as a policy ID (policyId) or policy
-      name (policyName).
+      name (policyName).The current revision of the Cb Defense backend only allows
+      one element to be changed with this call: the security policy assigned to the
+      device. For example policyName=Restrictive_Windows_Workstation'
   - name: cbd-find-events
     arguments:
     - name: hostName
@@ -1480,6 +1487,7 @@ script:
       required: true
       description: The ID of the policy to replace.
     - name: policy
+      required: true
       description: The JSON object containing the policy details. The JSON object
         containing the policy details. Make sure a valid policy object is passed.
         You may use 'get-policy' in order to receive the policy object you wish to
@@ -1506,10 +1514,10 @@ script:
     - name: required
       required: true
       auto: PREDEFINED
-      description: Rule required
       predefined:
       - "false"
       - "true"
+      description: Rule required
     - name: id
       required: true
       description: Rule id.
@@ -1520,6 +1528,7 @@ script:
       required: true
       description: Application value.
     - name: policyId
+      required: true
       description: The policy id.
     description: Add a new rule to an existing policy. Please note that system policies
       cannot be modified.
@@ -1543,11 +1552,11 @@ script:
       description: Rule operation.
     - name: required
       required: true
-      description: Rule required
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: Rule required
     - name: id
       required: true
       description: Rule id.

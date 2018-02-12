@@ -69,7 +69,7 @@ script:
         return {
             "name": incident.id + ' ' + incident.description,
             "labels": labels,
-            "rawJSON": JSON.stringify(incident).replace(/\\"/g, '"'),
+            "rawJSON": JSON.stringify(incident)
         }
     }
 
@@ -128,10 +128,25 @@ script:
         return sendRequest('POST', server + 'api/ariel/searches' + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'searches');
     }
 
-    var getClosingReasons = function(args) {
-        var range = args.range;
-        delete(args.Range);
-        return sendRequest('GET', server + 'api/siem/offense_closing_reasons' + encodeToURLQuery(args), {'Content-Type': ['application/json'], 'Range': range ? range : undefined});
+    var getClosingReasons = function(filter, fields, include_deleted, include_reserved, range) {
+        var urlArgs = {};
+        if (filter) {
+            urlArgs.filter = filter;
+        }
+        if (fields) {
+            urlArgs.fields = fields;
+        }
+        if (include_deleted) {
+            urlArgs.include_deleted = include_deleted;
+        }
+        if (include_reserved) {
+            urlArgs.include_reserved = include_reserved;
+        }
+        var headers = {'Content-Type': ['application/json']};
+        if (range) {
+            headers.Range = ['items=' + range];
+        }
+        return sendRequest('GET', server + 'api/siem/offense_closing_reasons' + encodeToURLQuery(urlArgs), headers);
     }
 
     var getSearch = function(search_id, fields) {
@@ -238,13 +253,13 @@ script:
         case 'qradar-get-search-results':
             return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
         case 'qradar-get-closing-reasons':
-            return addHumanRedable(getClosingReasons(args), 'QRadar get closing reasons', headers);
+            return addHumanRedable(getClosingReasons(args.filter, args.fields, args.include_deleted, args.include_reserved, args.range), 'QRadar get closing reasons', headers);
         case 'qradar-create-note':
             return addHumanRedable(
                 sendRequest(
                     'POST',
                     server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes', args) + encodeToURLQuery(args),
-                    headers,
+                    null,
                     'create note'),
                 'QRadar create note',
                 headers);
@@ -253,7 +268,7 @@ script:
                 sendRequest(
                     'GET',
                     server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes/%note_id%', args) + encodeToURLQuery(args),
-                    headers,
+                    null,
                     'get note'),
                 'QRadar get note',
                 headers);
@@ -277,8 +292,6 @@ script:
       required: true
       default: true
       description: The query expressions in AQL
-    - name: fields
-      description: Fields to filter in
     - name: headers
       description: Table headers
     description: Searches in QRadar
@@ -288,8 +301,6 @@ script:
       required: true
       default: true
       description: The search id
-    - name: fields
-      description: Fields to filter in
     - name: headers
       description: Table headers
     description: Gets a specific search id
@@ -371,8 +382,6 @@ script:
       required: true
       default: true
       description: The query expressions in AQL
-    - name: fields
-      description: Fields to filter in
     - name: headers
       description: Table headers
     description: Searches in QRadar
@@ -383,8 +392,6 @@ script:
       required: true
       default: true
       description: The search id
-    - name: fields
-      description: Fields to filter in
     - name: headers
       description: Table headers
     description: Gets a specific search id
@@ -458,12 +465,14 @@ script:
       - "true"
       - "false"
       description: If true, reserved closing reasons are included in the response
+      defaultValue: "true"
     - name: include_deleted
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       description: If true, deleted closing reasons are included in the response
+      defaultValue: "true"
     - name: fields
       description: Use this parameter to specify which fields you would like to get
         back in the response
@@ -486,6 +495,8 @@ script:
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas
+    - name: headers
+      description: Table headers
     description: Create a note on an offense
   - name: qradar-get-note
     arguments:
@@ -500,5 +511,7 @@ script:
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas
+    - name: headers
+      description: Table headers
     description: Retrieve a note for an offense
   isfetch: true

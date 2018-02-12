@@ -4,7 +4,7 @@
   "fromVersion": "3.5.0",
   "name": "Late Incidents",
   "dataType": "incidents",
-  "widgetType": "table",
+  "widgetType": "list",
   "query": "-category:job and -status:archived and -status:closed and dueDate:<now",
   "isPredefined": true,
   "dateRange": {
@@ -24,14 +24,12 @@
       {
         "displayed": true,
         "isDefault": true,
-        "key": "name",
-        "width": 100
+        "key": "name"
       },
       {
         "displayed": true,
         "isDefault": true,
-        "key": "dueDate",
-        "width": 100
+        "key": "dueDate"
       }
     ]
   }

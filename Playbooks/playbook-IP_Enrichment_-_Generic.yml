@@ -257,7 +257,7 @@ inputs:
 - key: IP
   value:
     simple: ${IP.Address}
-  required: true
+  required: false
   description: The IP addresses to enrich
 - key: InternalRange
   value: {}
@@ -270,4 +270,3 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, Vendor
   type: unknown
-releaseNotes: "-"

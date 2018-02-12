@@ -2,6 +2,7 @@ commonfields:
   id: dbbdc2e4-6105-4ee9-8e83-563a4b991a89
   version: 12
 name: VirustotalIsMalicious
+deprecated: true
 script: |-
   from time import sleep
   threshold = int(demisto.args()['threshold']) if 'threshold' in demisto.args() else 3
