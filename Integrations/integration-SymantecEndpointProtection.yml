@@ -233,30 +233,26 @@ script:
 
         md += '\n';
 
-        var entryContext = {};
-        entryContext = {
-            'SEPM.Endpoint.Hostname': [],
-            'SEPM.Endpoint.Domain': [],
-            'SEPM.Endpoint.IPAddresses': [],
-            'SEPM.Endpoint.OS': [],
-            'SEPM.Endpoint.Description': [],
-            'SEPM.Endpoint.MACAddress': [],
-            'SEPM.Endpoint.BIOSVersion': [],
-            'SEPM.Endpoint.DHCPServer': []
+        var entryContext = {
+            'SEPM.Endpoint': []
         };
+
         var filteredJsonRes = [];
-       jsonRes.content.forEach(function(content) {
-           filteredJsonRes.push(content);
-           // Set the entry context
-           entryContext['SEPM.Endpoint.Hostname'].push(content.computerName);
-           entryContext['SEPM.Endpoint.Domain'].push(content.domainOrWorkgroup);
-           entryContext['SEPM.Endpoint.IPAddresses'].push(content.ipAddresses);
-           entryContext['SEPM.Endpoint.OS'].push(content.operatingSystem + ' | ' + content.osBitness);
-           entryContext['SEPM.Endpoint.Description'].push(content.description);
-           entryContext['SEPM.Endpoint.MACAddress'].push(content.macAddress);
-           entryContext['SEPM.Endpoint.BIOSVersion'].push(content.biosVersion);
-           entryContext['SEPM.Endpoint.DHCPServer'].push(content.dhcpServer);
-       });
+        jsonRes.content.forEach(function(content) {
+            filteredJsonRes.push(content);
+            // Set the entry context
+
+            entryContext['SEPM.Endpoint'].push({
+                Hostname: content.computerName,
+                Domain: content.domainOrWorkgroup,
+                IPAddresses: content.ipAddresses,
+                OS: content.operatingSystem + ' | ' + content.osBitness,
+                Description: content.description,
+                MACAddresses: content.macAddresses,
+                BIOSVersion: content.biosVersion,
+                DHCPServer: content.dhcpServer
+            });
+        });
 
         if (args.columns) {
             if (args.columns == 'all' || args.columns == '*') {
@@ -537,7 +533,7 @@ script:
       description: The endpoint's OS information.
     - contextPath: SEPM.Endpoint.Description
       description: The endpoint's description.
-    - contextPath: SEPM.Endpoint.MACAddress
+    - contextPath: SEPM.Endpoint.MACAddresses
       description: The endpoint's MAC address.
     - contextPath: SEPM.Endpoint.BIOSVersion
       description: The endpoint's BIOS version.
