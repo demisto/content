@@ -291,6 +291,9 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test"
+        },
+        {
+            "playbookID": "ExtractDomainTest"
         }
     ],
     "skipped": [
