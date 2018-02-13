@@ -515,4 +515,3 @@ script:
       description: Table headers
     description: Retrieve a note for an offense
   isfetch: true
-releaseNotes: "Fixed 'Script failed to run' exception when using 'range' parameter with 'qradar-get-closing-reasons' command."

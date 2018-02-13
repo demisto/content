@@ -170,4 +170,3 @@ inputs:
 - key: ReportFormat
   value: xml
   description: ""
-releaseNotes: "-"
