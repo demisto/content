@@ -288,6 +288,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        },
+        {
+            "playbookID": "ExtractDomainTest"
         }
     ],
     "skipped": [
