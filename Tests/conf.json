@@ -23,6 +23,11 @@
             "timeout": 300
         },
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -310,11 +315,6 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
         {
