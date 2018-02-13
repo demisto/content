@@ -673,7 +673,11 @@ script:
             var body = JSON.stringify({username: params.credentials.identifier, password: params.credentials.password});
             var headers = {'Content-Type': ['application/json']};
             var res = sendRequest(url + loginPath, 'POST', headers, body);
-            userToken = body.token;
+            if (res.StatusCode != 200){
+                throw "Failed to login.\n" + res.Body;
+            }
+            var resBody = JSON.parse(res.Body);
+            userToken = resBody.token;
         };
 
         var logout = function() {
