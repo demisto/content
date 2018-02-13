@@ -1,0 +1,258 @@
+commonfields:
+  id: Proofpoint_TAP
+  version: -1
+name: Proofpoint TAP
+display: Proofpoint TAP
+category: Authentication
+image: data:image/png;base64,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
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: 'A string specifying which threat type will be returned in the data. If
+    no value is specified, all threat types are returned. The following values are
+    accepted: url, attachment, messageText'
+  name: threatType
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'A string specifying which threat statuses will be returned in the data.
+    If no value is specified, active and cleared threats are returned. The following
+    values are accepted: active, cleared, falsePositive'
+  name: threatStatus
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Server URL (TAP API URL)
+  name: url
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  type: 0
+  required: true
+- display: API Version (v1, v2)
+  name: apiVersion
+  defaultvalue: v2
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 0
+  required: false
+script:
+  script: |-
+    var MINUTE_IN_MILLIS = 60 * 1000;
+    var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+
+    function fixUrl(url) {
+        if (url.endsWith('/')) {
+            return url.slice(0, -1);
+        }
+
+        return url;
+    }
+    var SERVER_URL = fixUrl(params.url) + '/' + params.apiVersion + '/siem';
+
+
+    function httpGet(path) {
+        var requestUrl = SERVER_URL + path;
+
+        var res = http(requestUrl, {
+            Method: 'GET',
+            Username: params.credentials.identifier,
+            Password: params.credentials.password
+        });
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nRequest URL: ' + requestUrl +'\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    }
+
+    function getEvents() {
+        var events = getEventsRequest(args.interval, args.sinceTime, args.threatType, args.threatStatus);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: events
+        };
+    }
+
+    function getEventsRequest(interval, sinceTime, threatType, threatStatus) {
+        if (!interval && !sinceTime) {
+            throw 'Required to pass interval or sinceTime.';
+        }
+
+        var queryParams = {
+            format: 'json'
+        };
+
+        if (interval) {
+            queryParams.interval = interval;
+        }
+        if (sinceTime) {
+            queryParams.sinceTime = sinceTime;
+        }
+        if (threatType) {
+            queryParams.threatType = threatType;
+        }
+        if (threatStatus) {
+            queryParams.threatStatus = threatStatus;
+        }
+
+        var events = httpGet('/all' + encodeToURLQuery(queryParams));
+        return events;
+    }
+
+    function dateToISO8601(date) {
+        return date.toISOString().replace(/\.\d{3}/,'');
+    }
+
+    var results;
+    switch(command) {
+        case 'test-module':
+
+            break;
+        case 'fetch-incidents':
+            var now = new Date();
+            var lastRun = getLastRun();
+            if (!lastRun || !lastRun.lastRunTime) {
+                // if fetch run for the first time, we fetch the events in last half an hour
+                var lastHourDate = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
+                lastRun = {
+                    lastRunTime: dateToISO8601(lastHourDate)
+                };
+            }
+
+            var fromTime = lastRun.lastRunTime;
+            var untilTime = dateToISO8601(now);
+            var interval = fromTime + '/' + untilTime;
+            var events = getEventsRequest(interval, null, params.threatType, params.threatStatus);
+
+            var incidents = [];
+            if (events) {
+                // convert events to demisto incidents
+                if (events.messagesDelivered && events.messagesDelivered.length > 0) {
+                    for (var i = 0; i < events.messagesDelivered.length; i++) {
+                        var event = events.messagesDelivered[i];
+                        event.type = 'messages delivered';
+                        var incident = {
+                            name: 'Proofpoint - Message Delivered - ' + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (events.messagesBlocked && events.messagesBlocked.length > 0) {
+                    for (var i = 0; i < events.messagesBlocked.length; i++) {
+                        var event = events.messagesBlocked[i];
+                        event.type = 'messages blocked';
+                        var incident = {
+                            name: 'Proofpoint - Message Blocked - ' + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (events.clicksPermitted && events.clicksPermitted.length > 0) {
+                    for (var i = 0; i < events.clicksPermitted.length; i++) {
+                        var event = events.clicksPermitted[i];
+                        event.type = 'clicks permitted';
+                        var incident = {
+                            name: 'Proofpoint - Click Permitted - '  + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (events.clicksBlocked && events.clicksBlocked.length > 0) {
+                    for (var i = 0; i < events.clicksBlocked.length; i++) {
+                        var event = events.clicksBlocked[i];
+                        event.type = 'clicks blocked';
+                        var incident = {
+                            name: 'Proofpoint - Click Blocked - '  + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+            }
+
+            // set the next run time
+            setLastRun({
+                lastRunTime: dateToISO8601(now)
+            });
+
+            return JSON.stringify(incidents);
+        case 'proofpoint-get-events':
+            results = getEvents();
+            break;
+    }
+
+    return results;
+  type: javascript
+  commands:
+  - name: proofpoint-get-events
+    arguments:
+    - name: interval
+      description: 'A string containing an ISO8601-formatted interval. If this interval
+        overlaps with previous requests for data, records from the previous request
+        may be duplicated. The minimum interval is thirty seconds. The maximum interval
+        is one hour. Examples:  2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour
+        interval, beginning at noon UTC on 05-01-2016 PT30M/2016-05-01T12:30:00Z -
+        the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
+        UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
+        -0700 as the time zone'
+    - name: threatType
+      auto: PREDEFINED
+      predefined:
+      - url
+      - attachment
+      - messageText
+      description: 'A string specifying which threat type will be returned in the
+        data. If no value is specified, all threat types are returned. The following
+        values are accepted: url,attachment, messageText'
+    - name: threatStatus
+      auto: PREDEFINED
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      description: 'A string specifying which threat statuses will be returned in
+        the data. If no value is specified, active and cleared threats are returned.
+        The following values are accepted:  active, cleared, falsePositive'
+    - name: sinceTime
+      description: 'A string containing an ISO8601 date. It represents the start of
+        the data retrieval period. The end of the period is determined by current
+        API server time rounded to the nearest minute. If JSON output is selected,
+        the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
+    description: Fetch events for all click and message relating to known threats
+      within the specified time period. Details as per clicks/blocked.
+  isfetch: true
+  runonce: false
