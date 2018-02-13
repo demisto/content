@@ -1,5 +1,5 @@
 id: McAfeeESMTest
-version: 2
+version: -1
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1125,
           "y": 50
         }
       }
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 910,
+          "y": 720
         }
       }
   "4":
@@ -89,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 195
         }
       }
@@ -130,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 910,
+          "y": 895
         }
       }
   "9":
@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 910,
+          "y": 1770
         }
       }
   "11":
@@ -198,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 910,
+          "y": 1420
         }
       }
   "13":
@@ -231,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 910,
+          "y": 1595
         }
       }
   "16":
@@ -260,8 +260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 910,
+          "y": 1945
         }
       }
   "17":
@@ -286,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 910,
+          "y": 2470
         }
       }
   "18":
@@ -314,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 910,
+          "y": 2120
         }
       }
   "19":
@@ -344,8 +344,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 910,
+          "y": 2295
         }
       }
   "20":
@@ -370,8 +370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 910,
+          "y": 2645
         }
       }
   "21":
@@ -386,9 +386,6 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "23"
     scriptarguments:
       assignedUser:
         simple: ME
@@ -404,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2790
+          "y": 2965
         }
       }
   "22":
@@ -421,12 +418,16 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
+      - "23"
+      - "24"
+      - "25"
+      - "26"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 910,
+          "y": 2820
         }
       }
   "23":
@@ -441,14 +442,11 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "24"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 2965
         }
       }
@@ -464,15 +462,12 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3140
+          "x": 910,
+          "y": 2965
         }
       }
   "25":
@@ -487,15 +482,12 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "26"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3315
+          "x": 1340,
+          "y": 2965
         }
       }
   "26":
@@ -514,8 +506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3490
+          "x": 1770,
+          "y": 2965
         }
       }
   "27":
@@ -553,8 +545,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 910,
+          "y": 1245
         }
       }
   "28":
@@ -585,7 +577,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1340,
           "y": 195
         }
       }
@@ -612,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 910,
+          "y": 1070
         }
       }
   "30":
@@ -630,7 +622,7 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "2"
+      - "31"
     scriptarguments:
       contextKey: {}
       date: {}
@@ -643,8 +635,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 370
+        }
+      }
+  "31":
+    id: "31"
+    taskid: 1879371b-bd48-4926-8897-a8b8e1117f26
+    type: regular
+    task:
+      id: 1879371b-bd48-4926-8897-a8b8e1117f26
+      version: -1
+      name: Wait for the setup to update the context
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context: {}
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
         }
       }
 view: |-
@@ -652,8 +671,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3535,
-        "width": 810,
+        "height": 3010,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
