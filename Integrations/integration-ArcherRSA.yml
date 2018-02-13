@@ -1017,7 +1017,17 @@ script:
     function destroyAuthToken(token) {
         var soap = terminateSessionSoapRequest(token);
         var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
-        sendSoapRequest('logout', soap, SOAPAction);
+
+        try {
+            sendSoapRequest('logout', soap, SOAPAction);
+        } catch(err) {
+            if (err.indexOf('Invalid session token') > -1) {
+                // it means the session token already expired so no need to be terminated
+                return
+            }
+
+            throw err
+        }
     }
 
     var token = null;
