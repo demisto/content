@@ -704,7 +704,7 @@ script:
             'Type': entryTypes['note'],
             'Contents': fixed_organizations,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tblToMd('Case Events:', fixed_organizations, headers),
+            'HumanReadable': tblToMd('Organizations:', fixed_organizations, headers),
             'EntryContext': context
        }
 
