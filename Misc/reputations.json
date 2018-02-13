@@ -178,7 +178,8 @@
       "details": "hostname",
       "enhancementScriptNames": [
         "ADGetComputer"
-      ]
+      ],
+      "fromVersion": "3.5.0"
     },
     {
       "id": "usernameRep",
@@ -188,7 +189,9 @@
       "details": "username",
       "enhancementScriptNames": [
         "ADGetUser"
-      ]
+      ],
+      "fromVersion": "3.5.0"
     }
-  ]
+  ],
+  "releaseNotes": "Fix new indicator types for versions prior of 3.5"
 }
