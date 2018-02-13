@@ -183,7 +183,7 @@ args:
   defaultValue: "true"
 - name: calcReputation
   auto: PREDEFINED
-  defaultValue: "true"
+  defaultValue: "false"
   predefined:
   - "true"
   - "false"
@@ -203,3 +203,4 @@ outputs:
 - contextPath: Domain.Name
   description: Extracted domains
 scripttarget: 0
+releaseNotes: "ExtractDomain to calcReputation be false by default"
