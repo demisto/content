@@ -1,0 +1,162 @@
+commonfields:
+id: Proofpoint Threat Response
+version: -1
+name: Proofpoint Threat Response
+display: Proofpoint Threat Response
+category: Threat Intelligence
+description: Provides the API for Proofpoint Threat Response. Threat Response is designed
+to work in any IT Security and Security Operations Center environments - small,
+medium, or large.
+configuration:
+- display: The API server address
+name: Server
+defaultvalue: ""
+type: 0
+required: true
+- display: API Key
+name: APIKey
+defaultvalue: ""
+type: 0
+required: true
+- display: Ignore certificate
+name: insecure
+defaultvalue: "false"
+type: 8
+required: false
+script:
+script: |-
+  function fixUrl(url) {
+      if (url.endsWith('/')) {
+          return url.slice(0, -1);
+      }
+
+      return url;
+  }
+  var SERVER_URL = fixUrl(params.url) + '/';
+  var INCIDENT_DEFAULT_COLUMNS = null;
+
+  function sendRequest(path, queryParams){
+      var requestUrl = SERVER_URL.concat(path, queryParams ? encodeToURLQuery(queryParams ) : '');
+
+      var res = http(
+          requestUrl,
+          {
+
+              Method: 'GET',
+              Headers: {
+                  Accept: ['application/json'],
+                  Authorization: [params.APIKey]
+              }
+          },
+          params.insecure
+      );
+
+      if (res.StatusCode < 200 || res.StatusCode >= 300) {
+          throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+      }
+
+      return res;
+  };
+
+  function getIncidentById(){
+      var incident = getIncidentByIdRequest(args.incidentId);
+
+      var entryContext = {
+          Incident: incident
+      };
+
+      columnsList = INCIDENT_DEFAULT_COLUMNS;
+      columnsList.sort();
+      var md = 'Incident ' + args.incidentId + '\n';
+      md += tblToMd('Incident details', result, columnsList);
+
+      return {
+          Type: entryTypes.note,
+          Contents: result,
+          ContentsFormat: formats.json,
+          HumanReadable: md,
+          EntryContext: entryContext
+      };
+  }
+
+  function getIncidentByIdRequest(incidentId){
+      var incident;
+      var path = 'incidents';
+      path.concat('/', incidentId, '.json');
+      incident = sendRequest(path);
+
+      return incident;
+  }
+
+  function getIncidents(){
+      var results = retrieveIncidents(args);
+
+      var entryContext = {
+          Incident: results
+      };
+
+      columnsList = INCIDENT_DEFAULT_COLUMNS;
+      columnsList.sort();
+      var md = 'Incidents retrieved';
+      md += tblToMd('Incident details', result, columnsList);
+
+      return {
+          Type: entryTypes.note,
+          Contents: results,
+          ContentsFormat: formats.json,
+          HumanReadable: md,
+          EntryContext: entryContext
+      };
+  }
+
+  function getIncidentsRequest(queryParams){
+      var result;
+      result = sendRequest('incidents', 'GET', queryParams);
+  }
+
+  // The command input arg holds the command sent from the user.
+  var result;
+  switch (command) {
+      // This is the call made when pressing the integration test button.
+      case 'test-module':
+          return 'ok';
+      case 'fetch-incidents':
+      case 'proofpoint-get-incident-by-id':
+          result = getIncidentById();
+          return result;
+      case 'proofpoint-get-incidents':
+          result = getIncidents();
+          return result;
+      default:
+  }
+type: javascript
+commands:
+- name: proofpoint-get-incidents
+  arguments:
+  - name: state
+    auto: PREDEFINED
+    predefined:
+    - new
+    - open
+    - assigned
+    - closed
+    - ignored
+    description: State of the incidents to retrive
+  - name: created_after
+    description: Retrieve incidents that were created after specified date, in ISO
+      8601 format (UTC)
+  - name: created_before
+    description: Retrieve incidents that were created before specified date, in
+      ISO 8601 format (UTC)
+  - name: closed_after
+    description: Retrieve incidents that were closed after specified date, in ISO
+      8601 format (UTC)
+  description: Retrieve incidents metadata from Threat Response, by optionally specifying
+    filter criteria such as the state of the incident or time of closure.
+- name: proofpoint-get-incident-by-id
+  arguments:
+  - name: incidentId
+    required: true
+    description: The Id of the requested incident
+hidden: false
+releaseNotes: "-"
