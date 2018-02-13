@@ -192,5 +192,6 @@
       ],
       "fromVersion": "3.5.0"
     }
-  ]
+  ],
+  "releaseNotes": "Fix new indicator types for versions prior of 3.5"
 }
