@@ -233,16 +233,14 @@ script:
 
         md += '\n';
 
-        var entryContext = {
-            'SEPM.Endpoint': []
-        };
+        var entryContext = [];
 
         var filteredJsonRes = [];
         jsonRes.content.forEach(function(content) {
             filteredJsonRes.push(content);
             // Set the entry context
 
-            entryContext['SEPM.Endpoint'].push({
+            entryContext.push({
                 Hostname: content.computerName,
                 Domain: content.domainOrWorkgroup,
                 IPAddresses: content.ipAddresses,
@@ -266,7 +264,15 @@ script:
         }
 
         md += tblToMd('Endpoints', filteredJsonRes, columnsList);
-        return {Type: entryTypes.note, Contents: filteredJsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
+        return {
+            Type: entryTypes.note,
+            Contents: filteredJsonRes,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'SEPM.Endpoint(val.computerName == obj.computerName)': entryContext
+            }
+        };
     }
 
     var groupsInfo = function(token) {
