@@ -231,6 +231,8 @@ script:
             md += ', page size: ' + args.pageSize;
         }
 
+        md += '\n';
+
         var entryContext = {};
         entryContext = {
             'SEPM.Endpoint.Hostname': [],
@@ -255,8 +257,6 @@ script:
            entryContext['SEPM.Endpoint.BIOSVersion'].push(content.biosVersion);
            entryContext['SEPM.Endpoint.DHCPServer'].push(content.dhcpServer);
        });
-
-        md += '\n';
 
         if (args.columns) {
             if (args.columns == 'all' || args.columns == '*') {
