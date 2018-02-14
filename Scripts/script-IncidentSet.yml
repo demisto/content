@@ -2,7 +2,7 @@ commonfields:
   id: IncidentSet
   version: -1
 name: IncidentSet
-fromVersion: 3.6.0
+fromversion: 3.6.0
 script: |-
   res = []
   dArgs = {}
