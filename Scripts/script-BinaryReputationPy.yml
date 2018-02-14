@@ -87,5 +87,5 @@ dependson:
   must:
   - file
 timeout: 0s
-deperecated: true
+deprecated: true
 releaseNotes: "Deprecated script, use ExtractHash - to extract data, and use directly file command to get reputation"
