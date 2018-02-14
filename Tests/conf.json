@@ -3,9 +3,6 @@
     "testInterval": 30,
     "tests": [
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
