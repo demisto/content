@@ -1,6 +1,7 @@
 id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
+releaseNotes: "-"
 fromversion: 3.5.0
 description: Get file reputation using one or more integrations
 starttaskid: "0"
@@ -12,8 +13,8 @@ tasks:
     task:
       id: 214ebf34-1312-43ec-873d-41d45094ba22
       version: -1
-      description: ""
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,8 +35,8 @@ tasks:
     task:
       id: 4f88c305-19b2-4d29-8284-0fe706b0b516
       version: -1
-      description: ""
       name: Hash reputation
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -54,10 +55,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 9ca8e98e-7dbb-4bdf-8137-f140c3bc05ab
+    taskid: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
     type: regular
     task:
-      id: 9ca8e98e-7dbb-4bdf-8137-f140c3bc05ab
+      id: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
       version: -1
       name: Check MD5s
       description: Checks reputation of MD5
@@ -70,13 +71,14 @@ tasks:
       - "7"
     scriptarguments:
       file:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 49,
           "y": 515
         }
       }
@@ -87,8 +89,8 @@ tasks:
     task:
       id: 66d74bf4-438c-40a8-840f-58052c181d0f
       version: -1
-      description: ""
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -102,10 +104,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 898f453d-592a-4946-8a9c-24a16546e4fe
+    taskid: e7b3a313-8f11-45ab-8b4d-2373184ed873
     type: condition
     task:
-      id: 898f453d-592a-4946-8a9c-24a16546e4fe
+      id: e7b3a313-8f11-45ab-8b4d-2373184ed873
       version: -1
       name: Do we have MD5 hashes?
       description: Checks if there MD5 hashes to check
@@ -127,7 +129,8 @@ tasks:
       - - operator: general.isExists
           left:
             value:
-              simple: File.MD5
+              complex:
+                root: inputs.MD5
             iscontext: true
     view: |-
       {
@@ -138,10 +141,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 05b3f48a-479d-4c70-872d-a0c26b00aa2b
+    taskid: 201f454e-7e43-4b7a-86c1-cf184c3f4034
     type: condition
     task:
-      id: 05b3f48a-479d-4c70-872d-a0c26b00aa2b
+      id: 201f454e-7e43-4b7a-86c1-cf184c3f4034
       version: -1
       name: Do we have SHA256 hashes?
       description: Checks if there SHA256 hashes to check
@@ -163,7 +166,8 @@ tasks:
       - - operator: general.isExists
           left:
             value:
-              simple: File.SHA256
+              complex:
+                root: inputs.SHA256
             iscontext: true
     view: |-
       {
@@ -174,10 +178,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 39b93b59-a58a-47c7-8dd9-ea93f7bcb4a9
+    taskid: fa195b67-af7f-4d2c-8539-801984ffd27a
     type: regular
     task:
-      id: 39b93b59-a58a-47c7-8dd9-ea93f7bcb4a9
+      id: fa195b67-af7f-4d2c-8539-801984ffd27a
       version: -1
       name: Check SHA256s
       description: Checks reputation of SHA256
@@ -190,7 +194,8 @@ tasks:
       - "7"
     scriptarguments:
       file:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
     continueonerror: true
     separatecontext: false
     view: |-
@@ -202,10 +207,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 7e4a9672-2b7a-4291-8072-4aa7ffc35291
+    taskid: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
     type: condition
     task:
-      id: 7e4a9672-2b7a-4291-8072-4aa7ffc35291
+      id: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
       version: -1
       name: Do we have SHA1 hashes?
       description: Checks if there SHA1 hashes to check
@@ -227,7 +232,8 @@ tasks:
       - - operator: general.isExists
           left:
             value:
-              simple: File.SHA1
+              complex:
+                root: inputs.SHA1
             iscontext: true
     view: |-
       {
@@ -238,10 +244,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 2289f133-81fe-4dd7-8e67-d890237cc537
+    taskid: 689b03e9-186f-4edd-8ae2-859b957487d7
     type: regular
     task:
-      id: 2289f133-81fe-4dd7-8e67-d890237cc537
+      id: 689b03e9-186f-4edd-8ae2-859b957487d7
       version: -1
       name: Check SHA1s
       description: Checks reputation of SHA1
@@ -254,7 +260,8 @@ tasks:
       - "7"
     scriptarguments:
       file:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
     continueonerror: true
     separatecontext: false
     view: |-
@@ -273,8 +280,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 705,
-        "width": 1485,
-        "x": 50,
+        "width": 1486,
+        "x": 49,
         "y": 50
       }
     }
@@ -282,17 +289,23 @@ view: |-
 inputs:
 - key: MD5
   value:
-    simple: ${File.MD5}
+    complex:
+      root: File
+      accessor: MD5
   required: false
   description: File MD5 to enrich
 - key: SHA256
   value:
-    simple: ${File.SHA256}
+    complex:
+      root: File
+      accessor: SHA256
   required: false
   description: File SHA256 to enrich
 - key: SHA1
   value:
-    simple: ${File.SHA1}
+    complex:
+      root: File
+      accessor: SHA1
   required: false
   description: File SHA1 to enrich
 outputs:
