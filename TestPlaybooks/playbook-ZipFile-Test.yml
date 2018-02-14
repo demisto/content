@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 35e1ae3e-a936-4be5-8e14-a01b820493d2
+    taskid: 619d8c98-8a51-4685-836b-cab808ddf1fa
     type: start
     task:
-      id: 35e1ae3e-a936-4be5-8e14-a01b820493d2
+      id: 619d8c98-8a51-4685-836b-cab808ddf1fa
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +17,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -26,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 931a75cf-4649-41f7-8c1f-d8f32a7b0ed5
+    taskid: 0e7b75cf-4790-4908-816c-c4dc95676520
     type: regular
     task:
-      id: 931a75cf-4649-41f7-8c1f-d8f32a7b0ed5
+      id: 0e7b75cf-4790-4908-816c-c4dc95676520
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -42,9 +43,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      data: something
-      entryId: ""
-      filename: original.txt
+      data:
+        simple: something
+      entryId: {}
+      filename:
+        simple: original.txt
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -54,10 +58,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: f341eb93-e294-4786-8ea1-8d732191098d
+    taskid: f64580a9-8abe-4c1a-8be4-3769f4fd28c0
     type: regular
     task:
-      id: f341eb93-e294-4786-8ea1-8d732191098d
+      id: f64580a9-8abe-4c1a-8be4-3769f4fd28c0
       version: -1
       name: ZipFile
       description: Zip a file
@@ -69,7 +73,11 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      EntryID: ${File(val.Name=='original.txt').EntryID}
+      entryID:
+        simple: ${File.EntryID}
+      zipName:
+        simple: testing.zip
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -79,10 +87,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 9291c780-9e96-4c37-8574-ce8219e10c19
+    taskid: c7de4174-cb84-434e-8684-9a00490560bb
     type: regular
     task:
-      id: 9291c780-9e96-4c37-8574-ce8219e10c19
+      id: c7de4174-cb84-434e-8684-9a00490560bb
       version: -1
       name: UnzipFile
       description: Unzip a file using fileName or entryID to specify a file. Files
@@ -95,10 +103,12 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      entryID: ${File(val.Extension=='zip').EntryID}
-      fileName: ""
-      lastZipFileInWarroom: ""
-      password: ""
+      entryID:
+        simple: ${File(val.Extension=='zip').EntryID}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -108,10 +118,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 4ad44ff2-0e64-40a3-87b4-affd6f1b1b74
+    taskid: 4895c39c-31a7-4090-804c-a62e8ce9f606
     type: regular
     task:
-      id: 4ad44ff2-0e64-40a3-87b4-affd6f1b1b74
+      id: 4895c39c-31a7-4090-804c-a62e8ce9f606
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -123,8 +133,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -134,10 +146,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 8b8a021e-11a2-4735-815b-41c6d4b6ed7a
+    taskid: 68db8e23-4085-4bd0-8ae6-58a35f8b31e7
     type: regular
     task:
-      id: 8b8a021e-11a2-4735-815b-41c6d4b6ed7a
+      id: 68db8e23-4085-4bd0-8ae6-58a35f8b31e7
       version: -1
       name: ReadFile
       description: Load the contents of a file into context.
@@ -149,8 +161,10 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      entryID: ${File.EntryID=>val[2]}
-      maxFileSize: ""
+      entryID:
+        simple: ${File.EntryID=>val[2]}
+      maxFileSize: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -160,15 +174,15 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: ed85a764-25bf-464a-8c9f-9b571c2ea548
+    taskid: 0803fb70-0705-4a6b-86be-2caa80fd5381
     type: condition
     task:
-      id: ed85a764-25bf-464a-8c9f-9b571c2ea548
+      id: 0803fb70-0705-4a6b-86be-2caa80fd5381
       version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
+      name: VerifySuccessfulCycle
+      description: Check whether the initial file was zipped and unzipped properly
+        by comparing the initial and unzipped files md5. If the md5 is not equal to
+        expected it means that the process was not successful.
       type: condition
       iscommand: false
       brand: ""
@@ -176,23 +190,50 @@ tasks:
       "yes":
       - "7"
     scriptarguments:
-      left: ${FileData}
-      right: something
-    results:
-    - AreValuesEqual
+      firstFile:
+        simple: ${File.EntryID}
+      secondFile: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isNotExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: original.txt
+                - - operator: string.isNotEqual
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 437b930db84b8079c2dd804a71936b5f
+                accessor: MD5
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1069
         }
       }
   "7":
     id: "7"
-    taskid: eab78c28-49f7-49c5-8711-3324311cf285
+    taskid: 63c7ce47-81eb-46d1-8367-ab731abc028f
     type: regular
     task:
-      id: eab78c28-49f7-49c5-8711-3324311cf285
+      id: 63c7ce47-81eb-46d1-8367-ab731abc028f
       version: -1
       name: closeInvestigation
       description: Close the current investigation
@@ -201,9 +242,10 @@ tasks:
       iscommand: true
       brand: Builtin
     scriptarguments:
-      closeNotes: ""
-      closeReason: ""
-      id: ""
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -224,3 +266,5 @@ view: |-
     }
   }
 inputs: []
+outputs: []
+releaseNotes: "-"
