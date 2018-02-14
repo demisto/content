@@ -1280,4 +1280,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-  releaseNotes: "-"
+releaseNotes: "-"
