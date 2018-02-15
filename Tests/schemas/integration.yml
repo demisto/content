@@ -22,7 +22,7 @@ mapping:
     'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
     'Vulnerability Management', 'Case Management',
     'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
-     'Authentication', 'Database']
+     'Authentication', 'Database', 'Deception']
     required: yes
   fromversion:
     type: str
@@ -60,6 +60,8 @@ mapping:
         type: seq
         sequence:
         - include: command_schema
+      runonce:
+        type: bool
   system:
     type: bool
   hidden:
