@@ -162,6 +162,7 @@ script:
     - name: incidentId
       required: true
       description: The Id of the requested incident
+    description: Retreive incident metadata from Threat Response by Id
 hidden: false
 releaseNotes: "-"
 
