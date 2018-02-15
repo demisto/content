@@ -19,14 +19,7 @@ script: |-
       if (isValidRes(entries)) {
           for (var j=0;j<entries.length;j++){
               var ent=entries[j];
-              var obj = { 'id': entryID, 'description': desc};
-              if (args.occurred) {
-                obj.when = args.occurred;
-              }
-              if (entryTags) {
-                obj.tags = entryTags;
-              }
-              var res = executeCommand('markAsEvidence', obj);
+              var res = executeCommand('markAsEvidence', { 'id': entryID, 'description': desc, when: args.occurred, tags: entryTags });
               if (!isValidRes(res)) {
                   return res;
               }
