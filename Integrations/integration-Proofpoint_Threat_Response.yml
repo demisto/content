@@ -1,6 +1,6 @@
 commonfields:
-id: Proofpoint Threat Response
-version: -1
+  id: Proofpoint Threat Response
+  version: -1
 name: Proofpoint Threat Response
 display: Proofpoint Threat Response
 category: Threat Intelligence
@@ -9,130 +9,130 @@ description: Provides the API for Proofpoint Threat Response. Threat Response is
 to work in any IT Security and Security Operations Center environments - small,
 medium, or large.
 configuration:
-- display: The API server address
-name: Server
-defaultvalue: ""
-type: 0
-required: true
-- display: API Key
-name: APIKey
-defaultvalue: ""
-type: 0
-required: true
-- display: Ignore certificate
-name: insecure
-defaultvalue: "false"
-type: 8
-required: false
+  - display: The API server address
+  name: Server
+  defaultvalue: ""
+  type: 0
+  required: true
+  - display: API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 0
+  required: true
+  - display: Ignore certificate
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
-script: |-
-  function fixUrl(url) {
-      if (url.endsWith('/')) {
-          return url.slice(0, -1);
-      }
+  script: |-
+    function fixUrl(url) {
+        if (url.endsWith('/')) {
+            return url.slice(0, -1);
+        }
 
-      return url;
-  }
-  var SERVER_URL = fixUrl(params.url) + '/';
-  var INCIDENT_DEFAULT_COLUMNS = null;
+        return url;
+    }
+    var SERVER_URL = fixUrl(params.url) + '/';
+    var INCIDENT_DEFAULT_COLUMNS = null;
 
-  function sendRequest(path, queryParams){
-      var requestUrl = SERVER_URL.concat(path, queryParams ? encodeToURLQuery(queryParams ) : '');
+    function sendRequest(path, queryParams){
+        var requestUrl = SERVER_URL.concat(path, queryParams ? encodeToURLQuery(queryParams ) : '');
 
-      var res = http(
-          requestUrl,
-          {
+        var res = http(
+            requestUrl,
+            {
 
-              Method: 'GET',
-              Headers: {
-                  Accept: ['application/json'],
-                  Authorization: [params.APIKey]
-              }
-          },
-          params.insecure
-      );
+                Method: 'GET',
+                Headers: {
+                    Accept: ['application/json'],
+                    Authorization: [params.APIKey]
+                }
+            },
+            params.insecure
+        );
 
-      if (res.StatusCode < 200 || res.StatusCode >= 300) {
-          throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-      }
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
 
-      return res;
-  };
+        return res;
+    };
 
-  function getIncidentById(){
-      var incident = getIncidentByIdRequest(args.incidentId);
+    function getIncidentById(){
+        var incident = getIncidentByIdRequest(args.incidentId);
 
-      var entryContext = {
-          Incident: incident
-      };
+        var entryContext = {
+            Incident: incident
+        };
 
-      columnsList = INCIDENT_DEFAULT_COLUMNS;
-      columnsList.sort();
-      var md = 'Incident ' + args.incidentId + '\n';
-      md += tblToMd('Incident details', result, columnsList);
+        columnsList = INCIDENT_DEFAULT_COLUMNS;
+        columnsList.sort();
+        var md = 'Incident ' + args.incidentId + '\n';
+        md += tblToMd('Incident details', result, columnsList);
 
-      return {
-          Type: entryTypes.note,
-          Contents: result,
-          ContentsFormat: formats.json,
-          HumanReadable: md,
-          EntryContext: entryContext
-      };
-  }
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: entryContext
+        };
+    }
 
-  function getIncidentByIdRequest(incidentId){
-      var incident;
-      var path = 'incidents';
-      path.concat('/', incidentId, '.json');
-      incident = sendRequest(path);
+    function getIncidentByIdRequest(incidentId){
+        var incident;
+        var path = 'incidents';
+        path.concat('/', incidentId, '.json');
+        incident = sendRequest(path);
 
-      return incident;
-  }
+        return incident;
+    }
 
-  function getIncidents(){
-      var results = retrieveIncidents(args);
+    function getIncidents(){
+        var results = retrieveIncidents(args);
 
-      var entryContext = {
-          Incident: results
-      };
+        var entryContext = {
+            Incident: results
+        };
 
-      columnsList = INCIDENT_DEFAULT_COLUMNS;
-      columnsList.sort();
-      var md = 'Incidents retrieved';
-      md += tblToMd('Incident details', result, columnsList);
+        columnsList = INCIDENT_DEFAULT_COLUMNS;
+        columnsList.sort();
+        var md = 'Incidents retrieved';
+        md += tblToMd('Incident details', result, columnsList);
 
-      return {
-          Type: entryTypes.note,
-          Contents: results,
-          ContentsFormat: formats.json,
-          HumanReadable: md,
-          EntryContext: entryContext
-      };
-  }
+        return {
+            Type: entryTypes.note,
+            Contents: results,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: entryContext
+        };
+    }
 
-  function getIncidentsRequest(queryParams){
-      var result;
-      result = sendRequest('incidents', queryParams);
+    function getIncidentsRequest(queryParams){
+        var result;
+        result = sendRequest('incidents', queryParams);
 
-      return result;
-  }
+        return result;
+    }
 
-  // The command input arg holds the command sent from the user.
-  var result;
-  switch (command) {
-      // This is the call made when pressing the integration test button.
-      case 'test-module':
-          result = getIncidentsRequest();
-          return result instanceof Array ? 'ok' : 'notok';
-      case 'fetch-incidents':
-      case 'proofpoint-get-incident-by-id':
-          result = getIncidentById();
-          return result;
-      case 'proofpoint-get-incidents':
-          result = getIncidents();
-          return result;
-      default:
-  }
+    // The command input arg holds the command sent from the user.
+    var result;
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            result = getIncidentsRequest();
+            return result instanceof Array ? 'ok' : 'notok';
+        case 'fetch-incidents':
+        case 'proofpoint-get-incident-by-id':
+            result = getIncidentById();
+            return result;
+        case 'proofpoint-get-incidents':
+            result = getIncidents();
+            return result;
+        default:
+    }
 type: javascript
 commands:
 - name: proofpoint-get-incidents
