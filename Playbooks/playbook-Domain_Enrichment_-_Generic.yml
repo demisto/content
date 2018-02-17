@@ -2,7 +2,9 @@ id: domain_enrichment_generic
 version: -1
 fromversion: 3.5.0
 name: Domain Enrichment - Generic
+releaseNotes: "-"
 description: Enrich Domain using one or more integrations
+releaseNotes: "Run enrichment only if available modules exists and enabled"
 starttaskid: "0"
 tasks:
   "0":
@@ -52,6 +54,30 @@ tasks:
           left:
             value:
               simple: inputs.Domain
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.commands.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
             iscontext: true
     view: |-
       {

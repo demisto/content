@@ -4,6 +4,7 @@ name: Extract Indicators - Generic
 description: Extract indicators from input data
 starttaskid: "0"
 fromversion: 3.5.0
+releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -150,7 +151,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      calcReputation: {}
+      calcReputation:
+        simple: "false"
       markAsIndicator: {}
       text:
         simple: ${inputs.incident}

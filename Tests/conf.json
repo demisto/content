@@ -3,6 +3,10 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "Symantec Endpoint Protection",
+            "playbookID": "sep_-_test_endpoint_search"
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -17,6 +21,11 @@
             },
             "playbookID": "get_file_sample_from_path_-_generic_-_test",
             "timeout": 300
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
         },
         {
             "integrations": [
@@ -313,11 +322,6 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
         {
