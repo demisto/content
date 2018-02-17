@@ -80,8 +80,8 @@ script:
     };
 
     var urlDictionary = {};
-    urlDictionary.login = '/api/core/security/login';
-    urlDictionary.logout = '/api/core/security/logout';
+    urlDictionary.login = '/ws/general.asmx';
+    urlDictionary.logout = '/ws/general.asmx';
     urlDictionary.levelIdByModuleId = '/api/core/system/level/module/%applicationId%';
     urlDictionary.fieldByLevelId = '/api/core/system/fielddefinition/level/%levelId%';
     urlDictionary[commands.createRecord] = '/ws/record.asmx';
@@ -211,6 +211,34 @@ script:
         }
 
         return JSON.parse(result.Body);
+    }
+
+    function createUserSessionFromInstanceSoapRequest(instanceName, userName, password) {
+        return (
+        '<?xml version="1.0" encoding="utf-8"?>' +
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+        '  <soap:Body>' +
+        '    <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' +
+        '      <userName>' + userName + '</userName>' +
+        '      <instanceName>' + instanceName + '</instanceName>' +
+        '      <password>' + password + '</password>' +
+        '    </CreateUserSessionFromInstance>' +
+        '  </soap:Body>' +
+        '</soap:Envelope>'
+        );
+    }
+
+    function terminateSessionSoapRequest(token) {
+        return(
+        '<?xml version="1.0" encoding="utf-8"?>' +
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+        '    <soap:Body>' +
+        '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' +
+        '        <sessionToken>' + token + '</sessionToken>' +
+        '        </TerminateSession>' +
+        '    </soap:Body>' +
+        '</soap:Envelope>'
+        );
     }
 
     function getContentsByAppIdRequest(token, appId, displayFields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, sortByFieldId, isDescending, numericOperator, dateOperator, pageNumber) {
@@ -500,10 +528,11 @@ script:
 
         var soap = getContentSoapRequest(token, applicationId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/GetRecordById';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.GetRecordByIdResponse.GetRecordByIdResult');
@@ -637,10 +666,11 @@ script:
 
         var soap = createContentSoapRequest(token, appId, fields);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
@@ -680,10 +710,11 @@ script:
 
         var soap = updateContentSoapRequest(token,appId,contentId,fields);
         var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var result = dq(response, 'Envelope.Body.UpdateRecordResponse.UpdateRecordResult');
@@ -723,10 +754,11 @@ script:
         var contentId = dataArgs.contentId;
         var soap =  deleteContentSoapRequest(token, appId, contentId);
         var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var result = dq(response, 'Envelope.Body.DeleteRecordResponse.DeleteRecordResult');
@@ -784,12 +816,12 @@ script:
         }
 
         var soap = getContentsByAppIdRequest(token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
-
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
-        var response = JSON.parse(x2j(sendSoapRequest(command, soap, SOAPAction)));
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (response === null || typeof response !== 'object' || response === undefined) {
-            throw "Error in response. Check request : " + soap;
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
 
         var output = parseRecordsXml(response, reversemapping);
@@ -967,46 +999,67 @@ script:
     }
 
     function getAuthToken() {
-        var result = sendRestRequest("login",
-            {
-                InstanceName: params.instanceName,
-                Username: params.credentials.identifier,
-                Password: params.credentials.password
-            },
-            false
-        );
+        var soap = createUserSessionFromInstanceSoapRequest(params.instanceName,
+                                                            params.credentials.identifier,
+                                                            params.credentials.password);
+        var SOAPAction = 'http://archer-tech.com/webservices/CreateUserSessionFromInstance';
+        var rawResponse = sendSoapRequest('login', soap, SOAPAction);
+        var response = JSON.parse(x2j(rawResponse));
 
-        if (result.IsSuccessful != true) {
-            throw 'Login failed. Result = ' + JSON.stringify(result);
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Login failed. Request = " + soap + " Response = " + rawResponse;
         }
 
-        return result.RequestedObject.SessionToken;
+        var token = dq(response, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult');
+        return token;
     }
 
-    switch (command) {
-        case 'test-module':
-            var token = getAuthToken();
-            return !!token ? 'ok' : 'not-ok';
-        case commands.createRecord:
-            return createRecord(command, getAuthToken(), args);
-        case commands.valueListForField:
-            return getValueListForField(command, getAuthToken(), args);
-        case commands.updateRecord:
-            return updateRecord(command, getAuthToken(), args);
-        case commands.deleteRecord:
-            return deleteRecord(command, getAuthToken(), args);
-        case commands.getRecord:
-            return getRecord(command, getAuthToken());
-        case commands.searchApps:
-            return getListOfApplications(command, getAuthToken());
-        case commands.searchRecords:
-            return searchRecords(command, getAuthToken() , args);
-        case commands.getAppFields:
-            return getAppFields(getAuthToken());
-        case 'fetch-incidents':
-            return fetchIncidents(getAuthToken(), args);
-        default:
-            break;
+    function destroyAuthToken(token) {
+        var soap = terminateSessionSoapRequest(token);
+        var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
+
+        try {
+            sendSoapRequest('logout', soap, SOAPAction);
+        } catch(err) {
+            if (err.indexOf('Invalid session token') > -1) {
+                // it means the session token already expired so no need to be terminated
+                return
+            }
+
+            throw err
+        }
+    }
+
+    var token = null;
+    try {
+        token = getAuthToken();
+        switch (command) {
+            case 'test-module':
+                return !!token ? 'ok' : 'not-ok';
+            case commands.createRecord:
+                return createRecord(command, token, args);
+            case commands.valueListForField:
+                return getValueListForField(command, token, args);
+            case commands.updateRecord:
+                return updateRecord(command, token, args);
+            case commands.deleteRecord:
+                return deleteRecord(command, token, args);
+            case commands.getRecord:
+                return getRecord(command, token);
+            case commands.searchApps:
+                return getListOfApplications(command, token);
+            case commands.searchRecords:
+                return searchRecords(command, token , args);
+            case commands.getAppFields:
+                return getAppFields(token);
+            case 'fetch-incidents':
+                return fetchIncidents(token, args);
+            default:
+                break;
+        }
+    }
+    finally {
+        destroyAuthToken(token);
     }
   type: javascript
   commands:
@@ -1134,3 +1187,4 @@ script:
       description: ID of the field
     description: Returns mapping from list value name to list value id
   isfetch: true
+releaseNotes: "Login method now communicates using SOAP protocol."
