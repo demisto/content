@@ -3,6 +3,31 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "Symantec Endpoint Protection",
+            "playbookID": "sep_-_test_endpoint_search"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -270,8 +295,7 @@
             "playbookID": "GeneratePassword-Test"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
+            "playbookID": "ExtractDomainTest"
         }
     ],
     "skipped": [
@@ -294,31 +318,11 @@
             "timeout": 500
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "playbookID": "TestParseCSV"
         },
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test"
         },
         {
             "integrations": [
@@ -337,6 +341,10 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ]
 }

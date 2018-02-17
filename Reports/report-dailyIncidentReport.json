@@ -813,7 +813,6 @@
   "createdBy": "DBot",
   "tags": [],
   "fromVersion": "3.5.0",
-  "releaseNotes": "-",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
   "name": "Daily incidents",
   "id": "dailyIncidentReport"
