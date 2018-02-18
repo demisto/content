@@ -92,10 +92,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 66b478c8-4b31-47a6-8832-1b45e71a331d
+    taskid: 9325c81a-971c-4faa-855c-31815c2ca113
     type: condition
     task:
-      id: 66b478c8-4b31-47a6-8832-1b45e71a331d
+      id: 9325c81a-971c-4faa-855c-31815c2ca113
       version: -1
       name: Is ePO enabled?
       description: Is ePO enabled?
@@ -148,13 +148,6 @@ tasks:
                     right:
                       value:
                         simple: epo
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
