@@ -324,10 +324,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 77f9fb51-235f-498b-8c17-364d7709464c
+    taskid: c334c8ef-ff56-49b0-8508-1fbc7bb19d2d
     type: condition
     task:
-      id: 77f9fb51-235f-498b-8c17-364d7709464c
+      id: c334c8ef-ff56-49b0-8508-1fbc7bb19d2d
       version: -1
       name: Is FalconHost enabled?
       description: Is FalconHost enabled?
@@ -378,13 +378,6 @@ tasks:
                     right:
                       value:
                         simple: FalconHost
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -507,3 +500,4 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+releaseNotes: "-"
