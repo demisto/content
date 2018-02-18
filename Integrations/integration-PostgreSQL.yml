@@ -46,7 +46,7 @@ script:
             conn = psycopg2.connect(connectionString)
         except Exception as e:
             demisto.results(e.message)
-            return null
+            return None
         return conn
 
     if demisto.command() == 'test-module':
