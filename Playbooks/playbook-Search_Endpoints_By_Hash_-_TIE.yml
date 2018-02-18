@@ -37,10 +37,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+    taskid: aa03817d-efd2-4b56-84ae-d785dae24cd9
     type: condition
     task:
-      id: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+      id: aa03817d-efd2-4b56-84ae-d785dae24cd9
       version: -1
       name: Is TIE enabled?
       description: Is TIE enabled?
@@ -74,13 +74,6 @@ tasks:
                     right:
                       value:
                         simple: McAfee Threat Intelligence Exchange
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -409,3 +402,4 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+releaseNotes: "-"

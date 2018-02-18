@@ -61,10 +61,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 504da0d8-d8f5-4273-8954-d5d333dc5ca1
+    taskid: 30a7f2d0-e7c4-4868-8deb-22d3192d04d5
     type: condition
     task:
-      id: 504da0d8-d8f5-4273-8954-d5d333dc5ca1
+      id: 30a7f2d0-e7c4-4868-8deb-22d3192d04d5
       version: -1
       name: Is Carbon Black enabled?
       description: Is Carbon Black enabled?
@@ -97,14 +97,6 @@ tasks:
                     right:
                       value:
                         simple: carbonblack
-                accessor: brand
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -292,3 +284,4 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+releaseNotes: "-"
