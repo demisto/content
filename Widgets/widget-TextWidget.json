@@ -7,9 +7,9 @@
   },
   "isPredefined": true,
   "version": -1,
-  "category": "utilities",
+  "category": "utility",
   "widgetType": "text",
   "params": {
-    "text": "Place your text here"
+    "text": "Place your text here.."
   }
 }
