@@ -2,6 +2,8 @@ id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
+fromversion: 3.5.0
+releaseNots: "Add flag input for screenshots"
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +45,7 @@ tasks:
       - "24"
       "yes":
       - "20"
-      - "25"
+      - "27"
     scriptarguments:
       value:
         simple: inputs.url
@@ -90,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -277,
-          "y": 511
+          "x": -233,
+          "y": 515
         }
       }
   "23":
@@ -134,7 +136,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 863
+          "y": 1039
         }
       }
   "25":
@@ -180,8 +182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 362.5,
-          "y": 511
+          "x": 387,
+          "y": 694
         }
       }
   "26":
@@ -210,8 +212,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 488,
-          "y": 698
+          "x": 525,
+          "y": 880
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 9f59abc9-ab60-46a5-8c76-39a044a6b8e9
+    type: condition
+    task:
+      id: 9f59abc9-ab60-46a5-8c76-39a044a6b8e9
+      version: -1
+      name: Should the system take the URLs screenshots?
+      description: 'Check if the Rasterize input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: 'inputs.Rasterize '
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 272,
+          "y": 515
         }
       }
 view: |-
@@ -221,9 +261,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 878,
-        "width": 1145,
-        "x": -277,
+        "height": 1054,
+        "width": 1138,
+        "x": -233,
         "y": 50
       }
     }
@@ -234,6 +274,11 @@ inputs:
     simple: ${URL.Data}
   required: false
   description: url to enrich
+- key: 'Rasterize '
+  value:
+    simple: Flase
+  required: false
+  description: Should the system take safe screenshots of input URLs?
 outputs:
 - contextPath: URL
   description: The URL's object
@@ -253,4 +298,3 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
-fromversion: 3.5.0
