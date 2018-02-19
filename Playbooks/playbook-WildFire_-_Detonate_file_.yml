@@ -44,14 +44,14 @@ tasks:
       - "6"
     scriptarguments:
       delay: ""
-      entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      entryID: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
         >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       format: ""
       hash: ""
       interval: ""
       md5: ""
       timeout: ""
-      upload: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      upload: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
         >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
       verbose: ""
     view: |-
@@ -127,7 +127,7 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+      value: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
         >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
     view: |-
       {
