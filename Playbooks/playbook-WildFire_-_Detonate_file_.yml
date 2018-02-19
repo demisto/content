@@ -178,3 +178,4 @@ inputs:
   value: ${File}
   description: File object of file to be uploaded
 outputs: []
+releaseNotes: "-"
