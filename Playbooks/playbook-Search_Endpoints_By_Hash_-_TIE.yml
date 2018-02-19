@@ -37,10 +37,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: aa03817d-efd2-4b56-84ae-d785dae24cd9
+    taskid: f96c54b2-b8fa-48b8-8a56-56555a749c10
     type: condition
     task:
-      id: aa03817d-efd2-4b56-84ae-d785dae24cd9
+      id: f96c54b2-b8fa-48b8-8a56-56555a749c10
       version: -1
       name: Is TIE enabled?
       description: Is TIE enabled?
@@ -82,6 +82,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
@@ -92,10 +93,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 9325c81a-971c-4faa-855c-31815c2ca113
+    taskid: b098fed0-d1ae-418c-8a37-756e1ae0cb37
     type: condition
     task:
-      id: 9325c81a-971c-4faa-855c-31815c2ca113
+      id: b098fed0-d1ae-418c-8a37-756e1ae0cb37
       version: -1
       name: Is ePO enabled?
       description: Is ePO enabled?
@@ -156,6 +157,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
