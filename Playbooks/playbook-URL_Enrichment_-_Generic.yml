@@ -3,7 +3,7 @@ version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
-releaseNots: "Add flag input for screenshots"
+releaseNotes: "Add flag input for screenshots"
 starttaskid: "0"
 tasks:
   "0":
