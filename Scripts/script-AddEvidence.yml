@@ -43,7 +43,7 @@ tags:
 - Utility
 comment: |
   Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-enabled: trueÔ˚
+enabled: true
 args:
 - name: entryIDs
   description: Entry IDs to add its output to Evidence Board
