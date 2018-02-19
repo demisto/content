@@ -387,4 +387,4 @@ script:
   - name: epo-command
     arguments: []
     description: Execute ePO command
-releaseNotes: "bug fix for epo-command when result is a string"
+releaseNotes: "Better handling of string-type outputs by ePO"
