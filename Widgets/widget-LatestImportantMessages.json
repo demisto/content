@@ -1,10 +1,10 @@
 {
-  "id": "latest-messages",
+  "id": "latest-important-messages",
   "size": 10,
   "fromVersion": "3.6.0",
   "dataType": "messages",
-  "query": "",
-  "name": "Latest Messages",
+  "query": "(type:investigation* or type:newContentAvailable or type:mention*)",
+  "name": "Important Messages",
   "dateRange": {
     "period": { "byFrom": "days", "fromValue": null }
   },
