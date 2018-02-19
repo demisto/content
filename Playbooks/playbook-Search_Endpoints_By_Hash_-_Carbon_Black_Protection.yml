@@ -94,10 +94,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 7fc0d67f-473c-4d28-844e-ae3dcfd8e11b
+    taskid: 02afb0d8-e0fd-424d-83c6-44a15204351f
     type: condition
     task:
-      id: 7fc0d67f-473c-4d28-844e-ae3dcfd8e11b
+      id: 02afb0d8-e0fd-424d-83c6-44a15204351f
       version: -1
       name: Is Carbon Black Protection enabled?
       description: Is Carbon Black Protection enabled?
@@ -138,6 +138,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {

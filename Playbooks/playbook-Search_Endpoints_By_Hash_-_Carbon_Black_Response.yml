@@ -61,10 +61,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 30a7f2d0-e7c4-4868-8deb-22d3192d04d5
+    taskid: 31e80780-a121-4f17-8c64-2880e9ea0a20
     type: condition
     task:
-      id: 30a7f2d0-e7c4-4868-8deb-22d3192d04d5
+      id: 31e80780-a121-4f17-8c64-2880e9ea0a20
       version: -1
       name: Is Carbon Black enabled?
       description: Is Carbon Black enabled?
@@ -105,6 +105,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
