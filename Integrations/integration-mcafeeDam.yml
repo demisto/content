@@ -154,9 +154,9 @@ script:
             }
         }
         return {
-          name: 'DAM Event - ' + alert.id, 
-          labels: labels, 
-          details: alert.operation, 
+          name: 'DAM Event - ' + alert.id,
+          labels: labels,
+          details: alert.operation,
           rawJSON: JSON.stringify(alert)
         };
     };
@@ -201,11 +201,11 @@ script:
         md += mdTableData(alert);
         if (alert.operation) {
             md += '#### Statement\n';
-            md += '\n```' + alert.operation + '```\n';
+            md += '```\n' + alert.operation + '\n```';
         }
         if (alert.accessedObjects && alert.accessedObjects.object) {
             var objects = Array.isArray(alert.accessedObjects.object) ? alert.accessedObjects.object : new Array(alert.accessedObjects.object);
-            md += '#### Accessed Objects \n';
+            md += '\n#### Accessed Objects \n';
             md += 'Type|Owner|Name\n-|-|-\n';
             for (var i in objects) {
                 md += objects[i].type + '|' + objects[i].owner + '|' + objects[i].name + "\n";
@@ -306,7 +306,6 @@ script:
   type: javascript
   commands:
   - name: dam-get-alert-by-id
-    deprecated: false
     arguments:
     - name: id
       required: true
@@ -322,8 +321,6 @@ script:
     - contentPath: execUser
       contextPath: dbUser
       description: DAM Database User
-      important: true
-      importantDescription: DAM Database User
     - contentPath: osUser
       contextPath: Account.Username
       description: DAM OS User
@@ -339,7 +336,6 @@ script:
     description: Get a DAM alert from McAfee Database Activity Monitoring by alert
       ID
   - name: dam-get-latest-by-rule
-    deprecated: false
     arguments:
     - name: ruleName
       required: true
@@ -374,4 +370,4 @@ script:
       description: DAM Rules
     description: Get latest DAM alerts by rule name
   isfetch: true
-hidden: false
+releaseNotes: "Bug in human readble response was fixed"
