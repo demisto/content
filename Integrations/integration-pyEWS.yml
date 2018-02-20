@@ -828,7 +828,7 @@ script:
       description: Searchable mailboxes - is mailbox external?
     - contextPath: EWS.Mailboxes.externalEmailAddress
       description: Searchable mailboxes - external email address.
-    description: 'Get searchable mailboxes. '
+    description: Get searchable mailboxes. runonce
   - name: py-ews-search-mailboxes
     arguments:
     - name: filter
@@ -866,6 +866,7 @@ script:
     - contextPath: EWS.Searches.Search.receivedTime
       description: Email receive time
       type: date
+    description: Search over multiple mailboxes. Usually use after py-ews-get-searchable-mailboxes
   - name: py-ews-move-item
     arguments:
     - name: item-id
