@@ -135,7 +135,7 @@ script:
 
     var getUserId = function(args, params) {
         username = args.username;
-        uri = 'api/v1/users?filter=' + encodeURIComponent(profile.login eq "' + username + '"');
+        uri = 'api/v1/users?filter=' + encodeURIComponent('profile.login eq "' + username + '"');
         res = get(args, params, uri);
         if (res && res.length && res.length == 1) {
             return res[0].id;
