@@ -62,10 +62,10 @@ script:
             conn = pgsqlConnect()
         except Exception as e:
             demisto.results(e.message)
-            closeConnection(conn, cur)
             sys.exit(0)
+        finally:
+            closeConnection(conn)
         demisto.results('ok')
-        closeConnection(conn)
         sys.exit(0)
 
     if demisto.command() == 'pgsql-query':
@@ -78,8 +78,9 @@ script:
             colnames = [desc[0] for desc in cur.description]
         except Exception as e:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : e.message })
-            closeConnection(conn, cur)
             sys.exit(0)
+        finally:
+            closeConnection(conn)
 
         contents = []
         table = [];
@@ -95,7 +96,6 @@ script:
             table.append(tableRow)
 
         demisto.results( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': contents, "ReadableContentsFormat": formats['table'], "HumanReadable": table} );
-        closeConnection(conn, cur)
         sys.exit(0)
   type: python
   commands:
