@@ -1280,4 +1280,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-
+releaseNotes: 'Removing unneeded log line - That causes issue with Fetch incidents'
