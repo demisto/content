@@ -296,6 +296,10 @@
         },
         {
             "playbookID": "ExtractDomainTest"
+        },
+        {
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
         }
     ],
     "skipped": [
