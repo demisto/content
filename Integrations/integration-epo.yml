@@ -313,6 +313,7 @@ script:
             var result = callEpo(args.command,pArgs);
             var md = "#### ePO command *"+args.command+"* results:\n";
             md += objToMd(result);
+            result = (typeof result === 'string') ? {result:result} : result;
             return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
         default:
             throw 'ePO Error: unknown command';
@@ -386,4 +387,4 @@ script:
   - name: epo-command
     arguments: []
     description: Execute ePO command
-hidden: false
+releaseNotes: "Better handling of string-type outputs by ePO"
