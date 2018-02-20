@@ -650,7 +650,6 @@ script:
     def cases_to_incidents(esm, cases):
         incidents = []
         for case in cases:
-            demisto.log(esm.case_status_id_to_name(case['statusId']['value']))
             incident = {
                 'name' : case['summary'],
                 'details' : 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
@@ -1281,4 +1280,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-
+releaseNotes: 'Removing unneeded log line - That causes issue with Fetch incidents'
