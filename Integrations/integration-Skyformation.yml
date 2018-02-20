@@ -1,0 +1,209 @@
+commonfields:
+  id: Skyformation
+  version: -1
+name: Skyformation
+display: Skyformation
+category: IT Services
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABGEAAADZCAMAAAC3mN0LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA7VpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo3MTQ0OTQ1Q0E0QTAxMUU0OTcyODhBNzIyQkNEQjhBMSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo3MTQ0OTQ1QkE0QTAxMUU0OTcyODhBNzIyQkNEQjhBMSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBJbGx1c3RyYXRvciBDQyAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ1dWlkOjBkZTE2YmY0LTYzMWItZDQ0Ni04N2E3LWQzNDZlMDMyNmVlZSIgc3RSZWY6ZG9jdW1lbnRJRD0idXVpZDoxNjhhYjhhMy0yNmY4LTZmNGEtOWZiYy03MjkwZWY4MDdlMzciLz4gPGRjOnRpdGxlPiA8cmRmOkFsdD4gPHJkZjpsaSB4bWw6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
+configuration:
+- display: Server URL (https://35.158.26.15:8443)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    import requests
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # removes the last / from the url
+    def fix_url(url):
+        if url.endswith("/"):
+            return url[:-1]
+
+        return url
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    SERVER_URL = fix_url(demisto.params()['url'])
+    INSECURE = demisto.params()['insecure']
+
+    def get_accounts_request():
+        fullurl = '{}{}'.format(SERVER_URL, '/openapi/api/rest/v1/accounts')
+        res = requests.get(fullurl, auth = (USERNAME, PASSWORD), verify=(not INSECURE))
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Failed to get accounts. Status Code: {}'.format(res.status_code))
+
+        return res.json()
+
+    def get_accounts():
+        accounts = get_accounts_request()
+        context = accounts
+        accountsToContext = []
+        for account in accounts:
+            accountsToContext.append({
+                'Id': account['id'],
+                'Name': account['name'],
+                'Application': account['application'],
+                'TenantId': demisto.dt(account, 'tenant.id'),
+                'TenantName': demisto.dt(account, 'tenant.name')
+            })
+        hr = tableToMarkdown('Accounts', accountsToContext, ['Application', 'Name', 'Id', 'TenantName', 'TenantId'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': accounts,
+            'HumanReadable': hr,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {
+                'Skyformation.Account(val.Id==obj.Id)': accountsToContext
+            }
+        })
+
+    # suspend_or_unsuspend_user_request will suspend user if suspend=True, otherwise it will un-suspend user
+    def suspend_or_unsuspend_user_request(suspend, account_id, user_email):
+        query_params = {
+            'userAttributeName': 'email',
+            'userAttributeValue': user_email
+        }
+
+        fullurl = ''.join([
+            SERVER_URL,
+            '/openapi/api/rest/v1/remediation/',
+            account_id,
+            '/suspend-user' if suspend == True else '/un-suspend-user'
+        ])
+        demisto.info(fullurl)
+        res = requests.post(fullurl, auth = (USERNAME, PASSWORD), verify=(not INSECURE), params=query_params)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Failed to get accounts.\nStatus Code: {}\nResponse Body: {}'.format(res.status_code, res.text))
+
+        return res.json()
+
+    def suspend_user():
+        account_id = demisto.args().get('accountId')
+        user_email = demisto.args().get('userEmail')
+        res = suspend_or_unsuspend_user_request(True, account_id, user_email)
+        if not res['is-success']:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res['status-message']
+            })
+            return
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': user_email + ' was suspended successfully',
+            'ReadableContentsFormat': formats['markdown']
+        })
+
+    def unsuspend_user():
+        account_id = demisto.args().get('accountId')
+        user_email = demisto.args().get('userEmail')
+        res = suspend_or_unsuspend_user_request(False, account_id, user_email)
+        if not res['is-success']:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res['status-message']
+            })
+            return
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': user_email + ' was un-suspended successfully',
+            'ReadableContentsFormat': formats['markdown']
+        })
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        get_accounts_request()
+        demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'skyformation-get-accounts':
+        get_accounts()
+        sys.exit(0)
+    if demisto.command() == 'skyformation-suspend-user':
+        suspend_user()
+        sys.exit(0)
+    if demisto.command() == 'skyformation-unsuspend-user':
+        unsuspend_user()
+        sys.exit(0)
+
+  type: python
+  commands:
+  - name: skyformation-get-accounts
+    arguments: []
+    outputs:
+    - contextPath: Skyformation.Account
+      description: Account object
+    - contextPath: Skyformation.Account.Name
+      description: The name of the account
+      type: string
+    - contextPath: Skyformation.Account.Application
+      description: Application name (e.g Office 365, Sales Cloud)
+      type: string
+    - contextPath: Skyformation.Account.Id
+      description: The id of the account
+      type: string
+    - contextPath: Skyformation.Account.TenantId
+      description: The id of the tenant
+      type: string
+    - contextPath: Skyformation.Account.TenantName
+      description: The name of the tenant
+      type: string
+    description: Returns all the configured accounts in skyformation
+  - name: skyformation-suspend-user
+    arguments:
+    - name: accountId
+      required: true
+      description: You can get the account id by executing skyformation-get-accounts
+        command
+    - name: userEmail
+      required: true
+      description: The email of the user that will be suspended in that account
+    description: The command will suspend user in the configured application by user
+      email. For example if Sales Cloud configured in Skyformation, then this command
+      can suspend user in Sales Cloud.
+    execution: true
+  - name: skyformation-unsuspend-user
+    arguments:
+    - name: accountId
+      required: true
+      description: You can get the account id by executing skyformation-get-accounts
+        command
+    - name: userEmail
+      required: true
+      description: The email of the user that will be un-suspended in that account
+    description: The command will un-suspend user in the configured application by
+      user email. For example if Sales Cloud configured in Skyformation, then this
+      command can un-suspend user in Sales Cloud.
+    execution: true
+  runonce: false
