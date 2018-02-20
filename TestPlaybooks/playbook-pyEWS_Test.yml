@@ -1,0 +1,437 @@
+id: pyews_test
+version: -1
+name: pyEWS_Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a3d18e6-6c3e-4f7b-8933-f8e929e6a37c
+    type: start
+    task:
+      id: 1a3d18e6-6c3e-4f7b-8933-f8e929e6a37c
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 606281da-a6f6-43d9-83e3-8f56f2313d02
+    type: regular
+    task:
+      id: 606281da-a6f6-43d9-83e3-8f56f2313d02
+      version: -1
+      description: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "6"
+      - "8"
+      - "10"
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 214c626f-eab1-4485-825c-3e2f1bde0963
+    type: regular
+    task:
+      id: 214c626f-eab1-4485-825c-3e2f1bde0963
+      version: -1
+      description: ""
+      name: Get searchable mailboxes
+      script: pyEWS|||py-ews-get-searchable-mailboxes
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 7b7de5aa-d8e0-48c7-89f3-e9b84c42b7df
+    type: regular
+    task:
+      id: 7b7de5aa-d8e0-48c7-89f3-e9b84c42b7df
+      version: -1
+      description: ""
+      name: Verify Mailboxes context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Mailboxes
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8a460927-6a38-4555-8258-137c4c05ecea
+    type: regular
+    task:
+      id: 8a460927-6a38-4555-8258-137c4c05ecea
+      version: -1
+      description: ""
+      name: Search mailboxes
+      script: pyEWS|||py-ews-search-mailboxes
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context: {}
+      filter:
+        simple: test
+      mailbox-search-scope:
+        simple: ${EWS.Mailboxes.mailboxId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    taskid: cb375e6b-9c13-4467-899e-c50dea7e8fe1
+    type: regular
+    task:
+      id: cb375e6b-9c13-4467-899e-c50dea7e8fe1
+      version: -1
+      description: ""
+      name: Verify Mailboxes context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Results
+      path:
+        simple: EWS.Searches.Search
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8a786da1-8e62-47b7-87bf-f673e234e967
+    type: regular
+    task:
+      id: 8a786da1-8e62-47b7-87bf-f673e234e967
+      version: -1
+      description: ""
+      name: Get contacts
+      script: pyEWS|||py-ews-get-contacts
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      target-mailbox:
+        simple: demistoadmin@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 2fb2bd25-611f-41d0-8f26-8a2756de1b6c
+    type: regular
+    task:
+      id: 2fb2bd25-611f-41d0-8f26-8a2756de1b6c
+      version: -1
+      description: ""
+      name: Verify Contacts context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Contacts
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 34c7752a-4f6b-4193-8a4b-6440d78f663c
+    type: regular
+    task:
+      id: 34c7752a-4f6b-4193-8a4b-6440d78f663c
+      version: -1
+      description: ""
+      name: Get item attachment
+      script: pyEWS|||py-ews-get-attachment
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AAAAAAkQAAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 3d56c094-ab7b-4528-8714-124eba3aec8b
+    type: regular
+    task:
+      id: 3d56c094-ab7b-4528-8714-124eba3aec8b
+      version: -1
+      description: ""
+      name: Verify Items context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Items
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 08818181-8ca3-4f2f-8b4c-e76dfea365eb
+    type: regular
+    task:
+      id: 08818181-8ca3-4f2f-8b4c-e76dfea365eb
+      version: -1
+      description: ""
+      name: Get file attachment
+      script: pyEWS|||py-ews-get-attachment
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      attachment-ids:
+        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=,AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=
+      item-id:
+        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f93eb234-01ad-4170-8e0b-d07b3d964c9e
+    type: regular
+    task:
+      id: f93eb234-01ad-4170-8e0b-d07b3d964c9e
+      version: -1
+      description: ""
+      name: Verify EWS file attachment
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: FileAttachments
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 61131ccd-2b24-49f0-8efa-d11ba6684edf
+    type: regular
+    task:
+      id: 61131ccd-2b24-49f0-8efa-d11ba6684edf
+      version: -1
+      description: ""
+      name: Verify file context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+  "13":
+    id: "13"
+    taskid: fa9d4455-f79c-4b7c-86a9-44656a05d95d
+    type: regular
+    task:
+      id: fa9d4455-f79c-4b7c-86a9-44656a05d95d
+      version: -1
+      description: ""
+      name: Get out of office status
+      script: pyEWS|||py-ews-get-out-of-office
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      target-mailbox:
+        simple: aleeng@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -386,
+          "y": 378
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 53c0b3a3-8509-43ec-84a3-e2f74a79611c
+    type: regular
+    task:
+      id: 53c0b3a3-8509-43ec-84a3-e2f74a79611c
+      version: -1
+      description: ""
+      name: Verify out of office context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: OutOfOffice
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -386,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 2106,
+        "x": -386,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
