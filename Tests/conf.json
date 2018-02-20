@@ -300,6 +300,9 @@
         {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped": [
