@@ -302,6 +302,7 @@
             "timeout": 500
         },
         {
+            "integrations": "VirusTotal",
             "playbookID": "File Enrichment - Generic Test"
         }
     ],
