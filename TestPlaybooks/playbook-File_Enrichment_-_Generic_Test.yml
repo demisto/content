@@ -100,7 +100,7 @@ tasks:
       key:
         simple: File.SHA256
       value:
-        simple: d5dc19a7223a8fc5eb038d4c27341f6e8fe89862252d633fdca299ca632edeb1
+        simple: fd81fe12fab5cddf4ee5ca33bfbc033280afedb94bac8bf351a65a679f3f0dbe
     view: |-
       {
         "position": {
