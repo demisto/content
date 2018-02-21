@@ -296,6 +296,9 @@
         },
         {
             "playbookID": "ExtractDomainTest"
+        },
+        {
+            "playbookID": "Test-IsMaliciousIndicatorFound"
         }
     ],
     "skipped": [
