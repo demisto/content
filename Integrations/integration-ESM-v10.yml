@@ -556,6 +556,9 @@ script:
             if assignee is not None:
                 case['assignedTo'] = self.user_name_to_id(assignee)
 
+            if organization is not None:
+                case['orgId'] = self.organization_name_to_id(organization)
+
             cmd = 'caseEditCase'
             query = json.dumps({'caseDetail' : case})
             self.cmdquery(cmd, query, True)
@@ -1279,3 +1282,5 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
+  runonce: false
+releaseNotes: "Now possible to change organization when editing a case"
