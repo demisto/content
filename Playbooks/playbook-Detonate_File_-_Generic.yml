@@ -3,7 +3,6 @@ version: -1
 name: Detonate File - Generic
 description: Detonate file through active integration that support file detonation
 fromversion: 3.5.0
-releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
