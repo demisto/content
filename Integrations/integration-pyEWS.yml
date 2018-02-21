@@ -9,18 +9,15 @@ description: Exchange Web Services and Office 365 (mail)
 detaileddescription: |-
   For Office 365, use https://outlook.office365.com/EWS/Exchange.asmx (default) as the Server  URL.
   Default version is used when accessing the EWS API to determine the API version.
-  By default Demisto uses the Exchange2010 version.
-  It is recommended not to change this value unless you run into issues.
-  The default value can be bypassed in individual exchange commands by adding "version=Exhcange{yyyy}" where yyyy is the exchange version.
 
-  To fetch emails from a specific folder, folder ID needs to be specified, this ID can be fetched using the ews-find-folders command
+  To fetch emails from a specific folder, folder path needs to be specified. Inbox is the default folder.
 configuration:
 - display: Server URL or Server IP address
   name: ewsServer
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: ""
+- display: Username (use email account with Office365)
   name: credentials
   defaultvalue: ""
   type: 9
@@ -40,7 +37,7 @@ configuration:
   defaultvalue: "2013"
   type: 0
   required: true
-- display: Authentication Type (NTLM or Basic or Digest)
+- display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
   name: authType
   defaultvalue: NTLM
   type: 0
@@ -120,7 +117,7 @@ script:
     ACCOUNT_EMAIL = demisto.params().get('defaultTargetMailbox')
     if not ACCOUNT_EMAIL:
         ACCOUNT_EMAIL = USERNAME + "@" + DOMAIN
-    if not USERNAME.lower().startswith(DOMAIN.lower()):
+    if "@" not in USERNAME and not USERNAME.lower().startswith(DOMAIN.lower()):
         USERNAME = DOMAIN + "\\" + USERNAME
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params()['folder']
@@ -764,7 +761,8 @@ script:
       description: The ID of the email message to get the attachments.
     - name: target-mailbox
       description: The mailbox where this attachment was found. Use the default mailbox
-        if empty, otherwise user has to be with impersonation rights to this mailbox.
+        if empty, otherwise user might has to be with impersonation rights to this
+        mailbox.
     - name: attachment-ids
       description: The attachments ids to get. If none - all attachments will be retrieve
         from the message. Support multiple attachments with comma-separated value
@@ -805,7 +803,8 @@ script:
       description: The ID of the email message to get the attachments.
     - name: target-mailbox
       description: The mailbox where this attachment was found. Use the default mailbox
-        if empty, otherwise user has to be with impersonation rights to this mailbox.
+        if empty, otherwise user might has to be with impersonation rights to this
+        mailbox.
     - name: attachment-ids
       description: The attachment id to delete. If none - all attachments will be
         delete from the message. Support multiple attachments with comma-separated
@@ -878,7 +877,7 @@ script:
         e.g. Inbox\Phishing.
     - name: target-mailbox
       description: 'The mailbox where the item is. Use the default mailbox if empty,
-        otherwise user has to be with impersonation rights to this mailbox. '
+        otherwise user might has to be with impersonation rights to this mailbox. '
     outputs:
     - contextPath: EWS.MovedItems.newItemID
       description: The new item id after move.
@@ -898,7 +897,7 @@ script:
       defaultValue: soft
     - name: target-mailbox
       description: The mailbox where the items in. Use the default mailbox if empty,
-        otherwise user has to be with impersonation rights to this mailbox.
+        otherwise user might has to be with impersonation rights to this mailbox.
     outputs:
     - contextPath: EWS.DeletedItems.messageIds
       description: The deleted items message ids.
@@ -914,14 +913,14 @@ script:
       defaultValue: Inbox
     - name: target-mailbox
       description: The target mailbox to search in. Use the default mailbox if empty,
-        otherwise user has to be with impersonation rights to this mailbox.
+        otherwise user might has to be with impersonation rights to this mailbox.
     description: Search in specific mailbox. Notice that impersonation needed for
       this operation to search in another target mailbox than the default.
   - name: py-ews-get-contacts
     arguments:
     - name: target-mailbox
       description: The mailbox to get the contacts from. Use the default mailbox if
-        empty, otherwise user has to be with impersonation rights to this mailbox.
+        empty, otherwise user might has to be with impersonation rights to this mailbox.
     outputs:
     - contextPath: EWS.Contacts.displayName
       description: The contact name.
@@ -938,8 +937,8 @@ script:
     arguments:
     - name: target-mailbox
       required: true
-      description: The mailbox to get out-of-office status. User has to be with impersonation
-        rights to this mailbox.
+      description: The mailbox to get out-of-office status. User might has to be with
+        impersonation rights to this mailbox.
     outputs:
     - contextPath: EWS.OutOfOffice.state
       description: 'Out-of-office state. Result can be: Enabled, Scheduled, Disabled.'
@@ -968,7 +967,7 @@ script:
       defaultValue: Inbox
     - name: target-mailbox
       description: The mailbox where the messages found. Use the default mailbox if
-        empty, otherwise user has to be with impersonation rights to this mailbox.
+        empty, otherwise user might has to be with impersonation rights to this mailbox.
     outputs:
     - contextPath: EWS.RecoveredMessages.messageIds
       description: The recovered message ids.
