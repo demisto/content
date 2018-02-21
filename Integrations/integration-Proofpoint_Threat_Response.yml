@@ -328,10 +328,10 @@ script:
     - name: description
       description: Short description of list member
     - name: expiration
-      description: 'Timestamp to expire member. Format: 2017-01-11T03:47:15Z'
+      description: Timestamp to expire member. Format: 2017-01-11T03:47:15Z
     - name: duration
-      description: '# of milliseconds after which to expire membership. Expiration
-        takes precedence.'
+      description: number of milliseconds after which to expire membership. Expiration
+        takes precedence.
     description: Add host, IP address, or URL to a list. List can be host list, url
       list, user list, of file list.
   - name: proofpoint-get-list-members
