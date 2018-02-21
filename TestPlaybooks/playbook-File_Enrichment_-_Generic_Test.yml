@@ -147,9 +147,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: MD5,SHA1,SHA256
+        simple: SHA1,SHA256
       path:
-        simple: File
+        simple: File.[0]
     view: |-
       {
         "position": {
