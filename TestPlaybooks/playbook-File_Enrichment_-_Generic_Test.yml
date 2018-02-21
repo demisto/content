@@ -44,7 +44,7 @@ tasks:
       key:
         simple: File.MD5
       value:
-        simple: 802df14b53e56ec753245b6416a89a38
+        simple: 3f066dd1f1da052248aed5abc4a0c6a1
     view: |-
       {
         "position": {
@@ -172,7 +172,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Vendor,Indicator
+        simple: Vendor
       path:
         simple: File.Malicious
     view: |-
