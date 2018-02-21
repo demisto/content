@@ -1282,5 +1282,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-  runonce: false
 releaseNotes: "Now possible to change organization when editing a case"
