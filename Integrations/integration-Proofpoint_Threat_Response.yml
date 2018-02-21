@@ -35,19 +35,29 @@ script:
     }
     var SERVER_URL = fixUrl(params.url) + '/';
     var INCIDENT_DEFAULT_COLUMNS = null;
+    var LIST_MEMBERS_DEFAULT_COLUMNS = null;
 
-    function sendRequest(path, queryParams){
+    function dateToISO8601(date) {
+        if(!date){
+            return date;
+        }
+
+        return date.toISOString().replace(/\.\d{3}/,'');
+    }
+
+    function sendRequest(path, queryParams, method, body){
         var requestUrl = SERVER_URL.concat(path, queryParams ? encodeToURLQuery(queryParams ) : '');
-
+        var method = method ? method : 'GET';
         var res = http(
             requestUrl,
             {
 
-                Method: 'GET',
+                Method: method,
                 Headers: {
                     Accept: ['application/json'],
                     Authorization: [params.APIKey]
-                }
+                },
+                Body: body
             },
             params.insecure
         );
@@ -59,6 +69,115 @@ script:
         return res;
     };
 
+    function deleteMemberFromList(){
+        deleteMemberFromListRequest(args.listId, args.memberId);
+
+        return 'Deleted succesfully';
+    }
+
+    function deleteMemberFromListRequest(listId, memberId){
+        var path = 'lists';
+        path = path.concat('/', listId, 'members/', memberId);
+
+        sendRequest(path, null, 'DELETE');
+    }
+
+    function addMemberToList(){
+        var response = addMemberToListRequest(args.listId,
+                                             args.memberName,
+                                             args.memberValue,
+                                             args.description,
+                                             args.expiration,
+                                             args.duration);
+
+        return {
+            Type: entryTypes.note,
+            Contents: response,
+            ContentsFormat: formats.json
+        };
+    }
+
+    function addMemberToListRequest(listId, memberName, memberValue, description, expiration, duration){
+        var response;
+        var path = 'lists';
+        var body = {};
+        path = path.concat('/', listId, '/members.json');
+
+        if(!(memberValue instanceof Array)){
+            memberValue = [memberValue];
+        }
+
+        body[memberName] = memberValue;
+        body['description'] = description;
+        body['expiration'] = dateToISO8601(expiration);
+        body['duration'] = duration;
+
+        response = sendRequest(path, null, 'POST', body);
+
+        return response;
+    }
+
+    function getAllListMembers(){
+        var list = getAllListMembersRequest(args.listId);
+
+        var entryContext = {
+            List: list
+        };
+
+        var columnsList = LIST_MEMBERS_DEFAULT_COLUMNS;
+        columnsList.sort();
+        var md = 'List ' + args.listId + '\n';
+        md += tblToMd('List members', list, columnsList);
+
+        return {
+            Type: entryTypes.note,
+            Contents: list,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: entryContext
+        };
+    }
+
+    function getAllListMembersRequest(listId){
+        var list;
+        var path = 'lists';
+        path = path.concat('/', listId, '/members.json');
+        lists = sendRequest(path);
+
+        return lists;
+    }
+
+    function getSingleMemberFromList(){
+        var member = getSingleMemberFromListRequest(args.listId, args.memberId);
+
+        var entryContext = {
+          Member: member
+        };
+
+        var columnsList = LIST_MEMBERS_DEFAULT_COLUMNS;
+        columnsList.sort();
+        var md = 'Member ' + args.memberId + '\n';
+        md += tblToMd('Member', member, columnsList);
+
+          return {
+            Type: entryTypes.note,
+            Contents: member,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: entryContext
+        };
+    }
+
+    function getSingleMemberFromListRequest(listId, memberId){
+        var member;
+        var path = 'lists';
+        path = path.concat('/', listId, '/members/', memberId);
+
+        member = sendRequest(path);
+
+        return member;
+    }
+
     function getIncidentById(){
         var incident = getIncidentByIdRequest(args.incidentId);
 
@@ -66,14 +185,14 @@ script:
             Incident: incident
         };
 
-        columnsList = INCIDENT_DEFAULT_COLUMNS;
+        var columnsList = INCIDENT_DEFAULT_COLUMNS;
         columnsList.sort();
         var md = 'Incident ' + args.incidentId + '\n';
-        md += tblToMd('Incident details', result, columnsList);
+        md += tblToMd('Incident details', incident, columnsList);
 
         return {
             Type: entryTypes.note,
-            Contents: result,
+            Contents: incident,
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: entryContext
@@ -83,27 +202,27 @@ script:
     function getIncidentByIdRequest(incidentId){
         var incident;
         var path = 'incidents';
-        path.concat('/', incidentId, '.json');
+        path = path.concat('/', incidentId, '.json');
         incident = sendRequest(path);
 
         return incident;
     }
 
     function getIncidents(){
-        var results = retrieveIncidents(args);
+        var incidents = getIncidentsRequest(args);
 
         var entryContext = {
-            Incident: results
+            Incident: incidents
         };
 
         columnsList = INCIDENT_DEFAULT_COLUMNS;
         columnsList.sort();
         var md = 'Incidents retrieved';
-        md += tblToMd('Incident details', result, columnsList);
+        md += tblToMd('Incident details', incidents, columnsList);
 
         return {
             Type: entryTypes.note,
-            Contents: results,
+            Contents: incidents,
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: entryContext
@@ -111,10 +230,15 @@ script:
     }
 
     function getIncidentsRequest(queryParams){
-        var result;
-        result = sendRequest('incidents', queryParams);
+        queryParams.created_after = dateToISO8601(queryParams.created_after);
+        queryParams.created_after = dateToISO8601(queryParams.created_before);
+        queryParams.closed_after = dateToISO8601(queryParams.closed_after);
+        queryParams.closed_before = dateToISO8601(queryParams.closed_before);
 
-        return result;
+        var incidents;
+        incidents = sendRequest('incidents', queryParams);
+
+        return incidents;
     }
 
     // The command input arg holds the command sent from the user.
@@ -130,6 +254,18 @@ script:
             return result;
         case 'proofpoint-get-incidents':
             result = getIncidents();
+            return result;
+        case 'proofpoint-delete-member-from-list':
+            result = deleteMemberFromList();
+            return result;
+        case 'proofpoint-add-member-to-list':
+            result = addMemberToList();
+            return result;
+        case 'proofpoint-get-list-members':
+            result = getAllListMembers();
+            return result;
+        case 'proofpoint-get-list-single-member':
+            result = getSingleMemberFromList();
             return result;
         default:
     }
@@ -155,6 +291,9 @@ script:
     - name: closed_after
       description: Retrieve incidents that were closed after specified date, in ISO
         8601 format (UTC)
+    - name: closed_before
+      description: Retrieve incidents that were closed before specified date, in ISO
+        8601 format (UTC)
     description: Retrieve incidents metadata from Threat Response, by optionally specifying
       filter criteria such as the state of the incident or time of closure.
   - name: proofpoint-get-incident-by-id
@@ -162,7 +301,62 @@ script:
     - name: incidentId
       required: true
       description: The Id of the requested incident
-    description: Retreive incident metadata from Threat Response by Id
+    description: Retrieve incident metadata from Threat Response by specifying the
+      incident id.
+  - name: proofpoint-delete-member-from-list
+    arguments:
+    - name: listId
+      required: true
+      description: The id value of list
+    - name: memberId
+      required: true
+      description: id of the list member to delete
+    description: Delete the member of the list by specifying the list id and the member
+      id to delete
+  - name: proofpoint-add-member-to-list
+    arguments:
+    - name: listId
+      required: true
+      description: The id value of list
+    - name: memberName
+      required: true
+      description: Name of the member to add
+    - name: memberValue
+      required: true
+      description: Value of the member to add
+      isArray: true
+    - name: description
+      description: Short description of list member
+    - name: expiration
+      description: 'Timestamp to expire member. Format: 2017-01-11T03:47:15Z'
+    - name: duration
+      description: '# of milliseconds after which to expire membership. Expiration
+        takes precedence.'
+    description: Add host, IP address, or URL to a list. List can be host list, url
+      list, user list, of file list.
+  - name: proofpoint-get-list-members
+    arguments:
+    - name: listId
+      required: true
+      description: The id value of list
+    outputs:
+    - contextPath: ProofpointTR.List
+      description: Proofpoint Threat Response list
+    description: Retrive all the members of a Threat Response list. List can be host
+      list, url list, user list, of file list. To perform actions on a list, you must
+      first obtain the identification number (listId) for that list in Threat Response.
+  - name: proofpoint-get-list-single-member
+    arguments:
+    - name: listId
+      required: true
+      description: The id value of list
+    - name: memberId
+      required: true
+      description: id of the list member to retrieve
+    outputs:
+    - contextPath: ProofpointTR.Member
+      description: Single member record from Threat Response list
+    description: Retrive a single member record from a list, by specifying the member
+      id.
 hidden: false
 releaseNotes: "-"
-
