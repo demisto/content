@@ -370,4 +370,3 @@ script:
       description: DAM Rules
     description: Get latest DAM alerts by rule name
   isfetch: true
-releaseNotes: "Bug in human readble response was fixed"
