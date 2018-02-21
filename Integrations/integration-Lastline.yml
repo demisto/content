@@ -416,7 +416,7 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            urlGetSubmit('google.com');
+            urlGetSubmit('https://google.com');
             return 'ok';
         case 'url':
             return urlGetSubmit(args.url, args.threshold, args.timeout, args.interval, args.pushToPortal);
