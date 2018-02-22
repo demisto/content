@@ -12,12 +12,12 @@ detaileddescription: |-
 
   To fetch emails from a specific folder, folder path needs to be specified. Inbox is the default folder.
 configuration:
-- display: Server URL or Server IP address
+- display: Exchange URL or Server (IP address or Hostname)
   name: ewsServer
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: Username (use email account with Office365)
+- display: Username (for Office365 use email address)
   name: credentials
   defaultvalue: ""
   type: 9
@@ -67,13 +67,25 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Folder Name to fetch incidents from
+- display: Folder Name to fetch incidents from. Support sub-folders (e.g. Inbox\Phishing)
   name: folder
   defaultvalue: Inbox
   type: 0
   required: false
 script:
-  script: |-
+  script: |
+    DEBUG_MODE = False
+    # set output for logs
+    import logging
+    logging.basicConfig()
+
+    if DEBUG_MODE:
+        logging.getLogger("exchangelib").setLevel(logging.DEBUG)
+    else:
+        # disable warnings print
+        import warnings
+        warnings.filterwarnings("ignore")
+
     from exchangelib.errors import ErrorItemNotFound, ErrorAccessDenied
     from exchangelib.items import Item, Message
 
@@ -90,13 +102,8 @@ script:
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
-    # disable warnings print
-    import warnings
-
-    warnings.filterwarnings("ignore")
 
     # consts
-
     VERSIONS = {
         '2007': EXCHANGE_2007,
         '2010': EXCHANGE_2010,
@@ -105,8 +112,26 @@ script:
         '2016': EXCHANGE_2016
     }
 
-    # load arguments
+    ATTACHMENT_ID = "attachmentId"
+    ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
+    NEW_ITEM_ID = 'newItemId'
+    MESSAGE_ID = "messageId"
+    ITEM_ID = "itemId"
+    ACTION = "action"
+    CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,                                                                                                      MESSAGE_ID)
+    CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
+    CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
+    CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
+    MAILBOX = "mailbox"
+    MAILBOX_ID = "mailboxId"
 
+    LAST_RUN_TIME = "lastRunTime"
+    LAST_RUN_IDS = "ids"
+    LAST_RUN_FOLDER = "folderName"
+
+    ENTRY_CONTEXT = "EntryContext"
+
+    # load arguments
     USE_PROXY = demisto.params()['proxy']
     NON_SECURE = demisto.params()['insecure']
     AUTH_METHOD_STR = demisto.params()['authType'].lower()
@@ -116,7 +141,7 @@ script:
     DOMAIN = demisto.params()['domain']
     ACCOUNT_EMAIL = demisto.params().get('defaultTargetMailbox')
     if not ACCOUNT_EMAIL:
-        ACCOUNT_EMAIL = USERNAME + "@" + DOMAIN
+        ACCOUNT_EMAIL = USERNAME if "@" in USERNAME else USERNAME + "@" + DOMAIN
     if "@" not in USERNAME and not USERNAME.lower().startswith(DOMAIN.lower()):
         USERNAME = DOMAIN + "\\" + USERNAME
     PASSWORD = demisto.params()['credentials']['password']
@@ -125,14 +150,25 @@ script:
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
 
 
+    def filter_dict_null(d):
+        if isinstance(d, dict):
+            return dict((k, v) for k, v in d.items() if v is not None)
+        return d
+
     def get_entry_for_object(title, context_key, obj, headers=None):
+        obj = filter_dict_null(obj)
+        if isinstance(obj, list):
+            obj = map(filter_dict_null, obj)
+        if headers and isinstance(obj, dict):
+            headers = list(set(headers).intersection(set(obj.keys())))
+
         return {
             'Type': entryTypes['note'],
             'Contents': obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, obj, headers),
-            'EntryContext': {
+            ENTRY_CONTEXT: {
                 context_key: obj
             }
         }
@@ -146,7 +182,7 @@ script:
             return BASIC
         elif auth_method == 'digest':
             return DIGEST
-        raise Exception("Auth method not supported: %s" % auth_method)
+        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
 
 
     def get_items_from_mailbox(account, item_ids):
@@ -166,7 +202,7 @@ script:
 
     def get_version(version_str):
         if version_str not in VERSIONS:
-            raise Exception("Version is incorrect: %s" % version_str)
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
 
 
@@ -196,7 +232,7 @@ script:
             remove_from_dict(os.environ, 'https_proxy')
 
         version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=30)
         config_args = {
             'credentials': credentials,
             'auth_type': get_auth_method(AUTH_METHOD_STR),
@@ -217,8 +253,8 @@ script:
         @staticmethod
         def parse_element(element):
             return {
-                'mailbox': element.find("{%s}PrimarySmtpAddress" % TNS).text,
-                'mailboxId': element.find("{%s}ReferenceId" % TNS).text,
+                MAILBOX: element.find("{%s}PrimarySmtpAddress" % TNS).text,
+                MAILBOX_ID: element.find("{%s}ReferenceId" % TNS).text,
                 'displayName': element.find("{%s}DisplayName" % TNS).text,
                 'isExternal': element.find("{%s}IsExternalMailbox" % TNS).text,
                 'externalEmailAddress': element.find("{%s}ExternalEmailAddress" % TNS).text
@@ -248,14 +284,14 @@ script:
                 to_recipients = map(lambda x: x.text, to_recipients)
 
             return {
-                'messageId': element.find('{%s}Id' % TNS).attrib['Id'],
-                'mailbox': element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text,
+                ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'],
+                MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text,
                 'subject': element.find("{%s}Subject" % TNS).text,
                 'toRecipients': to_recipients,
                 'sender': element.find("{%s}Sender" % TNS).text,
-                'hasAttachment': element.find("{%s}HasAttachment" % TNS).text,
-                'sentTime': element.find("{%s}SentTime" % TNS).text,
-                'receivedTime': element.find("{%s}ReceivedTime" % TNS).text
+                'hasAttachments': element.find("{%s}HasAttachment" % TNS).text,
+                'datetimeSent': element.find("{%s}SentTime" % TNS).text,
+                'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text
             }
 
         def call(self, query, mailboxes):
@@ -290,11 +326,15 @@ script:
         return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
-    def search_mailboxes(protocol, filter, mailbox_search_scope):
+    def search_mailboxes(protocol, filter, mailbox_search_scope=None):
+        if not mailbox_search_scope:
+            entry = get_searchable_mailboxes(protocol)
+            mailboxes = entry[ENTRY_CONTEXT]['EWS.Mailboxes']
+            mailbox_search_scope = map(lambda x: x[MAILBOX_ID], mailboxes)
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_search_scope)
-        entry = get_entry_for_object("Search mailboxes results", 'EWS.Searches.Search.Results', search_results)
-        entry['EntryContext']['EWS.Searches.Search.Filter'] = filter
-        return entry
+        return get_entry_for_object("Search mailboxes results",
+                                    CONTEXT_UPDATE_EWS_ITEM,
+                                    search_results)
 
 
     def get_account(account_email, access_type=ACCESS_TYPE):
@@ -305,14 +345,14 @@ script:
 
     def get_last_run():
         last_run = demisto.getLastRun()
-        if not last_run or last_run.get('folderName') != FOLDER_NAME:
+        if not last_run or last_run.get(LAST_RUN_FOLDER) != FOLDER_NAME:
             last_run = {
-                'lastRunTime': None,
-                'folderName': FOLDER_NAME,
-                'ids': None
+                LAST_RUN_TIME: None,
+                LAST_RUN_FOLDER: FOLDER_NAME,
+                LAST_RUN_IDS: None
             }
-        if 'lastRunTime' in last_run and last_run['lastRunTime'] is not None:
-            last_run['lastRunTime'] = EWSDateTime.from_string(last_run['lastRunTime'])
+        if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
+            last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
 
         return last_run
 
@@ -405,9 +445,9 @@ script:
 
         if compact_fields:
             new_dict = {}
-            for field in ['datetime_created', 'datetime_received', 'datetime_sent',
-                          'has_attachments', 'importance', 'item_id', 'last_modified_time',
-                          'size', 'subject', 'text_body', 'headers']:
+            for field in ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
+                          'has_attachments', 'importance', 'item_id', 'message_id', 'last_modified_time',
+                          'size', 'subject', 'text_body', 'headers', 'body']:
                 if field in raw_dict:
                     new_dict[field] = raw_dict.get(field)
             for field in ['received_by', 'author', 'sender']:
@@ -460,7 +500,7 @@ script:
             email_format = 'HTML'
         labels.append({'type': 'Email/format', 'value': email_format})
 
-        # hadnle attachments
+        # handle attachments
         if item.attachments:
             for attachment in item.attachments:
                 if isinstance(attachment, FileAttachment):
@@ -482,7 +522,7 @@ script:
         # handle item id
         if item.message_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
-            labels.append({'type': 'Email/MessageID', 'value': item.message_id})
+            labels.append({'type': 'Email/MessageId', 'value': item.message_id})
 
         incident['labels'] = labels
         incident['rawJSON'] = parse_item_as_json(item)
@@ -493,37 +533,40 @@ script:
     def fetch_emails_as_incidents(account, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
-        last_emails = fetch_last_emails(account, folder_name, last_run.get('lastRunTime'), last_run.get('ids'))
+        last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
         ids = []
         incidents = []
         for item in last_emails:
-            ids.append(item.message_id)
-            incident = parse_incident_from_item(item)
-            incidents.append(incident)
+            if item.message_id:
+                ids.append(item.message_id)
+                incident = parse_incident_from_item(item)
+                incidents.append(incident)
 
         new_last_run = {
-            'lastRunTime': start_time.ewsformat(),
-            'folderName': folder_name,
-            'ids': ids
+            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_FOLDER: folder_name,
+            LAST_RUN_IDS: ids
         }
 
         demisto.setLastRun(new_last_run)
         return incidents
 
 
-    def get_entry_for_file_attachment(attachment):
+    def get_entry_for_file_attachment(item_id, attachment):
         entry = fileResult(attachment.name, attachment.content)
         ec = {
-            'EWS.FileAttachments(val.attachmentID == obj.attachmentID)': parse_attachment_as_dict(attachment)
+            CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
+                                                                                                              attachment)
         }
-        entry['EntryContext'] = ec
+        entry[ENTRY_CONTEXT] = filter_dict_null(ec)
         return entry
 
 
-    def parse_attachment_as_dict(attachment):
+    def parse_attachment_as_dict(item_id, attachment):
         return {
-            'attachmentId': attachment.attachment_id.id,
+            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+            ATTACHMENT_ID: attachment.attachment_id.id,
             'attachmentName': attachment.name,
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,
@@ -534,14 +577,15 @@ script:
         }
 
 
-    def get_entry_for_item_attachment(attachment, target_email):
+    def get_entry_for_item_attachment(item_id, attachment, target_email):
         item = attachment.item
-        dict_result = parse_attachment_as_dict(attachment)
+        dict_result = parse_attachment_as_dict(item_id, attachment)
         dict_result.update(parse_item_as_dict(item, camel_case=True, compact_fields=True))
         dict_result['targetMailbox'] = target_email
         title = 'EWS get attachment got item for "%s", "%s"' % (target_email, attachment.name)
 
-        return get_entry_for_object(title, 'EWS.Items(val.attachmentID == obj.attachmentID)', dict_result)
+        return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
+                                    dict_result)
 
 
     def get_attachments_for_item(item_id, account, attachment_ids=None):
@@ -570,18 +614,32 @@ script:
     def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         attachments = get_attachments_for_item(item_id, account, attachment_ids)
-        attachment_ids = []
+        deleted_file_attachments = []
+        deleted_item_attachments = []
         for attachment in attachments:
-            attachment_ids.append(attachment.attachment_id.id)
+            attachment_deleted_action = {
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                ACTION: 'deleted'
+            }
+            if isinstance(attachment, FileAttachment):
+                deleted_file_attachments.append(attachment_deleted_action)
+            else:
+                deleted_item_attachments.append(attachment_deleted_action)
             attachment.detach()
 
-        delete_attachments_result = {
-            'ids': attachment_ids
-        }
+        entries = []
+        if len(deleted_file_attachments) > 0:
+            entry = get_entry_for_object("Deleted file attachments",
+                                         "EWS.Items" + CONTEXT_UPDATE_FILE_ATTACHMENT,
+                                         deleted_file_attachments)
+            entries.append(entry)
+        if len(deleted_item_attachments) > 0:
+            entry = get_entry_for_object("Deleted item attachments",
+                                         "EWS.Items" + CONTEXT_UPDATE_ITEM_ATTACHMENT,
+                                         deleted_item_attachments)
+            entries.append(entry)
 
-        return get_entry_for_object('Deleted attachments',
-                                    'EWS.DeletedAttachments',
-                                    delete_attachments_result)
+        return entries
 
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
@@ -590,20 +648,17 @@ script:
         entries = []
         for attachment in attachments:
             if isinstance(attachment, FileAttachment):
-                entries.append(get_entry_for_file_attachment(attachment))
+                entries.append(get_entry_for_file_attachment(item_id, attachment))
             else:
-                entries.append(get_entry_for_item_attachment(attachment, account.primary_smtp_address))
+                entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
 
         return entries
 
 
     def test_module():
-        try:
-            account = get_account(ACCOUNT_EMAIL)
-            get_folder_by_path(account.root, FOLDER_NAME)
-            demisto.results('ok')
-        except Exception:
-            demisto.results('failed')
+        account = get_account(ACCOUNT_EMAIL)
+        get_folder_by_path(account.root, FOLDER_NAME)
+        demisto.results('ok')
 
 
     def move_item(item_id, target_folder_path, target_mailbox=None):
@@ -612,17 +667,20 @@ script:
         item = get_item_from_mailbox(account, item_id)
         item.move(target_folder)
         move_result = {
-            'newItemID': item.item_id,
-            'itemId': item_id,
-            'messageID': item.message_id
+            NEW_ITEM_ID: item.item_id,
+            ITEM_ID: item_id,
+            MESSAGE_ID: item.message_id,
+            ACTION: 'moved'
         }
 
-        return get_entry_for_object('Moved items', 'EWS.MovedItems', move_result)
+        return get_entry_for_object('Moved items',
+                                    CONTEXT_UPDATE_EWS_ITEM,
+                                    move_result)
 
 
     def delete_items(item_ids, delete_type, target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        message_ids = []
+        deleted_items = []
         item_ids = item_ids.split(",")
         items = get_items_from_mailbox(account, item_ids)
         delete_type = delete_type.lower()
@@ -634,15 +692,16 @@ script:
             elif delete_type == 'hard':
                 item.delete()
             else:
-                raise Exception('invalid delete type: %s. please use "trash" \\ "soft" \\ "hard"' % delete_type)
-            message_ids.append(item.message_id)
+                raise Exception('invalid delete type: %s. Use "trash" \\ "soft" \\ "hard"' % delete_type)
+            deleted_items.append({
+                ITEM_ID: item.item_id,
+                MESSAGE_ID: item.message_id,
+                ACTION: '%s-deleted' % delete_type
+            })
 
-        delete_result = {
-            'messageIds': message_ids
-        }
         return get_entry_for_object('Deleted items (%s delete type)' % delete_type,
-                                    'EWS.DeletedItems',
-                                    delete_result)
+                                    CONTEXT_UPDATE_EWS_ITEM,
+                                    deleted_items)
 
 
     def prepare_args(d):
@@ -654,10 +713,12 @@ script:
         folder = get_folder_by_path(account.root, folder_path) if folder_path else Folder(account=account)
         items = folder.filter(query)
         searched_items_result = map(lambda item: parse_item_as_dict(item, camel_case=True, compact_fields=True), items)
+        for item in searched_items_result:
+            item[MAILBOX] = account.primary_smtp_address
         hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
                       'receivedBy', 'author', 'toRecipients', ]
         return get_entry_for_object('Searched items',
-                                    'EWS.SearchItems',
+                                    CONTEXT_UPDATE_EWS_ITEM,
                                     searched_items_result,
                                     headers=hm_headers)
 
@@ -672,24 +733,30 @@ script:
             'end': oof.end.ewsformat() if oof.end else None,
             'internalReply': getattr(oof, 'internal_replay', None),
             'externalReply': getattr(oof, 'external_replay', None),
-            'account': account.primary_smtp_address
+            MAILBOX: account.primary_smtp_address
         }
         return get_entry_for_object("Out of office state for %s" % account.primary_smtp_address,
-                                    "EWS.OutOfOffice",
+                                    'Account.Email(val.Address == obj.{0}).OutOfOffice'.format(MAILBOX),
                                     oof_dict)
 
 
     def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         target_folder = get_folder_by_path(account.root, target_folder_path)
-        recovered_message_ids = []
+        recovered_messages = []
         for item in account.recoverable_items_deletions.filter(message_id__in=message_ids.split(",")).all():
             item.move(target_folder)
-            recovered_message_ids.append(item.message_id)
-        return get_entry_for_object("Recovered messages", "EWS.RecoveredMessages", {'messageIds': recovered_message_ids})
+            recovered_messages.append({
+                ITEM_ID: item.item_id,
+                MESSAGE_ID: item.message_id,
+                ACTION: 'recovered'
+            })
+        return get_entry_for_object("Recovered messages",
+                                    CONTEXT_UPDATE_EWS_ITEM,
+                                    recovered_messages)
 
 
-    def get_contacts(target_mailbox=None):
+    def get_contacts(limit, target_mailbox=None):
         def parse_physical_address(address):
             result = {}
             for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
@@ -715,12 +782,18 @@ script:
             contact_dict = keys_to_camel_case(contact_dict)
             contact_dict = dict((k, v) for k, v in contact_dict.items() if v)
             del contact_dict['mimeContent']
+            contact_dict['originMailbox'] = target_mailbox
             return contact_dict
 
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        contacts = map(parse_contact, account.contacts.all())
+        contacts = []
+        count = 0
+        for contact in account.contacts.all():
+            if count >= limit:
+                break
+            contacts.append(parse_contact(contact))
         return get_entry_for_object('Email contacts for %s' % target_mailbox,
-                                    'EWS.Contacts',
+                                    'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                     contacts)
 
 
@@ -732,29 +805,29 @@ script:
     elif demisto.command() == 'fetch-incidents':
         incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
         demisto.incidents(incidents)
-    elif demisto.command() == 'py-ews-get-attachment':
+    elif demisto.command() == 'ews-get-attachment':
         demisto.results(fetch_attachments_for_message(**args))
-    elif demisto.command() == 'py-ews-delete-attachment':
+    elif demisto.command() == 'ews-delete-attachment':
         demisto.results(delete_attachments_for_message(**args))
-    elif demisto.command() == 'py-ews-get-searchable-mailboxes':
+    elif demisto.command() == 'ews-get-searchable-mailboxes':
         demisto.results(get_searchable_mailboxes(config.protocol))
-    elif demisto.command() == 'py-ews-search-mailboxes':
+    elif demisto.command() == 'ews-search-mailboxes':
         demisto.results(search_mailboxes(config.protocol, **args))
-    elif demisto.command() == 'py-ews-move-item':
+    elif demisto.command() == 'ews-move-item':
         demisto.results(move_item(**args))
-    elif demisto.command() == 'py-ews-delete-items':
+    elif demisto.command() == 'ews-delete-items':
         demisto.results(delete_items(**args))
-    elif demisto.command() == 'py-ews-search-mailbox':
+    elif demisto.command() == 'ews-search-mailbox':
         demisto.results(search_items_in_mailbox(**args))
-    elif demisto.command() == 'py-ews-get-contacts':
-        demisto.results(get_contacts())
-    elif demisto.command() == 'py-ews-get-out-of-office':
+    elif demisto.command() == 'ews-get-contacts':
+        demisto.results(get_contacts(**args))
+    elif demisto.command() == 'ews-get-out-of-office':
         demisto.results(get_out_of_office_state(**args))
-    elif demisto.command() == 'py-ews-recover-messages':
+    elif demisto.command() == 'ews-recover-messages':
         demisto.results(recover_soft_delete_item(**args))
   type: python
   commands:
-  - name: py-ews-get-attachment
+  - name: ews-get-attachment
     arguments:
     - name: item-id
       required: true
@@ -769,34 +842,48 @@ script:
         or array.
       isArray: true
     outputs:
-    - contextPath: EWS.FileAttachments.attachmentId
+    - contextPath: EWS.Items.FileAttachments.attachmentId
       description: The attachment ID. Used for file attachments only.
-    - contextPath: EWS.FileAttachments.attachmentName
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentName
       description: The attachment name. Used for file attachments only.
-    - contextPath: EWS.FileAttachments.attachmentLastModifiedTime
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentLastModifiedTime
       description: The attachment last modified time. Used for file attachments only.
-    - contextPath: EWS.Items.datetimeCreated
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeCreated
       description: The attached email created time.
-    - contextPath: EWS.Items.datetimeReceived
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeReceived
       description: The attached email received time.
-    - contextPath: EWS.Items.datetimeSent
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeSent
       description: The attached email sent time.
-    - contextPath: EWS.Items.receivedBy
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.receivedBy
       description: The attached email received by address.
-    - contextPath: EWS.Items.subject
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.subject
       description: The attached email subject.
-    - contextPath: EWS.Items.textBody
-      description: The attached email text body.
-    - contextPath: EWS.Items.headers
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.textBody
+      description: The attached email body (as text).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.headers
       description: The attached email headers.
-    - contextPath: EWS.Items.hasAttachments
+    - contextPath: EWS.Items.ItemAttachments.hasAttachments
       description: Is attached email has attachments?
-    - contextPath: EWS.Items.itemId
+      type: boolean
+    - contextPath: EWS.Items.ItemAttachments.itemId
       description: The attached email item id.
-    - contextPath: EWS.Items.toRecipients
-      description: The attached email to recipients.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.toRecipients
+      description: The attached email to recipients addresses (list)
+    - contextPath: EWS.Items.ItemAttachments.body
+      description: The attached email body (as HTML).
+      type: string
     description: Get actual attachment item from email
-  - name: py-ews-delete-attachment
+  - name: ews-delete-attachment
     arguments:
     - name: item-id
       required: true
@@ -811,62 +898,76 @@ script:
         value or array.
       isArray: true
     outputs:
-    - contextPath: EWS.DeletedAttachments.ids
-      description: The ids of the deleted attachments.
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: The id of the deleted attachment in case of file attachment.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.attachmentId
+      description: The id of the deleted attachment in case of other attachment (like
+        "email").
+      type: string
+    - contextPath: EWS.Items.FileAttachments.action
+      description: 'The deletion action in case of file attachment, constant value:
+        ''deleted''.'
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.action
+      description: 'The deletion action in case of other attachment (like "email"),
+        constant value: ''deleted''.'
+      type: string
     description: Delete attachments for message.
-  - name: py-ews-get-searchable-mailboxes
+  - name: ews-get-searchable-mailboxes
     arguments: []
     outputs:
     - contextPath: EWS.Mailboxes.mailbox
       description: Searchable mailboxes addresses.
+      type: string
     - contextPath: EWS.Mailboxes.mailboxId
       description: Searchable mailboxes ids.
+      type: string
     - contextPath: EWS.Mailboxes.displayName
       description: Searchable mailboxes - display name of the email.
+      type: string
     - contextPath: EWS.Mailboxes.isExternal
       description: Searchable mailboxes - is mailbox external?
+      type: boolean
     - contextPath: EWS.Mailboxes.externalEmailAddress
       description: Searchable mailboxes - external email address.
+      type: string
     description: Get searchable mailboxes. runonce
-  - name: py-ews-search-mailboxes
+  - name: ews-search-mailboxes
     arguments:
     - name: filter
       required: true
       description: The filter query to search.
     - name: mailbox-search-scope
-      required: true
-      description: The mailboxes ids to search for. Usually use py-ews-search-mailboxes
-        command output -EWS.Mailboxes.mailboxId.
+      description: The mailboxes ids to search for. If empty - search in all searchable
+        mailboxes.
       isArray: true
     outputs:
-    - contextPath: EWS.Searches.Search.Filter
-      description: The search filter
+    - contextPath: EWS.Items.itemId.
+      description: The item id.
       type: string
-    - contextPath: EWS.Searches.Search.Results.messageId
-      description: The message id
+    - contextPath: EWS.Items.mailbox
+      description: The mailbox address where the item has been found.
       type: string
-    - contextPath: EWS.Searches.Search.Results.mailbox
-      description: The mailbox address where the item has been found
+    - contextPath: EWS.Items.subject
+      description: Email subject.
       type: string
-    - contextPath: EWS.Searches.Search.Results.subject
-      description: Email subject
-      type: string
-    - contextPath: EWS.Searches.Search.Results.toRecipients
-      description: Email to recipients
-    - contextPath: EWS.Searches.Search.Results.sender
+    - contextPath: EWS.Items.toRecipients
+      description: Email to recipients addresses (list).
+    - contextPath: EWS.Items.sender
       description: Sender email address
       type: string
-    - contextPath: EWS.Searches.Search.hasAttachment
+    - contextPath: EWS.Items.hasAttachments
       description: Does email has attachments?
       type: boolean
-    - contextPath: EWS.Searches.Search.sentTime
+    - contextPath: EWS.Items.datetimeSent
       description: Email sent time
       type: date
-    - contextPath: EWS.Searches.Search.receivedTime
+    - contextPath: EWS.Items.datetimeReceived
       description: Email receive time
       type: date
     description: Search over multiple mailboxes. Usually use after py-ews-get-searchable-mailboxes
-  - name: py-ews-move-item
+  - name: ews-move-item
     arguments:
     - name: item-id
       required: true
@@ -879,14 +980,20 @@ script:
       description: 'The mailbox where the item is. Use the default mailbox if empty,
         otherwise user might has to be with impersonation rights to this mailbox. '
     outputs:
-    - contextPath: EWS.MovedItems.newItemID
+    - contextPath: EWS.Items.newItemID
       description: The new item id after move.
-    - contextPath: EWS.MovedItems.messageID
+      type: string
+    - contextPath: EWS.Items.messageID
       description: The item message id.
-    - contextPath: EWS.MovedItems.itemId
+      type: string
+    - contextPath: EWS.Items.itemId
       description: The original item id.
+      type: string
+    - contextPath: EWS.Items.action
+      description: The action, value will be 'moved'.
+      type: string
     description: Move item to another folder in the mailbox.
-  - name: py-ews-delete-items
+  - name: ews-delete-items
     arguments:
     - name: item-ids
       required: true
@@ -899,10 +1006,18 @@ script:
       description: The mailbox where the items in. Use the default mailbox if empty,
         otherwise user might has to be with impersonation rights to this mailbox.
     outputs:
-    - contextPath: EWS.DeletedItems.messageIds
-      description: The deleted items message ids.
+    - contextPath: EWS.Items.itemId
+      description: The deleted item id.
+      type: string
+    - contextPath: EWS.Items.messageId
+      description: The deleted message id.
+      type: string
+    - contextPath: EWS.Items.action
+      description: 'The deletion action, one of the following: ''trash-deleted'',
+        ''soft-deleted'', ''hard-deleted''.'
+      type: string
     description: Delete items from mailbox.
-  - name: py-ews-search-mailbox
+  - name: ews-search-mailbox
     arguments:
     - name: query
       required: true
@@ -914,48 +1029,88 @@ script:
     - name: target-mailbox
       description: The target mailbox to search in. Use the default mailbox if empty,
         otherwise user might has to be with impersonation rights to this mailbox.
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The email item id.
+      type: string
+    - contextPath: EWS.Items.hasAttachments
+      description: Does email has attachments.
+      type: boolean
+    - contextPath: EWS.Items.datetimeReceived
+      description: Email received time.
+      type: date
+    - contextPath: EWS.Items.datetimeSent
+      description: Email sent time.
+      type: date
+    - contextPath: EWS.Items.headers
+      description: Email headers (list).
+    - contextPath: EWS.Items.sender
+      description: Email sender mail address.
+      type: string
+    - contextPath: EWS.Items.subject
+      description: Email subject
+      type: string
+    - contextPath: EWS.Items.textBody
+      description: Email body (as text)
+      type: string
+    - contextPath: EWS.Items.size
+      description: Email size.
+      type: number
+    - contextPath: EWS.Items.toRecipients
+      description: Email recipients addresses (list).
+    - contextPath: EWS.Items.receivedBy
+      description: Email received by address.
+    - contextPath: EWS.Items.messageId
+      description: Email message id.
+      type: string
+    - contextPath: EWS.Items.body
+      description: Email HTML body.
+      type: string
     description: Search in specific mailbox. Notice that impersonation needed for
       this operation to search in another target mailbox than the default.
-  - name: py-ews-get-contacts
+  - name: ews-get-contacts
     arguments:
     - name: target-mailbox
       description: The mailbox to get the contacts from. Use the default mailbox if
         empty, otherwise user might has to be with impersonation rights to this mailbox.
+    - name: limit
+      description: Maximum number of results to fetch
+      defaultValue: "100"
     outputs:
-    - contextPath: EWS.Contacts.displayName
+    - contextPath: Account.Email.EwsContacts.displayName
       description: The contact name.
-    - contextPath: EWS.Contacts.lastModifiedTime
+    - contextPath: Account.Email.EwsContacts.lastModifiedTime
       description: The contact last modified time.
-    - contextPath: EWS.Contacts.emailAddresses
+    - contextPath: Account.Email.EwsContacts.emailAddresses
       description: The contact phone numbers.
-    - contextPath: EWS.Contacts.physicalAddresses
+    - contextPath: Account.Email.EwsContacts.physicalAddresses
       description: The contact physical addresses.
-    - contextPath: EWS.Contacts.phoneNumbers.phoneNumber
+    - contextPath: Account.Email.EwsContacts.phoneNumbers.phoneNumber
       description: The contact email addresses.
     description: Get contacts for mailbox.
-  - name: py-ews-get-out-of-office
+  - name: ews-get-out-of-office
     arguments:
     - name: target-mailbox
       required: true
       description: The mailbox to get out-of-office status. User might has to be with
         impersonation rights to this mailbox.
     outputs:
-    - contextPath: EWS.OutOfOffice.state
+    - contextPath: Account.Email.OutOfOffice.state
       description: 'Out-of-office state. Result can be: Enabled, Scheduled, Disabled.'
-    - contextPath: EWS.OutOfOffice.externalAudience
+    - contextPath: Account.Email.OutOfOffice.externalAudience
       description: 'Out-of-office external audience. Result can be: None, Known, All.'
-    - contextPath: EWS.OutOfOffice.start
+    - contextPath: Account.Email.OutOfOffice.start
       description: Out-of-office start date.
-    - contextPath: EWS.OutOfOffice.end
+    - contextPath: Account.Email.OutOfOffice.end
       description: Out-of-office end date.
-    - contextPath: EWS.OutOfOffice.internalReply
+    - contextPath: Account.Email.OutOfOffice.internalReply
       description: Out-of-office internal replay.
-    - contextPath: EWS.OutOfOffice.externalReply
+    - contextPath: Account.Email.OutOfOffice.externalReply
       description: Out-of-office external replay.
-    - contextPath: EWS.OutOfOffice.account
+    - contextPath: Account.Email.OutOfOffice.mailbox
       description: Out-of-office mailbox.
     description: Get out-of-office status for mailbox.
-  - name: py-ews-recover-messages
+  - name: ews-recover-messages
     arguments:
     - name: message-ids
       required: true
@@ -969,8 +1124,12 @@ script:
       description: The mailbox where the messages found. Use the default mailbox if
         empty, otherwise user might has to be with impersonation rights to this mailbox.
     outputs:
-    - contextPath: EWS.RecoveredMessages.messageIds
-      description: The recovered message ids.
+    - contextPath: EWS.Items.itemId
+      description: The recovered item id.
+    - contextPath: EWS.Items.messageId
+      description: The recovered message id.
+    - contextPath: EWS.Items.action
+      description: The value will be 'recovered'.
     description: Recover messages that has beed deleted (soft-delete).
   dockerimage: demisto/py-ews:latest
   isfetch: true
