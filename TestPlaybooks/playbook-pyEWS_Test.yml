@@ -44,9 +44,8 @@ tasks:
       '#none#':
       - "2"
       - "6"
-      - "8"
-      - "10"
       - "13"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -61,14 +60,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 214c626f-eab1-4485-825c-3e2f1bde0963
+    taskid: c8f965aa-1eb3-46ed-8d74-11b2ffc755ad
     type: regular
     task:
-      id: 214c626f-eab1-4485-825c-3e2f1bde0963
+      id: c8f965aa-1eb3-46ed-8d74-11b2ffc755ad
       version: -1
       description: ""
       name: Get searchable mailboxes
-      script: pyEWS|||py-ews-get-searchable-mailboxes
+      script: pyEWS|||ews-get-searchable-mailboxes
       type: regular
       iscommand: true
       brand: pyEWS
@@ -85,10 +84,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 7b7de5aa-d8e0-48c7-89f3-e9b84c42b7df
+    taskid: 33e1a432-f453-466e-8ac7-a2c956ee68d8
     type: regular
     task:
-      id: 7b7de5aa-d8e0-48c7-89f3-e9b84c42b7df
+      id: 33e1a432-f453-466e-8ac7-a2c956ee68d8
       version: -1
       description: ""
       name: Verify Mailboxes context key
@@ -96,15 +95,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Mailboxes
+        simple: mailbox,mailboxId
       path:
-        simple: EWS
+        simple: EWS.Mailboxes
     separatecontext: false
     view: |-
       {
@@ -115,14 +111,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 8a460927-6a38-4555-8258-137c4c05ecea
+    taskid: fe5d2320-da71-481a-80be-a9f81122f66b
     type: regular
     task:
-      id: 8a460927-6a38-4555-8258-137c4c05ecea
+      id: fe5d2320-da71-481a-80be-a9f81122f66b
       version: -1
       description: ""
       name: Search mailboxes
-      script: pyEWS|||py-ews-search-mailboxes
+      script: pyEWS|||ews-search-mailboxes
       type: regular
       iscommand: true
       brand: pyEWS
@@ -130,65 +126,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      extend-context: {}
       filter:
         simple: test
-      mailbox-search-scope:
-        simple: ${EWS.Mailboxes.mailboxId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "5":
-    id: "5"
-    taskid: cb375e6b-9c13-4467-899e-c50dea7e8fe1
-    type: regular
-    task:
-      id: cb375e6b-9c13-4467-899e-c50dea7e8fe1
-      version: -1
-      description: ""
-      name: Verify Mailboxes context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Results
-      path:
-        simple: EWS.Searches.Search
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 8a786da1-8e62-47b7-87bf-f673e234e967
-    type: regular
-    task:
-      id: 8a786da1-8e62-47b7-87bf-f673e234e967
-      version: -1
-      description: ""
-      name: Get contacts
-      script: pyEWS|||py-ews-get-contacts
-      type: regular
-      iscommand: true
-      brand: pyEWS
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      target-mailbox:
-        simple: demistoadmin@demisto.int
+      mailbox-search-scope: {}
     separatecontext: false
     view: |-
       {
@@ -197,12 +137,72 @@ tasks:
           "y": 370
         }
       }
-  "7":
-    id: "7"
-    taskid: 2fb2bd25-611f-41d0-8f26-8a2756de1b6c
+  "5":
+    id: "5"
+    taskid: b6d4f244-a741-413b-871a-a5864a555722
     type: regular
     task:
-      id: 2fb2bd25-611f-41d0-8f26-8a2756de1b6c
+      id: b6d4f244-a741-413b-871a-a5864a555722
+      version: -1
+      description: ""
+      name: Verify Items context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "10"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: mailbox,subject,sender,hasAttachments,datetimeSent,datetimeReceived
+      path:
+        simple: EWS.Items.[0]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: dc49c45b-892c-4755-8131-b3670f590252
+    type: regular
+    task:
+      id: dc49c45b-892c-4755-8131-b3670f590252
+      version: -1
+      description: ""
+      name: Get contacts
+      script: pyEWS|||ews-get-contacts
+      type: regular
+      iscommand: true
+      brand: pyEWS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+      target-mailbox:
+        simple: demistoadmin@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 14cff168-51f8-4d99-82d6-2dcb4e87b55e
+    type: regular
+    task:
+      id: 14cff168-51f8-4d99-82d6-2dcb4e87b55e
       version: -1
       description: ""
       name: Verify Contacts context key
@@ -213,27 +213,27 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Contacts
+        simple: phoneNumbers,displayName,emailAddresses
       path:
-        simple: EWS
+        simple: Account.Email.EwsContacts
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 545
         }
       }
   "8":
     id: "8"
-    taskid: 34c7752a-4f6b-4193-8a4b-6440d78f663c
+    taskid: d9b923a8-b4cc-4383-8c65-99af500524d3
     type: regular
     task:
-      id: 34c7752a-4f6b-4193-8a4b-6440d78f663c
+      id: d9b923a8-b4cc-4383-8c65-99af500524d3
       version: -1
       description: ""
       name: Get item attachment
-      script: pyEWS|||py-ews-get-attachment
+      script: pyEWS|||ews-get-attachment
       type: regular
       iscommand: true
       brand: pyEWS
@@ -249,16 +249,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 265,
+          "y": 720
         }
       }
   "9":
     id: "9"
-    taskid: 3d56c094-ab7b-4528-8714-124eba3aec8b
+    taskid: 3c3d9a8d-e8c1-4fc3-8800-ee67ebda5863
     type: regular
     task:
-      id: 3d56c094-ab7b-4528-8714-124eba3aec8b
+      id: 3c3d9a8d-e8c1-4fc3-8800-ee67ebda5863
       version: -1
       description: ""
       name: Verify Items context
@@ -269,27 +269,27 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Items
+        simple: datetimeCreated,headers,subject,body,hasAttachments
       path:
-        simple: EWS
+        simple: EWS.Items.ItemAttachments
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 265,
+          "y": 895
         }
       }
   "10":
     id: "10"
-    taskid: 08818181-8ca3-4f2f-8b4c-e76dfea365eb
+    taskid: 4d3d92e3-4506-4c6b-8558-5efe203f30a5
     type: regular
     task:
-      id: 08818181-8ca3-4f2f-8b4c-e76dfea365eb
+      id: 4d3d92e3-4506-4c6b-8558-5efe203f30a5
       version: -1
       description: ""
       name: Get file attachment
-      script: pyEWS|||py-ews-get-attachment
+      script: pyEWS|||ews-get-attachment
       type: regular
       iscommand: true
       brand: pyEWS
@@ -306,16 +306,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 370
+          "x": 695,
+          "y": 720
         }
       }
   "11":
     id: "11"
-    taskid: f93eb234-01ad-4170-8e0b-d07b3d964c9e
+    taskid: 0f33ed47-5d87-4260-8713-2791acf1e83a
     type: regular
     task:
-      id: f93eb234-01ad-4170-8e0b-d07b3d964c9e
+      id: 0f33ed47-5d87-4260-8713-2791acf1e83a
       version: -1
       description: ""
       name: Verify EWS file attachment
@@ -329,23 +329,23 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: FileAttachments
+        simple: attachmentId,attachmentName
       path:
-        simple: EWS
+        simple: EWS.Items.FileAttachments
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 695,
+          "y": 895
         }
       }
   "12":
     id: "12"
-    taskid: 61131ccd-2b24-49f0-8efa-d11ba6684edf
+    taskid: 6e2e77e0-ac4e-46cb-82ec-370bbd812a0a
     type: regular
     task:
-      id: 61131ccd-2b24-49f0-8efa-d11ba6684edf
+      id: 6e2e77e0-ac4e-46cb-82ec-370bbd812a0a
       version: -1
       description: ""
       name: Verify file context
@@ -363,20 +363,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 720
+          "x": 695,
+          "y": 1070
         }
       }
   "13":
     id: "13"
-    taskid: fa9d4455-f79c-4b7c-86a9-44656a05d95d
+    taskid: def9962d-6379-49ce-878c-f9d722be3a64
     type: regular
     task:
-      id: fa9d4455-f79c-4b7c-86a9-44656a05d95d
+      id: def9962d-6379-49ce-878c-f9d722be3a64
       version: -1
       description: ""
       name: Get out of office status
-      script: pyEWS|||py-ews-get-out-of-office
+      script: pyEWS|||ews-get-out-of-office
       type: regular
       iscommand: true
       brand: pyEWS
@@ -390,16 +390,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -386,
-          "y": 378
+          "x": 1340,
+          "y": 370
         }
       }
   "14":
     id: "14"
-    taskid: 53c0b3a3-8509-43ec-84a3-e2f74a79611c
+    taskid: 401a68c7-9bd4-4286-8971-e750bff100c0
     type: regular
     task:
-      id: 53c0b3a3-8509-43ec-84a3-e2f74a79611c
+      id: 401a68c7-9bd4-4286-8971-e750bff100c0
       version: -1
       description: ""
       name: Verify out of office context key
@@ -410,14 +410,14 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: OutOfOffice
+        simple: state,start,end,mailbox
       path:
-        simple: EWS
+        simple: Account.Email.OutOfOffice
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -386,
+          "x": 1340,
           "y": 545
         }
       }
@@ -426,9 +426,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
-        "width": 2106,
-        "x": -386,
+        "height": 1115,
+        "width": 1670,
+        "x": 50,
         "y": 50
       }
     }
