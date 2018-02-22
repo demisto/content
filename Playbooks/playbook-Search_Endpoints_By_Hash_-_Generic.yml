@@ -174,7 +174,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-      - "14"
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -241,14 +241,22 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
+    taskid: a6785055-98d6-4b2e-8da8-c2e0c6b90887
     type: playbook
     task:
-      id: 23b5ec37-e084-4094-8807-c4e7aff4e6d4
+      id: a6785055-98d6-4b2e-8da8-c2e0c6b90887
       version: -1
       name: Search Endpoints By Hash - TIE
+      description: |-
+        Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+        Input:
+        * Hash (default, takes all deferent hashes from context)
+
+        Output:
+        * All agents that files with "Hash" has been executed on (TIE)
+        * Enrich Agents info from ePO
       playbookName: Search Endpoints By Hash - TIE
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -257,8 +265,8 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        complex:
-          root: JoinedHashes
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
+          }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     loop:
       iscommand: false
@@ -269,105 +277,6 @@ tasks:
         "position": {
           "x": 492,
           "y": 817
-        }
-      }
-  "14":
-    id: "14"
-    taskid: 0c2b727f-1b0e-4db5-8f98-03680e38ddf5
-    type: regular
-    task:
-      id: 0c2b727f-1b0e-4db5-8f98-03680e38ddf5
-      version: -1
-      name: Join MD5 Hashes
-      description: Join MD5 Hashes
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: JoinedHashes
-      value:
-        complex:
-          root: inputs
-          accessor: MD5Hash
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 561,
-          "y": 347
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 2a9b02c2-97a5-4a84-8b3f-7afec532b79f
-    type: regular
-    task:
-      id: 2a9b02c2-97a5-4a84-8b3f-7afec532b79f
-      version: -1
-      name: Join SHA1 Hashes
-      description: Join SHA1 Hashes
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: JoinedHashes
-      value:
-        complex:
-          root: inputs
-          accessor: SHA1Hash
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 561,
-          "y": 500
-        }
-      }
-  "16":
-    id: "16"
-    taskid: 564a98be-1134-44e8-8dc4-7f2c102813d1
-    type: regular
-    task:
-      id: 564a98be-1134-44e8-8dc4-7f2c102813d1
-      version: -1
-      name: Join SHA256 Hashes
-      description: Join SHA256 Hashes
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: JoinedHashes
-      value:
-        complex:
-          root: inputs
-          accessor: SHA256Hash
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 561,
-          "y": 652
         }
       }
 view: |-

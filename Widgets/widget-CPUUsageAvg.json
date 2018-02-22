@@ -8,7 +8,8 @@
   "query": "cpu.usedPercent",
   "isPredefined": true,
   "params": {
-    "currencySign": "%"
+    "currencySign": "%",
+    "signAlignment": "right"
   },
   "size": 0
 }
