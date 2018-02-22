@@ -1602,5 +1602,4 @@ script:
       defaultValue: "1"
     description: Search records by report Guid
   isfetch: true
-  runonce: false
   releaseNotes: "--"
