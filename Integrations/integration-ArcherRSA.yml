@@ -773,6 +773,7 @@ script:
             Contents: parsedJSON,
             keyValsForFetch: keyValsForFetch,
             ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown(command, nameToValue) + '\n\n' + innerRecordsMarkdown
             EntryContext: {'Archer.Content(true)': createContentContext(contentId, nameToValue)}
         };
@@ -1358,7 +1359,7 @@ script:
         var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
 
         try {
-            req = sendSoapRequest('logout', soap, SOAPAction);
+            sendSoapRequest('logout', soap, SOAPAction);
         } catch(err) {
             if (err.indexOf('Invalid session token') > -1) {
                 // it means the session token already expired so no need to be terminated
