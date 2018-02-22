@@ -67,7 +67,6 @@ configuration:
 script:
   script: |-
     var server = params.server.replace(/[\/]+$/, '');
-
     var commands = {
       createRecord:     'archer-create-record',
       updateRecord:     'archer-update-record',
@@ -83,7 +82,6 @@ script:
       getSearchOptionsByGuid: 'archer-get-search-options-by-guid',
       searchRecordsByReport: 'archer-search-records-by-report',
     };
-
     var urlDictionary = {};
     urlDictionary.login = '/ws/general.asmx';
     urlDictionary.logout = '/ws/general.asmx';
@@ -100,7 +98,6 @@ script:
     urlDictionary[commands.executeStatisticSearchByReport] = '/ws/search.asmx';
     urlDictionary[commands.getSearchOptionsByGuid] = '/ws/search.asmx';
     urlDictionary[commands.searchRecordsByReport] = '/ws/search.asmx';
-
     var methodDictionary = {};
     methodDictionary.login = 'POST';
     methodDictionary.logout = 'POST';
@@ -117,7 +114,6 @@ script:
     methodDictionary[commands.executeStatisticSearchByReport] = 'POST';
     methodDictionary[commands.getSearchOptionsByGuid] = 'POST';
     methodDictionary[commands.searchRecordsByReport] = 'POST';
-
     function extractObjectFromXML(xml, path) {
         var searchRes = dq(xml, path);
         if (searchRes === "" || searchRes === null){
@@ -131,7 +127,6 @@ script:
         }
         return JSON.parse(x2j(searchRes));
     }
-
     function parseRecordsXml(token, response, mapping) {
         var parsedJson = extractObjectFromXML(response, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult');
         var records = parsedJson.Records.Record;
@@ -158,7 +153,6 @@ script:
             args.applicationId = moduleId;
             // Getting top level record and iterating over it to get the linked records
             var recordObject = getRecord(commands.getRecord, token, null, contentId, moduleId).keyValsForFetch;
-
             toContext.Fields.Record = recordObject;
             var innerRecords = varifyOrMakeArray(recordObject.innerRecords); // contains all possible inner fields
             innerRecords.forEach(function (innerRecord){
@@ -175,17 +169,14 @@ script:
                     }
                     innerRecord.Record = getRecord(commands.getRecord, token, mapping, innerRecordContentId, innerRecordModuleId).keyValsForFetch;
                 }
-
             });
             fields.forEach(function (field) {
                 toContext.Fields[mapping[field['-id']].Name] = field['#text'];
             });
             outputs.push(toContext);
         });
-
         return outputs;
     }
-
     function soapRequestSender(cmd, bodyContent, SOAPAction) {
         var headers = {'Content-Type': ['text/xml; charset=utf-8']};
         if (SOAPAction) {
@@ -204,7 +195,6 @@ script:
         );
         return result;
     }
-
     function sendSoapRequest(cmd, bodyContent, SOAPAction) {
         var headers = {'Content-Type': ['text/xml; charset=utf-8']};
         if (SOAPAction) {
@@ -221,20 +211,15 @@ script:
             params.insecure,
             params.proxy
         );
-
         if (result.StatusCode < 200 || result.StatusCode >= 300) {
             throw 'Request to RSA Archer ' + url + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
         }
-
         return result.Body;
     }
-
-
     function getRecordSendSoapRequest(cmd, applicationId, contentId, token) {
         var currentToken = token;
         for(var i = 0; i<10; i++){
             var soap = getContentSoapRequest(currentToken, applicationId, contentId);
-
             var SOAPAction = 'http://archer-tech.com/webservices/GetRecordById';
             var result = soapRequestSender(cmd, soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
@@ -247,23 +232,18 @@ script:
             return result.Body;
         }
     }
-
-
     function sendRestRequest(cmd, bodyContent, token, httpTunneling, queryParams) {
         var headers = {
             'Content-Type': ['application/json'],
             'Accept': ['application/json']
         };
-
         if(httpTunneling) {
             headers['X-Http-Method-Override'] = ['GET'];
         }
-
         var url = server + replaceInTemplatesAndRemove(urlDictionary[cmd], args);
         if (queryParams) {
             url += queryParams;
         }
-
         var body = JSON.stringify(bodyContent);
         var currentToken = token;
         for(i = 0; i<10; i++){
@@ -280,7 +260,6 @@ script:
                 params.insecure,
                 params.proxy
             );
-
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 401 || result.StatusCode === -1){ // unauthorized, try again
                     currentToken = reLogin(currentToken);
@@ -291,7 +270,6 @@ script:
             return JSON.parse(result.Body);
         }
     }
-
     function searchSendSoapRequest(cmd, token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber) {
         var currentToken = token;
         for(var i = 0; i<10; i++){
@@ -308,7 +286,6 @@ script:
             return result.Body;
         }
     }
-
     function createUserSessionFromInstanceSoapRequest(instanceName, userName, password) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -323,7 +300,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function terminateSessionSoapRequest(token) {
         return(
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -336,7 +312,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getContentsByAppIdRequest(token, appId, displayFields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, sortByFieldId, isDescending, numericOperator, dateOperator, pageNumber) {
         var readyMaxReults = (maxResults === undefined || maxResults === null) ? '100' : maxResults;
         return (
@@ -401,7 +376,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function createContentSoapRequest(token, appId, fields) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -420,7 +394,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function updateContentSoapRequest(token, appId, contentId, fields) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -440,7 +413,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getContentSoapRequest(token, appId, contentId) {
         return (
         '<?xml version="1.0" encoding="utf-8"?> ' +
@@ -455,7 +427,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function deleteContentSoapRequest(token, appId, contentId) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -470,7 +441,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getValueListForFieldSoapRequest(token, fieldID){
         return (
         '<?xml version="1.0" encoding="utf-8"?>'+
@@ -484,7 +454,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getReportsSoapRequest(token){
         return (
         '<?xml version="1.0" encoding="utf-8"?>'+
@@ -497,7 +466,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function executeStatisticSearchByReportSoapRequest(token, reportGuid, maxResults) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -512,7 +480,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getSearchOptionsByGuidSoapRequest(token, reportGuid) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -526,7 +493,6 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function searchRecordsByReportSoapRequest(token, reportGuid, maxResults) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
@@ -541,30 +507,24 @@ script:
         '</soap:Envelope>'
         );
     }
-
     function getLevelsByApplicationId(token) {
         var lvlResponse = sendRestRequest('levelIdByModuleId', '', token, true);
         return dq(lvlResponse, 'RequestedObject.Id');
     }
-
     function createMappingFieldIdToName(levels, token) {
         var mapping = {};
         if (!levels) {
             throw 'Mapping levels to Fields failed';
         }
-
         if (!Array.isArray(levels)) {
             levels = [levels];
         }
-
         levels.forEach(function (lvl) {
             args.levelId = lvl;
             var fieldsLevelInfo = sendRestRequest('fieldByLevelId', '' ,token, true);
-
             if (!Array.isArray(fieldsLevelInfo)) {
                fieldsLevelInfo = [fieldsLevelInfo];
             }
-
             fieldsLevelInfo.forEach(function (field) {
                 if (field.RequestedObject.Type !== 25) {
                     mapping[field.RequestedObject.Id] = {
@@ -575,28 +535,22 @@ script:
                 }
             });
         });
-
         return mapping;
     }
-
     function createMappingNameToFieldId(levels, token) {
         var mapping = {};
         if (!levels) {
             throw 'Mapping levels to Fields failed';
         }
-
         if (!Array.isArray(levels)) {
             levels = [levels];
         }
-
         levels.forEach(function (lvl) {
             args.levelId = lvl;
             var fieldsLevelInfo = sendRestRequest('fieldByLevelId', '', token, true);
-
             if (!Array.isArray(fieldsLevelInfo)) {
                 fieldsLevelInfo = [fieldsLevelInfo];
             }
-
             fieldsLevelInfo.forEach(function (field) {
                 if (field.RequestedObject.Type !== 25) {
                     mapping[field.RequestedObject.Name] = {
@@ -607,10 +561,8 @@ script:
                 }
             });
         });
-
         return mapping;
     }
-
     function mapContentFieldNameToValue(mapping, fields, applicationId) {
         // we have records who are linked to the record we are working on.
         // humanReadableTables will have the data related to the linked records
@@ -634,10 +586,8 @@ script:
                 // used later on to check if we need to bring more mappings
                 var seenModuleIds = {};
                 seenModuleIds[applicationId] = applicationId;
-
                 // innerRecordrows and innerRecordcolumns are used to create the human readable
                 var innerRecordrows = [];
-
                 if (field.Record) { // handling the nested Record field
                     var innerRecords = varifyOrMakeArray(field.Record);
                     var tableName = mapping[field['-id']].Name;
@@ -701,7 +651,6 @@ script:
         }
         return [recordVals, humanReadableTables];
     }
-
     function varifyOrMakeArray(arr){
         return Array.isArray(arr)? arr : [arr];
     }
@@ -715,7 +664,6 @@ script:
         context.Fields = fields;
         return context;
     }
-
     function createKeyValsForFetch (recordId, records) {
         var keyVals = {};
         records.forEach(function (r) {
@@ -737,7 +685,6 @@ script:
                 LevelId: mapping[fieldId].levelId
             })
         }
-
         return {
             Type: entryTypes.note,
             Contents: mapping,
@@ -750,14 +697,12 @@ script:
         var levels = getLevelsByApplicationId(token);
         return createMappingFieldIdToName(levels, token);
     }
-
     function getRecord(command, token, mapping, contentId, applicationId) {
         var contentId = contentId || args.contentId;
         var applicationId = applicationId || args.applicationId;
         var mapping = mapping || createMapping(token);
         var rawResponse = getRecordSendSoapRequest(command, applicationId, contentId, token);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
@@ -767,7 +712,6 @@ script:
         var innerRecordValues =  contentMapping[1];
         var innerRecordsMarkdown = createInnerRecordsHumanReadable(innerRecordValues);
         var keyValsForFetch = createKeyValsForFetch(contentId, nameToValue);
-
         return {
             Type: entryTypes.note,
             Contents: parsedJSON,
@@ -778,7 +722,6 @@ script:
             EntryContext: {'Archer.Content(true)': createContentContext(contentId, nameToValue)}
         };
     }
-
     function createInnerRecordsHumanReadable(tables){
         var markdown = "";
         tables.forEach(function (table){
@@ -795,13 +738,10 @@ script:
         } else if (args.findById) {
             queryParams = '/' + args.findById;
         }
-
         var applictions = sendRestRequest(command, body, token, true, queryParams)
-
         if (!Array.isArray(applictions)) {
             applictions = [applictions];
         }
-
         applictions.forEach(function (app) {
             var record = app.RequestedObject;
             if (record) {
@@ -815,7 +755,6 @@ script:
                 })
             }
         });
-
         return {
             Type: entryTypes.note,
             Contents: applicatInfo,
@@ -825,7 +764,6 @@ script:
             EntryContext: {'Archer.Applications': applicatInfo}
         };
     }
-
     function inputToXML(fieldsToValue, mapping, token){
         var fields = '';
         for (var key in fieldsToValue) {
@@ -890,31 +828,25 @@ script:
         }
         return fields;
     }
-
     function createRecord(command, token, dataArgs) {
         var appId = dataArgs.applicationId;
         var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
-
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
         var fields = inputToXML(fieldsToValue, mapping, token);
-
         var soap = createContentSoapRequest(token, appId, fields);
         var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
         var md = fieldsToValue;
         md.Id = contentId;
-
         if (!contentId) {
             return {
                 ContentsFormat: formats["markdown"],
@@ -922,7 +854,6 @@ script:
                 Contents: "Recived an error" + JSON.stringify(response)
             };
         }
-
         return {
             Type: entryTypes.note,
             Contents: response,
@@ -932,29 +863,23 @@ script:
             EntryContext: {'Archer.Content(true)': {Id: contentId , Fields: fieldsToValue}}
         };
     }
-
     function updateRecord(command, token, dataArgs) {
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
         var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
-
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
-
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
         var fields = inputToXML(fieldsToValue, mapping, token);
-
         var soap = updateContentSoapRequest(token,appId,contentId,fields);
         var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var result = dq(response, 'Envelope.Body.UpdateRecordResponse.UpdateRecordResult');
         if (!result && result < 1) {
             return {
@@ -963,7 +888,6 @@ script:
                 Contents: "Recived an error" + JSON.stringify(response)
             };
         }
-
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
@@ -972,7 +896,6 @@ script:
             HumanReadable: 'content id = ' + contentId + ' was updated successfully'
         }
     }
-
     function getValueListForField(command, token, dataArgs){
         var SOAPAction = 'http://archer-tech.com/webservices/GetValueListForField';
         var fieldID = dataArgs.fieldID;
@@ -986,7 +909,6 @@ script:
         }
         return ret;
     }
-
     function getValueObjectForFieldId(token, dataArgs){
         var fieldID = dataArgs.fieldID;
         var mapping = createMapping(token);
@@ -998,7 +920,6 @@ script:
         }
         return result;
     }
-
     function deleteRecord(command, token, dataArgs) {
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
@@ -1006,11 +927,9 @@ script:
         var SOAPAction = 'http://archer-tech.com/webservices/DeleteRecord';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var result = dq(response, 'Envelope.Body.DeleteRecordResponse.DeleteRecordResult');
         if (!result && result < 1) {
             return {
@@ -1019,13 +938,11 @@ script:
                 Contents: "Recived an error while deleting record: " + JSON.stringify(response)
             };
         }
-
         return {
             Type: entryTypes.note,
             Contents: 'content id = ' + contentId + ' was deleted successfully'
         }
     }
-
     function searchRecords(command, token, dataArgs) {
         var appId = dataArgs.applicationId;
         var fieldsToDisplay = dataArgs.fieldsToDisplay;
@@ -1036,20 +953,16 @@ script:
         var dateOperator = dataArgs.dateOperator;
         var isDescending = dataArgs.Descending;
         var pageNumber = dataArgs.pageNumber || '1';
-
         var levels = getLevelsByApplicationId(token);
         var mapping = createMappingNameToFieldId(levels, token);
         var reversemapping = createMappingFieldIdToName(levels, token);
         var fields = ''
-
         if (!fieldsToDisplay) {
             fieldsToDisplay = Object.keys(mapping);
         }
-
         if (fieldsToDisplay && !Array.isArray(fieldsToDisplay)){
             fieldsToDisplay = fieldsToDisplay.split(',');
         }
-
         if (fieldsToDisplay) {
             fieldsToDisplay.forEach(function (field) {
                 if (field && mapping[field] !== undefined) {
@@ -1057,14 +970,12 @@ script:
                 }
             });
         }
-
         var fieldIdToSearchOn;
         var fieldNameToSearchOn;
         if (fieldToSearchOn) {
             fieldIdToSearchOn = mapping[fieldToSearchOn] ? mapping[fieldToSearchOn].Id : '';
             fieldNameToSearchOn = fieldToSearchOn;
         }
-
         var rawResponse = searchSendSoapRequest(command, token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
         var response = JSON.parse(x2j(rawResponse));
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
@@ -1075,7 +986,6 @@ script:
         output.forEach(function (out) {
             md.push(treeToFlattenObject(out));
         })
-
         return {
             Type: entryTypes.note,
             Contents: output,
@@ -1085,19 +995,15 @@ script:
             EntryContext: { 'Archer.Content(true)': output }
         };
     }
-
     function getReports(command, token) {
         var soap = getReportsSoapRequest(token);
         var SOAPAction = 'http://archer-tech.com/webservices/GetReports';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.GetReportsResponse.GetReportsResult');
-
         return {
             Type: entryTypes.note,
             Contents: parsedJSON,
@@ -1106,22 +1012,17 @@ script:
             EntryContext: {'Archer.Content(true)': parsedJSON}
         };
     }
-
     function executeStatisticSearchByReport(command, token, dataArgs) {
         var maxResults = dataArgs.maxResults || '100';
         var reportGuid = dataArgs.reportGuid;
-
         var soap = executeStatisticSearchByReportSoapRequest(token, reportGuid, maxResults);
         var SOAPAction = 'http://archer-tech.com/webservices/ExecuteStatisticSearchByReport';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatisticSearchByReportResult');
-
         return {
             Type: entryTypes.note,
             Contents: parsedJSON,
@@ -1130,21 +1031,16 @@ script:
             EntryContext: { 'Archer.Content(true)': parsedJSON}
         };
     }
-
     function getSearchOptionsByGuid(command, token, dataArgs) {
         var reportGuid = dataArgs.reportGuid;
-
         var soap = getSearchOptionsByGuidSoapRequest(token, reportGuid);
         var SOAPAction = 'http://archer-tech.com/webservices/GetSearchOptionsByGuid';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
-
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult');
-
         return {
             Type: entryTypes.note,
             Contents: parsedJSON,
@@ -1153,22 +1049,17 @@ script:
             EntryContext: { 'Archer.Content(true)': parsedJSON }
         };
     }
-
     function searchRecordsByReport(command, token, dataArgs) {
-
         var maxResults = dataArgs.maxResults || '1';
         var reportGuid = dataArgs.reportGuid;
-
         var soap = searchRecordsByReportSoapRequest(token, reportGuid, maxResults);
         var SOAPAction = 'http://archer-tech.com/webservices/SearchRecordsByReport';
         var rawResponse = sendSoapRequest(command, soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Error in response. Request = " + soap + " Response = " + rawResponse;
         }
         var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult');
-
         return {
             Type: entryTypes.note,
             Contents: parsedJSON,
@@ -1177,7 +1068,6 @@ script:
             EntryContext: { 'Archer.Content(true)': parsedJSON }
         };
     }
-
     function getOccurredTime(recordTimeStr, tz) {
         var occurred = new Date();
         if (recordTimeStr) {
@@ -1195,51 +1085,40 @@ script:
             if (tzMinutestr.length < 2) {
                 tzMinutestr = '0' + tzMinutestr;
             }
-
             // convert 7/18/2017 8:17:49 AM to 2017-07-18T20:17:49-0800
             var dateStr = recordTimeStr.split(' ')[0];
             var monthStr = dateStr.split('/')[0];
             var dayStr = dateStr.split('/')[1];
             var yearStr = dateStr.split('/')[2];
-
             var timeStr = recordTimeStr.split(' ')[1];
             var extStr = recordTimeStr.split(' ')[2];
             var hourInt = Number(timeStr.split(':')[0]);
             var minStr = timeStr.split(':')[1];
             var secStr = timeStr.split(':')[2];
-
             if (extStr == "PM" && hourInt < 12) {
                 hourInt = hourInt + 12;
             }
-
             if (extStr == "AM" && hourInt == 12) {
                 hourInt = hourInt - 12;
             }
-
             var hourStr = hourInt + '';
             if (Number(hourInt) < 10 && hourStr.length === 1) {
                 hourStr = "0" + hourStr;
             }
-
             if (Number(minStr) < 10 && minStr.length === 1) {
                 minStr = "0" + minStr;
             }
-
             if (Number(dayStr) < 10 && dayStr.length === 1) {
                 dayStr = "0" + dayStr;
             }
-
             if (Number(monthStr) < 10 && monthStr.length === 1) {
                 monthStr = "0" + monthStr;
             }
-
             recordTimeStr = yearStr + '-' +  monthStr + '-' + dayStr + 'T' + hourStr + ':' + minStr + ':' + secStr;
             occurred = new Date(Date.parse(recordTimeStr + tzPrefix + tzHourstr + tzMinutestr));
         }
-
         return occurred;
     }
-
     function toDateArcherString(date) {
         var day = Number(date.getDate());
         var month = Number(date.getMonth()) + 1;
@@ -1249,7 +1128,6 @@ script:
         var seconds = date.getSeconds();
         var ext = 'AM';
         var finalHour = hour;
-
         if (hour > 12) {
             ext = 'PM';
             finalHour = (hour - 12);
@@ -1262,30 +1140,24 @@ script:
         } else if (hour == 12) {
             ext = 'PM';
         }
-
         if (minutes < 10) {
             minutes = '0' + minutes;
         }
-
         if (seconds < 10) {
             seconds = '0' + seconds;
         }
-
         // format such: 7/22/2017 3:58 PM
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
-
     function fetchIncidents(token, dataArgs) {
         var myTimezone = new Date().getTimezoneOffset() * -1;
         var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
         if (params.timeZone === '0') {
             tz = 0;
         }
-
         var cmd = commands.searchRecords;
         var incidentRes = [];
         var lastRun = getLastRun();
-
         var day = 60 * 1000 * 60 * 24;
         var lastTime = lastRun.lastTime;
         if (!lastRun.lastTime) {
@@ -1297,14 +1169,12 @@ script:
         dataArgs.searchValue = toDateArcherString(new Date(lastTime));
         dataArgs.fieldToSearchOn = searchByField;
         dataArgs.fieldsToDisplay = params.fetchFields + ',' + searchByField;
-
         var incidents = [];
         var results = searchRecords(cmd, token, dataArgs);
         if (results && results.Contents && results.Contents.length > 0) {
             for (var i = 0; i < results.Contents.length; i++) {
                 var res = results.Contents[i];
                 var labels = [];
-
                 var fields = Object.keys(res.Fields);
                 if (fields) {
                     for (var j = 0; j < fields.length; j++) {
@@ -1320,9 +1190,7 @@ script:
                         labels.push({ 'type': fieldName, 'value': fieldValue });
                     }
                 }
-
                 var raw = JSON.stringify(res);
-
                 incidents.push({
                     name: 'RSA Archer Incident: ' + res.Id,
                     labels: labels,
@@ -1331,13 +1199,11 @@ script:
                     occurred: lastTime
                 });
             }
-
             var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
             setLastRun({ lastTime: lastTime.getTime() + offset });
         }
         return (JSON.stringify(incidents));
     }
-
     function getAuthToken() {
         var soap = createUserSessionFromInstanceSoapRequest(params.instanceName,
                                                             params.credentials.identifier,
@@ -1345,19 +1211,15 @@ script:
         var SOAPAction = 'http://archer-tech.com/webservices/CreateUserSessionFromInstance';
         var rawResponse = sendSoapRequest('login', soap, SOAPAction);
         var response = JSON.parse(x2j(rawResponse));
-
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Login failed. Request = " + soap + " Response = " + rawResponse;
         }
-
         var token = dq(response, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult');
         return token;
     }
-
     function destroyAuthToken(token) {
         var soap = terminateSessionSoapRequest(token);
         var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
-
         try {
             sendSoapRequest('logout', soap, SOAPAction);
         } catch(err) {
@@ -1365,23 +1227,19 @@ script:
                 // it means the session token already expired so no need to be terminated
                 return
             }
-
             throw err
         }
     }
-
     function reLogin(token){
         destroyAuthToken(token);
         return getAuthToken();
     }
-
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId) {
             throw 'If Fetch incidents is on, then Application Id must be passed';
         }
     }
-
     var token = null;
     try {
         token = getAuthToken();
@@ -1588,11 +1446,12 @@ script:
       description: The Guid of the report
     - name: maxResults
       defaultValue: "100"
-      description: Maximum pages of the reports	
+      description: Maximum pages of the reports
     description: Performs statistic search by report Guid
   - name: archer-get-search-options-by-guid
     arguments:
     - name: reportGuid
+      description: The GUID of the report
       required: true
       description: The GUID of the report
     description: 'Getting search criteria by report GUID '
@@ -1602,7 +1461,7 @@ script:
       description: The GUID of the report
       required: true
     - name: maxResults
-      description: Maximum pages of the records	
+      description: Maximum pages of the records
       defaultValue: "1"
     description: Search records by report Guid
   isfetch: true
