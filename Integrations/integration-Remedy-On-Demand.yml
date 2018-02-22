@@ -37,6 +37,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |
     // remove '/' at the end of the url (if exists)
@@ -242,10 +252,38 @@ script:
         return getIncident(incID, 'Updated incident:');
     };
 
+    var fetchIncidentsToDemisto = function() {
+        var lastRun = getLastRun();
+        nowDate = new Date();
+        var now = nowDate.toISOString();
+        if (!lastRun || !lastRun.value) {
+            lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
+        }
+        var query = "'Create Date' > " + '"' + now + '"';
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + '?q=' + encodeURIComponent(query);
+        var token = login();
+        var res = sendRequest(url, token);
+        logout(token);
+        var body = JSON.parse(res.Body);
+        var incidents = []
+        Object.keys(body.entries).forEach(function(key) {
+            var requestID = body.entries[key].values['Request ID'];
+            incidents.push({
+                'name': 'Remedy On-Demand incident ' + requestID,
+                'labels': [{'type':'Ticket ID', 'value':requestID}], //Ticket ID to be pushed to incident context
+                'rawJSON': JSON.stringify(body.entries[key])
+            });
+        });
+        setLastRun({value: now});
+        return JSON.stringify(incidents);
+    };
+
     switch (command) {
         case 'test-module':
             fetchIncidents();
             return 'ok';
+        case 'fetch-incidents':
+            return fetchIncidentsToDemisto();
         case 'remedy-incident-create':
             return createIncident(
                 args['first-name'],
@@ -487,4 +525,6 @@ script:
     - contextPath: Ticket.Type
       description: Ticket service type
     description: Update exiting incident
+  isfetch: true
 hidden: false
+releaseNotes: "Added fetch incidents support"
