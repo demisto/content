@@ -1443,7 +1443,7 @@ script:
     arguments:
     - name: reportGuid
       required: true
-      description: The Guid of the report
+      description: The GUID of the report
     - name: maxResults
       defaultValue: "100"
       description: Maximum pages of the reports
