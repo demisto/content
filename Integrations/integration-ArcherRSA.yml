@@ -1603,4 +1603,4 @@ script:
     description: Search records by report Guid
   isfetch: true
   runonce: false
-  releaseNotes: "-"
+  releaseNotes: "--"
