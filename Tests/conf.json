@@ -298,10 +298,6 @@
             "playbookID": "ZipFile-Test"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
-        },
-        {
             "playbookID": "ExtractDomainTest"
         }
     ],
