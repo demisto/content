@@ -252,7 +252,7 @@ script:
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
-            if (elements[key].simpleValues.elementDisplayName.values[0] == args.machine) {
+            if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
                 return true;
             }
         }
