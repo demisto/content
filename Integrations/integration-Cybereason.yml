@@ -539,3 +539,4 @@ script:
       description: End time of the connection
     description: Searches for connections.
 hidden: false
+releaseNotes: "Changed from case sensitive to case insensitive string comparison in is-probe-connected command"
