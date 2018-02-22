@@ -273,6 +273,10 @@ script:
                 path: "agents/%agent_id%/recommission",
                 method: 'POST'
             },
+            'so-agent-quarantine': {
+                path: "agents/%agent_id%/disconnect",
+                method: "POST"
+            },
             'so-agent-unquarentine': {
                 path: "agents/%agent_id%/connect",
                 method: 'POST'
@@ -1525,7 +1529,7 @@ script:
       - disconnecting
       description: Comma seprated list of agent network status
     description: Connect to network
-  - name: so-agent-quarentine
+  - name: so-agent-quarantine
     arguments:
     - name: agent_id
       required: true
