@@ -27,14 +27,9 @@ configuration:
 script:
   script: |-
     function fixUrl(url) {
-        if (url.endsWith('/')) {
-            return url.slice(0, -1);
-        }
-
-        return url;
+        return ((url[url.length - 1] != '/') ? (url + '/') : url);
     }
-    var SERVER_URL = fixUrl(params.url) + '/';
-    var INCIDENT_DEFAULT_COLUMNS = null;
+    var SERVER_URL = fixUrl(params.Server);
     var LIST_MEMBERS_DEFAULT_COLUMNS = null;
 
     function dateToISO8601(date) {
@@ -84,11 +79,11 @@ script:
 
     function addMemberToList(){
         var response = addMemberToListRequest(args.listId,
-                                             args.memberName,
-                                             args.memberValue,
-                                             args.description,
-                                             args.expiration,
-                                             args.duration);
+            args.memberName,
+            args.memberValue,
+            args.description,
+            args.expiration,
+            args.duration);
 
         return {
             Type: entryTypes.note,
@@ -151,7 +146,7 @@ script:
         var member = getSingleMemberFromListRequest(args.listId, args.memberId);
 
         var entryContext = {
-          Member: member
+            Member: member
         };
 
         var columnsList = LIST_MEMBERS_DEFAULT_COLUMNS;
@@ -159,7 +154,7 @@ script:
         var md = 'Member ' + args.memberId + '\n';
         md += tblToMd('Member', member, columnsList);
 
-          return {
+        return {
             Type: entryTypes.note,
             Contents: member,
             ContentsFormat: formats.json,
@@ -179,14 +174,20 @@ script:
     }
 
     function getIncidentById(){
-        var incident = getIncidentByIdRequest(args.incidentId);
+        var responseIncident = getIncidentByIdRequest(args.incidentId);
 
-        var entryContext = {
-            Incident: incident
+        var incident = createIncidentFromResponse(responseIncident);
+
+        var entryContext ={
+            Id: incident.Id,
+            IntendedUsers: incident.IntendedUsers,
+            URL: incident.URL,
+            Type: incident.Type,
+            CreatedAt: incident.CreatedAt,
+            State: incident.State,
+            Grouping: incident.Grouping
         };
 
-        var columnsList = INCIDENT_DEFAULT_COLUMNS;
-        columnsList.sort();
         var md = 'Incident ' + args.incidentId + '\n';
         md += tblToMd('Incident details', incident, columnsList);
 
@@ -195,7 +196,9 @@ script:
             Contents: incident,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: entryContext
+            EntryContext: {
+                'ProofpointTRAP.Incident(val.Id==obj.Id)' : entryContext
+            }
         };
     }
 
@@ -209,31 +212,74 @@ script:
     }
 
     function getIncidents(){
-        var incidents = getIncidentsRequest(args);
+        var responseIncidents = getIncidentsRequest(args);
+        var incidents = [];
+        var entryContext = [];
+        responseIncidents.forEach(function (responseIncident){
+            var incident = createIncidentFromResponse(responseIncident);
+            incidents.push(incident);
+            entryContext.push({
+                Id: incident.Id,
+                IntendedUsers: incident.IntendedUsers,
+                URL: incident.URL,
+                Type: incident.Type,
+                CreatedAt: incident.CreatedAt,
+                State: incident.State,
+                Grouping: incident.Grouping
+            })
+        });
 
-        var entryContext = {
-            Incident: incidents
-        };
-
-        columnsList = INCIDENT_DEFAULT_COLUMNS;
-        columnsList.sort();
         var md = 'Incidents retrieved';
-        md += tblToMd('Incident details', incidents, columnsList);
+        md += tblToMd('Incident details', incidents);
 
         return {
             Type: entryTypes.note,
             Contents: incidents,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: entryContext
+            EntryContext:  {
+                'ProofpointTRAP.Incident(val.Id==obj.Id)' : entryContext
+            }
         };
     }
 
+    function createIncidentFromResponse(responseIncident){
+        var incident = {};
+
+        incident.Id = responseIncident['id'];
+        incident.IntendedUsers = responseIncident['users'];
+        incident.URL = responseIncident['url'];
+        incident.Type = responseIncident['type'];
+        incident.CreatedAt = responseIncident['created_at'];
+        incident.State = responseIncident['state'];
+        incident.Grouping = [];
+        responseIncident['events'].forEach(function (event){
+            var grouping = createIncidentGroupingFromEvent(event);
+            incident.Grouping.push(grouping);
+        });
+
+        return incident;
+    }
+
+    function createIncidentGroupingFromEvent(event) {
+        var grouping = {};
+
+        grouping.Category = event['category'];
+        grouping.ThreatName = event['threatname'];
+        grouping.Received = event['received'];
+        grouping.Id = event['id'];
+        grouping.Severity = event['severity'];
+
+        return grouping;
+    }
+
     function getIncidentsRequest(queryParams){
-        queryParams.created_after = dateToISO8601(queryParams.created_after);
-        queryParams.created_after = dateToISO8601(queryParams.created_before);
-        queryParams.closed_after = dateToISO8601(queryParams.closed_after);
-        queryParams.closed_before = dateToISO8601(queryParams.closed_before);
+        if(queryParams){
+            queryParams.created_after = dateToISO8601(queryParams.created_after);
+            queryParams.created_before = dateToISO8601(queryParams.created_before);
+            queryParams.closed_after = dateToISO8601(queryParams.closed_after);
+            queryParams.closed_before = dateToISO8601(queryParams.closed_before);
+        }
 
         var incidents;
         incidents = sendRequest('incidents', queryParams);
@@ -294,6 +340,29 @@ script:
     - name: closed_before
       description: Retrieve incidents that were closed before specified date, in ISO
         8601 format (UTC)
+    outputs:
+    - contextPath: ProofpointTRAP.Incident.Id
+      description: Incident ID
+    - contextPath: ProofpointTRAP.Incident.IntendedUsers
+      description: Incident intended users
+    - contextPath: ProofpointTRAP.Incident.URL
+      description: Incident URL
+    - contextPath: ProofpointTRAP.Incident.Type
+      description: Incident type
+    - contextPath: ProofpointTRAP.Incident.CreatedAt
+      description: Incident creation time
+    - contextPath: ProofpointTRAP.Incident.State
+      description: State of the incident
+    - contextPath: ProofpointTRAP.Incident.Grouping.Category
+      description: Incident event category
+    - contextPath: ProofpointTRAP.Incident.Grouping.ThreatName
+      description: Incident event threat name
+    - contextPath: ProofpointTRAP.Incident.Grouping.Received
+      description: Incident event receiving time
+    - contextPath: ProofpointTRAP.Incident.Grouping.Id
+      description: Incident event ID
+    - contextPath: ProofpointTRAP.Incident.Grouping.Severity
+      description: Incident event severity
     description: Retrieve incidents metadata from Threat Response, by optionally specifying
       filter criteria such as the state of the incident or time of closure.
   - name: proofpoint-get-incident-by-id
@@ -301,6 +370,29 @@ script:
     - name: incidentId
       required: true
       description: The Id of the requested incident
+    outputs:
+    - contextPath: ProofpointTRAP.Incident.Id
+      description: Incident ID
+    - contextPath: ProofpointTRAP.Incident.IntendedUsers
+      description: Incident intended users
+    - contextPath: ProofpointTRAP.Incident.URL
+      description: Incident URL
+    - contextPath: ProofpointTRAP.Incident.Type
+      description: Incident type
+    - contextPath: ProofpointTRAP.Incident.CreatedAt
+      description: Incident creation time
+    - contextPath: ProofpointTRAP.Incident.State
+      description: State of the incident
+    - contextPath: ProofpointTRAP.Incident.Grouping.Category
+      description: Incident event category
+    - contextPath: ProofpointTRAP.Incident.Grouping.ThreatName
+      description: Incident event threat name
+    - contextPath: ProofpointTRAP.Incident.Grouping.Received
+      description: Incident event receiving time
+    - contextPath: ProofpointTRAP.Incident.Grouping.Id
+      description: Incident event ID
+    - contextPath: ProofpointTRAP.Incident.Grouping.Severity
+      description: Incident event severity
     description: Retrieve incident metadata from Threat Response by specifying the
       incident id.
   - name: proofpoint-delete-member-from-list
@@ -328,7 +420,7 @@ script:
     - name: description
       description: Short description of list member
     - name: expiration
-      description: Timestamp to expire member. Format: 2017-01-11T03:47:15Z
+      description: Timestamp to expire member in ISO8601 format.
     - name: duration
       description: number of milliseconds after which to expire membership. Expiration
         takes precedence.
