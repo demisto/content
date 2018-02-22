@@ -41,7 +41,7 @@ script:
             friendlyName = 'email.pdf'
 
         f = open('htmlBody.html','w')
-        f.write(html)
+        f.write('<html style=background:white' + html + '</html')
         f.close()
 
         proxy_flag = ""
@@ -134,3 +134,4 @@ script:
     description: Rasterize an email body into an image
   dockerimage: demisto/rasterize
 hidden: false
+releaseNotes: "Forcing white background on emails for better visibility in the dark theme"
