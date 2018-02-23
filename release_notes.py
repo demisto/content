@@ -214,8 +214,36 @@ class DashboardContent(Content):
             res += "-- " + rn + "\n"
         return res
 
-Content.register(ReportContent)
+Content.register(DashboardContent)
 
+class WidgetContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Widgets"
+
+    def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
+        res = "- " + cnt["name"] + "\n"
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
+            res += "-- " + cnt["description"] + "\n"
+        return res
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + rn + "\n"
+        return res
+
+Content.register(WidgetContent)
 
 class ReputationContent(Content):
     def loadData(self, data):
@@ -274,7 +302,8 @@ releaseNoteGenerator = {
     "Playbooks": PlaybookContent(),
     "Reports": ReportContent(),
     "Misc": ReputationContent(),
-    "Dashboards": DashboardContent()
+    "Dashboards": DashboardContent(),
+    "Widgets": WidgetContent()
 }
 
 def parseChangeList(filePath):
@@ -313,7 +342,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         fileType = fullFileName.split("/")[0]
         fileTypeMapping = releaseNoteGenerator.get(fileType)
         if fileTypeMapping is None:
-            print "Unsupported file type " + fileTypeMapping
+            print "Unsupported file type " + fileType
             return
 
         if changeType == "D":
