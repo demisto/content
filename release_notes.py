@@ -313,6 +313,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         fileType = fullFileName.split("/")[0]
         fileTypeMapping = releaseNoteGenerator.get(fileType)
         if fileTypeMapping is None:
+            print "Unsupported file type " + fileTypeMapping
             return
 
         if changeType == "D":
