@@ -4,7 +4,6 @@
   "name": "Incidents in Error Run Status",
   "dataType": "incidents",
   "widgetType": "number",
-  "releaseNotes": "ncidents in Error R rn",
   "query": "runStatus:error",
   "isPredefined": true,
   "dateRange": {
