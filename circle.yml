@@ -15,3 +15,6 @@ test:
     - python content_creator.py $CIRCLE_ARTIFACTS
   override:
     - chmod +x ./Tests/scripts/*
+
+    # ensure file name
+    - ./Tests/scripts/validate_files_structure.sh
