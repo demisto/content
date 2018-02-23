@@ -47,12 +47,12 @@ validateFilesStructure() {
     echo "Finished validate $dir"
 }
 
+validateFilesStructure Widgets widget- .json widget
 validateFilesStructure Integrations integration- .yml integration
 validateFilesStructure Playbooks playbook- .yml playbook
 # validateFilesStructure Reports report- .json report
 validateFilesStructure Scripts script- .yml script
 validateFilesStructure Misc reputations .json
-validateFilesStructure Widgets widget- .json widget
 
 if [ "$foundWrongName" = true ] || [ "$foundMissingField" = true ]
 then

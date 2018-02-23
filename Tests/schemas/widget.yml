@@ -34,3 +34,13 @@ mapping:
   params:
     type: map
     allowempty: True
+  size:
+    type: number
+  sort:
+    type: seq
+    sequence:
+      - type: any
+  category:
+    type: str
+  modified:
+    type: str
