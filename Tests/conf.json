@@ -23,11 +23,6 @@
             "timeout": 300
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -306,6 +301,11 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
