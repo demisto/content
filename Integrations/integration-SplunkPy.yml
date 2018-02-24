@@ -53,6 +53,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Parse Raw of notable events
+  name: parseNotableEventsRaw
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     import splunklib.client as client
@@ -66,6 +71,20 @@ script:
     import requests
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    def rawToDict(raw):
+        result = {}
+        raw = raw.strip("}")
+        raw = raw.strip("{")
+        key_val_arr = raw.split(",")
+
+        for key_val in key_val_arr:
+          single_key_val = key_val.split("=")
+          if len(single_key_val)>1:
+              val = single_key_val[1]
+              val = val.strip("\"")
+              result[single_key_val[0]] = val
+        return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
         """
@@ -139,6 +158,12 @@ script:
         incident["rawJSON"] = json.dumps(event)
         labels = []
         labels.append({'type':'security_domain','value':event["security_domain"]})
+
+        isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
+        if isParseNotableEventsRaw:
+            rawDict = rawToDict(event['_raw'])
+            for rawKey in rawDict:
+                labels.append({'type':rawKey,'value':rawDict[rawKey]})
         incident['labels'] = labels
         return incident
 
