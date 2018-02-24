@@ -129,8 +129,17 @@ script:
     var results;
     switch(command) {
         case 'test-module':
+            // the test will get the last 10 minutes events
+            // we just make sure the response is 200 and the username password are valid.
+            var now = new Date();
+            var last10minutes = new Date(now.getTime() - 10 * MINUTE_IN_MILLIS);
+            try {
+                getEventsRequest(null, dateToISO8601(last10minutes), null, null);
+            } catch (err) {
+                throw 'Test failed. Failed to fetch last 10 minutes events. Original error: ' + err
+            }
 
-            break;
+            return 'ok';
         case 'fetch-incidents':
             var now = new Date();
             var lastRun = getLastRun();
