@@ -16,7 +16,10 @@ echo ${PUBLIC_IP} > public_ip
 
 #copy installer files to instance
 INSTALLER=$(ls demistoserver*.sh)
-CONF_PATH="demisto-conf.json"
+CONF_PATH==$(ls demisto-conf*)
+
+echo "### - INSTALLER $INSTALLER"
+echo "### - CONF_PATH $CONF_PATH"
 USER="centos"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
