@@ -6,7 +6,7 @@ echo "start content tests"
 SECRET_CONF_PATH=$(cat secret_conf_path)
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
-CONF_PATH="./Tests/conf.json"
+CONF_PATH="./Tests/test-conf.json"
 USERNAME="admin"
 PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
 
