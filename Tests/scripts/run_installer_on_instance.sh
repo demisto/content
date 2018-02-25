@@ -16,7 +16,7 @@ echo ${PUBLIC_IP} > public_ip
 
 #copy installer files to instance
 INSTALLER=$(ls demistoserver*.sh)
-
+CONF_PATH="demisto-conf.json"
 USER="centos"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
@@ -26,6 +26,7 @@ echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
+scp ${CONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/${CONF_PATH}
 
 # copy licence to instance
 DEMISTO_LIC_PATH=$(cat demisto_lic_path)
@@ -36,7 +37,7 @@ INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
     && sudo mkdir /usr/local/demisto \
     && sudo cp demisto.lic /usr/local/demisto/ \
-    && sudo ./installer.sh -- -y -do-not-start-server"
+    && sudo ./installer.sh -- -y -do-not-start-server -conf ${CONF_PATH}"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 

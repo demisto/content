@@ -24,6 +24,11 @@ download_extra_files() {
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$BRANCH" -o "$DEMISTO_LIC_PATH"
 
+    echo "Downloading demisto-conf file..."
+    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto-conf.json?ref=$BRANCH" -o "$DEMISTO_LIC_PATH"
+
+
     echo "Finished downloading extra files from branch $BRANCH"
 }
 
