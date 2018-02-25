@@ -51,6 +51,3 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
 fi
 
 echo "Successfully downloaded configuration files"
-
-echo "## LS"
-ls
