@@ -23,11 +23,6 @@
             "timeout": 300
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -298,10 +293,22 @@
             "playbookID": "ExtractDomainTest"
         },
         {
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
             "playbookID": "Test-IsMaliciousIndicatorFound"
         }
     ],
     "skipped": [
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
