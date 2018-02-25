@@ -262,11 +262,11 @@ def test_integration(client, integrations, playbook_id, options={}):
         i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED
-    if test_pass:
-        # delete incident
-        __delete_incident(client, incident)
-
-        # delete integration instance
-        __delete_integrations_instances(client, instance_ids)
+    # if test_pass:
+    #     # delete incident
+    #     __delete_incident(client, incident)
+    #
+    #     # delete integration instance
+    #     __delete_integrations_instances(client, instance_ids)
 
     return test_pass
