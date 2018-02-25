@@ -828,7 +828,8 @@ script:
     - name: template
       description: Template name to use as a base to create new incidents.
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...
+        (You don''t need to add "u_" in the name of the custom field. It adds it automatically.'
     - name: type
       auto: PREDEFINED
       predefined:
@@ -1175,7 +1176,8 @@ script:
       required: true
       description: Id(UID) of the ticket to update
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...
+        (You don''t need to add "u_" in the name of the custom field. It adds it automatically.'
     - name: type
       auto: PREDEFINED
       predefined:
@@ -1545,3 +1547,5 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
+  runonce: false
+releaseNotes: "-"
