@@ -453,7 +453,8 @@ script:
     - contextPath: Splunk.Raw.Parsed
       description: The raw event data parsed
       type: unknown
+      default: true
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: ''
+releaseNotes: 'Adding command splunk-parse-raw to parse Splunk _raw result'
