@@ -556,6 +556,9 @@ script:
             if assignee is not None:
                 case['assignedTo'] = self.user_name_to_id(assignee)
 
+            if organization is not None:
+                case['orgId'] = self.organization_name_to_id(organization)
+
             cmd = 'caseEditCase'
             query = json.dumps({'caseDetail' : case})
             self.cmdquery(cmd, query, True)
@@ -649,7 +652,6 @@ script:
     def cases_to_incidents(esm, cases):
         incidents = []
         for case in cases:
-            demisto.log(esm.case_status_id_to_name(case['statusId']['value']))
             incident = {
                 'name' : case['summary'],
                 'details' : 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
@@ -1280,4 +1282,4 @@ script:
       isArray: true
     description: Delete triggered alarms
   isfetch: true
-releaseNotes: "-"
+releaseNotes: "Now possible to change organization when editing a case"
