@@ -1,0 +1,413 @@
+id: Test-IsMaliciousIndicatorFound
+version: -1
+name: Test-IsMaliciousIndicatorFound
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6bc2accb-18fa-42f3-8163-fb8548927da7
+    type: start
+    task:
+      id: 6bc2accb-18fa-42f3-8163-fb8548927da7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: dec758fa-46d1-4a8f-8de3-6ff089ba8892
+    type: regular
+    task:
+      id: dec758fa-46d1-4a8f-8de3-6ff089ba8892
+      version: -1
+      name: Create good indicator
+      description: Modify indicator reputation
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: IP
+      value:
+        simple: 4.3.7.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3a5fc555-015c-481f-89d2-37c77e685822
+    type: condition
+    task:
+      id: 3a5fc555-015c-481f-89d2-37c77e685822
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "3"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 23eba689-c4a0-437c-8b68-a35f821947bc
+    type: regular
+    task:
+      id: 23eba689-c4a0-437c-8b68-a35f821947bc
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: xxx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: cdcd81db-dd81-419b-887a-d1f3b342e9fd
+    type: regular
+    task:
+      id: cdcd81db-dd81-419b-887a-d1f3b342e9fd
+      version: -1
+      name: Create Bad indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Bad
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: dudu@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 2f612db5-3c1e-4a2c-854e-664341ede83f
+    type: regular
+    task:
+      id: 2f612db5-3c1e-4a2c-854e-664341ede83f
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: xxx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b03f84a8-b6ec-4a7c-86bb-9ac8d793a02e
+    type: condition
+    task:
+      id: b03f84a8-b6ec-4a7c-86bb-9ac8d793a02e
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "13"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    taskid: c0e11d78-b854-49e4-8450-3eaf435408f1
+    type: regular
+    task:
+      id: c0e11d78-b854-49e4-8450-3eaf435408f1
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Suspicious
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: yulu@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "8":
+    id: "8"
+    taskid: c6b5e42f-3366-46ec-8df3-8146ef0c33a9
+    type: condition
+    task:
+      id: c6b5e42f-3366-46ec-8df3-8146ef0c33a9
+      version: -1
+      name: IsMaliciuosFound-no-suspicious
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "10"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 6f22921c-07e1-4315-83ab-5cbb9013a6c2
+    type: regular
+    task:
+      id: 6f22921c-07e1-4315-83ab-5cbb9013a6c2
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: xxx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "11":
+    id: "11"
+    taskid: bb8f1bb0-23c3-490c-8b49-6a32ceae65af
+    type: condition
+    task:
+      id: bb8f1bb0-23c3-490c-8b49-6a32ceae65af
+      version: -1
+      name: IsMaliciuosFound-with-suspicious
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "4"
+    scriptarguments:
+      includeSuspicious:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 8877482e-d76f-48e9-8d7e-4943245a3338
+    type: regular
+    task:
+      id: 8877482e-d76f-48e9-8d7e-4943245a3338
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: xxx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 9c41e5b7-d520-45fa-8947-f13f2b4d70e6
+    type: title
+    task:
+      id: 9c41e5b7-d520-45fa-8947-f13f2b4d70e6
+      version: -1
+      name: All GOOD!!!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1435
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
