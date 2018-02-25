@@ -51,6 +51,7 @@ script:
         connectionString +="password='" + demisto.params()['password'] +"'";
         try:
             conn = psycopg2.connect(connectionString)
+            conn.autocommit = True
         except Exception as e:
             demisto.results(e.message)
             return None
@@ -107,3 +108,5 @@ script:
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
 hidden: false
+releaseNotes: "Setting auto-commit to True"
+
