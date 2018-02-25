@@ -3,6 +3,18 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
+        },
+        {
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
@@ -264,16 +276,7 @@
             "timeout": 400
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
-        {
             "playbookID": "LanguageDetect-Test",
-            "timeout": 300
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
         {
@@ -295,9 +298,6 @@
         {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
-        },
-        {
-            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped": [
