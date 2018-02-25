@@ -3,6 +3,18 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
+        },
+        {
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
@@ -12,7 +24,7 @@
                 "byoi": false
             },
             "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 300
+            "timeout": 400
         },
         {
             "integrations": {
@@ -264,16 +276,7 @@
             "timeout": 400
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
-        {
             "playbookID": "LanguageDetect-Test",
-            "timeout": 300
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
         {
@@ -295,9 +298,6 @@
         {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
-        },
-        {
-            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped": [
