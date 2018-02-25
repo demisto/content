@@ -107,3 +107,4 @@ script:
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
 hidden: false
+releaseNotes: "Set auto-commit to True"
