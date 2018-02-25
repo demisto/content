@@ -51,6 +51,7 @@ script:
         connectionString +="password='" + demisto.params()['password'] +"'";
         try:
             conn = psycopg2.connect(connectionString)
+            conn.autocommit = True
         except Exception as e:
             demisto.results(e.message)
             return None
