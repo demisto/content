@@ -42,7 +42,7 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     echo "Got message from github=$NOT_FOUND_MESSAGE"
 
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o "$SECRET_CONF_PATH"
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto-conf.json" -o "$SECRET_CONF_PATH"
 
     download_extra_files "master"
 
@@ -51,3 +51,6 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
 fi
 
 echo "Successfully downloaded configuration files"
+
+echo "## LS"
+ls

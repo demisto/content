@@ -3,6 +3,9 @@ set -e
 
 echo "start content tests"
 
+echo "## LS"
+ls
+
 SECRET_CONF_PATH=$(cat secret_conf_path)
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
