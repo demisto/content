@@ -53,7 +53,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
-  type: 0
+  type: 8
   required: false
 script:
   script: |-
