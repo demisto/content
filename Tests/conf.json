@@ -3,6 +3,21 @@
     "testInterval": 30,
     "tests": [
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
@@ -301,11 +316,6 @@
         }
     ],
     "skipped": [
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
