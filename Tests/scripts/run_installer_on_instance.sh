@@ -15,10 +15,16 @@ echo "Instance public IP is: $PUBLIC_IP"
 echo ${PUBLIC_IP} > public_ip
 
 #copy installer files to instance
+
+echo "##### pwd ####"
+pwd
+echo "##### ls ####"
+ls
 INSTALLER=$(ls demistoserver*.sh)
+echo "### - INSTALLER $INSTALLER"
+
 CONF_PATH==$(ls demisto-conf*)
 
-echo "### - INSTALLER $INSTALLER"
 echo "### - CONF_PATH $CONF_PATH"
 USER="centos"
 
