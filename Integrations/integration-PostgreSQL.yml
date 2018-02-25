@@ -56,7 +56,7 @@ script:
             return None
         return conn
 
-    if demisto.command() == 'test-module':
+    if demisto.command() == 'test-module': 
         try:
             conn = pgsqlConnect()
         except Exception as e:
