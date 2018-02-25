@@ -60,4 +60,3 @@ args:
 - name: tags
   description: Evidence tags
 scripttarget: 0
-releaseNotes: "Handle cases where 'when' argument is not available"
