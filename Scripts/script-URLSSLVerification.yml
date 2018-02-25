@@ -7,7 +7,7 @@ script: |-
 
   NON_SSL_PREFIX = "http"
   SSL_PREFIX = "https"
-  VENDOR = "URL Verification"
+  VENDOR = "URL SSL Verification"
   SUSPICIOUS_SCORE = 2
 
   urls = argToList(demisto.get(demisto.args(),"url"))
