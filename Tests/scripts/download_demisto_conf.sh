@@ -10,6 +10,9 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
+DEMISTO_CONF_PATH="./demisto-conf.json"
+echo ${DEMISTO_CONF_PATH} > demisto_conf_path
+
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
 
@@ -26,7 +29,7 @@ download_extra_files() {
 
     echo "Downloading demisto-conf file..."
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto-conf.json?ref=$BRANCH" -o "$DEMISTO_LIC_PATH"
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto-conf.json?ref=$BRANCH" -o "$DEMISTO_CONF_PATH"
 
 
     echo "Finished downloading extra files from branch $BRANCH"

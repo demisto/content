@@ -15,17 +15,9 @@ echo "Instance public IP is: $PUBLIC_IP"
 echo ${PUBLIC_IP} > public_ip
 
 #copy installer files to instance
-
-echo "##### pwd ####"
-pwd
-echo "##### ls ####"
-ls
 INSTALLER=$(ls demistoserver*.sh)
 echo "### - INSTALLER $INSTALLER"
 
-CONF_PATH==$(ls demisto-conf*)
-
-echo "### - CONF_PATH $CONF_PATH"
 USER="centos"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
@@ -35,11 +27,14 @@ echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 
 scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
-scp ${CONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/${CONF_PATH}
 
 # copy licence to instance
 DEMISTO_LIC_PATH=$(cat demisto_lic_path)
 scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
+
+# copy demisto conf file to instance
+DEMISTO_CONF_PATH=$(cat demisto_conf_path)
+scp ${DEMISTO_CONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/conf.json
 
 echo "get installer and run installation script"
 INSTALL_COMMAND_Y="cd ~/installer_files \
