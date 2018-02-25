@@ -1545,4 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
-releaseNotes: "Fetch incidents now supports customized tables."
+releaseNotes: "Fetch incidents now supports customised tables."
