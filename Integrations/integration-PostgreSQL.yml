@@ -36,6 +36,13 @@ script:
   script: |
     import psycopg2
 
+    def closeConnection(conn, cur = None):
+        if cur is not None:
+          cur.close()
+
+        if conn is not None:
+          conn.close()
+
     def pgsqlConnect():
         connectionString = "dbname='" + demisto.params()['dbname'] +"' ";
         connectionString +="user='" + demisto.params()['user'] +"' ";
@@ -46,20 +53,23 @@ script:
             conn = psycopg2.connect(connectionString)
         except Exception as e:
             demisto.results(e.message)
-            return null
+            return None
         return conn
 
     if demisto.command() == 'test-module':
         try:
-            pgsqlConnect()
+            conn = pgsqlConnect()
         except Exception as e:
             demisto.results(e.message)
             sys.exit(0)
+        finally:
+            closeConnection(conn)
         demisto.results('ok')
         sys.exit(0)
 
     if demisto.command() == 'pgsql-query':
         conn = pgsqlConnect()
+        cur = None
         try:
             cur = conn.cursor()
             cur.execute(demisto.args()['query'])
@@ -68,6 +78,8 @@ script:
         except Exception as e:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : e.message })
             sys.exit(0)
+        finally:
+            closeConnection(conn)
 
         contents = []
         table = [];
@@ -83,7 +95,6 @@ script:
             table.append(tableRow)
 
         demisto.results( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': contents, "ReadableContentsFormat": formats['table'], "HumanReadable": table} );
-
         sys.exit(0)
   type: python
   commands:
