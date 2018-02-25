@@ -59,7 +59,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -349,6 +349,13 @@ script:
                 sys.exit(0)
         demisto.results('Splunk ES Notable events: '+response_info['message'])
         sys.exit(0)
+    if demisto.command() == 'splunk-parse-raw':
+        raw = demisto.args()['raw']
+        rawDict = rawToDict(raw)
+        ec = {};
+        ec['Splunk.Raw.Parsed'] = rawDict
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
+        sys.exit(0)
   type: python
   commands:
   - name: splunk-results
@@ -437,5 +444,16 @@ script:
     - contextPath: Splunk.Job
       description: The created jon SID
     description: 'Create new search job in Splunk '
+  - name: splunk-parse-raw
+    arguments:
+    - name: raw
+      description: The Raw data of splunk event, in string format
+      defaultValue: ${Splunk.Result._raw}
+    outputs:
+    - contextPath: Splunk.Raw.Parsed
+      description: The raw event data parsed
+      type: unknown
+    description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: ''
