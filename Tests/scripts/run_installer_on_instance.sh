@@ -33,7 +33,7 @@ scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 
 # copy demisto conf file to instance
 DEMISTO_CONF_PATH=$(cat demisto_conf_path)
-scp ${DEMISTO_CONF_PATH} ${USER}@${PUBLIC_IP}:/installer_files/demisto.conf
+scp ${DEMISTO_CONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.conf
 
 
 echo "get installer and run installation script"
