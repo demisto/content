@@ -150,7 +150,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      calcReputation: {}
+      calcReputation:
+        simple: "false"
       markAsIndicator: {}
       text:
         simple: ${inputs.incident}

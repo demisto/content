@@ -53,6 +53,30 @@ tasks:
             value:
               simple: inputs.Domain
             iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.commands.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
     view: |-
       {
         "position": {
