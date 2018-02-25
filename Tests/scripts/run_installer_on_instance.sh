@@ -16,7 +16,6 @@ echo ${PUBLIC_IP} > public_ip
 
 #copy installer files to instance
 INSTALLER=$(ls demistoserver*.sh)
-echo "### - INSTALLER $INSTALLER"
 
 USER="centos"
 
@@ -36,12 +35,13 @@ scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 DEMISTO_CONF_PATH=$(cat demisto_conf_path)
 scp ${DEMISTO_CONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/conf.json
 
+
 echo "get installer and run installation script"
 INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
     && sudo mkdir /usr/local/demisto \
     && sudo cp demisto.lic /usr/local/demisto/ \
-    && sudo ./installer.sh -- -y -do-not-start-server -conf ${CONF_PATH}"
+    && sudo ./installer.sh -- -y -do-not-start-server -conf ./conf.json"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
