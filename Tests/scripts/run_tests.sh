@@ -18,6 +18,7 @@ PASSWORD=$temp
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
+sleep 5m
 
 echo "Starts tests with server url - $SERVER_URL"
 python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY
