@@ -3,6 +3,7 @@ test:
     # install dependencies
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
     - pip install pykwalify
+    - pip install -g jsdoc-to-markdown
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
@@ -10,6 +11,9 @@ test:
 
     # build content descriptor
     - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 95f762855ccbbd6598d8b1d052eabe3d5e31610a 18.2.3
+
+    # create common server documentation
+    - ./commonServerDocs.sh
 
     # create content bundle
     - python content_creator.py $CIRCLE_ARTIFACTS
