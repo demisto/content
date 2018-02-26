@@ -207,6 +207,10 @@ script:
 
     function get_domain(domain) {
         var threats_info = check_threats('Domain', domain, 'Name');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -222,6 +226,10 @@ script:
         }
 
         var threats_info = check_threats('IP', ip, 'Address');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -234,6 +242,10 @@ script:
 
     function get_url(url) {
         var threats_info = check_threats('URL', url, 'Data');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -252,7 +264,7 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
-    logDebug('entering with command: ' + command)
+    logDebug('entering with command: ' + command);
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
@@ -343,7 +355,6 @@ script:
       description: The actual score
     description: Check URL reputation
   - name: idefense-general
-    description: Get threats from iDefense database. Returns all records of ip/url/domain
     arguments:
     - name: max_result
       default: true
@@ -376,8 +387,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Get threats from iDefense database. Returns all records of ip/url/domain
   - name: uuid
-    description: Get specific indicator reputation
     arguments:
     - name: uuid
       required: true
@@ -410,3 +421,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Get specific indicator reputation
+  runonce: false
+releaseNotes: "-"
