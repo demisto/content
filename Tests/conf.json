@@ -144,7 +144,7 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 300
         },
         {
           "integrations": "AlienVault OTX",
