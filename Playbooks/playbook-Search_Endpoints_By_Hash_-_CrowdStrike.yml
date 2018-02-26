@@ -324,10 +324,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 77f9fb51-235f-498b-8c17-364d7709464c
+    taskid: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
     type: condition
     task:
-      id: 77f9fb51-235f-498b-8c17-364d7709464c
+      id: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
       version: -1
       name: Is FalconHost enabled?
       description: Is FalconHost enabled?
@@ -378,13 +378,6 @@ tasks:
                     right:
                       value:
                         simple: FalconHost
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -393,6 +386,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
