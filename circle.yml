@@ -3,7 +3,7 @@ test:
     # install dependencies
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
     - pip install pykwalify
-    - pip install jsdoc-to-markdown
+    - npm install -g jsdoc-to-markdown
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
