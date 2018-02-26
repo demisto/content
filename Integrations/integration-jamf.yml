@@ -42,7 +42,6 @@ script:
     password = demisto.params()['credentials']['password']
     auth = HTTPBasicAuth(user,password)
 
-
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
@@ -56,7 +55,7 @@ script:
             ec = {}
             ec["JAMF"] = [{"ID": item["id"], "Name":item["name"]} for item in contents['computers']]
 
-            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("table", ec["JAMF"])})
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Computers", ec["JAMF"])})
         except Exception,e:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
             sys.exit(0)
@@ -89,10 +88,67 @@ script:
                 for item in contents["computers"]
             ]
 
-
-            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("table", ec["JAMF"])})
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Computers", ec["JAMF"])})
         except Exception,e:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
+            sys.exit(0)
+
+    def jamf_computers_hardware(computer_id):
+        endpoint = "/JSSResource/computers/id/{computer_id}/subset/hardware"
+
+        try:
+            contents = requests.get(base_url + endpoint.format(computer_id=computer_id),auth=auth,headers=HEADERS).json()
+            ec = {}
+            ec["JAMF"] = {
+                "Make": contents["computer"]["hardware"]["make"],
+                "Model": contents["computer"]["hardware"]["model"],
+                "ModelIdentifier": contents["computer"]["hardware"]["model_identifier"],
+                "OSName": contents["computer"]["hardware"]["os_name"],
+                "OSVersion": contents["computer"]["hardware"]["os_version"],
+                "OSBuild": contents["computer"]["hardware"]["os_build"],
+                "MasterPasswordSet": contents["computer"]["hardware"]["master_password_set"],
+                "ActiveDirectoryStatus": contents["computer"]["hardware"]["active_directory_status"],
+                "ServicePack": contents["computer"]["hardware"]["service_pack"],
+                "ProcessorType": contents["computer"]["hardware"]["processor_type"],
+                "ProcessorArchitecture": contents["computer"]["hardware"]["processor_architecture"],
+                "NumberProcessors": contents["computer"]["hardware"]["number_processors"],
+                "NumberCores": contents["computer"]["hardware"]["number_cores"],
+                "TotalRam": contents["computer"]["hardware"]["total_ram"],
+            }
+
+            ec["JAMF"]["Storage"] = [
+                {
+                    "Disk": item["disk"],
+                    "Model": item["model"],
+                    "SerialNumber": item["serial_number"],
+                    "Size": item["size"],
+                    "DriveCapacityMB": item["drive_capacity_mb"],
+                    "PartitionName": item["partition"]["name"],
+                    "Size": item["partition"]["size"],
+                    "Type": item["partition"]["type"],
+                    "PartitionCapacityMB": item["partition"]["partition_capacity_mb"],
+                    "FilevaultStatus": item["partition"]["filevault_status"],
+                    "Filevault2Status": item["partition"]["filevault2_status"]
+                }
+                    for item in contents["computer"]["hardware"]["storage"]
+                ]
+
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Hardware Information", ec["JAMF"]) + "\n\n" + tableToMarkdown("Storage Information", ec["JAMF"]["Storage"]) })
+
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings\n" + str(e) })
+            sys.exit(0)
+
+    def jamf_erase_device(computer_id,passcode):
+        endpoint = "/JSSResource/computercommands/command/EraseDevice/passcode/{passcode}/id/{computer_id}"
+        data = None
+
+        try:
+            contents = requests.post(base_url + endpoint.format(computer_id=computer_id,passcode=passcode),auth=auth,headers=HEADERS).text
+            demisto.results(contents)
+            sys.exit(0)
+        except Exception, e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings\n" + str(e) })
             sys.exit(0)
 
     if demisto.command() == 'test-module':
@@ -110,6 +166,12 @@ script:
 
     if demisto.command() == 'jamf-get-computers-match':
         jamf_get_computers_match(demisto.args()['match'])
+
+    if demisto.command() == 'jamf-get-computer-hardware':
+        jamf_computers_hardware(demisto.args()['id'])
+
+    if demisto.command() == 'jamf-erase-device':
+        jamf_erase_device(demisto.args()['id'],demisto.args()['passcode'])
   type: python
   commands:
   - name: jamf-get-computers
@@ -166,5 +228,59 @@ script:
     - contextPath: Jamf.Computers.Room
       description: Computer room
     description: Get a list of managed computers that matches inputs query
+  - name: jamf-get-computer-hardware
+    arguments:
+    - name: id
+      required: true
+      description: Lookup by ID
+    outputs:
+    - contextPath: JAMF.Make
+      description: Make of device
+    - contextPath: JAMF.Model
+      description: Model of device
+    - contextPath: JAMF.ModelIdentifier
+      description: Model Identifier of device
+    - contextPath: JAMF.OSName
+      description: Operating System of device
+    - contextPath: JAMF.OSVersion
+      description: OS Version of device
+    - contextPath: JAMF.OSBuild
+      description: OS Build of device
+    - contextPath: JAMF.MasterPasswordSet
+      description: Is Master Password Set
+    - contextPath: JAMF.ActiveDirectoryStatus
+      description: Active Directory Status
+    - contextPath: JAMF.ServicePack
+      description: Service Pack of device
+    - contextPath: JAMF.ProcessorType
+      description: Processor Type
+    - contextPath: JAMF.ProcessorArchitecture
+      description: Processor Architecture
+    - contextPath: JAMF.NumberProcessors
+      description: Number Processors
+    - contextPath: JAMF.NumberCores
+      description: Number of Cores
+    - contextPath: JAMF.TotalRam
+      description: Total RAM (MB)
+    - contextPath: JAMF.Storage.Size
+      description: Size of storage device (MB)
+    - contextPath: JAMF.Storage.FilevaultStatus
+      description: FileVault Status of storage device
+    - contextPath: JAMF.Storage.Filevault2Status
+      description: Filevault2 Status of storage device
+    description: Display a subset of hardware information for a computer
+  - name: jamf-erase-device
+    arguments:
+    - name: id
+      required: true
+      description: Lookup by ID
+    - name: passcode
+      required: true
+      description: 6 digit passcode you that must be presented upon unlocking the
+        device
+    description: Send Erase command to device. Erases all content on the specified
+      device
+    execution: true
+  runonce: false
 hidden: false
-releaseNotes: 'Converted integration to Python'
+releaseNotes: 'Converted integration to Python, added jamf-erase-device and jamf-get-computer-hardware command'
