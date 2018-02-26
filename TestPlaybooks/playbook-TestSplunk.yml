@@ -308,8 +308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 21,
-          "y": 2228
+          "x": 265,
+          "y": 2645
         }
       }
   "11":
@@ -333,7 +333,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1595
         }
       }
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 21,
-          "y": 1655
+          "x": 480,
+          "y": 1610
         }
       }
   "13":
@@ -380,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 24,
-          "y": 1819
+          "x": 480,
+          "y": 1770
         }
       }
   "14":
@@ -398,7 +398,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "15"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -408,8 +408,185 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 21,
-          "y": 2020
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 9ffe77c1-53b8-423d-83c4-886e5cb86221
+    type: regular
+    task:
+      id: 9ffe77c1-53b8-423d-83c4-886e5cb86221
+      version: -1
+      name: Add raw Data example
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: rawEvent
+      value:
+        simple: '1510305969, search_name=\"Endpoint - CB Response Hit for Bit9AdvancedThreats
+          Threat Intel Feed - Rule\", dest_asset_tag=\"adobeInternal\", dest_asset_tag=\"adobe\",
+          dvc_asset_tag=\"adobeInternal\", dvc_asset_tag=\"adobe\", orig_eventtype=\"bit9_carbonblack_alert\",
+          orig_eventtype=\"bit9_carbonblack_application_state\", notification_type=\"alert.watchlist.hit.ingress.process\",
+          src_asset_tag=\"adobeInternal\", src_asset_tag=\"adobe\", orig_tag=\"alert\",
+          orig_tag=\"attack\", orig_tag=\"endpoint\", orig_tag=\"ids\", orig_tag=\"process\",
+          orig_tag=\"report\", orig_tag::eventtype=\"alert\", orig_tag::eventtype=\"attack\",
+          orig_tag::eventtype=\"endpoint\", orig_tag::eventtype=\"ids\", orig_tag::eventtype=\"process\",
+          orig_tag::eventtype=\"report\", user_identity=\"bechrist\", user_identity=\"bechrist@adobe.com\",
+          orig_raw=\"{\\\"alert_severity\\\":64.125,\\\"alert_type\\\":\\\"watchlist.hit.ingress.process\\\",\\\"cb_server\\\":\\\"cbserver\\\",\\\"childproc_count\\\":0,\\\"comms_ip\\\":\\\"192.150.10.205\\\",\\\"computer_name\\\":\\\"bechrist-wx-1\\\",\\\"created_time\\\":\\\"2017-11-02T04:40:55.495775Z\\\",\\\"crossproc_count\\\":5,\\\"feed_id\\\":8,\\\"feed_name\\\":\\\"bit9advancedthreats\\\",\\\"feed_rating\\\":3.0,\\\"filemod_count\\\":0,\\\"group\\\":\\\"adobe
+          default win\\\",\\\"hostname\\\":\\\"bechrist-wx-1\\\",\\\"interface_ip\\\":\\\"10.177.38.184\\\",\\\"ioc_confidence\\\":0.5,\\\"ioc_query_index\\\":\\\"events\\\",\\\"ioc_query_string\\\":\\\"(process_name:regsvr32.exe
+          netconn_count:[1 to *] -ipport:389 AND os_type:windows)\\\",\\\"ioc_type\\\":\\\"query\\\",\\\"ioc_value\\\":\\\"{\\\\\"index_type\\\\\":
+          \\\\\"events\\\\\", \\\\\"search_query\\\\\": \\\\\"cb.urlver=1\\u0026q=(process_name%3Aregsvr32.exe%20netconn_count%3A%5B1%20to%20*%5D%20-ipport%3A389%20AND%20os_type%3Awindows)\\\\\"}\\\",\\\"md5\\\":\\\"56CF190F4143DC68800C4125D6001B07\\\",\\\"modload_count\\\":23,\\\"netconn_count\\\":23,\\\"os_type\\\":\\\"windows\\\",\\\"process_guid\\\":\\\"000036bd-0000-47b8-01d3-5391423d9287\\\",\\\"process_id\\\":\\\"000036bd-0000-47b8-01d3-5391423d9287\\\",\\\"process_name\\\":\\\"regsvr32.exe\\\",\\\"process_path\\\":\\\"c:\\\\windows\\\\syswow64\\\\regsvr32.exe\\\",\\\"process_unique_id\\\":\\\"000036bd-0000-47b8-01d3-5391423d9287-015f7b0831c4\\\",\\\"regmod_count\\\":16,\\\"report_score\\\":95,\\\"segment_id\\\":\\\"1\\\",\\\"sensor_criticality\\\":3.0,\\\"sensor_id\\\":14013,\\\"status\\\":\\\"Unresolved\\\",\\\"timestamp\\\":1509597655.503,\\\"type\\\":\\\"alert.watchlist.hit.ingress.process\\\",\\\"unique_id\\\":\\\"47e0ba2e-6b10-414a-93c1-38ecc73d0187\\\",\\\"username\\\":\\\"ADOBENET\\\\bechrist\\\",\\\"watchlist_id\\\":\\\"33502013-4dd4-4ca2-99a1-64e350337d27\\\",\\\"watchlist_name\\\":\\\"33502013-4dd4-4ca2-99a1-64e350337d27\\\"}\",
+          orig_time=\"1510305969\", action=\"allowed\", alert_severity=\"64.125\",
+          alert_type=\"watchlist.hit.ingress.process\", category=\"33502013-4dd4-4ca2-99a1-64e350337d27\",
+          cb_server=\"cbserver\", change_type=\"process\", childproc_count=\"0\",
+          comms_ip=\"192.150.10.205\", computer_name=\"bechrist-wx-1\", created_time=\"2017-11-02T04:40:55.495775Z\",
+          crossproc_count=\"5\", dest=\"bechrist-wx-1\", dest_asset_id=\"0ca1878720e34926141365c9754a690bfe0b0306\",
+          dest_bunit=\"adobe\", dest_category=\"adobeInternal\", dest_city=\"Americas
+          Remote\", dest_country=\"Americas Remote\", dest_dns=\"BECHRIST-WX-1.corp.adobe.com\",
+          dest_ip=\"192.150.10.205\", dest_is_expected=\"false\", dest_mac=\"OI-DCB3EC7EA70511E7B8279093AF2D2822\",
+          dest_nt_domain=\"ADOBENET\", dest_nt_host=\"BECHRIST-WX-1\", dest_owner=\"bechrist@adobe.com\",
+          dest_pci_domain=\"untrust\", dest_priority=\"medium\", dest_requires_av=\"false\",
+          dest_should_timesync=\"false\", dest_should_update=\"false\", dvc=\"bechrist-wx-1\",
+          dvc_asset_id=\"0ca1878720e34926141365c9754a690bfe0b0306\", dvc_bunit=\"adobe\",
+          dvc_category=\"adobeInternal\", dvc_city=\"Americas Remote\", dvc_country=\"Americas
+          Remote\", dvc_dns=\"BECHRIST-WX-1.corp.adobe.com\", dvc_is_expected=\"false\",
+          dvc_mac=\"OI-DCB3EC7EA70511E7B8279093AF2D2822\", dvc_nt_host=\"BECHRIST-WX-1\",
+          dvc_owner=\"bechrist@adobe.com\", dvc_pci_domain=\"untrust\", dvc_priority=\"medium\",
+          dvc_requires_av=\"false\", dvc_should_timesync=\"false\", dvc_should_update=\"false\",
+          feed_id=\"8\", feed_name=\"bit9advancedthreats\", feed_rating=\"3.0\", filemod_count=\"0\",
+          group=\"adobe default win\", orig_host=\"SplunkES_HF08_ue1a\", hostname=\"bechrist-wx-1\",
+          ids_type=\"host\", orig_index=\"cb\", info_max_time=\"1510306200.000000000\",
+          info_min_time=\"1510305240.000000000\", info_search_time=\"1510306208.867201000\",
+          interface_ip=\"10.177.38.184\", ioc_confidence=\"0.5\", ioc_query_index=\"events\",
+          ioc_query_string=\"(process_name:regsvr32.exe netconn_count:[1 to *] -ipport:389
+          AND os_type:windows)\", ioc_type=\"query\", ioc_value=\"{\\\"index_type\\\":
+          \\\"events\\\", \\\"search_query\\\": \\\"cb.urlver=1\u0026q=(process_name%3Aregsvr32.exe%20netconn_count%3A%5B1%20to%20*%5D%20-ipport%3A389%20AND%20os_type%3Awindows)\\\"}\",
+          is_alert=\"hit\", is_process=\"proc\", last_time=\"1509697800.000000\",
+          orig_linecount=\"1\", max_last_update=\"2017-11-10T01:30:00Z\", md5=\"56CF190F4143DC68800C4125D6001B07\",
+          min_last_update=\"2017-11-03T01:30:00Z\", modload_count=\"23\", netconn_count=\"23\",
+          now_time=\"1510306200\", os_type=\"windows\", process_guid=\"000036bd-0000-47b8-01d3-5391423d9287\",
+          process_id=\"000036bd-0000-47b8-01d3-5391423d9287\", process_name=\"regsvr32.exe\",
+          process_path=\"c:\\windows\\syswow64\\regsvr32.exe\", process_unique_id=\"000036bd-0000-47b8-01d3-5391423d9287-015f7b0831c4\",
+          product=\"Carbon Black\", regmod_count=\"16\", report_score=\"95\", segment_id=\"1\",
+          sensor_criticality=\"3.0\", sensor_id=\"14013\", severity=\"high\", signature=\"alert.watchlist.hit.ingress.process\",
+          orig_source=\"s3://cbio-ferocious-tributary-syslog/event-forwarder.2017-11-02T04:40:55.400Z\",
+          orig_sourcetype=\"bit9:carbonblack:json\", orig_splunk_server=\"SplunkES_IDX_i-0f207ad5ab76211fc_ue1e\",
+          src=\"bechrist-wx-1\", src_asset_id=\"0ca1878720e34926141365c9754a690bfe0b0306\",
+          src_bunit=\"adobe\", src_category=\"adobeInternal\", src_city=\"Americas
+          Remote\", src_country=\"Americas Remote\", src_dns=\"BECHRIST-WX-1.corp.adobe.com\",
+          src_is_expected=\"false\", src_mac=\"OI-DCB3EC7EA70511E7B8279093AF2D2822\",
+          src_nt_host=\"BECHRIST-WX-1\", src_owner=\"bechrist@adobe.com\", src_pci_domain=\"untrust\",
+          src_priority=\"medium\", src_requires_av=\"false\", src_should_timesync=\"false\",
+          src_should_update=\"false\", orig_status=\"success\", subject=\"Type:alert.watchlist.hit.ingress.process,
+          Watchlist_name:33502013-4dd4-4ca2-99a1-64e350337d27\", timestamp=\"11/01/17
+          21:40:55\", transport=\"unknown\", type=\"alert\", unique_id=\"47e0ba2e-6b10-414a-93c1-38ecc73d0187\",
+          user=\"bechrist\", user_category=\"adobeCMDB\", user_email=\"bechrist@adobe.com\",
+          user_first=\"Beau\", user_identity_tag=\"adobeCMDB\", user_last=\"Christensen\",
+          user_nick=\"Beau Christensen\", user_priority=\"unknown\", user_watchlist=\"false\",
+          user_work_city=\"Americas Remote\", user_work_country=\"Americas Remote\",
+          username=\"ADOBENET\\bechrist\", vendor=\"Bit9\", vendor_product=\"Bit9
+          Carbon Black\", watchlist_id=\"33502013-4dd4-4ca2-99a1-64e350337d27\", watchlist_name=\"33502013-4dd4-4ca2-99a1-64e350337d27\"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+  "16":
+    id: "16"
+    taskid: aae19ee0-0c38-479b-8469-eb077ecd7cbf
+    type: regular
+    task:
+      id: aae19ee0-0c38-479b-8469-eb077ecd7cbf
+      version: -1
+      name: Parse Raw example
+      script: SplunkPy|||splunk-parse-raw
+      type: regular
+      iscommand: true
+      brand: SplunkPy_copy_raw
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      extend-context:
+        simple: parsedRaw=
+      raw:
+        simple: ${rawEvent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 35fe8b6f-a77c-4a79-8518-668e9a33904a
+    type: condition
+    task:
+      id: 35fe8b6f-a77c-4a79-8518-668e9a33904a
+      version: -1
+      name: Is Raw parsed ?
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${parsedRaw.search_name}
+      right:
+        simple: Endpoint - CB Response Hit for Bit9AdvancedThreats Threat Intel Feed
+          - Rule
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 4869dfde-e598-4895-82fa-c9015aeab227
+    type: regular
+    task:
+      id: 4869dfde-e598-4895-82fa-c9015aeab227
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: non-existent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2645
         }
       }
 view: |-
@@ -417,9 +594,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2273,
-        "width": 1054,
-        "x": 21,
+        "height": 2690,
+        "width": 1025,
+        "x": 50,
         "y": 50
       }
     }

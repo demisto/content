@@ -53,8 +53,13 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Parse Raw of notable events
+  name: parseNotableEventsRaw
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
-  script: |-
+  script: |
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -66,6 +71,23 @@ script:
     import requests
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    def rawToDict(raw):
+        result = {}
+        raw = raw.strip("}")
+        raw = raw.strip("{")
+        key_val_arr = raw.split(",")
+
+        for key_val in key_val_arr:
+          single_key_val = key_val.split("=")
+          if len(single_key_val)>1:
+              val = single_key_val[1]
+              val = val.strip("\\")
+              val = val.strip("\"")
+              val = val.strip("\\")
+              key = single_key_val[0].strip()
+              result[key] = val
+        return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
         """
@@ -139,6 +161,12 @@ script:
         incident["rawJSON"] = json.dumps(event)
         labels = []
         labels.append({'type':'security_domain','value':event["security_domain"]})
+
+        isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
+        if isParseNotableEventsRaw:
+            rawDict = rawToDict(event['_raw'])
+            for rawKey in rawDict:
+                labels.append({'type':rawKey,'value':rawDict[rawKey]})
         incident['labels'] = labels
         return incident
 
@@ -324,6 +352,13 @@ script:
                 sys.exit(0)
         demisto.results('Splunk ES Notable events: '+response_info['message'])
         sys.exit(0)
+    if demisto.command() == 'splunk-parse-raw':
+        raw = demisto.args()['raw']
+        rawDict = rawToDict(raw)
+        ec = {};
+        ec['Splunk.Raw.Parsed'] = rawDict
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
+        sys.exit(0)
   type: python
   commands:
   - name: splunk-results
@@ -412,5 +447,15 @@ script:
     - contextPath: Splunk.Job
       description: The created jon SID
     description: 'Create new search job in Splunk '
+  - name: splunk-parse-raw
+    arguments:
+    - name: raw
+      description: The Raw data of splunk event, in string format
+      defaultValue: ${Splunk.Result._raw}
+    outputs:
+    - contextPath: Splunk.Raw.Parsed
+      description: The raw event data parsed
+      type: unknown
+    description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
