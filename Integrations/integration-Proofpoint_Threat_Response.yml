@@ -178,9 +178,9 @@ script:
 
         if(responseIncident){
             var incident = createIncidentFromResponse(responseIncident[0]);
+            var entryContext = responseIncident[0];
         }
 
-        var entryContext = incident;
 
         var md = 'Incident ' + args.incidentId + '\n';
         md += tblToMd('Incident details', incident);
@@ -335,27 +335,27 @@ script:
       description: Retrieve incidents that were closed before specified date, in ISO
         8601 format (UTC)
     outputs:
-    - contextPath: ProofpointTRAP.Incident.Id
+    - contextPath: ProofpointTRAP.Incident.id
       description: Incident ID
-    - contextPath: ProofpointTRAP.Incident.IntendedUsers
+    - contextPath: ProofpointTRAP.Incident.users
       description: Incident intended users
-    - contextPath: ProofpointTRAP.Incident.URL
+    - contextPath: ProofpointTRAP.Incident.url
       description: Incident URL
-    - contextPath: ProofpointTRAP.Incident.Type
+    - contextPath: ProofpointTRAP.Incident.type
       description: Incident type
-    - contextPath: ProofpointTRAP.Incident.CreatedAt
+    - contextPath: ProofpointTRAP.Incident.created_at
       description: Incident creation time
-    - contextPath: ProofpointTRAP.Incident.State
+    - contextPath: ProofpointTRAP.Incident.state
       description: State of the incident
-    - contextPath: ProofpointTRAP.Incident.Grouping.Category
+    - contextPath: ProofpointTRAP.Incident.event.category
       description: Incident event category
-    - contextPath: ProofpointTRAP.Incident.Grouping.ThreatName
+    - contextPath: ProofpointTRAP.Incident.event.threat_name
       description: Incident event threat name
-    - contextPath: ProofpointTRAP.Incident.Grouping.Received
+    - contextPath: ProofpointTRAP.Incident.event.ProofpointTRAP.Incident.events.received
       description: Incident event receiving time
-    - contextPath: ProofpointTRAP.Incident.Grouping.Id
+    - contextPath: ProofpointTRAP.Incident.event.id
       description: Incident event ID
-    - contextPath: ProofpointTRAP.Incident.Grouping.Severity
+    - contextPath: ProofpointTRAP.Incident.event.severity
       description: Incident event severity
     description: Retrieve incidents metadata from Threat Response, by optionally specifying
       filter criteria such as the state of the incident or time of closure.
@@ -365,27 +365,27 @@ script:
       required: true
       description: The Id of the requested incident
     outputs:
-    - contextPath: ProofpointTRAP.Incident.Id
+    - contextPath: ProofpointTRAP.Incident.id
       description: Incident ID
-    - contextPath: ProofpointTRAP.Incident.IntendedUsers
+    - contextPath: ProofpointTRAP.Incident.users
       description: Incident intended users
-    - contextPath: ProofpointTRAP.Incident.URL
+    - contextPath: ProofpointTRAP.Incident.url
       description: Incident URL
-    - contextPath: ProofpointTRAP.Incident.Type
+    - contextPath: ProofpointTRAP.Incident.type
       description: Incident type
-    - contextPath: ProofpointTRAP.Incident.CreatedAt
+    - contextPath: ProofpointTRAP.Incident.created_at
       description: Incident creation time
-    - contextPath: ProofpointTRAP.Incident.State
+    - contextPath: ProofpointTRAP.Incident.state
       description: State of the incident
-    - contextPath: ProofpointTRAP.Incident.Grouping.Category
+    - contextPath: ProofpointTRAP.Incident.event.category
       description: Incident event category
-    - contextPath: ProofpointTRAP.Incident.Grouping.ThreatName
+    - contextPath: ProofpointTRAP.Incident.event.threat_name
       description: Incident event threat name
-    - contextPath: ProofpointTRAP.Incident.Grouping.Received
+    - contextPath: ProofpointTRAP.Incident.event.ProofpointTRAP.Incident.events.received
       description: Incident event receiving time
-    - contextPath: ProofpointTRAP.Incident.Grouping.Id
+    - contextPath: ProofpointTRAP.Incident.event.id
       description: Incident event ID
-    - contextPath: ProofpointTRAP.Incident.Grouping.Severity
+    - contextPath: ProofpointTRAP.Incident.event.severity
       description: Incident event severity
     description: Retrieve incident metadata from Threat Response by specifying the
       incident id.
