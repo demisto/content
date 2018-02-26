@@ -1,3 +1,3 @@
 python common_server_docs.py
-jsdoc2md --json ./commonServerJsDoc > commonServerJsDoc.json
+jsdoc2md --json ./commonServerJsDoc.js > commonServerJsDoc.json
 

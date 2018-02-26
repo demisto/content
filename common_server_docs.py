@@ -3,7 +3,6 @@ import datetime
 import json
 import sys
 import yaml
-from parinx import parser
 import inspect
 from parinx import parser
 import inspect
@@ -46,7 +45,7 @@ def main(argv):
             try:
                 y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
                 x.append(y)
-                print "i"
+                # print "i"
             except:
                 print "Bad docstring in function", a
 
