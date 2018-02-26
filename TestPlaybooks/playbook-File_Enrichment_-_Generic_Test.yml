@@ -44,7 +44,7 @@ tasks:
       key:
         simple: File.MD5
       value:
-        simple: 802df14b53e56ec753245b6416a89a38
+        simple: 3f066dd1f1da052248aed5abc4a0c6a1
     view: |-
       {
         "position": {
@@ -100,7 +100,7 @@ tasks:
       key:
         simple: File.SHA256
       value:
-        simple: d5dc19a7223a8fc5eb038d4c27341f6e8fe89862252d633fdca299ca632edeb1
+        simple: fd81fe12fab5cddf4ee5ca33bfbc033280afedb94bac8bf351a65a679f3f0dbe
     view: |-
       {
         "position": {
@@ -147,9 +147,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: MD5,SHA1,SHA256
+        simple: SHA1,SHA256
       path:
-        simple: File
+        simple: File.[0]
     view: |-
       {
         "position": {
@@ -172,7 +172,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Vendor,Indicator
+        simple: Vendor
       path:
         simple: File.Malicious
     view: |-

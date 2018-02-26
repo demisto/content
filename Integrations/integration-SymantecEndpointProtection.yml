@@ -643,4 +643,3 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
-releaseNotes: "Added option to filter endpoints info by computer name, os, last updated and page size."
