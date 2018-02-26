@@ -261,32 +261,6 @@ tasks:
           "y": 2120
         }
       }
-  "13":
-    id: "13"
-    taskid: bac918e7-2421-466b-8adb-b6abec70dada
-    type: regular
-    task:
-      id: bac918e7-2421-466b-8adb-b6abec70dada
-      version: -1
-      name: 'Get all known threat '
-      script: iDefense|||idefense-general
-      type: regular
-      iscommand: true
-      brand: iDefense
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      max_result:
-        simple: "50"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 2470
-        }
-      }
   "14":
     id: "14"
     taskid: ed3692e7-122b-4202-8ee1-02a90061fee0
@@ -302,7 +276,7 @@ tasks:
       '#default#':
       - "31"
       "yes":
-      - "13"
+      - "18"
     scriptarguments:
       string:
         simple: ${DBotScore.Indicator}
@@ -611,6 +585,8 @@ tasks:
     nexttasks:
       '#default#':
       - "31"
+      "yes":
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -668,13 +644,36 @@ tasks:
           "y": 2995
         }
       }
+  "36":
+    id: "36"
+    taskid: 700dc3e2-425d-422b-8546-acec35d36a05
+    type: regular
+    task:
+      id: 700dc3e2-425d-422b-8546-acec35d36a05
+      version: -1
+      name: Done
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Done
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 593,
+          "y": 3206
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3215,
-        "width": 830,
+        "height": 3251,
+        "width": 923,
         "x": 50,
         "y": 50
       }
