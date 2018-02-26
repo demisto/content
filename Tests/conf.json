@@ -1,6 +1,6 @@
 {
-    "testTimeout": 120,
-    "testInterval": 30,
+    "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
         {
             "playbookID": "File Enrichment - Generic Test"
@@ -144,7 +144,7 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 140
+            "timeout": 240
         },
         {
           "integrations": "AlienVault OTX",
