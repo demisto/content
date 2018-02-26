@@ -61,7 +61,7 @@ script:
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
 
-        return res;
+        return JSON.parse(res.Body);
     };
 
     function deleteMemberFromList(){
@@ -176,20 +176,14 @@ script:
     function getIncidentById(){
         var responseIncident = getIncidentByIdRequest(args.incidentId);
 
-        var incident = createIncidentFromResponse(responseIncident);
+        if(responseIncident){
+            var incident = createIncidentFromResponse(responseIncident[0]);
+        }
 
-        var entryContext ={
-            Id: incident.Id,
-            IntendedUsers: incident.IntendedUsers,
-            URL: incident.URL,
-            Type: incident.Type,
-            CreatedAt: incident.CreatedAt,
-            State: incident.State,
-            Grouping: incident.Grouping
-        };
+        var entryContext = incident;
 
         var md = 'Incident ' + args.incidentId + '\n';
-        md += tblToMd('Incident details', incident, columnsList);
+        md += tblToMd('Incident details', incident);
 
         return {
             Type: entryTypes.note,
@@ -215,21 +209,15 @@ script:
         var responseIncidents = getIncidentsRequest(args);
         var incidents = [];
         var entryContext = [];
-        responseIncidents.forEach(function (responseIncident){
-            var incident = createIncidentFromResponse(responseIncident);
-            incidents.push(incident);
-            entryContext.push({
-                Id: incident.Id,
-                IntendedUsers: incident.IntendedUsers,
-                URL: incident.URL,
-                Type: incident.Type,
-                CreatedAt: incident.CreatedAt,
-                State: incident.State,
-                Grouping: incident.Grouping
-            })
-        });
+        if(incidents){
+            responseIncidents.forEach(function (responseIncident){
+                var incident = createIncidentFromResponse(responseIncident);
+                incidents.push(incident);
+                entryContext.push(incident);
+            });
+        }
 
-        var md = 'Incidents retrieved';
+        var md =  incidents.length + ' Incidents retrieved \n';
         md += tblToMd('Incident details', incidents);
 
         return {
@@ -248,15 +236,21 @@ script:
 
         incident.Id = responseIncident['id'];
         incident.IntendedUsers = responseIncident['users'];
-        incident.URL = responseIncident['url'];
         incident.Type = responseIncident['type'];
         incident.CreatedAt = responseIncident['created_at'];
         incident.State = responseIncident['state'];
-        incident.Grouping = [];
-        responseIncident['events'].forEach(function (event){
-            var grouping = createIncidentGroupingFromEvent(event);
-            incident.Grouping.push(grouping);
-        });
+        var hosts = responseIncident['hosts'];
+        if(hosts){
+            incident.URL = hosts['url'];
+        }
+        var events = responseIncident['events'];
+        if(events){
+            incident.Grouping = [];
+            events.forEach(function (event){
+                var grouping = createIncidentGroupingFromEvent(event);
+                incident.Grouping.push(grouping);
+            });
+        }
 
         return incident;
     }
