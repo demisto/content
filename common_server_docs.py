@@ -13,17 +13,30 @@ import types
 contentLibPath = "./"
 limitedVersion = False
 
+
 def readFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.load(f)
         return out
     return []
 
+
 def reformatPythonOutput(output):
+    for a in output:
+        args = a.get("arguments", {})
+        z = []
+        for argName, argInfo in args.iteritems():
+            argInfo["name"] = argName
+            argInfo["type"] = argInfo["type_name"]
+            del argInfo["type_name"]
+            z.append(argInfo)
+        a["arguments"] = z
+        a["return"]["type"] = a["return"]["type_name"]
+        del a["return"]["type_name"]
     return output
 
-def main(argv):
 
+def main(argv):
     # create commonServer js file to extract doc from
     commonServer = readFile('./Scripts/script-CommonServer.yml')
     jsScript = commonServer.get("script", "")
@@ -44,8 +57,8 @@ def main(argv):
         if callable(ns.get(a)):
             try:
                 y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
+                y["name"] = a
                 x.append(y)
-                # print "i"
             except:
                 print "Bad docstring in function", a
 
@@ -54,6 +67,5 @@ def main(argv):
         json.dump(x, fp)
 
 
-
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main(sys.argv[1:])
