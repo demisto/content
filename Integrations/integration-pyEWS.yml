@@ -17,15 +17,10 @@ configuration:
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: Username (for Office365 use email address)
+- display: Email\Username
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
-- display: Domain
-  name: domain
-  defaultvalue: ""
-  type: 0
   required: true
 - display: Default Target Mailbox. If empty - username mailbox will be used
   name: defaultTargetMailbox
@@ -138,12 +133,16 @@ script:
     VERSION_STR = demisto.params()['defaultServerVersion']
     EWS_SERVER = demisto.params()['ewsServer']
     USERNAME = demisto.params()['credentials']['identifier']
-    DOMAIN = demisto.params()['domain']
-    ACCOUNT_EMAIL = demisto.params().get('defaultTargetMailbox')
+    ACCOUNT_EMAIL = demisto.params().get('defaultTargetMailbox', None)
     if not ACCOUNT_EMAIL:
-        ACCOUNT_EMAIL = USERNAME if "@" in USERNAME else USERNAME + "@" + DOMAIN
-    if "@" not in USERNAME and not USERNAME.lower().startswith(DOMAIN.lower()):
-        USERNAME = DOMAIN + "\\" + USERNAME
+        if "@" in USERNAME:
+            ACCOUNT_EMAIL = USERNAME
+        if "\\" in USERNAME:
+            user_domain = USERNAME.split("\\")
+            if len(user_domain) == 2:
+                ACCOUNT_EMAIL = user_domain[1] + "@" + user_domain[0]
+    if ACCOUNT_EMAIL is None:
+        raise Exception("Please provide a valid email address")
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params()['folder']
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
@@ -523,6 +522,10 @@ script:
         if item.message_id:
             labels.append({'type': 'Email/ID', 'value': item.item_id})
             labels.append({'type': 'Email/MessageId', 'value': item.message_id})
+
+        # handle conversion id
+        if item.conversation_id:
+            labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
         incident['labels'] = labels
         incident['rawJSON'] = parse_item_as_json(item)
