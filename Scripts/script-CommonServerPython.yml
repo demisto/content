@@ -1017,5 +1017,6 @@ tags:
 comment: Common code that will be merged into each server script when it runs
 system: true
 scripttarget: 0
+releaseNotes: "Added fake docs"
 dependson: {}
 timeout: 0s
