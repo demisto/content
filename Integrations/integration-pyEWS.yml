@@ -196,7 +196,10 @@ script:
 
 
     def get_item_from_mailbox(account, item_id):
-        return get_items_from_mailbox(account, [item_id])[0]
+        result = get_items_from_mailbox(account, [item_id])
+        if len(result) == 0:
+            raise Exception("ItemId %s not found" % str(item_id))
+        return result[0]
 
 
     def get_version(version_str):
