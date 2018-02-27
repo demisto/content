@@ -36,7 +36,7 @@ script:
             return date;
         }
 
-        return date.toISOString().replace(/\.\d{3}/,'');
+       return date.toISOString().replace(/\.\d{3}/,'');
     }
 
     function createIncidentFromResponse(responseIncident){
@@ -275,13 +275,6 @@ script:
     }
 
     function getIncidentsRequest(queryParams){
-        if(queryParams){
-            queryParams.created_after = dateToISO8601(queryParams.created_after);
-            queryParams.created_before = dateToISO8601(queryParams.created_before);
-            queryParams.closed_after = dateToISO8601(queryParams.closed_after);
-            queryParams.closed_before = dateToISO8601(queryParams.closed_before);
-        }
-
         var incidents;
         incidents = sendRequest('incidents', queryParams);
 
