@@ -99,7 +99,7 @@ script:
         return JSON.parse(x2j(res.Body));
     };
 
-    function createEntry(body, title, result, verbose, report) {
+    function createEntry(body, title, result, verbose, report, ec) {
         var md = tableToMarkdown(title, body, Object.keys(body));
         if (verbose) {
             for (var i = 0; i < report.length; i++) {
@@ -110,7 +110,8 @@ script:
                 Contents: result,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
-                ReadableContentsFormat : formats.markdown
+                ReadableContentsFormat : formats.markdown,
+                EntryContext: ec
         };
     }
 
@@ -207,7 +208,7 @@ script:
           };
         }
         else{ /* default format is xml*/
-          return createEntry(file_info, 'WildFire Report', result, verbose, report);
+            return createEntry(file_info, 'WildFire Report', result, verbose, report, context);
         }
     }
 
