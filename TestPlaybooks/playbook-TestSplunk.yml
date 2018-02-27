@@ -370,7 +370,7 @@ tasks:
       script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: SplunkPy_copy_raw
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "14"
@@ -514,7 +514,7 @@ tasks:
       script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: SplunkPy_copy_raw
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "17"
