@@ -9,6 +9,7 @@ description: OpenPhish uses proprietary Artificial Intelligence algorithms to au
   identify zero-day phishing sites and provide comprehensive, actionable, real-time
   threat intelligence.
 defaultEnabled: true
+releaseNotes: "-"
 configuration:
 - display: Use system proxy settings
   name: proxy

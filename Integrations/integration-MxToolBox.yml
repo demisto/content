@@ -8,6 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF0AAAAyCAYAAAA+09dMAAARNEl
 description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated
   tool
 detaileddescription: Query MxToolBox for threat intelligence information as seen [here](https://mxtoolbox.com/User/Api/Lookup.aspx)
+releaseNotes: "-"
 configuration:
 - display: API Key
   name: apiKey

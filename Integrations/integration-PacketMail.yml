@@ -5,6 +5,7 @@ name: PacketMail
 display: PacketMail.net
 category: Data Enrichment & Threat Intelligence
 description: Intel look up for IPS
+releaseNotes: "-"
 configuration:
 - display: URL
   name: url
