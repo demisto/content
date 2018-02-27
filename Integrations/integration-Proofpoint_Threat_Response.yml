@@ -30,7 +30,6 @@ script:
         return ((url[url.length - 1] != '/') ? (url + '/') : url);
     }
     var SERVER_URL = fixUrl(params.Server);
-    var LIST_MEMBERS_DEFAULT_COLUMNS = null;
 
     function dateToISO8601(date) {
         if(!date){
@@ -38,6 +37,42 @@ script:
         }
 
         return date.toISOString().replace(/\.\d{3}/,'');
+    }
+
+    function createIncidentFromResponse(responseIncident){
+        var incident = {};
+
+        incident.Id = responseIncident['id'];
+        incident.IntendedUsers = responseIncident['users'];
+        incident.Type = responseIncident['type'];
+        incident.CreatedAt = responseIncident['created_at'];
+        incident.State = responseIncident['state'];
+        var hosts = responseIncident['hosts'];
+        if(hosts){
+            incident.URL = hosts['url'];
+        }
+        var events = responseIncident['events'];
+        if(events){
+            incident.Grouping = [];
+            events.forEach(function (event){
+                var grouping = createIncidentGroupingFromEvent(event);
+                incident.Grouping.push(grouping);
+            });
+        }
+
+        return incident;
+    }
+
+    function createIncidentGroupingFromEvent(event) {
+        var grouping = {};
+
+        grouping.Category = event['category'];
+        grouping.ThreatName = event['threatname'];
+        grouping.Received = event['received'];
+        grouping.Id = event['id'];
+        grouping.Severity = event['severity'];
+
+        return grouping;
     }
 
     function sendRequest(path, queryParams, method, body){
@@ -85,11 +120,7 @@ script:
             args.expiration,
             args.duration);
 
-        return {
-            Type: entryTypes.note,
-            Contents: response,
-            ContentsFormat: formats.json
-        };
+        return response;
     }
 
     function addMemberToListRequest(listId, memberName, memberValue, description, expiration, duration){
@@ -115,14 +146,16 @@ script:
     function getAllListMembers(){
         var list = getAllListMembersRequest(args.listId);
 
-        var entryContext = {
-            List: list
-        };
-
-        var columnsList = LIST_MEMBERS_DEFAULT_COLUMNS;
-        columnsList.sort();
         var md = 'List ' + args.listId + '\n';
-        md += tblToMd('List members', list, columnsList);
+
+        if(!list || list.length == 0){
+            md += 'List not found';
+            return md;
+        }
+
+        var entryContext = list;
+
+        md += tblToMd('List members', list);
 
         return {
             Type: entryTypes.note,
@@ -145,14 +178,16 @@ script:
     function getSingleMemberFromList(){
         var member = getSingleMemberFromListRequest(args.listId, args.memberId);
 
-        var entryContext = {
-            Member: member
-        };
-
-        var columnsList = LIST_MEMBERS_DEFAULT_COLUMNS;
-        columnsList.sort();
         var md = 'Member ' + args.memberId + '\n';
-        md += tblToMd('Member', member, columnsList);
+
+        if(!member){
+            md += 'member not found';
+            return md;
+        }
+
+        var entryContext = member;
+
+        md += tblToMd('Member', member);
 
         return {
             Type: entryTypes.note,
@@ -176,13 +211,15 @@ script:
     function getIncidentById(){
         var responseIncident = getIncidentByIdRequest(args.incidentId);
 
-        if(responseIncident){
-            var incident = createIncidentFromResponse(responseIncident[0]);
-            var entryContext = responseIncident[0];
+        var md = 'Incident ' + args.incidentId + '\n';
+
+        if(!responseIncident || responseIncident.length == 0){
+            md += 'no details found';
+            return md;
         }
 
-
-        var md = 'Incident ' + args.incidentId + '\n';
+        var entryContext = responseIncident[0];
+        var incident = createIncidentFromResponse(responseIncident[0]);
         md += tblToMd('Incident details', incident);
 
         return {
@@ -209,13 +246,15 @@ script:
         var responseIncidents = getIncidentsRequest(args);
         var incidents = [];
         var entryContext = [];
-        if(incidents){
-            responseIncidents.forEach(function (responseIncident){
-                var incident = createIncidentFromResponse(responseIncident);
-                incidents.push(incident);
-                entryContext.push(incident);
-            });
+        if(!incidents || incidents.length == 0){
+            return 'no incidents found';
         }
+
+        responseIncidents.forEach(function (responseIncident){
+            var incident = createIncidentFromResponse(responseIncident);
+            incidents.push(incident);
+            entryContext.push(incident);
+        });
 
         var md =  incidents.length + ' Incidents retrieved \n';
         md += tblToMd('Incident details', incidents);
@@ -229,42 +268,6 @@ script:
                 'ProofpointTRAP.Incident(val.Id==obj.Id)' : entryContext
             }
         };
-    }
-
-    function createIncidentFromResponse(responseIncident){
-        var incident = {};
-
-        incident.Id = responseIncident['id'];
-        incident.IntendedUsers = responseIncident['users'];
-        incident.Type = responseIncident['type'];
-        incident.CreatedAt = responseIncident['created_at'];
-        incident.State = responseIncident['state'];
-        var hosts = responseIncident['hosts'];
-        if(hosts){
-            incident.URL = hosts['url'];
-        }
-        var events = responseIncident['events'];
-        if(events){
-            incident.Grouping = [];
-            events.forEach(function (event){
-                var grouping = createIncidentGroupingFromEvent(event);
-                incident.Grouping.push(grouping);
-            });
-        }
-
-        return incident;
-    }
-
-    function createIncidentGroupingFromEvent(event) {
-        var grouping = {};
-
-        grouping.Category = event['category'];
-        grouping.ThreatName = event['threatname'];
-        grouping.Received = event['received'];
-        grouping.Id = event['id'];
-        grouping.Severity = event['severity'];
-
-        return grouping;
     }
 
     function getIncidentsRequest(queryParams){
