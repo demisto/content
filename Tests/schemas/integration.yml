@@ -30,7 +30,6 @@ mapping:
     type: str
   image:
     type: str
-    required: yes
   description:
     type: str
     required: yes
