@@ -1,7 +1,24 @@
 {
-    "testTimeout": 120,
-    "testInterval": 30,
+    "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
+        {
+            "integrations": "GoogleSafeBrowsing",
+            "playbookID": "Google Safe Browsing Test",
+            "timeout": 240
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
+        },
+        {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
+        },
         {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
@@ -21,11 +38,6 @@
             },
             "playbookID": "get_file_sample_from_path_-_generic_-_test",
             "timeout": 300
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
         },
         {
             "integrations": [
@@ -133,10 +145,6 @@
         {
             "integrations": [],
             "playbookID": "Test CommonServer"
-        },
-        {
-            "integrations": "GoogleSafeBrowsing",
-            "playbookID": "Google Safe Browsing Test"
         },
         {
           "integrations": "AlienVault OTX",
@@ -269,16 +277,7 @@
             "timeout": 400
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
-        {
             "playbookID": "LanguageDetect-Test",
-            "timeout": 300
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
         {
@@ -296,9 +295,18 @@
         },
         {
             "playbookID": "ExtractDomainTest"
+        },
+        {
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
         }
     ],
     "skipped": [
+        {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
