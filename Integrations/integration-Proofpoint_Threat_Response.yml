@@ -246,7 +246,7 @@ script:
         var responseIncidents = getIncidentsRequest(args);
         var incidents = [];
         var entryContext = [];
-        if(!incidents || incidents.length == 0){
+        if(!responseIncidents || responseIncidents.length == 0){
             return 'no incidents found';
         }
 
@@ -429,7 +429,7 @@ script:
       required: true
       description: The id value of list
     outputs:
-    - contextPath: ProofpointTR.List
+    - contextPath: ProofpointTRAP.List
       description: Proofpoint Threat Response list
     description: Retrive all the members of a Threat Response list. List can be host
       list, url list, user list, of file list. To perform actions on a list, you must
@@ -443,7 +443,7 @@ script:
       required: true
       description: id of the list member to retrieve
     outputs:
-    - contextPath: ProofpointTR.Member
+    - contextPath: ProofpointTRAP.Member
       description: Single member record from Threat Response list
     description: Retrive a single member record from a list, by specifying the member
       id.
