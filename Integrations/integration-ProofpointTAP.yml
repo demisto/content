@@ -57,6 +57,7 @@ configuration:
   type: 8
   required: false
 script:
+  runonce: true
   script: |-
     var MINUTE_IN_MILLIS = 60 * 1000;
     var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
@@ -262,4 +263,3 @@ script:
     description: Fetch events for all click and message relating to known threats
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
-  runonce: true
