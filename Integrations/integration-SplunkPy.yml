@@ -82,8 +82,11 @@ script:
           single_key_val = key_val.split("=")
           if len(single_key_val)>1:
               val = single_key_val[1]
+              val = val.strip("\\")
               val = val.strip("\"")
-              result[single_key_val[0]] = val
+              val = val.strip("\\")
+              key = single_key_val[0].strip()
+              result[key] = val
         return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
