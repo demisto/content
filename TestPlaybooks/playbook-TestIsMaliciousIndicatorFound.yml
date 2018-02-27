@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6bc2accb-18fa-42f3-8163-fb8548927da7
+    taskid: fff89f4a-ebbb-4d5f-8fe7-827db8f6de4d
     type: start
     task:
-      id: 6bc2accb-18fa-42f3-8163-fb8548927da7
+      id: fff89f4a-ebbb-4d5f-8fe7-827db8f6de4d
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: dec758fa-46d1-4a8f-8de3-6ff089ba8892
+    taskid: 72f2d308-41ff-4b8b-84a8-b46d14144bb7
     type: regular
     task:
-      id: dec758fa-46d1-4a8f-8de3-6ff089ba8892
+      id: 72f2d308-41ff-4b8b-84a8-b46d14144bb7
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -67,10 +67,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3a5fc555-015c-481f-89d2-37c77e685822
+    taskid: c0ebe3bc-4d47-4c20-84b9-2595975dc176
     type: condition
     task:
-      id: 3a5fc555-015c-481f-89d2-37c77e685822
+      id: c0ebe3bc-4d47-4c20-84b9-2595975dc176
       version: -1
       name: IsMaliciuosFound
       scriptName: IsMaliciousIndicatorFound
@@ -94,10 +94,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 23eba689-c4a0-437c-8b68-a35f821947bc
+    taskid: 962dfcff-2bc4-40d4-8f29-ac4f4b7da291
     type: regular
     task:
-      id: 23eba689-c4a0-437c-8b68-a35f821947bc
+      id: 962dfcff-2bc4-40d4-8f29-ac4f4b7da291
       version: -1
       name: Fail
       description: |-
@@ -114,7 +114,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: xxx
+        simple: Found Mal indicator on good indicator only in incident
     separatecontext: false
     view: |-
       {
@@ -125,10 +125,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: cdcd81db-dd81-419b-887a-d1f3b342e9fd
+    taskid: 7c00fed4-deb8-4c97-8648-a8e502489bc3
     type: regular
     task:
-      id: cdcd81db-dd81-419b-887a-d1f3b342e9fd
+      id: 7c00fed4-deb8-4c97-8648-a8e502489bc3
       version: -1
       name: Create Bad indicator
       script: Builtin|||createNewIndicator
@@ -165,10 +165,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 2f612db5-3c1e-4a2c-854e-664341ede83f
+    taskid: 13da8f73-870a-4217-832e-4b6e43decad0
     type: regular
     task:
-      id: 2f612db5-3c1e-4a2c-854e-664341ede83f
+      id: 13da8f73-870a-4217-832e-4b6e43decad0
       version: -1
       name: Fail
       description: |-
@@ -185,7 +185,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: xxx
+        simple: Did not Found bad indicator that appeared in incident
     separatecontext: false
     view: |-
       {
@@ -196,10 +196,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: b03f84a8-b6ec-4a7c-86bb-9ac8d793a02e
+    taskid: 66cee68a-52ff-4c06-8386-8b81ef01f0aa
     type: condition
     task:
-      id: b03f84a8-b6ec-4a7c-86bb-9ac8d793a02e
+      id: 66cee68a-52ff-4c06-8386-8b81ef01f0aa
       version: -1
       name: IsMaliciuosFound
       scriptName: IsMaliciousIndicatorFound
@@ -223,10 +223,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: c0e11d78-b854-49e4-8450-3eaf435408f1
+    taskid: a48307bc-2ecf-4a68-83ae-b6f26d433ba0
     type: regular
     task:
-      id: c0e11d78-b854-49e4-8450-3eaf435408f1
+      id: a48307bc-2ecf-4a68-83ae-b6f26d433ba0
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -263,10 +263,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: c6b5e42f-3366-46ec-8df3-8146ef0c33a9
+    taskid: b17a0f89-dae9-443b-86cc-4afab5d7818c
     type: condition
     task:
-      id: c6b5e42f-3366-46ec-8df3-8146ef0c33a9
+      id: b17a0f89-dae9-443b-86cc-4afab5d7818c
       version: -1
       name: IsMaliciuosFound-no-suspicious
       scriptName: IsMaliciousIndicatorFound
@@ -290,10 +290,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 6f22921c-07e1-4315-83ab-5cbb9013a6c2
+    taskid: 7c364585-f614-43cc-89e6-5c181e2d5e31
     type: regular
     task:
-      id: 6f22921c-07e1-4315-83ab-5cbb9013a6c2
+      id: 7c364585-f614-43cc-89e6-5c181e2d5e31
       version: -1
       name: Fail
       description: |-
@@ -310,7 +310,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: xxx
+        simple: Found suspicious indicator but did not used suspicious check arg
     separatecontext: false
     view: |-
       {
@@ -321,10 +321,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: bb8f1bb0-23c3-490c-8b49-6a32ceae65af
+    taskid: 59519cc7-1398-4b2a-8b76-2ee91e7b7f05
     type: condition
     task:
-      id: bb8f1bb0-23c3-490c-8b49-6a32ceae65af
+      id: 59519cc7-1398-4b2a-8b76-2ee91e7b7f05
       version: -1
       name: IsMaliciuosFound-with-suspicious
       scriptName: IsMaliciousIndicatorFound
@@ -349,10 +349,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 8877482e-d76f-48e9-8d7e-4943245a3338
+    taskid: e8ed02bd-9307-4673-85cb-3bbd330c4c36
     type: regular
     task:
-      id: 8877482e-d76f-48e9-8d7e-4943245a3338
+      id: e8ed02bd-9307-4673-85cb-3bbd330c4c36
       version: -1
       name: Fail
       description: |-
@@ -369,7 +369,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: xxx
+        simple: Did not Found suspicious indicator that appeared in incident
     separatecontext: false
     view: |-
       {
@@ -380,10 +380,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 9c41e5b7-d520-45fa-8947-f13f2b4d70e6
+    taskid: cf54d557-2e3c-4039-8b56-751eb810857a
     type: title
     task:
-      id: 9c41e5b7-d520-45fa-8947-f13f2b4d70e6
+      id: cf54d557-2e3c-4039-8b56-751eb810857a
       version: -1
       name: All GOOD!!!
       type: title
