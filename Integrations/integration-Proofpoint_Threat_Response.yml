@@ -351,7 +351,7 @@ script:
       description: Incident event category
     - contextPath: ProofpointTRAP.Incident.event.threat_name
       description: Incident event threat name
-    - contextPath: ProofpointTRAP.Incident.event.ProofpointTRAP.Incident.events.received
+    - contextPath: ProofpointTRAP.Incident.event.received
       description: Incident event receiving time
     - contextPath: ProofpointTRAP.Incident.event.id
       description: Incident event ID
@@ -381,7 +381,7 @@ script:
       description: Incident event category
     - contextPath: ProofpointTRAP.Incident.event.threat_name
       description: Incident event threat name
-    - contextPath: ProofpointTRAP.Incident.event.ProofpointTRAP.Incident.events.received
+    - contextPath: ProofpointTRAP.Incident.event.received
       description: Incident event receiving time
     - contextPath: ProofpointTRAP.Incident.event.id
       description: Incident event ID
