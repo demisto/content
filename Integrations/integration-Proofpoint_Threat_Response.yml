@@ -135,7 +135,7 @@ script:
 
         body[memberName] = memberValue;
         body['description'] = description;
-        body['expiration'] = dateToISO8601(expiration);
+        body['expiration'] = expiration;
         body['duration'] = duration;
 
         response = sendRequest(path, null, 'POST', body);
@@ -321,7 +321,7 @@ script:
       - assigned
       - closed
       - ignored
-      description: State of the incidents to retrive
+      description: State of the incidents to retrieve
     - name: created_after
       description: Retrieve incidents that were created after specified date, in ISO
         8601 format (UTC)
@@ -428,7 +428,7 @@ script:
     outputs:
     - contextPath: ProofpointTRAP.List
       description: Proofpoint Threat Response list
-    description: Retrive all the members of a Threat Response list. List can be host
+    description: Retrieve all the members of a Threat Response list. List can be host
       list, url list, user list, of file list. To perform actions on a list, you must
       first obtain the identification number (listId) for that list in Threat Response.
   - name: proofpoint-get-list-single-member
@@ -442,7 +442,7 @@ script:
     outputs:
     - contextPath: ProofpointTRAP.Member
       description: Single member record from Threat Response list
-    description: Retrive a single member record from a list, by specifying the member
+    description: Retrieve a single member record from a list, by specifying the member
       id.
 hidden: false
 releaseNotes: "-"
