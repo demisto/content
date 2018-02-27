@@ -32,6 +32,7 @@ def main(argv):
         y["description"] = a.get("description", "")
         returns = a.get("returns", {})[0]
         y["return"] = {"description" : returns.get("description"), "type":  " or ".join(returns.get("type", {}).get("names", []) ) }
+        y["language"] = "javascript"
         for arg in a.get("params", {}):
             arg["type"] = " or ".join(arg.get("type", {}).get("names", []))
         y["arguments"] = a.get("params", {})

@@ -26,6 +26,7 @@ def reformatPythonOutput(output):
         args = a.get("arguments", {})
         z = []
         for argName, argInfo in args.iteritems():
+            argInfo["language"] = "python"
             argInfo["name"] = argName
             argInfo["type"] = argInfo["type_name"]
             del argInfo["type_name"]
