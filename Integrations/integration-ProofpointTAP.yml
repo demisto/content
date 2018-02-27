@@ -143,19 +143,16 @@ script:
         case 'fetch-incidents':
             var now = new Date();
             var lastRun = getLastRun();
-            if (!lastRun || !lastRun.lastRunTime) {
+            var sinceTime;
+            if (lastRun && lastRun.lastRunTime) {
+                sinceTime = lastRun.lastRunTime;
+            } else {
                 // if fetch run for the first time, we fetch the events in last half an hour
-                var lastHourDate = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
-                lastRun = {
-                    lastRunTime: dateToISO8601(lastHourDate)
-                };
+                var last30minutes = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
+                sinceTime = dateToISO8601(last30minutes)
             }
 
-            var fromTime = lastRun.lastRunTime;
-            var untilTime = dateToISO8601(now);
-            var interval = fromTime + '/' + untilTime;
-            var events = getEventsRequest(interval, null, params.threatType, params.threatStatus);
-
+            var events = getEventsRequest(null, sinceTime, params.threatType, params.threatStatus);
             var incidents = [];
             if (events) {
                 // convert events to demisto incidents
