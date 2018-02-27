@@ -459,6 +459,7 @@ script:
   - name: splunk-parse-raw
     arguments:
     - name: raw
+      default: true
       description: The Raw data of splunk event, in string format
       defaultValue: ${Splunk.Result._raw}
     outputs:
