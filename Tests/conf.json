@@ -297,6 +297,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        }, 
+        {
+            "playbookID": "ZipFile-Test"
         },
         {
             "playbookID": "ExtractDomainTest"
