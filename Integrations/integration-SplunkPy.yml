@@ -132,14 +132,23 @@ script:
 
     def notable_to_incident(event):
         incident = {}
-        incident["name"] = event['rule_title'] + ' : ' + event['rule_name']
-        incident["severity"]= severity_to_level(event['urgency'])
-        incident["details"] = event["rule_description"]
+        rule_title = ''
+        rule_name = ''
+        if demisto.get(event, 'rule_title'):
+            rule_title = event['rule_title']
+        if demisto.get(event, 'rule_name'):
+            rule_name = event['rule_name']
+        incident["name"] = rule_title + ' : ' + rule_name
+        if demisto.get(event, 'urgency'):
+            incident["severity"]= severity_to_level(event['urgency'])
+        if demisto.get(event, 'rule_description'):
+            incident["details"] = event["rule_description"]
         incident["occurred"] = event["_time"]
         incident["rawJSON"] = json.dumps(event)
-        labels = []
-        labels.append({'type':'security_domain','value':event["security_domain"]})
-        incident['labels'] = labels
+        if demisto.get(event, 'security_domain'):
+            labels = []
+            labels.append({'type':'security_domain','value':event["security_domain"]})
+            incident['labels'] = labels
         return incident
 
     def handler(proxy):
@@ -414,3 +423,4 @@ script:
     description: 'Create new search job in Splunk '
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: 'Protect Splunk notable events fetch from nil pointer'
