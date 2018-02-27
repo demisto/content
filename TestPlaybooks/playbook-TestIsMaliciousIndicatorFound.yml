@@ -1,0 +1,413 @@
+id: Test-IsMaliciousIndicatorFound
+version: -1
+name: Test-IsMaliciousIndicatorFound
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fff89f4a-ebbb-4d5f-8fe7-827db8f6de4d
+    type: start
+    task:
+      id: fff89f4a-ebbb-4d5f-8fe7-827db8f6de4d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 72f2d308-41ff-4b8b-84a8-b46d14144bb7
+    type: regular
+    task:
+      id: 72f2d308-41ff-4b8b-84a8-b46d14144bb7
+      version: -1
+      name: Create good indicator
+      description: Modify indicator reputation
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: IP
+      value:
+        simple: 4.3.7.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c0ebe3bc-4d47-4c20-84b9-2595975dc176
+    type: condition
+    task:
+      id: c0ebe3bc-4d47-4c20-84b9-2595975dc176
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "3"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 962dfcff-2bc4-40d4-8f29-ac4f4b7da291
+    type: regular
+    task:
+      id: 962dfcff-2bc4-40d4-8f29-ac4f4b7da291
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Found Mal indicator on good indicator only in incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 7c00fed4-deb8-4c97-8648-a8e502489bc3
+    type: regular
+    task:
+      id: 7c00fed4-deb8-4c97-8648-a8e502489bc3
+      version: -1
+      name: Create Bad indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Bad
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: dudu@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 13da8f73-870a-4217-832e-4b6e43decad0
+    type: regular
+    task:
+      id: 13da8f73-870a-4217-832e-4b6e43decad0
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Did not Found bad indicator that appeared in incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 66cee68a-52ff-4c06-8386-8b81ef01f0aa
+    type: condition
+    task:
+      id: 66cee68a-52ff-4c06-8386-8b81ef01f0aa
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "13"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a48307bc-2ecf-4a68-83ae-b6f26d433ba0
+    type: regular
+    task:
+      id: a48307bc-2ecf-4a68-83ae-b6f26d433ba0
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      internal: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Suspicious
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: yulu@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "8":
+    id: "8"
+    taskid: b17a0f89-dae9-443b-86cc-4afab5d7818c
+    type: condition
+    task:
+      id: b17a0f89-dae9-443b-86cc-4afab5d7818c
+      version: -1
+      name: IsMaliciuosFound-no-suspicious
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "10"
+    scriptarguments:
+      includeSuspicious: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 7c364585-f614-43cc-89e6-5c181e2d5e31
+    type: regular
+    task:
+      id: 7c364585-f614-43cc-89e6-5c181e2d5e31
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Found suspicious indicator but did not used suspicious check arg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 59519cc7-1398-4b2a-8b76-2ee91e7b7f05
+    type: condition
+    task:
+      id: 59519cc7-1398-4b2a-8b76-2ee91e7b7f05
+      version: -1
+      name: IsMaliciuosFound-with-suspicious
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "4"
+    scriptarguments:
+      includeSuspicious:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    taskid: e8ed02bd-9307-4673-85cb-3bbd330c4c36
+    type: regular
+    task:
+      id: e8ed02bd-9307-4673-85cb-3bbd330c4c36
+      version: -1
+      name: Fail
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Did not Found suspicious indicator that appeared in incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "13":
+    id: "13"
+    taskid: cf54d557-2e3c-4039-8b56-751eb810857a
+    type: title
+    task:
+      id: cf54d557-2e3c-4039-8b56-751eb810857a
+      version: -1
+      name: All GOOD!!!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1435
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
