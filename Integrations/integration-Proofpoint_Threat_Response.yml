@@ -107,7 +107,7 @@ script:
 
     function deleteMemberFromListRequest(listId, memberId){
         var path = 'lists';
-        path = path.concat('/', listId, 'members/', memberId);
+        path = path.concat('/', listId, '/members/', memberId, '.json');
 
         sendRequest(path, null, 'DELETE');
     }
@@ -155,14 +155,16 @@ script:
 
         var entryContext = list;
 
-        md += tblToMd('List members', list);
+        md += tableToMarkdown('List members', list);
 
         return {
             Type: entryTypes.note,
             Contents: list,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: entryContext
+            EntryContext:  {
+                'ProofpointTRAP.Member(val.id==obj.id)' : entryContext
+            }
         };
     }
 
@@ -187,14 +189,16 @@ script:
 
         var entryContext = member;
 
-        md += tblToMd('Member', member);
+        md += tableToMarkdown('Member', member);
 
         return {
             Type: entryTypes.note,
             Contents: member,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: entryContext
+            EntryContext:  {
+                'ProofpointTRAP.Member(val.id==obj.id)' : entryContext
+            }
         };
     }
 
@@ -220,7 +224,7 @@ script:
 
         var entryContext = responseIncident[0];
         var incident = createIncidentFromResponse(responseIncident[0]);
-        md += tblToMd('Incident details', incident);
+        md += tableToMarkdown('Incident details', incident);
 
         return {
             Type: entryTypes.note,
@@ -228,7 +232,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                'ProofpointTRAP.Incident(val.Id==obj.Id)' : entryContext
+                'ProofpointTRAP.Incident(val.id==obj.id)' : entryContext
             }
         };
     }
@@ -253,11 +257,11 @@ script:
         responseIncidents.forEach(function (responseIncident){
             var incident = createIncidentFromResponse(responseIncident);
             incidents.push(incident);
-            entryContext.push(incident);
+            entryContext.push(responseIncident);
         });
 
         var md =  incidents.length + ' Incidents retrieved \n';
-        md += tblToMd('Incident details', incidents);
+        md += tableToMarkdown('Incident details', incidents);
 
         return {
             Type: entryTypes.note,
@@ -265,7 +269,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext:  {
-                'ProofpointTRAP.Incident(val.Id==obj.Id)' : entryContext
+                'ProofpointTRAP.Incident(val.id==obj.id)' : entryContext
             }
         };
     }
