@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
@@ -292,6 +297,9 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
+        }, 
+        {
+            "playbookID": "ZipFile-Test"
         },
         {
             "playbookID": "ExtractDomainTest"
@@ -299,14 +307,12 @@
         {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
+        },
+        {
+            "playbookID": "Test-IsMaliciousIndicatorFound"
         }
     ],
     "skipped": [
-        {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
