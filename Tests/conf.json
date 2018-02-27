@@ -301,9 +301,6 @@
             "timeout": 500
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "playbookID": "Test-IsMaliciousIndicatorFound"
         }
     ],
