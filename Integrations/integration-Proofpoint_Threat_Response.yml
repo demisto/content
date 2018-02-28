@@ -26,6 +26,9 @@ configuration:
   required: false
 script:
   script: |-
+    var MINUTE_IN_MILLIS = 60 * 1000;
+    var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+
     function fixUrl(url) {
         return ((url[url.length - 1] != '/') ? (url + '/') : url);
     }
@@ -85,6 +88,7 @@ script:
                 Method: method,
                 Headers: {
                     Accept: ['application/json'],
+                    'Content-Type': ['application/json'],
                     Authorization: [params.APIKey]
                 },
                 Body: body
@@ -260,7 +264,7 @@ script:
             entryContext.push(responseIncident);
         });
 
-        var md =  incidents.length + ' Incidents retrieved \n';
+        var md = incidents.length + ' Incidents retrieved \n';
         md += tableToMarkdown('Incident details', incidents);
 
         return {
@@ -289,6 +293,38 @@ script:
             result = getIncidentsRequest();
             return result instanceof Array ? 'ok' : 'notok';
         case 'fetch-incidents':
+            var now = new Date();
+            var lastRun = getLastRun();
+            if (!lastRun || !lastRun.lastRunTime) {
+                // if fetch runs for the first time, we fetch the incidents in last half an hour
+                var lastHourDate = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
+                lastRun = {
+                    lastRunTime: dateToISO8601(lastHourDate)
+                };
+            }
+
+            var fromTime = lastRun.lastRunTime;
+            var trapIncidents = getIncidentsRequest({created_after: fromTime});
+
+            var incidents = [];
+            if (trapIncidents) {
+                // convert trap incidents to demisto incidents
+                if (trapIncidents.length > 0) {
+                   trapIncidents.ForEach(function(trapIncident){
+                        var incident = {
+                            name: 'Proofpoint - Incident - ' + trapIncident.id,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                   });
+                }
+            }
+                 setLastRun({
+                lastRunTime: dateToISO8601(now)
+            });
+
+            return JSON.stringify(incidents);
         case 'proofpoint-get-incident-by-id':
             result = getIncidentById();
             return result;
