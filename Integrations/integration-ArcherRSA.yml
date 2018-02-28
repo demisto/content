@@ -1,8 +1,8 @@
 commonfields:
-  id: RSA Archer
+  id: RSA Archer v2
   version: -1
-name: RSA Archer
-display: RSA Archer
+name: RSA Archer v2
+display: RSA Archer v2
 category: IT Services
 image: data:image/png;base64,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
 description: The RSA Archer GRC Platform provides a common foundation for managing
@@ -164,7 +164,9 @@ script:
                         var newModuleId = innerRecordModuleId;
                         args.applicationId = newModuleId;
                         var newMapping = createMapping(token);
-                        for (var attrname in newMapping) { mapping[attrname] = newMapping[attrname]; }
+                        for (var attrname in newMapping) { 
+                            mapping[attrname] = newMapping[attrname]; 
+                        }
                         seenModuleIds[newModuleId] = newModuleId;
                     }
                     innerRecord.Record = getRecord(commands.getRecord, token, mapping, innerRecordContentId, innerRecordModuleId).keyValsForFetch;
@@ -273,7 +275,7 @@ script:
     function searchSendSoapRequest(cmd, token, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber) {
         var currentToken = token;
         for(var i = 0; i<10; i++){
-            var soap = getContentsByAppIdRequest(currentToken, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
+            var soap = getContentsByAppIdRequest(currentToken, appId, fields, maxResults, fieldIdToSearchOn, fieldNameToSearchOn, searchValue, sortByFieldId, fieldIdToSearchOn, isDescending, numericOperator, dateOperator, pageNumber);
             var SOAPAction = 'http://archer-tech.com/webservices/ExecuteSearch';
             var result = soapRequestSender(cmd, soap, SOAPAction);
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
@@ -718,8 +720,10 @@ script:
             keyValsForFetch: keyValsForFetch,
             ContentsFormat: formats.json,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown(command, nameToValue) + '\n\n' + innerRecordsMarkdown
-            EntryContext: {'Archer.Content(true)': createContentContext(contentId, nameToValue)}
+            HumanReadable: tableToMarkdown(command, nameToValue) + '\n\n' + innerRecordsMarkdown,
+            EntryContext: {
+              'Archer.Content(true)': createContentContext(contentId, nameToValue)
+            }
         };
     }
     function createInnerRecordsHumanReadable(tables){
