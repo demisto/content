@@ -153,11 +153,19 @@ script:
             var lastRun = getLastRun();
             var sinceTime;
             if (lastRun && lastRun.lastRunTime) {
-                sinceTime = lastRun.lastRunTime;
+                var lastRunDate = new Date(lastRun.lastRunTime);
+                if (lastRunDate.getTime() < now.getTime() - (30 * MINUTE_IN_MILLIS)) {
+                    // if for some reason the lastRunTime is more in the past than 30 mins, then fetch the last 30 mintues
+                    // could be that integration was disabled for some time and now it was enabled
+                    var last30minutes = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
+                    sinceTime = dateToISO8601(last30minutes);
+                } else {
+                    sinceTime = lastRun.lastRunTime;
+                }
             } else {
                 // if fetch run for the first time, we fetch the events in last half an hour
                 var last30minutes = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
-                sinceTime = dateToISO8601(last30minutes)
+                sinceTime = dateToISO8601(last30minutes);
             }
 
             var events = getEventsRequest(null, sinceTime, params.threatType, params.threatStatus);
@@ -269,3 +277,4 @@ script:
     description: Fetch events for all click and message relating to known threats
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
+releaseNotes: "Add Proofpoint TAP integration"
