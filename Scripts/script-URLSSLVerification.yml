@@ -63,7 +63,9 @@ script: |-
 
   ec["URL(val.Data && val.Data === obj.Data)"] = url_list
 
-  md = tableToMarkdown("URL SSL Verification",url_list)
+  preview_list = [{"URL": url["Data"],"Verified": url["Verified"], "Description": demisto.get(url, "Malicious.Description") or "SSL certificate is verified"} for url in url_list]
+
+  md = tableToMarkdown("URL SSL Verification",preview_list,["URL","Verified","Description"])
 
   demisto.results({
       "Type" : entryTypes["note"],

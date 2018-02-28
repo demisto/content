@@ -409,7 +409,7 @@ inputs:
   description: url to enrich
 - key: 'Rasterize'
   value:
-    simple: Flase
+    simple: False
   required: false
   description: Should the system take safe screenshots of input URLs?
 - key: VerifyURL
