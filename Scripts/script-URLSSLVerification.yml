@@ -83,6 +83,7 @@ args:
   required: true
   default: true
   description: URL to verify
+  isArray: true
 outputs:
 - contextPath: URL
   description: The URL object
