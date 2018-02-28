@@ -62,6 +62,12 @@ script:
     var MINUTE_IN_MILLIS = 60 * 1000;
     var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
 
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     function fixUrl(url) {
         if (url.endsWith('/')) {
             return url.slice(0, -1);
