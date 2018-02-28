@@ -9,7 +9,7 @@ description: Provides the API for Proofpoint Threat Response. Threat Response is
   to work in any IT Security and Security Operations Center environments - small,
   medium, or large.
 configuration:
-- display: The API server address
+- display: The API server address, e.g https://trap-api.com/api
   name: Server
   defaultvalue: ""
   type: 0
@@ -19,7 +19,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Ignore certificate
+- display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -49,7 +49,7 @@ script:
             return date;
         }
 
-       return date.toISOString().replace(/\.\d{3}/,'');
+        return date.toISOString().replace(/\.\d{3}/,'');
     }
 
     function createIncidentFromResponse(responseIncident){
@@ -64,28 +64,20 @@ script:
         if(hosts){
             incident.URL = hosts['url'];
         }
-        var events = responseIncident['events'];
-        if(events){
-            incident.Grouping = [];
-            events.forEach(function (event){
-                var grouping = createIncidentGroupingFromEvent(event);
-                incident.Grouping.push(grouping);
-            });
-        }
 
         return incident;
     }
 
-    function createIncidentGroupingFromEvent(event) {
-        var grouping = {};
+    function createIncidentEvent(event) {
+        var incidentEvent = {};
 
-        grouping.Category = event['category'];
-        grouping.ThreatName = event['threatname'];
-        grouping.Received = event['received'];
-        grouping.Id = event['id'];
-        grouping.Severity = event['severity'];
+        incidentEvent.Category = event['category'];
+        incidentEvent.ThreatName = event['threatname'];
+        incidentEvent.Received = event['received'];
+        incidentEvent.Id = event['id'];
+        incidentEvent.Severity = event['severity'];
 
-        return grouping;
+        return incidentEvent;
     }
 
     function sendRequest(path, queryParams, method, body){
@@ -160,22 +152,22 @@ script:
     function getAllListMembers(){
         var list = getAllListMembersRequest(args.listId);
 
-        var md = 'List ' + args.listId + '\n';
+        var markdown = 'List ' + args.listId + '\n';
 
         if(!list || list.length == 0){
-            md += 'List not found';
-            return md;
+            markdown += 'List not found';
+            return markdown;
         }
 
         var entryContext = list;
 
-        md += tableToMarkdown('List members', list);
+        markdown += tableToMarkdown('List members', list);
 
         return {
             Type: entryTypes.note,
             Contents: list,
             ContentsFormat: formats.json,
-            HumanReadable: md,
+            HumanReadable: markdown,
             EntryContext:  {
                 'ProofpointTRAP.Member(val.id==obj.id)' : entryContext
             }
@@ -194,22 +186,22 @@ script:
     function getSingleMemberFromList(){
         var member = getSingleMemberFromListRequest(args.listId, args.memberId);
 
-        var md = 'Member ' + args.memberId + '\n';
+        var markdown = 'Member ' + args.memberId + '\n';
 
         if(!member){
-            md += 'member not found';
-            return md;
+            markdown += 'member not found';
+            return markdown;
         }
 
         var entryContext = member;
 
-        md += tableToMarkdown('Member', member);
+        markdown += tableToMarkdown('Member', member);
 
         return {
             Type: entryTypes.note,
             Contents: member,
             ContentsFormat: formats.json,
-            HumanReadable: md,
+            HumanReadable: markdown,
             EntryContext:  {
                 'ProofpointTRAP.Member(val.id==obj.id)' : entryContext
             }
@@ -229,26 +221,44 @@ script:
     function getIncidentById(){
         var responseIncident = getIncidentByIdRequest(args.incidentId);
 
-        var md = 'Incident ' + args.incidentId + '\n';
+        var markdown = 'Incident ' + args.incidentId + '\n';
 
         if(!responseIncident || responseIncident.length == 0){
-            md += 'no details found';
-            return md;
+            markdown += 'no details found';
+            return markdown;
         }
 
         var entryContext = responseIncident[0];
         var incident = createIncidentFromResponse(responseIncident[0]);
-        md += tableToMarkdown('Incident details', incident);
+        var incidentEvents = responseIncident[0]['events'];
+        if(incidentEvents && incidentEvents.length > 0){
+            var events = [];
+            var eventsMarkdown = 'Events for incident ' + args.incidentId + '\n';
+            incidentEvents.forEach(function (incidentEvent){
+                var event = createIncidentEvent(incidentEvent);
+                events.push(event);
+            });
 
-        return {
+            eventsMarkdown += tableToMarkdown('event details', events);
+        }
+
+        markdown += tableToMarkdown('Incident details', incident);
+
+        return [{
             Type: entryTypes.note,
             Contents: incident,
             ContentsFormat: formats.json,
-            HumanReadable: md,
+            HumanReadable: markdown,
             EntryContext: {
                 'ProofpointTRAP.Incident(val.id==obj.id)' : entryContext
             }
-        };
+        },
+            {
+                Type: entryTypes.note,
+                Contents: events,
+                ContentsFormat: formats.json,
+                HumanReadable: eventsMarkdown
+            }];
     }
 
     function getIncidentByIdRequest(incidentId){
@@ -271,17 +281,18 @@ script:
         responseIncidents.forEach(function (responseIncident){
             var incident = createIncidentFromResponse(responseIncident);
             incidents.push(incident);
-            entryContext.push(responseIncident);
         });
 
-        var md = incidents.length + ' Incidents retrieved \n';
-        md += tableToMarkdown('Incident details', incidents);
+        entryContext = responseIncidents;
+
+        var markdown = incidents.length + ' Incidents retrieved \n';
+        markdown += tableToMarkdown('Incident details', incidents);
 
         return {
             Type: entryTypes.note,
             Contents: incidents,
             ContentsFormat: formats.json,
-            HumanReadable: md,
+            HumanReadable: markdown,
             EntryContext:  {
                 'ProofpointTRAP.Incident(val.id==obj.id)' : entryContext
             }
@@ -290,9 +301,44 @@ script:
 
     function getIncidentsRequest(queryParams){
         var incidents;
-        incidents = sendRequest('incidents', queryParams);
+        incidents = sendRequest('incidents/', queryParams);
 
         return incidents;
+    }
+
+    function fetchIncidents(){
+        var now = new Date();
+        var lastRun = getLastRun();
+        if (!lastRun || !lastRun.lastRunTime) {
+            // if fetch runs for the first time, we fetch the incidents in last half an hour
+            var lastHourDate = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
+            lastRun = {
+                lastRunTime: dateToISO8601(lastHourDate)
+            };
+        }
+
+        var fromTime = lastRun.lastRunTime;
+        var trapIncidents = getIncidentsRequest({created_after: fromTime});
+
+        var incidents = [];
+        if (trapIncidents) {
+            // convert trap incidents to demisto incidents
+            if (trapIncidents.length > 0) {
+                trapIncidents.forEach(function(trapIncident){
+                    var incident = {
+                        name: 'Proofpoint - Incident - ' + trapIncident.id,
+                        rawJSON: JSON.stringify(trapIncident)
+                    };
+
+                    incidents.push(incident);
+                });
+            }
+        }
+        setLastRun({
+            lastRunTime: dateToISO8601(now)
+        });
+
+        return JSON.stringify(incidents);
     }
 
     // The command input arg holds the command sent from the user.
@@ -303,38 +349,7 @@ script:
             result = getIncidentsRequest();
             return result instanceof Array ? 'ok' : 'notok';
         case 'fetch-incidents':
-            var now = new Date();
-            var lastRun = getLastRun();
-            if (!lastRun || !lastRun.lastRunTime) {
-                // if fetch runs for the first time, we fetch the incidents in last half an hour
-                var lastHourDate = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
-                lastRun = {
-                    lastRunTime: dateToISO8601(lastHourDate)
-                };
-            }
-
-            var fromTime = lastRun.lastRunTime;
-            var trapIncidents = getIncidentsRequest({created_after: fromTime});
-
-            var incidents = [];
-            if (trapIncidents) {
-                // convert trap incidents to demisto incidents
-                if (trapIncidents.length > 0) {
-                   trapIncidents.forEach(function(trapIncident){
-                        var incident = {
-                            name: 'Proofpoint - Incident - ' + trapIncident.id,
-                            rawJSON: JSON.stringify(trapIncident)
-                        };
-
-                        incidents.push(incident);
-                   });
-                }
-            }
-                 setLastRun({
-                lastRunTime: dateToISO8601(now)
-            });
-
-            return JSON.stringify(incidents);
+            return fetchIncidents();
         case 'proofpoint-get-incident-by-id':
             result = getIncidentById();
             return result;
