@@ -320,10 +320,10 @@ script:
             if (trapIncidents) {
                 // convert trap incidents to demisto incidents
                 if (trapIncidents.length > 0) {
-                   trapIncidents.ForEach(function(trapIncident){
+                   trapIncidents.forEach(function(trapIncident){
                         var incident = {
                             name: 'Proofpoint - Incident - ' + trapIncident.id,
-                            rawJSON: JSON.stringify(event)
+                            rawJSON: JSON.stringify(trapIncident)
                         };
 
                         incidents.push(incident);
