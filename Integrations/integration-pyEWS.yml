@@ -17,7 +17,7 @@ configuration:
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: Email\Username
+- display: Email (for authentication)
   name: credentials
   defaultvalue: ""
   type: 9
@@ -367,9 +367,11 @@ script:
             if not FETCH_ALL_HISTORY:
                 last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
                 qs = qs.filter(datetime_received__gte=last_10_min)
+        result = qs.all()
         if exclude_ids and len(exclude_ids) > 0:
-            qs = qs.exclude(message_id__in=exclude_ids)
-        return qs.all()
+            exclude_ids = set(exclude_ids)
+            result = [x for x in result if x.message_id not in exclude_ids]
+        return result
 
 
     def keys_to_camel_case(value):
