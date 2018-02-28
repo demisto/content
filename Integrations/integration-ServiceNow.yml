@@ -471,7 +471,7 @@ script:
         }
         parameters.sysparm_limit = (params.fetch_limit) ? params.fetch_limit : defaults.fetch_limit;
 
-        var path = "table/incident" + encodeToURLQuery(parameters);
+        var path = "table/" + params.ticket_type + encodeToURLQuery(parameters);
 
         res = sendRequest('GET',path);
 
@@ -1545,4 +1545,4 @@ script:
       description: Servicenow group name
     description: Return information about specific servicenow group
   isfetch: true
-releaseNotes: "-"
+releaseNotes: "Fetch incidents now supports customised tables."
