@@ -61,12 +61,6 @@ script:
     var MINUTE_IN_MILLIS = 60 * 1000;
     var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
 
-    if not demisto.params()['proxy']:
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
     function fixUrl(url) {
         if (url.endsWith('/')) {
             return url.slice(0, -1);
@@ -80,11 +74,16 @@ script:
     function httpGet(path) {
         var requestUrl = SERVER_URL + path;
 
-        var res = http(requestUrl, {
-            Method: 'GET',
-            Username: params.credentials.identifier,
-            Password: params.credentials.password
-        });
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Username: params.credentials.identifier,
+                Password: params.credentials.password
+            },
+            params.insecure,
+            params.proxy
+        );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nRequest URL: ' + requestUrl +'\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
