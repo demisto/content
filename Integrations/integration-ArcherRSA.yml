@@ -129,7 +129,7 @@ script:
     }
     function parseRecordsXml(token, response, mapping) {
         var parsedJson = extractObjectFromXML(response, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult');
-        var records = parsedJson.Records.Record;
+        var records = dq(parsedJson, 'Records.Record');
         if (!records) {
             return [];
         }
