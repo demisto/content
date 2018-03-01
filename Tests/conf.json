@@ -359,6 +359,10 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test"
+        },
+        {
+            "integrations": "Remedy AR",
+            "playbookID": "Remedy AR Test"
         }
     ]
 }
