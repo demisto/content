@@ -255,7 +255,7 @@ view: |-
 inputs:
 - key: GetCorrelationLogs
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: If "True" will get all of the offense's correlations logs
 - key: MaxLogsCount
