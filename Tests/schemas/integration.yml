@@ -55,6 +55,8 @@ mapping:
         type: str
       isfetch:
         type: bool
+      runonce:
+        type: bool
       commands:
         type: seq
         sequence:
