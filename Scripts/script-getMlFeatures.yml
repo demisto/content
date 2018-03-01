@@ -1,5 +1,5 @@
 commonfields:
-  id: 125fd255-3a91-4210-84d0-49786b69ac9f
+  id: getMlFeatures
   version: -1
 name: getMlFeatures
 script: |+
@@ -156,7 +156,7 @@ args:
 scripttarget: 0
 timeout: 400ns
 runonce: false
-dockerimage: demisto/ml-telemetry:latest
+dockerimage: demisto/ml-telemetry
 sensitive: true
 releaseNotes: -
 fromVersion: 3.5
