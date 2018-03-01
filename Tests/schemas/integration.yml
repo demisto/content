@@ -21,8 +21,8 @@ mapping:
     enum: [
     'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
     'Vulnerability Management', 'Case Management',
-    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
-     'Authentication', 'Database']
+    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment & Threat Intelligence',
+     'Authentication', 'Database', 'Deception']
     required: yes
   fromversion:
     type: str
@@ -30,7 +30,6 @@ mapping:
     type: str
   image:
     type: str
-    required: yes
   description:
     type: str
     required: yes
@@ -60,6 +59,8 @@ mapping:
         type: seq
         sequence:
         - include: command_schema
+      runonce:
+        type: bool
   system:
     type: bool
   hidden:

@@ -1,0 +1,326 @@
+id: search_endpoints_by_hash_-_generic
+version: -1
+name: Search Endpoints By Hash - Generic
+fromversion: 3.5.0
+system: true
+description: Hunt using available tools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c485e19b-c83a-48e4-892c-8bd91e17ced2
+    type: start
+    task:
+      id: c485e19b-c83a-48e4-892c-8bd91e17ced2
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 697,
+          "y": 50
+        }
+      }
+  "5":
+    id: "5"
+    taskid: f4b71101-7ae3-4ce8-87b7-10eeb13c1a79
+    type: playbook
+    task:
+      id: f4b71101-7ae3-4ce8-87b7-10eeb13c1a79
+      version: -1
+      name: Search Endpoints By Hash - CrowdStrike
+      playbookName: Search Endpoints By Hash - CrowdStrike
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+      SHA1Hash:
+        complex:
+          root: inputs
+          accessor: SHA1Hash
+      SHA256Hash:
+        complex:
+          root: inputs
+          accessor: SHA256Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 53,
+          "y": 817
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 5937d882-8964-48b8-834d-1e6f3d83b189
+    type: playbook
+    task:
+      id: 5937d882-8964-48b8-834d-1e6f3d83b189
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Response
+      playbookName: Search Endpoints By Hash - Carbon Black Response
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1202,
+          "y": 817
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 912e992b-d3bd-4353-8177-5ea207ef2ac6
+    type: playbook
+    task:
+      id: 912e992b-d3bd-4353-8177-5ea207ef2ac6
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Protection
+      playbookName: Search Endpoints By Hash - Carbon Black Protection
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        complex:
+          root: inputs
+          accessor: MD5Hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1644,
+          "y": 817
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 9510dbd8-98c3-4611-802f-333acf31875b
+    type: title
+    task:
+      id: 9510dbd8-98c3-4611-802f-333acf31875b
+      version: -1
+      name: MD5 Only
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1148,
+          "y": 184
+        }
+      }
+  "10":
+    id: "10"
+    taskid: ce67117f-133a-4da3-84be-14e4a831756a
+    type: title
+    task:
+      id: ce67117f-133a-4da3-84be-14e4a831756a
+      version: -1
+      name: MD5 / SHA1 / SHA256
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 184
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+    type: condition
+    task:
+      id: 05df1d6e-f77e-4b06-8c62-2750064f5b00
+      version: -1
+      name: Is MD5 hash?
+      description: Is MD5 hash?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "7"
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: MD5Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1148,
+          "y": 309
+        }
+      }
+  "12":
+    id: "12"
+    taskid: f2a05482-2b17-4a09-8813-be48459935c3
+    type: title
+    task:
+      id: f2a05482-2b17-4a09-8813-be48459935c3
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 726,
+          "y": 1032
+        }
+      }
+  "13":
+    id: "13"
+    taskid: a6785055-98d6-4b2e-8da8-c2e0c6b90887
+    type: playbook
+    task:
+      id: a6785055-98d6-4b2e-8da8-c2e0c6b90887
+      version: -1
+      name: Search Endpoints By Hash - TIE
+      description: |-
+        Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+        Input:
+        * Hash (default, takes all deferent hashes from context)
+
+        Output:
+        * All agents that files with "Hash" has been executed on (TIE)
+        * Enrich Agents info from ePO
+      playbookName: Search Endpoints By Hash - TIE
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
+          }).reduce(function(a, b){ return a.concat(b); }, [])}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 492,
+          "y": 817
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_#default#": 0.2,
+      "11_7_yes": 0.5,
+      "11_8_yes": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1047,
+        "width": 1971,
+        "x": 53,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 Hash
+- key: SHA1Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: SHA1 Hash
+- key: SHA256Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: SHA256 Hash
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown

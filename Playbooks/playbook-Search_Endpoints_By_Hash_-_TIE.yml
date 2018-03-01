@@ -1,0 +1,399 @@
+id: search_endpoints_by_hash_-_tie
+version: -1
+name: Search Endpoints By Hash - TIE
+description: |-
+  Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+  Input:
+  * Hash (default, takes all deferent hashes from context)
+
+  Output:
+  * All agents that files with "Hash" has been executed on (TIE)
+  * Enrich Agents info from ePO
+starttaskid: "0"
+fromversion: 3.5.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+    type: start
+    task:
+      id: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: f96c54b2-b8fa-48b8-8a56-56555a749c10
+    type: condition
+    task:
+      id: f96c54b2-b8fa-48b8-8a56-56555a749c10
+      version: -1
+      name: Is TIE enabled?
+      description: Is TIE enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    scriptarguments:
+      left: {}
+      right: {}
+      value: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: McAfee Threat Intelligence Exchange
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b098fed0-d1ae-418c-8a37-756e1ae0cb37
+    type: condition
+    task:
+      id: b098fed0-d1ae-418c-8a37-756e1ae0cb37
+      version: -1
+      name: Is ePO enabled?
+      description: Is ePO enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: epo
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: epo
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1288
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 26ba9604-ced2-4c35-8e13-075d3ed04042
+    type: regular
+    task:
+      id: 26ba9604-ced2-4c35-8e13-075d3ed04042
+      version: -1
+      name: List all agents that the Hash has been executed on
+      description: Get Agent GUIDS for the given hashes
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.Hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 737
+        }
+      }
+  "4":
+    id: "4"
+    taskid: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+    type: title
+    task:
+      id: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 138,
+          "y": 1793
+        }
+      }
+  "5":
+    id: "5"
+    taskid: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+    type: condition
+    task:
+      id: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+      version: -1
+      name: Did we find any relevant agents?
+      description: Did we get any Agent GUIDS?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: References.AgentGuid
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: References.AgentGuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 910
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 101e3e85-0246-4bd4-80be-2df713ee96e6
+    type: regular
+    task:
+      id: 101e3e85-0246-4bd4-80be-2df713ee96e6
+      version: -1
+      name: Get Agent info from ePO
+      description: Get hostnames for the Agent GUIDS
+      scriptName: EPOFindSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      searchText:
+        complex:
+          root: File
+          accessor: References.AgentGuid
+      taskID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1587
+        }
+      }
+  "7":
+    id: "7"
+    taskid: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+    type: title
+    task:
+      id: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+      version: -1
+      name: Hunt HASH in TIE
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+    type: title
+    task:
+      id: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+      version: -1
+      name: Enrich in ePO
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1145
+        }
+      }
+  "9":
+    id: "9"
+    taskid: c8baebe6-606d-4e83-88ab-09ac98b1be34
+    type: condition
+    task:
+      id: c8baebe6-606d-4e83-88ab-09ac98b1be34
+      version: -1
+      name: Do we have any files to hunt?
+      description: Do we have any files to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 507
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.1,
+      "2_4_#default#": 0.17,
+      "5_4_#default#": 0.11,
+      "9_4_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1808,
+        "width": 672,
+        "x": 138,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hash
+  value:
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+  required: false
+  description: |-
+    The Hash to hunt (Could be MD5,SHA1,SHA256).
+    Default is set to all hashes
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
