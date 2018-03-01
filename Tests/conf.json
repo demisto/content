@@ -1,17 +1,159 @@
 {
-    "testTimeout": 120,
-    "testInterval": 30,
+    "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
         {
+            "integrations": "McAfee ESM-v10",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "GoogleSafeBrowsing",
+            "playbookID": "Google Safe Browsing Test",
+            "timeout": 240
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
+        },
+        {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
+        },
+        {
+            "integrations": "Symantec Endpoint Protection",
+            "playbookID": "sep_-_test_endpoint_search"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_from_path_-_generic_-_test",
+            "timeout": 300
+        },
+        {
+            "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                {
+                    "name": "carbonblack",
+                    "byoi": false
+                },
+                {
+                    "name": "carbonblackprotection",
+                    "byoi": false
+                }
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblackprotection",
+                "byoi": false
+            },
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
+            "timeout": 240
+        },
+        {
+            "playbookID": "process_email_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": {
+                "name": "activedir",
+                "byoi": false
+            },
+            "playbookID": "account_enrichment_-_generic_test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test"
+        },
+        {
+            "integrations": "FalconHost",
+            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+        },
+        {
+          "integrations": "AlienVault OTX",
+          "playbookID": "ip_enrichment_generic_test"
+        },
+        {
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
             "playbookID": "ExposeIncidentOwner-Test"
+        },
+        {
+            "integrations": "OpenPhish",
+            "playbookID": "email_test"
         },
         {
             "integrations": [],
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "GoogleSafeBrowsing",
-            "playbookID": "Google Safe Browsing Test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -34,7 +176,8 @@
         },
         {
             "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook"
+            "playbookID": "Archer-Test-Playbook",
+            "nightly": true
         },
         {
             "integrations": "ThreatExchange",
@@ -89,10 +232,6 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
-        },
-        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
@@ -130,7 +269,9 @@
             "timeout": 1200
         },
         {
-            "playbookID": "ProofpointDecodeURL-Test"
+            "playbookID": "ProofpointDecodeURL-Test",
+            "timeout": 300,
+            "interval": 20
         },
         {
             "playbookID": "listExecutedCommands-Test"
@@ -141,15 +282,8 @@
             "timeout": 400
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
+            "playbookID": "LanguageDetect-Test",
             "timeout": 300
-        },
-        {
-            "playbookID": "LanguageDetect-Test"
-        },
-        {
-            "playbookID": "TestWordFileToIOC"
         },
         {
             "integrations": "ArcSight Logger",
@@ -158,10 +292,24 @@
         {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "playbookID": "GeneratePassword-Test"
+        }, 
+        {
+            "playbookID": "ZipFile-Test"
+        },
+        {
+            "playbookID": "ExtractDomainTest"
+        },
+        {
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "Test-IsMaliciousIndicatorFound"
         }
     ],
     "skipped": [
@@ -191,9 +339,26 @@
             "playbookID": "VMWare Test"
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
+            "integrations": [
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "AlienVault OTX",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
         }
     ]
 }

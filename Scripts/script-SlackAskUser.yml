@@ -2,8 +2,9 @@ commonfields:
   id: SlackAskUser
   version: -1
 name: SlackAskUser
+fromversion: 3.5.0
 script: |-
-  res = demisto.executeCommand('addOneTimeEntitlement', {})
+  res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'), 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
@@ -38,6 +39,15 @@ args:
   description: Second option for the user reply. "no" is the default.
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
+- name: persistent
+  description: Indicates wether to use one-time entitlement or a persistent one
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
 scripttarget: 0
 dependson:
   must:

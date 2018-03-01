@@ -9,23 +9,10 @@ test:
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM bb700a16b67f8697208cbbfc10085b79bdeb836e 3.1.0
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM d58a640cf60f305f1393af1ad37483240d79c0b9 18.2.4
 
     # create content bundle
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp Dashboards/* bundle/
-    - cp Widgets/* bundle/
-    - cp content-descriptor.json bundle/
-    - cp $(find Scripts -type f -print) bundle/
-
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-    - cp release-notes.txt $CIRCLE_ARTIFACTS/
+    - python content_creator.py $CIRCLE_ARTIFACTS
   override:
     - chmod +x ./Tests/scripts/*
 
@@ -46,6 +33,9 @@ test:
 
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
+
+    # pull all non default docker images
+    #- ./Tests/scripts/pull_docker_images.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh
