@@ -299,7 +299,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None):
+  def tableToMarkdown(name, t, headers=None, headerTransform=None):
       '''
       Converts a demisto table in JSON form to a Markdown table
       @param {String} name - the name of the table
