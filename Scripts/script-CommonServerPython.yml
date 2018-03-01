@@ -318,10 +318,16 @@ script: |-
           mdResult = '### ' + name + '\n'
 
       if t:
-          if len(headers) == 1:
-              mdResult += headers[0] + '|' + '\n'
+          newHeaders = []
+          if headerTransform is None:
+              headerTransform = lambda s: s
+          for header in headers:
+              newHeaders.append(headerTransform(header))
+
+          if len(newHeaders) == 1:
+              mdResult += newHeaders[0] + '|' + '\n'
           else:
-              mdResult += '|'.join(headers) + '\n'
+              mdResult += '|'.join(newHeaders) + '\n'
 
           sep = '-'
           if len(headers) == 1:
@@ -335,10 +341,20 @@ script: |-
                   mdResult += '|'.join(vals) + '\n'
       else:
           mdResult += '**No entries.**\n'
+
       return mdResult
 
 
   tblToMd = tableToMarkdown
+
+  def underscoreToCamelCase(s):
+      '''
+      Converts underscore case strings to camel case
+      @param {String} string - string to be converted - i.e. hello_world
+      @returns {String} - converted string - i.e. HelloWorld
+      '''
+      components = s.split('_')
+      return ''.join(x.title() for x in components)
 
   def createContextSingle(obj, id=None):
       res = {}
