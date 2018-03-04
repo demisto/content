@@ -85,13 +85,16 @@ def main(circle_artifacts):
     for b in [BUNDLE_PRE, BUNDLE_POST]:
         shutil.copyfile('content-descriptor.json', os.path.join(b, 'content-descriptor.json'))
 
+    print 'copying common server doc to bundles'
+    for b in [BUNDLE_PRE, BUNDLE_POST]:
+        shutil.copyfile('doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
     shutil.make_archive(ZIP_PRE, 'zip', BUNDLE_PRE)
     shutil.copyfile(ZIP_PRE + '.zip', os.path.join(circle_artifacts, ZIP_PRE + '.zip'))
     shutil.copyfile(ZIP_POST + '.zip', os.path.join(circle_artifacts, ZIP_POST + '.zip'))
-    shutil.copyfile('commonServerPyDoc.json', os.path.join(circle_artifacts, 'commonServerPyDoc.json'))
-    shutil.copyfile('commonServerJsDoc.json', os.path.join(circle_artifacts, 'commonServerJsDoc.json'))
+    # shutil.copyfile('doc-commonServer.json', os.path.join(circle_artifacts, 'doc-commonServer.json'))
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
 
     print 'finished create content artifact'

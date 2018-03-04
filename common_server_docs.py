@@ -1,14 +1,8 @@
-import abc
-import datetime
-import json
 import sys
 import yaml
-import inspect
 from parinx import parser
 import inspect
 import json
-
-import types
 
 contentLibPath = "./"
 limitedVersion = False
@@ -26,13 +20,15 @@ def reformatPythonOutput(output):
         args = a.get("arguments", {})
         z = []
         for argName, argInfo in args.iteritems():
-            argInfo["language"] = "python"
             argInfo["name"] = argName
             argInfo["type"] = argInfo["type_name"]
             del argInfo["type_name"]
             z.append(argInfo)
         a["arguments"] = z
         a["return"]["type"] = a["return"]["type_name"]
+        a["language"] = "python"
+        a["origin"] = "CommonServerPython"
+
         del a["return"]["type_name"]
     return output
 
@@ -64,7 +60,7 @@ def main(argv):
                 print "Bad docstring in function", a
 
     x = reformatPythonOutput(x)
-    with open('commonServerPyDoc.json', 'w') as fp:
+    with open('doc-CommonServer.json', 'w') as fp:
         json.dump(x, fp)
 
 
