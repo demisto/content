@@ -162,7 +162,12 @@ script:
             Source: incident['Reported Source'],
             Impact: incident.Impact,
             Urgency: incident.Urgency,
-            Type: incident.Service_Type
+            Type: incident.Service_Type,
+            Assignee: incident['Assigned To'],
+            Email: incident['Internet E-mail'],
+            Priority: incident.Priority,
+            ServiceType: incident.Service_Type,
+            ModifiedDate: incident['Modified Date']
         };
     };
 
@@ -257,7 +262,9 @@ script:
         nowDate = new Date();
         var now = nowDate.toISOString();
         if (!lastRun || !lastRun.value) {
-            lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
+            lastRun = {
+                value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
+            };
         }
         var query =  "'Create Date'>" + '"' + lastRun.value + '"';
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + '?q=' + encodeURIComponent(query);
@@ -267,11 +274,17 @@ script:
         var body = JSON.parse(res.Body);
         var incidents = []
         Object.keys(body.entries).forEach(function(key) {
+            var incident = body.entries[key].values;
             var requestID = body.entries[key].values['Request ID'];
             incidents.push({
                 'name': 'Remedy On-Demand incident ' + requestID,
-                'labels': [{'type':'Ticket ID', 'value':requestID}], //Ticket ID to be pushed to incident context
-                'rawJSON': JSON.stringify(body.entries[key])
+                'labels': [
+                    {
+                        'type': 'Ticket(val.ID && val.ID == obj.ID)',
+                        'value': JSON.stringify(convertIncidentToTicket(incident)) // Ticket ID to be pushed to incident context
+                    }
+                ],
+                'rawJSON': JSON.stringify(incident)
             });
         });
         setLastRun({value: now});
