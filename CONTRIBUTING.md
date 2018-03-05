@@ -13,9 +13,7 @@ If you are a first time GitHub contributor, please look at these links explainin
 
 ## Contributing Playbooks
 
-In order to contribute playbooks you need to save them in the COPS format (as a yaml file) and create a Pull Request.
-
-You can also edit them visually inside the Demisto Platform and then export to a yaml file.
+You can edit or create playbooks visually inside the Demisto Platform and then export to a yaml file.
 
 To add a new playbook, or modify and enhance an existing playbook - just open a Pull Request in this repo.
 
@@ -23,7 +21,7 @@ Some requirements for playbooks yml are:
 1. Change playbook version to `-1`
 2. Make sure all tasks (including 'Title' task) have a description
 3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same Pull Request
-4. Should be added under folder Playbooks, with name convention to start with suffix `playbook-`
+4. It should be added under the Playbooks folder, using the naming convention starting with prefix `playbook-`
 
 ## Contributing Scripts
 
@@ -80,7 +78,7 @@ timeout: 0s
 
 Some requirements for scripts yml are:
 1. Make it has a description
-2. Should be added under folder Scripts, with name convention to start with suffix `script-`
+2. It should be added under the Script folder, using the naming convention starting with prefix `script-`
 3. If the script uses some Docker image, make sure it's publicly available on docker hub
 
 ## Contributing Integrations
@@ -91,7 +89,7 @@ Some requirements for integrations yml are:
 1. Change integration version to `-1`
 2. Make it has a description
 3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
-4. Should be added under folder Integrations, with name convention to start with suffix `integration-`
+4. It should be added under the Integrations folder, using the naming convention starting with prefix `integration-`
 
 ------------
 
