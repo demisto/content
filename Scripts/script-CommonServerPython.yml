@@ -28,15 +28,6 @@ script: |-
 
   # Checks if the given entry from a URL reputation query is positive (known bad)
   def positiveUrl(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['xfe']:
               return demisto.get(entry, 'Contents.url.result.score') > thresholds['xfeScore']
@@ -49,15 +40,6 @@ script: |-
 
 
   def positiveFile(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['xfe'] and (demisto.get(entry, 'Contents.malware.family') or demisto.gets(entry, 'Contents.malware.origins.external.family')):
               return True
@@ -79,15 +61,6 @@ script: |-
 
 
   def vtCountPositives(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       positives = 0
       if demisto.get(entry, 'Contents.detected_urls'):
           for detected in demisto.get(entry, 'Contents.detected_urls'):
@@ -97,15 +70,6 @@ script: |-
 
 
   def positiveIp(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['xfe']:
               return demisto.get(entry, 'Contents.reputation.score') > thresholds['xfeScore']
@@ -118,30 +82,12 @@ script: |-
 
 
   def formatEpochDate(t):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if t:
           return time.ctime(t)
       return ''
 
 
   def compareDates(date1, date2, dateFormat):
-    """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-    """
     # should return delta between two dates
     # if instead of date passed string 'now' then will be compared to current time
     # date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
@@ -162,15 +108,6 @@ script: |-
 
 
   def shortCrowdStrike(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['cs'] and demisto.get(entry, 'Contents'):
               c = demisto.get(entry, 'Contents')[0]
@@ -195,15 +132,6 @@ script: |-
 
 
   def shortUrl(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           c = entry['Contents']
           if entry['Brand'] == brands['xfe']:
@@ -222,15 +150,6 @@ script: |-
 
 
   def shortFile(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           c = entry['Contents']
           if entry['Brand'] == brands['xfe']:
@@ -264,15 +183,6 @@ script: |-
 
 
   def shortIp(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           c = entry['Contents']
           if entry['Brand'] == brands['xfe']:
@@ -288,15 +198,6 @@ script: |-
 
 
   def shortDomain(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
           if entry['Brand'] == brands['vt']:
               return {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': {'Positive URLs': vtCountPositives(entry), 'Provider': providers['vt']}}
@@ -304,54 +205,18 @@ script: |-
 
 
   def isError(entry):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return type(entry) == dict and entry['Type'] == entryTypes['error']
 
 
   def FormatADTimestamp(ts):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return ( datetime(year=1601, month=1, day=1) + timedelta(seconds = int(ts)/10**7) ).ctime()
 
 
   def PrettifyCompactedTimestamp(x):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return '%s-%s-%sT%s:%s:%s' % (x[:4], x[4:6], x[6:8], x[8:10], x[10:12], x[12:])
 
 
   def NormalizeRegistryPath(strRegistryPath):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       dSub = {
           'HKCR' : 'HKEY_CLASSES_ROOT',
           'HKCU' : 'HKEY_CURRENT_USER',
@@ -367,15 +232,6 @@ script: |-
 
 
   class IntegrationLogger(object):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       def __init__(self, ):
           self.messages = []
 
@@ -388,7 +244,7 @@ script: |-
           demisto.info(text)
 
   '''
-  a logger for python integrations:
+  a logger for oython integrations:
   use LOG(<message>) to add a record to the logger (message can be any object with __str__)
   use LOG.print_log() to display all records in War-Room and server log.
   '''
@@ -396,15 +252,6 @@ script: |-
 
 
   def formatCell(data, is_pretty=True):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       l_format = '\n' if is_pretty else ''
       if type(data) in STRING_TYPES:
           return data
@@ -414,15 +261,6 @@ script: |-
           return flattenCell(data, is_pretty)
 
   def flattenCell(data, is_pretty=True):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
@@ -430,27 +268,9 @@ script: |-
           return json.dumps(data, indent=indent)
 
   def FormatIso8601(t):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return t.strftime("%Y-%m-%dT%H:%M:%S")
 
   def argToList(arg):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if not arg:
           return []
       if isinstance(arg, list):
@@ -462,15 +282,6 @@ script: |-
       return arg
 
   def appendContext(key, data, dedup=False):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if not data:
         return
       existing = demisto.get(demisto.context(), key)
@@ -488,16 +299,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
+  def tableToMarkdown(name, t, headers=None, headerTransform=None):
       '''
       Converts a demisto table in JSON form to a Markdown table
       @param {String} name - the name of the table
@@ -516,10 +318,16 @@ script: |-
           mdResult = '### ' + name + '\n'
 
       if t:
-          if len(headers) == 1:
-              mdResult += headers[0] + '|' + '\n'
+          newHeaders = []
+          if headerTransform is None:
+              headerTransform = lambda s: s
+          for header in headers:
+              newHeaders.append(headerTransform(header))
+
+          if len(newHeaders) == 1:
+              mdResult += newHeaders[0] + '|' + '\n'
           else:
-              mdResult += '|'.join(headers) + '\n'
+              mdResult += '|'.join(newHeaders) + '\n'
 
           sep = '-'
           if len(headers) == 1:
@@ -533,21 +341,22 @@ script: |-
                   mdResult += '|'.join(vals) + '\n'
       else:
           mdResult += '**No entries.**\n'
+
       return mdResult
 
 
   tblToMd = tableToMarkdown
 
+  def underscoreToCamelCase(s):
+      '''
+      Converts underscore case strings to camel case
+      @param {String} string - string to be converted - i.e. hello_world
+      @returns {String} - converted string - i.e. HelloWorld
+      '''
+      components = s.split('_')
+      return ''.join(x.title() for x in components)
+
   def createContextSingle(obj, id=None):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       res = {}
       keys = obj.keys()
       for key in keys:
@@ -564,15 +373,6 @@ script: |-
 
 
   def createContext(data, id=None):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if isinstance(data, (list, tuple)):
           return [createContextSingle(d, id) for d in data]
       else:
@@ -580,15 +380,6 @@ script: |-
 
 
   def sectionsToMarkdown(root):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       mdResult = ''
       if isinstance(root, dict):
           for section in root:
@@ -601,15 +392,6 @@ script: |-
 
 
   def fileResult(filename, data):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
@@ -617,15 +399,6 @@ script: |-
 
 
   def file_result_existing_file(filename, saveFilename = None):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """ Create a file result from an existing file by moving it into the right file name """
       temp = demisto.uniqueFile()
       os.rename(filename, demisto.investigation()['id'] + '_' + temp)
@@ -634,56 +407,20 @@ script: |-
 
 
   def flattenRow(rowDict):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return {k: formatCell(rowDict[k]) for k in rowDict}
 
 
   def flattenTable(tableDict):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return [flattenRow(row) for row in tableDict]
 
   MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
   def stringEscapeMD(st):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
 
   def raiseTable(root, key):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       newInternal = {}
       if key in root and isinstance(root[key], dict):
           for sub in root[key]:
@@ -698,30 +435,12 @@ script: |-
 
 
   def zoomField(item, fieldName):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       if isinstance(item, dict) and fieldName in item:
           return item[fieldName]
       else:
           return item
 
   def isCommandAvailable(cmd):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       modules = demisto.getAllSupportedCommands()
       for m in modules:
           if modules[m] and isinstance(modules[m], list):
@@ -731,40 +450,13 @@ script: |-
       return False
 
   def epochToTimestamp(epoch):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
   def formatTimeColumns(data, timeColumnNames):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       for row in data:
           for k in timeColumnNames:
               row[k] = epochToTimestamp(row[k])
 
   def strip_tag(tag):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       strip_ns_tag = tag
       split_array = tag.split('}')
       if len(split_array) > 1:
@@ -774,15 +466,6 @@ script: |-
 
 
   def elem_to_internal(elem, strip_ns=1, strip=1):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert an Element into an internal dictionary (not JSON!)."""
 
       d = OrderedDict()
@@ -834,15 +517,7 @@ script: |-
 
 
   def internal_to_elem(pfsh, factory=ET.Element):
-      """
-         Checks if the given entry frovt count
 
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert an internal dictionary (not JSON!) into an Element.
       Whatever Element implementation we could import will be
       used by default; if you want to use something else, pass the
@@ -882,15 +557,7 @@ script: |-
 
 
   def elem2json(elem, options, strip_ns=1, strip=1):
-      """
-         Checks if the given entry frovt count
 
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert an ElementTree or Element into a JSON string."""
 
       if hasattr(elem, 'getroot'):
@@ -903,15 +570,7 @@ script: |-
 
 
   def json2elem(json_data, factory=ET.Element):
-      """
-         Checks if the given entry frovt count
 
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert a JSON string into an Element.
       Whatever Element implementation we could import will be used by
       default; if you want to use something else, pass the Element class
@@ -922,15 +581,7 @@ script: |-
 
 
   def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
-      """
-         Checks if the given entry frovt count
 
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert an XML string into a JSON string."""
 
       elem = ET.fromstring(xmlstring)
@@ -938,15 +589,7 @@ script: |-
 
 
   def json2xml(json_data, factory=ET.Element):
-      """
-         Checks if the given entry frovt count
 
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       """Convert a JSON string into an XML string.
       Whatever Element implementation we could import will be used by
       default; if you want to use something else, pass the Element class
@@ -960,15 +603,6 @@ script: |-
 
   # return 'md5', 'sha1', 'sha256' or 'Unknown' upon the given hash file
   def get_hash_type(hash_file):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       hash_len = len(hash_file)
       if (hash_len == 32):
           return 'md5'
@@ -981,15 +615,6 @@ script: |-
 
   # ensure that s is the form of <number>.<number>.<number>.<number>
   def is_ip_valid(s):
-      """
-         Checks if the given entry frovt count
-
-         :type entry: ``str``
-         :param entry: URL entry
-
-         :return:    the value pf the answer
-         :rtype: ``bool``
-      """
       a = s.split('.')
       if len(a) != 4:
           return False
@@ -1017,6 +642,6 @@ tags:
 comment: Common code that will be merged into each server script when it runs
 system: true
 scripttarget: 0
-releaseNotes: "Added fake docs"
 dependson: {}
 timeout: 0s
+releaseNotes: "Added headerTransform to tableToMarkdown and underscoreToCamelCase function"

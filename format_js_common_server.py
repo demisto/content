@@ -17,24 +17,22 @@ def main(argv):
     commonServer = readFile('./commonServerJsDoc.json')
     x = []
     for a in commonServer:
-        print a
         y = {}
         y["name"] = a.get("name", "")
         y["description"] = a.get("description", "")
         returns = a.get("returns", {})[0]
         y["return_value"] = {"description" : returns.get("description"), "type":  " or ".join(returns.get("type", {}).get("names", []) ) }
         y["language"] = "javascript"
-        y["origin"] = "CommonServer"
+        y["origin"] = "CommonServerJs"
         for arg in a.get("params", {}):
             arg["type"] = " or ".join(arg.get("type", {}).get("names", []))
-        y["arguments"] = a.get("params", {})
+        y["arguments"] = a.get("params", [])
 
         x.append(y)
 
-
     with open('doc-CommonServer.json', 'r+') as fp:
         res = json.load(fp)
-        res.append(x)
+        res += x
         fp.seek(0)
         json.dump(res, fp)
 
