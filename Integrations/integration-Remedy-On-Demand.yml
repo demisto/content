@@ -37,6 +37,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |
     // remove '/' at the end of the url (if exists)
@@ -152,7 +162,12 @@ script:
             Source: incident['Reported Source'],
             Impact: incident.Impact,
             Urgency: incident.Urgency,
-            Type: incident.Service_Type
+            Type: incident.Service_Type,
+            Assignee: incident['Assigned To'],
+            Email: incident['Internet E-mail'],
+            Priority: incident.Priority,
+            ServiceType: incident.Service_Type,
+            ModifiedDate: incident['Modified Date']
         };
     };
 
@@ -242,10 +257,46 @@ script:
         return getIncident(incID, 'Updated incident:');
     };
 
+    var fetchIncidentsToDemisto = function() {
+        var lastRun = getLastRun();
+        nowDate = new Date();
+        var now = nowDate.toISOString();
+        if (!lastRun || !lastRun.value) {
+            lastRun = {
+                value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
+            };
+        }
+        var query =  "'Create Date'>" + '"' + lastRun.value + '"';
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + '?q=' + encodeURIComponent(query);
+        var token = login();
+        var res = sendRequest(url, token);
+        logout(token);
+        var body = JSON.parse(res.Body);
+        var incidents = []
+        Object.keys(body.entries).forEach(function(key) {
+            var incident = body.entries[key].values;
+            var requestID = body.entries[key].values['Request ID'];
+            incidents.push({
+                'name': 'Remedy On-Demand incident ' + requestID,
+                'labels': [
+                    {
+                        'type': 'Ticket(val.ID && val.ID == obj.ID)',
+                        'value': JSON.stringify(convertIncidentToTicket(incident)) // Ticket ID to be pushed to incident context
+                    }
+                ],
+                'rawJSON': JSON.stringify(incident)
+            });
+        });
+        setLastRun({value: now});
+        return JSON.stringify(incidents);
+    };
+
     switch (command) {
         case 'test-module':
             fetchIncidents();
             return 'ok';
+        case 'fetch-incidents':
+            return fetchIncidentsToDemisto();
         case 'remedy-incident-create':
             return createIncident(
                 args['first-name'],
@@ -487,4 +538,6 @@ script:
     - contextPath: Ticket.Type
       description: Ticket service type
     description: Update exiting incident
+  isfetch: true
 hidden: false
+releaseNotes: "Added fetch incidents support"
