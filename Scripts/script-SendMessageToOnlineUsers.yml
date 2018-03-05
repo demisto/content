@@ -95,4 +95,3 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: "Added Mattermost support"
-fromversion: 3.6.0
