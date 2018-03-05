@@ -52,3 +52,4 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: "Added the Mattermost equivalent for SlackAskUser"
+fromversion: 3.6.0
