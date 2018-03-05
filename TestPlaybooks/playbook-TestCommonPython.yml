@@ -1,14 +1,14 @@
 id: TestCommonPython
-version: 8
+version: -1
 name: TestCommonPython
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c3abef67-7252-42da-8ebb-f76e0f0c8620
+    taskid: b95322d1-6762-46bd-89e6-3591301699ce
     type: start
     task:
-      id: c3abef67-7252-42da-8ebb-f76e0f0c8620
+      id: b95322d1-6762-46bd-89e6-3591301699ce
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,10 +26,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
+    taskid: f08ad922-1a02-47aa-876b-8ac5d35f0631
     type: regular
     task:
-      id: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
+      id: f08ad922-1a02-47aa-876b-8ac5d35f0631
       version: -1
       name: Test DQ
       scriptName: TestPYCommonServer
@@ -41,6 +42,7 @@ tasks:
     scriptarguments:
       test_type:
         simple: DQ
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -50,20 +52,24 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+    taskid: 236318a3-e1ff-485c-8ea8-c722c83b3c91
     type: regular
     task:
-      id: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+      id: 236318a3-e1ff-485c-8ea8-c722c83b3c91
       version: -1
       name: Test MarkDown
+      description: Tests for common functions createEntry and TableToMarkDown
       scriptName: TestPYCommonServer
-      description: 'Tests for common functions createEntry and TableToMarkDown'
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       test_type:
         simple: MD
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -73,14 +79,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: b41c3542-9a1b-4114-80fb-e761d369fae1
+    taskid: 0848edaa-e517-4371-8ca9-baf1f0b9266b
     type: regular
     task:
-      id: b41c3542-9a1b-4114-80fb-e761d369fae1
+      id: 0848edaa-e517-4371-8ca9-baf1f0b9266b
       version: -1
       name: Test XML JSON relations
-      scriptName: TestPYCommonServer
       description: 'Tests for common functions xml2json and json2xml '
+      scriptName: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -90,6 +96,7 @@ tasks:
     scriptarguments:
       test_type:
         simple: XML
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -97,12 +104,37 @@ tasks:
           "y": 195
         }
       }
+  "5":
+    id: "5"
+    taskid: c6a2e171-6cc4-428d-819d-7a47d87a239b
+    type: regular
+    task:
+      id: c6a2e171-6cc4-428d-819d-7a47d87a239b
+      version: -1
+      name: Test tableToMarkdown
+      description: Tests underscoreToCamelCase and tableToMarkDown with and without headerTransform
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      extend-context: {}
+      test_type:
+        simple: TBLMD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 770,
         "width": 380,
         "x": 50,
         "y": 50
@@ -110,3 +142,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

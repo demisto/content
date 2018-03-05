@@ -187,6 +187,63 @@ class ReportContent(Content):
 
 Content.register(ReportContent)
 
+class DashboardContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Dashboards"
+
+    def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
+        res = "- " + cnt["name"] + "\n"
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
+            res += "-- " + cnt["description"] + "\n"
+        return res
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + rn + "\n"
+        return res
+
+Content.register(DashboardContent)
+
+class WidgetContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Widgets"
+
+    def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) > 0 and rn == "-":
+            return ""
+        res = "- " + cnt["name"] + "\n"
+        if cnt.get("description") is not None and len(cnt.get("description")) > 0:
+            res += "-- " + cnt["description"] + "\n"
+        return res
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+        #Add a comment only if there are release notes
+        if rn != '-':
+            res =  "- " + cnt["name"] + "\n"
+            res += "-- " + rn + "\n"
+        return res
+
+Content.register(WidgetContent)
 
 class ReputationContent(Content):
     def loadData(self, data):
@@ -244,7 +301,9 @@ releaseNoteGenerator = {
     "Integrations": IntegrationContent(),
     "Playbooks": PlaybookContent(),
     "Reports": ReportContent(),
-    "Misc": ReputationContent()
+    "Misc": ReputationContent(),
+    "Dashboards": DashboardContent(),
+    "Widgets": WidgetContent()
 }
 
 def parseChangeList(filePath):
@@ -283,6 +342,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
         fileType = fullFileName.split("/")[0]
         fileTypeMapping = releaseNoteGenerator.get(fileType)
         if fileTypeMapping is None:
+            print "Unsupported file type " + fileType
             return
 
         if changeType == "D":
@@ -301,7 +361,7 @@ def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
     release_notes = "## Demisto Content Release Notes for version " + version + " (" + assetId + ")\n"
-    release_notes += "##### Published at %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
+    release_notes += "##### Published on %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
     contentDescriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(assetId),
