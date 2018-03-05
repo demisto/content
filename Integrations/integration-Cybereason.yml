@@ -252,17 +252,10 @@ script:
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
-            if (args['case-sensitive'] === 'yes'){
-                if (elements[key].simpleValues.elementDisplayName.values[0] === args.machine) {
-                    return true;
-                }
-            } else {
-                if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
-                    return true;
-                }
+            if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
+                return true;
             }
         }
-
         return false;
     }
 
@@ -504,13 +497,6 @@ script:
     - name: machine
       required: true
       description: The hostname of the machine to check.
-    - name: case-sensitive
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Makes case sensitive/insensitive string comparison in machine name
-      defaultValue: "yes"
     description: Checks if the machine is currently connected to the Cybereason server
   - name: cybereason-query-connections
     arguments:
