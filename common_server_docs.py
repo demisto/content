@@ -25,11 +25,13 @@ def reformatPythonOutput(output):
             del argInfo["type_name"]
             z.append(argInfo)
         a["arguments"] = z
-        a["return"]["type"] = a["return"]["type_name"]
         a["language"] = "python"
         a["origin"] = "CommonServerPython"
+        a["return_value"] = a["return"]
+        a["return_value"]["type"] = a["return_value"]["type_name"]
 
-        del a["return"]["type_name"]
+        del a["return"]
+        del a["return_value"]["type_name"]
     return output
 
 

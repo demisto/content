@@ -22,7 +22,7 @@ def main(argv):
         y["name"] = a.get("name", "")
         y["description"] = a.get("description", "")
         returns = a.get("returns", {})[0]
-        y["return"] = {"description" : returns.get("description"), "type":  " or ".join(returns.get("type", {}).get("names", []) ) }
+        y["return_value"] = {"description" : returns.get("description"), "type":  " or ".join(returns.get("type", {}).get("names", []) ) }
         y["language"] = "javascript"
         y["origin"] = "CommonServer"
         for arg in a.get("params", {}):
