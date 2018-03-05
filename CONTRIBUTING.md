@@ -17,7 +17,7 @@ You can edit or create playbooks visually inside the Demisto Platform and then e
 
 To add a new playbook, or modify and enhance an existing playbook - just open a Pull Request in this repo.
 
-Some requirements for playbooks yml are:
+Some requirements for playbooks yaml are:
 1. Change playbook version to `-1`
 2. Make sure all tasks (including 'Title' task) have a description
 3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same Pull Request
@@ -25,9 +25,9 @@ Some requirements for playbooks yml are:
 
 ## Contributing Scripts
 
-Each of our scripts comes as a self-contained yml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
+Each of our scripts comes as a self-contained yaml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
 
-Here is a description of the script yml format's fields and structure:
+Here is a description of the script yaml format's fields and structure:
 
 ``` yaml
 commonfields:
@@ -76,8 +76,8 @@ timeout: 0s
 * dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
 * dockerimage: The Docker image name the automation needs to run on, if empty will use default demisto docker image (demisto/python)
 
-Some requirements for scripts yml are:
-1. Make it has a description
+Some requirements for scripts yaml are:
+1. Make sure it has a description
 2. It should be added under the Script folder, using the naming convention starting with prefix `script-`
 3. If the script uses some Docker image, make sure it's publicly available on docker hub
 
@@ -85,7 +85,7 @@ Some requirements for scripts yml are:
 
 Integrations are build with BYOI feature inside demisto platform, to be later exported to yaml format.
 
-Some requirements for integrations yml are:
+Some requirements for integrations yaml are:
 1. Change integration version to `-1`
 2. Make it has a description
 3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
