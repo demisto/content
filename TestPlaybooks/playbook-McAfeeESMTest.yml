@@ -419,7 +419,6 @@ tasks:
       '#none#':
       - "21"
       - "23"
-      - "24"
       - "25"
       - "26"
     separatecontext: false
@@ -447,26 +446,6 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2965
-        }
-      }
-  "24":
-    id: "24"
-    taskid: 18c86abb-ca3a-4077-8594-f950552aca77
-    type: regular
-    task:
-      id: 18c86abb-ca3a-4077-8594-f950552aca77
-      version: -1
-      name: Get cases
-      script: McAfee ESM-v10|||esm-get-case-list
-      type: regular
-      iscommand: true
-      brand: McAfee ESM-v10
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
           "y": 2965
         }
       }
