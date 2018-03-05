@@ -6,8 +6,8 @@ Welcome to Demisto content repo!
 
 Demisto content is MIT Licensed and accepts contributions via GitHub pull requests.
 If you are first time GitHub contributor, please look at these links on how to create a PR to a GitHub repo:
-https://guides.github.com/activities/forking/
-https://help.github.com/articles/creating-a-pull-request-from-a-fork/
+* https://guides.github.com/activities/forking/
+* https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
 
@@ -94,6 +94,8 @@ Some requirements for integrations yml are:
 2. Make it has a description
 3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
 4. Should be added under folder Integrations, with name convention to start with suffix `integration-`
+
+------------
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)
