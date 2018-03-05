@@ -1,0 +1,158 @@
+id: test_similar_incidents
+version: -1
+name: Test Similar Incidents
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 713549d1-d07b-4539-8d74-59d7b5fd706a
+    type: start
+    task:
+      id: 713549d1-d07b-4539-8d74-59d7b5fd706a
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b6827386-4d8f-4cad-8512-f6abaf5c01e8
+    type: regular
+    task:
+      id: b6827386-4d8f-4cad-8512-f6abaf5c01e8
+      version: -1
+      description: ""
+      name: Create dup incident
+      scriptName: TestCreateDuplicates
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hoursDiff: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c56d5f92-2964-4fd5-8b2a-2a4546fa9aaa
+    type: regular
+    task:
+      id: c56d5f92-2964-4fd5-8b2a-2a4546fa9aaa
+      version: -1
+      description: ""
+      name: find similar incidents
+      scriptName: findSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      ignoreMissingKeys: {}
+      maxNumberOfIncidents: {}
+      minimumNumberOfKeysToCompare: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentKeys:
+        simple: type
+      similarLabelsKeys: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 348d5adf-0919-464f-8128-0ee251eea58b
+    type: regular
+    task:
+      id: 348d5adf-0919-464f-8128-0ee251eea58b
+      version: -1
+      description: ""
+      name: verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: isSimilarIncidentFound
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 86faa855-c6bf-418c-8ec6-d7f24c79f06c
+    type: regular
+    task:
+      id: 86faa855-c6bf-418c-8ec6-d7f24c79f06c
+      version: -1
+      description: ""
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

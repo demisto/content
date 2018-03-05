@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestCreateDuplicates"
+        },
+        {
             "integrations": "pyEWS",
             "playbookID": "pyEWS_Test"
         },
