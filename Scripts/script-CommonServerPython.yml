@@ -299,7 +299,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None, headerTransform=None):
+  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False):
       '''
       Converts a demisto table in JSON form to a Markdown table
       @param {String} name - the name of the table
@@ -312,6 +312,12 @@ script: |-
       # in case of headers was not provided (backward compatibility)
       if not headers:
           headers = list(t[0].keys())
+
+      if removeNull:
+          headers_aux = headers[:]
+          for header in headers_aux:
+              if all(obj[header] is None for obj in t):
+                  headers.remove(header)
 
       mdResult = ''
       if name:
@@ -356,27 +362,31 @@ script: |-
       components = s.split('_')
       return ''.join(x.title() for x in components)
 
-  def createContextSingle(obj, id=None):
+  def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
       res = {}
+      if keyTransform is None:
+          keyTransform = lambda s: s
       keys = obj.keys()
       for key in keys:
+          if removeNull and obj[key] is None:
+              continue
           values = key.split('.')
           current = res
           for v in values[:-1]:
               current.setdefault(v, {})
               current = current[v]
-          current[values[-1]] = obj[key]
+          current[keyTransform(values[-1])] = obj[key]
 
       if id is not None:
           res.setdefault('ID', id)
       return res
 
 
-  def createContext(data, id=None):
+  def createContext(data, id=None, keyTransform=None, removeNull=False):
       if isinstance(data, (list, tuple)):
-          return [createContextSingle(d, id) for d in data]
+          return [createContextSingle(d, id, keyTransform, removeNull) for d in data]
       else:
-          return createContextSingle(data, id)
+          return createContextSingle(data, id, keyTransform, removeNull)
 
 
   def sectionsToMarkdown(root):
@@ -644,4 +654,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added headerTransform to tableToMarkdown and underscoreToCamelCase function"
+releaseNotes: "Added keyTransform to createContext in order to be able to edit context keys with given function"
