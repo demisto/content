@@ -158,4 +158,4 @@ timeout: 400ns
 runonce: false
 dockerimage: demisto/ml-telemetry
 releaseNotes: "add new script"
-fromversion: 3.5
+fromversion: "3.5.0"
