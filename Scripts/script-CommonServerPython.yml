@@ -356,8 +356,10 @@ script: |-
       components = s.split('_')
       return ''.join(x.title() for x in components)
 
-  def createContextSingle(obj, id=None):
+  def createContextSingle(obj, id=None, keyTransform=None):
       res = {}
+      if keyTransform is None:
+          keyTransform = lambda s: s
       keys = obj.keys()
       for key in keys:
           values = key.split('.')
@@ -365,18 +367,18 @@ script: |-
           for v in values[:-1]:
               current.setdefault(v, {})
               current = current[v]
-          current[values[-1]] = obj[key]
+          current[keyTransform(values[-1])] = obj[key]
 
       if id is not None:
           res.setdefault('ID', id)
       return res
 
 
-  def createContext(data, id=None):
+  def createContext(data, id=None, keyTransform=None):
       if isinstance(data, (list, tuple)):
-          return [createContextSingle(d, id) for d in data]
+          return [createContextSingle(d, id, keyTransform) for d in data]
       else:
-          return createContextSingle(data, id)
+          return createContextSingle(data, id, keyTransform)
 
 
   def sectionsToMarkdown(root):
@@ -644,4 +646,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added headerTransform to tableToMarkdown and underscoreToCamelCase function"
+releaseNotes: "Added keyTransform to createContext in order to be able to edit context keys with given function"
