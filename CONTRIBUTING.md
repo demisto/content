@@ -5,15 +5,13 @@ Welcome to Demisto content repo!
 ## How to contribute
 
 Demisto content is MIT Licensed and accepts contributions via GitHub pull requests.
-If you are first time GitHub contributor, please look at these links on how to create a PR to a GitHub repo:
+If you are a first time GitHub contributor, please look at these links explaining on how to create a Pull Request to a GitHub repo:
 * https://guides.github.com/activities/forking/
 * https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
 
 ## Contributing Playbooks
-
-Our playbooks are described in an open format called [COPS](https://github.com/demisto/COPS) which we released as an initiative to drive collaboration and interoperability within the InfoSec community.
 
 In order to contribute playbooks you need to save them in the COPS format (as a yaml file) and create a Pull Request.
 
@@ -24,7 +22,7 @@ To add a new playbook, or modify and enhance an existing playbook - just open a 
 Some requirements for playbooks yml are:
 1. Change playbook version to `-1`
 2. Make sure all tasks (including 'Title' task) have a description
-3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same PR
+3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same Pull Request
 4. Should be added under folder Playbooks, with name convention to start with suffix `playbook-`
 
 ## Contributing Scripts
