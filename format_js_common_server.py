@@ -3,6 +3,7 @@ import json
 
 contentLibPath = "./"
 limitedVersion = False
+privateFuncs = ["dqQueryBuilder", "toArray"]
 
 def readFile(filepath):
     with open(filepath, 'r') as f:
@@ -17,15 +18,21 @@ def main(argv):
     commonServer = readFile('./commonServerJsDoc.json')
     x = []
     for a in commonServer:
+        if (a.get("deprecated", None) is not None) or a.get("name", "") in privateFuncs:
+            continue
         y = {}
         y["name"] = a.get("name", "")
         y["description"] = a.get("description", "")
-        returns = a.get("returns", {})[0]
+        returns = a.get("returns", None)[0]
         y["return_value"] = {"description" : returns.get("description"), "type":  " or ".join(returns.get("type", {}).get("names", []) ) }
         y["language"] = "javascript"
         y["origin"] = "CommonServerJs"
         for arg in a.get("params", {}):
             arg["type"] = " or ".join(arg.get("type", {}).get("names", []))
+            arg["required"] = True
+            if arg.get("optional"):
+                arg["required"] = False
+                del arg["optional"]
         y["arguments"] = a.get("params", [])
 
         x.append(y)
