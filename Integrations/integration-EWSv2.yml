@@ -951,7 +951,7 @@ script:
         mailboxes.
       isArray: true
     outputs:
-    - contextPath: EWS.Items.itemId.
+    - contextPath: EWS.Items.itemId
       description: The item id.
       type: string
     - contextPath: EWS.Items.mailbox
