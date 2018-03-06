@@ -6,6 +6,9 @@ import json
 
 contentLibPath = "./"
 limitedVersion = False
+privateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
+                "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
+                "createContextSingle"]
 
 
 def readFile(filepath):
@@ -14,9 +17,11 @@ def readFile(filepath):
         return out
     return []
 
-
 def reformatPythonOutput(output):
+    res = []
     for a in output:
+        if "deprecated" in a["description"]:
+            continue
         args = a.get("arguments", {})
         z = []
         for argName, argInfo in args.iteritems():
@@ -32,7 +37,8 @@ def reformatPythonOutput(output):
 
         del a["return"]
         del a["return_value"]["type_name"]
-    return output
+        res.append(a)
+    return res
 
 
 def main(argv):
@@ -59,7 +65,9 @@ def main(argv):
                 y["name"] = a
                 x.append(y)
             except:
-                print "Bad docstring in function", a
+                if a not in privateFuncs:
+                    print "Bad docstring in function", a, "\ndocstring is:\n", (inspect.getdoc(ns.get(a)))
+                    exit(1)
 
     x = reformatPythonOutput(x)
     with open('doc-CommonServer.json', 'w') as fp:
