@@ -236,6 +236,5 @@ script:
       description: A comma-separated list of names to the attachments to be send.
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
-  dockerimage: demisto/py-ews:latest
-  runonce: false
+  dockerimage: demisto/py-ews
 releaseNotes: Send Email via EWS and Office365.
