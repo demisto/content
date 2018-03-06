@@ -1,16 +1,19 @@
 commonfields:
-  id: TestCreateDuplicates
-  version: -1
+  id: 76c044f3-999e-4585-8274-59e9f677bdf0
+  version: 28
 name: TestCreateDuplicates
 script: |-
-  import dateutil.parser
   from datetime import timedelta
   incident = demisto.incidents()[0]
+
+  def parse_datetime(datetime_str):
+      datetime_str = datetime_str[:datetime_str.find(".")]
+      return datetime.datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S")
 
   def parse_label(label):
       return {label['type']: label['value']}
 
-  new_incident_time = dateutil.parser.parse(incident['occurred']) - timedelta(hours=int(demisto.args()['hoursDiff']))
+  new_incident_time = parse_datetime(incident['occurred']) - timedelta(hours=int(demisto.args()['hoursDiff']))
   res = demisto.executeCommand("createNewIncident", {'name': 'ThisIsATestForDuplicate',
   'occurred': new_incident_time.isoformat(), 'type': incident['type'],
   'labels': map(parse_label, incident['labels'])
