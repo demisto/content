@@ -1,0 +1,442 @@
+id: SalesforceTestPlaybook
+version: 6
+name: SalesforceTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 863d2485-8888-468e-8f37-2f9695d2da6d
+    type: start
+    task:
+      id: 863d2485-8888-468e-8f37-2f9695d2da6d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: ee0bc65d-6ae0-4387-89a8-400bd0e8a458
+    type: regular
+    task:
+      id: ee0bc65d-6ae0-4387-89a8-400bd0e8a458
+      version: -1
+      name: 'Search for string  '
+      script: Salesforce|||salesforce-search
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      pattern:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1dc49c1e-8574-4f8a-8d1f-d1bbc59b9100
+    type: regular
+    task:
+      id: 1dc49c1e-8574-4f8a-8d1f-d1bbc59b9100
+      version: -1
+      name: Query User
+      script: Salesforce|||salesforce-query
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      query:
+        simple: SELECT ID,Name FROM User WHERE Email LIKE '%@demisto%'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 7dc4056a-72ce-453e-8693-794f20485800
+    type: regular
+    task:
+      id: 7dc4056a-72ce-453e-8693-794f20485800
+      version: -1
+      name: Add a new case
+      script: Salesforce|||salesforce-create-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    scriptarguments:
+      description: {}
+      origin:
+        simple: Email
+      priority: {}
+      status:
+        simple: New
+      subject:
+        simple: Integration case
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 21e6c562-53e8-4b11-81fe-f01c872552b6
+    type: regular
+    task:
+      id: 21e6c562-53e8-4b11-81fe-f01c872552b6
+      version: -1
+      name: Get an object Item
+      script: Salesforce|||salesforce-get-object
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      path:
+        simple: Case/${SalesForce.Case.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1d00fbb7-49fc-4070-8260-ca68a282fe1c
+    type: regular
+    task:
+      id: 1d00fbb7-49fc-4070-8260-ca68a282fe1c
+      version: -1
+      name: Get Case
+      script: Salesforce|||salesforce-get-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      caseNumber:
+        simple: ${SalesForce.Case.CaseNumber}
+      oid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 9d18c50e-3dcd-4542-80b3-6ef426102070
+    type: regular
+    task:
+      id: 9d18c50e-3dcd-4542-80b3-6ef426102070
+      version: -1
+      name: Update a case item
+      script: Salesforce|||salesforce-update-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      caseNumber: {}
+      description:
+        simple: ${SalesForce.Case.Subject}
+      oid:
+        simple: ${SalesForce.Case.ID}
+      origin: {}
+      priority: {}
+      status: {}
+      subject: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 5c922aa1-9a40-4718-8913-58326ffc0a68
+    type: condition
+    task:
+      id: 5c922aa1-9a40-4718-8913-58326ffc0a68
+      version: -1
+      name: Verify case update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              simple: SalesForce.Case.Subject
+            iscontext: true
+          right:
+            value:
+              simple: SalesForce.Case.Description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 41902cb2-5a7e-434d-8e3b-8287e1ee98e5
+    type: regular
+    task:
+      id: 41902cb2-5a7e-434d-8e3b-8287e1ee98e5
+      version: -1
+      name: 'Update user data as object '
+      script: Salesforce|||salesforce-update-object
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      json:
+        complex:
+          root: SalesForce
+          accessor: Case.CaseNumber
+          transformers:
+          - operator: string.substring
+            args:
+              from:
+                value:
+                  simple: "3"
+              to:
+                value:
+                  simple: "9"
+          - operator: string.concat
+            args:
+              prefix:
+                value:
+                  simple: '{"Phone":"'
+              suffix:
+                value:
+                  simple: '"}'
+      path:
+        simple: User/${SalesForce.User.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 998e0675-d81c-4180-85a8-9d706ce051b0
+    type: condition
+    task:
+      id: 998e0675-d81c-4180-85a8-9d706ce051b0
+      version: -1
+      name: Verify update object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              simple: SalesForce.User.Phone
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SalesForce
+                accessor: Case.CaseNumber
+                transformers:
+                - operator: string.substring
+                  args:
+                    from:
+                      value:
+                        simple: "3"
+                    to:
+                      value:
+                        simple: "9"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d5045eb1-c48b-485b-85ac-ef8ee9d23d7f
+    type: regular
+    task:
+      id: d5045eb1-c48b-485b-85ac-ef8ee9d23d7f
+      version: -1
+      name: Chattar Message (1)
+      script: Salesforce|||salesforce-push-comment
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      link: {}
+      oid:
+        simple: me
+      text:
+        simple: new chatter message
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "11":
+    id: "11"
+    taskid: d4ce40ba-64fb-4e2b-83a5-939035c20ba4
+    type: regular
+    task:
+      id: d4ce40ba-64fb-4e2b-83a5-939035c20ba4
+      version: -1
+      name: Chattar Message (2)
+      script: Salesforce|||salesforce-push-comment
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      link:
+        simple: google.com
+      oid:
+        simple: ${SalesForce.Case.ID}
+      text:
+        simple: 'new chatter message with link: '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 2a876fd5-57f6-4508-8c48-c04b40c4456e
+    type: regular
+    task:
+      id: 2a876fd5-57f6-4508-8c48-c04b40c4456e
+      version: -1
+      name: Error!!!
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      path:
+        simple: "21423"
+      value:
+        simple: "12342341234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1420
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ffc49796-989f-46a1-8e3c-10618f7c3f8e
+    type: regular
+    task:
+      id: ffc49796-989f-46a1-8e3c-10618f7c3f8e
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
