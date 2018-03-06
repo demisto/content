@@ -326,4 +326,4 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Add script"
+releaseNotes: "Add automation to find duplicate incident"

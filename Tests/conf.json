@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "TestCreateDuplicates"
+            "playbookID": "test_similar_incidents"
         },
         {
             "integrations": "pyEWS",
