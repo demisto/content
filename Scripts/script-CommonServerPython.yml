@@ -1,6 +1,7 @@
 commonfields:
   id: CommonServerPython
   version: -1
+  "fromVersion": "3.6.0"
 name: CommonServerPython
 script: |-
   # Common functions script
@@ -402,10 +403,10 @@ script: |-
 
 
   def fileResult(filename, data):
-      temp = demisto.uniqueFile()
-      with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+      path = demisto.uniqueFile()
+      with open(path,'wb') as f:
           f.write(data)
-      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': path}
 
 
   def file_result_existing_file(filename, saveFilename = None):
