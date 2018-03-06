@@ -31,6 +31,21 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Filter by LOW , MEDIUM , or HIGH threatLevel
+  name: threatLevel
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     var base = params.server.replace(/[\/]+$/, '') + '/api/ticket/v3/';
@@ -99,7 +114,7 @@ script:
             title: 'Secure works add worklog ticket response',
             extended: true,
         },
-        'test-module': {
+        'tickets-count': {
             url: 'tickets/count',
             method: 'POST',
         },
@@ -141,6 +156,14 @@ script:
             title: 'Secure works get ticket response',
             contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
             extended: true,
+        },
+        'get-ids': {
+            url: 'tickets/ids',
+            method: 'POST'
+        },
+        'tickets-updates':{
+          url: 'tickets/updates',
+          method: 'POST'
         },
     }
 
@@ -196,11 +219,72 @@ script:
         return JSON.parse(res.Body);
     }
 
-    var commandData = commands[command];
-    var result = sendRequest(commandData);
     if (command === 'test-module') {
         return 'ok';
     }
+
+    if(command === 'fetch-incidents'){
+        var countCommand = commands['tickets-count'];
+        var countObject = sendRequest(countCommand);
+
+        if(!countObject){
+            return [];
+        }
+
+        var count = countObject.ticketCount;
+
+        var idsCommand = commands['get-ids'];
+        var ids;
+        args = [{limit: count}];
+        var ticketIdsObject = sendRequest(idsCommand);
+        if(ticketIdsObject){
+            ids = ticketIdsObject.ticketIds;
+        }
+
+        if(!ids){
+            return [];
+        }
+
+        var incidents = [];
+        var lastRun = getLastRun();
+        if(!lastRun || !lastRun.lastId){
+            lastRun = { lastId: ids[ids.length - 1] }
+        }
+
+        var idsToFetch = ids.filter(function(id){
+            return id > lastRun.lastId;
+        });
+
+        if (idsToFetch && idsToFetch.length > 0) {
+            var tickets = [];
+            var getTicketCommand = commands['secure-works-get-ticket'];
+            idsToFetch.forEach(function(id){
+               var ticket =  sendRequest(getTicketCommand);
+               tickets.push(ticket);
+            });
+            // convert tickets to demisto incidents
+            if (tickets.length > 0) {
+                tickets.forEach(function(ticket){
+                    var incident = {
+                        name: 'Secureworks - Ticket - ' + ticket.id,
+                        rawJSON: JSON.stringify(ticket)
+                    };
+
+                    incidents.push(incident);
+                });
+            }
+
+            setLastRun({
+                lastId: idsToFetch[idsToFetch.length - 1]
+            });
+        }
+
+        return JSON.stringify(incidents);
+    }
+
+    var commandData = commands[command];
+    var result = sendRequest(commandData);
+
     var entry = {
         Type: entryTypes.note,
         Contents: result,
@@ -486,3 +570,4 @@ script:
     - contextPath: SecureWorks.Tickets.ID
       description: The ticket ID
     description: Assign a ticket to the SecureWorks Counter Threat Operations Center
+  isfetch: true
