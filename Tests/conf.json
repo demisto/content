@@ -7,6 +7,10 @@
             "playbookID": "pyEWS_Test"
         },
         {
+            "integrations": "Salesforce",
+            "playbookID": "SalesforceTestPlaybook"
+        },
+        {
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
