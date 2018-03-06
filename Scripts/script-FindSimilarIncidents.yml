@@ -3,8 +3,7 @@ commonfields:
   version: -1
 name: FindSimilarIncidents
 script: |-
-  from datetime import timedelta
-  import dateutil.parser
+  from datetime import timedelta, datetime
   import collections
 
 
@@ -36,6 +35,9 @@ script: |-
 
   MAX_CANDIDATES_IN_LIST = 10
 
+  def parse_datetime(datetime_str):
+      datetime_str = datetime_str[:datetime_str.find(".")]
+      return datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S")
 
   def nested_dict_flatted(d, parent_key='', sep='.'):
       if d:
@@ -110,7 +112,7 @@ script: |-
   def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hours_back, ignore_closed, max_number_of_results):
       similar_keys_query = " or ".join(map(lambda t: '%s:%s' % (t[0], t[1]), similar_incident_keys.items()))
 
-      incident_time = dateutil.parser.parse(incident_time)
+      incident_time = parse_datetime(incident_time)
       max_date = incident_time
       min_date = incident_time - timedelta(hours=hours_back)
       hours_back_query = 'occurred:>="%s" and occurred:<="%s"' % (min_date.isoformat(), max_date.isoformat())
@@ -148,8 +150,7 @@ script: |-
   def incident_to_record(incident):
       def parse_time(date_time_str):
           try:
-              date_obj = dateutil.parser.parse(date_time_str)
-              return date_obj.strftime('%Y-%m-%d %H:%M:%S')
+              return parse_datetime(date_time_str).strftime('%Y-%m-%d %H:%M:%S')
           except Exception:
               return date_time_str
 
