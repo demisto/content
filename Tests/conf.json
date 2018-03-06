@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "pyEWS",
+            "integrations": "EWSv2",
             "playbookID": "pyEWS_Test"
         },
         {
