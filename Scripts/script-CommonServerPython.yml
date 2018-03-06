@@ -254,7 +254,7 @@ script: |-
   def formatCell(data, is_pretty=True):
       l_format = '\n' if is_pretty else ''
       if type(data) in STRING_TYPES:
-          return data
+          return data.replace("|","\\|")
       elif isinstance(data, dict):
           return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
       else:
