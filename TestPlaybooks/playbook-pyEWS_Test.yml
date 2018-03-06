@@ -289,10 +289,10 @@ tasks:
       version: -1
       description: ""
       name: Get file attachment
-      script: pyEWS|||ews-get-attachment
+      script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "11"
