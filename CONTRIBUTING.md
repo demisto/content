@@ -1,5 +1,7 @@
 # Content Contribution Guide
 
+![Content logo](demisto_content_logo.png)
+
 Welcome to Demisto content repo!
 
 ## How to contribute
