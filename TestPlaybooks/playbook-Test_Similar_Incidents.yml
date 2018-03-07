@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 713549d1-d07b-4539-8d74-59d7b5fd706a
+    taskid: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
     type: start
     task:
-      id: 713549d1-d07b-4539-8d74-59d7b5fd706a
+      id: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
       version: -1
       description: ""
       name: ""
@@ -29,10 +29,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: b6827386-4d8f-4cad-8512-f6abaf5c01e8
+    taskid: 577034dd-1556-4f9d-8e4b-f9fd1179c166
     type: regular
     task:
-      id: b6827386-4d8f-4cad-8512-f6abaf5c01e8
+      id: 577034dd-1556-4f9d-8e4b-f9fd1179c166
       version: -1
       description: ""
       name: Create dup incident
@@ -44,7 +44,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      hoursDiff: {}
+      hoursDiff:
+        simple: "0"
     separatecontext: false
     view: |-
       {
@@ -55,14 +56,14 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: c56d5f92-2964-4fd5-8b2a-2a4546fa9aaa
+    taskid: 1c71aeb2-a479-493e-8a22-0ef4860d52d4
     type: regular
     task:
-      id: c56d5f92-2964-4fd5-8b2a-2a4546fa9aaa
+      id: 1c71aeb2-a479-493e-8a22-0ef4860d52d4
       version: -1
       description: ""
       name: find similar incidents
-      scriptName: findSimilarIncidents
+      scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
@@ -90,10 +91,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 348d5adf-0919-464f-8128-0ee251eea58b
+    taskid: b672e4f4-61d0-49d3-837d-f86650c2f3c6
     type: regular
     task:
-      id: 348d5adf-0919-464f-8128-0ee251eea58b
+      id: b672e4f4-61d0-49d3-837d-f86650c2f3c6
       version: -1
       description: ""
       name: verify context
@@ -116,10 +117,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 86faa855-c6bf-418c-8ec6-d7f24c79f06c
+    taskid: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
     type: regular
     task:
-      id: 86faa855-c6bf-418c-8ec6-d7f24c79f06c
+      id: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
       version: -1
       description: ""
       name: Delete context
