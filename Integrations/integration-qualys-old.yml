@@ -2870,4 +2870,3 @@ script:
     description: fetch scan results for a scan
 hidden: false
 toversion: 3.1.0
-releaseNotes: "-"

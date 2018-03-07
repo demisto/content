@@ -133,4 +133,3 @@ outputs:
   description: list of file names which extracted from zip
 scripttarget: 0
 runonce: false
-releaseNotes: "-"

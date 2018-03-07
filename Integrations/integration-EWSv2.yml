@@ -1142,4 +1142,3 @@ script:
   dockerimage: demisto/py-ews:latest
   isfetch: true
   runonce: false
-releaseNotes: EWS (Exchange Web Services) integration
