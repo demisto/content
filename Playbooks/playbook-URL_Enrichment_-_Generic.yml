@@ -3,6 +3,7 @@ version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
+releaseNotes: "Add URL SSL verification"
 starttaskid: "0"
 tasks:
   "0":
@@ -18,12 +19,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 50
         }
       }
@@ -43,8 +44,7 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "20"
-      - "27"
+      - "28"
     scriptarguments:
       value:
         simple: inputs.url
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 340
+          "x": 152.5,
+          "y": 195
         }
       }
   "20":
@@ -91,31 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -233,
-          "y": 515
-        }
-      }
-  "23":
-    id: "23"
-    taskid: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
-    type: title
-    task:
-      id: c18e46cc-3d65-4dbe-8af0-4a2d9eb72124
-      version: -1
-      name: URL Indicators
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
+          "x": 684,
+          "y": 1010
         }
       }
   "24":
@@ -134,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1039
+          "x": -176,
+          "y": 1170
         }
       }
   "25":
@@ -181,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387,
-          "y": 694
+          "x": 162.5,
+          "y": 835
         }
       }
   "26":
@@ -211,8 +188,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 525,
-          "y": 880
+          "x": 283,
+          "y": 1010
         }
       }
   "27":
@@ -240,7 +217,7 @@ tasks:
           left:
             value:
               complex:
-                root: 'inputs.Rasterize '
+                root: 'inputs.Rasterize'
             iscontext: true
           right:
             value:
@@ -249,20 +226,177 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272,
-          "y": 515
+          "x": 50,
+          "y": 660
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 50dca04a-9bf6-4f56-8d3d-50d87a1b7df2
+    type: title
+    task:
+      id: 50dca04a-9bf6-4f56-8d3d-50d87a1b7df2
+      version: -1
+      name: Enrich URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 551589fe-87f8-4b47-8865-304283d81363
+    type: title
+    task:
+      id: 551589fe-87f8-4b47-8865-304283d81363
+      version: -1
+      name: Take Screenshits
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 524
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 3e51b603-c5de-478f-8364-86280835b671
+    type: title
+    task:
+      id: 3e51b603-c5de-478f-8364-86280835b671
+      version: -1
+      name: URL reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 684,
+          "y": 524
+        }
+      }
+  "31":
+    id: "31"
+    taskid: f752ee26-6b8a-4bff-836b-21d8e3c803ec
+    type: title
+    task:
+      id: f752ee26-6b8a-4bff-836b-21d8e3c803ec
+      version: -1
+      name: Verify URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 524
+        }
+      }
+  "32":
+    id: "32"
+    taskid: fc2d0d25-7f80-4202-8c44-7444ad0959cd
+    type: regular
+    task:
+      id: fc2d0d25-7f80-4202-8c44-7444ad0959cd
+      version: -1
+      name: URL SSL Verification
+      description: Verify URL SSL certificate
+      scriptName: URLSSLVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 1010
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 270fb89c-f46b-4a8d-8a97-2e091fb422fd
+    type: condition
+    task:
+      id: 270fb89c-f46b-4a8d-8a97-2e091fb422fd
+      version: -1
+      name: Should the system verify the URLs?
+      description: 'Check if the VerifyURL input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.VerifyURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 680
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {
-      "16_20_yes": 0.79
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1054,
-        "width": 1138,
-        "x": -233,
+        "height": 1185,
+        "width": 1678,
+        "x": -176,
         "y": 50
       }
     }
@@ -273,11 +407,16 @@ inputs:
     simple: ${URL.Data}
   required: false
   description: url to enrich
-- key: 'Rasterize '
+- key: 'Rasterize'
   value:
-    simple: Flase
+    simple: False
   required: false
   description: Should the system take safe screenshots of input URLs?
+- key: VerifyURL
+  value:
+    simple: "False"
+  required: false
+  description: Should the system verify the input URLs?
 outputs:
 - contextPath: URL
   description: The URL's object
