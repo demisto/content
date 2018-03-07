@@ -6,7 +6,7 @@
             "playbookID": "test_similar_incidents"
         },
         {
-            "integrations": "pyEWS",
+            "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
         {
