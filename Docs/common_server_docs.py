@@ -45,7 +45,7 @@ def main(argv):
     # create commonServer js file to extract doc from
     commonServer = readFile('./Scripts/script-CommonServer.yml')
     jsScript = commonServer.get("script", "")
-    with open('commonServerJsDoc.js', 'w') as fp:
+    with open('./Docs/commonServerJsDoc.js', 'w') as fp:
         fp.write(jsScript)
 
     # create commonServerPy json doc
