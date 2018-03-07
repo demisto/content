@@ -654,4 +654,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added keyTransform to createContext in order to be able to edit context keys with given function"
