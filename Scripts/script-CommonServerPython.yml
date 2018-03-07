@@ -134,7 +134,7 @@ script: |-
   def compareDates(date1, date2, dateFormat):
       """
          Compares two dates and returns the delta.
-         If instead of date passed string 'now' then will be compared to current time.
+         If instead of date passed string 'now' then it will be compared to current time.
          Date format must be according to python date formats: https://docs.python.org/2/library/datetime.html
 
          :type date1: ``int`` or ``str``
@@ -319,7 +319,7 @@ script: |-
 
   def FormatADTimestamp(ts):
       """
-         Given an Active Directory timestamp, returns a formatted string represeting the time.
+         Formats an Active Directory timestamp into human readable time representation
 
          :type ts: ``int``
          :param ts: The timestamp to be formatted (required)
@@ -332,7 +332,7 @@ script: |-
 
   def PrettifyCompactedTimestamp(x):
       """
-         Given a compacted timestamp string, returns a formatted string represeting the time.
+         Formats a compacted timestamp string into human readable time representation
 
          :type x: ``str``
          :param x: The timestamp to be formatted (required)
@@ -600,7 +600,7 @@ script: |-
           :keyword keyTransform: A formatting function for the markdown table headers
 
           :type removeNull: ``bool``
-          :keyword removeNull: True if empty columns shouldbe removed, false otherwise
+          :keyword removeNull: True if empty columns should be removed, false otherwise
 
           :return: The converted context list
           :rtype: ``list``
@@ -638,7 +638,7 @@ script: |-
           :keyword keyTransform: A formatting function for the markdown table headers
 
           :type removeNull: ``bool``
-          :keyword removeNull: True if empty columns shouldbe removed, false otherwise
+          :keyword removeNull: True if empty columns should be removed, false otherwise
 
           :return: The converted context list
           :rtype: ``list``
