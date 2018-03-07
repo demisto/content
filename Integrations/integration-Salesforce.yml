@@ -172,4 +172,3 @@ script:
     description: Create new object
     execution: true
 system: true
-releaseNotes: "-"

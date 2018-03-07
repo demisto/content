@@ -469,4 +469,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Adding command splunk-parse-raw to parse Splunk _raw result and Protect Splunk notable events fetch from nil pointer'

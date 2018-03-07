@@ -422,4 +422,3 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Get specific indicator reputation
-releaseNotes: "-"

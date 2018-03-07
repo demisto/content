@@ -3,7 +3,6 @@ version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
-releaseNotes: "Add URL SSL verification"
 starttaskid: "0"
 tasks:
   "0":
