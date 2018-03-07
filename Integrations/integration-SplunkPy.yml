@@ -168,11 +168,12 @@ script:
         incident["occurred"] = event["_time"]
         incident["rawJSON"] = json.dumps(event)
         labels = []
-        isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
-        if isParseNotableEventsRaw:
-            rawDict = rawToDict(event['_raw'])
-            for rawKey in rawDict:
-                labels.append({'type':rawKey,'value':rawDict[rawKey]})
+        if demisto.get(demisto.params(),parseNotableEventsRaw'):
+            isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
+            if isParseNotableEventsRaw:
+                rawDict = rawToDict(event['_raw'])
+                for rawKey in rawDict:
+                    labels.append({'type':rawKey,'value':rawDict[rawKey]})
         if demisto.get(event, 'security_domain'):
             labels.append({'type':'security_domain','value':event["security_domain"]})
         incident['labels'] = labels
