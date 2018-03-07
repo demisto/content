@@ -87,7 +87,7 @@ def main(circle_artifacts):
 
     print 'copying common server doc to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST]:
-        shutil.copyfile('doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)

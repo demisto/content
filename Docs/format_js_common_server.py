@@ -17,7 +17,7 @@ def reformatPythonOutput(output):
     return output
 
 def main(argv):
-    commonServer = readFile('./commonServerJsDoc.json')
+    commonServer = readFile('./Docs/commonServerJsDoc.json')
     x = []
     for a in commonServer:
         if (a.get("deprecated", None) is not None) or a.get("name", "") in privateFuncs:
@@ -39,7 +39,7 @@ def main(argv):
 
         x.append(y)
 
-    with open('doc-CommonServer.json', 'r+') as fp:
+    with open('./Docs/doc-CommonServer.json', 'r+') as fp:
         res = json.load(fp)
         res += x
         fp.seek(0)
