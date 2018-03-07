@@ -1,6 +1,6 @@
 commonfields:
-  id: TestCreateDuplicates
-  version: -1
+  id: a18ff76e-c462-4daa-8be2-6a1b5308713f
+  version: 13
 name: TestCreateDuplicates
 script: |-
   from datetime import timedelta, datetime
@@ -15,7 +15,7 @@ script: |-
 
   new_incident_time = parse_datetime(incident['occurred']) - timedelta(hours=int(demisto.args()['hoursDiff']))
   res = demisto.executeCommand("createNewIncident", {'name': 'ThisIsATestForDuplicate',
-  'occurred': new_incident_time.isoformat(), 'type': incident['type'],
+  'occurred': new_incident_time.strftime('%d %b %y %H:%M MST'), 'type': incident['type'],
   'labels': map(parse_label, incident['labels'])
   })
   demisto.results(res)
@@ -26,6 +26,6 @@ enabled: true
 args:
 - name: hoursDiff
   description: Hours different between the original incident and created incident.
-  defaultValue: "2"
+  defaultValue: "6"
 scripttarget: 0
 runonce: false
