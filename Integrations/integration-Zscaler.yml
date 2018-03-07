@@ -112,6 +112,90 @@ script:
             listOfUrls += '- ' + url + '\n'
         return 'Added the following URL to the blacklist successfully:\n' + listOfUrls
 
+    def ioc_lookup(ioc, ioc_type):
+        response = lookup_request(ioc)
+        hr = json.loads(response.content)
+        ioc_context = [None]*len(hr)
+        suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
+        dbot_score_array = [None]*len(hr)
+        for i in range(len(hr)):
+            ioc_context[i] = {}
+            dbot_score_array[i] = {}
+            ioc_context[i]['Address'] = hr[i]['url']
+            dbot_score_array[i]['Indicator'] = hr[i]['url']
+            score = 1
+            if ioc_type == 'url':
+                if len(hr[i]['urlClassifications']) == 0:
+                    hr[i]['urlClassifications'] = ''
+                else:
+                    hr[i]['urlClassifications'] = ''.join(hr[i]['urlClassifications'])
+                    ioc_context[i]['urlClassifications'] = hr[i]['urlClassifications']
+                if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
+                    hr[i]['urlClassificationsWithSecurityAlert'] = ''
+                else:
+                    hr[i]['urlClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
+                    if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
+                        score = 2
+                    else:
+                        score = 3
+                    ioc_context[i]['Malicious'] = {
+                        'Vendor': 'Zscaler',
+                        'Description': hr[i]['urlClassificationsWithSecurityAlert']
+                    }
+            else: # IOC type is IP
+                if len(hr[i]['urlClassifications']) == 0:
+                    hr[i]['iplClassifications'] = ''
+                else:
+                    hr[i]['ipClassifications'] = ''.join(hr[i]['urlClassifications'])
+                    ioc_context[i]['ipClassifications'] = hr[i]['ipClassifications']
+                del hr[i]['urlClassifications']
+                if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
+                    hr[i]['ipClassificationsWithSecurityAlert'] = ''
+                else:
+                    hr[i]['ipClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
+                    if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
+                        score = 2
+                    else:
+                        score = 3
+                    ioc_context[i]['Malicious'] = {
+                        'Vendor': 'Zscaler',
+                        'Description': r[i]['ipClassificationsWithSecurityAlert']
+                    }
+                del hr[i]['urlClassificationsWithSecurityAlert']
+                hr[i]['ip'] = hr[i].pop('url')
+            dbot_score_array[i]['Score'] = score
+            dbot_score_array[i]['Type'] = ioc_type
+            dbot_score_array[i]['Vendor'] = 'Zscaler'
+
+        ioc_context = createContext(data=ioc_context, removeNull=True)
+        if ioc_type == 'url':
+            ec = {
+                'URL': ioc_context
+            }
+            title = 'Zscaler URL Lookup'
+        else: # IOC type is IP
+            ec = {
+                'IP': ioc_context
+            }
+            title = 'Zscaler IP Lookup'
+        ec['DBotScore'] = dbot_score_array
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': hr,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
+            'EntryContext': ec
+        }
+        return entry
+
+    def lookup_request(ioc):
+        cmd_url = '/urlLookup'
+        ioc_list = ioc.split(',')
+        jsondata = json.dumps(ioc_list)
+        response = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        return response
+
     ''' EXECUTION CODE '''
     auth = login()
     jsession_id = auth[:auth.index(';')]
@@ -123,6 +207,10 @@ script:
             demisto.results('ok')
         elif demisto.command() == 'zscaler-blacklist-url':
             demisto.results(blacklist_url(demisto.args()['url']))
+        elif demisto.command() == 'url':
+            demisto.results(ioc_lookup(demisto.args()['url'], 'url'))
+        elif demisto.command() == 'ip':
+            demisto.results(ioc_lookup(demisto.args()['ip'], 'ip'))
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -138,3 +226,78 @@ script:
       default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Adds URL to the blacklist.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to search for
+    outputs:
+    - contextPath: URL.Address
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.urlClassifications
+      description: The classification of the URL
+      type: string
+    - contextPath: URL.urlClassificationsWithSecurityAlert
+      description: Classifications with security alert of the URL
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com.
+      Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to search for
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address that was searched
+      type: string
+    - contextPath: IP.ipClassifications
+      description: The classification of the IP address
+      type: string
+    - contextPath: IP.iplClassificationsWithSecurityAlert
+      description: Classifications with security alert of the IP address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason for the vendor to make the
+        decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Look up the categorization of the given set of IP addresses, e.g.,
+      8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot
+      exceed 1024 characters.
+releaseNotes: "Added url and ip commands"
