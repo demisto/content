@@ -1,6 +1,6 @@
-id: close_incident_if_duplicate_found_ml
+id: dedup_incidents_-_ml
 version: -1
-name: Close incident if duplicate found ML
+name: DeDup incidents - ML
 fromversion: "3.5.0"
 description: |+
   Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
@@ -31,13 +31,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: becd6edd-f25f-43a4-8099-9c55a32210dd
+    taskid: 19915cbc-3042-425d-8254-c3be9c291076
     type: regular
     task:
-      id: becd6edd-f25f-43a4-8099-9c55a32210dd
+      id: 19915cbc-3042-425d-8254-c3be9c291076
       version: -1
       name: Find duplicate incidents
-      description: Find duplicate incidents by machine-learning
+      description: Find duplicate incidents using machine-learning.
       scriptName: GetDuplicatesMl
       type: regular
       iscommand: false
@@ -246,7 +246,7 @@ inputs:
 outputs:
 - contextPath: foundDuplicates
   description: found any duplicate incident?
-  type: unknown
+  type: boolean
 - contextPath: duplicateCandidate
   description: the duplicate top candidate
   type: unknown
