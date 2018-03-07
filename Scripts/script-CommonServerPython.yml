@@ -587,7 +587,24 @@ script: |-
 
 
   def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
+      """
+          Recieves a dict with flattened key values, and converts them into nested dicts
 
+          :type data: ``dict`` or ``list``
+          :param data: The data to be added to the context (required)
+
+          :type id: ``str``
+          :keyword id: The ID of the context entry
+
+          :type keyTransform: ``function``
+          :keyword keyTransform: A formatting function for the markdown table headers
+
+          :type removeNull: ``bool``
+          :keyword removeNull: True if empty columns shouldbe removed, false otherwise
+
+          :return: The converted context list
+          :rtype: ``list``
+      """
       res = {}
       if keyTransform is None:
           keyTransform = lambda s: s
@@ -609,13 +626,22 @@ script: |-
 
   def createContext(data, id=None, keyTransform=None, removeNull=False):
       """
-         Recieves a dict with flattened key values, and converts them into nested dicts
+          Recieves a dict with flattened key values, and converts them into nested dicts
 
-         :type data: ``dict`` or ``list``
-         :param data: The data to be added to the context (required)
+          :type data: ``dict`` or ``list``
+          :param data: The data to be added to the context (required)
 
-         :return: The converted context list
-         :rtype: ``list``
+          :type id: ``str``
+          :keyword id: The ID of the context entry
+
+          :type keyTransform: ``function``
+          :keyword keyTransform: A formatting function for the markdown table headers
+
+          :type removeNull: ``bool``
+          :keyword removeNull: True if empty columns shouldbe removed, false otherwise
+
+          :return: The converted context list
+          :rtype: ``list``
       """
       if isinstance(data, (list, tuple)):
           return [createContextSingle(d, id, keyTransform, removeNull) for d in data]

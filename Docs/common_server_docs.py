@@ -1,8 +1,8 @@
+import inspect
+import json
 import sys
 import yaml
 from parinx import parser
-import inspect
-import json
 
 contentLibPath = "./"
 limitedVersion = False
@@ -59,18 +59,14 @@ def main(argv):
     x = []
 
     for a in ns:
-        if callable(ns.get(a)):
-            try:
-                y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
-                y["name"] = a
-                x.append(y)
-            except:
-                if a not in privateFuncs:
-                    print "Bad docstring in function", a, "\ndocstring is:\n", (inspect.getdoc(ns.get(a)))
-                    exit(1)
+        if callable(ns.get(a)) and a not in privateFuncs:
+            y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
+            y["name"] = a
+            x.append(y)
+
 
     x = reformatPythonOutput(x)
-    with open('doc-CommonServer.json', 'w') as fp:
+    with open('./Docs/doc-CommonServer.json', 'w') as fp:
         json.dump(x, fp)
 
 

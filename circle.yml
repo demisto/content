@@ -4,6 +4,7 @@ test:
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
     - pip install pykwalify
     - npm install -g jsdoc-to-markdown
+    - pip install git+https://github.com/rahulrrixe/parinx.git@master
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
@@ -13,7 +14,7 @@ test:
     - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM d58a640cf60f305f1393af1ad37483240d79c0b9 18.2.4
 
     # create common server documentation
-    - ./commonServerDocs.sh
+    - ./Docs/commonServerDocs.sh
 
     # create content bundle
     - python content_creator.py $CIRCLE_ARTIFACTS
