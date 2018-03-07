@@ -3,7 +3,9 @@ import json
 
 contentLibPath = "./"
 limitedVersion = False
-privateFuncs = ["dqQueryBuilder", "toArray"]
+privateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array", "array_to_hex_string",
+                "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash", "HMAC_SHA256_init", "HMAC_SHA256_write",
+                "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
 def readFile(filepath):
     with open(filepath, 'r') as f:

@@ -1274,10 +1274,10 @@ script: |-
   }
 
   /**
-     * Flatten a JSON tree object to key-value format
-     * @param {Object} object - The object to be flattened
-     * @return {Object} the formatted object (key-value format)
-     */
+   * Flatten a JSON tree object to key-value format
+   * @param {Object} object - The object to be flattened
+   * @return {Object} the formatted object (key-value format)
+   */
   var treeToFlattenObject = function(object) {
       var retVal = {};
 
@@ -1327,12 +1327,18 @@ script: |-
         }
   };
 
-  I am here!
-  // Add the given obj to the path while making sure to append Malicious property
+  /**
+   * Add the given obj to the path while making sure to append Malicious property
+   * @param {Object} context - The current war room context, to which the value should be added
+   * @param {String} path - The context path in which the object shoud be added
+   * @param {Object} obj - The object to be flattened
+   * @return {Undefined} The function does not return a value
+   */
   function addMalicious(context, path, obj) {
       obj['properties_to_append'] = ['Malicious'];
       context[path] = obj;
   }
+
   // Constants for common merge paths
   var outputPaths = {
       file: 'File(val.MD5 && val.MD5 === obj.MD5 || val.SHA1 && val.SHA1 === obj.SHA1 || val.SHA256 && val.SHA256 === obj.SHA256)',
@@ -1344,7 +1350,11 @@ script: |-
   };
 
 
-  // Converts score (in number format) to human readable reputation format
+  /**
+   * Converts score (in number format) to human readable reputation format
+   * @param {Int} score - The score to be formatted
+   * @return {String} The formatted score
+   */
   function scoreToReputation(score) {
       if (score === 3){
           return 'Bad';
@@ -1358,7 +1368,12 @@ script: |-
       return 'None';
   };
 
-  //Check if ip is in subnet
+  /**
+   * Check if the given IP address is in the given subnet
+   * @param {String} ip - The IP address
+   * @param {String} subnet - The subnet
+   * @return {String} True if IP is in the subnet, false otherwise
+   */
   function isIPInSubnet(ip, subnet) {
       function IPnumber(IPaddress) {
           var parsedIp = IPaddress.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
@@ -1383,9 +1398,9 @@ script: |-
   }
 
   /**
-   * Converts all cells in a Demisto table in JSON form to human-readable strings
-   * @param {Object} obj - the Demisto table
-   * @return {Object} - a new Demisto table containing the same fields as formatted strings
+   * Converts all cells in a JSON form Demisto table to human-readable strings
+   * @param {Object} obj - The Demisto table
+   * @return {Object} - A new Demisto table containing the same fields as formatted strings
    */
   function formatTableValues(obj) {
 
@@ -1472,11 +1487,11 @@ script: |-
   };
 
   /**
-   * Formats date object to string according to format.
+   * Formats a date object to a string according to the given format.
    * @deprecated
-   * @param {Date} date
-   * @param {Date} format - format should be followed to python datetime formats.
-   * @return {string} string representation of date object according to format
+   * @param {Date} date - The date object to be formatted
+   * @param {Date} format - The format string. Should be a legal python datetime format (e.g. "%d %Y %H:%M:%S")
+   * @return {string} A string representation of date object according to format
    */
   function dateToString(date, format) {
       if (!date || !(date instanceof Date) || typeof date.getMonth !== 'function' || String(date.getDate()) === 'NaN') {
