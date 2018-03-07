@@ -177,7 +177,7 @@ script: |-
   }
 
   /**
-   * Converts a demisto table in JSON form to a Markdown table
+   * Converts a JSON demisto table to a Markdown table
    * @param {String} name - The name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
    * @param {Array} [headers] - The output markdown table will show only these headers (by order) (Optional).
@@ -472,7 +472,7 @@ script: |-
    * Converts a demisto table in JSON form to a HTML table
    * @param {String} name - the name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
-   * @param {Array} [headers] - optinal, the output markdown table will show only these headers (by order)
+   * @param {Array} [headers] - optional, the output markdown table will show only these headers (by order)
    * @param {String} [cellDelimiter] - The delimiter of the string representation of arrays (Optional).
    * @return {String} A string representation of the html result
    */
@@ -516,7 +516,7 @@ script: |-
   * @param {String} fieldName - the name of the field (dq format)
   * @param {Object} expectedValue - the value to verify
   * @param {String} [comparisonType] - 'stringContains' or 'stringEquals'. Default is 'stringEquals'
-  * @return {Object} The value, or throws an exeption if the value do not match
+  * @return {Object} Returns the value if value at the field matches, throws an error an exeption otherwise
   */
   function verifyContextField(fieldName, expectedValue, comparisonType) {
       value = dq(invContext, fieldName);
@@ -634,7 +634,7 @@ script: |-
 
   /**
    * Sets playbook according to type.
-   * @param {String} type - The incident type, which the playbook is set accordingly.
+   * @param {String} type - The incident type, according to which the playbook is chosen
    * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setPlaybookAccordingToType(type) {
@@ -769,7 +769,7 @@ script: |-
   }
 
   /**
-   * Check if the given res is an array and is not an error
+   * Check if the given result entry is an array and is not an error
    * @param {Array} res - The result from the execute to check
    * @return {Boolean} True if this is a valid result
    */
@@ -831,7 +831,7 @@ script: |-
   }
 
   /**
-   * Convert a given object to md list (-) while each value is converted to simple str
+   * Convert a given object to md list (-) while each value is converted to a simple string
    * @param {Object} o - The object to convert
    * @param {String} t - The title of the list
    * @return {String} The markdown string
@@ -890,7 +890,7 @@ script: |-
    * @deprecated please use dq which has the full functionality
    * @param {Object} obj - The object to query
    * @param {String} path - The path to retrieve from the object
-   * @return {Object} The value at the path if the path exists, null otherwise
+   * @return {Object} The value of the path if the path exists, null otherwise
    */
   function jq(obj, path) {
     if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
