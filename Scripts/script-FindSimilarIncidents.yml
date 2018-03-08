@@ -17,7 +17,7 @@ script: |-
           if ':' in value:
               value, count = value.split(':')
               value = value.strip()
-              different_words_map[value] = int(count.strip())
+              different_words_map[value] = int(count.strip()) if count != '*' else count
           keys.append(value.strip())
       return keys, different_words_map
 
@@ -31,12 +31,15 @@ script: |-
   IGNORE_MISSING_KEYS = demisto.args()['ignoreMissingKeys'] == 'yes'
   MAX_NUMBER_OF_INCIDENTS = int(demisto.args()['maxNumberOfIncidents'])
   MIN_NUMBER_OF_KEYS_TO_COMPARE = int(demisto.args()['minimumNumberOfKeysToCompare'])
+  MIN_NUMBER_OF_LABEL_KEYS = int(demisto.args()['minimumLabelsKeysToCompare'])
+  MIN_NUMBER_OF_CUSTOM_FIELDS_KEYS = int(demisto.args()['minimumCustomFieldsToCompare'])
+  MIN_NUMBER_OF_CONTEXT_KEYS = int(demisto.args()['minimumContextKeysToCompare'])
 
 
   MAX_CANDIDATES_IN_LIST = 10
 
   def parse_datetime(datetime_str):
-      datetime_str = datetime_str[:datetime_str.find(".")]
+      datetime_str = datetime_str[:len('yyyy-mm-ddThh:mm:ss')]
       return datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S")
 
   def nested_dict_flatted(d, parent_key='', sep='.'):
@@ -150,7 +153,12 @@ script: |-
   def incident_to_record(incident):
       def parse_time(date_time_str):
           try:
-              return parse_datetime(date_time_str).strftime('%Y-%m-%d %H:%M:%S')
+
+              if date_time_str.find('.') > 0:
+                  date_time_str = date_time_str[:date_time_str.find('.')]
+              if date_time_str.find('+') > 0:
+                  date_time_str = date_time_str[:date_time_str.find('+')]
+              return date_time_str.replace('T',' ')
           except Exception:
               return date_time_str
 
@@ -167,25 +175,33 @@ script: |-
           text1 = str(text1)
       if not isinstance(text2, basestring):
           text2 = str(text2)
+      if number_of_different_words < 0:
+          return text1.find(text2) >= 0 or text2.find(text1) >= 0
       words_set1 = set([x for x in map(lambda x: x.strip(), text1.replace("\\n", separator).split(separator)) if x])
       words_set2 = set([x for x in map(lambda x: x.strip(), text2.replace("\\n", separator).split(separator)) if x])
       return len(words_set1.difference(words_set2)) <= number_of_different_words and len(words_set2.difference(words_set1)) <= number_of_different_words
 
 
-  def verify_map_equals(values_map1, values_map2, different_words_map):
+  def verify_map_equals(values_map1, values_map2, different_words_map, number_of_keys_to_consider_equals):
       if not values_map1 or not values_map2:
           return False
-      if set(values_map1.keys()) != set(values_map2.keys()):
-          return False
-
-      for key in values_map1:
+      count = 0
+      if number_of_keys_to_consider_equals == '*':
+          if len(values_map1) != len(values_map2):
+              return False
+          number_of_keys_to_consider_equals = len(values_map1)
+      for key in set(values_map1.keys()).intersection(values_map2.keys()):
           value1 = values_map1[key]
           value2 = values_map2[key]
-          if key in different_words_map and not is_text_equal_by_x_different_words(value1, value2, different_words_map[key]):
-              return False
-          elif values_map1[key] != values_map2[key]:
-              return False
-      return True
+          if isinstance(value1, basestring):
+              value1 = value1.lower()
+          if isinstance(value2, basestring):
+              value2 = value2.lower()
+          if key in different_words_map and is_text_equal_by_x_different_words(value1, value2, different_words_map[key]):
+              count += 1
+          elif values_map1[key] == values_map2[key]:
+              count += 1
+      return count >= number_of_keys_to_consider_equals
 
   SIMILAR_INCIDENT_KEYS = map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS)
 
@@ -198,19 +214,19 @@ script: |-
 
   if len(missing_incident_keys or {}) > 0:
       demisto.results("missing keys for incident " + str(missing_incident_keys))
-      if not IGNORE_MISSING_KEYS:
+      if not IGNORE_MISSING_KEYS or MIN_NUMBER_OF_KEYS_TO_COMPARE < 0:
           exit(0)
   if len(missing_labels_keys or {}) > 0:
       demisto.results("missing label for incident " + str(missing_labels_keys))
-      if not IGNORE_MISSING_KEYS:
+      if not IGNORE_MISSING_KEYS or MIN_NUMBER_OF_KEYS_TO_COMPARE < 0:
           exit(0)
   if len(missing_context_keys or {}) > 0:
       demisto.results("missing context for incident " + str(missing_context_keys))
-      if not IGNORE_MISSING_KEYS:
+      if not IGNORE_MISSING_KEYS or MIN_NUMBER_OF_KEYS_TO_COMPARE < 0:
           exit(0)
   if len(missing_custom_fields_keys or {}) > 0:
       demisto.results("missing custom fields for incident " + str(missing_custom_fields_keys))
-      if not IGNORE_MISSING_KEYS:
+      if not IGNORE_MISSING_KEYS or MIN_NUMBER_OF_KEYS_TO_COMPARE < 0:
           exit(0)
 
   keys_sum = len(similar_incident_keys or {}) + len(similar_labels or {}) + len(similar_context_values or {}) + len(similar_custom_fields or {})
@@ -225,14 +241,16 @@ script: |-
       duplicate_incidents = [c for c in duplicate_incidents if
                              verify_map_equals(similar_labels,
                                                get_incident_labels_map(c.get('labels', []),
-                                               similar_labels.keys()), LABELS_DIFFERENT_WORDS)]
+                                               similar_labels.keys()),
+                                               LABELS_DIFFERENT_WORDS, MIN_NUMBER_OF_LABEL_KEYS)]
 
   # filter by custom fields
   if len(similar_custom_fields or {}) > 0:
       duplicate_incidents = [c for c in duplicate_incidents
                              if verify_map_equals(similar_custom_fields,
                                                   c.get('CustomFields', dict()),
-                                                  CUSTOMS_FIELDS_DIFFERENT_WORDS)]
+                                                  CUSTOMS_FIELDS_DIFFERENT_WORDS,
+                                                  MIN_NUMBER_OF_CUSTOM_FIELDS_KEYS)]
 
   if similar_context_values:
       filter_by_context = []
@@ -240,7 +258,10 @@ script: |-
           other_context = nested_dict_flatted(get_context(c['id']))
           if other_context:
               other_context = dict((k, v) for (k, v) in other_context.items() if k in similar_context_values)
-              if verify_map_equals(other_context, similar_context_values, CONTEXT_DIFFERENT_WORDS):
+              if verify_map_equals(other_context,
+                                   similar_context_values,
+                                   CONTEXT_DIFFERENT_WORDS,
+                                   MIN_NUMBER_OF_CONTEXT_KEYS):
                   filter_by_context.append(c)
       duplicate_incidents = filter_by_context
 
@@ -278,19 +299,21 @@ args:
 - name: similarLabelsKeys
   description: 'Similar label keys. Comma separated value. It''s also possible to
     let X different words between labels, within the following way: label_name:X,
-    where X is the number of words.'
+    where X is the number of words. X can also be ''*'' for contains. For example:
+    the value "Email/subject:*" will consider  email subject similar, if one is substring
+    of the other.'
 - name: similarContextKeys
-  description: 'Similar context keys. Comma separated value. It''s also possible to
-    let X different words between labels, within the following way: label_name:X,
-    where X is the number of words.'
+  description: Similar context keys. Comma separated value. It's also possible to
+    let X different words between values (see labels description).
 - name: similarCustomFields
-  description: 'Similar custom fields keys. Comma separated value. It''s also possible
-    to let X different words between labels, within the following way: label_name:X,
-    where X is the number of words.'
+  description: Similar custom fields keys. Comma separated value. It's also possible
+    to let X different words between values (see labels description).
 - name: hoursBack
+  required: true
   description: Maximum number of hours for incidents to lookup.
   defaultValue: "24"
 - name: ignoreClosedIncidents
+  required: true
   auto: PREDEFINED
   predefined:
   - "yes"
@@ -298,9 +321,11 @@ args:
   description: Ignore close incidents as duplicate candidates.
   defaultValue: "yes"
 - name: maxNumberOfIncidents
+  required: true
   description: Maximum number of incidents to query.
   defaultValue: "1000"
 - name: ignoreMissingKeys
+  required: true
   auto: PREDEFINED
   predefined:
   - "yes"
@@ -311,6 +336,21 @@ args:
   description: The minimum number of keys (context\labels\custom fields\incident)
     to compare. The default is 1.
   defaultValue: "1"
+- name: minimumLabelsKeysToCompare
+  required: true
+  description: Minimum number of labels to compare to consider equality. Default is
+    -1 means all specified labels should be similar.
+  defaultValue: "-1"
+- name: minimumCustomFieldsToCompare
+  required: true
+  description: Minimum number of custom fields to compare to consider equality. Default
+    is -1 means all specified custom fields should be similar.
+  defaultValue: "-1"
+- name: minimumContextKeysToCompare
+  required: true
+  description: Minimum number of context keys to compare to consider equality. Default
+    is -1 means all specified context keys should be similar.
+  defaultValue: "-1"
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.
@@ -327,4 +367,3 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Add automation to find duplicate incident"
