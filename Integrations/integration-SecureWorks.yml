@@ -488,6 +488,16 @@ script:
     - name: worklog
       description: The work log message describing why you are closing the ticket
     - name: reason
+      auto: PREDEFINED
+      predefined:
+      - Authorized/Expected
+      - Duplicate Previously Escalated
+      - False Positive
+      - Inconclusive
+      - Mitigated By Security Controls
+      - Not Relevant
+      - True Positive
+      - Work Completed
       description: The reason code to use when closing the ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ID
