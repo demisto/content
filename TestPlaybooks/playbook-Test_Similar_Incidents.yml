@@ -56,10 +56,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 1c71aeb2-a479-493e-8a22-0ef4860d52d4
+    taskid: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
     type: regular
     task:
-      id: 1c71aeb2-a479-493e-8a22-0ef4860d52d4
+      id: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
       version: -1
       description: ""
       name: find similar incidents
@@ -75,12 +75,15 @@ tasks:
       ignoreClosedIncidents: {}
       ignoreMissingKeys: {}
       maxNumberOfIncidents: {}
+      minimumContextKeysToCompare: {}
+      minimumCustomFieldsToCompare: {}
+      minimumLabelsKeysToCompare: {}
       minimumNumberOfKeysToCompare: {}
       similarContextKeys: {}
       similarCustomFields: {}
-      similarIncidentKeys:
-        simple: type
-      similarLabelsKeys: {}
+      similarIncidentKeys: {}
+      similarLabelsKeys:
+        simple: brand
     separatecontext: false
     view: |-
       {
