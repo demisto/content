@@ -114,10 +114,6 @@ script:
             title: 'Secure works add worklog ticket response',
             extended: true,
         },
-        'tickets-count': {
-            url: 'tickets/count',
-            method: 'POST',
-        },
         'secure-works-get-ticket': {
             url: 'tickets/%id%',
             method: 'GET',
@@ -157,12 +153,56 @@ script:
             contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
             extended: true,
         },
-        'get-ids': {
+        'secure-works-get-tickets-ids': {
             url: 'tickets/ids',
-            method: 'POST'
+            method: 'POST',
+             translator: [
+                {to: 'IDs', from: 'ticketIds'}
+            ],
+            title: 'Secure works get IDs',
+            extended: true,
         },
-        'tickets-updates':{
+        'secure-works-get-tickets-updates':{
           url: 'tickets/updates',
+          method: 'POST',
+           translator: [
+                {to: 'ChangeApproval', from: 'changeApproval'},
+                {to: 'AttachmentInfo', from: 'attachmentInfo'},
+                {to: 'ChangeSlo', from: 'changeSlo'},
+                {to: 'ChangeWindowStart', from: 'changeWindowStart'},
+                {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
+                {to: 'Client-ID', from: 'client.id'},
+                {to: 'Client-ID', from: 'client.name'},
+                {to: 'Contact-ID', from: 'contact.id'},
+                {to: 'Contact-ID', from: 'contact.name'},
+                {to: 'Created', from: 'dateCreated'},
+                {to: 'Closed', from: 'dateClosed'},
+                {to: 'Modified', from: 'dateModified'},
+                {to: 'Description', from: 'detailedDescription'},
+                {to: 'Devices-ID', from: 'devices.id'},
+                {to: 'Devices-Name', from: 'devices.name'},
+                {to: 'Impact', from: 'impact'},
+                {to: 'Location', from: 'location'},
+                {to: 'Partner', from: 'partner'},
+                {to: 'Priority', from: 'priority'},
+                {to: 'Reason', from: 'reason'},
+                {to: 'RequestType', from: 'requestType'},
+                {to: 'RiskAssessment', from: 'riskAssessment'},
+                {to: 'Service', from: 'service'},
+                {to: 'Status', from: 'status'},
+                {to: 'Status', from: 'status'},
+                {to: 'SymptomDescription', from: 'symptomDescription'},
+                {to: 'ID', from: 'ticketId'},
+                {to: 'Type', from: 'ticketType'},
+                {to: 'Urgency', from: 'urgency'},
+                {to: 'Watchers', from: 'watchers'},
+            ],
+            title: 'Secure works get updated tickets',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-acknowledge': {
+          url: '/tickets/acknowledge',
           method: 'POST'
         },
     }
@@ -224,7 +264,7 @@ script:
     }
 
     if(command === 'fetch-incidents'){
-        var countCommand = commands['tickets-count'];
+        var countCommand = commands['secure-works-get-ticket-count'];
         var countObject = sendRequest(countCommand);
 
         if(!countObject){
@@ -233,7 +273,7 @@ script:
 
         var count = countObject.ticketCount;
 
-        var idsCommand = commands['get-ids'];
+        var idsCommand = commands['secure-works-get-ids'];
         var ids;
         args = [{limit: count}];
         var ticketIdsObject = sendRequest(idsCommand);
@@ -570,4 +610,109 @@ script:
     - contextPath: SecureWorks.Tickets.ID
       description: The ticket ID
     description: Assign a ticket to the SecureWorks Counter Threat Operations Center
+  - name: secure-works-get-tickets-updates
+    arguments:
+    - name: limit
+      description: A maximum number of tickets to be returned (default 10), between
+        1 and 500
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SEVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: The ticket type to filter
+    - name: includeWorklogs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether or not to include ticket worklogs, default is true
+    outputs:
+    - contextPath: SecureWorks.Ticket.ChangeApproval
+      description: Ticket change approval
+    - contextPath: SecureWorks.Ticket.AttachmentInfo
+      description: Ticket attachment info
+    - contextPath: SecureWorks.Ticket.ChangeSlo
+      description: Ticket change slo
+    - contextPath: SecureWorks.Ticket.ChangeWindowStart
+      description: Ticket change window start
+    - contextPath: SecureWorks.Ticket.ChangeWindowEnd
+      description: Ticket window end
+    - contextPath: SecureWorks.Ticket.Client.ID
+      description: Ticket client id
+    - contextPath: SecureWorks.Ticket.Client.Name
+      description: Ticket client name
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Created
+      description: Ticket created
+    - contextPath: SecureWorks.Ticket.Closed
+      description: Ticket closed
+    - contextPath: SecureWorks.Ticket.Modified
+      description: Ticket modified
+    - contextPath: SecureWorks.Ticket.Description
+      description: Ticket description
+    - contextPath: SecureWorks.Ticket.Devices.ID
+      description: Ticket device id
+    - contextPath: SecureWorks.Ticket.Devices.Name
+      description: Ticket device name
+    - contextPath: SecureWorks.Ticket.Impact
+      description: Ticket impact
+    - contextPath: SecureWorks.Ticket.Location
+      description: Ticket location
+    - contextPath: SecureWorks.Ticket.Partner
+      description: Ticket partner
+    - contextPath: SecureWorks.Ticket.Priority
+      description: Ticket priority
+    - contextPath: SecureWorks.Ticket.Reason
+      description: Ticket reason
+    - contextPath: SecureWorks.Ticket.RequestType
+      description: Ticket request type
+    - contextPath: SecureWorks.Ticket.RiskAssessment
+      description: Ticket risk assessment
+    - contextPath: SecureWorks.Ticket.Service
+      description: Ticket service
+    - contextPath: SecureWorks.Ticket.Status
+      description: Ticket status
+    - contextPath: SecureWorks.Ticket.SymptomDescription
+      description: Ticket symptom description
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket id
+    - contextPath: SecureWorks.Ticket.Type
+      description: Ticket type
+    - contextPath: SecureWorks.Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: SecureWorks.Ticket.Watchers
+      description: Tickets matching the ticketType. If not specified, tickets of all
+        types are returned.
+    description: This endpoint retrieves 10 tickets from 24 hours prior to when the
+      POST /tickets/updates endpoint is executed. If the is specified, it will retrieve
+      up to that many tickets (max is 500 tickets). Tickets must be updated within
+      the last 24 hours to be visible in POST /tickets/updates. When accessing this
+      endpoint you also receive the ticket worklogs. It is recommended that you access
+      POST /tickets/updates on a regular basis. NOTE ­ It is important that you send
+      a POST to /tickets/acknowledge after you receive updated frmo POST /tickets/updates
+      to inform SecureWorks that you have received the latest version of the ticket.
+      Please note that ticket attachments are not visible via this endpoint. In order
+      to view the attachment information of a specific ticket, you must use the GET
+      /tickets/{id} endpoint. This endpoint will return the list of attachments available
+      for that particular ticket.
+  - name: secure-works-get-tickets-ids
+    arguments:
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: 'If provided, limit response to tickets matching the ticket type
+        identified '
+    - name: limit
+      description: If provided, limit response to that number of tickets. If not provided,
+        a maximum of 10 tickets are returned
+    description: Get a list of ticket IDs in the same order as the tickets returned
+      by the GET /tickets/updates endpoint.
   isfetch: true
