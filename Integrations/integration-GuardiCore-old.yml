@@ -857,4 +857,3 @@ script:
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
 toversion: 3.1.0
-releaseNotes: "-"

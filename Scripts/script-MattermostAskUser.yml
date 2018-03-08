@@ -51,7 +51,6 @@ args:
   defaultValue: "false"
 scripttarget: 0
 runonce: false
-releaseNotes: "Added the Mattermost equivalent for SlackAskUser"
 dependson:
   must:
   - mattermost-send
