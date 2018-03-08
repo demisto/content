@@ -30,8 +30,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Filter by LOW , MEDIUM , or HIGH threatLevel
-  name: threatLevel
+- display: Filter tickets by SERVICE_REQUEST, INCIDENT or CHANGE
+  name: ticketType
   defaultvalue: ""
   type: 0
   required: false
@@ -626,7 +626,7 @@ script:
     - name: ticketType
       auto: PREDEFINED
       predefined:
-      - SEVICE_REQUEST
+      - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
       description: The ticket type to filter
