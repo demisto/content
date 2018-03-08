@@ -715,3 +715,4 @@ script:
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
   isfetch: true
+releaseNotes: '-'
