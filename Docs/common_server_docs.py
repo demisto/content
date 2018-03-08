@@ -12,6 +12,8 @@ pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColu
                 "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                 "createContextSingle"]
 
+markdownDescFuncs = ["createEntry"]
+
 def readJsonFile(filepath):
     with open(filepath, 'r') as f:
         out = json.load(f)
@@ -54,6 +56,8 @@ def reformatPythonOutput(output, origin, language):
         a["arguments"] = z
         a["return_value"] = a["return"]
         a["return_value"]["type"] = a["return_value"]["type_name"]
+        if a["name"] in markdownDescFuncs:
+            a["markdown"] = True
         a["language"] = language
         a["origin"] = origin
 
@@ -97,11 +101,13 @@ def createJsDocumentation(path, origin, language):
         returns = a.get("returns", None)[0]
         y["return_value"] = {"description": returns.get("description"),
                              "type": " or ".join(returns.get("type", {}).get("names", []))}
+        if y["name"] in markdownDescFuncs:
+            y["markdown"] = True
         y["language"] = language
         y["origin"] = origin
 
         x.append(y)
-        return x, isError
+    return x, isError
 
 def createPyDocumentation(path, origin, language):
 
