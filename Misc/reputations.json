@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Fixed IP regex to capture valid IP addresses only",
   "reputations": [
     {
       "id": "fileRep",
