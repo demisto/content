@@ -239,6 +239,13 @@ script:
                 args[k] = commandData.defaultArgs[k];
             }
         }
+
+        if(commandData.method && commandData.method !== 'GET'){
+            if(args){
+                log(JSON.stringify(args));
+            }
+        }
+
         var res = http(
             base + replaceInTemplatesAndRemove(commandData.url, args) + (commandData.method === 'GET' ? encodeToURLQuery(args || commandData.defaultArgs) : ''),
             {
@@ -504,6 +511,8 @@ script:
       - INCIDENT
       - CHANGE
       description: The ticket type to filter
+    - name: categoryClass
+      description: Category Class
     description: Retrieve a count of tickets that have been updated and not yet acknowledged
   - name: secure-works-get-ticket
     arguments:
@@ -627,6 +636,8 @@ script:
       - "true"
       - "false"
       description: Whether or not to include ticket worklogs, default is true
+    - name: categoryClass
+      description: Category class
     outputs:
     - contextPath: SecureWorks.Ticket.ChangeApproval
       description: Ticket change approval
@@ -712,6 +723,8 @@ script:
     - name: limit
       description: If provided, limit response to that number of tickets. If not provided,
         a maximum of 10 tickets are returned
+    - name: categoryClass
+      description: Category class
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
   isfetch: true
