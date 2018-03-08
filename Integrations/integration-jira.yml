@@ -615,4 +615,3 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
-releaseNotes: "-"

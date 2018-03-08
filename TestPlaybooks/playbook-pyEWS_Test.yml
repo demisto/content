@@ -60,17 +60,17 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: c8f965aa-1eb3-46ed-8d74-11b2ffc755ad
+    taskid: c86c5d14-3783-418b-814b-4a5271768cfb
     type: regular
     task:
-      id: c8f965aa-1eb3-46ed-8d74-11b2ffc755ad
+      id: c86c5d14-3783-418b-814b-4a5271768cfb
       version: -1
       description: ""
       name: Get searchable mailboxes
-      script: pyEWS|||ews-get-searchable-mailboxes
+      script: EWS v2|||ews-get-searchable-mailboxes
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "3"
@@ -111,17 +111,17 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: fe5d2320-da71-481a-80be-a9f81122f66b
+    taskid: 095a271e-6768-406a-8230-09a11d36a9e9
     type: regular
     task:
-      id: fe5d2320-da71-481a-80be-a9f81122f66b
+      id: 095a271e-6768-406a-8230-09a11d36a9e9
       version: -1
       description: ""
       name: Search mailboxes
-      script: pyEWS|||ews-search-mailboxes
+      script: EWS v2|||ews-search-mailboxes
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "5"
@@ -170,17 +170,17 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: dc49c45b-892c-4755-8131-b3670f590252
+    taskid: 11bfb829-bf97-42de-88ed-ce993c4a8296
     type: regular
     task:
-      id: dc49c45b-892c-4755-8131-b3670f590252
+      id: 11bfb829-bf97-42de-88ed-ce993c4a8296
       version: -1
       description: ""
       name: Get contacts
-      script: pyEWS|||ews-get-contacts
+      script: EWS v2|||ews-get-contacts
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "7"
@@ -226,17 +226,17 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: d9b923a8-b4cc-4383-8c65-99af500524d3
+    taskid: 0e5e77a3-be4a-496f-806a-4f105bd2c12d
     type: regular
     task:
-      id: d9b923a8-b4cc-4383-8c65-99af500524d3
+      id: 0e5e77a3-be4a-496f-806a-4f105bd2c12d
       version: -1
       description: ""
       name: Get item attachment
-      script: pyEWS|||ews-get-attachment
+      script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "9"
@@ -289,10 +289,10 @@ tasks:
       version: -1
       description: ""
       name: Get file attachment
-      script: pyEWS|||ews-get-attachment
+      script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "11"
@@ -369,17 +369,17 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: def9962d-6379-49ce-878c-f9d722be3a64
+    taskid: 633dca6c-72d4-4108-856b-3c982ff3bcdc
     type: regular
     task:
-      id: def9962d-6379-49ce-878c-f9d722be3a64
+      id: 633dca6c-72d4-4108-856b-3c982ff3bcdc
       version: -1
       description: ""
       name: Get out of office status
-      script: pyEWS|||ews-get-out-of-office
+      script: EWS v2|||ews-get-out-of-office
       type: regular
       iscommand: true
-      brand: pyEWS
+      brand: EWS v2
     nexttasks:
       '#none#':
       - "14"
