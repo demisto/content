@@ -698,8 +698,8 @@ script:
     - contextPath: SecureWorks.Ticket.Watchers
       description: Tickets matching the ticketType. If not specified, tickets of all
         types are returned.
-    description: This endpoint retrieves 10 tickets from 24 hours prior to when the
-      POST /tickets/updates endpoint is executed. If the is specified, it will retrieve
+    description: retrieves 10 tickets from 24 hours prior to when the
+      POST /tickets/updates endpoint is executed. If the limit is specified, it will retrieve
       up to that many tickets (max is 500 tickets). Tickets must be updated within
       the last 24 hours to be visible in POST /tickets/updates. When accessing this
       endpoint you also receive the ticket worklogs. It is recommended that you access
