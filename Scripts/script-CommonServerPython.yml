@@ -559,7 +559,7 @@ script: |-
               sep = '-|'
           mdResult += '|'.join([sep] * len(headers)) + '\n'
           for entry in t:
-              vals = [(formatCell(entry[h], False) if entry[h] else '') for h in headers]
+              vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
               if len(vals) == 1:
                   mdResult += vals[0] + '|' + '\n'
               else:
