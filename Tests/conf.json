@@ -12,9 +12,6 @@
             "timeout": 500
         },
         {
-            "playbookID": "test_similar_incidents"
-        },
-        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
