@@ -83,7 +83,7 @@ tasks:
       similarCustomFields: {}
       similarIncidentKeys: {}
       similarLabelsKeys:
-        simple: brand
+        simple: Brand
     separatecontext: false
     view: |-
       {
