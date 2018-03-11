@@ -1,0 +1,32 @@
+{
+  "brandName": "SplunkPy",
+  "version": -1,
+  "modified": "2018-03-11T22:53:40.004610895+02:00",
+  "defaultIncidentType": "",
+  "instanceId": "1ed11288-1278-49f2-8278-80d26fc2ab66",
+  "mapping": {
+    "Access": {
+      "internalMapping": {
+        "details": {
+          "simple": "ip",
+          "complex": null
+        },
+        "occurred": {
+          "simple": "blabla",
+          "complex": null
+        }
+      },
+      "dontMapEventToLabels": false
+    }
+  },
+  "unclassifiedCases": {},
+  "incidentSamples": [],
+  "transformer": {
+      "simple": "type",
+      "complex": null
+  },
+  "keyTypeMap": {
+    "oka1": "Access",
+    "oka2": "Authentication"
+  }
+}
