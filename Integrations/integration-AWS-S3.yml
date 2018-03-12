@@ -134,9 +134,10 @@ script:
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        demisto.results('ok')
-
+        response = s3.list_buckets()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+          demisto.results('ok')
+          
     if demisto.command() == 'aws-s3-create-bucket':
         result = create_bucket(demisto.args())
 
