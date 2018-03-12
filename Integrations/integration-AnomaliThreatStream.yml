@@ -266,6 +266,10 @@ script:
     }
 
     var parseResult = function(command, result) {
+        if(!(result['objects'] instanceof Array)){
+            result['objects'] = [result['objects']];
+        }
+
         if (dq(result, 'objects').length == 0) {
             return 'Anomali ThreatStream - No records found.';
         }
@@ -523,3 +527,4 @@ script:
       type: number
     description: Checks the reputation of the given IP
 hidden: false
+releaseNotes: "Fix parse result sort issue"
