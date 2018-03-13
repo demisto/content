@@ -276,3 +276,4 @@ script:
     - contextPath: Account.Usernames
       description: Online platforms usernames
     description: Searches for information regarding given email address
+releaseNotes: "-"
