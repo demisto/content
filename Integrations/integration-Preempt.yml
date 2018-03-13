@@ -216,7 +216,7 @@ script:
 
         types = []
         auth_types = []
-        for t in (demisto.args().get("types").split(",") or []):
+        for t in demisto.args().get("types", "").split(","):
             if t == "LOGIN":
                 types.append("SUCCESSFUL_AUTHENTICATION")
                 auth_types.append("DOMAIN_LOGIN")
@@ -358,7 +358,9 @@ script:
       required: true
       description: ID of a user whose activities to retrieve
     - name: types
+      required: true
       description: List of specific incident types (comma delimited)
+      defaultValue: LOGIN
     - name: endTime
       description: End of the timeframe to search in
     - name: numOfHours
