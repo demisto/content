@@ -244,8 +244,8 @@ script:
       description: Order of columns to be displayed in results (comma seperated list
         of values)
     outputs:
-    - contextPath: Account.Email
-      description: 'Email addresses'
+    - contextPath: Account.Email.Address
+      description: Email addresses
     - contextPath: Account.IDs
       description: User IDs
     - contextPath: Account.Addresses
@@ -263,8 +263,8 @@ script:
       required: true
       description: Email address to search for
     outputs:
-    - contextPath: Account.Email
-      description: 'Email addresses'
+    - contextPath: Account.Email.Address
+      description: Email addresses
     - contextPath: Account.IDs
       description: User IDs
     - contextPath: Account.Addresses
