@@ -268,7 +268,7 @@ script:
             'Contents': device,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, [hr])
+            'HumanReadable': tableToMarkdown(title, hr)
         }
 
         demisto.results(entry)
