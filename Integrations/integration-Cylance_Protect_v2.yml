@@ -65,6 +65,7 @@ script:
     SCOPE_THREAT_DEVICELIST = 'threat:devicelist'
     SCOPE_THREAT_UPDATE = 'threat:update'
     SCOPE_GLOBAL_LIST = 'globallist:list'
+    SCOPE_THREAT_LIST = 'threat:list'
 
     # PREREQUISITES
     def load_server_url():
@@ -268,7 +269,7 @@ script:
             'Contents': device,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr)
+            'HumanReadable': tableToMarkdown(title, [hr])
         }
 
         demisto.results(entry)
@@ -578,7 +579,10 @@ script:
 
     def get_threats():
 
-        threats = get_threats_request()['page_items']
+        page = demisto.args()['page'] if 'page' in demisto.args() else None
+        page_size = demisto.args()['page_size'] if 'page_size' in demisto.args() else None
+
+        threats = get_threats_request(page, page_size)['page_items']
 
         context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
         ec = {
@@ -598,20 +602,20 @@ script:
         demisto.results(entry)
 
 
-    def get_threats_request():
-        access_token = get_authentication_token(scope='threat:list')
+    def get_threats_request(page = None, page_size = None):
+        access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + access_token
         }
 
         params = {}
-        if page:
-            params['page'] = page
-        if page_size:
-            params['page_size'] = page_size
+        if page in demisto.args():
+            params['page'] = demisto.args()['page']
+        if page_size in demisto.args():
+            params['page_size'] = demisto.args()['page_size']
 
-        res = api_call(uri=URI_THREATS, method='get', headers=headers, params=demisto.args())
+        res = api_call(uri=URI_THREATS, method='get', headers=headers, params=params)
         return res
 
 
@@ -804,7 +808,6 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
-
 
   type: python
   commands:
@@ -1274,3 +1277,4 @@ script:
       type: string
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
+releaseNotes: "-"
