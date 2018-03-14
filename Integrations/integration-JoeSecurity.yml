@@ -569,5 +569,7 @@ script:
       required: true
       default: true
       description: Web ID
+    description: Download the sample file of an analysis. for security reasons, the
+      extension will be "dontrun"
   runonce: false
 releaseNotes: "Added search and download commands"
