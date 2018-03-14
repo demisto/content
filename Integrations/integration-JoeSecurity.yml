@@ -570,4 +570,4 @@ script:
       default: true
       description: Web ID
   runonce: false
-releaseNotes: "Added sesrch command to
+releaseNotes: "Added search and download commands"
