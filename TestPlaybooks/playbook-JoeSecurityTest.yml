@@ -1,14 +1,14 @@
 id: JoeSecurityTestPlaybook
-version: 24
+version: 14
 name: JoeSecurityTestPlaybook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8e11f044-75f0-43f4-87c0-212349ce9590
+    taskid: b1516e55-8f73-4e59-8b09-1670bca3d8b4
     type: start
     task:
-      id: 8e11f044-75f0-43f4-87c0-212349ce9590
+      id: b1516e55-8f73-4e59-8b09-1670bca3d8b4
       version: -1
       name: ""
       iscommand: false
@@ -16,19 +16,21 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "11"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 3f6cf685-6eb6-47cc-82b6-630dc0ca97df
+    taskid: aec325de-81aa-4f4d-87ba-4342a6d18346
     type: regular
     task:
-      id: 3f6cf685-6eb6-47cc-82b6-630dc0ca97df
+      id: aec325de-81aa-4f4d-87ba-4342a6d18346
       version: -1
       name: Start fresh
       scriptName: DeleteContext
@@ -42,6 +44,7 @@ tasks:
       all:
         simple: "yes"
       key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -51,10 +54,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: ea8b1bfa-8a10-4286-8fb4-93dcb0f7d6ba
+    taskid: 8d481524-ce50-4a35-88e3-2d4a1398bf5c
     type: regular
     task:
-      id: ea8b1bfa-8a10-4286-8fb4-93dcb0f7d6ba
+      id: 8d481524-ce50-4a35-88e3-2d4a1398bf5c
       version: -1
       name: Validate instance is working
       script: Joe Security|||joe-is-online
@@ -64,6 +67,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -73,10 +77,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 96befd23-e144-440c-8508-af8fa3535070
+    taskid: 835cb787-f5a6-42dd-8869-54e517cab277
     type: regular
     task:
-      id: 96befd23-e144-440c-8508-af8fa3535070
+      id: 835cb787-f5a6-42dd-8869-54e517cab277
       version: -1
       name: Analyse a file using a url with out waiting
       script: Joe Security|||joe-analysis-submit-sample
@@ -87,12 +91,13 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      sample: {}
+      comments: {}
+      file_id: {}
       sample_url:
         simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
       should_wait: {}
-      url: {}
-      webid: {}
+      systems: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -102,10 +107,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 1fd00cef-26e4-48e8-8e27-99ada2729aae
+    taskid: e036e43b-eacc-4101-89d2-fbb089c566fa
     type: regular
     task:
-      id: 1fd00cef-26e4-48e8-8e27-99ada2729aae
+      id: e036e43b-eacc-4101-89d2-fbb089c566fa
       version: -1
       name: Analyse a url without waiting
       script: Joe Security|||joe-analysis-submit-url
@@ -116,10 +121,13 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      comments: {}
       should_wait:
         simple: "False"
+      systems: {}
       url:
         simple: www.google.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,10 +137,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 00e5c871-e1f9-4bd2-8a1c-0a02fb224419
+    taskid: fabb6446-0c9e-4c87-8d07-40dac22d0421
     type: regular
     task:
-      id: 00e5c871-e1f9-4bd2-8a1c-0a02fb224419
+      id: fabb6446-0c9e-4c87-8d07-40dac22d0421
       version: -1
       name: Get info on the file analysis
       script: Joe Security|||joe-analysis-info
@@ -143,10 +151,9 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      should_wait: {}
-      url: {}
       webid:
         simple: ${Joe.Analysis.[0].WebID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -156,10 +163,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 961e1d35-2ed4-43a5-8655-3219936045a9
+    taskid: 86021972-f4bf-4d31-8820-17ead0b6d3c3
     type: regular
     task:
-      id: 961e1d35-2ed4-43a5-8655-3219936045a9
+      id: 86021972-f4bf-4d31-8820-17ead0b6d3c3
       version: -1
       name: Get info on the URL analysis
       script: Joe Security|||joe-analysis-info
@@ -170,10 +177,9 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      should_wait: {}
-      url: {}
       webid:
         simple: ${Joe.Analysis.[1].WebID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -183,10 +189,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: d3caced7-48af-463d-8ba6-a28c89f8a1b3
+    taskid: 1e5447da-152d-4f60-853f-eda3d6cd218a
     type: regular
     task:
-      id: d3caced7-48af-463d-8ba6-a28c89f8a1b3
+      id: 1e5447da-152d-4f60-853f-eda3d6cd218a
       version: -1
       name: Analyse url with polling
       script: Joe Security|||joe-analysis-submit-url
@@ -197,11 +203,13 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      comments: {}
       should_wait:
         simple: "True"
+      systems: {}
       url:
         simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
-      webid: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -211,10 +219,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 99ada482-7b5e-4f7d-83c5-b0bb62f607d3
+    taskid: b08554d5-83cc-4015-8f01-22c742f7afb7
     type: regular
     task:
-      id: 99ada482-7b5e-4f7d-83c5-b0bb62f607d3
+      id: b08554d5-83cc-4015-8f01-22c742f7afb7
       version: -1
       name: List all analysis
       script: Joe Security|||joe-list-analysis
@@ -224,10 +232,7 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
-    scriptarguments:
-      should_wait: {}
-      url: {}
-      webid: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -237,10 +242,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: cd41b90f-c37f-4cbe-85e5-bc1bab2bca51
+    taskid: b86abc4e-1b9c-4e81-883a-25167f21fb5d
     type: regular
     task:
-      id: cd41b90f-c37f-4cbe-85e5-bc1bab2bca51
+      id: b86abc4e-1b9c-4e81-883a-25167f21fb5d
       version: -1
       name: Create sample file
       scriptName: FileCreateAndUpload
@@ -256,19 +261,20 @@ tasks:
       entryId: {}
       filename:
         simple: zaq
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 51,
-          "y": 1590
+          "x": 50,
+          "y": 1595
         }
       }
   "10":
     id: "10"
-    taskid: d544610c-d075-4efb-849d-561099f32bbc
+    taskid: a9c434d1-ead2-482f-83eb-e406b779336b
     type: regular
     task:
-      id: d544610c-d075-4efb-849d-561099f32bbc
+      id: a9c434d1-ead2-482f-83eb-e406b779336b
       version: -1
       name: Run sample with file
       script: Joe Security|||joe-analysis-submit-sample
@@ -276,17 +282,145 @@ tasks:
       iscommand: true
       brand: Joe Security
     scriptarguments:
-      sample:
+      comments: {}
+      file_id:
         simple: ${File.EntryID}
       sample_url: {}
       should_wait: {}
-      url: {}
-      webid: {}
+      systems: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 49,
-          "y": 1766
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "11":
+    id: "11"
+    taskid: a6dc7191-839a-4d11-8646-5f7e2e0a9336
+    type: regular
+    task:
+      id: a6dc7191-839a-4d11-8646-5f7e2e0a9336
+      version: -1
+      name: Search command
+      script: Joe Security|||joe-search
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+    scriptarguments:
+      query:
+        simple: java_tutorial
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 5b40277a-1bcc-48d8-8c75-127843969178
+    type: regular
+    task:
+      id: 5b40277a-1bcc-48d8-8c75-127843969178
+      version: -1
+      name: Download sample file
+      script: Joe Security|||joe-download-sample
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      webid:
+        simple: "513622"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 5cdcae14-81de-4de1-875d-de716ef3a260
+    type: regular
+    task:
+      id: 5cdcae14-81de-4de1-875d-de716ef3a260
+      version: -1
+      name: Download fie Report - HTML
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: html
+      webid:
+        simple: "513622"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 6f863b3b-d5db-4d0c-8fe4-96fe723c69ee
+    type: regular
+    task:
+      id: 6f863b3b-d5db-4d0c-8fe4-96fe723c69ee
+      version: -1
+      name: Download url Report - PDF
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: pdf
+      webid:
+        simple: "513696"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "15":
+    id: "15"
+    taskid: cfa334ee-c4e7-4617-8dfb-231313687b35
+    type: regular
+    task:
+      id: cfa334ee-c4e7-4617-8dfb-231313687b35
+      version: -1
+      name: Download url Report -JSON
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: json
+      webid:
+        simple: "513696"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
         }
       }
 view: |-
@@ -294,12 +428,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1811,
-        "width": 382,
-        "x": 49,
+        "height": 1815,
+        "width": 2100,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
-releaseNotes: "-"
+outputs: []

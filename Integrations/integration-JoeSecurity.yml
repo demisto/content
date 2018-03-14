@@ -17,6 +17,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: 'Max. Polling Time (in seconds):'
+  name: maxpolls
+  defaultvalue: "300"
+  type: 0
+  required: false
+- display: 'Verbose (show log in case of error) '
+  name: verbose
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -29,6 +39,7 @@ script:
     ''' GLOBAL VARS '''
     BASE_URL = 'https://jbxcloud.joesecurity.org/api/'
     USE_SSL = not demisto.params().get('insecure', False)
+    MAX_POLLS = int(demisto.params().get('maxpolls', 300))
 
     ''' HELPER FUNCTIONS '''
     def dq(obj, path):
@@ -121,27 +132,29 @@ script:
       return entry
 
 
-    def http_post(url_suffix, data=None, files=None):
+    def http_post(url_suffix, data=None, files=None, parse_json=True):
         data = {} if data is None else data
 
         data.setdefault('apikey', demisto.params()['api_key'])
-        LOG('running request with url=%s\tdata=%s\tfiles=%s' % (BASE_URL + url_suffix,
+        LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
             data, files, ))
-        try:
-            res = requests.post(BASE_URL + url_suffix,
-                verify=USE_SSL,
-                data=data,
-                files=files
-            )
 
-            if res.status_code != 200:
-                raise Exception('Your request failed with the following error: ' + res.reason)
+        res = requests.post(BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=data,
+            files=files
+        )
 
-        except Exception, e:
-            LOG(e)
-            raise
+        if res.status_code == 403:
+            raise Exception('API Key is incorrect')
 
-        return res.json()
+        if res.status_code != 200:
+            raise Exception('Your request failed with the following error: ' + res.reason)
+
+        if parse_json:
+            return res.json()
+        else:
+            return res.content
 
 
     def webid_to_entry(title, web_ids):
@@ -160,25 +173,31 @@ script:
             'title' : title,
             'data' : [
                 {'to' : 'WebID', 'from' : u'webid'},
+                {'to' : 'AnalysisID', 'from' : u'analysisid', 'humanReadable' : False},
                 {'to' : 'FileName', 'from' : u'filename'},
                 {'to' : 'Status', 'from' : u'status'},
                 {'to' : 'Comments', 'from' : u'comments'},
                 {'to' : 'Time', 'from' : u'time'},
+                {'to' : 'md5', 'from' : u'md5'},
+                {'to' : 'sha1', 'from' : u'sha1'},
+                {'to' : 'sha256', 'from' : u'sha256'},
                 {'to' : 'Runs', 'from' : u'runs', 'humanReadable' : False},
                 {'to' : 'Result', 'from' : u'runs.detection'},
+                {'to' : 'RunErrors', 'from' : u'runs.error'},
+                {'to' : 'RunSystems', 'from' : u'runs.system'},
             ],
         })
 
 
     def poll_webid(web_id):
         result = {'data' : {'status' : 'pending'}}
-        max_polls = 100;
+        max_polls = MAX_POLLS
 
         while (max_polls >=0) and result['data']['status'] != 'finished':
             if result['data']['status'] != 'pending':
                 LOG('error while polling: result is %s' % (result, ))
             result = info_request(web_id)
-            time.sleep(2);
+            time.sleep(1)
             max_polls -= 1
 
         LOG('reached max_polls #%d' % (max_polls, ))
@@ -195,6 +214,16 @@ script:
         return res['data']['online']
 
 
+    def search():
+        cmd_url = 'v2/analysis/search'
+        query = demisto.args().get('query')
+        res = http_post(cmd_url, data={'q':query})
+        if len(res['data']) == 0:
+            return 'No Result was found.'
+
+        return webid_to_entry('Web IDs:', res['data'])
+
+
     def list_analysis():
         cmd_url = 'v2/analysis/list'
         res = http_post(cmd_url)
@@ -205,6 +234,7 @@ script:
         web_id = demisto.args().get('webid')
         LOG('info: web_id = %s' % (web_id, ))
         res = info_request(web_id)
+
         return analysis_to_entry('Analysis #' + web_id, res['data'])
 
 
@@ -216,13 +246,25 @@ script:
     def analyse_url():
         args = demisto.args()
         url = args.get('url')
+        comments = args.get('comments')
+        systems = args.get('systems')
+        systems = None if systems is None else systems.split(',')
+
         should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
-        return analyse_url_request(url, should_wait)
+        return analyse_url_request(url, should_wait, comments, systems)
 
 
-    def analyse_url_request(url, should_wait):
+    def analyse_url_request(url, should_wait, comments=None, systems=None):
+        data = {
+            'accept-tac': 1,
+            'url' : url,
+        }
+        if comments is not None:
+            data['comments'] = comments
+        if systems is not None:
+            data['systems[]'] = systems.split(',')
         res = http_post('v2/analysis/submit',
-            data={'accept-tac': 1, 'url' : url})
+            data=data)
 
         if 'errors' in res:
             LOG('Error! in command analyse_url: url=%s' % (url, ))
@@ -238,24 +280,34 @@ script:
 
     def analyse_sample():
         args = demisto.args()
-        file_entry = args.get('sample')
+        file_entry = args.get('file_id')
         sample_url = args.get('sample_url')
+        comments = args.get('comments')
+        systems = args.get('systems')
         should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
 
         if (file_entry is None and sample_url is None) or (None not in [file_entry, sample_url]):
-            raise ValueError('You must specify one (and only one) of the following: sample_url, sample.')
+            raise ValueError('You must specify one (and only one) of the following: sample_url, file_id.')
 
         LOG('analysing sample')
         if file_entry is not None:
-            return analyse_sample_file_request(file_entry, should_wait)
+            return analyse_sample_file_request(file_entry, should_wait, comments, systems)
         else:
-            return analyse_sample_url_request(sample_url, should_wait)
+            return analyse_sample_url_request(sample_url, should_wait, comments, systems)
 
 
-    def analyse_sample_file_request(file_entry, should_wait):
+    def analyse_sample_file_request(file_entry, should_wait, comments=None, systems=None):
+        data = {
+            'accept-tac': 1,
+        }
+        if comments is not None:
+            data['comments'] = comments
+        if systems is not None:
+            data['systems[]'] = systems.split(',')
+
         with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
             res = http_post('v2/analysis/submit',
-                data={'accept-tac': 1},
+                data=data,
                 files={'sample':f})
 
             if 'errors' in res:
@@ -270,9 +322,18 @@ script:
         return webid_to_entry('Web ID:', info)
 
 
-    def analyse_sample_url_request(sample_url, should_wait):
+    def analyse_sample_url_request(sample_url, should_wait, comments, systems):
+        data = {
+            'accept-tac': 1,
+            'sample-url' : sample_url,
+        }
+        if comments is not None:
+            data['comments'] = comments
+        if systems is not None:
+            data['systems[]'] = systems.split(',')
+
         res = http_post('v2/analysis/submit',
-                data={'accept-tac': 1, 'sample-url' : sample_url})
+            data=data)
 
         if 'errors' in res:
             LOG('Error! in command sample file: file url=%s' % (sample_url, ))
@@ -284,6 +345,32 @@ script:
 
         info = [{'webid' : i} for i in res['data']['webids']]
         return webid_to_entry('Web ID:', info)
+
+
+    def download_report():
+        args = demisto.args()
+        webid = args.get('webid')
+        rsc_type = args.get('type')
+        return download_request(webid, rsc_type)
+
+
+    def download_sample():
+        args = demisto.args()
+        webid = args.get('webid')
+        rsc_type = 'sample'
+        return download_request(webid, rsc_type)
+
+    def download_request(webid, rsc_type):
+        res = http_post('v2/analysis/download',
+            data={'webid': webid,
+                'type' : rsc_type.lower(),
+            },
+            parse_json=False)
+
+        if rsc_type == 'sample':
+            return fileResult('%s_sample.dontrun' % (webid, ), res)
+        else:
+            return fileResult('%s_report.%s' % (webid, rsc_type, ), res)
 
 
     ''' EXECUTION CODE '''
@@ -303,12 +390,24 @@ script:
             demisto.results(analyse_url())
         elif demisto.command() == 'joe-analysis-submit-sample':
             demisto.results(analyse_sample())
+        elif demisto.command() == 'joe-download-report':
+            demisto.results(download_report())
+        elif demisto.command() == 'joe-download-sample':
+            demisto.results(download_sample())
+        elif demisto.command() == 'joe-search':
+            demisto.results(search())
 
     except Exception, e:
         if demisto.params().get('verbose'):
             LOG(e.message)
-            LOG.print_log()
-        raise
+            if demisto.command() != 'test-module':
+                LOG.print_log()
+
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'error has occured: %s' % (e.message, ),
+        })
   type: python
   commands:
   - name: joe-is-online
@@ -327,21 +426,45 @@ script:
       - "False"
       description: Should the command poll for the result of the analysis
       defaultValue: "False"
+    - name: comments
+      description: 'Comments for the analysis '
+    - name: systems
+      description: Operating System to run analysis on(comma separated). should be
+        one of the the follow
     outputs:
-    - contextPath: Joe. Analysis.WebID
+    - contextPath: Joe.Analysis.WebID
       description: Web ID
-    - contextPath: Joe. Analysis.FileName
+      type: string
+    - contextPath: Joe.Analysis.FileName
       description: Sample Data
-    - contextPath: Joe. Analysis.Status
+      type: string
+    - contextPath: Joe.Analysis.Status
       description: Analysis Status
-    - contextPath: Joe. Analysis.Comments
+      type: string
+    - contextPath: Joe.Analysis.Comments
       description: Analysis Comments
-    - contextPath: Joe. Analysis.Time
+      type: string
+    - contextPath: Joe.Analysis.Time
       description: Submitted Time
-    - contextPath: Joe. Analysis.Runs
+      type: date
+    - contextPath: Joe.Analysis.Runs
       description: Application used for analysis
-    - contextPath: Joe. Analysis.Result
+    - contextPath: Joe.Analysis.Result
       description: Analysis Results
+      type: unknown
+    - contextPath: Joe.Analysis.RunErrors
+      description: Raised errors during sampling
+    - contextPath: Joe.Analysis.RunSystems
+      description: Analysis OS
+    - contextPath: Joe.Analysis.md5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.sha1
+      description: sha1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.sha256
+      description: sha256 of analysis sample
+      type: string
     description: Submit a url for analysis.
   - name: joe-analysis-info
     arguments:
@@ -350,32 +473,37 @@ script:
       default: true
       description: Web ID
     outputs:
-    - contextPath: Joe. Analysis.WebID
+    - contextPath: Joe.Analysis.WebID
       description: Web ID
-    - contextPath: Joe. Analysis.FileName
+    - contextPath: Joe.Analysis.FileName
       description: Sample Data
-    - contextPath: Joe. Analysis.Status
+      type: string
+    - contextPath: Joe.Analysis.Status
       description: Analysis Status
-    - contextPath: Joe. Analysis.Comments
+      type: string
+    - contextPath: Joe.Analysis.Comments
       description: Analysis Comments
-    - contextPath: Joe. Analysis.Time
+      type: string
+    - contextPath: Joe.Analysis.Time
       description: Submitted Time
-    - contextPath: Joe. Analysis.Runs
+      type: date
+    - contextPath: Joe.Analysis.Runs
       description: Application used for analysis
-    - contextPath: Joe. Analysis.Result
+    - contextPath: Joe.Analysis.Result
       description: Analysis Results
     description: Show information about an analysis.
   - name: joe-list-analysis
     arguments: []
     outputs:
-    - contextPath: Joe. Analysis.WebID
+    - contextPath: Joe.Analysis.WebID
       description: Web ID
+      type: string
     description: List all analyses.
   - name: joe-analysis-submit-sample
     arguments:
-    - name: sample
+    - name: file_id
       default: true
-      description: Sample File
+      description: War Room entry of a file (for example, 3245@4)
     - name: sample_url
       description: Url to a sample file
     - name: should_wait
@@ -385,19 +513,61 @@ script:
       - "False"
       description: Should the command poll for the result of the analysis
       defaultValue: "False"
+    - name: comments
+      description: Comments for the analysis
+    - name: systems
+      description: Operating System to run analysis on(comma separated)
     outputs:
-    - contextPath: Joe. Analysis.WebID
+    - contextPath: Joe.Analysis.WebID
       description: Web ID
-    - contextPath: Joe. Analysis.FileName
+    - contextPath: Joe.Analysis.FileName
       description: Sample Data
-    - contextPath: Joe. Analysis.Status
+    - contextPath: Joe.Analysis.Status
       description: Analysis Status
-    - contextPath: Joe. Analysis.Comments
+    - contextPath: Joe.Analysis.Comments
       description: Analysis Comments
-    - contextPath: Joe. Analysis.Time
+    - contextPath: Joe.Analysis.Time
       description: Submitted Time
-    - contextPath: Joe. Analysis.Runs
+    - contextPath: Joe.Analysis.Runs
       description: Application used for analysis
-    - contextPath: Joe. Analysis.Result
+    - contextPath: Joe.Analysis.Result
       description: Analysis Results
     description: Submit a sample for analysis.
+  - name: joe-download-report
+    arguments:
+    - name: webid
+      required: true
+      default: true
+      description: Web ID
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+      description: The resource type to download. Defaults to html.
+      defaultValue: html
+    description: Download a resource belonging to a report. This can be the full report,
+      dropped binaries, etc.
+  - name: joe-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: 'Search string which will search in the following fields only:
+        webid, md5, sha1, sha256, filename, URL, comments.'
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    description: Search through all analyses.
+  - name: joe-download-sample
+    arguments:
+    - name: webid
+      required: true
+      default: true
+      description: Web ID
+  runonce: false
+releaseNotes: "Added sesrch command to
