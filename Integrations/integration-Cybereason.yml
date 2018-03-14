@@ -252,11 +252,10 @@ script:
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
-            if (elements[key].simpleValues.elementDisplayName.values[0] == args.machine) {
+            if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -498,7 +497,7 @@ script:
     - name: machine
       required: true
       description: The hostname of the machine to check.
-    description: Checks if the given hostname exists in Cybereason.
+    description: Checks if the machine is currently connected to the Cybereason server
   - name: cybereason-query-connections
     arguments:
     - name: ip
@@ -539,3 +538,4 @@ script:
       description: End time of the connection
     description: Searches for connections.
 hidden: false
+releaseNotes: "Changed from case sensitive to case insensitive string comparison in is-probe-connected command"
