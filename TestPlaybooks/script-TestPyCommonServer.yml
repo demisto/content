@@ -74,6 +74,11 @@ script: |-
               'header_1': 'a3',
               'header_2': 'b3',
               'header_3': 'c3'
+          },
+          {
+              'header_1': 'a|3', # test table chars excaping
+              'header_2': 'b\n3\rvalue', # test line excaping
+              'header_3': 'c3'
           }
       ]
       table = tableToMarkdown('tableToMarkdown test', data)
