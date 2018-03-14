@@ -560,7 +560,8 @@ script: |-
           mdResult += '|'.join([sep] * len(headers)) + '\n'
           for entry in t:
               vals = [stringEscapeMD(formatCell(entry.get(h, ''), False), minimal_escaping=False, escape_line_ending=False)
-                  for h in headers]
+                 for h in headers]
+              #vals = [formatCell(entry.get(h, ''), False) for h in headers]
               if len(vals) == 1:
                   mdResult += vals[0] + '|' + '\n'
               else:
@@ -754,11 +755,11 @@ script: |-
           for c in ['\r\n', '\n', '\r']:
               st = st.replace(c, '<br>')
 
+      chars = MARKDOWN_CHARS
       if minimal_escaping:
-          for c in ['|']:
-              st.replace(c, '\\' + c)
-      else:
-          st = "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+          chars = '|'
+
+      st = "".join([ "\\" + str(c) if c in chars else str(c) for c in st])
       return st
 
 
