@@ -109,5 +109,5 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python
+dockerimage: demisto/python_zipfile
 releaseNotes: "-"
