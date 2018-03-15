@@ -559,7 +559,7 @@ script: |-
               sep = '-|'
           mdResult += '|'.join([sep] * len(headers)) + '\n'
           for entry in t:
-              vals = [stringEscapeMD(formatCell(entry.get(h, ''), False), minimal_escaping=False, escape_line_ending=False)
+              vals = [stringEscapeMD(formatCell(entry.get(h, ''), False), minimal_escaping=True, escape_line_ending=True)
                  for h in headers]
               #vals = [formatCell(entry.get(h, ''), False) for h in headers]
               if len(vals) == 1:
