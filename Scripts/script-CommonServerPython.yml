@@ -759,7 +759,8 @@ script: |-
       if minimal_escaping:
           chars = '|'
 
-      st = "".join([ "\\" + str(c) if c in chars else str(c) for c in st])
+      for c in chars:
+          st = st.replace(c, '\\' + c)
       return st
 
 
