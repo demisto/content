@@ -266,11 +266,23 @@ script:
     }
 
     if (command === 'test-module') {
-        return 'ok';
+        var countCommand = commands['secure-works-get-ticket-count'];
+         var countObject = sendRequest(countCommand);
+
+        if(!countObject){
+            return 'not ok';
+        }
+
+        return countObject.ticketCount ? 'ok' : 'not ok';
     }
 
     if(command === 'fetch-incidents'){
         var countCommand = commands['secure-works-get-ticket-count'];
+
+        if(params.ticketType){
+            args = [{ticketType: params.ticketType}]
+        }
+
         var countObject = sendRequest(countCommand);
 
         if(!countObject){
@@ -280,25 +292,25 @@ script:
         var count = countObject.ticketCount;
 
         var idsCommand = commands['secure-works-get-ids'];
-        var ids;
+        var currentIds;
         args = [{limit: count}];
         var ticketIdsObject = sendRequest(idsCommand);
         if(ticketIdsObject){
-            ids = ticketIdsObject.ticketIds;
+            currentIds = ticketIdsObject.ticketIds;
         }
 
-        if(!ids){
+        if(!currentIds){
             return [];
         }
 
         var incidents = [];
         var lastRun = getLastRun();
-        if(!lastRun || !lastRun.lastId){
-            lastRun = { lastId: ids[ids.length - 1] }
+        if(!lastRun || !lastRun.ids){
+            lastRun = { ids: currentIds };
         }
 
-        var idsToFetch = ids.filter(function(id){
-            return id > lastRun.lastId;
+        var idsToFetch = currentIds.filter(function(id){
+            return lastRun.ids.indexOf(id) === -1;
         });
 
         if (idsToFetch && idsToFetch.length > 0) {
