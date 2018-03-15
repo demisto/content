@@ -9,10 +9,11 @@ script: |
   else:
       whitelist = res[0]['Contents']
       if demisto.args()['item'] in whitelist:
-          answer = 'yes'
+          answer = True
       else:
-          answer = 'no'
+          answer = False
       demisto.results(answer)
+      demisto.setContext('in_whitelist', answer)
 type: python
 tags:
 - whitelist
@@ -26,6 +27,10 @@ args:
 - name: whitelistname
   defaultValue: Indicators Whitelist
   description: Name of whitelist to check
+outputs:
+- contextPath: in_whitelist
+  description: Returns boolean True or False depending on whether the input was found
+    in the whiltelist
 scripttarget: 0
 dependson: {}
 timeout: 0s
