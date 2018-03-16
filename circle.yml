@@ -1,6 +1,10 @@
+machine:
+  node:
+    version: v9.8.0
 test:
   pre:
     # install dependencies
+    - npm install npm -g
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
     - pip install pykwalify
     - npm install -g jsdoc-to-markdown
