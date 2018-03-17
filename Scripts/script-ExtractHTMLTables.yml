@@ -27,8 +27,9 @@ script: |-
                   table.append(tds[0].text)
               # If there are 2 columns and no headers, treat as key-value (might override values if same key in first column)
               elif len(tds) == 2 and len(headers) == 0:
-                  # If there are headers, just treat
-                  table.append({tds[0]: tds[1]})
+                  if type(table) == list:
+                      table = {}
+                  table[tds[0].text] = tds[1].text
               else:
                   row = {}
                   if len(headers) > 0:
@@ -45,7 +46,7 @@ script: |-
           'Type': entryTypes['note'],
           'Contents': 'Found {} tables in HTML.'.format(len(tables)),
           'ContentsFormat': formats['text'],
-          'EntryContext': {'HTMLTables': tables}
+          'EntryContext': {'HTMLTables': tables if len(tables) > 1 else tables[0]}
       })
   else:
       demisto.results('Did not find tables in HTML.')
