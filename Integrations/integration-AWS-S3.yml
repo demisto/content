@@ -65,17 +65,14 @@ script:
             'AWSRegion': args.get('awsRegion')
         })
 
-        ec = {'AWS.S3.NewBucket': data}
+        ec = {'AWS.S3.Bucket': data}
         return create_entry('Created S3 Bucket', data, ec)
 
     def delete_bucket(args):
         data =[]
         response = s3.delete_bucket(Bucket=args.get('bucketName'))
-        data.append ({
-            'BucketName': bucket
-            })
-        ec = {'AWS.S3.DeletedBuckets': data}
-        return create_entry('The following S3 bucket was deleted', data, ec)
+
+        return "the Bucket %s was Deleted " % args.get('bucketName')
 
     def list_buckets(args):
         data = []
@@ -85,7 +82,7 @@ script:
                 'BucketName': bucket['Name']
             })
 
-        ec = {'AWS.S3.BucketList': data}
+        ec = {'AWS.S3.Bucket': data}
         return create_entry('AWS S3 Bucket List', data, ec)
 
     def get_bucket_policy(args):
@@ -95,22 +92,26 @@ script:
         statements = policy['Statement']
         for statement in statements:
                 data.append({
-                'BucketName': args.get('bucketName'),
-                'PolicyId': policy['Id'],
-                'PolicyVersion': policy['Version'],
-                'Sid': statement['Sid'],
-                'Action': statement['Action'],
-                'Principal': statement['Principal'],
-                'Resource': statement['Resource'],
-                'Effect': statement['Effect']
-                })
+                    'BucketName':args.get('bucketName'),
+                    'PolicyId': policy['Id'],
+                    'PolicyVersion': policy['Version'],
+                    'Sid': statement['Sid'],
+                    'Action': statement['Action'],
+                    'Principal': statement['Principal'],
+                    'Resource': statement['Resource'],
+                    'Effect': statement['Effect']
+                    })
 
-        ec = {'AWS.S3.Policy': data, 'AWS.S3.Policy.json': response['Policy']}
+        ec = {'AWS.S3.Bucket.Policy': data, 'AWS.S3.Bucket.Policy.json': response['Policy']}
         return create_entry('AWS S3 Bucket Policy', data, ec)
 
 
     def set_bucket_policy(args):
-        bucket_policy = json.dumps(args.get('bucketPolicyJson'))
+        if type(args.get('bucketPolicyJson')) is dict:
+            bucket_policy = json.dumps(args.get('bucketPolicyJson'))
+        elif type(args.get('bucketPolicyJson')) is string:
+            bucket_policy = json.loads(args.get('bucketPolicyJson'))
+
         s3.put_bucket_policy(Bucket=args.get('bucketName'), Policy=bucket_policy)
         return 'Successfully applied Bucket policy to %s bucket' % args.get('BucketName')
 
@@ -141,14 +142,14 @@ script:
         response = s3.list_buckets()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
           result = ('ok')
-          
+
     if demisto.command() == 'aws-s3-create-bucket':
         result = create_bucket(demisto.args())
 
     if demisto.command() == 'aws-s3-delete-bucket':
         result = delete_bucket(demisto.args())
 
-    if demisto.command() == 'aws-s3-list-buckets':
+    if demisto.command() == 'aws-s3-describe-buckets':
         result = list_buckets(demisto.args())
 
     if demisto.command() == 'aws-s3-get-bucket-policy':
@@ -193,10 +194,10 @@ script:
       description: AWS Region to create bucket (optional, e.g us-west-1) if no region
         is selected the default region will be used
     outputs:
-    - contextPath: AWS.S3.NewBucket.BucketName
+    - contextPath: AWS.S3.Bucket.BucketName
       description: The name of the bucket that was created
       type: string
-    - contextPath: AWS.S3.NewBucket.AWSRegion
+    - contextPath: AWS.S3.Bucket.AWSRegion
       description: 'The AWS Region the bucket was created '
       type: string
     description: Create AWS S3 bucket
@@ -211,10 +212,10 @@ script:
       description: Name of S3 bucket that was deleted
       type: string
     description: Delete AWS S3 bucket
-  - name: aws-s3-list-buckets
+  - name: aws-s3-describe-buckets
     arguments: []
     outputs:
-    - contextPath: AWS.S3.BucketList.BucketName
+    - contextPath: AWS.S3.Bucket.BucketName
       description: The name of the AWS S3 bucket
     description: List all S3 buckets in AWS account
   - name: aws-s3-get-bucket-policy
@@ -224,31 +225,31 @@ script:
       description: Name of bucket
       isArray: true
     outputs:
-    - contextPath: AWS.S3.Policy.Version
+    - contextPath: AWS.S3.Bucket.Policy.Version
       description: S3 Bucket Policy Version
       type: string
-    - contextPath: AWS.S3.Policy.PolicyID
+    - contextPath: AWS.S3.Bucket.Policy.PolicyID
       description: S3 Bucket Policy ID
       type: string
-    - contextPath: AWS.S3.Policy.Sid
+    - contextPath: AWS.S3.Bucket.Policy.Sid
       description: S3 Bucket Policy Statment ID
       type: string
-    - contextPath: AWS.S3.Policy.Action
+    - contextPath: AWS.S3.Bucket.Policy.Action
       description: S3 Bucket Policy Statment Action
       type: string
-    - contextPath: AWS.S3.Policy.Principal
+    - contextPath: AWS.S3.Bucket.Policy.Principal
       description: S3 Bucket Policy Statment Principal
       type: string
-    - contextPath: AWS.S3.Policy.Resource
+    - contextPath: AWS.S3.Bucket.Policy.Resource
       description: S3 Bucket Policy Statment Resource
       type: string
-    - contextPath: AWS.S3.Policy.Effect
+    - contextPath: AWS.S3.Bucket.Policy.Effect
       description: S3 Bucket Policy Statment Effect
       type: string
-    - contextPath: AWS.S3.Policy.Json
+    - contextPath: AWS.S3.Bucket.Policy.Json
       description: AWS S3 Policy Json output
       type: string
-    - contextPath: AWS.S3.Policy.BucketName
+    - contextPath: AWS.S3.Bucket.Policy.BucketName
       description: S3 Bucket Name
       type: string
     description: Get AWS S3 Bucket Policy
