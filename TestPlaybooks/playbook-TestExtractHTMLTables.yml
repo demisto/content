@@ -147,9 +147,12 @@ tasks:
       id: 50da60bb-61ac-4ad6-8f89-8f43eb32cb9f
       version: -1
       name: Bad
+      scriptName: Print
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      value: {}
     separatecontext: false
     view: |-
       {
