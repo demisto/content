@@ -70,7 +70,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: number.c18885f4-57fd-4c63-8734-d3a287644124
+      - - operator: number.InRange
           left:
             value:
               simple: "4"
@@ -126,7 +126,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: number.c18885f4-57fd-4c63-8734-d3a287644124
+      - - operator: number.InRange
           left:
             value:
               simple: "-4"
@@ -160,7 +160,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: number.c18885f4-57fd-4c63-8734-d3a287644124
+      - - operator: number.InRange
           left:
             value:
               simple: "1"
@@ -194,7 +194,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: number.c18885f4-57fd-4c63-8734-d3a287644124
+      - - operator: number.InRange
           left:
             value:
               simple: panda
@@ -228,7 +228,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: number.c18885f4-57fd-4c63-8734-d3a287644124
+      - - operator: number.InRange
           left:
             value:
               simple: "1"
@@ -364,7 +364,7 @@ tasks:
     task:
       id: a945a4bd-cd31-4d8b-8f2b-2dadc61499a6
       version: -1
-      name: Test Script Char
+      name: Test Strip Char
       type: condition
       iscommand: false
       brand: ""
@@ -383,7 +383,7 @@ tasks:
               complex:
                 root: arg1
                 transformers:
-                - operator: string.56b23cc9-8925-4097-8198-344fbf46f61d
+                - operator: string.StripChar
                   args:
                     chars:
                       value:
@@ -531,7 +531,7 @@ tasks:
               complex:
                 root: arg2
                 transformers:
-                - operator: unknown.b70c0b1c-a649-46c4-883c-387f7032f460
+                - operator: unknown.ReverseList
                 - operator: general.join
                   args:
                     separator:
@@ -652,7 +652,7 @@ tasks:
               complex:
                 root: arg3
                 transformers:
-                - operator: unknown.b70c0b1c-a649-46c4-883c-387f7032f460
+                - operator: unknown.ReverseList
             iscontext: true
           right:
             value:
