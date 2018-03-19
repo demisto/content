@@ -9,7 +9,9 @@ script: |-
   // Place here all common functions you'd like to share between server scripts.
 
   /**
-   * startsWith polyfil
+   * Returns true if string starts with search string
+   * @param {String} search - string to check
+   * @return {Boolean} true if string starts with <search> string
    */
   if (!String.prototype.startsWith) {
       String.prototype.startsWith = function(search, pos) {
@@ -18,7 +20,9 @@ script: |-
   }
 
   /**
-   * endsWith polyfil
+   * Returns true if string ends with search string
+   * @param {String} search - string to check
+   * @return {Boolean} true if string ends with <search> string
    */
   if (!String.prototype.endsWith) {
       String.prototype.endsWith = function(search, this_len) {
