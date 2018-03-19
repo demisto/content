@@ -318,6 +318,9 @@
         },
         {
             "playbookID": "Test-IsMaliciousIndicatorFound"
+        },
+        {
+            "playbookID": "TestExtractHTMLTables"
         }
     ],
     "skipped": [
