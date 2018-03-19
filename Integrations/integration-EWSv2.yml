@@ -230,6 +230,7 @@ script:
             remove_from_dict(os.environ, 'http_proxy')
             remove_from_dict(os.environ, 'HTTPS_PROXY')
             remove_from_dict(os.environ, 'https_proxy')
+            os.environ['NO_PROXY'] = EWS_SERVER
 
         version = get_version(VERSION_STR)
         credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
