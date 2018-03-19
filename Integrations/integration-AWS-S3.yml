@@ -56,7 +56,7 @@ script:
         data = []
         response = s3.create_bucket(
                         ACL=args.get('acl'),
-                        Bucket=args.get('bucketName'),
+                        Bucket=args.get('bucketName').lower(),
                         CreateBucketConfiguration={
                             'LocationConstraint': args.get('awsRegion')
                         })
@@ -70,7 +70,7 @@ script:
 
     def delete_bucket(args):
         data =[]
-        response = s3.delete_bucket(Bucket=args.get('bucketName'))
+        response = s3.delete_bucket(Bucket=args.get('bucketName').lower())
 
         return "the Bucket %s was Deleted " % args.get('bucketName')
 
@@ -105,15 +105,15 @@ script:
         ec = {'AWS.S3.Bucket.Policy': data, 'AWS.S3.Bucket.Policy.json': response['Policy']}
         return create_entry('AWS S3 Bucket Policy', data, ec)
 
-
     def set_bucket_policy(args):
         if type(args.get('bucketPolicyJson')) is dict:
             bucket_policy = json.dumps(args.get('bucketPolicyJson'))
-        elif type(args.get('bucketPolicyJson')) is string:
-            bucket_policy = json.loads(args.get('bucketPolicyJson'))
+        else:
+            bucket_policy = args.get('bucketPolicyJson')
 
         s3.put_bucket_policy(Bucket=args.get('bucketName'), Policy=bucket_policy)
         return 'Successfully applied Bucket policy to %s bucket' % args.get('BucketName')
+
 
     def delete_bucket_policy(args):
         s3.delete_bucket_policy(Bucket=args.get('bucketName'))
@@ -121,7 +121,7 @@ script:
 
     def download_file(args):
         data = io.BytesIO()
-        s3.download_fileobj(args.get('bucketName'), args.get('s3Key'), data)
+        s3.download_fileobj(args.get('bucketName').lower(), args.get('s3Key'), data)
 
         return fileResult(args.get('s3Key'),data.getvalue())
 
@@ -178,7 +178,7 @@ script:
     arguments:
     - name: bucketName
       required: true
-      description: The name of S3 bucket to create
+      description: The name of S3 bucket to create (in lowercase)
     - name: acl
       required: true
       auto: PREDEFINED
@@ -253,13 +253,6 @@ script:
       description: S3 Bucket Name
       type: string
     description: Get AWS S3 Bucket Policy
-  - name: aws-s3-set-bucket-policy
-    arguments:
-    - name: bucketName
-      description: Name of S3 bucket
-    - name: bucketPolicyJson
-      description: The S3 bucket policy to apply in json document format
-    description: Set AWS S3 Bucket policy with a json document
   - name: aws-s3-delete-bucket-policy
     arguments:
     - name: bucketName
@@ -286,5 +279,14 @@ script:
     - contextPath: AWS.S3.BucketObjects.LastModified
       description: Last date object was modified
     description: List object in S3 bucket
-  dockerimage: boto3
+  - name: aws-s3-set-bucket-policy
+    arguments:
+    - name: bucketName
+      required: true
+      description: Name of S3 bucket
+    - name: bucketPolicyJson
+      required: true
+      description: The S3 bucket policy to apply in json  format
+    description: Set a new bucket policy from json
+  dockerimage: demisto/boto3
   runonce: false
