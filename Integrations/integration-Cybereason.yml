@@ -390,6 +390,9 @@ script:
                 'Cybereason(val.Machine && val.Machine === obj.Machine)': {
                     'Machine': args.machine,
                     'IsIsolated': true
+                },
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+                    'Hostname': args.machine
                 }
             }
             return {
@@ -419,6 +422,9 @@ script:
                 'Cybereason(val.Machine && val.Machine === obj.Machine)': {
                     'Machine': args.machine,
                     'IsIsolated': false
+                },
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+                    'Hostname': args.machine
                 }
             }
             return {
@@ -639,6 +645,9 @@ script:
     - contextPath: Cybereason.IsIsolated
       description: Is the machine isolated
       type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
     description: Isolates a machine that has been infected from the rest of the network
     execution: true
   - name: cybereason-unisolate-machine
@@ -650,8 +659,13 @@ script:
     outputs:
     - contextPath: Cybereason.Machine
       description: Machine name
+      type: string
     - contextPath: Cybereason.IsIsolated
       description: Is the machine isolated
+      type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
     description: Stops isolation of a machine
     execution: true
 hidden: false
