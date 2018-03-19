@@ -1246,3 +1246,4 @@ script:
         be with impersonation rights to this mailbox. '
   dockerimage: demisto/py-ews
   isfetch: true
+releaseNotes: "-"
