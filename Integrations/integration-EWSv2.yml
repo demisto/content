@@ -136,7 +136,7 @@ script:
             if len(user_domain) == 2:
                 ACCOUNT_EMAIL = user_domain[1] + "@" + user_domain[0]
     if ACCOUNT_EMAIL is None:
-        raise Exception("Please provide a valid email address")
+        raise Exception("Provide a valid email address")
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
@@ -147,6 +147,7 @@ script:
         if isinstance(d, dict):
             return dict((k, v) for k, v in d.items() if v is not None)
         return d
+
 
     def get_entry_for_object(title, context_key, obj, headers=None):
         obj = filter_dict_null(obj)
@@ -853,7 +854,7 @@ script:
 
 
     def test_module():
-        BaseProtocol.TIMEOUT = 15
+        BaseProtocol.TIMEOUT = 20
         get_account(ACCOUNT_EMAIL)
         demisto.results('ok')
 
@@ -900,12 +901,13 @@ script:
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = "Got unauthorized from the server. " \
-                                 "Please check credentials are correct and authentication method are supported. " \
-                                 "If you are using NTLM, you can try using 'domain\\username' as username for authentication"
+                                 "Check credentials are correct and authentication method are supported."
+
+            error_message += "You can try using 'domain\\username' as username for authentication" if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings" \
-                            "Please check proxy parameter. If you are using server URL - please change to server IP address"
+                            "Check proxy parameter. If you are using server URL - change to server IP address"
         if debug_log:
             error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
         raise Exception(error_message)
@@ -1242,6 +1244,5 @@ script:
     - name: target-mailbox
       description: 'Use the default mailbox if empty, otherwise user might has to
         be with impersonation rights to this mailbox. '
-  dockerimage: demisto/py-ews:latest
+  dockerimage: demisto/py-ews
   isfetch: true
-  runonce: false
