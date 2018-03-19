@@ -102,13 +102,15 @@ script: |-
   def get_context_values(context_keys):
       context_values = {}
       missing_keys = []
-      for key in map(lambda x: x.lower(), context_keys):
-          if key:
-              value = demisto.get(demisto.context(), key)
-              if value:
-                  context_values[key] = value
-              else:
-                  missing_keys.append(key)
+      incident_context = nested_dict_flatted(demisto.context())
+      if incident_context:
+          for key in context_keys:
+              if key:
+                  value = incident_context.get(key)
+                  if value:
+                      context_values[key] = value
+                  else:
+                      missing_keys.append(key)
       return context_values, missing_keys
 
 
@@ -141,7 +143,7 @@ script: |-
   def get_context(incident_id):
       res = demisto.executeCommand("getContext", {'id': incident_id});
       try:
-          return res[0].Contents.context
+          return res[0]['Contents']['context']
       except:
           pass
 
@@ -232,7 +234,7 @@ script: |-
   keys_sum = len(similar_incident_keys or {}) + len(similar_labels or {}) + len(similar_context_values or {}) + len(similar_custom_fields or {})
   if keys_sum < MIN_NUMBER_OF_KEYS_TO_COMPARE:
       demisto.results("There is not enough incident\labels\context keys\custom fields to compare. Need at least %d keys, found %d." % (MIN_NUMBER_OF_KEYS_TO_COMPARE, keys_sum))
-      exit(1)
+      exit(0)
 
   duplicate_incidents = get_incidents_by_keys(similar_incident_keys, incident['occurred'], incident['id'],
                                               HOURS_BACK, IGNORE_CLOSED, MAX_NUMBER_OF_INCIDENTS)
@@ -251,6 +253,7 @@ script: |-
                                                   c.get('CustomFields', dict()),
                                                   CUSTOMS_FIELDS_DIFFERENT_WORDS,
                                                   MIN_NUMBER_OF_CUSTOM_FIELDS_KEYS)]
+
 
   if similar_context_values:
       filter_by_context = []
