@@ -1,32 +1,32 @@
 {
   "brandName": "_Siem",
+  "id": "b2a75d77-2a86-45b9-8f0f-11ef205fbb6d",
   "version": -1,
-  "modified": "2018-03-11T22:53:40.004610895+02:00",
+  "modified": "2018-03-19T18:12:06.090014744+02:00",
   "defaultIncidentType": "",
-  "instanceId": "1ed11288-1278-49f2-8278-80d26fc2ab66",
+  "instanceId": "188c6c42-42d2-410f-80a6-3be1da4d8705",
+  "incidentSamples": [],
   "mapping": {
     "Access": {
       "internalMapping": {
-        "details": {
-          "simple": "ip",
-          "complex": null
-        },
-        "occurred": {
-          "simple": "blabla",
+        "name": {
+          "simple": "title",
           "complex": null
         }
       },
       "dontMapEventToLabels": false
     }
   },
-  "unclassifiedCases": {},
-  "incidentSamples": [],
+  "unclassifiedCases": {
+    "OKA2": 1
+  },
+  "custom": true,
   "transformer": {
-      "simple": "type",
-      "complex": null
+    "simple": "type",
+    "complex": null
   },
   "keyTypeMap": {
-    "oka1": "Access",
-    "oka2": "Authentication"
+    "OKA1": "Access",
+    "aa": "Authentication"
   }
 }
