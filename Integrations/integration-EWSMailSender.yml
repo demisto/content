@@ -79,7 +79,7 @@ script:
         if "@" in USERNAME:
             ACCOUNT_EMAIL = USERNAME
     if ACCOUNT_EMAIL is None:
-        raise Exception("Please provide a valid email address in the mailbox field")
+        raise Exception("Provide a valid email address in the mailbox field")
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
@@ -210,7 +210,7 @@ script:
 
 
     def test_module():
-        BaseProtocol.TIMEOUT = 15
+        BaseProtocol.TIMEOUT = 20
         account = get_account(ACCOUNT_EMAIL)
         demisto.results('ok')
 
@@ -231,12 +231,13 @@ script:
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = "Got unauthorized from the server. " \
-                                 "Please check credentials are correct and authentication method are supported. " \
-                                 "If you are using NTLM, you can try using 'domain\\username' as username for authentication"
+                                 "Check credentials are correct and authentication method are supported."
+
+            error_message += "You can try using 'domain\\username' as username for authentication" if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings" \
-                            "Please check proxy parameter. If you are using server URL - please change to server IP address"
+                            "Check proxy parameter. If you are using server URL - change to server IP address"
         if debug_log:
             error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
         raise Exception(error_message)
