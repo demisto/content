@@ -2,7 +2,6 @@ commonfields:
   id: MarkAsNoteByTag
   version: -1
 name: MarkAsNoteByTag
-releaseNotes: "Script to mark entries with given tag as notes"
 script: |
   entries = demisto.executeCommand('getEntries', {})
   if isError(entries[0]):
