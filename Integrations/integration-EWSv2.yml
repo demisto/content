@@ -1254,4 +1254,3 @@ script:
       here: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx#bk_AddRemoveEWS'
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "-"
