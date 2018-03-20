@@ -12,12 +12,13 @@ detaileddescription: |-
 
   To fetch emails from a specific folder, folder path needs to be specified. Inbox is the default folder.
 configuration:
-- display: Exchange URL or Server (IP address or Hostname)
+- display: Exchange URL or Server IP address
   name: ewsServer
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: Email (for authentication)
+- display: 'Authentication: Email address (for office365) or DOMAIN\USERNAME (e.g.
+    DEMISTO.INT\admin)'
   name: credentials
   defaultvalue: ""
   type: 9
@@ -42,34 +43,46 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Has impersonation rights.
+  name: impersonation
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Mailbox (to send the message from)
+  name: mailbox
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |
-    DEBUG_MODE = False
-    # set output for logs
-    import logging
-    logging.basicConfig()
+    from cStringIO import StringIO
+    import logging, warnings
 
-    if DEBUG_MODE:
-        logging.getLogger("exchangelib").setLevel(logging.DEBUG)
-    else:
-        # disable warnings print
-        import warnings
-        warnings.filterwarnings("ignore")
+    warnings.filterwarnings("ignore")
+    log_stream = StringIO()
+    logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, ServiceAccount, Configuration, NTLM, \
         BASIC, DIGEST, Version, DELEGATE
 
+    # load arguments
     USE_PROXY = demisto.params()['proxy']
     NON_SECURE = demisto.params()['insecure']
     AUTH_METHOD_STR = demisto.params()['authType'].lower()
     VERSION_STR = demisto.params()['defaultServerVersion']
     EWS_SERVER = demisto.params()['ewsServer']
     USERNAME = demisto.params()['credentials']['identifier']
-    ACCOUNT_EMAIL = USERNAME
+    ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
+    if not ACCOUNT_EMAIL:
+        if "@" in USERNAME:
+            ACCOUNT_EMAIL = USERNAME
+    if ACCOUNT_EMAIL is None:
+        raise Exception("Provide a valid email address in the mailbox field")
     PASSWORD = demisto.params()['credentials']['password']
-    ACCESS_TYPE = DELEGATE
+    FOLDER_NAME = demisto.params().get('folder', 'Inbox')
+    ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
 
     VERSIONS = {
         '2007': EXCHANGE_2007,
@@ -177,6 +190,8 @@ script:
             remove_from_dict(os.environ, 'HTTPS_PROXY')
             remove_from_dict(os.environ, 'https_proxy')
 
+            os.environ['NO_PROXY'] = EWS_SERVER
+
         version = get_version(VERSION_STR)
         credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
         config_args = {
@@ -197,17 +212,37 @@ script:
 
 
     def test_module():
+        BaseProtocol.TIMEOUT = 20
         account = get_account(ACCOUNT_EMAIL)
-        account.root.tree()
         demisto.results('ok')
 
     config = prepare()
     args = prepare_args(demisto.args())
 
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'send-mail':
-        demisto.results(send_email(**args))
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'send-mail':
+            demisto.results(send_email(**args))
+
+    except Exception, e:
+        import time
+        time.sleep(2)
+        log_stream.seek(0)
+        debug_log = log_stream.read()
+        error_message = ""
+        if "Status code: 401" in debug_log:
+            error_message = "Got unauthorized from the server. " \
+                                 "Check credentials are correct and authentication method are supported."
+
+            error_message += "You can try using 'domain\\username' as username for authentication" if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+        if "Status code: 503" in debug_log:
+            error_message = "Got timeout from the server. " \
+                            "Probably the server is not reachable with the current settings" \
+                            "Check proxy parameter. If you are using server URL - change to server IP address"
+        if debug_log:
+            error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
+        raise Exception(error_message)
   type: python
   commands:
   - name: send-mail
@@ -237,3 +272,4 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+releaseNotes: "-"
