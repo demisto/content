@@ -1289,4 +1289,3 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-  runonce: false
