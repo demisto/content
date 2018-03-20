@@ -3,9 +3,6 @@
   "id": "b2a75d77-2a86-45b9-8f0f-11ef205fbb6d",
   "version": -1,
   "modified": "2018-03-19T18:12:06.090014744+02:00",
-  "defaultIncidentType": "",
-  "instanceId": "188c6c42-42d2-410f-80a6-3be1da4d8705",
-  "incidentSamples": [],
   "mapping": {
     "Access": {
       "internalMapping": {
@@ -20,7 +17,6 @@
   "unclassifiedCases": {
     "OKA2": 1
   },
-  "custom": true,
   "transformer": {
     "simple": "type",
     "complex": null
