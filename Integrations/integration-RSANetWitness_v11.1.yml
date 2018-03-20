@@ -196,7 +196,7 @@ script:
             - missing arguments
         """
         args = demisto.args()
-        incident_id = args.get('incident_id')
+        incident_id = args.get('incidentId')
 
         #call get_incident_request(), given user arguments
         #returns the response body on success
@@ -397,7 +397,7 @@ script:
         incident = update_incident_request(
             #use get_token to retrieve a token
             get_token(),
-            args.get('incident_id'),
+            args.get('incidentId'),
             status = args.get('status'),
             assignee = args.get('assignee')
             )
@@ -454,7 +454,7 @@ script:
         """
 
         args = demisto.args()
-        incident_id = args.get('incident_id')
+        incident_id = args.get('incidentId')
 
         #call delete_incident_request() function
         #no return value on successful request
@@ -536,7 +536,7 @@ script:
 
         """
         args = demisto.args()
-        incident_id = args.get('incident_id')
+        incident_id = args.get('incidentId')
         alerts = get_all_alerts(incident_id)
 
         alerts_parsed = []
@@ -919,16 +919,16 @@ script:
             demisto.results('ok')
         elif command == 'fetch-incidents':
             fetch_incidents()
-        elif command == 'nw-get-incident':
+        elif command == 'NetWitness-get-incident':
             get_incident()
             get_alerts()
-        elif command == 'nw-get-incidents':
+        elif command == 'NetWitness-get-incidents':
             get_incidents()
-        elif command == 'nw-update-incident':
+        elif command == 'NetWitness-update-incident':
             update_incident()
-        elif command == 'nw-delete-incident':
+        elif command == 'NetWitness-delete-incident':
             delete_incident()
-        elif command == 'nw-get-alerts':
+        elif command == 'NetWitness-get-alerts':
             get_alerts()
         sys.exit(0)
     except ValueError as e:
@@ -937,9 +937,9 @@ script:
 
   type: python
   commands:
-  - name: nw-get-incident
+  - name: NetWitness-get-incident
     arguments:
-    - name: incident_id
+    - name: incidentId
       required: true
       description: The incident id
     outputs:
@@ -1066,7 +1066,7 @@ script:
       description: An Active Directory (AD) domain
     description: Get details of a specific incident, including all alerts related
       with the incident.
-  - name: nw-get-incidents
+  - name: NetWitness-get-incidents
     arguments:
     - name: since
       description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z).
@@ -1149,9 +1149,9 @@ script:
       description: Unique destination IP addresses.
     description: 'Get a list of incidents in a specific time frame. One of the followings
       must be specified:  since, until, last_days'
-  - name: nw-update-incident
+  - name: NetWitness-update-incident
     arguments:
-    - name: incident_id
+    - name: incidentId
       required: true
       description: The incident's id
     - name: status
@@ -1238,15 +1238,15 @@ script:
       description: Unique destination IP addresses.
     description: Update a specific incident.  Currently, an incident’s status and
       assignee may be modified
-  - name: nw-delete-incident
+  - name: NetWitness-delete-incident
     arguments:
-    - name: incident_id
+    - name: incidentId
       required: true
       description: The incident id
     description: Delete a specific incident, by its id.
-  - name: nw-get-alerts
+  - name: NetWitness-get-alerts
     arguments:
-    - name: incident_id
+    - name: incidentId
       required: true
     outputs:
     - contextPath: NetWitness.Alerts.id
