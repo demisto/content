@@ -306,10 +306,10 @@ script:
         args = demisto.args()
 
         #validate one of the following was passed - until, since
-        if not any([args.get('since'), args.get('until'), args.get('last_days')]):
+        if not any([args.get('since'), args.get('until'), args.get('lastDays')]):
             raise ValueError("Please provide one or both of the following parameters: since, until.")
 
-        num_of_days = args.get('last_days')
+        num_of_days = args.get('lastDays')
         if num_of_days:
             since = datetime.now() - timedelta(days=int(num_of_days))
             #convert to ISO 8601 format and add Z suffix
@@ -1077,7 +1077,7 @@ script:
     - name: limit
       description: The maximum number of incidents to retrieve. default  is 200.
       defaultValue: "200"
-    - name: last_days
+    - name: lastDays
       description: Use this to retrieve incidents from the last number of days specified.
     outputs:
     - contextPath: NetWitness.Incidents.id
@@ -1148,7 +1148,7 @@ script:
     - contextPath: NetWitness.Incidents.alertMeta.DestinationIp
       description: Unique destination IP addresses.
     description: 'Get a list of incidents in a specific time frame. One of the followings
-      must be specified:  since, until, last_days'
+      must be specified:  since, until, lastDays'
   - name: NetWitness-update-incident
     arguments:
     - name: incidentId
