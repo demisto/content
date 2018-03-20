@@ -580,8 +580,8 @@ script:
         iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
         last_incident_datetime = datetime.strptime(timestamp, iso_format)
-
         last_incident_timestamp = timestamp
+
         for incident in netwitness_incidents:
 
             incident_timestamp = incident.get('created')
@@ -590,7 +590,7 @@ script:
 
             #parse timestamp to datetime format to be able to compare with last_incident_datetime
             incident_datetime = datetime.strptime(incident_timestamp, iso_format)
-            if incident_datetime < last_incident_datetime:
+            if incident_datetime > last_incident_datetime:
                 #update last_incident_datetime
                 last_incident_datetime = incident_datetime
                 last_incident_timestamp = incident_timestamp
@@ -912,6 +912,8 @@ script:
             update_incident()
         elif command == 'nw-delete-incident':
             delete_incident()
+        elif command == 'nw-get-alerts':
+            get_alerts()
         sys.exit(0)
     except ValueError as e:
         retrun_error_entry(e.message)
@@ -999,11 +1001,13 @@ script:
     - contextPath: NetWitness.Alerts.title
       description: The title or name of the rule that created the alert.
     - contextPath: NetWitness.Alerts.detail
-      description: The details of the alert. This can be the module name or meta that the module included.
+      description: The details of the alert. This can be the module name or meta that
+        the module included.
     - contextPath: NetWitness.Alerts.created
       description: The timestamp of the alert created date.
     - contextPath: NetWitness.Alerts.source
-      description: The source of this alert. For example, "Event Stream Analysis", "Malware Analysis", etc.
+      description: The source of this alert. For example, "Event Stream Analysis",
+        "Malware Analysis", etc.
     - contextPath: NetWitness.Alerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
     - contextPath: NetWitness.Alerts.type
@@ -1044,7 +1048,8 @@ script:
       description: An Active Directory (AD) username.
     - contextPath: NetWitness.Alerts.events.destination.user.adDomain
       description: An Active Directory (AD) domain
-    description: Get details of a specific incident
+    description: Get details of a specific incident, including all alerts related
+      with the incident.
   - name: nw-get-incidents
     arguments:
     - name: since
@@ -1223,5 +1228,65 @@ script:
       required: true
       description: The incident id
     description: Delete a specific incident, by its id.
+  - name: nw-get-alerts
+    arguments:
+    - name: incident_id
+      required: true
+    outputs:
+    - contextPath: NetWitness.Alerts.id
+      description: The unique alert identifier.
+    - contextPath: NetWitness.Alerts.incidentId
+      description: The incident id associated with the alert.
+    - contextPath: NetWitness.Alerts.title
+      description: The title or name of the rule that created the alert.
+    - contextPath: NetWitness.Alerts.detail
+      description: The details of the alert. This can be the module name or meta that
+        the module included.
+    - contextPath: NetWitness.Alerts.created
+      description: The timestamp of the alert created date.
+    - contextPath: NetWitness.Alerts.source
+      description: The source of this alert. For example, "Event Stream Analysis",
+        "Malware Analysis", etc.
+    - contextPath: NetWitness.Alerts.riskScore
+      description: The risk score of this alert, usually in the range 0 - 100.
+    - contextPath: NetWitness.Alerts.type
+      description: Type of alert, "Network", "Log", etc.
+    - contextPath: NetWitness.Alerts.events.source.device.ipAddress
+      description: The IP address.
+    - contextPath: NetWitness.Alerts.events.source.device.port
+      description: The port.
+    - contextPath: NetWitness.Alerts.events.source.device.macAddress
+      description: The ethernet MAC address.
+    - contextPath: NetWitness.Alerts.events.source.device.dnsHostname
+      description: The DNS resolved hostname.
+    - contextPath: NetWitness.Alerts.events.source.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+    - contextPath: NetWitness.Alerts.events.source.user.username
+      description: The unique username.
+    - contextPath: NetWitness.Alerts.events.source.user.emailAddress
+      description: An email address.
+    - contextPath: NetWitness.Alerts.events.source.user.adUsername
+      description: An Active Directory (AD) username.
+    - contextPath: NetWitness.Alerts.events.source.user.adDomain
+      description: An Active Directory (AD) domain
+    - contextPath: NetWitness.Alerts.events.destination.device.ipAddress
+      description: The IP address.
+    - contextPath: NetWitness.Alerts.events.destination.device.port
+      description: The port.
+    - contextPath: NetWitness.Alerts.events.destination.device.macAddress
+      description: The ethernet MAC address.
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsHostname
+      description: The DNS resolved hostname.
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+    - contextPath: NetWitness.Alerts.events.destination.user.username
+      description: The unique username.
+    - contextPath: NetWitness.Alerts.events.destination.user.emailAddress
+      description: An email address.
+    - contextPath: NetWitness.Alerts.events.destination.user.adUsername
+      description: An Active Directory (AD) username.
+    - contextPath: NetWitness.Alerts.events.destination.user.adDomain
+      description: An Active Directory (AD) domain
+    description: Get all the alerts related to a specific incident.
   isfetch: true
   runonce: false
