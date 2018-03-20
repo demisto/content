@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "okta",
+            "playbookID": "test_okta_fetch_logs"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
