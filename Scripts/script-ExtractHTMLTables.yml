@@ -52,7 +52,7 @@ script: |-
       demisto.results('Did not find tables in HTML.')
 type: python
 tags:
-- Utilities
+- Utility
 comment: |-
   Find tables inside HTML and extract the contents into objects using the following logic:
   - If table has a single column, just create an array of strings from the values
