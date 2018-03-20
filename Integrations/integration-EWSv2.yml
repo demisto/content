@@ -68,6 +68,11 @@ configuration:
   defaultvalue: Inbox
   type: 0
   required: false
+- display: HTTP requests to exchange server timeout
+  name: requestTimeout
+  defaultvalue: "120"
+  type: 0
+  required: false
 script:
   script: |
     from cStringIO import StringIO
@@ -141,7 +146,7 @@ script:
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
-
+    BaseProtocol.TIMEOUT = demisto.params().get('requestTimeout', 120)
 
     def filter_dict_null(d):
         if isinstance(d, dict):
@@ -230,7 +235,6 @@ script:
             remove_from_dict(os.environ, 'http_proxy')
             remove_from_dict(os.environ, 'HTTPS_PROXY')
             remove_from_dict(os.environ, 'https_proxy')
-            os.environ['NO_PROXY'] = EWS_SERVER
 
         version = get_version(VERSION_STR)
         credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
@@ -855,7 +859,6 @@ script:
 
 
     def test_module():
-        BaseProtocol.TIMEOUT = 20
         get_account(ACCOUNT_EMAIL)
         demisto.results('ok')
 
@@ -902,13 +905,13 @@ script:
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = "Got unauthorized from the server. " \
-                                 "Check credentials are correct and authentication method are supported."
+                                 "Check credentials are correct and authentication method are supported. "
 
-            error_message += "You can try using 'domain\\username' as username for authentication" if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message = "Got timeout from the server. " \
-                            "Probably the server is not reachable with the current settings" \
-                            "Check proxy parameter. If you are using server URL - change to server IP address"
+                            "Probably the server is not reachable with the current settings. " \
+                            "Check proxy parameter. If you are using server URL - change to server IP address. "
         if debug_log:
             error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
         raise Exception(error_message)
