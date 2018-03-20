@@ -146,7 +146,7 @@ script:
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
-    BaseProtocol.TIMEOUT = demisto.params().get('requestTimeout', 120)
+    BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
     def filter_dict_null(d):
         if isinstance(d, dict):
