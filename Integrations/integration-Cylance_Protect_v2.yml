@@ -1277,4 +1277,3 @@ script:
       type: string
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
-releaseNotes: "-"

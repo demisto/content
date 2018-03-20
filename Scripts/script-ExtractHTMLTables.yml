@@ -2,7 +2,6 @@ commonfields:
   id: ExtractHTMLTables
   version: -1
 name: ExtractHTMLTables
-releaseNotes: "Extract HTML table data into the context"
 script: |-
   from bs4 import BeautifulSoup
 
