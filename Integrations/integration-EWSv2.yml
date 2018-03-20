@@ -1250,6 +1250,8 @@ script:
     - name: target-mailbox
       description: 'Use the default mailbox if empty, otherwise user might has to
         be with impersonation rights to this mailbox. '
+    description: 'Mark item as junk - usually use to block an email address, as described
+      here: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx#bk_AddRemoveEWS'
   dockerimage: demisto/py-ews
   isfetch: true
 releaseNotes: "-"
