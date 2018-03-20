@@ -106,7 +106,7 @@ script:
         if(log.client){
             logObject.ClientRawUserAgent = log.client.userAgent.rawUserAgent;
             logObject.ClientOS = log.client.userAgent.os;
-            logObject.ClientBrowser = log.client.browser;
+            logObject.ClientBrowser = log.client.userAgent.browser;
             logObject.ClientDevice = log.client.device;
             logObject.ClientID = log.client.ID;
             logObject.ClientIPAddress = log.client.ipAddress;
