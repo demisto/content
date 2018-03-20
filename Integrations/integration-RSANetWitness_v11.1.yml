@@ -54,13 +54,13 @@ script:
 
     """
     from datetime import datetime, timedelta
-    from requests import post as http_post, get as http_get, delete as http_delete, patch as http_patch, packages
+    import requests
     import urllib
     import json
     import os
-    from re import sub as regex_replace
+    import re
     # disable insecure warnings
-    packages.urllib3.disable_warnings()
+    requests.packages.urllib3.disable_warnings()
 
     """
 
@@ -112,7 +112,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code different from 200
             - response body does not contain valid json (ValueError)
 
@@ -123,18 +123,19 @@ script:
             'Content-Type' : 'application/x-www-form-urlencoded;charset=ISO-8859-1',
             'Accept': 'application/json; charset=UTF-8',
             'NetWitness-Version': VERSION
-            }
+        }
 
-        response = http_post(url,
+        response = requests.post(url,
             headers = get_token_headers,
             data = username_password,
             verify = USE_SSL,
-            proxies = PROXIES)
+            proxies = PROXIES
+        )
 
         #successful get_token
         if response.status_code == 200:
             return response.json()
-        #bad request - NetWitness retunrs a common json structure for errors
+        #bad request - NetWitness returns a common json structure for errors
         error_lst = response.json().get('errors')
         raise ValueError('get_token failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
@@ -151,7 +152,7 @@ script:
         response_body = get_token_request(
             USERNAME,
             PASSWORD
-            )
+        )
         token = response_body.get('accessToken')
         if not token:
             raise ValueError('Failed to access get_token token (Unexpected response)')
@@ -165,7 +166,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code different from 200
             - response body does not contain valid json (ValueError)
 
@@ -173,22 +174,23 @@ script:
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = http_get(url,
+        response = requests.get(url,
             headers = headers,
             verify = USE_SSL,
-            proxies = PROXIES)
+            proxies = PROXIES
+        )
 
         #successful request
         if response.status_code == 200:
             return response.json()
-        #bad request - NetWitness retunrs a common json structure for errors; a list of error objects
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
     def get_incident():
         """
 
-        return incidents main attriibutes to the war room
+        return incidents main attributes to the war room
 
         raises an exception on:
             - missing arguments
@@ -202,14 +204,14 @@ script:
         incident = get_incident_request(
             get_token(),
             incident_id
-            )
+        )
 
         md_content = create_incident_md_table(incident)
         md_title = "## NetWitness Get Incident {}".format(incident_id)
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': json.dumps(incident),
+            'Contents': incident,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': '\n'.join([md_title, md_content]),
@@ -222,7 +224,7 @@ script:
     def get_incidents_request(token, since=None, until=None, page_number=None, page_size=None):
         """
 
-        retuens the response bodys
+        returns the response body
 
         arguments:
             - token for request auth
@@ -230,7 +232,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code diff from 200
             - response body does not contain valid json (ValueError)
 
@@ -245,28 +247,27 @@ script:
         url = '{}/incidents'.format(BASE_PATH)
         headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = http_get(
+        response = requests.get(
             url,
             headers = headers,
             verify = USE_SSL,
             proxies = PROXIES,
-            params = url_params)
+            params = url_params
+        )
 
         #successful request
         if response.status_code == 200:
             return response.json()
-        #bad request - NetWitness retunrs a common json structure for errors
+        #bad request - NetWitness returns a common json structure for errors
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
-    def get_all_incidents(since=None, until=None, limit=None):
+    def get_all_incidents(token, since=None, until=None, limit=None):
         """
 
         returns all/up to limit incidents in a time window
 
         """
-
-        token = get_token()
 
         # if limit is None, set to infinity
         if not limit:
@@ -283,12 +284,12 @@ script:
                 since = since,
                 until = until,
                 page_number = page_number
-                )
+            )
             incidents.extend(response_body.get('items'))
             has_next = response_body.get('hasNext')
             page_number += 1
 
-        #if incidents lisit larger then limit - fit to limit
+        #if incidents list larger then limit - fit to limit
         if len(incidents) > limit:
             incidents[limit : -1] = []
 
@@ -317,23 +318,24 @@ script:
             args['until'] = None
 
         incidents = get_all_incidents(
+            get_token(),
             since = args.get('since'),
             until = args.get('until'),
             limit = args.get('limit', 500)
-            )
+        )
 
         md_content = create_incidents_list_md_table(incidents)
         md_title = "## NetWitness Get Incidents"
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': json.dumps(incidents),
+            'Contents': incidents,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': '\n'.join([md_title, md_content]),
             'EntryContext': {
                 "NetWitness.Incidents(obj.id==val.id)": incidents
-                }
+            }
         }
         demisto.results(entry)
 
@@ -341,7 +343,7 @@ script:
     def update_incident_request(token, incident_id, assignee=None, status=None):
 
         """
-        retuens the response body
+        returns the response body
 
         arguments:
             - token for request auth
@@ -349,7 +351,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code diff from 200
             - response body does not contain valid json (ValueError)
 
@@ -360,16 +362,17 @@ script:
         }
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         headers = add_token_header(DEFAULT_HEADERS, token)
-        response = http_patch(
+        response = requests.patch(
             url,
             headers = headers,
             verify = USE_SSL,
             proxies = PROXIES,
-            json = body)
+            json = body
+        )
         #successful request
         if response.status_code == 200:
             return response.json()
-        #bad request - NetWitness retunrs a common json structure for errors; a list of error objects
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
@@ -392,7 +395,7 @@ script:
         #returns the response body on success
         #raises an exception on failed request
         incident = update_incident_request(
-            #use get_token to retrive a token
+            #use get_token to retrieve a token
             get_token(),
             args.get('incident_id'),
             status = args.get('status'),
@@ -403,19 +406,19 @@ script:
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': json.dumps(incident),
+            'Contents': incident,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md_content,
             'EntryContext': {
                 "NetWitness.Incidents(obj.id==val.id)": incident
-                }
+            }
         }
         demisto.results(entry)
 
     def delete_incident_request(token, incident_id):
         """
-        retuens the response bodys
+        returns the response body
 
         arguments:
             - token for request auth
@@ -423,7 +426,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code diff from 204
 
         """
@@ -431,7 +434,7 @@ script:
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = http_delete(
+        response = requests.delete(
             url,
             headers = headers,
             verify = USE_SSL,
@@ -439,7 +442,7 @@ script:
         #successful request, no content is  returned from NetWitness
         if response.status_code == 204:
             return
-        #bad request - NetWitness retunrs a common json structure for errors; a list of error objects
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
@@ -458,7 +461,8 @@ script:
         #raises an exception on failed request
         delete_incident_request(
             get_token(),
-            incident_id)
+            incident_id
+        )
 
         entry = {
             'Type': entryTypes['note'],
@@ -469,7 +473,7 @@ script:
 
     def get_alerts_request(token, incident_id, page_number=None, page_size=None):
         """
-        retuens the response bodys
+        returns the response body
 
         arguments:
             - token for request auth
@@ -477,7 +481,7 @@ script:
 
         raises an exception on:
 
-            - http request failiure
+            - http request failure
             - response status code diff from 204
 
         """
@@ -488,25 +492,25 @@ script:
             'pageSize' : page_size
         }
         headers = add_token_header(DEFAULT_HEADERS, token)
-        response = http_get(
+        response = requests.get(
             url,
             headers = headers,
             verify = USE_SSL,
             proxies = PROXIES,
-            params = url_params)
+            params = url_params
+        )
         #successful request
         if response.status_code == 200:
             return response.json()
-        #bad request - NetWitness retunrs a common json structure for errors; a list of error objects
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
-    def get_all_alerts(incident_id):
+    def get_all_alerts(token ,incident_id):
         """
         returns the alerts that are associated with an incident
 
         """
-        token = get_token()
         has_next = True
         page_number = 0
         alerts = []
@@ -519,7 +523,7 @@ script:
                 token,
                 incident_id,
                 page_number = page_number
-                )
+            )
             alerts.extend(response_body.get('items'))
             has_next = response_body.get('hasNext')
             page_number += 1
@@ -549,13 +553,13 @@ script:
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': json.dumps(alerts),
+            'Contents': alerts,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': '\n'.join([title, md_content]),
             'EntryContext': {
                 "NetWitness.Alerts(obj.id==val.id)": alerts
-                }
+            }
         }
         demisto.results(entry)
 
@@ -563,7 +567,7 @@ script:
 
         lastRun = demisto.getLastRun()
 
-        #if last timestemp was recorded- use it, else generate timestamp for one day prior to current date
+        #if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
         if lastRun and lastRun.get('timestamp'):
             timestamp = lastRun.get('timestamp')
         else:
@@ -571,10 +575,13 @@ script:
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
 
+        token = get_token()
+
         netwitness_incidents = get_all_incidents(
+            token,
             since = timestamp,
             limit = 1000
-            )
+        )
 
         demisto_incidents =[]
         iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -596,7 +603,7 @@ script:
                 last_incident_timestamp = incident_timestamp
 
             # add to incident object an array of all related alerts
-            incident['alerts'] = get_all_alerts(incident.get('id'))
+            incident['alerts'] = get_all_alerts(token, incident.get('id'))
             demisto_incidents.append(parse_incident(incident))
 
         demisto.incidents(demisto_incidents)
@@ -631,13 +638,16 @@ script:
     def dict_list_to_str(dict_list):
         """
 
-        parses a list of dictionaries into a string reresentation
+        parses a list of dictionaries into a string representation
 
         """
-        if dict_list:
-            return '\n'.join([', '.join(["{}: {}".format(k,v) for k,v in d.items()]) for d in dict_list])
-        return ''
-
+        if not dict_list:
+            return ''
+        string_list = []
+        for dict in dict_list:
+            key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
+            string_list.append(', '.join(string_representation))
+        return '\n'.join(string_list)
 
     def create_incident_md_table(incident):
 
@@ -653,16 +663,18 @@ script:
             'lastUpdated',
             'assignee',
             'sources',
-            'categories']
+            'categories'
+        ]
 
         #list of fields to be presented in 'journal' md table, by order of appearance
         journal_entry_fields = [
             'created',
             'author',
             'notes',
-            'milestone']
+            'milestone'
+        ]
 
-        #create incedent entry
+        #create incident entry
         incident_entry = { k:v for k,v in incident.items() if k in incident_entry_fields }
 
         #if category field exists and not empty - update incident entry 'category' field with a short string representation of the categories-list as value
@@ -672,7 +684,7 @@ script:
         else:
             incident_entry['categories'] = ''
 
-        #if source fields exists and not epmpty - update incident entry 'source' field with a short string representation of the source-list as value
+        #if source fields exists and not empty - update incident entry 'source' field with a short string representation of the source-list as value
         source_list = incident.get('sources')
         if source_list:
             incident_entry['sources'] = ', '.join(source_list)
@@ -683,7 +695,8 @@ script:
             'Incident Details',
             incident_entry,
             headers = incident_entry_fields,
-            headerTransform = header_transformer)
+            headerTransform = header_transformer
+        )
 
         #if journalEntries field exists and not empty - create journal entry
         journal = incident.get('journalEntries');
@@ -694,7 +707,8 @@ script:
                 'Incident Journal',
                 journal_entry,
                 headers = journal_entry_fields,
-                headerTransform = header_transformer)
+                headerTransform = header_transformer
+            )
 
         md_content = '\n'.join([incident_table, journal_table]);
         return md_content
@@ -713,11 +727,12 @@ script:
             'lastUpdated',
             'assignee',
             'sources',
-            'categories']
+            'categories'
+        ]
 
         incidents_list = []
         for incident in incidents:
-            #create incedent entry to hold the fields to be presented in the md table
+            #create incident entry to hold the fields to be presented in the md table
             incident_entry = { k:v for k,v in incident.items() if k in incident_entry_fields }
             #if category field exists and not empty - update incident entry 'category' field with a short string representation of the categories-list as value
             categories = incident.get('categories')
@@ -726,7 +741,7 @@ script:
             else:
                 incident_entry['categories'] = ''
 
-             #if source fields exists and not epmpty - update incident entry 'source' field with a short string representation of the source-list as value
+             #if source fields exists and not empty - update incident entry 'source' field with a short string representation of the source-list as value
             source_list = incident.get('sources')
             if source_list:
                 incident_entry['sources'] = ', '.join(source_list)
@@ -739,7 +754,8 @@ script:
             'Incident Details',
             incidents_list,
             headers = incident_entry_fields,
-            headerTransform = header_transformer)
+            headerTransform = header_transformer
+        )
 
         return incident_table
 
@@ -754,7 +770,7 @@ script:
             'source',
             'riskScore',
             'type'
-            ]
+        ]
 
         alert_entry = { k:v for k,v in alert.items() if k in alert_entry_fields }
         alert_events = alert.get('events', [])
@@ -768,7 +784,7 @@ script:
             alert_entry,
             headers = alert_entry_fields,
             headerTransform = header_transformer
-            )
+        )
 
         events = []
         for event in alert_events:
@@ -845,7 +861,7 @@ script:
         md_content = '\n'.join([event_details, source_md, destination_md])
         return md_content
 
-    def retrun_error_entry(message):
+    def return_error_entry(message):
         error_entry = {
             'Type': entryTypes['error'],
             'Contents': message,
@@ -859,7 +875,7 @@ script:
 
         """
 
-        return regex_replace("([a-z])([A-Z])","\g<1> \g<2>", header).capitalize()
+        return re.sub("([a-z])([A-Z])","\g<1> \g<2>", header).capitalize()
 
 
     def priority_to_severity(priority):
@@ -916,7 +932,7 @@ script:
             get_alerts()
         sys.exit(0)
     except ValueError as e:
-        retrun_error_entry(e.message)
+        return_error_entry(e.message)
         sys.exit(1)
 
   type: python
