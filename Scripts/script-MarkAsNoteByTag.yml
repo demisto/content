@@ -24,7 +24,7 @@ script: |
               'Contents': "No entries with '" + demisto.getArg('tag') + "' found"})
 type: python
 tags:
-- Utilities
+- Utility
 comment: Mark entries as notes if they are tagged with given tag
 enabled: true
 args:
