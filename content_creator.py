@@ -5,7 +5,7 @@ import glob
 import shutil
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
-                'Classifiers', 'Layouts']
+                'Classifiers', 'Layouts', 'IncidentFields']
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
 BUNDLE_POST = 'bundle_post'
