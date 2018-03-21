@@ -12,21 +12,22 @@ detaileddescription: |-
 
   To fetch emails from a specific folder, folder path needs to be specified. Inbox is the default folder.
 configuration:
-- display: Exchange URL or Server (IP address or Hostname)
+- display: 'Exchange URL or Server IP address '
   name: ewsServer
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: Email (for authentication)
+- display: 'Authentication: Email address (for office365) or DOMAIN\USERNAME (e.g.
+    DEMISTO.INT\admin)'
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
-- display: Default Target Mailbox. If empty - username mailbox will be used
+- display: Default Target Mailbox
   name: defaultTargetMailbox
   defaultvalue: ""
   type: 0
-  required: false
+  required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
   defaultvalue: "2013"
@@ -67,36 +68,33 @@ configuration:
   defaultvalue: Inbox
   type: 0
   required: false
+- display: HTTP requests to exchange server timeout
+  name: requestTimeout
+  defaultvalue: "120"
+  type: 0
+  required: false
 script:
   script: |
-    DEBUG_MODE = False
-    # set output for logs
-    import logging
-    logging.basicConfig()
+    from cStringIO import StringIO
+    import logging, warnings
 
-    if DEBUG_MODE:
-        logging.getLogger("exchangelib").setLevel(logging.DEBUG)
-    else:
-        # disable warnings print
-        import warnings
-        warnings.filterwarnings("ignore")
-
-    from exchangelib.errors import ErrorItemNotFound, ErrorAccessDenied
-    from exchangelib.items import Item, Message
+    warnings.filterwarnings("ignore")
+    log_stream = StringIO()
+    logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     import json
     from datetime import timedelta
 
-    from exchangelib.services import EWSService
-    from exchangelib.util import create_element, add_xml_child
+    from exchangelib.errors import ErrorItemNotFound, ErrorAccessDenied, ResponseMessageError
+    from exchangelib.items import Item, Message
+    from exchangelib.services import EWSService, EWSAccountService
+    from exchangelib.util import create_element, add_xml_child, xml_to_str
     from exchangelib.transport import MNS, TNS
-
     from exchangelib import IMPERSONATION, DELEGATE, Account, ServiceAccount, \
         EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-
 
     # consts
     VERSIONS = {
@@ -113,7 +111,8 @@ script:
     MESSAGE_ID = "messageId"
     ITEM_ID = "itemId"
     ACTION = "action"
-    CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,                                                                                                      MESSAGE_ID)
+    CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
+                                                                                                                   MESSAGE_ID)
     CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
     CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
     CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
@@ -142,17 +141,18 @@ script:
             if len(user_domain) == 2:
                 ACCOUNT_EMAIL = user_domain[1] + "@" + user_domain[0]
     if ACCOUNT_EMAIL is None:
-        raise Exception("Please provide a valid email address")
+        raise Exception("Provide a valid email address")
     PASSWORD = demisto.params()['credentials']['password']
-    FOLDER_NAME = demisto.params()['folder']
+    FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
-
+    BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
     def filter_dict_null(d):
         if isinstance(d, dict):
             return dict((k, v) for k, v in d.items() if v is not None)
         return d
+
 
     def get_entry_for_object(title, context_key, obj, headers=None):
         obj = filter_dict_null(obj)
@@ -212,7 +212,10 @@ script:
         path = path.split('\\')
         folder_result = folder
         for sub_folder_name in path:
-            folder_result = folder_result.get_folder_by_name(sub_folder_name)
+            folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
+            if len(folder_filter_by_name) == 0:
+                raise Exception("No such folder %s" % path)
+            folder_result = folder_filter_by_name[0]
 
         return folder_result
 
@@ -233,8 +236,10 @@ script:
             remove_from_dict(os.environ, 'HTTPS_PROXY')
             remove_from_dict(os.environ, 'https_proxy')
 
+            os.environ['NO_PROXY'] = EWS_SERVER
+
         version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=30)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
         config_args = {
             'credentials': credentials,
             'auth_type': get_auth_method(AUTH_METHOD_STR),
@@ -247,6 +252,28 @@ script:
         config = Configuration(**config_args)
         return config
 
+    class MarkAsJunk(EWSAccountService):
+        SERVICE_NAME = 'MarkAsJunk'
+
+        def call(self, item_id, move_item):
+            elements = list(self._get_elements(payload=self.get_payload(item_id=item_id, move_item=move_item)))
+            for element in elements:
+                if isinstance(element, ResponseMessageError):
+                    return element.message
+            return "Success"
+
+
+        def get_payload(self, item_id, move_item):
+            junk = create_element('m:%s' % self.SERVICE_NAME,
+                                       IsJunk="true",
+                                       MoveItem="true" if move_item else "false")
+
+            items_list = create_element('m:ItemIds')
+            item_element = create_element("t:ItemId", Id=item_id)
+            items_list.append(item_element)
+            junk.append(items_list)
+
+            return junk
 
     class GetSearchableMailboxes(EWSService):
         SERVICE_NAME = 'GetSearchableMailboxes'
@@ -322,7 +349,6 @@ script:
 
             return element
 
-
     def get_searchable_mailboxes(protocol):
         searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
         return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
@@ -360,7 +386,7 @@ script:
 
 
     def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
-        qs = get_folder_by_path(account.root, folder_name)
+        qs = get_folder_by_path(account.root.tois, folder_name)
         if since_datetime:
             qs = qs.filter(datetime_received__gte=since_datetime)
         else:
@@ -663,15 +689,9 @@ script:
         return entries
 
 
-    def test_module():
-        account = get_account(ACCOUNT_EMAIL)
-        get_folder_by_path(account.root, FOLDER_NAME)
-        demisto.results('ok')
-
-
     def move_item(item_id, target_folder_path, target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        target_folder = get_folder_by_path(account.root, target_folder_path)
+        target_folder = get_folder_by_path(account.root.tois, target_folder_path)
         item = get_item_from_mailbox(account, item_id)
         item.move(target_folder)
         move_result = {
@@ -718,7 +738,7 @@ script:
 
     def search_items_in_mailbox(query, folder_path, target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        folder = get_folder_by_path(account.root, folder_path) if folder_path else Folder(account=account)
+        folder = get_folder_by_path(account.root.tois, folder_path) if folder_path else Folder(account=account)
         items = folder.filter(query)
         searched_items_result = map(lambda item: parse_item_as_dict(item, camel_case=True, compact_fields=True), items)
         for item in searched_items_result:
@@ -750,7 +770,7 @@ script:
 
     def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        target_folder = get_folder_by_path(account.root, target_folder_path)
+        target_folder = get_folder_by_path(account.root.tois, target_folder_path)
         recovered_messages = []
         for item in account.recoverable_items_deletions.filter(message_id__in=message_ids.split(",")).all():
             item.move(target_folder)
@@ -805,34 +825,98 @@ script:
                                     contacts)
 
 
-    config = prepare()
-    args = prepare_args(demisto.args())
+    def create_folder(new_folder_name, folder_path, target_mailbox=None):
+        account = get_account(target_mailbox or ACCOUNT_EMAIL)
+        folder_exist = False
+        full_path = "%s\\%s" % (folder_path, new_folder_name)
+        try:
+            if get_folder_by_path(account.root.tois, full_path):
+                folder_exist = True
+        except:
+            pass
+        if folder_exist:
+            return "Folder %s was already exist" % full_path
+        parent_folder = get_folder_by_path(account.root.tois, folder_path)
+        f = Folder(parent=parent_folder, name=new_folder_name)
+        f.save()
+        get_folder_by_path(account.root.tois, full_path)
+        return "Folder %s created successfully" % full_path
 
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'fetch-incidents':
-        incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
-        demisto.incidents(incidents)
-    elif demisto.command() == 'ews-get-attachment':
-        demisto.results(fetch_attachments_for_message(**args))
-    elif demisto.command() == 'ews-delete-attachment':
-        demisto.results(delete_attachments_for_message(**args))
-    elif demisto.command() == 'ews-get-searchable-mailboxes':
-        demisto.results(get_searchable_mailboxes(config.protocol))
-    elif demisto.command() == 'ews-search-mailboxes':
-        demisto.results(search_mailboxes(config.protocol, **args))
-    elif demisto.command() == 'ews-move-item':
-        demisto.results(move_item(**args))
-    elif demisto.command() == 'ews-delete-items':
-        demisto.results(delete_items(**args))
-    elif demisto.command() == 'ews-search-mailbox':
-        demisto.results(search_items_in_mailbox(**args))
-    elif demisto.command() == 'ews-get-contacts':
-        demisto.results(get_contacts(**args))
-    elif demisto.command() == 'ews-get-out-of-office':
-        demisto.results(get_out_of_office_state(**args))
-    elif demisto.command() == 'ews-recover-messages':
-        demisto.results(recover_soft_delete_item(**args))
+
+    def mark_item_as_junk(item_id, move_items, target_mailbox=None):
+        account = get_account(target_mailbox or ACCOUNT_EMAIL)
+        move_items = (move_items.lower() == "yes")
+        ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
+        mark_as_junk_result = {
+            ITEM_ID: item_id,
+        }
+        if ews_result == "Success":
+            mark_as_junk_result[ACTION] = 'marked-as-junk'
+        else:
+            raise Exception("Failed mark-item-as-junk with error: " + ews_result)
+
+        return get_entry_for_object('Mark item as junk',
+                                    CONTEXT_UPDATE_EWS_ITEM,
+                                    mark_as_junk_result)
+
+
+    def test_module():
+        get_account(ACCOUNT_EMAIL)
+        demisto.results('ok')
+
+    try:
+        config = prepare()
+        args = prepare_args(demisto.args())
+
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
+            demisto.incidents(incidents)
+        elif demisto.command() == 'ews-get-attachment':
+            demisto.results(fetch_attachments_for_message(**args))
+        elif demisto.command() == 'ews-delete-attachment':
+            demisto.results(delete_attachments_for_message(**args))
+        elif demisto.command() == 'ews-get-searchable-mailboxes':
+            demisto.results(get_searchable_mailboxes(config.protocol))
+        elif demisto.command() == 'ews-search-mailboxes':
+            demisto.results(search_mailboxes(config.protocol, **args))
+        elif demisto.command() == 'ews-move-item':
+            demisto.results(move_item(**args))
+        elif demisto.command() == 'ews-delete-items':
+            demisto.results(delete_items(**args))
+        elif demisto.command() == 'ews-search-mailbox':
+            demisto.results(search_items_in_mailbox(**args))
+        elif demisto.command() == 'ews-get-contacts':
+            demisto.results(get_contacts(**args))
+        elif demisto.command() == 'ews-get-out-of-office':
+            demisto.results(get_out_of_office_state(**args))
+        elif demisto.command() == 'ews-recover-messages':
+            demisto.results(recover_soft_delete_item(**args))
+        elif demisto.command() == 'ews-create-folder':
+            demisto.results(create_folder(**args))
+        elif demisto.command() == 'ews-mark-item-as-junk':
+            demisto.results(mark_item_as_junk(**args))
+
+
+    except Exception, e:
+        import time
+        time.sleep(2)
+        log_stream.seek(0)
+        debug_log = log_stream.read()
+        error_message = ""
+        if "Status code: 401" in debug_log:
+            error_message = "Got unauthorized from the server. " \
+                                 "Check credentials are correct and authentication method are supported. "
+
+            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+        if "Status code: 503" in debug_log:
+            error_message = "Got timeout from the server. " \
+                            "Probably the server is not reachable with the current settings. " \
+                            "Check proxy parameter. If you are using server URL - change to server IP address. "
+        if debug_log:
+            error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
+        raise Exception(error_message)
   type: python
   commands:
   - name: ews-get-attachment
@@ -1139,6 +1223,34 @@ script:
     - contextPath: EWS.Items.action
       description: The value will be 'recovered'.
     description: Recover messages that has beed deleted (soft-delete).
-  dockerimage: demisto/py-ews:latest
+  - name: ews-create-folder
+    arguments:
+    - name: new-folder-name
+      required: true
+      description: The new folder name.
+    - name: folder-path
+      required: true
+      description: Path to locate the new folder)
+      defaultValue: Inbox
+    - name: target-mailbox
+      description: The mailbox.
+    description: Create new folder.
+  - name: ews-mark-item-as-junk
+    arguments:
+    - name: item-id
+      required: true
+      description: The item id to mark as junk.
+    - name: move-items
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Move the item from the original folder to junk folder.
+      defaultValue: "yes"
+    - name: target-mailbox
+      description: 'Use the default mailbox if empty, otherwise user might has to
+        be with impersonation rights to this mailbox. '
+    description: 'Mark item as junk - usually use to block an email address, as described
+      here: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx#bk_AddRemoveEWS'
+  dockerimage: demisto/py-ews
   isfetch: true
-  runonce: false
