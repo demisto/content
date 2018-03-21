@@ -1,7 +1,7 @@
 commonfields:
-  id: StripChar
+  id: StripChars
   version: -1
-name: StripChar
+name: StripChars
 script: |
   value = demisto.args()["value"]
   chars = demisto.args().get("chars", "")
