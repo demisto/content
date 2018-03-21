@@ -47,6 +47,8 @@ script: |-
           items = []
           for k, v in d.items():
               new_key = parent_key + sep + k if parent_key else k
+              if isinstance(v, list) and len(v) > 0:
+                  v = v[0]
               if isinstance(v, collections.MutableMapping) and len(v) > 0:
                   items.extend(nested_dict_flatted(v, new_key, sep=sep).items())
               else:
@@ -103,6 +105,7 @@ script: |-
       context_values = {}
       missing_keys = []
       incident_context = nested_dict_flatted(demisto.context())
+
       if incident_context:
           for key in context_keys:
               if key:
@@ -188,7 +191,7 @@ script: |-
       if not values_map1 or not values_map2:
           return False
       count = 0
-      if number_of_keys_to_consider_equals == '*':
+      if number_of_keys_to_consider_equals == -1:
           if len(values_map1) != len(values_map2):
               return False
           number_of_keys_to_consider_equals = len(values_map1)
@@ -241,7 +244,7 @@ script: |-
   # filter by labels
   if len(similar_labels or {}):
       duplicate_incidents = [c for c in duplicate_incidents if
-                             verify_map_equals(similar_labels,
+                            verify_map_equals(similar_labels,
                                                get_incident_labels_map(c.get('labels', []),
                                                similar_labels.keys()),
                                                LABELS_DIFFERENT_WORDS, MIN_NUMBER_OF_LABEL_KEYS)]
@@ -249,11 +252,10 @@ script: |-
   # filter by custom fields
   if len(similar_custom_fields or {}) > 0:
       duplicate_incidents = [c for c in duplicate_incidents
-                             if verify_map_equals(similar_custom_fields,
+                            if verify_map_equals(similar_custom_fields,
                                                   c.get('CustomFields', dict()),
                                                   CUSTOMS_FIELDS_DIFFERENT_WORDS,
                                                   MIN_NUMBER_OF_CUSTOM_FIELDS_KEYS)]
-
 
   if similar_context_values:
       filter_by_context = []
@@ -266,6 +268,7 @@ script: |-
                                    CONTEXT_DIFFERENT_WORDS,
                                    MIN_NUMBER_OF_CONTEXT_KEYS):
                   filter_by_context.append(c)
+
       duplicate_incidents = filter_by_context
 
 
