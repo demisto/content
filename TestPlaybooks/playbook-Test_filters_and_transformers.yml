@@ -531,7 +531,7 @@ tasks:
               complex:
                 root: arg2
                 transformers:
-                - operator: unknown.ReverseList
+                - operator: general.ReverseList
                 - operator: general.join
                   args:
                     separator:
@@ -652,7 +652,7 @@ tasks:
               complex:
                 root: arg3
                 transformers:
-                - operator: unknown.ReverseList
+                - operator: general.ReverseList
             iscontext: true
           right:
             value:
