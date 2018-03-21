@@ -383,7 +383,7 @@ tasks:
               complex:
                 root: arg1
                 transformers:
-                - operator: string.StripChar
+                - operator: string.StripChars
                   args:
                     chars:
                       value:
