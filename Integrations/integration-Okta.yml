@@ -353,7 +353,7 @@ script:
 
     var getUserIdRequest = function(username){
         var uri = 'users?filter=' + encodeURIComponent('profile.login eq "' + username + '"');
-        var res = sendRequest(uri, params, uri);
+        var res = sendRequest(uri);
         if (res && res.length && res.length === 1) {
             return res[0].id;
         } else {
@@ -446,7 +446,7 @@ script:
     };
 
     var getGroupsRequest = function (userId) {
-        var uri = 'users/' + userId + '/groups'
+        var uri = 'users/' + userId + '/groups';
 
         return sendRequest(uri);
     };
@@ -1128,9 +1128,6 @@ script:
       - ASCENDING
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
-    - name: limit
-      description: Sets the number of results returned in the response, between 0
-        and 1000, default is 100
     outputs:
     - contextPath: Okta.Logs.FailedLogins.ActorAlternateId
       description: Log actor alternate Id
@@ -1196,7 +1193,8 @@ script:
       description: Log target alternate Id
     - contextPath: Okta.Logs.FailedLogins.Targets.DisplayName
       description: Log target display name
-    description: Get logs about user failed logins
+    description: Get events for when Okta issued a session to a user who is authenticating
+      and the user failed to log-in
   - name: okta-get-group-assignments
     arguments:
     - name: since
@@ -1211,9 +1209,6 @@ script:
       - ASCENDING
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
-    - name: limit
-      description: Sets the number of results returned in the response, between 0
-        and 1000, default is 100
     outputs:
     - contextPath: Okta.Logs.GroupAssignments.ActorAlternateId
       description: Log actor alternate Id
@@ -1294,9 +1289,6 @@ script:
       - ASCENDING
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
-    - name: limit
-      description: Sets the number of results returned in the response, between 0
-        and 1000, default is 100
     outputs:
     - contextPath: Okta.Logs.ApplicationAssignments.ActorAlternateId
       description: Log actor alternate Id
@@ -1377,9 +1369,6 @@ script:
       - ASCENDING
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
-    - name: limit
-      description: Sets the number of results returned in the response, between 0
-        and 1000, default is 100
     outputs:
     - contextPath: Okta.Logs.ApplicationAuthentication.ActorAlternateId
       description: Log actor alternate Id

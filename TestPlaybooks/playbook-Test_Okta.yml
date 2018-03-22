@@ -1,7 +1,8 @@
-id: test_okta_fetch_logs
+id: okta_test_playbook
 version: -1
-name: Test Okta fetch logs
-description: Test the fetch logs functionality of Okta
+fromversion: 3.5.0
+name: Okta test playbook
+description: Test the functionality of Okta
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: f9fd4278-c268-4e7b-88b4-0c87050f4ef6
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,10 +36,10 @@ tasks:
       version: -1
       name: okta-get-failed-logins
       description: Get logs about user failed logins
-      script: okta_copy|||okta-get-failed-logins
+      script: okta|||okta-get-failed-logins
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "4"
@@ -50,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461,
-          "y": 250
+          "x": 780,
+          "y": 252
         }
       }
   "2":
@@ -63,10 +65,10 @@ tasks:
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
-      script: okta_copy|||okta-get-group-assignments
+      script: okta|||okta-get-group-assignments
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "3"
@@ -79,8 +81,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461,
-          "y": 635
+          "x": 782,
+          "y": 644
         }
       }
   "3":
@@ -92,10 +94,10 @@ tasks:
       version: -1
       name: okta-get-application-assignments
       description: Get events for when a user was assigned to an application.
-      script: okta_copy|||okta-get-application-assignments
+      script: okta|||okta-get-application-assignments
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "5"
@@ -108,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461,
-          "y": 836
+          "x": 780,
+          "y": 858
         }
       }
   "4":
@@ -122,10 +124,10 @@ tasks:
       name: okta-get-application-authentication
       description: Get events for when a user attempted to SSO to an application managed
         in Okta
-      script: okta_copy|||okta-get-application-authentication
+      script: okta|||okta-get-application-authentication
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "2"
@@ -138,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461,
-          "y": 441
+          "x": 782,
+          "y": 447
         }
       }
   "5":
@@ -160,9 +162,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -175,27 +174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 461,
-          "y": 1031
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 905d3175-beaf-4fe3-800c-40e794723947
-    type: title
-    task:
-      id: 905d3175-beaf-4fe3-800c-40e794723947
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 461,
-          "y": 1207
+          "x": 780,
+          "y": 1076
         }
       }
   "7":
@@ -214,6 +194,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -226,14 +207,138 @@ tasks:
           "y": 78
         }
       }
+  "8":
+    id: "8"
+    taskid: 24281336-10bb-4f48-810f-23f8774bbc94
+    type: regular
+    task:
+      id: 24281336-10bb-4f48-810f-23f8774bbc94
+      version: -1
+      name: okta-get-user
+      description: Fetches a specific user when you know the user’s login, please
+        note that one of the parameters bellow is mandatory.
+      script: okta|||okta-get-user
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      userid: {}
+      username:
+        simple: johndoe3@test.org
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 287,
+          "y": 644
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 552a6a9d-bca0-4381-8aae-3b3d57b9177f
+    type: regular
+    task:
+      id: 552a6a9d-bca0-4381-8aae-3b3d57b9177f
+      version: -1
+      name: okta-get-groups
+      description: Get all user groups
+      script: okta|||okta-get-groups
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      username:
+        simple: johndoe3@test.org
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 287,
+          "y": 252
+        }
+      }
+  "10":
+    id: "10"
+    taskid: f5b3a41a-edd8-4829-8e19-cad481ca1143
+    type: regular
+    task:
+      id: f5b3a41a-edd8-4829-8e19-cad481ca1143
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: id, Type, Groups
+      path:
+        simple: Account
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 287,
+          "y": 447
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 55c419ec-6258-4a4a-8a21-16c8f36b2441
+    type: regular
+    task:
+      id: 55c419ec-6258-4a4a-8a21-16c8f36b2441
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: id, Email, Username, DisplayName, Type
+      path:
+        simple: Account.[1]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 287,
+          "y": 847
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1362,
-        "width": 380,
-        "x": 461,
+        "height": 1261,
+        "width": 875,
+        "x": 287,
         "y": -90
       }
     }
