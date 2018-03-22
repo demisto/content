@@ -112,7 +112,7 @@ script:
         var keys = Object.keys(logObject);
         keys.forEach(function(key){
             if(logObject[key] instanceof Array){
-                flattened[pascalToSpace(key)] = flattenValue(logObject[key]);
+                flattened[pascalToSpace(key)] = flattenValue(logObject[key], 0, true);
             }
             else{
                 flattened[pascalToSpace(key)] = logObject[key];
@@ -263,7 +263,7 @@ script:
         return ret;
     };
 
-    var flattenValue = function(value,level) {
+    var flattenValue = function(value, level, isArray) {
         if (!level) {
             level=0;
         }
@@ -272,11 +272,11 @@ script:
         } else if (typeof value === 'string') {
             return value + '<br>';
         } else {
-            var ret = (level>0) ? identLevel(level-1) + '{ <br>' : '';
+            var ret = (level>0) ? (identLevel(level-1) + (isArray ? '' : '{') + ' <br>') : '';
             for (var key in value) {
-                ret += identLevel(level) + key + ': ' + flattenValue(value[key],level+1);
+                ret += identLevel(level) + (isArray ? '' : key + ': ') + flattenValue(value[key],level+1,isArray);
             }
-            return (level>0) ? ret + identLevel(level-1) + '}<br>' : ret;
+            return (level>0) ? (ret + identLevel(level-1) + (isArray ? '' : '}') + '<br>') : ret;
         }
 
     };
