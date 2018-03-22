@@ -110,4 +110,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/python_zipfile
-releaseNotes: "-"
