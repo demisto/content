@@ -317,6 +317,10 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": "RSA NetWitness v11.1",
+            "playbookID": "RSA NetWitness Test"
         }
     ],
     "skipped": [
