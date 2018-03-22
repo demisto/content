@@ -4,7 +4,7 @@
     "tests": [
         {
           "integrations": "okta",
-            "playbookID": "test_okta_fetch_logs"
+            "playbookID": "okta_test_playbook"
         },
         {
             "integrations": "EWS v2",
