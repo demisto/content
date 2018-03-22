@@ -1,14 +1,14 @@
 id: SalesforceTestPlaybook
-version: 6
+version: -1
 name: SalesforceTestPlaybook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 863d2485-8888-468e-8f37-2f9695d2da6d
+    taskid: e48ff07a-4392-41b1-80cd-dafe7c1dc599
     type: start
     task:
-      id: 863d2485-8888-468e-8f37-2f9695d2da6d
+      id: e48ff07a-4392-41b1-80cd-dafe7c1dc599
       version: -1
       name: ""
       iscommand: false
@@ -20,16 +20,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: ee0bc65d-6ae0-4387-89a8-400bd0e8a458
+    taskid: fc22c766-f9f8-4c58-8cf3-9127bb553b6d
     type: regular
     task:
-      id: ee0bc65d-6ae0-4387-89a8-400bd0e8a458
+      id: fc22c766-f9f8-4c58-8cf3-9127bb553b6d
       version: -1
       name: 'Search for string  '
       script: Salesforce|||salesforce-search
@@ -43,16 +43,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
   "2":
     id: "2"
-    taskid: 1dc49c1e-8574-4f8a-8d1f-d1bbc59b9100
+    taskid: 5ab6ed4f-e52a-46f1-87e1-61d305e4bc33
     type: regular
     task:
-      id: 1dc49c1e-8574-4f8a-8d1f-d1bbc59b9100
+      id: 5ab6ed4f-e52a-46f1-87e1-61d305e4bc33
       version: -1
       name: Query User
       script: Salesforce|||salesforce-query
@@ -66,16 +66,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: 7dc4056a-72ce-453e-8693-794f20485800
+    taskid: 4d599895-5a9e-4334-8fb8-eb40de9c9ae7
     type: regular
     task:
-      id: 7dc4056a-72ce-453e-8693-794f20485800
+      id: 4d599895-5a9e-4334-8fb8-eb40de9c9ae7
       version: -1
       name: Add a new case
       script: Salesforce|||salesforce-create-case
@@ -106,10 +106,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 21e6c562-53e8-4b11-81fe-f01c872552b6
+    taskid: 9e00d573-a8ea-44e8-828d-e1fc1fb23def
     type: regular
     task:
-      id: 21e6c562-53e8-4b11-81fe-f01c872552b6
+      id: 9e00d573-a8ea-44e8-828d-e1fc1fb23def
       version: -1
       name: Get an object Item
       script: Salesforce|||salesforce-get-object
@@ -123,16 +123,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 705,
           "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: 1d00fbb7-49fc-4070-8260-ca68a282fe1c
+    taskid: 11fc5f1a-ccea-4c16-816f-e66f0bff0d46
     type: regular
     task:
-      id: 1d00fbb7-49fc-4070-8260-ca68a282fe1c
+      id: 11fc5f1a-ccea-4c16-816f-e66f0bff0d46
       version: -1
       name: Get Case
       script: Salesforce|||salesforce-get-case
@@ -150,16 +150,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1135,
           "y": 545
         }
       }
   "6":
     id: "6"
-    taskid: 9d18c50e-3dcd-4542-80b3-6ef426102070
+    taskid: c1399a1c-5bb5-47df-8908-3606e48791c7
     type: regular
     task:
-      id: 9d18c50e-3dcd-4542-80b3-6ef426102070
+      id: c1399a1c-5bb5-47df-8908-3606e48791c7
       version: -1
       name: Update a case item
       script: Salesforce|||salesforce-update-case
@@ -184,16 +184,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1135,
           "y": 720
         }
       }
   "7":
     id: "7"
-    taskid: 5c922aa1-9a40-4718-8913-58326ffc0a68
+    taskid: 5d72562c-7ebb-46ae-8770-a1db6eda3053
     type: condition
     task:
-      id: 5c922aa1-9a40-4718-8913-58326ffc0a68
+      id: 5d72562c-7ebb-46ae-8770-a1db6eda3053
       version: -1
       name: Verify case update
       type: condition
@@ -204,6 +204,7 @@ tasks:
       - "12"
       "yes":
       - "8"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -220,16 +221,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1135,
           "y": 895
         }
       }
   "8":
     id: "8"
-    taskid: 41902cb2-5a7e-434d-8e3b-8287e1ee98e5
+    taskid: c6dfcd6f-dde8-4c37-8b1e-596164e47b23
     type: regular
     task:
-      id: 41902cb2-5a7e-434d-8e3b-8287e1ee98e5
+      id: c6dfcd6f-dde8-4c37-8b1e-596164e47b23
       version: -1
       name: 'Update user data as object '
       script: Salesforce|||salesforce-update-object
@@ -267,16 +268,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 1350,
           "y": 1070
         }
       }
   "9":
     id: "9"
-    taskid: 998e0675-d81c-4180-85a8-9d706ce051b0
+    taskid: 44c97621-1a2d-4c55-8c07-b442e1ea2558
     type: condition
     task:
-      id: 998e0675-d81c-4180-85a8-9d706ce051b0
+      id: 44c97621-1a2d-4c55-8c07-b442e1ea2558
       version: -1
       name: Verify update object
       type: condition
@@ -315,16 +316,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 1350,
           "y": 1245
         }
       }
   "10":
     id: "10"
-    taskid: d5045eb1-c48b-485b-85ac-ef8ee9d23d7f
+    taskid: 9159ac1e-f90c-43e9-8bce-84975485a02a
     type: regular
     task:
-      id: d5045eb1-c48b-485b-85ac-ef8ee9d23d7f
+      id: 9159ac1e-f90c-43e9-8bce-84975485a02a
       version: -1
       name: Chattar Message (1)
       script: Salesforce|||salesforce-push-comment
@@ -341,16 +342,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1135,
           "y": 1420
         }
       }
   "11":
     id: "11"
-    taskid: d4ce40ba-64fb-4e2b-83a5-939035c20ba4
+    taskid: 89bb14a3-335a-4438-8399-3cdb21fc6742
     type: regular
     task:
-      id: d4ce40ba-64fb-4e2b-83a5-939035c20ba4
+      id: 89bb14a3-335a-4438-8399-3cdb21fc6742
       version: -1
       name: Chattar Message (2)
       script: Salesforce|||salesforce-push-comment
@@ -368,16 +369,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1565,
           "y": 1420
         }
       }
   "12":
     id: "12"
-    taskid: 2a876fd5-57f6-4508-8c48-c04b40c4456e
+    taskid: f1b171b6-7d1a-43f1-8490-025a5a079739
     type: regular
     task:
-      id: 2a876fd5-57f6-4508-8c48-c04b40c4456e
+      id: f1b171b6-7d1a-43f1-8490-025a5a079739
       version: -1
       name: Error!!!
       scriptName: ContextContains
@@ -393,16 +394,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 592.5,
           "y": 1420
         }
       }
   "13":
     id: "13"
-    taskid: ffc49796-989f-46a1-8e3c-10618f7c3f8e
+    taskid: f18aad56-9443-4ebc-86c6-42527650669c
     type: regular
     task:
-      id: ffc49796-989f-46a1-8e3c-10618f7c3f8e
+      id: f18aad56-9443-4ebc-86c6-42527650669c
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -422,8 +423,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    taskid: f2e9fee6-0378-48b2-8232-f1280eb933f9
+    type: regular
+    task:
+      id: f2e9fee6-0378-48b2-8232-f1280eb933f9
+      version: -1
+      name: Close Case
+      script: Salesforce|||salesforce-close-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      caseNumber: {}
+      oid:
+        simple: ${SalesForce.Case.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1070
         }
       }
 view: |-
@@ -432,7 +457,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1465,
-        "width": 1670,
+        "width": 1895,
         "x": 50,
         "y": 50
       }
