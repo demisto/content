@@ -152,7 +152,6 @@ def __create_incident_with_playbook(client, name, playbook_id):
 def __get_investigation_playbook_state(client, inv_id):
     res = client.req('GET', '/inv-playbook/' + inv_id, {})
     investigation_playbook = res.json()
-    print investigation_playbook
 
     return investigation_playbook['state']
 
