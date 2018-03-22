@@ -537,7 +537,10 @@ script:
         """
         args = demisto.args()
         incident_id = args.get('incidentId')
-        alerts = get_all_alerts(incident_id)
+        alerts = get_all_alerts(
+            get_token(),
+            incident_id
+        )
 
         alerts_parsed = []
         for alert in alerts:
