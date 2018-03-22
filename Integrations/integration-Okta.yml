@@ -94,6 +94,34 @@ script:
        return res;
     };
 
+    var logsToMarkdown = function(title, contents){
+        var md = title + '\n';
+        if(!(contents.length > 0)){
+            return md + 'No events found';
+        }
+
+        md += tableToMarkdown('Event Details', contents.map(function(content){
+            return logToHumanReadble(content);
+        }));
+
+        return md;
+    }
+
+    var logToHumanReadble = function(logObject){
+        var flattened = {};
+        var keys = Object.keys(logObject);
+        keys.forEach(function(key){
+            if(logObject[key] instanceof Array){
+                flattened[pascalToSpace(key)] = flattenValue(logObject[key]);
+            }
+            else{
+                flattened[pascalToSpace(key)] = logObject[key];
+            }
+        });
+
+        return flattened;
+    }
+
     var createLogObject = function(log){
         var logObject = {};
 
@@ -121,11 +149,44 @@ script:
         logObject.OutcomeReason = log.outcome.reason;
         logObject.Published = log.published;
         logObject.Severity = log.severity;
-        logObject.SecurityContextAsNumber = log.securityContext.asNumber;
-        logObject.SecurityContextAsOrg = log.securityContext.asOrg;
-        logObject.SecurityContextISP = log.securityContext.isp;
-        logObject.SecurityContextDomain = log.securityContext.domain;
-        logObject.SecurityContextIsProxy = log.securityContext.isProxy;
+        if(log.securityContext.asNumber){
+            logObject.SecurityContextAsNumber = log.securityContext.asNumber;
+        }
+        if(log.securityContext.asOrg){
+            logObject.SecurityContextAsOrg = log.securityContext.asOrg;
+        }
+        if(log.securityContext.isp){
+            logObject.SecurityContextISP = log.securityContext.isp;
+        }
+        if(log.SecurityContextDomain){
+            logObject.SecurityContextDomain = log.securityContext.domain;
+        }
+        if(log.securityContext.domain){
+            logObject.SecurityContextIsProxy = log.securityContext.isProxy;
+        }
+        if(log.authenticationContext){
+            if(log.authenticationContext.authenticationProvider){
+                logObject.AuthenticationProvider = log.authenticationContext.authenticationProvider;
+            }
+            if(log.authenticationContext.credentialProvider){
+                logObject.CredentialProvider = log.authenticationContext.credentialProvider;
+            }
+            if(log.authenticationContext.credentialType){
+                logObject.CredentialType = log.authenticationContext.credentialType;
+            }
+            if(log.authenticationContext.issuer){
+                logObject.AuthenticationIssuer = log.authenticationContext.issuer;
+            }
+            if(log.authenticationContext.interface){
+                logObject.AuthenticationInterface = log.authenticationContext.interface;
+            }
+            if(log.authenticationContext.authenticationStep){
+                logObject.AuthenticationStep = log.authenticationContext.authenticationStep;
+            }
+            if(log.authenticationContext.externalSessionId){
+                logObject.ExternalSessionId = log.authenticationContext.externalSessionId;
+            }
+        }
         logObject.uuid = log.uuid;
 
 
@@ -158,19 +219,6 @@ script:
         }
 
         return logObject;
-    };
-
-    var addLogQueryParams = function(queryParams){
-        var query = '';
-        if(queryParams){
-            var keys = Object.keys(queryParams);
-            keys.forEach(function(key){
-               query += "&";
-               query += key + '=' + queryParams[key];
-            });
-        }
-
-        return query;
     };
 
     var buildProfile = function(args) {
@@ -618,13 +666,7 @@ script:
             contents.push(createLogObject(res[i]));
         }
 
-        md = "Login events \n";
-
-        if(!(contents.length > 0)){
-            return md + 'No events found';
-        }
-
-        md += tableToMarkdown('event details', contents);
+        var md = logsToMarkdown("Failed Login events", contents);
 
         return {
             Type: entryTypes.note,
@@ -658,13 +700,7 @@ script:
             contents.push(createLogObject(res[i]));
         }
 
-        md = "Group assignment events \n";
-
-        if(!(contents.length > 0)){
-            return md + 'No events found';
-        }
-
-        md += tableToMarkdown('event details', contents);
+        var md = logsToMarkdown("Group assignment events", contents);
 
         return {
             Type: entryTypes.note,
@@ -696,13 +732,7 @@ script:
             contents.push(createLogObject(res[i]));
         }
 
-        md = "Application assignment events \n";
-
-        if(!(contents.length > 0)){
-            return md + 'No events found';
-        }
-
-        md += tableToMarkdown('event details', contents);
+        var md = logsToMarkdown("Application assignment events", contents);
 
         return {
             Type: entryTypes.note,
@@ -733,13 +763,7 @@ script:
             contents.push(createLogObject(res[i]));
         }
 
-        md = "Application authentication events \n";
-
-        if(!(contents.length > 0)){
-            return md + 'No events found';
-        }
-
-        md += tableToMarkdown('event details', contents);
+        var md = logsToMarkdown("Application authentication events", contents);
 
         return {
             Type: entryTypes.note,
