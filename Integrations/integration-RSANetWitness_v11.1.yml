@@ -291,7 +291,7 @@ script:
 
         #if incidents list larger then limit - fit to limit
         if len(incidents) > limit:
-            incidents[limit : -1] = []
+            incidents[limit-1 : -1] = []
 
         return incidents
 
@@ -317,11 +317,16 @@ script:
             args['since'] = timestamp
             args['until'] = None
 
+        limit = args.get('limit')
+        # parse limit argument to int
+        if limit:
+            limit = int(limit)
+
         incidents = get_all_incidents(
             get_token(),
             since = args.get('since'),
             until = args.get('until'),
-            limit = args.get('limit', 500)
+            limit = limit
         )
 
         md_content = create_incidents_list_md_table(incidents)
