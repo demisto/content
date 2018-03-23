@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: ba9f9bad-2bce-410d-815e-fceed9b85b4d
+    taskid: fd7db6e3-2385-4d83-8774-ab014d1965cc
     type: regular
     task:
-      id: ba9f9bad-2bce-410d-815e-fceed9b85b4d
+      id: fd7db6e3-2385-4d83-8774-ab014d1965cc
       version: -1
       name: threatstream-intelligence (type=ip, value=218.227.212.90)
       description: To retrieve threat intelligence from the ThreatStream cloud
@@ -74,8 +74,6 @@ tasks:
       type:
         simple: ip
       update_id: {}
-      using:
-        simple: Anomali_ThreatStream_instance_1
       value:
         simple: 218.227.212.90
     separatecontext: false
@@ -88,10 +86,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: f750cef2-9d1e-48db-82e2-a5e21a92a0b7
+    taskid: 7408f6a4-8790-4753-88ca-60e70aeaefcf
     type: regular
     task:
-      id: f750cef2-9d1e-48db-82e2-a5e21a92a0b7
+      id: 7408f6a4-8790-4753-88ca-60e70aeaefcf
       version: -1
       name: ip (176.228.66.70)
       description: Checks the reputation of the given IP
@@ -106,8 +104,6 @@ tasks:
       ip:
         simple: 176.228.66.70
       threshold: {}
-      using:
-        simple: Anomali_ThreatStream_instance_1
     separatecontext: false
     view: |-
       {
@@ -118,10 +114,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 1e846eb4-2634-4b78-8beb-659486208c2e
+    taskid: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
     type: regular
     task:
-      id: 1e846eb4-2634-4b78-8beb-659486208c2e
+      id: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
       version: -1
       name: domain (kpanels.in)
       description: Checks the reputation of the given IP or domain name
@@ -136,8 +132,6 @@ tasks:
       domain:
         simple: kpanels.in
       threshold: {}
-      using:
-        simple: Anomali_ThreatStream_instance_1
     separatecontext: false
     view: |-
       {
@@ -148,10 +142,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 5f3b4257-7df5-48f4-8ae8-df336d0f5f45
+    taskid: ce92b708-ce6d-4dce-887c-6f84b160ebd2
     type: regular
     task:
-      id: 5f3b4257-7df5-48f4-8ae8-df336d0f5f45
+      id: ce92b708-ce6d-4dce-887c-6f84b160ebd2
       version: -1
       name: file (3e5d63b93a68d715f7559f42285223f4)
       description: Checks the reputation of the given checksum
@@ -166,8 +160,6 @@ tasks:
       file:
         simple: 3e5d63b93a68d715f7559f42285223f4
       threshold: {}
-      using:
-        simple: Anomali_ThreatStream_instance_1
     separatecontext: false
     view: |-
       {
@@ -234,10 +226,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: e157f516-36e1-4a79-8506-d9052a6b4989
+    taskid: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
     type: regular
     task:
-      id: e157f516-36e1-4a79-8506-d9052a6b4989
+      id: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
       version: -1
       name: VerifyContext (File)
       description: |+
@@ -267,10 +259,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 1d6adc0e-ce79-4ee7-8b57-c0211d7add19
+    taskid: 255a564c-e2bb-473e-82f5-69ff848b978f
     type: regular
     task:
-      id: 1d6adc0e-ce79-4ee7-8b57-c0211d7add19
+      id: 255a564c-e2bb-473e-82f5-69ff848b978f
       version: -1
       name: VerifyContext (IP)
       description: |+
