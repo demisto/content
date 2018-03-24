@@ -27,5 +27,6 @@
 		"OKA2": "C2Communication"
 	},
 	"brandName": "_Siem",
-	"instanceName": "_Siem_instance With mapping"
+	"instanceName": "_Siem_instance With mapping",
+	"releaseNotes": "Siem release notes"
 }
