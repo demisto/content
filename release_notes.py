@@ -61,10 +61,15 @@ class Content:
                 new_count = 0
                 for rawContent in self.addedStore:
                     cnt = self.loadData(rawContent)
-                    new_content_rn = self.addedReleaseNotes(cnt)
-                    if new_content_rn:
+
+                    ans = self.addedReleaseNotes(cnt)
+                    if ans is None:
+                        print_error(cnt["name"] + " is missing releaseNotes entry")
+                        missingReleaseNotes = True
+
+                    if ans:
                         new_count += 1
-                    newStr += self.addedReleaseNotes(cnt)
+                    newStr += ans
 
                 if len(newStr) > 0:
                     if new_count > 1:
