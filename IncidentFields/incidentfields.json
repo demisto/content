@@ -26,7 +26,7 @@
 			"Phishing",
 			"Malware"
 		],
-		"associatedToAll": false,
+		"associatedToAll": true,
 		"unmapped": false
 	},
 	{
@@ -41,7 +41,7 @@
 		"type": "shortText",
 		"closeForm": false,
 		"editForm": true,
-		"required": false,
+		"required": true,
 		"script": "",
 		"neverSetAsRequired": false,
 		"isReadOnly": false,
@@ -55,7 +55,7 @@
 		"associatedTypes": [
 			"Malware"
 		],
-		"associatedToAll": false,
+		"associatedToAll": true,
 		"unmapped": false
 	},
 	{
@@ -84,7 +84,7 @@
 		"associatedTypes": [
 			"Phishing"
 		],
-		"associatedToAll": false,
+		"associatedToAll": true,
 		"unmapped": false
 	}
 ]
