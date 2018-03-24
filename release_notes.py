@@ -308,6 +308,8 @@ class LayoutContent(Content):
             print_error("invalid layout kind %s" % (layout_type,))
             return None
 
+        res = "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn
+        print ("### getReleaseNotes " + res)
         return "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn
 
     def addedReleaseNotes(self, cnt):
