@@ -1,6 +1,7 @@
 {
 	"typeId": "Phishing",
 	"kind": "details",
+  	"releaseNotes": "relase notes of Phishing details",
 	"layout": {
 		"id": "Phishing",
 		"version": -1,

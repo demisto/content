@@ -51,5 +51,6 @@
 		"Threat": "Malware"
 	},
 	"brandName": "SplunkPy",
-	"instanceName": "SplunkPy_instance_1"
+	"instanceName": "SplunkPy_instance_1",
+	"releaseNotes": "SplunkPy release notes"
 }
