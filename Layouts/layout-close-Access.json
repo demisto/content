@@ -1,0 +1,61 @@
+{
+	"typeId": "Access",
+	"kind": "close",
+	"layout": {
+		"id": "Access",
+		"version": 21,
+		"modified": "2018-03-24T17:49:42.10855468+03:00",
+		"name": "",
+		"sections": [
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_a3",
+						"isVisible": true
+					}
+				],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Custom Fields",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			}
+		],
+		"system": false
+	}
+}
