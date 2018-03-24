@@ -112,7 +112,7 @@ class ScriptContent(Content):
     def getHeader(self):
         return "Scripts"
 
-    def addedReleaseNotes(self,cnt):
+    def addedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
@@ -305,12 +305,12 @@ class LayoutContent(Content):
 
         return "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn
 
-    def addedReleaseNotes(self, cnt, rn):
+    def addedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
 
-        return self.getReleaseNotes(cnt)
+        return self.getReleaseNotes(cnt, rn)
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
