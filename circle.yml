@@ -4,6 +4,9 @@ test:
     # build content descriptor
     - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 8bb6cb740b82dc7ec14ff13ab4163c2e8498d938 18.3.5
 
+    # create common server documentation
+    - ./Docs/commonServerDocs.sh
+
     # create content bundle
     - python content_creator.py $CIRCLE_ARTIFACTS
   override:
