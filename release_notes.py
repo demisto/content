@@ -297,7 +297,9 @@ class LayoutContent(Content):
     def getHeader(self):
         return "Incident Layouts"
 
-    def getReleaseNotes(self, cnt, rn):
+    def getReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+
         layout_kind = LAYOUT_TYPE_TO_NAME.get(cnt.get("kind", ""))
         if not layout_kind:
             print_error("invalid layout kind %s" % (cnt.get("kind", ""),))
@@ -308,18 +310,14 @@ class LayoutContent(Content):
             print_error("invalid layout kind %s" % (layout_type,))
             return None
 
-        res = "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn
-        print ("### getReleaseNotes " + res)
-        return "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn
+        return "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn + "\n"
 
     def addedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
 
-        print ("# starting rn" + rn)
-
-        return self.getReleaseNotes(cnt, rn)
+        return self.getReleaseNotes(cnt)
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -330,7 +328,7 @@ class LayoutContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
 
-        return self.getReleaseNotes(cnt, rn)
+        return self.getReleaseNotes(cnt)
 
 
 Content.register(LayoutContent)
@@ -343,7 +341,8 @@ class ClassifierContent(Content):
     def getHeader(self):
         return "Classification & Mapping"
 
-    def getReleaseNotes(self, cnt, rn):
+    def getReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
         brand_name = cnt.get("brandName")
         if not brand_name:
             print_error("invalid classifier brand name %s" % (brand_name,))
@@ -356,7 +355,7 @@ class ClassifierContent(Content):
         if len(rn) == 0:
             return None
 
-        return self.getReleaseNotes(cnt, rn)
+        return self.getReleaseNotes(cnt)
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -367,7 +366,7 @@ class ClassifierContent(Content):
         if len(rn) > 0 and rn == "-":
             return ""
 
-        return self.getReleaseNotes(cnt, rn)
+        return self.getReleaseNotes(cnt)
 
 
 Content.register(ClassifierContent)
