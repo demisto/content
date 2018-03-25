@@ -20,3 +20,5 @@ test:
     - python content_creator.py $CIRCLE_ARTIFACTS
   override:
     - chmod +x ./Tests/scripts/*
+
+    - sleep 9m

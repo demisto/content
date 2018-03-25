@@ -317,6 +317,8 @@ class LayoutContent(Content):
         if len(rn) == 0:
             return None
 
+        print ("# starting rn" + rn)
+
         return self.getReleaseNotes(cnt, rn)
 
     def modifiedReleaseNotes(self, cnt):
