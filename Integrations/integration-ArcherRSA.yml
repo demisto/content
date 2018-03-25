@@ -2441,5 +2441,4 @@ script:
       description: Archer's file ID
     description: Downloads file from Archer to Demisto's war room context
   isfetch: true
-  runonce: false
-  releaseNotes: "-"
+releaseNotes: "-"
