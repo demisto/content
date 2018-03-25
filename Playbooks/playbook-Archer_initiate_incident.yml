@@ -2,6 +2,7 @@ id: Archer initiate incident
 version: -1
 name: Archer initiate incident
 starttaskid: "0"
+description: "initiate Archer incident"
 tasks:
   "0":
     id: "0"
@@ -13,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "start"
     nexttasks:
       '#none#':
       - "2"
