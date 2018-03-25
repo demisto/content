@@ -1679,7 +1679,7 @@ script:
             var incidentId = args.incidentId;
 
             if (incidentId){
-                contentId = getContentIdsFromIncIds(appId, incidentId)[0];
+                contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
             }
             extendAppIdMapping(applicationId);
             var rawResponse = getRecordSendSoapRequest(command, applicationId, contentId);
