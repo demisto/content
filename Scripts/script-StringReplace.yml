@@ -2,6 +2,7 @@ commonfields:
   id: StringReplace
   version: -1
 name: StringReplace
+releaseNotes: set Utility tag
 script: |-
   if ((typeof args.data) !== 'string') {
       return {
@@ -35,7 +36,7 @@ script: |-
   };
 type: javascript
 tags:
-- Utilitiy
+- Utility
 comment: |-
   Replaces regex match/es in string.
   Returns the string after replace was preformed.
