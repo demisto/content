@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+          "playbookID": "Test filters & transformers scripts"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
