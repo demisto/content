@@ -348,7 +348,7 @@ class ClassifierContent(Content):
             print_error("invalid classifier brand name %s" % (brand_name,))
             return None
 
-        return "- " + brand_name + "\n" + "-- " + rn
+        return "- " + brand_name + "\n" + "-- " + rn + "\n"
 
     def addedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
