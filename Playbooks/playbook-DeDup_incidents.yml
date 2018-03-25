@@ -1,4 +1,4 @@
-id: dedup_incidents
+id: close_incident_if_duplicate_found
 version: -1
 name: DeDup incidents
 fromversion: "3.5.0"
