@@ -1,0 +1,703 @@
+id: Test filters & transformers scripts
+version: -1
+name: Test filters & transformers scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bac59b83-9b06-44d1-8fa2-43209cc25559
+    type: start
+    task:
+      id: bac59b83-9b06-44d1-8fa2-43209cc25559
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 374f8b88-3e54-4e5e-8c6c-e85ee1eb2fdb
+    type: title
+    task:
+      id: 374f8b88-3e54-4e5e-8c6c-e85ee1eb2fdb
+      version: -1
+      name: Test In Range
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3538472c-5a70-4ed5-8aec-11da2a6e9363
+    type: condition
+    task:
+      id: 3538472c-5a70-4ed5-8aec-11da2a6e9363
+      version: -1
+      name: 4 In range [2,8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.InRange
+          left:
+            value:
+              simple: "4"
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    taskid: dfa4b712-3e90-4570-821b-85e6ddfd9fd0
+    type: title
+    task:
+      id: dfa4b712-3e90-4570-821b-85e6ddfd9fd0
+      version: -1
+      name: Test Strip charecter
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 530
+        }
+      }
+  "4":
+    id: "4"
+    taskid: c3bcf2f3-46ac-4f77-8dc9-31d446497679
+    type: condition
+    task:
+      id: c3bcf2f3-46ac-4f77-8dc9-31d446497679
+      version: -1
+      name: -4 In range [-2, -8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.InRange
+          left:
+            value:
+              simple: "-4"
+          right:
+            value:
+              simple: -8,-2
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 73ff3dfc-7df5-43fb-8d0a-ffc52e267477
+    type: condition
+    task:
+      id: 73ff3dfc-7df5-43fb-8d0a-ffc52e267477
+      version: -1
+      name: 1 In range [2,8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.InRange
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 340
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8f4b54b9-ad95-44aa-88a9-dc268a23beaa
+    type: condition
+    task:
+      id: 8f4b54b9-ad95-44aa-88a9-dc268a23beaa
+      version: -1
+      name: panda In range [2, 8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.InRange
+          left:
+            value:
+              simple: panda
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 340
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 0fc9642c-8adf-423f-810e-e12f5275c8a8
+    type: condition
+    task:
+      id: 0fc9642c-8adf-423f-810e-e12f5275c8a8
+      version: -1
+      name: 1 In range [28]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.InRange
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "28"
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 340
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 90d73450-c0df-4967-8287-88aea51536a3
+    type: regular
+    task:
+      id: 90d73450-c0df-4967-8287-88aea51536a3
+      version: -1
+      name: 'FAILED: 1 In range [2,8]'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: 1 In range [2,8]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 515
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 3581c474-06e9-4478-81e8-2b920e21771c
+    type: regular
+    task:
+      id: 3581c474-06e9-4478-81e8-2b920e21771c
+      version: -1
+      name: 'FAILED: 1 In range [28]'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: 1 In range [28]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 515
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 082d9efc-fc05-4cc7-8a5b-e215b61a77b3
+    type: regular
+    task:
+      id: 082d9efc-fc05-4cc7-8a5b-e215b61a77b3
+      version: -1
+      name: 'FAILED: panda In range [2, 8]'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: panda In range [2, 8]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 515
+        }
+      }
+  "11":
+    id: "11"
+    taskid: ce43fb26-4856-4c64-89bb-289ee4b1daeb
+    type: regular
+    task:
+      id: ce43fb26-4856-4c64-89bb-289ee4b1daeb
+      version: -1
+      name: 'FAILED: -4 In range [-2, -8]'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: -4 In range [-2, -8]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 87ce74c9-e65c-4918-8af3-b3f7e3434da2
+    type: regular
+    task:
+      id: 87ce74c9-e65c-4918-8af3-b3f7e3434da2
+      version: -1
+      name: 'FAILED: 4 In range [2,8]'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: 4 In range [2,8]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    taskid: a945a4bd-cd31-4d8b-8f2b-2dadc61499a6
+    type: condition
+    task:
+      id: a945a4bd-cd31-4d8b-8f2b-2dadc61499a6
+      version: -1
+      name: Test Strip Char
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg1
+                transformers:
+                - operator: string.StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '!~'
+            iscontext: true
+          right:
+            value:
+              simple: www.somedomain.com
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 2e360261-9795-40d4-803e-6142e3478b3b
+    type: regular
+    task:
+      id: 2e360261-9795-40d4-803e-6142e3478b3b
+      version: -1
+      name: Set arg1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arg1
+      value:
+        simple: ~!www.somedomain.com~~!!~
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 6c5348c9-e5e1-46a5-8929-ffcb94669d51
+    type: title
+    task:
+      id: 6c5348c9-e5e1-46a5-8929-ffcb94669d51
+      version: -1
+      name: Test Reverse
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1055
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 0383a306-b336-49ad-83d7-3e83cdf0c7a2
+    type: regular
+    task:
+      id: 0383a306-b336-49ad-83d7-3e83cdf0c7a2
+      version: -1
+      name: 'FAILED: Split char'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: split char'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1040
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 016c4815-4908-40b5-84ca-218dd21358c5
+    type: regular
+    task:
+      id: 016c4815-4908-40b5-84ca-218dd21358c5
+      version: -1
+      name: Set arg2 (multiple items)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arg2
+      value:
+        simple: '["mars","jupiter","saturn"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1215
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 76446107-21f2-4e5d-8c3c-51ce56c3cb55
+    type: condition
+    task:
+      id: 76446107-21f2-4e5d-8c3c-51ce56c3cb55
+      version: -1
+      name: Test Reverse List (multiple items)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg2
+                transformers:
+                - operator: general.ReverseList
+                - operator: general.join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: saturn,jupiter,mars
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+  "19":
+    id: "19"
+    taskid: eb01a9a5-5fef-4a60-8cb0-7e89d6a6e021
+    type: regular
+    task:
+      id: eb01a9a5-5fef-4a60-8cb0-7e89d6a6e021
+      version: -1
+      name: Finished
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Finished
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1915
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 310e30bf-6889-43db-870d-eec770598408
+    type: regular
+    task:
+      id: 310e30bf-6889-43db-870d-eec770598408
+      version: -1
+      name: 'FAILED: Reverse List  (multiple items)'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: Reverse List - expected saturn,jupiter,mars'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+  "21":
+    id: "21"
+    taskid: a940ab60-4225-4a87-8e37-a05e05719c00
+    type: regular
+    task:
+      id: a940ab60-4225-4a87-8e37-a05e05719c00
+      version: -1
+      name: Set arg3 (single item)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arg3
+      value:
+        simple: neptune
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+  "22":
+    id: "22"
+    taskid: ef9dcdab-1024-408e-8c52-97595943b972
+    type: condition
+    task:
+      id: ef9dcdab-1024-408e-8c52-97595943b972
+      version: -1
+      name: Test Reverse List  (single item)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "19"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg3
+                transformers:
+                - operator: general.ReverseList
+            iscontext: true
+          right:
+            value:
+              simple: neptune
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1738
+        }
+      }
+  "23":
+    id: "23"
+    taskid: c75aaf86-538e-44a0-89e4-5e1189f44485
+    type: regular
+    task:
+      id: c75aaf86-538e-44a0-89e4-5e1189f44485
+      version: -1
+      name: 'FAILED: Reverse List (single item)'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: Reverse List - expected neptune'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1915
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
