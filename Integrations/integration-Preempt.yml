@@ -310,8 +310,8 @@ script:
             "Contents": json.dumps(events),
             "HumanReadable": tableToMarkdown("Activies in time frame", pretty_results, ["Timestamp", "EndpointHostName"]),
             "EntryContext": {
-                "Preeempt.Activities": pretty_results,
-                "Preempt.Cursor": cursor
+                "Activities": pretty_results,
+                "Cursor": cursor
             }
         })
         sys.exit(0)
@@ -373,7 +373,7 @@ script:
             "Contents": json.dumps(result),
             "HumanReadable": tableToMarkdown("User's regular endpoints", pretty_results, ["HostName", "IsOwnedByUser"]),
             "EntryContext": {
-                "Preempt.Endpoint": pretty_results
+                "Endpoint": pretty_results
             }
         })
         sys.exit(0)
@@ -397,8 +397,8 @@ script:
             "Contents": json.dumps(alerts),
             "HumanReadable": tableToMarkdown("User's last 48 hours alerts", alerts),
             "EntryContext": {
-                "Preempt.Alerts": alerts,
-                "Preempt.Cursor": cursor
+                "Alerts": alerts,
+                "Cursor": cursor
             }
         })
         sys.exit(0)
