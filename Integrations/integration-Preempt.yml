@@ -17,7 +17,7 @@ detaileddescription: |-
   5) Copy the API key to the clipboard by clicking the link icon on the right
   6) Paste this value into the apiKey parameter on the integration
 configuration:
-- display: Address of Preempt server
+- display: Address of Preempt server (e.g. https://192.168.0.1)
   name: server
   defaultvalue: https://
   type: 0
