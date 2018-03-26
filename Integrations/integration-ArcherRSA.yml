@@ -84,7 +84,8 @@ script:
           searchRecordsByReport: 'archer-search-records-by-report',
           getMappingByLevel: 'archer-get-mapping-by-level',
           manualFetch: 'archer-manually-fetch-incident',
-          getFile: 'archer-get-file'
+          getFile: 'archer-get-file',
+          uploadFile: 'archer-upload-file'
         };
 
         var urlDictionary = {};
@@ -104,6 +105,7 @@ script:
         urlDictionary[commands.getSearchOptionsByGuid] = '/ws/search.asmx';
         urlDictionary[commands.searchRecordsByReport] = '/ws/search.asmx';
         urlDictionary[commands.getFile] = '/ws/record.asmx';
+        urlDictionary[commands.uploadFile] = '/api/core/content/attachment';
 
         var methodDictionary = {};
         methodDictionary.login = 'POST';
@@ -122,6 +124,7 @@ script:
         methodDictionary[commands.getSearchOptionsByGuid] = 'POST';
         methodDictionary[commands.searchRecordsByReport] = 'POST';
         methodDictionary[commands.getFile] = 'POST';
+        methodDictionary[commands.uploadFile] = 'POST';
 
         var GLOBAL_MAPPING = {};
         var dateRe = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/;
@@ -150,6 +153,7 @@ script:
                 if (currentToken) {
                     headers.Authorization = ['Archer session-id=' + currentToken];
                 }
+
                 var result = http(
                     fullurl,
                     {
@@ -229,7 +233,7 @@ script:
                         currentToken = reLogin(currentToken);
                         continue;
                     }
-                    throw 'Request to RSA Archer ' + url + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
+                    throw 'Request to RSA Archer failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
                 }
                 destroyAuthToken(currentToken);
                 return result.Body;
@@ -715,6 +719,17 @@ script:
                         case 1:
                         case 2:
                         case 3:
+                        case 11:
+                            if (Array.isArray(fieldsToValue[key])){
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
+                                for(var i=1; i<fieldsToValue[key].length; i++){
+                                    fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
+                                }
+                                fields+= '</Field>';
+                            } else{
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
+                            }
+                            break;
                         case 19:
                             fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
                             break;
@@ -1620,7 +1635,11 @@ script:
 
             var appId = dataArgs.applicationId;
             var contentId = dataArgs.contentId;
-            var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
+            if (typeof dataArgs.fieldsToValue === 'object'){
+                fieldsToValue = dataArgs.fieldsToValue;
+            } else {
+                fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
+            }
             var incidentId = dataArgs.incidentId;
             if (incidentId){
                 contentId = getContentIdsFromIncIds(appId, incidentId)[0];
@@ -1705,7 +1724,6 @@ script:
 
             var keyValsForFetch = createKeyValsForFetch(contentId, contentMapping);
             keyValsForFetch.attachedFiles = attachedFiles;
-
             var record = JSON.parse(JSON.stringify(keyValsForFetch));
             record.innerRecords = innerRecordValues;
 
@@ -1729,7 +1747,7 @@ script:
                         var fileName = fileInfo[1];
                         var demistoFileId = saveFile(fileData, undefined, true);
                         attachedFiles[i]['demistoFileId'] = demistoFileId;
-                        reply.push({Type: 3, FileID: demistoFileId, File: fileName, Contents: fileName});
+                        reply.push({Type: 3, FileID: demistoFileId, File: fileName, Contents: fileName, ArcherFileId: attachedFiles[i]['fileID']});
                     }
                     attachedFilesMarkdown = tableToMarkdown('Attached files', attachedFiles, ['fileID', 'fileName', 'demistoFileId']);
                 } else { // we don't want to download the files at the moment
@@ -2171,7 +2189,45 @@ script:
                 File: fileName,
                 Contents: fileName
             });
+        }
 
+        function uploadFile(args){
+            // corresponds to 'archer-upload-file' command. Uploads a file to Archer and adds its id to the context attached files
+
+            var applicationId = args.applicationId;
+            var contentId = args.contentId;
+            var incidentId = args.incidentId;
+            var entryId = args.entryId;
+            if (incidentId){
+                contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            }
+            var fileName = dq(invContext, "File(val.EntryID == '" + entryId + "').Name");
+            if (Array.isArray(fileName)) {
+                if (fileName.length > 0) {
+                    fileName = fileName[0];
+                } else {
+                    fileName = undefined;
+                }
+            }
+
+            var fileB64String = entrytoa(entryId);
+            var body = {"AttachmentName": fileName, "AttachmentBytes": fileB64String};
+            var response = sendRestRequest(urlDictionary[commands.uploadFile], commands.uploadFile, body, false);
+
+            var archerFileId = response.RequestedObject.Id;
+            var currentRecord = getRecord(commands.getRecord, contentId, applicationId, true);
+            var currentFiles = [archerFileId];
+            for (var i=1; i<currentRecord.length; i++){
+                currentFiles.push(parseInt(currentRecord[i]['ArcherFileId']));
+            }
+            var args = {
+                "applicationId": applicationId,
+                "contentId": contentId,
+                "fieldsToValue": {"Supporting Documentation":currentFiles},
+                "incidentId": incidentId
+                }
+            updateRecord(commands.updateRecord, args);
+            return "File uploaded successfully";
         }
 
         function test() {
@@ -2220,6 +2276,8 @@ script:
                 return manualFetch(args);
             case commands.getFile:
                 return getFile(args);
+            case commands.uploadFile:
+                return uploadFile(args);
             case 'fetch-incidents':
                 return fetchIncidents(args);
             default:
@@ -2440,5 +2498,19 @@ script:
       required: true
       description: Archer's file ID
     description: Downloads file from Archer to Demisto's war room context
+  - name: archer-upload-file
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application which we want to upload the file to
+    - name: contentId
+      description: The Content (record) ID to update
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    - name: entryId
+      description: The entry id of the file in Demisto's context
+    description: Uploads a file to Archer and adds its id to the context attached
+      files
   isfetch: true
+  runonce: false
 releaseNotes: "-"
