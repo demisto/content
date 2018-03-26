@@ -670,7 +670,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: contents,
+            Contents: res,
             ContentsFormat: formats.json,
             EntryContext: {
                 'Okta.Logs.FailedLogins(val.uuid==obj.uuid)' : contents
@@ -704,7 +704,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: contents,
+            Contents: res,
             ContentsFormat: formats.json,
             EntryContext: {
                 'Okta.Logs.GroupAssignments(val.uuid==obj.uuid)' : contents
@@ -736,7 +736,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: contents,
+            Contents: res,
             ContentsFormat: formats.json,
             EntryContext: {
                 'Okta.Logs.ApplicationAssignments(val.uuid==obj.uuid)' : contents
@@ -767,7 +767,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: contents,
+            Contents: res,
             ContentsFormat: formats.json,
             EntryContext: {
                 'Okta.Logs.ApplicationAuthentication(val.uuid==obj.uuid)' : contents
