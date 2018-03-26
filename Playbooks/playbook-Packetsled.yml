@@ -1,0 +1,165 @@
+id: 2c56c928-58f2-4d5d-84f2-048146e8fbc9
+version: 2
+name: Packetsled
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bee2fdd3-0257-4811-80d0-060826e5c69d
+    type: start
+    task:
+      id: bee2fdd3-0257-4811-80d0-060826e5c69d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e1e1e2f9-5b4a-4ffb-8b7e-6b4bc963cb71
+    type: regular
+    task:
+      id: e1e1e2f9-5b4a-4ffb-8b7e-6b4bc963cb71
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: ""
+      key: packetsled
+    view: |-
+      {
+        "position": {
+          "x": 454,
+          "y": 214
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b57444ae-591f-434d-86ac-e1d35300b298
+    type: regular
+    task:
+      id: b57444ae-591f-434d-86ac-e1d35300b298
+      version: -1
+      name: packetsled-probes
+      description: List the probes attached to the packetsled platform.
+      script: Packetsled|||packetsled-probes
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 393
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 64280b1a-b3dd-4036-8bdf-de5dc38f8185
+    type: regular
+    task:
+      id: 64280b1a-b3dd-4036-8bdf-de5dc38f8185
+      version: -1
+      name: packetsled-get-incident-pcaps
+      description: Get pcaps for each host involved in an incident
+      script: Packetsled|||packetsled-get-incident-pcaps
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    scriptarguments:
+      envid: ${packetsled.probes.envid}
+      probe: ${packetsled.probes.probe}
+      psincidents: ${packetsled.psincidents}
+    view: |-
+      {
+        "position": {
+          "x": 703,
+          "y": 758
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6c15f582-9ddd-4f2a-8701-e839e72b187d
+    type: regular
+    task:
+      id: 6c15f582-9ddd-4f2a-8701-e839e72b187d
+      version: -1
+      name: packetsled-get-incidents
+      description: Query for incidents by time range and severity
+      script: Packetsled|||packetsled-get-incidents
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+    scriptarguments:
+      StartDateTime: ""
+      StopDateTime: ""
+      envid: ${packetsled.probes.envid}
+      probe: ${packetsled.probes.probe}
+      severity: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 573
+        }
+      }
+  "5":
+    id: "5"
+    taskid: d1f80f91-efed-43d7-8cf6-807df616b309
+    type: regular
+    task:
+      id: d1f80f91-efed-43d7-8cf6-807df616b309
+      version: -1
+      name: packetsled-get-incident-files
+      description: Get the files for a host by a given incident.
+      script: Packetsled|||packetsled-get-incident-files
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    scriptarguments:
+      envid: ${packetsled.probes.envid}
+      probe: ${packetsled.probes.probe}
+      psincidents: ${packetsled.psincidents}
+    view: |-
+      {
+        "position": {
+          "x": 162,
+          "y": 758
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 803,
+        "width": 921,
+        "x": 162,
+        "y": 50
+      }
+    }
+  }
+inputs: []
