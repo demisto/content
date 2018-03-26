@@ -534,10 +534,10 @@ script:
 
         var md;
         var ec;
-        if (res && res.result && res.result.length>0) {
+        if (res && res.length>0) {
             md = '### Okta users found:\n';
-            md += usersToMd(res.result,args.verbose);
-            ec = usersToEc(res.result);
+            md += usersToMd(res, args.verbose);
+            ec = usersToEc(res);
         }
         else {
              md = '### No users found in Okta\n';
