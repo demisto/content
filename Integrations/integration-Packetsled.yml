@@ -65,18 +65,7 @@ script:
     family_map = {'network_services':1,'network_management':2,'encrypted':3,'tunnel':4,'logging':5,'application_service':6,'authentication':7,'remote_access':8,'file_transfer':9,'p2p':10,'scada':11,'mobile':12,'web':13,'mail':14,'database':15,'chat':16,'voice':17}
     family_inv_map = {v: k for k, v in family_map.iteritems()}
 
-    killchain_map = {'mitre:TTP-e491a5ac-e434-468c-b48c-990d69a9a68a': 'Persistence',
-    'mitre:TTP-0c974e94-fe2b-4f51-9373-204b5804dec7': 'Privilege Escalation',
-    'mitre:TTP-b9811282-cb47-4cb9-aba5-a48f5068e47a': 'Defense Evasion',
-    'mitre:TTP-f87c271c-ff1a-4e33-8cc3-94c82bdd6539': 'Credential Access',
-    'mitre:TTP-83610d07-0683-42a1-83f1-8683f294eca8': 'Discovery',
-    'mitre:TTP-3ea0403e-b6e4-4e51-a66c-7be410d26e38': 'Lateral Movement',
-    'mitre:TTP-5180b5b6-4d0c-4d61-b57a-bc946c7d7fbc': 'Execution',
-    'mitre:TTP-6326c4ba-36af-4b63-b38a-614f2a457577': 'Collection',
-    'mitre:TTP-1fe53cda-f0b6-45ea-affb-02b156d22a36': 'Exfiltration',
-    'mitre:TTP-e1482e88-3b70-4354-bd6f-9546760dfa06': 'Command and Control'}
-
-    def process_flow(flow):
+    def format_flow(flow):
         if 'src_ip' in flow:
             flow['src_ip'] = number_to_ip(flow['src_ip'])
         if 'dest_ip' in flow:
@@ -91,7 +80,7 @@ script:
 
     def get_flows(result):
         data = result['data'] or []
-        return map(lambda x: process_flow(x), data)
+        return map(lambda x: format_flow(x), data)
 
     def validate_response(response):
         result = None
@@ -121,7 +110,7 @@ script:
             sensor = {'probe': int(dargs['probe']), 'envid': int(dargs['envid'])}
             return {'probes': [sensor], 'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
         else:
-            response = requests.get(urljoin(host, '/admin/probes'),
+            response = requests.get(urljoin(apihost, '/admin/probes'),
             params = {
                 'filterscount': 1,
                 'filtercondition0': 'NOT_EQUAL',
@@ -185,32 +174,11 @@ script:
 
         return search
 
-    def create_demisto_incidents(result, incidentContext, start_time, stop_time):
-        incidents = []
-        envid = incidentContext['probes'][0]['envid']
-        probe = incidentContext['probes'][0]['probe']
-        for match in result['matches'] or []:
-            for incident in match['values'] or []:
-                incident['envid'] = envid
-                incident['probe'] = probe
-                incident['killchain'] = map(lambda x: killchain_map[x], incident['killchain'])
-                hosts = []
-                if 'hosts' in incident:
-                    hosts += map(lambda x: number_to_ip(x), incident['hosts'].keys())
-                if 'ps_defining_query' in incident:
-                    ip_candidates = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", " ".join(incident['ps_defining_query']))
-                    hosts += ip_candidates
-                hosts = list(set(hosts))
-                incident['hosts'] = hosts
-                incidents.append({'start_time': start_time, 'stop_time': stop_time, 'name': incident['value'], 'rawJSON': incident, 'labels': incident['killchain'], 'envid': envid, 'probe': probe, 'host': hosts})
-
-        return incidents
-
-    host = demisto.params()['host']
+    apihost = demisto.params()['host']
     username = demisto.params()['username']
     password = demisto.params()['password']
 
-    response = requests.post(urljoin(host, '/api/login'),
+    response = requests.post(urljoin(apihost, '/api/login'),
         data = {
         'email': username,
         'password': password
@@ -233,7 +201,7 @@ script:
         sys.exit(0)
 
     if demisto.command() == 'packetsled-probes':
-        response = requests.get(urljoin(host, '/admin/probes'),
+        response = requests.get(urljoin(apihost, '/admin/probes'),
         params = {
             'filterscount': 1,
             'filtercondition0': 'NOT_EQUAL',
@@ -267,10 +235,12 @@ script:
             incidentContext = {'probes': [sensor], 'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
 
             ### query for incidents ###
-            response = requests.post(urljoin(host, '/flows/incidents/query'),
+            flows_query = {"limit":50000,"pivot":{"attribute":"src_ip","fields":["log"],"dimensions":["src_ip","log"]},"query":{"time":{"=":{"scalars":[],"ranges":[{"lhs":"time","v1":tmin,"v2":tnow}]}},"log":{"=":{"scalars":[{"i":7,"t":"a","v1":"intel"},{"i":9,"t":"a","v1":"notice"},{"i":11,"t":"a","v1":"psfile_analytics"}],"ranges":[]}}},"search_text":"log = [intel notice psfile_analytics ] cluster src_ip on [log]"};
+
+            response = requests.post(urljoin(apihost, '/flows/flows'),
                 data = json.dumps({
                     'context': incidentContext,
-                    'search': search
+                    'search': flows_query
                 }),
                 headers = {
                     'content-type': 'application/json',
@@ -281,7 +251,27 @@ script:
 
             ### validate the response ###
             result = validate_response(response)
-            incidents += create_demisto_incidents(result, incidentContext, tmin, tnow)
+            hosts = map(lambda x: number_to_ip(x['name']), result['data'] or [])
+
+            flows_query = {"limit":50000,"pivot":{"attribute":"dest_ip","fields":["log"],"dimensions":["dest_ip","log"]},"query":{"time":{"=":{"scalars":[],"ranges":[{"lhs":"time","v1":tmin,"v2":tnow}]}},"log":{"=":{"scalars":[{"i":7,"t":"a","v1":"intel"},{"i":9,"t":"a","v1":"notice"},{"i":11,"t":"a","v1":"psfile_analytics"}],"ranges":[]}}},"search_text":"log = [intel notice psfile_analytics ] cluster dest_ip on [log]"};
+
+            response = requests.post(urljoin(apihost, '/flows/flows'),
+                data = json.dumps({
+                    'context': incidentContext,
+                    'search': flows_query
+                }),
+                headers = {
+                    'content-type': 'application/json',
+                    'cache-control': 'no-cache',
+                    'x-api-access-token': auth_token
+                },
+                verify=False)
+
+            ### validate the response ###
+            result = validate_response(response)
+            hosts += map(lambda x: number_to_ip(x['name']), result['data'] or [])
+            hosts = list(set(hosts))
+            incidents += map(lambda x: {'name': 'SOURCE: Packetsled SENSOR: ' + sensor['label'] + ' ENTITY: ' + x, 'labels': ['packetsled', sensor['label'], x], 'rawJSON': {'log': ['intel','notice','psfile_analytics'], 'host': [x], 'start_time': tmin, 'stop_time': tnow, 'envid': sensor['envid'], 'probe': sensor['probe']}}, hosts)
 
         if demisto.command() == "fetch-incidents":
             demisto.incidents(incidents)
@@ -292,17 +282,16 @@ script:
     if demisto.command() == 'packetsled-get-flows':
         dargs = demisto.args()
 
-        if 'host' not in dargs:
-            sys.exit(0)
-
         limit = 5000
         if 'limit' in dargs:
             limit = long(dargs['limit'])
+        if 'incident' in dargs:
+            dargs = dargs['incident']['rawJSON']
         search = make_query(dargs)
         sensorContext = make_context(dargs)
 
         ### query for flows ###
-        response = requests.post(urljoin(host, '/flows/flows'),
+        response = requests.post(urljoin(apihost, '/flows/flows'),
             data = json.dumps({
                 'context': sensorContext,
                 'search': {'query': search, 'limit': limit}
@@ -331,7 +320,7 @@ script:
         search = {'uid': uid}
 
         ### query for flows ###
-        response = requests.post(urljoin(host, '/flows/events'),
+        response = requests.post(urljoin(apihost, '/flows/events'),
             data = json.dumps({
                 'context': sensorContext,
                 'search': search
@@ -350,18 +339,17 @@ script:
     if demisto.command() == 'packetsled-get-files':
         dargs = demisto.args()
 
-        if 'host' not in dargs:
-            sys.exit(0)
-
         limit = 5000
         if 'limit' in dargs:
             limit = long(dargs['limit'])
+        if 'incident' in dargs:
+            dargs = dargs['incident']['rawJSON']
         search = make_query(dargs)
         sensorContext = make_context(dargs)
         search["@attribute"] = {'=': {'scalars': [{'v1': 'extracted'}],'ranges': []}}
 
         ### query for flows ###
-        response = requests.post(urljoin(host, '/flows/flows'),
+        response = requests.post(urljoin(apihost, '/flows/flows'),
             data = json.dumps({
                 'context': sensorContext,
                 'search': {'query': search, 'limit': limit}
@@ -381,7 +369,7 @@ script:
                 for file in flow["extracted"]:
 
                     ### download the extracted file ###
-                    response = requests.get(urljoin(host, ('/download/file_extraction/{probe}/'+ file).format(**flow)),
+                    response = requests.get(urljoin(apihost, ('/download/file_extraction/{probe}/'+ file).format(**flow)),
                         headers = {
                             'cache-control': 'no-cache',
                             'x-api-access-token': auth_token
@@ -394,34 +382,35 @@ script:
 
     if demisto.command() == 'packetsled-get-pcaps':
         dargs = demisto.args()
+        if 'incident' in dargs:
+            dargs = dargs['incident']['rawJSON']
         tmin,tnow = make_timerange(dargs)
         sensorContext = make_context(dargs)
 
         query = "before " + isoTime(tnow) + " and after " + isoTime(tmin)
 
-        constraints = False
         if 'host' in dargs:
-            constraints = True
             host = coalesceToArray(dargs['host'])
-            query = query + " and (" + " or ".join(map(lambda x: "host " + x, host)) + ")"
+            if len(host)>1:
+                query = query + " and (" + " or ".join(map(lambda x: "host " + x, host)) + ")"
+            else:
+                query = query + " and host " + host[0]
 
         if 'protocol' in dargs:
-            constraints = True
             protocol = coalesceToArray(dargs['protocol'])
-            query = query + " and (" + " or ".join(map(lambda x: x, protocol)) + ")"
+            if len(protocol)>1:
+                query = query + " and (" + " or ".join(map(lambda x: x, protocol)) + ")"
+            else:
+                query = query + " and " + protocol[0]
 
         if 'port' in dargs:
-            constraints = True
             port = coalesceToArray(dargs['port'])
-            query = query + " and (" + " or ".join(map(lambda x: "port " + x, port)) + ")"
+            if len(port)>1:
+                query = query + " and (" + " or ".join(map(lambda x: "port " + x, host)) + ")"
+            else:
+                query = query + " and port " + port[0]
 
-        if not constraints:
-            sys.exit(0)
-
-        result = validate_response(response)
         for sensor in sensorContext['probes']:
-            ### prepare a time range query on host ###
-            ### prepare a query to get the list of files for this host ###
             route = "?rule=" + urllib.quote(query)
             if 'limitbytes' in dargs:
                 route = route + "&limitbytes=" + long(dargs['limitbytes'])
@@ -429,20 +418,17 @@ script:
             if 'limitpkts' in dargs:
                 route = route + "&limitpkts=" + long(dargs['limitpkts'])
 
-            try:
-                ### download the extracted file ###
-                response = requests.get(urljoin(host, ('/download/ndr/{probe}/'+ route).format(**sensor)),
-                    headers = {
-                        'cache-control': 'no-cache',
-                        'x-api-access-token': auth_token
-                    },
-                    verify=False)
+            ### download the extracted file ###
+            response = requests.get(urljoin(apihost, ('/download/ndr/{probe}/'+ route).format(**sensor)),
+                headers = {
+                    'cache-control': 'no-cache',
+                    'x-api-access-token': auth_token
+                },
+                verify=False)
 
-                ### the download will return 404 if the file has been purged ###
-                if response.status_code == 200:
-                    demisto.results(fileResult(query,response.content))
-            except:
-                demisto.log(query + " failed")
+            ### the download will return 404 if the file has been purged ###
+            if response.status_code == 200:
+                demisto.results(fileResult(query,response.content))
   type: python
   commands:
   - name: packetsled-get-incidents
@@ -661,6 +647,8 @@ script:
     - name: limit
       description: Limit the number of search results
       defaultValue: "5000"
+    - name: incident
+      description: The incident to query
     outputs:
     - contextPath: packetsled.flows
     description: Query packetsled sensor metadata
@@ -846,6 +834,8 @@ script:
     - name: limit
       description: Limit the number of search results
       defaultValue: "5000"
+    - name: incident
+      description: The incident to query
     description: Query packetsled extracted files
   - name: packetsled-get-pcaps
     arguments:
@@ -938,6 +928,8 @@ script:
       description: The environment id of the probe to search
     - name: probe
       description: The probe number of the probe to search
+    - name: incident
+      description: The incident to query
     description: Query packetsled for full packet
   - name: packetsled-get-events
     arguments:
