@@ -325,7 +325,7 @@ class LayoutContent(Content):
         if len(rn) == 0:
             return None
 
-        if len(rn) > 0 and rn == "-":
+        if rn == "-":
             return ""
 
         return self.getReleaseNotes(cnt)
@@ -363,7 +363,7 @@ class ClassifierContent(Content):
         if len(rn) == 0:
             return None
 
-        if len(rn) > 0 and rn == "-":
+        if rn == "-":
             return ""
 
         return self.getReleaseNotes(cnt)
