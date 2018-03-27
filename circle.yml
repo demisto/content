@@ -1,29 +1,27 @@
+machine:
+  node:
+    version: v9.8.0
 test:
   pre:
     # install dependencies
+    - npm install npm -g
     - pip install git+https://github.com/demisto/demisto-py.git@test-content
     - pip install pykwalify
+    - npm install -g jsdoc-to-markdown
+    - pip install git+https://github.com/rahulrrixe/parinx.git@master
 
     # validate yaml
     - chmod +x ./Tests/yamlvalidator
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM d3bcffa6578b2e4673e9a33eb90c5769869c07a8 3.1.0
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 30a9335588dbb52e61b9f30c644755f5da4537c5 18.3.3
+
+    # create common server documentation
+    - ./Docs/commonServerDocs.sh
 
     # create content bundle
-    - mkdir bundle
-    - cd Tools/ && for i in */ ; do zip -jr "../bundle/tools-${i%/}.zip" "$i"; done
-    - cp Integrations/* bundle/
-    - cp Misc/* bundle/
-    - cp Playbooks/* bundle/
-    - cp Reports/* bundle/
-    - cp content-descriptor.json bundle/
-    - cp $(find Scripts -type f -print) bundle/
-
-    - cd bundle/ && zip ../content.zip *
-    - cp content.zip $CIRCLE_ARTIFACTS/content.zip
-    - cp release-notes.txt $CIRCLE_ARTIFACTS/
+    - python content_creator.py $CIRCLE_ARTIFACTS
   override:
     - chmod +x ./Tests/scripts/*
 
@@ -44,6 +42,9 @@ test:
 
     # wait until server is ready
     - ./Tests/scripts/wait_until_server_ready.sh
+
+    # pull all non default docker images
+    #- ./Tests/scripts/pull_docker_images.sh
 
     # run tests
     - ./Tests/scripts/run_tests.sh

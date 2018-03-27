@@ -1,0 +1,192 @@
+id: close_incident_if_duplicate_found
+version: -1
+name: Close incident if duplicate found
+fromversion: "3.5.0"
+description: |
+  Check for duplicate incidents for the current incident, and close it if any duplicate has found.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5143833-522e-4edc-85f7-7fabf61c96ea
+    type: start
+    task:
+      id: e5143833-522e-4edc-85f7-7fabf61c96ea
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 51
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b28e7d7f-b929-4b40-81a2-b68164e705e2
+    type: regular
+    task:
+      id: b28e7d7f-b929-4b40-81a2-b68164e705e2
+      version: -1
+      name: Find duplicate incidents
+      description: Find duplicate incidents for the current incident.
+      scriptName: findSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      hoursBack:
+        simple: ${inputs.hoursBack}
+      ignoreClosedIncidents:
+        simple: "no"
+      ignoreMissingKeys: {}
+      maxNumberOfIncidents: {}
+      similarContextKeys:
+        simple: ${inputs.similarContextKeys}
+      similarCustomFields:
+        simple: ${inputs.similarCustomFields}
+      similarIncidentKeys:
+        simple: ${inputs.similarIncidentKeys}
+      similarLabelsKeys:
+        simple: ${inputs.similarLabels}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 194
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 0b306157-ac37-4006-8abc-6cdb910ef3dd
+    type: regular
+    task:
+      id: 0b306157-ac37-4006-8abc-6cdb910ef3dd
+      version: -1
+      name: Close as duplicate
+      description: Close the current investigation as duplicate.
+      scriptName: CloseInvestigationAsDuplicate
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      duplicateId:
+        simple: ${similarIncident.rawId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: b9f0f671-1eff-42d8-8387-1d9fd00dd4c2
+    type: condition
+    task:
+      id: b9f0f671-1eff-42d8-8387-1d9fd00dd4c2
+      version: -1
+      name: Is duplicate incident found?
+      description: Check if there is any duplicate incident found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 369
+        }
+      }
+  "5":
+    id: "5"
+    taskid: ae7479e7-e2fb-48f5-8794-2ffbfa66f2f7
+    type: title
+    task:
+      id: ae7479e7-e2fb-48f5-8794-2ffbfa66f2f7
+      version: -1
+      description: ""
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 734,
+        "width": 492.5,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }
+inputs:
+- key: similarIncidentKeys
+  value: {}
+  required: false
+  description: Identical incident keys
+- key: similarLabels
+  value: {}
+  required: false
+  description: "Identical\\Similar labels keys.\nYou allow difference in X words between
+    labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1.
+    Email\\from to be identical \n2. Email\\subject to be similar with 2 max words
+    difference\n"
+- key: similarContextKeys
+  value: {}
+  required: false
+  description: "Identical\\Similar context keys.\nYou allow difference in X words
+    between values. "
+- key: similarCustomFields
+  value: {}
+  required: false
+  description: |-
+    Identical\Similar custom fields.
+    You allow difference in X words between values.
+- key: hoursBack
+  value:
+    simple: "24"
+  required: false
+  description: Check incidents within X hours back.
+outputs:
+- contextPath: isSimilarIncidentFound
+  description: Is similar incident found? (true\false)

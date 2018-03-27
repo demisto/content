@@ -1,0 +1,161 @@
+id: ExtractDomainTest
+version: -1
+name: ExtractDomainTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 709f1b79-ee47-45f0-882f-60e7146a9a2d
+    type: start
+    task:
+      id: 709f1b79-ee47-45f0-882f-60e7146a9a2d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 73eede55-e81f-4fcb-8119-706d1ed6d7da
+    type: regular
+    task:
+      id: 73eede55-e81f-4fcb-8119-706d1ed6d7da
+      version: -1
+      name: Extract Domain from www.google.com
+      scriptName: ExtractDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      calcReputation:
+        simple: "false"
+      extractFromEmails: {}
+      markAsIndicator: {}
+      text:
+        simple: www.google.com
+      tldList: {}
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 285
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 614aa9af-9f80-4815-8b59-b7c8e403689e
+    type: regular
+    task:
+      id: 614aa9af-9f80-4815-8b59-b7c8e403689e
+      version: -1
+      name: verify it's google.com
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: google.com
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 538
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c43e408e-5110-4e1a-8b56-3557a81f721d
+    type: regular
+    task:
+      id: c43e408e-5110-4e1a-8b56-3557a81f721d
+      version: -1
+      name: Extract Domain from Email
+      scriptName: ExtractDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      calcReputation:
+        simple: "false"
+      extend-context:
+        simple: emailDomain=Name
+      extractFromEmails: {}
+      markAsIndicator: {}
+      text:
+        simple: meir@demisto.com
+      tldList: {}
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 741
+        }
+      }
+  "4":
+    id: "4"
+    taskid: c944f8d9-4b87-4af8-808d-a5a78e1cd956
+    type: regular
+    task:
+      id: c944f8d9-4b87-4af8-808d-a5a78e1cd956
+      version: -1
+      name: verify it's domain from email
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: demisto.com
+      fields: {}
+      path:
+        simple: emailDomain.[0]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 967
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1012,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

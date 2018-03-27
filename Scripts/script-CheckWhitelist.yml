@@ -8,11 +8,19 @@ script: |
       demisto.results(res)
   else:
       whitelist = res[0]['Contents']
-      demisto.log(str(whitelist))
+      result = False
+      answer = 'no'
       if demisto.args()['item'] in whitelist:
           answer = 'yes'
+          result = True
+      contextKey = "WhitelistCheck"
+      contextValue = demisto.get(demisto.context(), contextKey)
+      contextDic = { demisto.args()['item']: result }
+      if contextValue:
+          contextValue.update(contextDic)
+          demisto.setContext(contextKey, contextValue)
       else:
-          answer = 'no'
+          demisto.setContext(contextKey, contextDic)
       demisto.results(answer)
 type: python
 tags:
@@ -25,8 +33,11 @@ args:
   default: true
   description: Item to check
 - name: whitelistname
-  required: true
+  defaultValue: Indicators Whitelist
   description: Name of whitelist to check
+outputs:
+- contextPath: WhitelistCheck
+  description: Returns a dictionary of indicators mapped to True if found in whitelist, or False otherwise.
 scripttarget: 0
 dependson: {}
 timeout: 0s

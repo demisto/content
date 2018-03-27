@@ -1,0 +1,651 @@
+commonfields:
+  id: VxStream
+  version: -1
+name: VxStream
+display: CrowdStrike Falcon Sandbox
+category: Forensics & Malware Analysis
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAApCAYAAAD+tu2AAAAU8klEQVR4Ae3ZBXQcR9Yv8P+tru4eFFuyZcvMYeaFMDPTYngpzMvMzPx4IczM5DhgZgsMYhhsqKr75J0Zpz1HzubBF/iOfudcDVP/C1sYN27cuHHjxr0nCP+BLnyke4IyZgiAwrj3hDz3oS34j/JSp3dIWppHxgN+78jV3R7+X4z4YYOvhAuwqouLEQABynLGPmxCLP4wxr1n6KD/uRX/J9Z2DzZ7ho+tdfkYaTl7upImGyKpDAwzDxpgiWPJZ+OERevz+kspmGMB+Bj3nqAJP1uNd6LBCpr7fL5+ctr51IGTk/Uz6hzEbYHAMIqKkQsMhgONgaJBZybE5pxCj3LWXNH77K4AQrwnxsmzel/Gv3N30+5naNv62WV7Nk7atTkOTzOGPIVhXyEXMArKIB8aFEKGpwxqXYIlJAYy0LsPt8855Zm/ntK3cM/vADB4V42Tl6+7B2/nkH1uv3XvBufrn9pzApiA7nxYDrMUal6Vgs1HbufDUo9OOAmZLIyIwuDgN6316z7spFJnAsjhXTNOxnu6sTMXn/2V249oiH31rIWNGPY1MqOVDyuB6tHicsAmEjD/63ZutEbgN2zNaxJSFrm/7xjl+3ck9tn3pHdvTh4nnekzMJYDFnzu9BlO8qunzqtHdy5ANjAojBlq5Hr5sXxgUFQG8VT8SSsZ2ypS6efZC49U2cxR/to1vwDwaUSkP/7ptuF77p0nEolsYMbIngjwA/CWzYMA1qKK1dQqkI7tY9hYzEyOYw8BWAUArMUUpf0ZIKFkGKwBMIAq9twFdcX1axYAkIl0/RsqDJLGL8wgyyoYVy4BwHgbes2GOcZ2WmhgQML3QOkUm1RtSGS2AGjHziSTKaqp2Q3Mho0RyVlzOwFsRhWvY8M8Y0wDAIMoGsXCmPVre3f2ObRk3z1Q7Z7vf2viX5c2Lr9knykNmnl7z60OtTL35sq3K5fKMODGN0+qq5kNwFv8wJW1AytWrWalWmA0Rn/I0QAeRVn8+ONbu3/xs2+zEBcxMwg7IYQWjvumO2XKJwG8iTJ2nLOKy5b+DUIAzCAhcnbLxN0AtDsTJ80trli6SBW9GpmuWeTOXXBwdF8umxus/AsvPK6Ghz9s1zdsla1tc4KNa682vv81sqwN5NhzAWiMQaZqj1LDQz8wRi+EMRaIsB0zyLICIlpqNbdcCeAVVOFs9jcqM3IpE4GYIVz3VdnQcGD15wV9fQ+yNscCDDCjGgkR0uhxic+Z83kALyBCyqlTUe1nLzVec+KC+gZlDAYKYanHBpVwNYqKkfU1hkZrW6CBZhRUaYEFy4Ydd+86o+/12zAADwBGtvQUGdCMbQj+4MAPnPkL963smQuvLt5Sc8DBFxdzQ495S1f8haWFamAAxli6kN+bt279rd06+SAABkRu0L7xy4YIJEQRhi3tean43PmXA7jJAGucGTPPD1esvDfIZfez+vtuAvB1lFHzhC8H/f0fJtvW8d32PQ9A3lu3ShgSIKKQSGAsbm19yh/o/4MJwzYQAUIAoAAAAyCAHQ6VA6J9zODgP2IzZ+8KIIMy1dfTGuYL5zEIZMkRY0ytCcJ9qeifCeB/IcIQhQxASHtEOG4nmKlyUIzSNToMpqJY3Lewbt3fRxv0GQBeQplUuTyifvSZX01sbB++dFLKxtaMVzUMlwLtKyh058JuY3CvJaBCg2M9jRmIJ1fs72+94drFd3Xssfihb1DMHTLzdr0vyOfPN1q3gghkWQiHBnfDmpWnAPg7InzPf9JIaQAIS8qbyfAT2MYYiFRSGsLnVCZzjioWZ2HTpjSAEbjuhapQXMjawG2dci1Z8sNe+4Zzci88d1nqwAN/CmALTWi+XzYP/jzo6/2s19Xx5djc2c8CeNr4wf6ZB++/md0Y3NbWLxc3rnoaAFjazNoHQAwQxpJJJ/a0u8M2QwQ7kfidrK37kcqMFEACYCa3ZWJch8Hlxc6Oz2nPa1PZzMLogVdBcKPWYZosO4xNmnya17PlZzoId4FXvKE6YAZgAEhbPgjW5yFidIp12fcu9To7fqo8r5UL+UN2CNgv5FHxuXN/QpuW95w6b2KqNuOHGCwqFMLy3BuUhuSBgsLoY4vm1NonAegBgH5KNzhe7owLNzzw6Okv/o+L5XD/HTkhHeQ90KsvfxzCAhFtH7qYCIbx6eqATRDEGCXGsV+NDmuaNYQdq2eicwAQByE4XUOmkLtaqxDJthlrWz591W9yb778arGz/ewwk6lz6uuuA3ANAHj1dTeJXPZQVcjvFWzu/lV44bkn4G///AMbtpy62ucS++z/DZQNP/owDAAq11jCZLJRGAZJqURT07cMsFE0NqIiVAGcpgk/wJbNVxqtpSkUZlQOfP2Z58zq/fMfPq0DhcReCx/RwJMiX/tjNTTwO1Uo7F175NEnAbgXZZlnn4YBQRugmu7s8OWEln+ysL7PzA6UbkCE1EqjYkKDs0uPr06vcS305QJkfYV8GBmaQ4PeXKhnpe3Pq8D0oKwOI4Mg/O6cx379ei40e3qWWz44DLYk6K1xC5XhTGUzh9hz5k4CsBVlJpcHswEDANMVxpiPACwAsJCOMMXiMQYEKGVSBx+YEW7szMHHHt6FjOHg0EO/1LXqTQM3tshubvkvfm/vxX0PPnxZbN78HwLYRG68IGfNvlCvWfOqn88vEH/+r6+YMGwiKXOiddKlubWrGGUGBN7+C8aWWLtRhkKAgCAcGCxiDGG2wAYUMkga34+jbPCeO24J8/mESCTyZjh3NQBQPP57EaSuVsPDC4vLl36p7Ybr7y93XIw8+wwYABNhLCaXAYQIWClH9/UJRMjRO1Dx3KrBXRzXmgtmDOT90qIp0OUtkUEu0Ag0D/bkaBnGkIulWKscRDlQgFDCQOQaEcEYnaRp02fsEPC69WCUqELhdEQY9rANa4V4a9tLxQ0bmR35FUMCIhEP1b13H8qjrV84LigWS7JlQQdBIty8+SoAN6NkRfywg2/OPfTYjzXQxMyYePiRnwGwEhH97Z3be7DA2LSUYJQYZsYYyCIwUKryM+See88ovPT8BSwl2LKGg8HBTyEMLFgWj5bHjoPi1u59uh994kwAfwMAE6mxCGYYgAwRSFqECLnDgoZ4Fykwcbi4rfeWgw309l7sjZYQlNh7Zm0SQBYRt25+gLS0a8CAqRraGARCddCE4I3XJyLCRJ5BltUDIFe6UX7AsgIrWf+yO2vWtZzLnz/8xuIFsG1oYxzt+1fCsgCtgFwWIAIsC0Eue6UzecrPK9uPYEPnT6gmfY72/YOEbS/uee6Zv6CKsCQMEQgwJgg1xiAaW5TJDIMA107XNALoQRXZ1hYPBgYcJgLHYgUAKK5Ydp3W2oUQ0GE4WSG8EURAGJZKa5BlIfvM01+oBLy995JQGINOpS2Ty8WYCLEpbQEipNs2FRW5QE20JdzBQoCsp/4VcK68p9WGAQJ0gKRm73oA1yKi9p47bsyOjMwiywIiQzKBI7cpMlzztqpFBNNbw5BwnM8LEncINmAQDDO4vl4xwH7gSW/DuluMELAsuVoY9bvoNMBEDEvWaOZbtdY14UD/bQCuiKxKB0rrAB7ETjD+JU0x9/gdOg8zjd43IJTfoUjAMFt+NvMHy7bvVkGYN77PVjxOsqU5GWzccMK2x0EEMXHSm7pYmKk62j9piGAJ6wlh1P0AUeW3g5ndadPmFLZuvVwViwclpk8/G8Dfil1dMAC00ZOIzYdYKQIRwMyUrklyNnOBZrZK00KuGxFy9A5UGMPshRqDOa+091UaoWaUUKkE8Ojy4Wum1MUb4w7/bVPRUZf1L1qC4aHzDAi0k95LYHA0BBBYaVPVg4kBAaDUe9iE2w83ARgewjaBUp8Jc9ldAELTUUffDOBOjKH36SfnmkLhvLBQvNypb/gNgDcAwKhcvDzKxDA2aUoHsA1F735i7Li/DfUqMSG5UKTSj6pM5qgwlz8wJDqQhACIoAoFhGvXlbIjwG1qftbv6VlpfO8OpVRMuDFF53zqUgbWo4rd/rrE4NBxJsxNK/b2fsdK19xjQIJBCIPwCACjRQADAAGZLNgYbOPEYy+6tvUwImjxoQeg4txjv3jb1gLfYojiXmhgUEb0VshUvmQGqPSDGpPx3/z6jT/+ZtobTyzypGsRcyTo6kveftuS9qkA7kZZYPRUS4V3QmsLsdh1AB5DFW6dGg/6ev8HRoanJ2pTnYmLPnU2AA9jUC+9sGBo1aq/mDCMJePuHwD8BABMsfAz4wcfkrb1IoDLUYWFvMQE/lXakia0XRAAO/AgjAaIKIwnlwG4KDl5Sr3par/cSqX2UMXiNJXLx4iImQ3JdE3BuLEuxVgenzHrJ8HQYDzobL/L8grxxNRp9wK4HTvBsdhFwdo110AIWySSV2lhHR8K6wQAxlYBLBUCRAgtG8qSsC3RF2PzylBL2w8B9CGCHj36GFTcfNQXTl85GH4vH+iZIKoKliIp0Y7BWw4fm8wf+OV7v3Fu2Nd7NUsbVGntKKnu2QRGfNqMAypboXesdzPlCz4AMD5AHAELgMa7jBbNn4GKc8755dx+L/xeJgxPLoVHY/fe6pCZYSVSa7/pdp1y+D+/94tirngIMztE9FbAzACwPXgh5UjNQQfPiba441tOdzdrca1bEz/UZpOWYUCjfL8YvjF/Us23q1vnFop9r5DJ7ybIJEEEMAEAxQTdDuBJRGgRO6zXCz/dWOO2+pblSkvkB4bCzdPrnF8BWIyIIchPWLb8aJLwsUpDMhATC0y/E5bz0+hp1gRUU1apXxlBNSTIAgQR2EuyXjLFqG8ByCCip7754rznn7xXyroIQBFl60YKF2V8vgwkjHKdjLEshwkxFrLLZnlxpXE0WKAhQ1/WmhdeMCXzicpC9M7++luUV9ivAfwVAG+gTF54y7OosIE17srX/gHmkxFdKlUwlQNFCYly4BJaYPITTVPEE5f95PBv3ff9Y7Jr1t3FbGLR/e+/MJcCTqaeyC1Z0oeIwkdOOkb5wTeS2rsr5spnBEEUQ9NUKKpLpEAfgG8jYqir+8SQKdWUcH/JIEAQACKG6UGETKRl70j2z7ZFrZQ3jzfZcrCvGDZSqD7VG1qHTU/aC6ILqfac2QPgUz1HisqBtVmkR5Q6sbmx6f5owJlsJj6i+UyANoFoACCQoNgwcDyn3DUA/oQIb1PPHiOazxhRyU9GAw6LeiuUXqRByeFM8ZK4tF5NSetZBvWy46JiGOBr9uU7bn8m+OIiV/oALhzMO0dvzQx8Y2bSvqYlLpYhQrYIRpRwrXtHAvQE2rRUeuc20hIDiikOshKwZBEWbahhvWxCkH1mgpfdcGR+yxr0YgMA3NF2wMNHrd+4iUMzG7RjU+Hye7rTZ/4OVYp+EEOoIWMyHwThSFxaIwmBN2Nx+36X+BVUsYiLhpmlUv0GACyAIChtUz8iMvlcaxiqmQubar9QmYfbXAc9I3ywIJpmAMIOOLCI8xKMCgvaEBiEIESERQZEjAZpfxbAXQCQisnGLcWga8hTraiSsq3AAhcEDCNiSlw8BojH1mWDJIgvicH8TSnzPWyjAkT94Bm8OS/tXLKoI/zd3EZ3eUeu+IUG17pjWKkfDWexA7ksG2AHLfOHm8IlP92S9b8BQQAT0o61tD4eO3x6o2hs6e+eMnvTmi2Tsr1ySqG/pban60DXzx9q+d6eOlV3I9WmHzJBcG6o9XTQjtuibdgYODU1z6vM8MOocvoJLQ8u7Rr6zoo+/wjF2H+EQksQ1YWGG/wOfQWAXyOCCKGneH6n5psqd4CIJjliMYBelDkSDoExMFTIIkICL2C0hvMKOzCCQOC8H2iU1dtSwRiAfUKUYSZj8hkV/jdHiBBEyOY9O1SIf3zvzCpUuWttLWC4VGPIK10Dw2DiGN5G90jx9/NaEh9a3ZP/Zjxmb5mftq7AGOToA6g2JPCrbuZLjeZpAODG4lsLrPtvfvqPQ7XrV9ysfe8wbXi6ZhKGBApEgLAhvOJdQoXtHAYzqwb37RslEoJlU/PVhmFQ5Zz9muuOnm49/atF2a9Uhq+tg97kjozfVZvg/aoDHshzMkZ4GtDHYRsu1bCHHTQl7RwbDWa1GwONDrH2IW0S4mrFWNjkyrMAhCjLeUr72qSn1sSaKw1FCtnWP1RAHbRGRJ8xABtpC/FsPgjWgwiuZTUL4lOfWB9vQLXS8wHWGIswuhS+EPh3pibdm9aJ4MJ6m77dng16MQY5+gBQrXWXoUMaOy5+uXPwsSBQ9mAhPPzqppH5ia511w4Xg49BSJBF2xdP9FZjFiYIZhIRSjiy7wXIMJyWid8Ii8VFGMOlv18ydXO2+IDjWlnB6AMRFJDUvqYj95j9Mqr8r+c2wlfmWNcS6/mtRZ9wCFcBeABlI4Vc94RE/N6erPcFIcXnLCKtoW2jDepj9j/6wiBExIS4+3hHoG/oyhQ3ElMvCAgMprpSDNQSP4OIXqOFUdr9yNSWX0b3409v6Qs2jARzUaUxTi4zJ8CGMAY2hsAMNnDxb/QOm5AEU3/BD7AT5PxgKXbmo7VDlzz88obfIpnECbn1h1z77O++URDyI2PucZmBse6vDM/GwHbdPwP4BN7GBcfctmc+0AslkQQAZhg/1J0AnkGVxtrk4fnQtIBgbz9zTCAJ8xSADkTMm1yf7M4Hh/RmwwkEQQasa+J2n014FoCPKiHJ3bOBXmCRcDUzHFsWZjelFlW/76YBL5HV5sTDp7e9CKALAEb0kFi8OTzpooMK6wAsR8R9S2p3K2jMmVufuAeAQpV1WT8WGJycIF4GYAXeRltzg7t+qHgyCIsBbMAYqPVnK/B2aNOyT2728etjCx0n3vjSn67KBfpkIgLwNiczmFEdvJ1M/EEKcdm7uxccJ//XXy7Av/HHM4776kaTx6Bh5tGCoLeiZTCoekNFBGYGGQPYzlCsoeEGAL83GPduo6cPOxTvVBgG/yzmi4eaMGgGMyonMio9Gsa8dZ8Qg/G62r/mdtv/hwC68J4YR/dd9lm8Y68898Pk1Km/8Pt6p7DhE4zvLWCl5sCYFIFCKx5rZ6VW2en0UwiDJwD04T01jh47cH+8E54ylJox44jqfwB4XZ1kPN8WBD0+v77/0EN77Yl3wp7SRrHJk2sBDOMDYxw9f/nl+M9rnMD71LjxgMeNBzzufwN2omMenW6zHQAAAABJRU5ErkJggg==
+description: Fully automated malware analysis with unique Hybrid Analysis. (formerly
+  Payload Security VxStream)
+configuration:
+- display: Server URL (e.g. https://216.3.128.82)
+  name: serverUrl
+  defaultvalue: https://www.hybrid-analysis.com
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Secret Key
+  name: secretKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    var apiKey = params.apiKey;
+    var secretKey = params.secretKey;
+    var serverUrl = params.serverUrl;
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+    var auth = 'Basic ' + Base64.encode(apiKey + ':' + secretKey);
+
+    // handle '/' at the end of serverUrl
+    if (serverUrl[serverUrl.length - 1] === '/') {
+        serverUrl = serverUrl.substring(0, serverUrl.length - 1);
+    }
+
+    function entryError(errorCode, text) {
+        var error = 'Falcon Sandbox returned an error (' + errorCode + ') - ' + text;
+        return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
+    }
+
+    // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
+    function mapObject(mapper) {
+        return function(obj) {
+            var res = {};
+            Object.keys(obj).forEach(function(key) {
+                // map key or capitalize if not exists
+                var newKey = mapper[key] || key;
+                res[newKey] = obj[key];
+            });
+            return res;
+        }
+    }
+
+    function createTableEntry(name, rawResponse, table, context, headers) {
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: rawResponse,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, table, headers),
+            EntryContext: context
+        };
+    }
+
+    var sendRequest = function(endpoint) {
+        var requestUrl = serverUrl + endpoint;
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Authorization': [auth],
+                    'User-Agent': ['VxStream']
+                }
+            },
+            insecure,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        var body;
+        try {
+            body = JSON.parse(res.Body);
+        } catch (ex) {
+            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
+        }
+
+        return body;
+    };
+
+    function scan(hash) {
+        return sendRequest('/api/scan/' + hash);
+    }
+    function scanToEntry(res) {
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var response = res.response;
+
+        // create table from response
+        var tableMapper = {
+           threatlevel: 'threat level',
+           total_network_connections: 'total network connections',
+           targeturl: 'target url',
+           classification_tags: 'classification tags',
+           threatscore: 'threat score',
+           total_processes: 'total processes',
+           submitname: 'submit name',
+           environmentDescription: 'environment description',
+           isinteresting: 'interesting',
+           environmentId: 'environment id',
+           isurlanalysis: 'url analysis',
+           analysis_start_time: 'analysis start time',
+           total_signatures: 'total signatures'
+        };
+
+        var table = response.map(mapObject(tableMapper));
+
+        // create context from response
+        var context = {};
+
+        var contextMapper = {
+            sha1: 'SHA1',
+            sha256: 'SHA256',
+            md5: 'MD5',
+        };
+        context[outputPaths.file] = response.map(mapObject(contextMapper));
+        response.forEach(function(res) {
+           if(res.threatlevel && res.threatlevel > 1) {
+               addMalicious(context, outputPaths.file, {
+                    MD5: res.md5,
+                    SHA1: res.sha1,
+                    SHA256: res.sha256,
+                    Malicious: { Vendor: 'Falcon Sandbox', Description: 'Score above ' + res.threatscore }
+                });
+           }
+        });
+        return createTableEntry('Scan Results:', response, table, context);
+    }
+
+    function getEnvironments() {
+        var res = sendRequest('/system/state');
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var response = res.response;
+        return response;
+
+    }
+
+    function tableFromEnvironments(response) {
+        var environments = response.backend.global_environment;
+        var environmentsKeys = Object.keys(environments);
+        var table=[];
+        var envContext = [];
+        for (var i = 0; i < environmentsKeys.length; i++){
+            var currentEnvironment = environments[environmentsKeys[i]];
+            envContext[i] = environments[environmentsKeys[i]];
+            table[i] = {
+                ID: currentEnvironment.ID,
+                description: currentEnvironment.description,
+                architecture: currentEnvironment.architecture,
+                'total VMS': currentEnvironment.VMs_busy,
+                'busy VMS': currentEnvironment.VMs_total,
+                'analysis mode': currentEnvironment.analysisMode,
+                'group icon': currentEnvironment.groupicon ? currentEnvironment.groupicon : ''
+            }
+        }
+        // create context from environments
+        var context = {
+            'VX.Environment(val.ID && val.ID == obj.ID)': envContext
+        };
+
+
+        return createTableEntry('All Environments:', response, table, context, ['ID', 'description', 'architecture', 'total VMS', 'busy VMS', 'analysis mode', 'group icon']);
+    }
+
+    function submitFile (entryId, environmentId) {
+        var requestUrl = serverUrl + '/api/submit';
+        // submit file
+        var res = httpMultipart(
+                    requestUrl, // URL
+                    entryId, // Optional - FilePath / EntryID
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            'Authorization': [auth],
+                            'User-Agent': ['VxStream']
+                        }
+                    },
+                    { // Multipart Contents
+                        environmentId: environmentId
+                    },
+                    insecure,
+                    proxy
+                );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Multipart Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        var body;
+        try {
+            body = JSON.parse(res.Body);
+        } catch (ex) {
+            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
+        }
+        if (body.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+
+        }
+        var response = body.response;
+        var resMessage = '';
+        if (response.sha256) {
+            resMessage = resMessage + '\nsha256 - ' + response.sha256;
+        }
+        if (response.sha1) {
+            resMessage = resMessage + '\nsha1 - ' + response.sha1;
+        }
+        if (response.md5) {
+            resMessage = resMessage + '\nmd5 - ' + response.md5;
+        }
+
+        return resMessage;
+    }
+
+    function submitFileMsg(hash) {
+        var resMessage = "File submitted successfully";
+        resMessage += resMessage + hash;
+        return resMessage;
+    }
+
+    function searchQuery(query) {
+        var res = sendRequest('/api/search?query=' + args.query);
+        if (res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+
+        var result = res.response.result;
+
+        // create table from search result
+        var tableMapper = {
+           environmentDescription: 'environment description',
+           start_time: 'start time',
+           submitname: 'submit name',
+           threatscore: 'threat score',
+           type_short: 'type short',
+        };
+
+        var table = result.map(mapObject(tableMapper));
+
+        // create context from search result
+        var contextMapper = {
+            sha1: 'SHA1',
+            sha256: 'SHA256',
+            md5: 'MD5',
+        };
+
+        var context = {
+            'VX.Search(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
+        };
+
+        result.forEach(function(res) {
+           if(res.threatlevel && res.threatlevel > 1) {
+               addMalicious(context, outputPaths.file, {
+                    MD5: res.md5,
+                    SHA1: res.sha1,
+                    SHA256: res.sha256,
+                    Malicious: { Vendor: 'Falcon Sandbox', Description: 'Score above ' + res.threatscore }
+                });
+           }
+        });
+
+        return createTableEntry('All Environments:', result, table, context);
+    }
+
+    function vxResult(hash, environmentId) {
+        var res = sendRequest('/api/result/' + hash + '?type=json&environmentId=' + args.environmentId);
+        if (res.response_code !== undefined && res.response_code !== 0) {
+            return entryError(res.response_code, res.response.error);
+        }
+        return res;
+    }
+
+    function detonateFile(entryId, delay, timeout) {
+
+        var environmentId;
+        if (args.environmentID) {
+            environmentId = args.environmentID;
+        } else {
+            var environments = getEnvironments().backend.global_environment;
+            for (var i=0; i<environments.length; i++) {
+                if (environments[i]['ID'] === 100) {
+                    environmentId = 100;
+                    break;
+                 } else if (environments[i]['architecture'] === 'WINDOWS') {
+                    environmentId = environments[i]['ID'];
+                    break;
+                    } else {
+                        throw 'Please enter valid environment ID';
+                }
+            }
+        }
+
+        var hash = submitFile(entryId, environmentId).substring(10);
+
+        delayTime = parseInt(delay);
+        timeOut = parseInt(timeout);
+        var waitTime = delayTime;
+
+        wait(delayTime);
+
+        while (waitTime<timeOut) {
+            res = scan(hash);
+            if (res.response.length > 0 && res.response[0]) {
+                return scanToEntry(res);
+            } else {
+                waitTime = waitTime + delayTime;
+                wait(delayTime);
+            }
+        }
+        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
+
+    }
+
+    switch (command) {
+        case 'test-module':
+            var entry = searchQuery('url:google');
+            if (entry && entry.Type === entryTypes.note) {
+               return 'ok';
+            }
+            return entry && entry.Contents;
+        case 'vx-scan':
+        case 'crowdstrike-scan':
+            var res = scan(args.file);
+            return scanToEntry(res);
+        case 'vx-get-environments':
+        case 'crowdstrike-get-environments':
+            var response = getEnvironments();
+            return tableFromEnvironments(response);
+        case 'vx-submit-sample':
+        case 'crowdstrike-submit-sample':
+            var hash = submitFile(args.entryId, args.environmentID);
+            return submitFileMsg(hash);
+        case 'vx-search':
+        case 'crowdstrike-search':
+            return searchQuery(args.query);
+        case 'vx-result':
+        case 'crowdstrike-result':
+            return vxResult(args.file, args.environmentId);
+        case 'vx-detonate-file':
+        case 'crowdstrike-detonate-file':
+            return detonateFile(args.entryId, args.delay, args.timeout);
+    }
+
+  type: javascript
+  commands:
+  - name: vx-scan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+    - contextPath: File.MD5
+      description: MD5 of the file
+    - contextPath: File.environmentId
+      description: 'Environment id of the file '
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+    - contextPath: File.submitname
+      description: Submission name of the file
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: crowdstrike-scan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+    - contextPath: File.MD5
+      description: MD5 of the file
+    - contextPath: File.environmentId
+      description: 'Environment id of the file '
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+    - contextPath: File.submitname
+      description: Submission name of the file
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: vx-get-environments
+    arguments: []
+    outputs:
+    - contextPath: VX.Environment.ID
+      description: Environment id
+    - contextPath: VX.Environment.description
+      description: Environment description
+    - contextPath: VX.Environment.architecture
+      description: Environment architecture
+    - contextPath: VX.Environment.VMs_total
+      description: Total virtual machines in environment
+    - contextPath: VX.Environment.VMs_busy
+      description: Busy virtual machines in environment
+    - contextPath: VX.Environment.analysisMode
+      description: 'Analysis mode of environment '
+    - contextPath: VX.Environment.groupicon
+      description: Icon of environment
+    description: Get a list of all available environments  (NOTE - minimum required
+      authorization is `default`)
+  - name: crowdstrike-get-environments
+    arguments: []
+    outputs:
+    - contextPath: VX.Environment.ID
+      description: Environment id
+    - contextPath: VX.Environment.description
+      description: Environment description
+    - contextPath: VX.Environment.architecture
+      description: Environment architecture
+    - contextPath: VX.Environment.VMs_total
+      description: Total virtual machines in environment
+    - contextPath: VX.Environment.VMs_busy
+      description: Busy virtual machines in environment
+    - contextPath: VX.Environment.analysisMode
+      description: 'Analysis mode of environment '
+    - contextPath: VX.Environment.groupicon
+      description: Icon of environment
+    description: Get a list of all available environments  (NOTE - minimum required
+      authorization is `default`)
+  - name: vx-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    description: Submit a file from investigation to analysis server  (NOTE - minimum
+      required authorization is `default`)
+  - name: crowdstrike-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    description: Submit a file from investigation to analysis server  (NOTE - minimum
+      required authorization is `default`)
+  - name: vx-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
+    outputs:
+    - contextPath: VX.Search.SHA256
+      description: SHA256 of search result
+    - contextPath: VX.Search.SHA1
+      description: SHA1of search result
+    - contextPath: VX.Search.MD5
+      description: MD5 of search result
+    - contextPath: VX.Search.environmentId
+      description: Environment Id of search result
+    - contextPath: VX.Search.start_time
+      description: Start time of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result by server
+    - contextPath: VX.Search.verdict
+      description: Verdict of search result
+    - contextPath: VX.Search.environmentDescription
+      description: Environment description of search result
+    - contextPath: VX.Search.submitname
+      description: Submission name of search result
+    - contextPath: VX.Search.vxfamily
+      description: Family of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result
+    - contextPath: VX.Search.type_short
+      description: type of search result (url, host, etc.)
+    - contextPath: VX.Search.size
+      description: Size of search result
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Search the database using the Falcon Sandbox search syntax
+  - name: crowdstrike-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
+    outputs:
+    - contextPath: VX.Search.SHA256
+      description: SHA256 of search result
+    - contextPath: VX.Search.SHA1
+      description: SHA1of search result
+    - contextPath: VX.Search.MD5
+      description: MD5 of search result
+    - contextPath: VX.Search.environmentId
+      description: Environment Id of search result
+    - contextPath: VX.Search.start_time
+      description: Start time of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result by server
+    - contextPath: VX.Search.verdict
+      description: Verdict of search result
+    - contextPath: VX.Search.environmentDescription
+      description: Environment description of search result
+    - contextPath: VX.Search.submitname
+      description: Submission name of search result
+    - contextPath: VX.Search.vxfamily
+      description: Family of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result
+    - contextPath: VX.Search.type_short
+      description: type of search result (url, host, etc.)
+    - contextPath: VX.Search.size
+      description: Size of search result
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Search the database using the Falcon Sandbox search syntax
+  - name: vx-result
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    - name: environmentId
+      required: true
+      description: 'environment ID to submit file to(get all via vx-get-environments) '
+    description: Retrieve result data upon a file. NOTE - This command returns a file
+      (also - minimum required authorization is `default`)
+  - name: crowdstrike-result
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    - name: environmentId
+      required: true
+      description: 'environment ID to submit file to(get all via vx-get-environments) '
+    description: Retrieve result data upon a file. NOTE - This command returns a file
+      (also - minimum required authorization is `default`)
+  - name: vx-detonate-file
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via vx-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    description: Detonate file through Falcon Sandbox
+  - name: crowdstrike-detonate-file
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via vx-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    description: Detonate file through Falcon Sandbox

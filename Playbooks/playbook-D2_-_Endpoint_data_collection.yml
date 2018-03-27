@@ -126,7 +126,7 @@ tasks:
       id: 34499d4a-e00a-4886-8882-e5bcddf3a892
       version: -1
       name: d2 agent - Get active users
-      scriptName: D2ActiveUsersParsed
+      scriptName: ActiveUsersD2
       type: regular
       iscommand: false
       brand: ""
