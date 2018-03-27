@@ -1,107 +1,34 @@
 id: 2c56c928-58f2-4d5d-84f2-048146e8fbc9
-version: 2
+version: 21
 name: Packetsled
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bee2fdd3-0257-4811-80d0-060826e5c69d
+    taskid: b3bc6824-db01-4a5b-886e-04fc2d8263cf
     type: start
     task:
-      id: bee2fdd3-0257-4811-80d0-060826e5c69d
+      id: b3bc6824-db01-4a5b-886e-04fc2d8263cf
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 50,
+          "y": -100
         }
       }
   "1":
     id: "1"
-    taskid: e1e1e2f9-5b4a-4ffb-8b7e-6b4bc963cb71
+    taskid: ba93881a-fecf-44a4-8f06-ef1b2cefc29d
     type: regular
     task:
-      id: e1e1e2f9-5b4a-4ffb-8b7e-6b4bc963cb71
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all: ""
-      key: packetsled
-    view: |-
-      {
-        "position": {
-          "x": 454,
-          "y": 214
-        }
-      }
-  "2":
-    id: "2"
-    taskid: b57444ae-591f-434d-86ac-e1d35300b298
-    type: regular
-    task:
-      id: b57444ae-591f-434d-86ac-e1d35300b298
-      version: -1
-      name: packetsled-probes
-      description: List the probes attached to the packetsled platform.
-      script: Packetsled|||packetsled-probes
-      type: regular
-      iscommand: true
-      brand: Packetsled
-    nexttasks:
-      '#none#':
-      - "4"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 393
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 64280b1a-b3dd-4036-8bdf-de5dc38f8185
-    type: regular
-    task:
-      id: 64280b1a-b3dd-4036-8bdf-de5dc38f8185
-      version: -1
-      name: packetsled-get-incident-pcaps
-      description: Get pcaps for each host involved in an incident
-      script: Packetsled|||packetsled-get-incident-pcaps
-      type: regular
-      iscommand: true
-      brand: Packetsled
-    scriptarguments:
-      envid: ${packetsled.probes.envid}
-      probe: ${packetsled.probes.probe}
-      psincidents: ${packetsled.psincidents}
-    view: |-
-      {
-        "position": {
-          "x": 703,
-          "y": 758
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 6c15f582-9ddd-4f2a-8701-e839e72b187d
-    type: regular
-    task:
-      id: 6c15f582-9ddd-4f2a-8701-e839e72b187d
+      id: ba93881a-fecf-44a4-8f06-ef1b2cefc29d
       version: -1
       name: packetsled-get-incidents
       description: Query for incidents by time range and severity
@@ -111,43 +38,145 @@ tasks:
       brand: Packetsled
     nexttasks:
       '#none#':
-      - "3"
-      - "5"
+      - "4"
     scriptarguments:
-      StartDateTime: ""
-      StopDateTime: ""
-      envid: ${packetsled.probes.envid}
-      probe: ${packetsled.probes.probe}
+      envid: ""
+      probe: ""
       severity: ""
+      start_time: ""
+      stop_time: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 573
+          "x": 50,
+          "y": 225
         }
       }
-  "5":
-    id: "5"
-    taskid: d1f80f91-efed-43d7-8cf6-807df616b309
+  "2":
+    id: "2"
+    taskid: 77b29294-1227-4d74-8107-7e7a769b6552
     type: regular
     task:
-      id: d1f80f91-efed-43d7-8cf6-807df616b309
+      id: 77b29294-1227-4d74-8107-7e7a769b6552
       version: -1
-      name: packetsled-get-incident-files
-      description: Get the files for a host by a given incident.
-      script: Packetsled|||packetsled-get-incident-files
+      name: packetsled-get-files
+      description: Query packetsled extracted files
+      script: Packetsled|||packetsled-get-files
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      envid: ${packetsled.psincidents.envid}
+      family: ""
+      geo: ""
+      host: ${packetsled.psincidents.host}
+      incident: ${packetsled.psincidents}
+      limit: ""
+      log: psfile_analytics
+      port: ""
+      probe: ${packetsled.psincidents.probe}
+      protocol: ""
+      start_time: ${packetsled.psincidents.start_time}
+      stop_time: ${packetsled.psincidents.stop_time}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 075fbbbf-38a0-4a7a-82db-b10e62e2ed64
+    type: regular
+    task:
+      id: 075fbbbf-38a0-4a7a-82db-b10e62e2ed64
+      version: -1
+      name: packetsled-get-pcaps
+      description: Query packetsled for full packet
+      script: Packetsled|||packetsled-get-pcaps
       type: regular
       iscommand: true
       brand: Packetsled
     scriptarguments:
-      envid: ${packetsled.probes.envid}
-      probe: ${packetsled.probes.probe}
-      psincidents: ${packetsled.psincidents}
+      envid: ${packetsled.psincidents.envid}
+      host: ${packetsled.psincidents.host}
+      limitbytes: ""
+      limitpkts: ""
+      port: ""
+      probe: ${packetsled.psincidents.probe}
+      protocol: ""
+      start_time: ${packetsled.psincidents.start_time}
+      stop_time: ${packetsled.psincidents.stop_time}
     view: |-
       {
         "position": {
-          "x": 162,
-          "y": 758
+          "x": 50,
+          "y": 750
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 712a6b8d-29d5-495a-8ac0-f2963771e337
+    type: regular
+    task:
+      id: 712a6b8d-29d5-495a-8ac0-f2963771e337
+      version: -1
+      name: packetsled-get-flows
+      description: Query packetsled sensor metadata
+      script: Packetsled|||packetsled-get-flows
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      envid: ${packetsled.psincidents.envid}
+      family: ""
+      geo: ""
+      host: ${packetsled.psincidents.host}
+      limit: ""
+      log: ""
+      port: ""
+      probe: ${packetsled.psincidents.probe}
+      protocol: ""
+      start_time: ${packetsled.psincidents.start_time}
+      stop_time: ${packetsled.psincidents.stop_time}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 10889c2c-285d-4f2f-8281-f6c05f5e3fea
+    type: regular
+    task:
+      id: 10889c2c-285d-4f2f-8281-f6c05f5e3fea
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: packetsled
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 43
         }
       }
 view: |-
@@ -155,10 +184,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 803,
-        "width": 921,
-        "x": 162,
-        "y": 50
+        "height": 945,
+        "width": 380,
+        "x": 50,
+        "y": -100
       }
     }
   }
