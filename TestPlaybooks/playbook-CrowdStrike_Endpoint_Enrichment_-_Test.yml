@@ -1,0 +1,190 @@
+id: crowdstrike_endpoint_enrichment_-_test
+version: -1
+name: CrowdStrike Endpoint Enrichment - Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+    type: start
+    task:
+      id: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+    type: regular
+    task:
+      id: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+      version: -1
+      description: ""
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+    type: regular
+    task:
+      id: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+      version: -1
+      description: ""
+      name: Verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: FalconHostDevices
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
+    type: regular
+    task:
+      id: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
+      version: -1
+      description: ""
+      name: 'Add hostname #1'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: CentOS70
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 759fe9ee-1d3b-4e02-844d-2207862d71c3
+    type: regular
+    task:
+      id: 759fe9ee-1d3b-4e02-844d-2207862d71c3
+      version: -1
+      description: ""
+      name: 'Add hostname #2'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: CYPHORT-CS-PC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+    type: playbook
+    task:
+      id: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+      version: -1
+      name: CrowdStrike Endpoint Enrichment
+      description: Enrich Endpoint with CrowdStrike
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

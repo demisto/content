@@ -1,14 +1,14 @@
 id: McAfeeESMTest
-version: 30
+version: -1
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 529fbfaf-789b-445d-85fb-541febea1435
+    taskid: 01101142-e554-4d22-8067-42f788c08d66
     type: start
     task:
-      id: 529fbfaf-789b-445d-85fb-541febea1435
+      id: 01101142-e554-4d22-8067-42f788c08d66
       version: -1
       name: ""
       iscommand: false
@@ -16,19 +16,21 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+      - "28"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1125,
           "y": 50
         }
       }
   "2":
     id: "2"
-    taskid: ab6ba2c5-8aea-4549-8871-77bfaeab0fa6
+    taskid: c6786fd3-10df-480e-84ac-bd35edc52e37
     type: regular
     task:
-      id: ab6ba2c5-8aea-4549-8871-77bfaeab0fa6
+      id: c6786fd3-10df-480e-84ac-bd35edc52e37
       version: -1
       name: esm-add-case
       description: Add a case to the system
@@ -38,26 +40,28 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
-      assignee: ""
-      organization: ""
-      severity: ""
-      status: ""
-      summary: this is the first case
+      assignee: {}
+      organization: {}
+      severity: {}
+      status: {}
+      summary:
+        simple: this is the first case
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 720
         }
       }
   "4":
     id: "4"
-    taskid: fb3ff295-2838-4636-8ac7-29c818de98f6
+    taskid: fa98304b-831a-430c-8c19-423cfba0ae25
     type: regular
     task:
-      id: fb3ff295-2838-4636-8ac7-29c818de98f6
+      id: fa98304b-831a-430c-8c19-423cfba0ae25
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -66,64 +70,35 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "30"
     scriptarguments:
-      additional: ""
-      all: "yes"
-      contextKey: ""
-      data: ""
-      filter: ""
-      filterType: ""
-      key: ""
-      out: ""
-      table: ""
-      title: ""
-      verbose: ""
-      xml: ""
+      additional: {}
+      all:
+        simple: "yes"
+      contextKey: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      key: {}
+      out: {}
+      table: {}
+      title: {}
+      verbose: {}
+      xml: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 272fc313-ddbf-464a-8a95-6dab1662e263
-    type: regular
-    task:
-      id: 272fc313-ddbf-464a-8a95-6dab1662e263
-      version: -1
-      name: Verify case added to context
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      field1: Case.ID
-      field2: Case.Summary
-      field3: Case.Status
-      field4: Case.Assignee
-      value1: ${Case.ID}
-      value2: ${Case.Summary}
-      value3: ${Case.Status}
-      value4: ${Case.Assignee}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
+          "x": 910,
+          "y": 195
         }
       }
   "6":
     id: "6"
-    taskid: c0a1dd61-ad08-4ec6-8f8e-8cd2dd895de1
+    taskid: 14c20347-e8bf-4580-8533-cc35a4853ef4
     type: regular
     task:
-      id: c0a1dd61-ad08-4ec6-8f8e-8cd2dd895de1
+      id: 14c20347-e8bf-4580-8533-cc35a4853ef4
       version: -1
       name: Edit severity, organization and summary
       script: McAfee ESM-v10|||esm-edit-case
@@ -132,65 +107,39 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "7"
+      - "29"
     scriptarguments:
-      assignedUser: ""
-      assignee: ""
-      customEnd: ""
-      customStart: ""
-      filters: ""
-      id: ${Case.ID}
-      maxWait: ""
-      organization: LuthorCorp
-      queryType: ""
-      severity: "50"
-      status: ""
-      summary: editing first case
-      timeRange: ""
+      assignedUser: {}
+      assignee: {}
+      customEnd: {}
+      customStart: {}
+      filters: {}
+      id:
+        simple: ${Case.ID}
+      maxWait: {}
+      organization:
+        simple: LuthorCorp
+      queryType: {}
+      severity:
+        simple: "50"
+      status: {}
+      summary:
+        simple: editing first case
+      timeRange: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 3c012170-4e5e-480c-87f1-83682200578a
-    type: regular
-    task:
-      id: 3c012170-4e5e-480c-87f1-83682200578a
-      version: -1
-      name: Validate case edit
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      field1: Case.ID
-      field2: Case.Assignee
-      field3: Case.OpenTime
-      field4: Case.EventList
-      value1: ${Case.ID}
-      value2: ${Case.Assignee}
-      value3: ${Case.OpenTime}
-      value4: ${Case.EventList}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
+          "x": 910,
+          "y": 895
         }
       }
   "9":
     id: "9"
-    taskid: f13a80a9-2531-42eb-81f7-4c5f5a8e0fa9
+    taskid: 26ebf7ad-afb5-4a8e-802c-2606abc734cb
     type: regular
     task:
-      id: f13a80a9-2531-42eb-81f7-4c5f5a8e0fa9
+      id: 26ebf7ad-afb5-4a8e-802c-2606abc734cb
       version: -1
       name: Get case info after event assignment
       script: McAfee ESM-v10|||esm-get-case-detail
@@ -201,28 +150,30 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      field1: ""
-      field2: ""
-      field3: ""
-      field4: ""
-      id: ${Case.ID}
-      value1: ""
-      value2: ""
-      value3: ""
-      value4: ""
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      id:
+        simple: ${Case.ID}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 910,
+          "y": 1770
         }
       }
   "11":
     id: "11"
-    taskid: 64645f2f-061d-44c2-8e7e-eae32d8d7254
+    taskid: aba236ae-da58-46ea-89fb-2671bff1806e
     type: regular
     task:
-      id: 64645f2f-061d-44c2-8e7e-eae32d8d7254
+      id: aba236ae-da58-46ea-89fb-2671bff1806e
       version: -1
       name: Add new case with all parameters.
       script: McAfee ESM-v10|||esm-add-case
@@ -233,24 +184,30 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      assignee: JKRolling
-      organization: LuthorCorp
-      severity: "1"
-      status: Research
-      summary: McAfee ESM playbook test - all parameter case
+      assignee:
+        simple: JKRolling
+      organization:
+        simple: LuthorCorp
+      severity:
+        simple: "1"
+      status:
+        simple: Research_${TimeNowUnix}
+      summary:
+        simple: McAfee ESM playbook test - all parameter case
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1729
+          "x": 910,
+          "y": 1420
         }
       }
   "13":
     id: "13"
-    taskid: c5474ed8-6720-4d53-8b9f-18dd1d292a35
+    taskid: 4e25910b-e854-4b62-8b62-b4911fc2ab11
     type: regular
     task:
-      id: c5474ed8-6720-4d53-8b9f-18dd1d292a35
+      id: 4e25910b-e854-4b62-8b62-b4911fc2ab11
       version: -1
       name: Edit the user name of last case to default
       script: McAfee ESM-v10|||esm-edit-case
@@ -261,77 +218,31 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      assignee: me
-      id: ${Case.ID}
-      organization: ""
-      severity: ""
-      status: Open
-      summary: ""
+      assignee:
+        simple: me
+      id:
+        simple: ${Case.ID}
+      organization: {}
+      severity: {}
+      status:
+        simple: Open
+      summary: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1925
-        }
-      }
-  "14":
-    id: "14"
-    taskid: ec006101-1a58-4912-8b81-f9645c8f8b6a
-    type: regular
-    task:
-      id: ec006101-1a58-4912-8b81-f9645c8f8b6a
-      version: -1
-      name: Clear the context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      all: "yes"
-      key: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1558
-        }
-      }
-  "15":
-    id: "15"
-    taskid: b9ea6dd5-a008-4f45-8bbe-a37584711bd9
-    type: regular
-    task:
-      id: b9ea6dd5-a008-4f45-8bbe-a37584711bd9
-      version: -1
-      name: Add a new case status named "Research"
-      script: McAfee ESM-v10|||esm-add-case-status
-      type: regular
-      iscommand: true
-      brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      name: Research
-      show_in_case_pane: "True"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "x": 910,
+          "y": 1595
         }
       }
   "16":
     id: "16"
-    taskid: 0ecef3c3-be18-4f28-8152-fe39f021ad03
+    taskid: a24ac1fa-55d6-4436-83f5-1e5d6202ce5a
     type: regular
     task:
-      id: 0ecef3c3-be18-4f28-8152-fe39f021ad03
+      id: a24ac1fa-55d6-4436-83f5-1e5d6202ce5a
       version: -1
-      name: Change case status name from "Research" to "Development"
+      name: Change case status name from Research to Development
       script: McAfee ESM-v10|||esm-edit-case-status
       type: regular
       iscommand: true
@@ -340,22 +251,25 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      new_name: Development
-      original_name: Research
-      show_in_case_pane: ""
+      new_name:
+        simple: Development_${TimeNowUnix}
+      original_name:
+        simple: Research_${TimeNowUnix}
+      show_in_case_pane: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 910,
+          "y": 1945
         }
       }
   "17":
     id: "17"
-    taskid: a062f26a-b7fe-4e39-8fa7-606cc85b311b
+    taskid: 317f41a4-1a93-4b8c-8cbc-ce83fdbccb3c
     type: regular
     task:
-      id: a062f26a-b7fe-4e39-8fa7-606cc85b311b
+      id: 317f41a4-1a93-4b8c-8cbc-ce83fdbccb3c
       version: -1
       name: Remove additional case status
       script: McAfee ESM-v10|||esm-delete-case-status
@@ -366,20 +280,22 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      name: Development
+      name:
+        simple: Development_${TimeNowUnix}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2995
+          "x": 910,
+          "y": 2470
         }
       }
   "18":
     id: "18"
-    taskid: 8c335d69-cbb3-4a75-8f20-b87952a65738
+    taskid: bb653697-995d-4fcf-83ef-c078c31fda1d
     type: regular
     task:
-      id: 8c335d69-cbb3-4a75-8f20-b87952a65738
+      id: bb653697-995d-4fcf-83ef-c078c31fda1d
       version: -1
       name: Set show case pane of new case status
       script: McAfee ESM-v10|||esm-add-case-status
@@ -390,21 +306,24 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      name: VooDoo
-      show_in_case_pane: "True"
+      name:
+        simple: VooDoo_${TimeNowUnix}
+      show_in_case_pane:
+        simple: "True"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 910,
+          "y": 2120
         }
       }
   "19":
     id: "19"
-    taskid: 88d98f7f-5326-4ef4-8280-d0f50e6e49ab
+    taskid: ea8df99a-a2eb-4625-80e5-65d6bc2636cf
     type: regular
     task:
-      id: 88d98f7f-5326-4ef4-8280-d0f50e6e49ab
+      id: ea8df99a-a2eb-4625-80e5-65d6bc2636cf
       version: -1
       name: Change case status optional parameter
       script: McAfee ESM-v10|||esm-edit-case-status
@@ -415,22 +334,26 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      new_name: VooDoo
-      original_name: VooDoo
-      show_in_case_pane: "False"
+      new_name:
+        simple: VooDoo_${TimeNowUnix}
+      original_name:
+        simple: VooDoo_${TimeNowUnix}
+      show_in_case_pane:
+        simple: "False"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 910,
+          "y": 2295
         }
       }
   "20":
     id: "20"
-    taskid: 7fa0b65f-e992-44da-898f-c97062696d82
+    taskid: ba52a20f-bdb6-4634-8fd1-94b224679020
     type: regular
     task:
-      id: 7fa0b65f-e992-44da-898f-c97062696d82
+      id: ba52a20f-bdb6-4634-8fd1-94b224679020
       version: -1
       name: Remove additional case status2
       script: McAfee ESM-v10|||esm-delete-case-status
@@ -441,50 +364,52 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      name: VooDoo
+      name:
+        simple: VooDoo_${TimeNowUnix}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3170
+          "x": 910,
+          "y": 2645
         }
       }
   "21":
     id: "21"
-    taskid: 68fbf399-b9b2-40df-80fb-eb422c5dca1b
+    taskid: e547054f-a677-4a36-800e-a33bb5e6fc97
     type: regular
     task:
-      id: 68fbf399-b9b2-40df-80fb-eb422c5dca1b
+      id: e547054f-a677-4a36-800e-a33bb5e6fc97
       version: -1
       name: Fetch Alarms
       script: McAfee ESM-v10|||esm-fetch-alarms
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "23"
     scriptarguments:
-      assignedUser: ME
-      customEnd: ""
-      customStart: ""
-      filters: ""
-      maxWait: ""
-      queryType: ""
-      timeRange: CURRENT_WEEK
+      assignedUser:
+        simple: ME
+      customEnd: {}
+      customStart: {}
+      filters: {}
+      maxWait: {}
+      queryType: {}
+      timeRange:
+        simple: CURRENT_WEEK
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3490
+          "y": 2965
         }
       }
   "22":
     id: "22"
-    taskid: 31727499-2368-422c-8406-92564020c136
+    taskid: 391a8a71-aa59-4e28-88e8-c1271e240c53
     type: title
     task:
-      id: 31727499-2368-422c-8406-92564020c136
+      id: 391a8a71-aa59-4e28-88e8-c1271e240c53
       version: -1
       name: All listing commands
       type: title
@@ -493,104 +418,83 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
+      - "23"
+      - "25"
+      - "26"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3345
+          "x": 910,
+          "y": 2820
         }
       }
   "23":
     id: "23"
-    taskid: c13b1b3c-65df-4f42-8224-54546723c7b1
+    taskid: a711ed45-de5d-4876-8a07-48cbf5e2d79c
     type: regular
     task:
-      id: c13b1b3c-65df-4f42-8224-54546723c7b1
+      id: a711ed45-de5d-4876-8a07-48cbf5e2d79c
       version: -1
       name: Get status cases
       script: McAfee ESM-v10|||esm-get-case-statuses
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "24"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3665
-        }
-      }
-  "24":
-    id: "24"
-    taskid: 4d8174d2-c0fb-4391-84bb-597fac87f7af
-    type: regular
-    task:
-      id: 4d8174d2-c0fb-4391-84bb-597fac87f7af
-      version: -1
-      name: Get cases
-      script: McAfee ESM-v10|||esm-get-case-list
-      type: regular
-      iscommand: true
-      brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "25"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3840
+          "x": 480,
+          "y": 2965
         }
       }
   "25":
     id: "25"
-    taskid: 1ff22ee8-bbc4-48c8-8db1-5f07cbe87408
+    taskid: a91e63a8-972b-4437-8a8b-ac11a6bb60be
     type: regular
     task:
-      id: 1ff22ee8-bbc4-48c8-8db1-5f07cbe87408
+      id: a91e63a8-972b-4437-8a8b-ac11a6bb60be
       version: -1
       name: Get users
       script: McAfee ESM-v10|||esm-get-user-list
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
-    nexttasks:
-      '#none#':
-      - "26"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4015
+          "x": 1340,
+          "y": 2965
         }
       }
   "26":
     id: "26"
-    taskid: 6f303cfa-e49f-490d-8962-c1ee2ad039bd
+    taskid: eb940493-ef22-407b-844f-56aeb6ae27d5
     type: regular
     task:
-      id: 6f303cfa-e49f-490d-8962-c1ee2ad039bd
+      id: eb940493-ef22-407b-844f-56aeb6ae27d5
       version: -1
       name: Get organizations
       script: McAfee ESM-v10|||esm-get-organization-list
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4190
+          "x": 1770,
+          "y": 2965
         }
       }
   "27":
     id: "27"
-    taskid: d79e7504-ff54-436d-8f93-5917553924e0
+    taskid: 9a1c2365-7e25-4822-8b9a-3d724c29ec29
     type: regular
     task:
-      id: d79e7504-ff54-436d-8f93-5917553924e0
+      id: 9a1c2365-7e25-4822-8b9a-3d724c29ec29
       version: -1
       name: Close Case
       script: McAfee ESM-v10|||esm-edit-case
@@ -599,26 +503,119 @@ tasks:
       brand: McAfee ESM-v10
     nexttasks:
       '#none#':
-      - "14"
+      - "11"
     scriptarguments:
-      assignedUser: ""
-      assignee: ""
-      customEnd: ""
-      customStart: ""
-      filters: ""
-      id: ${Case.ID}
-      maxWait: ""
-      organization: ""
-      queryType: ""
-      severity: ""
-      status: Closed
-      summary: ""
-      timeRange: ""
+      assignedUser: {}
+      assignee: {}
+      customEnd: {}
+      customStart: {}
+      filters: {}
+      id:
+        simple: ${Case.ID}
+      maxWait: {}
+      organization: {}
+      queryType: {}
+      severity: {}
+      status:
+        simple: Closed
+      summary: {}
+      timeRange: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1401
+          "x": 910,
+          "y": 1245
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 33091f39-8bc6-44da-8d12-a14d5b70b293
+    type: regular
+    task:
+      id: 33091f39-8bc6-44da-8d12-a14d5b70b293
+      version: -1
+      name: Search by fields
+      script: McAfee ESM-v10|||esm-search
+      type: regular
+      iscommand: true
+      brand: McAfee ESM-v10
+    scriptarguments:
+      customEnd: {}
+      customStart: {}
+      fields:
+        simple: SrcIP,IPSIDAlertID,DstIP
+      filters:
+        simple: '[{  "type": "EsmFieldFilter",  "field": {"name": "SrcIP"},  "operator":
+          "EQUALS",   "values": [{  "type": "EsmBasicValue",    "value": "199.203.151.209"  }]  }]'
+      maxWait: {}
+      queryType: {}
+      timeRange:
+        simple: CURRENT_DAY
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 07f6fa53-f3b9-4222-876b-3d982e506f82
+    type: regular
+    task:
+      id: 07f6fa53-f3b9-4222-876b-3d982e506f82
+      version: -1
+      name: Add a new case status named with timestamp
+      script: McAfee ESM-v10|||esm-add-case-status
+      type: regular
+      iscommand: true
+      brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      name:
+        simple: Research_${TimeNowUnix}
+      show_in_case_pane: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 702d15b4-f7d9-4d09-8088-7de36e3acef1
+    type: regular
+    task:
+      id: 702d15b4-f7d9-4d09-8088-7de36e3acef1
+      version: -1
+      name: Setup
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      extend-context: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
         }
       }
 view: |-
@@ -626,12 +623,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4235,
-        "width": 380,
+        "height": 3010,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []
 releaseNotes: "-"

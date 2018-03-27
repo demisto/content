@@ -1,0 +1,2147 @@
+commonfields:
+  id: RSA NetWitness Packets and Logs
+  version: -1
+name: RSA NetWitness Packets and Logs
+display: RSA NetWitness Packets and Logs
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: RSA NetWitness Logs and Packets decoders are responsible for the real-time
+  collection of network data. The decode captures data in real time and can normalize
+  and reconstruct data for full session analysis. In addition, the decoder can collect
+  flow and endpoint data.
+configuration:
+- display: Appliance IP/Hostname (192.168.56.108)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
+    Broker (50103)
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: admin
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Secure (over HTTPS)
+  name: secure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Expiration time
+  name: expiry
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |-
+
+        var LAST_HOURS = 'lastHours';
+        var LAST_MINUTES = 'lastMinutes'
+        var QUERY = 'query';
+        var fixUrl = function(base) {
+            var url = base.trim();
+            if (base.indexOf('http://') !== 0 && base.indexOf('https://') !== 0) {
+                url = "http://" + url;
+            }
+
+            url = url.replace(/\/$/, '');
+
+            return url;
+        };
+
+
+        var isObjectEmpty = function (obj) {
+            return Object.keys(obj).length === 0;
+        };
+
+        var mapQueryResults = function (fields, queryResults) {
+            var TYPE  = 'type';
+            var VALUE = 'value';
+            var GROUP = 'group';
+            if(fields && Array.isArray(fields)) {
+                fields.forEach(function (element) {
+                    if (element[TYPE] && element[VALUE] && element[GROUP]) {
+                        var index = element[GROUP];
+                        if(queryResults[index]) {
+                            queryResults[index][element[TYPE]] = element[VALUE];
+                        } else {
+                            queryResults[index] = {};
+                            queryResults[index][element[TYPE]] = element[VALUE];
+                        }
+                    }
+                });
+            }
+        }
+
+        var buildHrAndContext = function (data, isEvent) {
+            //Check if we have values
+            var retVal = {md: [], context: {NetWitness:{}}};
+            var queryResults = {};
+
+            var extractFromData = function(data) {
+                var fields = dq(data, 'results.fields');
+                mapQueryResults(fields, queryResults);
+            };
+
+            if (Array.isArray(data)) {
+                data.forEach(function (element) {
+                    extractFromData(element);
+                });
+            } else if ((typeof data) ==='object') {
+                extractFromData(data);
+            }
+            var flatQueryResult = []
+            for(key in queryResults) {
+                flatQueryResult.push(queryResults[key])
+            }
+            if(!isObjectEmpty(queryResults)) {
+                retVal.md = flatQueryResult;
+                var hr = tableToMarkdown(command, retVal.md);
+                return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown};
+            } else {
+                return "No results found.";
+            }
+        };
+
+        var parseResponse = function(resp) {
+            if (resp.StatusCode === 200) {
+                try {
+                    var res = JSON.parse(resp.Body);
+                    if (Array.isArray(res)) {
+                        return { results: res };
+                    }
+
+                    return res;
+                } catch (e) {
+                    return resp.Body;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var parseDownloadResponse = function(resp) {
+            if (resp.StatusCode === 200) {
+                try {
+                    var currentTime = new Date();
+                    var fileName = command + '_at_' + currentTime.getTime();
+                    return {Type: 3, FileID: saveFile(resp.Body), File: fileName, Contents: fileName};
+                } catch (e) {
+                    return e;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var buildMdAndContext = function(resp, isEvent) {
+            var mdAndContext;
+            if (resp.StatusCode === 200) {
+                try {
+                    var res = JSON.parse(resp.Body);
+                    return buildHrAndContext(res, isEvent);
+                } catch (e) {
+                    return resp.Body;
+                }
+            } else {
+                err = resp.Status;
+                if (resp.Body) {
+                    err += '\n' + resp.Body;
+                }
+                throw err;
+            }
+        };
+
+        var url = fixUrl(params.url) + ':' + params.port;
+
+        var getHelp = function(node) {
+            var fullUrl = url + node + '?msg=help&op=messages' + '&force-content-type=application/json';
+            res = http(
+                fullUrl,
+                {
+                    Method: 'GET',
+                    Username: params.username,
+                    Password: params.password
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        };
+
+        var handleTimeFilter = function (args) {
+            if(LAST_HOURS in args || LAST_MINUTES in args) {
+                var now = new Date();
+                var dt = new Date();
+                if (args[LAST_HOURS]) {
+                dt.setHours(dt.getHours() - parseInt(args[LAST_HOURS]))
+                }
+                if (args[LAST_MINUTES]) {
+                    dt.setMinutes(dt.getMinutes() - parseInt(args[LAST_MINUTES]))
+                }
+                var buildDateFormat = function () {
+                    return dt.toISOString().slice(0,19).replace('T',' ') + '"-"' + now.toISOString().slice(0,19).replace('T',' ') + '"';
+                };
+                //if query is empry string
+                if(!args || !args[QUERY]) {
+                    args[QUERY] = 'select * where time = "' + buildDateFormat();
+                }
+                //if query has select and where statements
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
+                    args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
+                }
+                //id query contains just select
+                else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
+                    args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
+                }
+            }
+        }
+
+        var encodeParams = function(p) {
+            var q = '';
+            if (p) {
+                var argsToIgnore = {
+                  responseType: true,
+                  using: true
+                };
+                handleTimeFilter(p);
+                var keys = Object.keys(p);
+                if (keys.length > 0) {
+                    q = '&';
+                    for (var i = 0; i < keys.length; i++) {
+                        if (argsToIgnore[keys[i]]) {
+                          continue;
+                        } else if (i !== 0) {
+                            q += '&';
+                        }
+                        q += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(p[keys[i]]);
+                    }
+                }
+            }
+            return q;
+        };
+
+
+
+
+        var ResponseTypes = {
+          'json': 'application/json',
+          'html': 'text/html',
+          'text': 'text/plain',
+          'xml': 'text/xml',
+          'octet-stream': 'application/octet-stream'
+        };
+
+        var doReq = function(method, path, args, resType, body) {
+            var parametersUrl = encodeParams(args);
+            var responseType = resType ? ResponseTypes[resType] : 'application/json';
+            var fullUrl = url + path + parametersUrl + '&force-content-type=' + responseType;
+
+            if (params.expiry) {
+                fullUrl += '&expiry=' + params.expiry;
+            }
+
+            var res = http(
+                fullUrl,
+                {
+                    Method: method,
+                    Username: params.username,
+                    Password: params.password,
+                    Accept: responseType,
+                    Body: body || ''
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            if (res.StatusCode !== 200 && res.StatusCode !== 201) {
+                throw 'Failed to perform request to: ' + fullUrl + '. StatusCode: ' + res.StatusCode + '. Error: ' + res.Body;
+            }
+
+            return res;
+        };
+
+        var decoderImport = function(path) {
+            var fileParam = args.entryID ? args.entryID : args.fileID;
+            var fullUrl = url + path;
+            var res = httpMultipart(
+                fullUrl,
+                fileParam,
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    ContentType: 'appliaction/json',
+                    Accept: 'application/json',
+                    Username: params.username,
+                    Password: params.password
+                },
+                null,
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        };
+
+        var concentratorAgg = function() {
+            var fullUrl = url + '/concentrator/agg';
+            var body = {
+              op: args.op,
+              crc: args.crc,
+              nice: args.nice
+            };
+            var res = http(
+                fullUrl,
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    ContentType: 'appliaction/json',
+                    Accept: 'application/json',
+                    Username: params.username,
+                    Password: params.password,
+                    Body: JSON.stringify(args)
+                },
+                !params.secure,
+                params.proxy
+            );
+
+            return parseResponse(res);
+        }
+
+        var commandToPath = {
+          'netwitness-msearch': '/sdk?msg=msearch',
+          'netwitness-search': '/sdk?msg=search',
+          'netwitness-query': '/sdk?msg=query',
+          'netwitness-packets': '/sdk/packets?',
+          'nw-sdk-session': '/sdk?msg=session',
+          'nw-sdk-cancel': '/sdk?msg=cancel',
+          'nw-sdk-query': '/sdk?msg=query',
+          'nw-sdk-validate': '/sdk?msg=validate',
+          'nw-sdk-aliases': '/sdk?msg=aliases',
+          'nw-sdk-content': '/sdk/?msg=content',
+          'nw-sdk-ls': '/sdk?msg=ls',
+          'nw-sdk-count': '/sdk?msg=count',
+          'nw-sdk-timeline': '/sdk?msg=timeline',
+          'nw-sdk-mon': '/sdk?msg=mon',
+          'nw-sdk-stopMon': '/sdk?msg=stopMon',
+          'nw-sdk-msearch': '/sdk?msg=msearch',
+          'nw-sdk-precache': '/sdk?msg=precache',
+          'nw-sdk-delCache': '/sdk?msg=delCache',
+          'nw-sdk-info': '/sdk?msg=info',
+          'nw-sdk-search': '/sdk?msg=search',
+          'nw-sdk-language': '/sdk?msg=language',
+          'nw-sdk-packets': '/sdk?msg=packets',
+          'nw-sdk-summary': '/sdk?msg=summary',
+          'nw-sdk-reconfig': '/sdk?msg=reconfig',
+          'nw-sdk-values': '/sdk?msg=values',
+          'nw-sdk-xforms': '/sdk?msg=xforms',
+          'nw-database-info': '/database?msg=info',
+          'nw-database-count': '/database?msg=count',
+          'nw-database-dbState': '/database?msg=dbState',
+          'nw-database-dump': '/database?msg=dump',
+          'nw-database-hashnw-loInfo': '/database?msg=hashInfo',
+          'nw-database-resetMax': '/database?msg=resetMax',
+          'nw-database-optimize': '/database?msg=optimize',
+          'nw-database-reconfig': '/database?msg=reconfig',
+          'nw-database-ls': '/database?msg=ls',
+          'nw-database-timeRoll': '/database?msg=timeRoll',
+          'nw-database-stopMon': '/database?msg=stopMon',
+          'nw-database-manifest': '/database?msg=manifest',
+          'nw-database-wipe': '/database?msg=wipe',
+          'nw-database-sizeRoll': '/database?msg=sizeRoll',
+          'nw-database-mon': '/database?msg=mon',
+          'nw-decoder-reset': '/decoder?msg=reset',
+          'nw-decoder-info': '/decoder?msg=info',
+          'nw-decoder-reconfig': '/decoder?msg=reconfig',
+          'nw-decoder-agg': '/decoder?msg=agg',
+          'nw-decoder-stop': '/decoder?msg=stop',
+          'nw-decoder-count': '/decoder?msg=count',
+          'nw-decoder-start': '/decoder?msg=start',
+          'nw-decoder-meta': '/decoder?msg=meta',
+          'nw-decoder-ls': '/decoder?msg=ls',
+          'nw-decoder-stopMon': '/decoder?msg=stopMon',
+          'nw-decoder-resetMax': '/decoder?msg=resetMax',
+          'nw-decoder-whoAgg': '/decoder?msg=whoAgg',
+          'nw-decoder-logStats': '/decoder?msg=logStats',
+          'nw-decoder-select': '/decoder?msg=select',
+          'nw-decoder-mon': '/decoder?msg=mon',
+          'nw-index-ls': '/index?msg=ls',
+          'nw-index-mon': '/index?msg=mon',
+          'nw-index-save': '/index?msg=save',
+          'nw-index-info': '/index?msg=info',
+          'nw-index-drop': '/index?msg=drop',
+          'nw-index-count': '/index?msg=count',
+          'nw-index-values': '/index?msg=values',
+          'nw-index-profile': '/index?msg=profile',
+          'nw-index-stopMon': '/index?msg=stopMon',
+          'nw-index-inspect': '/index?msg=inspect',
+          'nw-index-language': '/index?msg=language',
+          'nw-index-reconfig': '/index?msg=reconfig',
+          'nw-index-sizeRoll': '/index?msg=sizeRoll',
+          'nw-decoderParsers-ls': '/decoder/parsers?msg=ls',
+          'nw-decoderParsers-mon': '/decoder/parsers?msg=mon',
+          'nw-decoderParsers-feed': '/decoder/parsers?msg=feed',
+          'nw-decoderParsers-info': '/decoder/parsers?msg=info',
+          'nw-decoderParsers-count': '/decoder/parsers?msg=count',
+          'nw-decoderParsers-schema': '/decoder/parsers?msg=schema',
+          'nw-decoderParsers-reload': '/decoder/parsers?msg=reload',
+          'nw-decoderParsers-upload': '/decoder/parsers?msg=upload',
+          'nw-decoderParsers-delete': '/decoder/parsers?msg=delete',
+          'nw-decoderParsers-stopMon': '/decoder/parsers?msg=stopMon',
+          'nw-decoderParsers-devices': '/decoder/parsers?msg=devices',
+          'nw-decoderParsers-content': '/decoder/parsers?msg=content',
+          'nw-decoderParsers-ipdevice': '/decoder/parsers?msg=ipdevice',
+          'nw-decoderParsers-iptmzone': '/decoder/parsers?msg=iptmzone',
+          'nw-logs-ls': '/logs?msg=ls',
+          'nw-logs-mon': '/logs?msg=mon',
+          'nw-logs-pull': '/logs?msg=pull',
+          'nw-logs-info': '/logs?msg=info',
+          'nw-logs-count': '/logs?msg=count',
+          'nw-logs-stopMon': '/logs?msg=stopMon',
+          'nw-logs-download': '/logs?msg=download',
+          'nw-logs-timeRoll': '/logs?msg=timeRoll',
+          'nw-sys-ls': '/sys?msg=ls',
+          'nw-sys-mon': '/sys?msg=mon',
+          'nw-sys-save': '/sys?msg=save',
+          'nw-sys-info': '/sys?msg=info',
+          'nw-sys-count': '/sys?msg=count',
+          'nw-sys-caCert': '/sys?msg=caCert',
+          'nw-sys-stopMon': '/sys?msg=stopMon',
+          'nw-sys-shutdown': '/sys?msg=shutdown',
+          'nw-sys-fileEdit': '/sys?msg=fileEdit',
+          'nw-sys-peerCert': '/sys?msg=peerCert',
+          'nw-sys-servCert': '/sys?msg=servCert',
+          'nw-sys-statHist': '/sys?msg=statHist',
+          'nw-users-ls': '/users?msg=ls',
+          'nw-users-mon': '/users?msg=mon',
+          'nw-users-info': '/users?msg=info',
+          'nw-users-auths': '/users?msg=auths',
+          'nw-users-count': '/users?msg=count',
+          'nw-users-delete': '/users?msg=delete',
+          'nw-users-unlock': '/users?msg=unlock',
+          'nw-users-stopMon': '/users?msg=stopMon',
+          'nw-users-addOrMod': '/users?msg=addOrMod',
+          'nw-concentrator-ls': '/concentrator?msg=ls',
+          'nw-concentrator-add': '/concentrator?msg=add',
+          'nw-concentrator-mon': '/concentrator?msg=mon',
+          'nw-concentrator-meta': '/concentrator?msg=meta',
+          'nw-concentrator-info': '/concentrator?msg=info',
+          'nw-concentrator-help': '/concentrator?msg=help',
+          'nw-concentrator-stop': '/concentrator?msg=stop',
+          'nw-concentrator-edit': '/concentrator?msg=edit',
+          'nw-concentrator-reset': '/concentrator?msg=reset',
+          'nw-concentrator-count': '/concentrator?msg=count',
+          'nw-concentrator-start': '/concentrator?msg=start',
+          'nw-concentrator-delete': '/concentrator?msg=delete',
+          'nw-concentrator-whoAgg': '/concentrator?msg=whoAgg',
+          'nw-concentrator-status': '/concentrator?msg=status',
+          'nw-concentrator-stopMon': '/concentrator?msg=stopMon',
+          'nw-concentrator-reconfig': '/concentrator?msg=reconfig',
+          'nw-concentrator-resetMax': '/concentrator?msg=resetMax',
+          'nw-broker-ls': '/broker?msg=ls',
+          'nw-broker-add': '/broker?msg=add',
+          'nw-broker-mon': '/broker?msg=mon',
+          'nw-broker-meta': '/broker?msg=meta',
+          'nw-broker-info': '/broker?msg=info',
+          'nw-broker-help': '/broker?msg=help',
+          'nw-broker-stop': '/broker?msg=stop',
+          'nw-broker-edit': '/broker?msg=edit',
+          'nw-broker-reset': '/broker?msg=reset',
+          'nw-broker-count': '/broker?msg=count',
+          'nw-broker-start': '/broker?msg=start',
+          'nw-broker-delete': '/broker?msg=delete',
+          'nw-broker-whoAgg': '/broker?msg=whoAgg',
+          'nw-broker-status': '/broker?msg=status',
+          'nw-broker-stopMon': '/broker?msg=stopMon',
+          'nw-broker-reconfig': '/broker?msg=reconfig',
+          'nw-broker-resetMax': '/broker?msg=resetMax'
+        };
+
+
+        // The command input arg holds the command sent from the user.
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+            case 'test-module':
+                doReq('GET', '/sdk?msg=help&op=messages');
+                return true;
+            case 'nw-decoder-import':
+                var res = decoderImport('/decoder/import');
+                return res;
+            case 'nw-decoder-parsers-upload':
+                var res = decoderImport('/decoder/parsers/upload');
+                return res;
+            case  'netwitness-msearch':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            case  'netwitness-search':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            case  'netwitness-query':
+                return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType), true)
+            case 'netwitness-packets':
+                return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
+            default:
+                return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
+        }
+  type: javascript
+  commands:
+  - name: netwitness-msearch
+    arguments:
+    - name: sessions
+      description: <string, optional> The session ID ranges to search
+    - name: packets
+      description: <string, optional> The packet ID ranges to search
+    - name: search
+      required: true
+      description: '<string> The search string to use. 
+Example: "select hit, pretext, posttext where keyword=’netwitness’ sp ci ds".         
+sp = Search Packets ci = Case Insensitive ds = Decode Sessions (e.g., convert email attachments before searching).
+For regular expressions, change “keyword” to “regex”
+'
+    - name: where
+      description: <string, optional> The where clause used to identify sessions to
+        consider for the search
+    - name: limit
+      description: <uint64, optional> The maximum number of sessions to traverse for
+        this search
+    - name: flags
+      description: <string, optional> Flags to use for search.  This is a comma separated
+        list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+    outputs:
+    - contextPath: NetWitness.Events
+      description: all events of netwitness
+    description: Search for pattern matches in many sessions or packets
+  - name: netwitness-search
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to search
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: search
+      required: true
+      description: <string> The search string to use
+    outputs:
+    - contextPath: NetWitness.Events
+      description: all events of netwitness
+    description: Searches for matches in session/packet content
+  - name: netwitness-query
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting meta id (to run the query from
+        most recent to oldest meta, make id1 larger than id2)
+    - name: id2
+      description: <uint64, optional> The ending meta id
+    - name: size
+      description: <uint32, optional> The max number of entries to return, or just
+        stream back all results if zero
+    - name: query
+      description: <string, optional> The query string to use
+    - name: flags
+      description: <string, optional> The flags to use for query.  Can be a number
+        (bitwise mask) or comma separated values like query-log.
+    - name: threshold
+      description: <uint64, optional> Query optimization to stop processing results
+        after the threshold is reached (useful with select aggregate functions).  Zero
+        means no threshold (the default).
+    - name: lastHours
+      description: <uint64, optional> Filter for date and time
+    - name: lastMinutes
+      description: <uint64, optional> Filter by last minutes
+    outputs:
+    - contextPath: NetWitness.Events
+      description: all events of NetWitness
+    description: Performs a query against the meta database
+  - name: netwitness-packets
+    arguments:
+    - name: op
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform
+        (start, cancel, processed)
+    - name: sessions
+      required: true
+      description: <string, optional> A comma separated list of session ids or session
+        id ranges (#-#) whose packets will be streamed back.
+    - name: packets
+      description: <string, optional> A comma separated list of packet ids or session/packet
+        ids (#&#) that will be streamed back.
+    - name: where
+      description: <string, optional> Where clause which will be evaluated to determine
+        which sessions to stream back
+    - name: time1
+      description: <date-time, optional> A starting time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 09:00:00")
+    - name: time2
+      description: <date-time, optional> An ending time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 10:00:00")
+    - name: flags
+      description: <uint32, optional> Additional flags as defined by the NwPackets
+        SDK function
+    outputs:
+    - contextPath: NetWitness.Events
+      description: all events of NetWitness
+    description: Stream packets back based on the input parameters provided
+  - name: nw-sdk-session
+    arguments:
+    - name: id1
+      required: true
+      description: <uint64> The starting session id
+    - name: id2
+      required: true
+      description: <uint64> The ending session id
+    description: Retrieves the meta id range for the session range
+  - name: nw-sdk-cancel
+    arguments:
+    - name: handle
+      required: true
+      description: <uint32> The channel handle running the query
+    description: Cancel a running query, regardless of the user
+  - name: nw-sdk-query
+    deprecated: true
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting meta id (to run the query from
+        most recent to oldest meta, make id1 larger than id2)
+    - name: id2
+      description: <uint64, optional> The ending meta id
+    - name: size
+      description: <uint32, optional> The max number of entries to return, or just
+        stream back all results if zero
+    - name: query
+      description: <string, optional> The query string to use
+    - name: flags
+      description: <string, optional> The flags to use for query.  Can be a number
+        (bitwise mask) or comma separated values like query-log.
+    - name: threshold
+      description: <uint64, optional> Query optimization to stop processing results
+        after the threshold is reached (useful with select aggregate functions).  Zero
+        means no threshold (the default).
+    description: Performs a query against the meta database
+  - name: nw-sdk-validate
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:query|values}> The operation to validate
+    - name: validateLanguage
+      description: <bool, optional> If true (default is false), language tokens and
+        syntax will be validated, otherwise just syntax will be validated
+    - name: fieldName
+      description: <string, optional> Required if validating a 'values' operation.
+        The field to retrieve values for.
+    - name: where
+      description: <string, optional> Optional if validating a 'values' operation.
+        The filter criteria to be validated.
+    - name: query
+      description: <string, optional> Required if validating a 'query' operation.
+        The query string to be validated.
+    description: Validate a query or values call without execution
+  - name: nw-sdk-aliases
+    arguments:
+    - name: key
+      required: true
+      description: <string> The language key to retrieve aliases for
+    - name: value
+      description: <string, optional> An optional value to return a specific alias
+        for
+    description: Retrieves aliases for the specified key
+  - name: nw-sdk-content
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to retrieve packet content for
+    - name: packet
+      description: <uint64, optional> The packet id of the first packet of the session,
+        in case the session has rolled out
+    - name: maxSize
+      description: <size, optional> The max number of bytes to return, zero means
+        no limit
+    - name: failOnCacheMiss
+      description: <bool, optional> If true, the content call fails if the NWD is
+        not in the cache.  This is used by optimized caching code only.
+    - name: renderType
+      description: <uint32, optional> The render type (see NwContentTypes in NwSDK.h),
+        pass zero to pick best option.  Not specifying this parameter always results
+        in an NWD and renderFlags and renderOptions are not considered.
+    - name: renderFlags
+      description: <uint32, optional> Bitwise mask to control options, (see NwContentFlags
+        in NwSDK.h)
+    - name: renderOptions
+      description: <string, optional> An encoded string params containing additional
+        options for controlling the operation.
+    description: Returns the packet content for a session
+  - name: nw-sdk-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-sdk-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-sdk-timeline
+    arguments:
+    - name: time1
+      description: <date-time, optional> The starting time in seconds since 1970 or
+        a time string (YYYY-MMM-DD HH:MM:SS), if greater than time2, then the whole
+        time range is returned
+    - name: time2
+      description: <date-time, optional> The ending time in seconds since 1970 or
+        a time string (YYYY-MMM-DD HH:MM:SS)
+    - name: timezone
+      description: <int32, optional> The timezone of the local computer to receive
+        the data, hour offset from GMT [-13 to 13]
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: flags
+      description: <string, optional> The flags to use for the timeline.  Can be a
+        number (bitwise mask) or comma separated values like sessions, size, packets,
+        order-ascending, order-descending, ignore-cache or clear-cache.
+    - name: where
+      description: <string, optional> Optional where clause for filtering the data
+    - name: bookendHours
+      description: uint32, optional> The number of hours outside the given time1,
+        time2 which will become part of the cache.  Default is 24 hours.
+    description: Returns the count of sessions/size/packets in discrete time intervals
+  - name: nw-sdk-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-sdk-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-sdk-msearch
+    deprecated: true
+    arguments:
+    - name: sessions
+      description: <string, optional> The session ID ranges to search
+    - name: packets
+      description: <string, optional> The packet ID ranges to search
+    - name: search
+      required: true
+      description: <string> The search string to use
+    - name: where
+      description: <string, optional> The where clause used to identify sessions to
+        consider for the search
+    - name: limit
+      description: <uint64, optional> The maximum number of sessions to traverse for
+        this search
+    - name: flags
+      description: <string, optional> Flags to use for search.  This is a comma separated
+        list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+    description: Search for pattern matches in many sessions or packets
+  - name: nw-sdk-precache
+    arguments:
+    - name: sessions
+      description: <string, optional> A comma separated list of session ids or session
+        id ranges (#-#) that will be saved in the NWD cache directory
+    - name: packets
+      description: <string, optional> A comma separated list of session and packet
+        ids (#p#) that will be saved in the NWD cache directory
+    - name: waitOnComplete
+      description: <bool, optional> If true, will wait for precache to complete before
+        returning a response.
+    description: Efficiently caches NWD files for future retrieval via the content
+      message
+  - name: nw-sdk-delCache
+    arguments: []
+    description: Removes all cached NWD files
+  - name: nw-sdk-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-sdk-search
+    deprecated: true
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to search
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: search
+      required: true
+      description: <string> The search string to use
+    description: Searches for matches in session/packet content
+  - name: nw-sdk-language
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting language id
+    - name: id2
+      description: <uint64, optional> The ending language id
+    - name: time1
+      description: <date-time, optional> The starting time in seconds since 1970 or
+        a time string (YYYY-MMM-DD HH:MM:SS)
+    - name: time2
+      description: <date-time, optional> The ending time in seconds since 1970 or
+        a time string (YYYY-MMM-DD HH:MM:SS)
+    - name: options
+      description: <string, optional> Extra options, currently unused
+    - name: flags
+      description: <string, optional> Optional flags to configure how the results
+        are returned.  Can be a number (bitwise mask) or comma separated values like
+        default, no-count, quick-count or full-count.
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    description: Retrieves the language definition
+  - name: nw-sdk-packets
+    deprecated: true
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform
+        (start, cancel, processed)
+    - name: sessions
+      description: <string, optional> A comma separated list of session ids or session
+        id ranges (#-#) whose packets will be streamed back.
+    - name: packets
+      description: <string, optional> A comma separated list of packet ids or session/packet
+        ids (#&#) that will be streamed back.
+    - name: where
+      description: <string, optional> Where clause which will be evaluated to determine
+        which sessions to stream back
+    - name: time1
+      description: <date-time, optional> A starting time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 09:00:00")
+    - name: time2
+      description: <date-time, optional> An ending time range (UTC) where matching
+        packets will be streamed back ("2010-Apr-20 10:00:00")
+    - name: flags
+      description: <uint32, optional> Additional flags as defined by the NwPackets
+        SDK function
+    description: Stream packets back based on the input parameters provided
+  - name: nw-sdk-summary
+    arguments:
+    - name: flags
+      description: <string, optional> Optional SDK flags.  Can be a number (bitwise
+        mask) or comma separated values like default or ignore-cache.
+    description: Retrieves summary information from the databases
+  - name: nw-sdk-reconfig
+    arguments:
+    - name: update
+      description: <bool, optional> If true (default is false), will automatically
+        update the config nodes with the defaults
+    - name: memory
+      description: <size, optional> If non-zero, will use that setting as installed
+        physical RAM (e.g., memory="24 GiB"). This is useful for hybrids and/or all-in-one
+        machines where the service will need to share memory.
+    description: Calculates default values for some of the config nodes.
+  - name: nw-sdk-values
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting meta id
+    - name: id2
+      description: <uint64, optional> The ending meta id
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: flags
+      description: <string, optional> The flags to use for values.  Can be a number
+        (bitwise mask) or comma separated values like sessions, size, packets, aggregate,
+        sort-total, sort-value, order-ascending, order-descending, ignore-cache, clear-cache,
+        query-log or database-scan.
+    - name: threshold
+      description: <uint64, optional> Query optimization to stop processing large
+        session counts
+    - name: fieldName
+      required: true
+      description: <string> The field to retrieve values for
+    - name: where
+      description: <string, optional> The filter criteria for the values
+    - name: aggregateFunction
+      description: <string, optional, {enum-one:count|sum}> The aggregate operation
+        to be applied where the aggregate flag is set
+    - name: aggregateFieldName
+      description: <string, optional> The meta field to aggregate in the aggregateFunction
+    - name: min
+      description: <string, optional> The lower limit of values to return.  Only values
+        greater than this value will be returned.
+    - name: max
+      description: <string, optional> The upper limit of values to return.  Only values
+        less than this value will be returned.
+    description: Performs a value count query and returns the matching values for
+      a report
+  - name: nw-sdk-xforms
+    arguments:
+    - name: key
+      description: <string, optional> An optional language key to retrieve transform
+        for, all transforms returned if not provided
+    description: Retrieves transforms for the specified key
+  - name: nw-database-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-database-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-database-dbState
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:view|save}> The operation to perform (view or
+        save)
+    - name: type
+      required: true
+      description: <string, {enum-any:session|meta|packet}> The database(s) to operate
+        on
+    description: Returns comprehensive information about the current database state
+      or persists the current state to disk for fast reload
+  - name: nw-database-dump
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to dump
+    - name: type
+      description: <string, optional, {enum-one:db|nwd}> The dump type
+    - name: source
+      description: <string, optional, {enum-any:s|m|p}> The types of data to dump,
+        default is all
+    - name: verbose
+      description: <bool, optional> If true (default is false), dumps more information
+    - name: file
+      description: <string, optional> Optional filename to use for NWD type, otherwise
+        filename is assumed to be _sessionid_.nwd
+    description: Dumps information out of the database in nwd formatted files
+  - name: nw-database-hashInfo
+    arguments:
+    - name: sessions
+      description: <string, optional> A comma delimited list of sessions and session
+        ranges to retrieve file hashes for.
+    - name: beginDate
+      description: <string, optional> The beginning of a date range (YYYY-MM-DD HH:MM:SS)
+        of database file creation dates to retrieve file hashes for.
+    - name: endDate
+      description: <string, optional> The end of a date range (YYYY-MM-DD HH:MM:SS)
+        of database file creation dates to retrieve file hashes for.
+    - name: directories
+      description: <string, optional> A semi-colon delimited list of additional directories
+        to search for hash files.  This may be used to account for changes to the
+        hash.dir configuration.
+    description: Retrieves hash information for database files that containing session/meta/packet
+      objects for a set of sessions or date range.
+  - name: nw-database-resetMax
+    arguments:
+    - name: stats
+      description: <string, optional, {enum-any:session.rate.max|meta.rate.max|packet.rate.max}>
+        The stats to reset, default is all
+    description: Resets all max database stats or just the ones listed.
+  - name: nw-database-optimize
+    arguments:
+    - name: type
+      description: <string, optional, {enum-any:session|meta|packet}> The database
+        types to optimize, default is all
+    - name: size
+      description: <size, optional, {byte-range:104857600 to 107374182400}> The amount
+        of data to write for each test
+    - name: compression
+      description: <string, optional, {enum-one:none|gzip|bzip2|lzma}> Determines
+        if compression block sizes should be tested, default is none
+    - name: compressionLevel
+      description: <uint32, optional, {range:0 to 9}> Determines the compression level,
+        0-9, where 1 is fastest, 9 is the best compression and zero is a predetermined
+        balance between speed and compression
+    description: Runs a series of tests to determine the optimimal *.write.block.size
+      based on configured drives and using data from existing databases.
+  - name: nw-database-reconfig
+    arguments:
+    - name: update
+      description: <bool, optional> If true (default is false), will automatically
+        update the respective *.dir and *.free.space.min settings, otherwise it will
+        just output the calculations
+    - name: type
+      description: <string, optional, {enum-any:session|meta|packet}> The database
+        types to reconfigure, default is all
+    - name: percent
+      description: <uint32, optional, {range:1 to 99}> The drive percentage to use
+        for the calculated size per directory, default is 95
+    - name: op
+      description: <string, optional, {enum-one:normal|10g}> The operating mode, 'normal'
+        or '10g'. Default is normal.
+    description: Calculates new drive sizes and free space for the session, meta and/or
+      packet directories.  No directories are removed and the assumption is each directory
+      is mounted on a separate filesystem and will only be used for storage of that
+      database.
+  - name: nw-database-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-database-timeRoll
+    arguments:
+    - name: time
+      required: true
+      description: <string, {enum-any:session|meta|packet}> The database files to
+        remove
+    - name: timeCalc
+      description: <string, optional, {enum-one:current|last-write}> The time calculation
+        to use (current date or last write date), default is current
+    - name: minutes
+      description: <uint32, optional, {range:0 to 10000}> Remove database files older
+        than the given number of minutes
+    - name: hours
+      description: <uint32, optional, {range:0 to 10000}> Remove database files older
+        than the given number of hours
+    - name: days
+      description: <uint32, optional, {range:0 to 10000}> Remove database files older
+        than the given number of days
+    - name: date
+      description: <string, optional> Remove database files older than the given UTC
+        date (YYYY-MM-DD HH:MM:SS), not compatible with minutes, hours, or days parameters
+    description: Delete database files that exceed a given age
+  - name: nw-database-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-database-manifest
+    arguments:
+    - name: op
+      description: <string, optional, {enum-one:query|compress}> The operation to
+        perform (defaults to query)
+    - name: time1
+      description: <date-time, optional> The beginning time (UTC) for matching offline
+        database files
+    - name: time2
+      description: <date-time, optional> The ending time (UTC) for matching offline
+        database files
+    - name: timeFormat
+      description: <string, optional, {enum-one:posix|simple}> Specify the time format
+        that is returned (posix, simple), default is posix
+    description: If a manifest directory is defined, it will allow operations on the
+      manifest files (such as a time based query) for database files in cold storage
+  - name: nw-database-wipe
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id whose packets will be wiped
+    - name: payloadOnly
+      description: <bool, optional> If true (default), will only overwrite the packet
+        payload
+    - name: pattern
+      description: <string, optional> The pattern to use, by default it uses all zeros
+    - name: metaList
+      description: <string, optional> Comma separated list of meta to wipe, default
+        (empty) is all meta
+    - name: source
+      description: <string, optional, {enum-any:m|p}> The types of data to wipe, meta
+        and/or packets, default is just packets
+    description: Overwrites all packets and/or meta for a session with a pattern (for
+      eliminating sensitive information)
+  - name: nw-database-sizeRoll
+    arguments:
+    - name: type
+      required: true
+      description: <string, {enum-any:session|meta|packet}> The databases to consider
+        for removing the oldest data based on total size or space remaining
+    - name: log
+      description: <bool, optional> If true, will log all actions taken, otherwise
+        all activity will happen silently.  Default is true.
+    - name: maxSize
+      description: <size, optional> The maximum size of all databases passed in 'type'
+        parameter combined. When exceeded, oldest data is deleted first until total
+        size is less than maxSize. This applies only to the Hot tier.
+    - name: maxSizeWarm
+      description: <size, optional> The maximum size of all databases passed in 'type'
+        parameter combined. When exceeded, oldest data is deleted first until total
+        size is less than maxSize. This applies only to the Warm tier.
+    - name: maxPercent
+      description: <string, optional> The maximum percentage of all the volumes of
+        all databases passed in 'type' parameter combined. When exceeded, oldest data
+        is deleted first until total size is less than maxPercent of total volumes.
+        This applies only to the Hot tier.
+    - name: maxPercentWarm
+      description: <string, optional> The maximum percentage of all the volumes of
+        all databases passed in 'type' parameter combined. When exceeded, oldest data
+        is deleted first until total size is less than maxPercent of total volumes.
+        This applies only to the Warm tier.
+    - name: minFree
+      description: <size, optional> The minimum allowed free space on all volumes
+        for all databases in 'type' parameter before oldest data is deleted. When
+        minimum free space drops below target, the oldest data is deleted first until
+        free space once again exceeds target. This only applies to the Hot tier
+    - name: minFreeWarm
+      description: <size, optional> The minimum allowed free space on all volumes
+        for all databases in 'type' parameter before oldest data is deleted. When
+        minimum free space drops below target, the oldest data is deleted first until
+        free space once again exceeds target. This only applies to the Warm tier
+    description: Delete database files based on the total size of all databases (passed
+      with 'type' parameter) or space remaining on shared volume(s). This command
+      should not be used on databases that don't share storage.
+  - name: nw-database-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-decoder-reset
+    arguments:
+    - name: data
+      description: <bool, optional> Reset data, automatically resets index (may not
+        be applicable to all services)
+    - name: index
+      description: <bool, optional> Reset index, only valid if data is not reset (may
+        not be applicable to all services)
+    - name: manifest
+      description: <bool, optional> Reset all manifests stored in the long term manifest
+        directory (may not be applicable to all services)
+    - name: config
+      description: <bool, optional> Reset configuration settings to default
+    - name: stats
+      description: <bool, optional> Reset the stats database
+    - name: log
+      description: <bool, optional> Reset the log database
+    - name: filesCreatedAfter
+      description: <date-time, optional> Delete all database files (session, meta,
+        packets) created after a certain date. The index will automatically get rolled
+        back on restart.  Not valid with option index.
+    - name: cl
+      description: <string, optional> A (cl="name=value name2=value2") set of options
+        for setting the command line on the next restart
+    description: 'Reset data, index, manifests, stats, configuration, or logs for
+      this service.  Data automatically deletes index and stats, unless filesCreatedAfter
+      is specified.  Service is automatically restarted.  Example arguments: data=1
+      config=1 log=1 This example will reset data, index, logs, and configuration  index=1
+      This example will reset the index only  manifest=1 This example will delete
+      everything in the manifest directory  filesCreatedAfter="2015-12-01 14:00:00"
+      This example will delete all session, meta and packet files created on or after
+      Dec 1st, 2015 2pm (UTC) from the service.  All other files will remain.  The
+      index will not be touched, but upon restart will be truncated to match the last
+      session in the session database.'
+  - name: nw-decoder-info
+    arguments:
+    - name: update
+      description: <bool, optional> If true (default is false), will automatically
+        update the respective decoder settings, otherwise it will just output the
+        calculations
+    - name: op
+      description: <string, optional, {enum-one:normal|10g}> The operating mode, 'normal'
+        or '10g'. Default is normal.
+    - name: memory
+      description: <size, optional> If non-zero, will use that setting as installed
+        physical RAM (e.g., memory="24 GiB"). This is useful for hybrids and/or all-in-one
+        machines where the service will need to share memory.
+    description: Returns detailed information about the node
+  - name: nw-decoder-reconfig
+    arguments: []
+    description: Calculates optimal settings for decoder pools and buffers based on
+      the installed hardware.
+  - name: nw-decoder-agg
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:start|next|cancel}> The aggregation operation
+    - name: crc
+      description: <bool, optional> If set to true, the stream returned will be CRC
+        validated
+    - name: options
+      description: <string, optional, {enum-any:meta|packets}> Determines if meta
+        or packets or both will be streamed back (default is only meta)
+    description: Stream session, meta and/or packets
+  - name: nw-decoder-stop
+    arguments:
+    - name: flush
+      description: <bool, optional> If true (default), process all sessions and packets
+        currently in memory.  Otherwise, stop immediately, discarding unprocessed
+        sessions and packets.
+    description: Stops capture on the decoder
+  - name: nw-decoder-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-decoder-start
+    arguments: []
+    description: Starts capture on the decoder
+  - name: nw-decoder-meta
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:start|next|cancel}> The meta operation
+    - name: crc
+      description: <uint32, optional, {range:0 to 1}> If set to 1, the stream returned
+        will be CRC validated
+    description: Stream session/meta information (DEPRECATED)
+  - name: nw-decoder-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-decoder-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-decoder-resetMax
+    arguments: []
+    description: Resets all max stats to zero.
+  - name: nw-decoder-whoAgg
+    arguments: []
+    description: Returns information on who is aggregating from this service
+  - name: nw-decoder-logStats
+    arguments:
+    - name: op
+      description: <string, optional, {enum-one:clear|remove|save}> The log stats
+        operation.  If clear, all log stats state will be reset and no results will
+        be returned. If save, the current stats are saved for the next time the log
+        decoder is restarted.
+    - name: deviceFilter
+      description: <string, optional> A regex that will only return matching devices.
+    - name: forwarderFilter
+      description: <string, optional> A regex that will only return matching forwarders.
+    - name: sourceFilter
+      description: <string, optional> A regex that will only return matching sources.
+    - name: timeFilter
+      description: <string, optional> This parameter forms a window from the current
+        time which will return any device that falls outside that window.  So if you
+        pass 300, it will return all devices that have not sent a log in over 5 minutes.  You
+        can pass a hard datetime (YYYY-MM-DD HH:MM:SS) or a time duration (HH:MM:SS
+        or just number of seconds). Not compatible with the lastReceived parameter.
+    - name: lastReceived
+      description: <string, optional> Compare the last received log time from each
+        device with the passed in operator (<, <=, >, >=) and time/duration. For example,
+        lastReceived="<60" will return all devices that have sent logs less than 60
+        seconds ago. lastReceived=">=2014-04-23 16:00:00" will return all devices
+        that have sent logs on or after April 4, 2014 at 4pm UTC.
+    - name: lastUpdated
+      description: <string, optional> Compare the last updated log time from each
+        device with the passed in operator (<, <=, >, >=) and time/duration. For example,
+        lastUpdated="<60" will return all devices that have had logs updated less
+        than 60 seconds ago. lastUpdated=">=2014-04-23 16:00:00" will return all devices
+        that have had logs updated on or after April 4, 2014 at 4pm UTC.
+    - name: timeFormat
+      description: <string, optional, {enum-one:posix|simple}> Specify the time format
+        that is returned (posix, simple), default is simple (YYYY-MM-DD HH:MM:SS)
+    description: Retrieve count and last receive times for log devices, sources and
+      forwarders.
+  - name: nw-decoder-select
+    arguments:
+    - name: adapter
+      description: <uint32> The new adapter
+    description: Selected a new capture device
+  - name: nw-decoder-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-index-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-index-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-index-save
+    arguments: []
+    description: Saves the index to disk
+  - name: nw-index-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-index-drop
+    arguments:
+    - name: key
+      required: true
+      description: <string> The key to drop
+    - name: value
+      required: true
+      description: <string> The value to drop
+    description: Drops keys and values from the index
+  - name: nw-index-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-index-values
+    arguments:
+    - name: key
+      required: true
+      description: <string> The index key for values
+    - name: top
+      required: true
+      description: <string, {range:0 to 10000}> The number of top entries to return
+    description: Returns the top n values for the given key
+  - name: nw-index-profile
+    arguments:
+    - name: key
+      description: <string, optional> The key to profile
+    - name: value
+      description: <string, optional> The value to profile
+    - name: max
+      description: <uint32, optional> Max number of pages to return
+    - name: flag
+      description: '<uint32, optional> Bitwise option when key is specified. 1: Break
+        report to values. 2: List page sizes. 4: Categorize page counts in different
+        range. 8: Sessions count Per page with each algorithm. 16: Verify session
+        page'
+    description: Returns information about the index used by the Index Profile tool
+  - name: nw-index-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-index-inspect
+    arguments:
+    - name: key
+      description: <string, optional> The key to inspect
+    - name: value
+      description: <string, optional> The value to inspect
+    - name: page
+      description: <uint64, optional> The page number to inspect
+    - name: options
+      description: <string, optional> Any options like all-slices
+    description: Provides overall information about the index or can inspect specific
+      keys and values
+  - name: nw-index-language
+    arguments:
+    - name: values
+      description: <string, optional, {range:0 to 1}> If set to 1, will describe the
+        value overrides defined in the language
+    description: Returns language information
+  - name: nw-index-reconfig
+    arguments:
+    - name: update
+      description: <bool, optional> If true (default is false), will automatically
+        update the respective config node settings, otherwise it will just output
+        the calculations
+    - name: percent
+      description: <uint32, optional, {range:1 to 99}> The drive percentage to use
+        for the index database, default is 90
+    description: 'Calculates new sizes for the summary and page directories.  NOTE:
+      Any size changes require a reset of the index before they take effect.'
+  - name: nw-index-sizeRoll
+    arguments:
+    - name: log
+      description: <bool, optional> If true, will log all actions taken, otherwise
+        all activity will happen silently.  Default is true.
+    - name: type
+      description: <string, optional, {enum-any:session|meta|packet}> The databases
+        to consider for removing the oldest data based on total size or space remaining
+    - name: maxSize
+      description: <size, optional> The maximum size of the index hot storage. When
+        exceeded, oldest data is deleted first until total size is less than maxSize.
+    - name: maxSizeWarm
+      description: <size, optional> The maximum size of the index warm storage. When
+        exceeded, oldest data is delete first until total size is less that maxSizeWarm
+    - name: maxPercent
+      description: <string, optional> The maximum percentage of all the volumes of
+        all databases passed in 'type' parameter combined. When exceeded, oldest data
+        is deleted first until total size is less than maxPercent of total volumes.
+        This parameter applies to hot storage only.
+    - name: maxPercentWarm
+      description: <string, optional> The maximum percentage of all the volumes of
+        all databases passed in 'type' parameter combined. When exceeded, oldest data
+        is deleted first until total size is less than maxPercent of total volumes.
+        This parameter applies to warm storage only.
+    - name: minFree
+      description: <size, optional> The minimum allowed free space on the volumes
+        before oldest data is deleted. This parameter applies to hot storage only.
+    - name: minFreeWarm
+      description: <size, optional> The minimum allowed free space on the volumes
+        before oldest data is deleted. This parameter applies to warm storage only.
+    description: Delete index and other DB files (see 'type' param) based on the total
+      size or space remaining on shared volumes. This command is not intended to be
+      used on databases that do not share storage.
+  - name: nw-decoderParsers-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-decoderParsers-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-decoderParsers-feed
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:notify|reload|remove|delete}> The feed operation
+        to perform
+    - name: file
+      description: <string, optional> The feed filename
+    description: Manages the feed parsers
+  - name: nw-decoderParsers-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-decoderParsers-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-decoderParsers-schema
+    arguments: []
+    description: Returns the parsers meta schema
+  - name: nw-decoderParsers-reload
+    arguments: []
+    description: Reloads all meta parsers
+  - name: nw-decoderParsers-upload
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:start|attributes|cancel|finished}> The operation
+        to perform (start, cancel, finished)
+    - name: size
+      description: <uint64, optional> The size of the incoming file
+    - name: filename
+      description: <string, optional> The name of the incoming file
+    - name: reload
+      description: <uint32, optional> Reload all parsers when upload is complete for
+        the appropriate file types (default).  A setting of 0 when sending a finished
+        op will disable the reload.
+    description: Upload feed/parser files to this service
+  - name: nw-decoderParsers-delete
+    arguments:
+    - name: file
+      required: true
+      description: <string> The content filename
+    - name: type
+      required: true
+      description: <string, {enum-one:feeds|parsers}> The content type (feed|parser)
+    description: Delete parsing content files.
+  - name: nw-decoderParsers-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-decoderParsers-devices
+    arguments: []
+    description: Returns the log parsers
+  - name: nw-decoderParsers-content
+    arguments:
+    - name: file
+      description: <string, optional> The content filename (type must be specified)
+    - name: type
+      description: <string, optional, {enum-one:feeds|parsers}> The content type
+    description: Get parsing content file information.
+  - name: nw-decoderParsers-ipdevice
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:edit|describe}> The operation to perform (edit|describe).
+    - name: entries
+      description: <string, optional> The IP entries. StringParam in format of '+/-ip=device'.
+        + means adding or editing a map entry, - means delete a map entry
+    - name: reload
+      description: <bool, optional> If true, reload parsers when command finishes.
+    description: Map IP to Device type in log parsing. Takes effect after parser reload.
+  - name: nw-decoderParsers-iptmzone
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:edit|describe}> The operation to perform (edit|describe).
+    - name: entries
+      description: <string, optional> The IP entries. StringParam in format of '+/-ip=timeoffset'.
+        + means adding or editing a map entry, - means delete a map entry. timeoffset
+        is +/-integer with value equal to hour * 100 + min
+    - name: reload
+      description: <bool, optional> Flag to reload parser after this command
+    description: Map IP to time zone in log parsing. Takes effect after parser reload.
+  - name: nw-logs-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-logs-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-logs-pull
+    arguments:
+    - name: d1
+      description: <uint64, optional> The first log id number to retrieve, this is
+        mutually exclusive with id2
+    - name: id2
+      description: <uint64, optional> The last log id number that will be sent, defaults
+        to most recent log message when id1 or id2 is not sent
+    - name: count
+      description: <uint32, optional, {range:1 to 10000}> The number of logs to pull
+    - name: timeFormat
+      description: <string, optional, {enum-one:posix|simple}> The time format used
+        in each log message, default is posix time (seconds since 1970)
+    description: Downloads N log entries
+  - name: nw-logs-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-logs-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-logs-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-logs-download
+    arguments:
+    - name: id1
+      description: <uint64, optional> The starting log number to download
+    - name: id2
+      description: <uint64, optional> The ending log number to download
+    - name: time1
+      description: <date-time, optional> The starting log date to download, can be
+        posix time (seconds since 1970) or DD-MM-YY HH:MM:SS
+    - name: time2
+      description: <date-time, optional> The ending log date to download, can be posix
+        time (seconds since 1970) or DD-MM-YY HH:MM:SS
+    - name: op
+      required: true
+      description: <string, {enum-one:start|next|cancel}> The operation to perform
+        (start, next, cancel)
+    - name: logTypes
+      description: <string, optional> The type(s) of log messages to retrieve (debug,info,audit,warning,failure)
+    - name: match
+      description: <string, optional> Case insensitive string to match in each log
+        message
+    - name: regex
+      description: <string, optional> Regular expression to match in each log message
+    - name: timeFormat
+      description: <string, optional, {enum-one:posix|simple}> The time format used
+        in each log message, default is posix time (seconds since 1970)
+    - name: batchSize
+      description: <uint32, optional, {range:2000 to 10000}> The number of logs to
+        retrieve per batch, default is 2000
+    - name: responseType
+      description: <string, optional {enum-one:text|html|json|xml|octet-stream}> Default
+        set to json. Defines the type of the response message.
+    description: Downloads log entries
+  - name: nw-logs-timeRoll
+    arguments:
+    - name: timeCalc
+      description: <string, optional, {enum-any:current|last-write}> The time calculation
+        to use (current date or last write date), default is current
+    - name: minutes
+      description: <uint32, optional, {range:0 to 60}> Remove log entries older than
+        the given number of minutes
+    - name: hours
+      description: <uint32, optional, {range:0 to 24}> Remove log entries older than
+        the given number of hours
+    - name: days
+      description: <uint32, optional, {range:0 to 365}> Remove log entries older than
+        the given number of days
+    - name: date
+      description: <string, optional> Remove log entries older than the given date
+        (YYYY-MM-DD HH:MM:SS), not compatible with minutes, hours, or days parameters
+    description: Delete log entries that exceed a given age
+  - name: nw-sys-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-sys-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-sys-save
+    arguments:
+    - name: force
+      description: <uint32, optional> If 1, forces the configuration file to saved,
+        regardless if changes are detected, default is 0
+    description: Forces a save of system settings
+  - name: nw-sys-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-sys-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-sys-caCert
+    arguments:
+    - name: op
+      description: <string, optional, {enum-one:list|delete|add}> CA action to perform
+        (list,delete,add)
+    - name: id
+      description: <string, optional> ID of CA certificate to remove when op=delete
+    description: Display or delete trusted CA certs
+  - name: nw-sys-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-sys-shutdown
+    arguments:
+    - name: reason
+      description: <string, optional, {length:0 to 512}> The reason for shutting down
+        the service
+    - name: cl
+      description: <string, optional> A (cl="name=value name2=value2") set of options
+        for setting the command line on the next restart
+    description: Stop the service
+  - name: nw-sys-fileEdit
+    arguments:
+    - name: op
+      required: true
+      description: <string, {enum-one:dir|get|getBackup|put|create|delete}> The operation
+        to perform (dir, get, getBackup, put, create, delete)
+    - name: type
+      description: <string, optional, {enum-one:parser|filter}> The type of file,
+        if not provided will check file extension
+    - name: filename
+      description: <string, optional, {length:1 to 64}> File to create, edit, get
+        or delete
+    description: View and edit system configuration files
+  - name: nw-sys-peerCert
+    arguments:
+    - name: op
+      description: <string, optional, {enum-one:list|delete|add}> Operation to perform
+        on the list of trusted peers (list,delete,add)
+    - name: id
+      description: <string, optional> ID of peer certificate to remove when op=delete
+    description: Display or modify trusted peer certificates
+  - name: nw-sys-servCert
+    arguments: []
+    description: Display the current server certificate in PEM format.
+  - name: nw-sys-statHist
+    arguments:
+    - name: time1
+      description: <date-time, optional> The starting time for retrieving stats
+    - name: time2
+      description: <date-time, optional> The ending time for retrieving stats
+    - name: timeFormat
+      description: <string, optional, {enum-one:posix|simple}> Specify the time format
+        for each stat snapshot, default is posix (seconds since 1970)
+    - name: include
+      description: <string, optional> Comma separated list of stats to include (wildcards
+        allowed)
+    - name: exclude
+      description: <string, optional> Comma separated list of stats to exclude (wildcards
+        allowed, has precedence over include)
+    - name: reduce
+      description: <bool, optional> If true, reduces data transmission by replacing
+        stat pathnames with a shorthand and provides a lookup table as first result
+    description: Retrieve historical stats from the stats db.  Don't send time1/time2
+      to get bounding times about stats db.  Supported wildcards are ? to match any
+      single char, * to match zero or more characters, not including slash /, ** to
+      match zero or more characters including slash /.
+  - name: nw-users-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: Returns the list of child nodes
+  - name: nw-users-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: Fires notifications when the node changes
+  - name: nw-users-info
+    arguments: []
+    description: Returns detailed information about the node
+  - name: nw-users-auths
+    arguments: []
+    description: Get supported authentication types
+  - name: nw-users-count
+    arguments: []
+    description: Returns the number of child nodes
+  - name: nw-users-delete
+    arguments:
+    - name: name
+      required: true
+      description: <string, {char:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@!#$%&'+-=?^_`{|}~.[]}>
+        The username to delete
+    description: Delete a user from the system
+  - name: nw-users-unlock
+    arguments:
+    - name: name
+      required: true
+      description: <string> The username or account to unlock
+    description: Unlock a locked out account
+  - name: nw-users-stopMon
+    arguments: []
+    description: Removes the channel from the node as a monitor
+  - name: nw-users-addOrMod
+    arguments:
+    - name: name
+      required: true
+      description: <string, {char:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@!#$%&'+-=?^_`{|}~.[]}>
+        The username to add or update, must be alphanumeric or @!#$%&'+-=?^_`{|}~.[]
+    - name: password
+      description: <string, optional> The user's password
+    - name: pwdIsHashed
+      description: <bool, optional> Set to true if the password has already been hashed
+    - name: groups
+      description: <string, optional> The groups the user belongs to
+    - name: authType
+      description: <string, optional, {enum-one:netwitness|pam}> The authentication
+        system to use, "netwitness" is the default
+    - name: queryTimeout
+      description: <uint32, optional, {range:0 to 43200}> The maximum number of minutes
+        that a query is allowed to execute for this user.  Zero means unlimited.
+    - name: displayName
+      description: <string, optional> Display name for this user account
+    - name: email
+      description: <string, optional> Email address for this account
+    - name: description
+      description: <string, optional> Description of this user account
+    - name: queryPrefix
+      description: <string, optional> Query filter applied to every query performed
+        by this user account
+    - name: sessionThreshold
+      description: <uint32, optional, {range:0 to 4294967295}> Query optimization
+        which will extrapolate the remaining session counts when they exceed this
+        value
+    description: Add a new user or update an existing user in the system
+  - name: nw-decoder-import
+    arguments:
+    - name: entryID
+      description: The entry IF of file from the War Room.
+    description: Import new data into the decoder
+  - name: nw-decoder-parsers-upload
+    arguments:
+    - name: entryID
+      description: The entry IF of file from the War Room.
+    description: Uploading new parser into the decoder
+  - name: nw-concentrator-reset
+    arguments:
+    - name: data
+      description: <bool, optional> Reset data, automatically resets index (may not
+        be applicable to all services)
+    - name: index
+      description: <bool, optional> Reset index, only valid if data is not reset (may
+        not be applicable to all services)
+    - name: manifest
+      description: <bool, optional> Reset all manifests stored in the long term manifest
+        directory (may not be applicable to all services)
+    - name: config
+      description: <bool, optional> Reset configuration settings to default
+    - name: stats
+      description: <bool, optional> Reset the stats database
+    - name: log
+      description: <bool, optional> Reset the log database
+    - name: filesCreatedAfter
+      description: <date-time, optional> Delete all database files (session, meta,
+        packets) created after a certain date. The index will automatically get rolled
+        back on restart.  Not valid with option index.
+    - name: cl
+      description: <string, optional> A (cl="name=value name2=value2") set of options
+        for setting the command line on the next restart
+    description: |-
+      reset: Reset data, index, manifests, stats, configuration, or logs for this service.  Data automatically deletes index and stats, unless filesCreatedAfter is specified.  Service is automatically restarted. Example arguments: data=1 config=1 log=1 This example will reset data, index, logs, and configuration
+      index=1 This example will reset the index only
+      manifest=1 This example will delete everything in the manifest directory
+      filesCreatedAfter="2015-12-01 14:00:00" This example will delete all session, meta and packet files created on or after Dec 1st, 2015 2pm (UTC) from the service.  All other files will remain.  The index will not be touched, but upon restart will be truncated to match the last session in the session database.
+      security.roles: concentrator.manage
+  - name: nw-concentrator-reconfig
+    arguments:
+    - name: update
+      description: <bool, optional> If true (default is false), will automatically
+        update the respective concentrator settings, otherwise it will just output
+        the calculations
+    - name: memory
+      description: <size, optional> If non-zero, will use that setting as installed
+        physical RAM (e.g., memory="24 GiB"). This is useful for hybrids and/or all-in-one
+        machines where the service will need to share memory.
+    description: 'Calculates optimal settings for concentrator pools and buffers based
+      on the installed hardware. security.roles: concentrator.manage'
+  - name: nw-concentrator-start
+    arguments: []
+    description: 'Starts aggregation on the concentrator security.roles: concentrator.manage'
+  - name: nw-concentrator-stop
+    arguments: []
+    description: 'Stops aggregation on the concentrator security.roles: concentrator.manage'
+  - name: nw-concentrator-count
+    arguments: []
+    description: 'Returns the number of child nodes security.roles: everyone'
+  - name: nw-concentrator-edit
+    arguments:
+    - name: device
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to edit
+    - name: username
+      required: true
+      description: <string> The username to run as
+    - name: password
+      required: true
+      description: <string> The username's password
+    - name: options
+      description: <string, optional> The device options
+    - name: ssl
+      description: <string, optional> If true, the device requires SSL to connect
+    - name: backup
+      description: <string, optional> If true, the device will be used as a backup
+    - name: reconnect
+      description: <string, optional> If true, will automatically reconnect when not
+        connected
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Edit an existing aggregation device security.roles: concentrator.manage'
+  - name: nw-concentrator-add
+    arguments:
+    - name: device
+      description: <string, optional, {ip-address:[ip-address]:[0-65535]}> The device
+        to add (ip:port or [ipv6]:port), either this or ip must be set
+    - name: ip
+      description: <string, optional> The IP address of the device, either this or
+        device must be set
+    - name: port
+      description: <uint32, optional, {range:0 to 65535}> The port number the device
+        is listening on
+    - name: username
+      required: true
+      description: <string> The username to run as
+    - name: password
+      required: true
+      description: <string> The username's password
+    - name: options
+      description: <string, optional> The device options
+    - name: ssl
+      description: <string, optional> If true, the device requires SSL to connect
+    - name: backup
+      description: <string, optional> If true, the device will be used as a backup
+    - name: reconnect
+      description: <string, optional> If true, will automatically reconnect when not
+        connected
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Add a new device for aggregation security.roles: concentrator.manage'
+  - name: nw-concentrator-meta
+    arguments:
+    - name: op
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - start
+      - next
+      - cancel
+      description: <string, {enum-one:start|next|cancel}> The meta operation
+    - name: crc
+      description: <bool, optional> If set to true, the stream returned will be CRC
+        validated
+    - name: startSession
+      required: true
+      description: "The id of the first session"
+    - name: startMeta
+      required: true
+      description: ""
+    - name: maxSessions
+      required: true
+      description: "Count of sessions to return"
+    - name: query
+      description: "Query used to query the sessions"
+    description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
+  - name: nw-concentrator-status
+    arguments:
+    - name: device
+      required: true
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to change
+        status
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - online
+      - offline
+      description: <string, optional, {enum-one:online|offline}> Whether to take device
+        offline or put online
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Change the online/offline status of an aggregation device security.roles:
+      concentrator.manage'
+  - name: nw-concentrator-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: 'Returns the list of child nodes security.roles: everyone'
+  - name: nw-concentrator-resetMax
+    arguments: []
+    description: 'Resets all max stats, including device max stats back to zero. security.roles:
+      concentrator.manage'
+  - name: nw-concentrator-stopMon
+    arguments: []
+    description: 'Removes the channel from the node as a monitor security.roles: everyone'
+  - name: nw-concentrator-delete
+    arguments:
+    - name: device
+      required: true
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to delete
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Delete an existing aggregation device security.roles: concentrator.manage'
+  - name: nw-concentrator-whoAgg
+    arguments: []
+    description: 'Returns information on who is aggregating from this service security.roles:
+      concentrator.manage'
+  - name: nw-concentrator-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: 'Fires notifications when the node changes security.roles: everyone'
+  - name: nw-broker-reset
+    arguments:
+    - name: data
+      description: <bool, optional> Reset data, automatically resets index (may not
+        be applicable to all services)
+    - name: index
+      description: <bool, optional> Reset index, only valid if data is not reset (may
+        not be applicable to all services)
+    - name: manifest
+      description: <bool, optional> Reset all manifests stored in the long term manifest
+        directory (may not be applicable to all services)
+    - name: config
+      description: <bool, optional> Reset configuration settings to default
+    - name: stats
+      description: <bool, optional> Reset the stats database
+    - name: log
+      description: <bool, optional> Reset the log database
+    - name: filesCreatedAfter
+      description: <date-time, optional> Delete all database files (session, meta,
+        packets) created after a certain date. The index will automatically get rolled
+        back on restart.  Not valid with option index.
+    - name: cl
+      description: <string, optional> A (cl="name=value name2=value2") set of options
+        for setting the command line on the next restart
+    description: |-
+      reset: Reset data, index, manifests, stats, configuration, or logs for this service.  Data automatically deletes index and stats, unless filesCreatedAfter is specified.  Service is automatically restarted. Example arguments: data=1 config=1 log=1 This example will reset data, index, logs, and configuration
+      index=1 This example will reset the index only
+      manifest=1 This example will delete everything in the manifest directory
+      filesCreatedAfter="2015-12-01 14:00:00" This example will delete all session, meta and packet files created on or after Dec 1st, 2015 2pm (UTC) from the service.  All other files will remain.  The index will not be touched, but upon restart will be truncated to match the last session in the session database.
+      security.roles: concentrator.manage
+  - name: nw-broker-start
+    arguments: []
+    description: 'Starts aggregation on the broker security.roles: concentrator.manage'
+  - name: nw-broker-stop
+    arguments: []
+    description: 'Stops aggregation on the broker security.roles: concentrator.manage'
+  - name: nw-broker-count
+    arguments: []
+    description: 'Returns the number of child nodes security.roles: everyone'
+  - name: nw-broker-edit
+    arguments:
+    - name: device
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to edit
+    - name: username
+      required: true
+      description: <string> The username to run as
+    - name: password
+      required: true
+      description: <string> The username's password
+    - name: options
+      description: <string, optional> The device options
+    - name: ssl
+      description: <string, optional> If true, the device requires SSL to connect
+    - name: backup
+      description: <string, optional> If true, the device will be used as a backup
+    - name: reconnect
+      description: <string, optional> If true, will automatically reconnect when not
+        connected
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Edit an existing aggregation device security.roles: concentrator.manage'
+  - name: nw-broker-add
+    arguments:
+    - name: device
+      description: <string, optional, {ip-address:[ip-address]:[0-65535]}> The device
+        to add (ip:port or [ipv6]:port), either this or ip must be set
+    - name: ip
+      description: <string, optional> The IP address of the device, either this or
+        device must be set
+    - name: port
+      description: <uint32, optional, {range:0 to 65535}> The port number the device
+        is listening on
+    - name: username
+      required: true
+      description: <string> The username to run as
+    - name: password
+      required: true
+      description: <string> The username's password
+    - name: options
+      description: <string, optional> The device options
+    - name: ssl
+      description: <string, optional> If true, the device requires SSL to connect
+    - name: backup
+      description: <string, optional> If true, the device will be used as a backup
+    - name: reconnect
+      description: <string, optional> If true, will automatically reconnect when not
+        connected
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Add a new device for aggregation security.roles: concentrator.manage'
+  - name: nw-broker-meta
+    arguments:
+    - name: op
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - start
+      - next
+      - cancel
+      description: <string, {enum-one:start|next|cancel}> The meta operation
+    - name: crc
+      description: <bool, optional> If set to true, the stream returned will be CRC
+        validated
+    - name: startSession
+      required: true
+      description: "The id of the first session"
+    - name: startMeta
+      required: true
+      description: ""
+    - name: maxSessions
+      required: true
+      description: "Count of sessions to return"
+    - name: query
+      description: "Query used to query the sessions"
+    description: 'Stream session/meta information (DEPRECATED) security.roles: concentrator.manage'
+  - name: nw-broker-status
+    arguments:
+    - name: device
+      required: true
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to change
+        status
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - online
+      - offline
+      description: <string, optional, {enum-one:online|offline}> Whether to take device
+        offline or put online
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Change the online/offline status of an aggregation device security.roles:
+      concentrator.manage'
+  - name: nw-broker-ls
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to return node info, default
+        is 1
+    - name: options
+      description: <string, optional> What types of nodes to return information about,
+        default is all nodes.  Can be a number (bitwise mask) or comma separated values
+        like config, stat, folder, session, connection, channel, restart-needed or
+        pretty-print.
+    - name: exclude
+      description: '<string, optional> Comma separated list of nodes or node pathnames
+        to exclude (wildcards allowed: * and ?)'
+    description: 'Returns the list of child nodes security.roles: everyone'
+  - name: nw-broker-resetMax
+    arguments: []
+    description: 'Resets all max stats, including device max stats back to zero. security.roles:
+      concentrator.manage'
+  - name: nw-broker-stopMon
+    arguments: []
+    description: 'Removes the channel from the node as a monitor security.roles: everyone'
+  - name: nw-broker-delete
+    arguments:
+    - name: device
+      required: true
+      description: <string, {ip-address:[ip-address]:[0-65535]}> The device to delete
+    - name: name
+      description: <string, optional> Device collection name if device is a collection
+    description: 'Delete an existing aggregation device security.roles: concentrator.manage'
+  - name: nw-broker-whoAgg
+    arguments: []
+    description: 'Returns information on who is aggregating from this service security.roles:
+      concentrator.manage'
+  - name: nw-broker-mon
+    arguments:
+    - name: depth
+      description: <uint32, optional> How many levels deep to monitor
+    - name: options
+      description: <uint32, optional> What types of nodes to return information about,
+        default is zero (all nodes)
+    description: 'Fires notifications when the node changes security.roles: everyone'
+toversion: 3.1.0

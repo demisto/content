@@ -59,6 +59,8 @@ mapping:
     type: text
   dockerimage:
     type: str
+  runonce:
+    type: bool
   releaseNotes:
     type: str
 
@@ -103,6 +105,8 @@ schema;output_schema:
     description:
       type: str
       required: yes
+    type:
+      type: str
 
 # script->important
 schema;important_schema:
