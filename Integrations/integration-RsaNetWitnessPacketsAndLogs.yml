@@ -679,7 +679,9 @@ script:
       description: Use the instance that is mapped to this concentrator address
     description: Returns the packet content for a session
   - name: nw-sdk-info
-    arguments: []
+    arguments:
+    - name: concentratorAddress
+      description: Use the instance that is mapped to this concentrator address
     description: Returns detailed information about the node
   - name: nw-sdk-ls
     arguments:
