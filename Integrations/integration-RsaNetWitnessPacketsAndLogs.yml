@@ -58,18 +58,18 @@ script:
         return url;
     };
 
+    var getUrl = function(currentUrl){
+        var urlToReturn;
+        if(args && args.concentratorUrl){
+            var currentAddress = currentUrl.match(/:\/\/(.*):/)[1];
+            urlToReturn = currentUrl.replace(currentAddress, args.concentratorUrl);
+            delete(args.concentratorUrl);
+        }
+        else {
+            urlToReturn = currentUrl;
+        }
 
-    var getUrl = function(commandArgs, currentUrl){
-      var urlToReturn;
-      if(commandArgs){
-          urlToReturn = commandArgs.url ? commandArgs.url : currentUrl;
-      }
-      else {
-          urlToReturn = currentUrl;
-      }
-
-      return urlToReturn;
-
+        return urlToReturn;
     };
 
     var isObjectEmpty = function (obj) {
@@ -252,9 +252,6 @@ script:
         return q;
     };
 
-
-
-
     var ResponseTypes = {
         'json': 'application/json',
         'html': 'text/html',
@@ -264,9 +261,10 @@ script:
     };
 
     var doReq = function(method, path, args, resType, body) {
+        var urlToUse = getUrl(url);
         var parametersUrl = encodeParams(args);
         var responseType = resType ? ResponseTypes[resType] : 'application/json';
-        var fullUrl = getUrl(args, url) + path + parametersUrl + '&force-content-type=' + responseType;
+        var fullUrl = urlToUse + path + parametersUrl + '&force-content-type=' + responseType;
 
         if (params.expiry) {
             fullUrl += '&expiry=' + params.expiry;
@@ -294,7 +292,7 @@ script:
 
     var decoderImport = function(path) {
         var fileParam = args.entryID ? args.entryID : args.fileID;
-        var fullUrl = getUrl(args, url) + path;
+        var fullUrl = getUrl(url) + path;
         var res = httpMultipart(
             fullUrl,
             fileParam,
@@ -314,7 +312,7 @@ script:
     };
 
     var concentratorAgg = function() {
-        var fullUrl = getUrl(args, url) + '/concentrator/agg';
+        var fullUrl = getUrl(url) + '/concentrator/agg';
         var body = {
             op: args.op,
             crc: args.crc,
@@ -533,6 +531,8 @@ script:
     - name: flags
       description: <string, optional> Flags to use for search.  This is a comma separated
         list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     outputs:
     - contextPath: NetWitness.Events
       description: all events of netwitness
@@ -548,6 +548,8 @@ script:
     - name: search
       required: true
       description: <string> The search string to use
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     outputs:
     - contextPath: NetWitness.Events
       description: all events of netwitness
@@ -575,6 +577,8 @@ script:
       description: <uint64, optional> Filter for date and time
     - name: lastMinutes
       description: <uint64, optional> Filter by last minutes
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     outputs:
     - contextPath: NetWitness.Events
       description: all events of NetWitness
@@ -603,6 +607,8 @@ script:
     - name: flags
       description: <uint32, optional> Additional flags as defined by the NwPackets
         SDK function
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     outputs:
     - contextPath: NetWitness.Events
       description: all events of NetWitness
@@ -615,6 +621,8 @@ script:
     - name: id2
       required: true
       description: <uint64> The ending session id
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Retrieves the meta id range for the session range
   - name: nw-sdk-validate
     arguments:
@@ -633,6 +641,8 @@ script:
     - name: query
       description: <string, optional> Required if validating a 'query' operation.
         The query string to be validated.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Validate a query or values call without execution
   - name: nw-sdk-content
     arguments:
@@ -658,6 +668,8 @@ script:
     - name: renderOptions
       description: <string, optional> An encoded string params containing additional
         options for controlling the operation.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the packet content for a session
   - name: nw-sdk-info
     arguments: []
@@ -675,6 +687,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-sdk-timeline
     arguments:
@@ -700,6 +714,8 @@ script:
     - name: bookendHours
       description: uint32, optional> The number of hours outside the given time1,
         time2 which will become part of the cache.  Default is 24 hours.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the count of sessions/size/packets in discrete time intervals
   - name: nw-sdk-language
     arguments:
@@ -722,12 +738,16 @@ script:
     - name: size
       required: true
       description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Retrieves the language definition
   - name: nw-sdk-summary
     arguments:
     - name: flags
       description: <string, optional> Optional SDK flags.  Can be a number (bitwise
         mask) or comma separated values like default or ignore-cache.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Retrieves summary information from the databases
   - name: nw-sdk-values
     arguments:
@@ -762,10 +782,14 @@ script:
     - name: max
       description: <string, optional> The upper limit of values to return.  Only values
         less than this value will be returned.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Performs a value count query and returns the matching values for
       a report
   - name: nw-database-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-database-ls
     arguments:
@@ -780,6 +804,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-decoder-info
     arguments:
@@ -794,6 +820,8 @@ script:
       description: <size, optional> If non-zero, will use that setting as installed
         physical RAM (e.g., memory="24 GiB"). This is useful for hybrids and/or all-in-one
         machines where the service will need to share memory.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-decoder-ls
     arguments:
@@ -808,6 +836,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-decoder-logStats
     arguments:
@@ -843,6 +873,8 @@ script:
     - name: timeFormat
       description: <string, optional, {enum-one:posix|simple}> Specify the time format
         that is returned (posix, simple), default is simple (YYYY-MM-DD HH:MM:SS)
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Retrieve count and last receive times for log devices, sources and
       forwarders.
   - name: nw-index-ls
@@ -858,9 +890,13 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-index-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-decoderParsers-ls
     arguments:
@@ -875,9 +911,13 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-decoderParsers-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-decoderParsers-ipdevice
     arguments:
@@ -889,6 +929,8 @@ script:
         + means adding or editing a map entry, - means delete a map entry
     - name: reload
       description: <bool, optional> If true, reload parsers when command finishes.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Map IP to Device type in log parsing. Takes effect after parser reload.
   - name: nw-logs-ls
     arguments:
@@ -903,6 +945,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-logs-pull
     arguments:
@@ -917,9 +961,13 @@ script:
     - name: timeFormat
       description: <string, optional, {enum-one:posix|simple}> The time format used
         in each log message, default is posix time (seconds since 1970)
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Downloads N log entries
   - name: nw-logs-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-logs-download
     arguments:
@@ -953,6 +1001,8 @@ script:
     - name: responseType
       description: <string, optional {enum-one:text|html|json|xml|octet-stream}> Default
         set to json. Defines the type of the response message.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Downloads log entries
   - name: nw-sys-ls
     arguments:
@@ -967,9 +1017,13 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-sys-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-users-ls
     arguments:
@@ -984,25 +1038,35 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns the list of child nodes
   - name: nw-users-info
-    arguments: []
+    arguments:
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Returns detailed information about the node
   - name: nw-users-unlock
     arguments:
     - name: name
       required: true
       description: <string> The username or account to unlock
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Unlock a locked out account
   - name: nw-decoder-import
     arguments:
     - name: entryID
       description: The entry IF of file from the War Room.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Import new data into the decoder
   - name: nw-decoder-parsers-upload
     arguments:
     - name: entryID
       description: The entry ID of file from the War Room.
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: Uploading new parser into the decoder
   - name: nw-concentrator-ls
     arguments:
@@ -1017,6 +1081,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: 'Returns the list of child nodes security.roles: everyone'
   - name: nw-broker-ls
     arguments:
@@ -1031,6 +1097,8 @@ script:
     - name: exclude
       description: '<string, optional> Comma separated list of nodes or node pathnames
         to exclude (wildcards allowed: * and ?)'
+    - name: concentratorUrl
+      description: Use the instance that is mapped to this concentrator IP
     description: 'Returns the list of child nodes security.roles: everyone'
 fromversion: 3.5.0
 releaseNotes: "-"
