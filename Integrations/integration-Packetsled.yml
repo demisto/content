@@ -35,6 +35,7 @@ configuration:
 script:
   script: |
     import requests
+    import re
     import socket, struct
     import json
     import datetime, time
@@ -42,15 +43,64 @@ script:
     from urlparse import urljoin
     requests.packages.urllib3.disable_warnings()
 
+    def humanReadable(obj):
+        return obj
+
     def number_to_ip(n):
-        return socket.inet_ntoa(struct.pack('!L', long(n)))
+        if isinstance(n,str):
+            return n
+        try:
+            return socket.inet_ntoa(struct.pack('!L', long(n)))
+        except:
+            return n
 
     def ip_to_number(i):
-        return struct.unpack('!L', socket.inet_aton(i))[0]
+        try:
+            return struct.unpack('!L', socket.inet_aton(i))[0]
+        except:
+            return i
 
     proto_map = {"tcp":10001,"udp":10002,"dns":10003,"dhcp":10004,"arp":10005,"finger":10006,"ncp":10007,"rpc":10008,"telnet":10009,"rlogin":10010,"citrix":10011,"dhcpv6":10012,"icmp":20001,"ntp":20003,"snmp":20004,"bgp":20005,"ripv1":20006,"ripv2":20007,"ipmi":20008,"ssh":30001,"ssl":30002,"openvpn":30003,"teredo":40001,"tunnel":40002,"ciscovpn_tcp":40003,"ciscovpn_udp":40004,"syslog":50001,"dce-rpc":60001,"xmpp":60002,"amqp":60003,"emp":60004,"dce-rpc-lsa":60005,"ident":70001,"radius":70002,"socks":70003,"kerberos":70004,"ntlm":70005,"login":80001,"rdp":80002,"vnc":80003,"pcanywhere":80004,"ftp":90001,"netbios":90002,"smb":90003,"ftp-data":90004,"irc-dcc-data":90005,"rsync":90006,"tftp":90007,"dropbox":90008,"bittorrent":100001,"gnutella":100002,"dnp3":110001,"modbus":110002,"gtpv1":120001,"gps":120002,"wiu":120003,"http":130001,"smtp":140001,"imap":140002,"pop3":140004,"mapi":140005,"mysql":150001,"irc":160001,"sip":170001}
-
+    proto_inv_map = {v: k for k, v in proto_map.iteritems()}
     family_map = {'network_services':1,'network_management':2,'encrypted':3,'tunnel':4,'logging':5,'application_service':6,'authentication':7,'remote_access':8,'file_transfer':9,'p2p':10,'scada':11,'mobile':12,'web':13,'mail':14,'database':15,'chat':16,'voice':17}
+    family_inv_map = {v: k for k, v in family_map.iteritems()}
+
+    killchain_map = {'mitre:TTP-e491a5ac-e434-468c-b48c-990d69a9a68a': 'Persistence',
+    'mitre:TTP-0c974e94-fe2b-4f51-9373-204b5804dec7': 'Privilege Escalation',
+    'mitre:TTP-b9811282-cb47-4cb9-aba5-a48f5068e47a': 'Defense Evasion',
+    'mitre:TTP-f87c271c-ff1a-4e33-8cc3-94c82bdd6539': 'Credential Access',
+    'mitre:TTP-83610d07-0683-42a1-83f1-8683f294eca8': 'Discovery',
+    'mitre:TTP-3ea0403e-b6e4-4e51-a66c-7be410d26e38': 'Lateral Movement',
+    'mitre:TTP-5180b5b6-4d0c-4d61-b57a-bc946c7d7fbc': 'Execution',
+    'mitre:TTP-6326c4ba-36af-4b63-b38a-614f2a457577': 'Collection',
+    'mitre:TTP-1fe53cda-f0b6-45ea-affb-02b156d22a36': 'Exfiltration',
+    'mitre:TTP-e1482e88-3b70-4354-bd6f-9546760dfa06': 'Command and Control'}
+
+    def process_flow(flow):
+        if 'src_ip' in flow:
+            flow['src_ip'] = number_to_ip(flow['src_ip'])
+        if 'dest_ip' in flow:
+            flow['dest_ip'] = number_to_ip(flow['dest_ip'])
+        if 'time' in flow:
+            flow['time'] = isoTime(flow['time'])
+        if 'family' in flow:
+            flow['family'] = map(lambda x: family_inv_map[x], flow['family'])
+        if 'proto' in flow:
+            flow['proto'] = map(lambda x: proto_inv_map[x], flow['proto'])
+        return flow
+
+    def get_flows(result):
+        data = result['data'] or []
+        return map(lambda x: process_flow(x), data)
+
+    def validate_response(response):
+        result = None
+        if response.status_code == 200 :
+            result = response.json()
+        if result and result["status"] != 1 :
+            raise Exception(str(result['message'] or 'an api error occurred'))
+        demisto.debug(result)
+        return result
 
     def getTime(t):
         try:
@@ -61,11 +111,33 @@ script:
     def isoTime(epochTime):
         return datetime.datetime.fromtimestamp(epochTime).isoformat() + 'Z'
 
-    def make_query(dargs):
-        ### prepare a time range query on host ###
-        ### times are expressed in UNIX epoch seconds ###
-        ### search for any times greater than NOW minus 1 hours ###
+    def coalesceToArray(o):
+        if not isinstance(o, list):
+            return [o]
+        return o
 
+    def make_context(dargs):
+        if 'probe' in dargs and 'envid' in dargs:
+            sensor = {'probe': int(dargs['probe']), 'envid': int(dargs['envid'])}
+            return {'probes': [sensor], 'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
+        else:
+            response = requests.get(urljoin(host, '/admin/probes'),
+            params = {
+                'filterscount': 1,
+                'filtercondition0': 'NOT_EQUAL',
+                'filterdatafield0': 'deleted',
+                'filtervalue0': 1
+            },
+            headers = {
+                'cache-control': 'no-cache',
+                'x-api-access-token': auth_token
+            },
+            verify=False)
+
+            result = validate_response(response)
+            return {'probes': result['rows'], 'dbs': list(map(lambda x: 'probe_{envid}_{probe}'.format(**x), result['rows']))}
+
+    def make_timerange(dargs):
         if 'stop_time' in dargs:
             tnow = getTime(dargs['stop_time'])
         else:
@@ -74,29 +146,65 @@ script:
         if 'start_time' in dargs:
             tmin = getTime(dargs['start_time'])
         else:
-            tmin = tnow - 1*60*60
+            lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
+            if len(lastRun) != 0:
+                tmin = getTime(lastRun)
+            else:
+                tmin = tnow - 1*60*60
+
+        return tmin, tnow
+
+    def make_query(dargs):
+        ### prepare a time range query on host ###
+        ### times are expressed in UNIX epoch seconds ###
+        ### search for any times greater than NOW minus 1 hours ###
+
+        tmin, tnow = make_timerange(dargs)
 
         search = {'time': {'=': {'scalars': [], 'ranges': [{'v1': tmin, 'v2': tnow}]}}}
 
         if 'host' in dargs:
-            ipaddr = ip_to_number(dargs['host'])
-            search['ip'] = {'=': {'scalars': [{'v1': ipaddr}], 'ranges': []}}
+            host = coalesceToArray(dargs['host'])
+            search['ip'] = {'=': {'scalars': map(lambda x: {'v1': ip_to_number(x)}, host), 'ranges': []}}
 
         if 'protocol' in dargs:
-            search['proto'] = {'=': {'scalars': [{'v1': proto_map[dargs['protocol']]}], 'ranges': []}}
+            protocol = coalesceToArray(dargs['protocol'])
+            search['proto'] = {'=': {'scalars': map(lambda x: {'v1': proto_map[x]}, protocol), 'ranges': []}}
 
         if 'family' in dargs:
-            search['family'] = {'=': {'scalars': [{'v1': family_map[dargs['family']]}], 'ranges': []}}
+            family = coalesceToArray(dargs['family'])
+            search['family'] = {'=': {'scalars': map(lambda x: {'v1': family_map[x]}, family), 'ranges': []}}
 
         if 'geo' in dargs:
-            search['geo'] = {'=': {'scalars': [{'v1': dargs['geo']}], 'ranges': []}}
+            geo = coalesceToArray(dargs['geo'])
+            search['geo'] = {'=': {'scalars': map(lambda x: {'v1': x}, geo), 'ranges': []}}
 
         if 'port' in dargs:
-            search['port'] = {'=': {'scalars': [{'v1': dargs['port']}], 'ranges': []}}
-
-        demisto.log(search)
+            port = coalesceToArray(dargs['port'])
+            search['port'] = {'=': {'scalars': map(lambda x: {'v1': x}, port), 'ranges': []}}
 
         return search
+
+    def create_demisto_incidents(result, incidentContext, start_time, stop_time):
+        incidents = []
+        envid = incidentContext['probes'][0]['envid']
+        probe = incidentContext['probes'][0]['probe']
+        for match in result['matches'] or []:
+            for incident in match['values'] or []:
+                incident['envid'] = envid
+                incident['probe'] = probe
+                incident['killchain'] = map(lambda x: killchain_map[x], incident['killchain'])
+                hosts = []
+                if 'hosts' in incident:
+                    hosts += map(lambda x: number_to_ip(x), incident['hosts'].keys())
+                if 'ps_defining_query' in incident:
+                    ip_candidates = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", " ".join(incident['ps_defining_query']))
+                    hosts += ip_candidates
+                hosts = list(set(hosts))
+                incident['hosts'] = hosts
+                incidents.append({'start_time': start_time, 'stop_time': stop_time, 'name': incident['value'], 'rawJSON': incident, 'labels': incident['killchain'], 'envid': envid, 'probe': probe, 'host': hosts})
+
+        return incidents
 
     host = demisto.params()['host']
     username = demisto.params()['username']
@@ -141,33 +249,63 @@ script:
         result = response.json()
         demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-probes': result['rows']}, 'EntryContext': {'packetsled.probes': result['rows']}})
 
+
+    if demisto.command() == "fetch-incidents" or demisto.command() == 'packetsled-get-incidents':
+        now = datetime.datetime.utcnow().isoformat()[:-3] + "Z"
+        dargs = demisto.args()
+        tmin,tnow = make_timerange(dargs)
+        sensorContext = make_context(dargs)
+
+        severity = 5
+        if 'severity' in dargs:
+            severity = int(dargs['severity'])
+
+        search = {'severity': {'$gte': severity}, 'time': {'$lte': tnow, '$gte': tmin}}
+
+        incidents = []
+        for sensor in sensorContext['probes']:
+            incidentContext = {'probes': [sensor], 'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
+
+            ### query for incidents ###
+            response = requests.post(urljoin(host, '/flows/incidents/query'),
+                data = json.dumps({
+                    'context': incidentContext,
+                    'search': search
+                }),
+                headers = {
+                    'content-type': 'application/json',
+                    'cache-control': 'no-cache',
+                    'x-api-access-token': auth_token
+                },
+                verify=False)
+
+            ### validate the response ###
+            result = validate_response(response)
+            incidents += create_demisto_incidents(result, incidentContext, tmin, tnow)
+
+        if demisto.command() == "fetch-incidents":
+            demisto.incidents(incidents)
+        else:
+            demisto.results({'HumanReadable': humanReadable(incidents), 'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-incidents': incidents}, 'EntryContext': {'packetsled.psincidents': incidents}})
+        demisto.setLastRun({"time": now})
+
     if demisto.command() == 'packetsled-get-flows':
-
-        response = requests.get(urljoin(host, '/admin/probes'),
-        params = {
-            'filterscount': 1,
-            'filtercondition0': 'NOT_EQUAL',
-            'filterdatafield0': 'deleted',
-            'filtervalue0': 1
-        },
-        headers = {
-            'cache-control': 'no-cache',
-            'x-api-access-token': auth_token
-        },
-        verify=False)
-
-        result = response.json()
-        sensorContext = {'dbs': list(map(lambda x: 'probe_{envid}_{probe}'.format(**x), result['rows']))}
-
         dargs = demisto.args()
 
+        if 'host' not in dargs:
+            sys.exit(0)
+
+        limit = 5000
+        if 'limit' in dargs:
+            limit = long(dargs['limit'])
         search = make_query(dargs)
+        sensorContext = make_context(dargs)
 
         ### query for flows ###
         response = requests.post(urljoin(host, '/flows/flows'),
             data = json.dumps({
                 'context': sensorContext,
-                'search': {'query': search, 'limit': 50000}
+                'search': {'query': search, 'limit': limit}
             }),
             headers = {
                 'content-type': 'application/json',
@@ -177,29 +315,16 @@ script:
             verify=False)
 
         ### validate the response ###
-        result = response.json()
-        demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-get-flows': result['data']}, 'EntryContext': {'packetsled.flows': result['data']}})
+        result = validate_response(response)
+        flows = get_flows(result)
+        demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-get-flows': flows}, 'EntryContext': {'packetsled.flows': flows}})
 
     if demisto.command() == 'packetsled-get-events':
-
-        response = requests.get(urljoin(host, '/admin/probes'),
-        params = {
-            'filterscount': 1,
-            'filtercondition0': 'NOT_EQUAL',
-            'filterdatafield0': 'deleted',
-            'filtervalue0': 1
-        },
-        headers = {
-            'cache-control': 'no-cache',
-            'x-api-access-token': auth_token
-        },
-        verify=False)
-
-        result = response.json()
-        sensorContext = {'dbs': list(map(lambda x: 'probe_{envid}_{probe}'.format(**x), result['rows']))}
+        dargs = demisto.args()
+        sensorContext = make_context(dargs)
 
         ### prepare a time range query on host ###
-        uid = demisto.args()['uid']
+        uid = dargs['uid']
 
         ### times are expressed in UNIX epoch seconds ###
         ### search for any times greater than NOW minus 1 hours ###
@@ -219,39 +344,27 @@ script:
             verify=False)
 
         ### validate the response ###
-        result = response.json()
+        result = validate_response(response)
         demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-get-events': result['data']}, 'EntryContext': {'packetsled.events': result['data']}})
 
     if demisto.command() == 'packetsled-get-files':
-
-        response = requests.get(urljoin(host, '/admin/probes'),
-        params = {
-            'filterscount': 1,
-            'filtercondition0': 'NOT_EQUAL',
-            'filterdatafield0': 'deleted',
-            'filtervalue0': 1
-        },
-        headers = {
-            'cache-control': 'no-cache',
-            'x-api-access-token': auth_token
-        },
-        verify=False)
-
-        result = response.json()
-        sensorContext = {'dbs': list(map(lambda x: 'probe_{envid}_{probe}'.format(**x), result['rows']))}
-
-        ### prepare a time range query on host ###
-        ipaddr = ip_to_number(demisto.args()['host'])
-
         dargs = demisto.args()
+
+        if 'host' not in dargs:
+            sys.exit(0)
+
+        limit = 5000
+        if 'limit' in dargs:
+            limit = long(dargs['limit'])
         search = make_query(dargs)
+        sensorContext = make_context(dargs)
         search["@attribute"] = {'=': {'scalars': [{'v1': 'extracted'}],'ranges': []}}
 
         ### query for flows ###
         response = requests.post(urljoin(host, '/flows/flows'),
             data = json.dumps({
                 'context': sensorContext,
-                'search': {'query': search, 'limit': 50000}
+                'search': {'query': search, 'limit': limit}
             }),
             headers = {
                 'content-type': 'application/json',
@@ -261,7 +374,7 @@ script:
             verify=False)
 
         ### validate the response ###
-        result = response.json()
+        result = validate_response(response)
         ### iterate over the returned flows, looking for extracted files ###
         for flow in result["data"]:
             if 'extracted' in flow:
@@ -280,46 +393,33 @@ script:
                         demisto.results(fileResult(file.replace('/','_'),response.content))
 
     if demisto.command() == 'packetsled-get-pcaps':
-
-        response = requests.get(urljoin(host, '/admin/probes'),
-        params = {
-            'filterscount': 1,
-            'filtercondition0': 'NOT_EQUAL',
-            'filterdatafield0': 'deleted',
-            'filtervalue0': 1
-        },
-        headers = {
-            'cache-control': 'no-cache',
-            'x-api-access-token': auth_token
-        },
-        verify=False)
-
         dargs = demisto.args()
-
-        if 'stop_time' in dargs:
-            tnow = getTime(dargs['stop_time'])
-        else:
-            tnow = long(time.mktime(datetime.datetime.now().timetuple()))
-
-        if 'start_time' in dargs:
-            tmin = getTime(dargs['start_time'])
-        else:
-            tmin = tnow - 1*60*60
+        tmin,tnow = make_timerange(dargs)
+        sensorContext = make_context(dargs)
 
         query = "before " + isoTime(tnow) + " and after " + isoTime(tmin)
+
+        constraints = False
         if 'host' in dargs:
-            query = query + " and host " + dargs['host']
+            constraints = True
+            host = coalesceToArray(dargs['host'])
+            query = query + " and (" + " or ".join(map(lambda x: "host " + x, host)) + ")"
 
         if 'protocol' in dargs:
-            query = query + " and " + dargs['protocol']
+            constraints = True
+            protocol = coalesceToArray(dargs['protocol'])
+            query = query + " and (" + " or ".join(map(lambda x: x, protocol)) + ")"
 
         if 'port' in dargs:
-            query = query + " and port " + dargs['port']
+            constraints = True
+            port = coalesceToArray(dargs['port'])
+            query = query + " and (" + " or ".join(map(lambda x: "port " + x, port)) + ")"
 
-        demisto.log(query)
+        if not constraints:
+            sys.exit(0)
 
-        result = response.json()
-        for sensor in result['rows']:
+        result = validate_response(response)
+        for sensor in sensorContext['probes']:
             ### prepare a time range query on host ###
             ### prepare a query to get the list of files for this host ###
             route = "?rule=" + urllib.quote(query)
@@ -332,131 +432,6 @@ script:
             try:
                 ### download the extracted file ###
                 response = requests.get(urljoin(host, ('/download/ndr/{probe}/'+ route).format(**sensor)),
-                    headers = {
-                        'cache-control': 'no-cache',
-                        'x-api-access-token': auth_token
-                    },
-                    verify=False)
-
-                ### the download will return 404 if the file has been purged ###
-                if response.status_code == 200:
-                    demisto.results(fileResult(query,response.content))
-            except:
-                demisto.log(query + " failed")
-
-    if demisto.command() == 'packetsled-get-incidents':
-
-        sensor = {'probe': int(demisto.args()['probe']), 'envid': int(demisto.args()['envid'])}
-        # sensor = {'probe': int(demisto.args()['probe'])}
-        sensorContext = {'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
-
-        ### prepare a time range query on severity ###
-
-        ### times are expressed in UNIX epoch seconds ###
-        ### search for any times greater than NOW minus 1 hours ###
-        tnow = long(time.mktime(datetime.datetime.now().timetuple()))
-        tmin = tnow - 1*60*60
-        search = {'severity': {'$gte': int(demisto.args()['severity'])}, 'time': {'$gte': tmin}}
-
-        ### query for incidents ###
-        response = requests.post(urljoin(host, '/flows/incidents/query'),
-            data = json.dumps({
-                'context': sensorContext,
-                'search': search
-            }),
-            headers = {
-                'content-type': 'application/json',
-                'cache-control': 'no-cache',
-                'x-api-access-token': auth_token
-            },
-            verify=False)
-
-        ### validate the response ###
-        result = response.json()
-        demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': {'packetsled-incidents': result['matches']}, 'EntryContext': {'packetsled.psincidents': result['matches']}})
-
-    if demisto.command() == 'packetsled-get-incident-files':
-
-        sensor = {'probe': int(demisto.args()['probe']), 'envid': int(demisto.args()['envid'])}
-        sensorContext = {'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
-        incident = demisto.args()['psincidents']
-
-        ### prepare a time range query on severity ###
-
-        ### times are expressed in UNIX epoch seconds ###
-        ### search for any times greater than NOW minus 1 hours ###
-        tnow = long(time.mktime(datetime.datetime.now().timetuple()))
-        tmin = tnow - 1*60*60
-
-        for ip,cnt in incident["hosts"].items():
-
-            ### convert the numeric ip address to an octet for display ###
-            # print socket.inet_ntoa(struct.pack('!L', long(ip)))
-
-            ### prepare a query to get the list of files for this host ###
-            search = {}
-            search["time"] = {'=': {'scalars': [],'ranges': [{'v1': tmin, 'v2': tnow}]}}
-            search["@attribute"] = {'=': {'scalars': [{'v1': 'extracted'}],'ranges': []}}
-            search["log"] = {'=': {'scalars': [{'v1': 'psfile_analytics'}],'ranges': []}}
-            search["ip"] = {'=': {'scalars': [{'v1': long(ip)}],'ranges': []}}
-
-            ### query for flows on this sensor ###
-            response = requests.post(urljoin(host, '/flows/flows'),
-                data = json.dumps({
-                    'context': sensorContext,
-                    'search': {'query': search, 'limit': 1000}
-                }),
-                headers = {
-                    'content-type': 'application/json',
-                    'cache-control': 'no-cache',
-                    'x-api-access-token': auth_token
-                },
-                verify=False)
-
-            ### validate the response ###
-            result = response.json()
-
-            ### iterate over the returned flows, looking for extracted files ###
-            for flow in result["data"]:
-                if 'extracted' in flow:
-                    for file in flow["extracted"]:
-
-                        ### download the extracted file ###
-                        response = requests.get(urljoin(host, ('/download/file_extraction/{probe}/'+ file).format(**sensor)),
-                            headers = {
-                                'cache-control': 'no-cache',
-                                'x-api-access-token': auth_token
-                            },
-                            verify=False)
-
-                        ### the download will return 404 if the file has been purged ###
-                        if response.status_code == 200:
-                            demisto.results(fileResult(file.replace('/','_'),response.content))
-
-    if demisto.command() == 'packetsled-get-incident-pcaps':
-
-        sensor = {'probe': int(demisto.args()['probe']), 'envid': int(demisto.args()['envid'])}
-        sensorContext = {'dbs': ['probe_{envid}_{probe}'.format(**sensor)]}
-        incident = demisto.args()['psincidents']
-
-        ### prepare a time range query on severity ###
-
-        ### times are expressed in UNIX epoch seconds ###
-        ### search for any times greater than NOW minus 1 hours ###
-        tnow = long(time.mktime(datetime.datetime.now().timetuple()))
-        tmin = tnow - 1*60*60
-
-        for ip,cnt in incident["hosts"].items():
-
-            ### convert the numeric ip address to an octet for display ###
-            ip_octet = number_to_ip(ip)
-
-            ### prepare a query to get the list of files for this host ###
-            query = "?rule=" + urllib.quote("after 60m ago and host " + ip_octet)
-
-            try:
-                ### download the extracted file ###
-                response = requests.get(urljoin(host, ('/download/ndr/{probe}/'+ query).format(**sensor)),
                     headers = {
                         'cache-control': 'no-cache',
                         'x-api-access-token': auth_token
@@ -488,12 +463,11 @@ script:
       - "10"
       description: Return incidents with severity greater than or equal to this value.
       defaultValue: "5"
-    - name: StartDateTime
+    - name: start_time
       description: Start time to query for incidents.
-    - name: StopDateTime
+    - name: stop_time
       description: Stop time to query for incidents.
     - name: probe
-      required: true
       description: The probe number
     - name: envid
       description: The environment id
@@ -505,33 +479,11 @@ script:
     outputs:
     - contextPath: packetsled.probes
     description: List the probes attached to the packetsled platform.
-  - name: packetsled-get-incident-files
-    arguments:
-    - name: psincidents
-      required: true
-      description: The incident
-    - name: probe
-      required: true
-      description: the probe number
-    - name: envid
-      required: true
-      description: the environment id
-    description: Get the files for a host by a given incident.
-  - name: packetsled-get-incident-pcaps
-    arguments:
-    - name: psincidents
-      description: The incident
-    - name: probe
-      required: true
-      description: the probe number
-    - name: envid
-      required: true
-      description: the environment id
-    description: Get pcaps for each host involved in an incident
   - name: packetsled-get-flows
     arguments:
     - name: host
       description: The ip of the host to query flows for
+      isArray: true
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -600,6 +552,7 @@ script:
       - irc
       - sip
       description: The protocol
+      isArray: true
     - name: family
       auto: PREDEFINED
       predefined:
@@ -621,6 +574,7 @@ script:
       - chat
       - voice
       description: The protocol family
+      isArray: true
     - name: log
       auto: PREDEFINED
       predefined:
@@ -687,16 +641,26 @@ script:
       - weird
       - x509
       description: The log name
+      isArray: true
     - name: geo
       description: The 2-digit geo code,' local', or 'private'
+      isArray: true
     - name: port
       description: The port number
+      isArray: true
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string
         or seconds since the epoch.
     - name: stop_time
       description: The end of the time range to query. Either an ISO time string or
         seconds since the epoch.
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    - name: limit
+      description: Limit the number of search results
+      defaultValue: "5000"
     outputs:
     - contextPath: packetsled.flows
     description: Query packetsled sensor metadata
@@ -704,6 +668,7 @@ script:
     arguments:
     - name: host
       description: The ip of the host to query flows for
+      isArray: true
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -772,6 +737,7 @@ script:
       - irc
       - sip
       description: The protocol
+      isArray: true
     - name: family
       auto: PREDEFINED
       predefined:
@@ -793,6 +759,7 @@ script:
       - chat
       - voice
       description: The protocol family
+      isArray: true
     - name: log
       auto: PREDEFINED
       predefined:
@@ -859,21 +826,32 @@ script:
       - weird
       - x509
       description: The log name
+      isArray: true
     - name: geo
       description: The 2-digit geo code,' local', or 'private'
+      isArray: true
     - name: port
       description: The port number
+      isArray: true
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string
         or seconds since the epoch.
     - name: stop_time
       description: The end of the time range to query. Either an ISO time string or
         seconds since the epoch.
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    - name: limit
+      description: Limit the number of search results
+      defaultValue: "5000"
     description: Query packetsled extracted files
   - name: packetsled-get-pcaps
     arguments:
     - name: host
       description: The ip of the host to query flows for
+      isArray: true
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -942,8 +920,10 @@ script:
       - irc
       - sip
       description: The protocol
+      isArray: true
     - name: port
       description: The port number
+      isArray: true
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string
         or seconds since the epoch.
@@ -954,12 +934,20 @@ script:
       description: The upper bound on the number of bytes to return from the query
     - name: limitpkts
       description: The upper bound on the number of packets to process from the query
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
     description: Query packetsled for full packet
   - name: packetsled-get-events
     arguments:
     - name: uid
       required: true
       description: The uid to retrieve logs for
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
     outputs:
     - contextPath: packetsled.events
     description: Get all of the events for a given uid
