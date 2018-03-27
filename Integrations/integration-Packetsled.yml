@@ -66,8 +66,6 @@ detaileddescription: |
   | probe      | A unique id within an envid used to identify a sensingle sensor | optional, if not provided, all sensors are queried  |
   | host      | an ip address | optional |
   | port      | port | optional |
-  | geo      | geo code | optional |
-  | family      | A protocol family (enumeration value) | optional |
   | proto      | a protocol (enumeration value) | optional |
   | incident      | An incident returned by packetsled-get-incidents | optional. If provided, will override other argument values |
 configuration:
