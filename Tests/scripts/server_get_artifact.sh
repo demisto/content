@@ -18,7 +18,7 @@ done
 
 if [[ "$ARTIFACT_BUILD_NUM" = "" ]]; then
     echo "couldn't find successful build"
-    exit
+    exit 1
 fi
 
 SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BUILD_NUM}/artifacts?${TOKEN_ATTR} | jq '.[].url' -r | grep demistoserver | grep /0/)
