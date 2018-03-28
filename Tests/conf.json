@@ -41,7 +41,7 @@
                 "byoi": false
             },
             "playbookID": "get_file_sample_from_path_-_generic_-_test",
-            "timeout": 500
+            "timeout": 1200
         },
         {
             "integrations": [
