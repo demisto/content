@@ -477,7 +477,7 @@ script: |-
           elif a.shortFilename:
               fname = a.shortFilename
           if fname and a.data:
-              fname = fname.encode('utf-8').strip()
+              fname = getUtfString(fname, 'fname')
               attachments.append(fname)
               r.append(fileResult(fname, a.data))
 
@@ -501,7 +501,7 @@ script: |-
       try:
           utfString = text.encode('utf-8')
       except Exception as ex:
-          utfString = text.decode('utf-8','ignore').encode("utf-8")
+          utfString = text.decode('utf-8','ignore').encode('utf-8')
           temp = demisto.uniqueFile()
           with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
               f.write(text)
