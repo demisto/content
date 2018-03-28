@@ -36,14 +36,6 @@
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test",
-            "timeout": 1200
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
