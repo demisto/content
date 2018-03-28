@@ -224,6 +224,13 @@
             "nightly": true
         },
         {
+            "integrations": {
+                "name": "carbonblack-v2",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {

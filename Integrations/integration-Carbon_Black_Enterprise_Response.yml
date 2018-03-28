@@ -2247,17 +2247,17 @@ script:
       required: true
       description: The session ID to close
     outputs:
-    - contextPath: CbResponse.Sensors.Status
+    - contextPath: CbResponse.Sessions.Status
       description: Session Status
-    - contextPath: CbResponse.Sensors.Hostname
+    - contextPath: CbResponse.Sessions.Hostname
       description: Hostname
-    - contextPath: CbResponse.Sensors.CbSensorID
+    - contextPath: CbResponse.Sessions.CbSensorID
       description: Sensor ID
-    - contextPath: CbResponse.Sensors.CbSessionID
+    - contextPath: CbResponse.Sessions.CbSessionID
       description: Session ID
-    - contextPath: CbResponse.Sensors.SessionTimeout
+    - contextPath: CbResponse.Sessions.SessionTimeout
       description: Session Timeout
-    - contextPath: CbResponse.Sensors.WaitTimeout
+    - contextPath: CbResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
     description: Close the given session
   - name: cb-session-create
@@ -2273,17 +2273,17 @@ script:
       description: Session keepalive timeout (If a keepalive is not issued after this
         time, the session will close)
     outputs:
-    - contextPath: CbResponse.Sensors.Status
+    - contextPath: CbResponse.Sessions.Status
       description: Session Status
-    - contextPath: CbResponse.Sensors.Hostname
+    - contextPath: CbResponse.Sessions.Hostname
       description: Hostname
-    - contextPath: CbResponse.Sensors.CbSensorID
+    - contextPath: CbResponse.Sessions.CbSensorID
       description: Sensor ID
-    - contextPath: CbResponse.Sensors.CbSessionID
+    - contextPath: CbResponse.Sessions.CbSessionID
       description: Session ID
-    - contextPath: CbResponse.Sensors.SessionTimeout
+    - contextPath: CbResponse.Sessions.SessionTimeout
       description: Session Timeout
-    - contextPath: CbResponse.Sensors.WaitTimeout
+    - contextPath: CbResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
     description: Create a new CarbonBlack session for a given sensor
   - name: cb-session-info
@@ -2293,17 +2293,17 @@ script:
       default: true
       description: Session ID to get info for
     outputs:
-    - contextPath: CbResponse.Sensors.Status
+    - contextPath: CbResponse.Sessions.Status
       description: Session Status
-    - contextPath: CbResponse.Sensors.Hostname
+    - contextPath: CbResponse.Sessions.Hostname
       description: Hostname
-    - contextPath: CbResponse.Sensors.CbSensorID
+    - contextPath: CbResponse.Sessions.CbSensorID
       description: Sensor ID
-    - contextPath: CbResponse.Sensors.CbSessionID
+    - contextPath: CbResponse.Sessions.CbSessionID
       description: Session ID
-    - contextPath: CbResponse.Sensors.SessionTimeout
+    - contextPath: CbResponse.Sessions.SessionTimeout
       description: Session Timeout
-    - contextPath: CbResponse.Sensors.WaitTimeout
+    - contextPath: CbResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
     description: Display session info
   - name: cb-terminate-process
