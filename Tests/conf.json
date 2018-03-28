@@ -48,10 +48,6 @@
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
                 {
-                    "name": "carbonblack",
-                    "byoi": false
-                },
-                {
                     "name": "carbonblackprotection",
                     "byoi": false
                 }
