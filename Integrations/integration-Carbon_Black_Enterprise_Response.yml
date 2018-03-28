@@ -2327,8 +2327,9 @@ script:
     - contextPath: File.LastAction
       description: Last action taken on this file
     important:
-    - description: File Actions
-      related: File(val.LastAction)
+    - contextPath: File(val.LastAction)
+      description: File Actions
+      related: ""
     description: Unblocking hash
   - name: cb-unquarantine-device
     arguments:
