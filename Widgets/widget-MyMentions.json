@@ -1,15 +1,16 @@
 {
   "id": "my-mentions",
   "size": 10,
-  "fromVersion": "3.6.0",
+  "fromVersion": "3.5.1",
   "dataType": "messages",
   "query": "type:mention*",
   "name": "Mentions",
   "dateRange": {
-    "period": { "byFrom": "days", "fromValue": null }
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z"
   },
   "isPredefined": true,
   "version": -1,
-  "category": "others",
+  "category": "",
   "widgetType": "list"
 }
