@@ -8,6 +8,16 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAX8AAACECAMAAABPuNs7AAAAgVB
 description: Proofpoint's Targeted Attack Protection (TAP) helps protect against and
   provide additional visibility into phishing and other malicious email attacks.
 configuration:
+- display: 'Server URL (e.g: https://tap-api-v2.proofpoint.com)'
+  name: url
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  type: 0
+  required: true
+- display: API Version (v1, v2)
+  name: apiVersion
+  defaultvalue: v2
+  type: 0
+  required: true
 - display: Credentials
   name: credentials
   defaultvalue: ""
@@ -37,16 +47,6 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Server URL (TAP API URL)
-  name: url
-  defaultvalue: https://tap-api-v2.proofpoint.com
-  type: 0
-  required: true
-- display: API Version (v1, v2)
-  name: apiVersion
-  defaultvalue: v2
-  type: 0
-  required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "true"
@@ -59,8 +59,30 @@ configuration:
   required: false
 script:
   script: |-
-    var MINUTE_IN_MILLIS = 60 * 1000;
-    var HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+    /**
+     * Returns true if string starts with search string
+     * @param {String} search - string to check
+     * @return {Boolean} true if string starts with <search> string
+     */
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function(search, pos) {
+            return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+        };
+    }
+
+    /**
+     * Returns true if string ends with search string
+     * @param {String} search - string to check
+     * @return {Boolean} true if string ends with <search> string
+     */
+    if (!String.prototype.endsWith) {
+        String.prototype.endsWith = function(search, this_len) {
+            if (this_len === undefined || this_len > this.length) {
+                this_len = this.length;
+            }
+            return this.substring(this_len - search.length, this_len) === search;
+        };
+    }
 
     function fixUrl(url) {
         if (url.endsWith('/')) {
@@ -93,19 +115,99 @@ script:
         return JSON.parse(res.Body);
     }
 
+
+
     function getEvents() {
-        var events = getEventsRequest(args.interval, args.sinceTime, args.threatType, args.threatStatus);
+        var events = getEventsRequest(args.interval, args.sinceTime, args.sinceSeconds, args.threatType, args.threatStatus);
+
+        // human readable
+        var hrEvents = {};
+        var messagesDeliveredOutput = [];
+        var messagesBlockedOutput = [];
+        var clicksPermittedOutput = [];
+        var clicksBlockedOutput = [];
+        if (events) {
+              // convert events to demisto incidents
+              if (events.messagesDelivered && events.messagesDelivered.length > 0) {
+                  for (var i = 0; i < events.messagesDelivered.length; i++) {
+                      var event = events.messagesDelivered[i];
+                      messagesDeliveredOutput.push({
+                          CampaignId: dq(event, 'campaignId'),
+                          Classification: dq(event, 'classification'),
+                          ClickIP: dq(event, 'clickIP'),
+                          ClickTime: dq(event, 'clickTime'),
+                          MessageID: dq(event, 'messageID'),
+                          Recipient: dq(event, 'recipient'),
+                          Sender: dq(event, 'sender'),
+                          SenderIP: dq(event, 'senderIP'),
+                          ThreatID: dq(event, 'threatID'),
+                          ThreatTime: dq(event, 'threatTime'),
+                          ThreatURL: dq(event, 'threatURL'),
+                          Url: dq(event, 'url'),
+                          UserAgent: dq(event, 'userAgent')
+                      })
+                  }
+              }
+
+              if (events.messagesBlocked && events.messagesBlocked.length > 0) {
+                  for (var i = 0; i < events.messagesBlocked.length; i++) {
+                      var event = events.messagesBlocked[i];
+                      messagesBlocked.push({
+
+                      })
+                  }
+              }
+
+              if (events.clicksPermitted && events.clicksPermitted.length > 0) {
+                  for (var i = 0; i < events.clicksPermitted.length; i++) {
+                      var event = events.clicksPermitted[i];
+                      event.type = 'clicks permitted';
+                      var incident = {
+                          name: 'Proofpoint - Click Permitted - '  + event.GUID,
+                          rawJSON: JSON.stringify(event)
+                      };
+
+                      incidents.push(incident);
+                  }
+              }
+
+              if (events.clicksBlocked && events.clicksBlocked.length > 0) {
+                  for (var i = 0; i < events.clicksBlocked.length; i++) {
+                      var event = events.clicksBlocked[i];
+                      event.type = 'clicks blocked';
+                      var incident = {
+                          name: 'Proofpoint - Click Blocked - '  + event.GUID,
+                          rawJSON: JSON.stringify(event)
+                      };
+
+                      incidents.push(incident);
+                  }
+              }
+
+          }
+
+        // output to context
+        var eventsMarkdownString = '';
+
 
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: events
+            Contents: events,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: eventsMarkdownString,
+            EntryContext: {
+                'Proofpoint.MessagesDelivered()': messagesDeliveredOutput,
+                'Proofpoint.MessagesBlocked()': messagesBlockedOutput,
+                'Proofpoint.ClicksPermitted()': clicksPermittedOutput,
+                'Proofpoint.ClicksBlocked()': clicksBlockedOutput
+            }
         };
     }
 
-    function getEventsRequest(interval, sinceTime, threatType, threatStatus) {
-        if (!interval && !sinceTime) {
-            throw 'Required to pass interval or sinceTime.';
+    function getEventsRequest(interval, sinceTime, sinceSeconds, threatType, threatStatus) {
+        if (!interval && !sinceTime && !sinceSeconds) {
+            throw 'Required to pass interval or sinceTime or sinceSeconds.';
         }
 
         var queryParams = {
@@ -117,6 +219,9 @@ script:
         }
         if (sinceTime) {
             queryParams.sinceTime = sinceTime;
+        }
+        if (sinceSeconds) {
+            queryParams.sinceSeconds = sinceSeconds;
         }
         if (threatType) {
             queryParams.threatType = threatType;
@@ -138,36 +243,29 @@ script:
         case 'test-module':
             // the test will get the last 10 minutes events
             // we just make sure the response is 200 and the username password are valid.
-            var now = new Date();
-            var last10minutes = new Date(now.getTime() - 10 * MINUTE_IN_MILLIS);
+            var last10minutes = 10 * 60;
             try {
-                getEventsRequest(null, dateToISO8601(last10minutes), null, null);
+                getEventsRequest(null, null, last10minutes, null, null);
             } catch (err) {
-                throw 'Test failed. Failed to fetch last 10 minutes events. Original error: ' + err
+                throw 'Test failed. Failed to fetch last 10 minutes events. Original error: ' + err;
             }
 
             return 'ok';
         case 'fetch-incidents':
             var now = new Date();
             var lastRun = getLastRun();
-            var sinceTime;
-            if (lastRun && lastRun.lastRunTime) {
-                var lastRunDate = new Date(lastRun.lastRunTime);
-                if (lastRunDate.getTime() < now.getTime() - (30 * MINUTE_IN_MILLIS)) {
-                    // if for some reason the lastRunTime is more in the past than 30 mins, then fetch the last 30 mintues
-                    // could be that integration was disabled for some time and now it was enabled
-                    var last30minutes = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
-                    sinceTime = dateToISO8601(last30minutes);
-                } else {
-                    sinceTime = lastRun.lastRunTime;
-                }
+
+            var events;
+            if (lastRun && lastRun.notFirstTimeRun) {
+                 // if fetch run for the first time, we fetch the events in last half an hour
+                 var last1minute = 1 * 60;
+                 events = getEventsRequest(null, null, last1minute, params.threatType, params.threatStatus);
             } else {
                 // if fetch run for the first time, we fetch the events in last half an hour
-                var last30minutes = new Date(now.getTime() - (30 * MINUTE_IN_MILLIS));
-                sinceTime = dateToISO8601(last30minutes);
+                var last30minutes = 30 * 60;
+                events = getEventsRequest(null, null, last30minutes, params.threatType, params.threatStatus);
             }
 
-            var events = getEventsRequest(null, sinceTime, params.threatType, params.threatStatus);
             var incidents = [];
             if (events) {
                 // convert events to demisto incidents
@@ -227,7 +325,7 @@ script:
 
             // set the next run time
             setLastRun({
-                lastRunTime: dateToISO8601(now)
+                notFirstTimeRun: true
             });
 
             return JSON.stringify(incidents);
@@ -273,6 +371,12 @@ script:
         the data retrieval period. The end of the period is determined by current
         API server time rounded to the nearest minute. If JSON output is selected,
         the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
+    - name: sinceSeconds
+      description: 'An integer representing a time window in seconds from the current API server time.
+        The start of the window is the current API server time, rounded to the nearest minute,
+        less the number of seconds provided. The end of the window is the current API server
+        time rounded to the nearest minute. If JSON output is selected, the end
+        time is included in the returned result.'
     description: Fetch events for all click and message relating to known threats
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
