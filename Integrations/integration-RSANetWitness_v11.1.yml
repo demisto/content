@@ -1274,6 +1274,7 @@ script:
     arguments:
     - name: incidentId
       required: true
+      description: The incident id
     outputs:
     - contextPath: NetWitness.Alerts.id
       description: The unique alert identifier.
