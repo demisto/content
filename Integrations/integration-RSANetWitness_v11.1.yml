@@ -619,10 +619,28 @@ script:
 
 
     def parse_incident(netwitness_incident):
+        incident_fields = [
+            'id',
+            'title',
+            'summary',
+            'riskScore',
+            'status',
+            'alertCount',
+            'created',
+            'lastUpdated',
+            'assignee',
+            'sources',
+            'categories'
+        ]
+        incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in incident_fields ]
+        alerts = netwitness_incident.get('alerts', [])
+        alerts_ids = [alert.get('id') for alert in alerts]
+        incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
         incident = {
             'name': netwitness_incident.get('title'),
             'occurred': netwitness_incident.get('created'),
             'severity': priority_to_severity( netwitness_incident.get('priority') ),
+            'labels': incident_labels,
             'rawJSON': json.dumps(netwitness_incident)
         }
         return incident
@@ -804,7 +822,7 @@ script:
 
     def parse_event_to_md_representation(event):
 
-        event_details = "#### Event Details \
+        event_details = "### Event Details \
         \n*Domain:* {domain} \
         \n*Source:* {source} \
         \n*ID:* {id} \
