@@ -158,6 +158,10 @@ script:
             var data = res.result;
             var md = '## Intezer analysis result\n';
             md += 'SHA256: ' + hash + '\n';
+            if (data.family) {
+                var familyType = data.family_type ? ' (' + data.family_type + ')' : '';
+                md += 'Family: **' + data.family + '**' + familyType + '\n';
+            }
             md += 'Verdict: **' + data.verdict + '** (' + data.sub_verdict + ')\n';
             md += '[' + 'Analysis Link' + '](' + data.analysis_url + ')\n';
             // set return entry with context
