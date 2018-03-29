@@ -241,7 +241,7 @@ script:
 
         path = path.replace("/", "\\")
         path = path.split('\\')
-        folder_result = account.root.tois
+        folder_result = account.inbox.parent
         for sub_folder_name in path:
             folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
             if len(folder_filter_by_name) == 0:
@@ -708,7 +708,7 @@ script:
             raise Exception('Message item not found: ' + item_id)
 
         if attachment_ids and len(attachments) < len(attachment_ids):
-            raise Exception('Some attachment id did not found for message:' + attachment_ids)
+            raise Exception('Some attachment id did not found for message:' + str(attachment_ids))
 
         return attachments
 
@@ -825,7 +825,7 @@ script:
         if folder_path:
             folders = [get_folder_by_path(account, folder_path)]
         else:
-            folders = account.root.tois.walk()
+            folders = account.inbox.parent.walk()
 
         items = []
         for folder in folders:
@@ -1608,6 +1608,5 @@ script:
     description: Get items by id.
   dockerimage: demisto/py-ews
   isfetch: true
-  runonce:
 releaseNotes: "1. support folder id in a addition to folder path.
 2. add ews-find-folders, ews-get-items, ews-get-items-from-folder commands"
