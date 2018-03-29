@@ -98,11 +98,55 @@ script:
         }
     }
 
+    var mapSingleArray = function(fields, arrayResults){
+        if(fields && Array.isArray(fields)) {
+            fields.forEach(function (field) {
+              var element = {};
+              element[field['type']] = field['value'];
+              arrayResults.push(element);
+            });
+        }
+    }
+
+    var BuildArrayMd = function(response){
+        var data = parseResponse(response);
+
+        var queryResults = [];
+        var extractFromData = function(data) {
+            var fields = dq(data, 'results.fields');
+            mapSingleArray(fields, queryResults);
+        };
+
+        if (Array.isArray(data)) {
+            data.forEach(function (element) {
+                extractFromData(element);
+            });
+        } else if ((typeof data) ==='object') {
+            extractFromData(data);
+        }
+
+        var flatQueryResult = [];
+        for(key in queryResults) {
+            flatQueryResult.push(queryResults[key])
+        }
+        if(!isObjectEmpty(queryResults)) {
+            var hr = tableToMarkdown(command, flatQueryResult);
+            return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: hr,
+                ReadableContentsFormat: formats.markdown
+            };
+        } else {
+            return "No results found.";
+        }
+    }
+
     var buildHrAndContext = function (data, isEvent) {
         //Check if we have values
         var retVal = {md: [], context: {NetWitness:{}}};
         var queryResults = {};
-
         var extractFromData = function(data) {
             var fields = dq(data, 'results.fields');
             mapQueryResults(fields, queryResults);
@@ -115,18 +159,65 @@ script:
         } else if ((typeof data) ==='object') {
             extractFromData(data);
         }
-        var flatQueryResult = []
+        var flatQueryResult = [];
         for(key in queryResults) {
             flatQueryResult.push(queryResults[key])
         }
         if(!isObjectEmpty(queryResults)) {
             retVal.md = flatQueryResult;
             var hr = tableToMarkdown(command, retVal.md);
-            return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown};
+            return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: hr,
+                ReadableContentsFormat: formats.markdown
+            };
         } else {
             return "No results found.";
         }
     };
+
+    var BuildNodeMdAndContext = function(response){
+        var data = parseResponse(response);
+        var nodes = data.nodes ? data.nodes : [data.node];
+
+        return {
+             Type: entryTypes.note,
+                Contents: nodes,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown(command, nodes),
+                EntryContext: {
+                    'NetWitness.Node(val.handle==obj.handle)' : nodes
+                },
+                ReadableContentsFormat: formats.markdown
+        }
+    }
+
+
+    var BuildStringMdAndContext = function(response){
+        var data = parseResponse(response);
+        var string = data.string;
+        var md =  '### Results for ' + command + ':\n' + string;
+         return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: md
+        }
+    }
+
+    var BuildParamsMd = function(response){
+        var data = parseResponse(response);
+        var params = data.params;
+
+         return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown(command, params)
+        }
+    }
 
     var parseResponse = function(resp, isXml) {
         if (resp.StatusCode === 200) {
@@ -273,6 +364,8 @@ script:
         var responseType = resType ? ResponseTypes[resType] : 'application/json';
         var fullUrl = urlToUse + path + parametersUrl + '&force-content-type=' + responseType;
 
+        log(fullUrl);
+
         if (params.expiry) {
             fullUrl += '&expiry=' + params.expiry;
         }
@@ -315,8 +408,30 @@ script:
             params.proxy
         );
 
-        return parseResponse(res, true);
+        var data = parseResponse(res, true);
+        var blob = data.blob;
+
+        return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown(command, data.import.data)
+        };
+
     };
+
+    var parseBlob = function(response){
+        var data = parseResponse(response);
+        var blob = data.blob;
+
+        var md =  '### Results for ' + command + ':\n' + blob;
+         return {
+                Type: entryTypes.note,
+                Contents: blob,
+                ContentsFormat: formats.json,
+                HumanReadable: md
+        }
+    }
 
     var concentratorAgg = function() {
         var fullUrl = getUrl(url) + '/concentrator/agg';
@@ -512,6 +627,40 @@ script:
             return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType), true)
         case 'netwitness-packets':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-content':
+            return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-language':
+        case 'nw-sdk-timeline':
+        case 'nw-sdk-values':
+           return BuildArrayMd(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-info':
+        case 'nw-sdk-ls':
+        case 'nw-broker-ls':
+        case 'nw-concentrator-ls':
+        case 'nw-database-info':
+        case 'nw-database-ls':
+        case 'nw-decoder-info':
+        case 'nw-decoder-ls':
+        case 'nw-decoderParsers-info':
+        case 'nw-decoderParsers-ls':
+        case 'nw-index-info':
+        case 'nw-index-ls':
+        case 'nw-logs-info':
+        case 'nw-logs-ls':
+        case 'nw-sys-info':
+        case 'nw-sys-ls':
+        case 'nw-users-info':
+        case 'nw-users-ls':
+            return BuildNodeMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-decoderParsers-ipdevice':
+        case 'nw-sdk-validate':
+        case 'nw-users-unlock':
+        case 'nw-sdk-summary':
+            return BuildStringMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-session':
+        case 'nw-logs-pull':
+        case 'nw-decoder-logStats':
+            return BuildParamsMd(doReq('GET', commandToPath[command], args, args.responseType));
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
@@ -682,6 +831,19 @@ script:
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-sdk-ls
     arguments:
@@ -698,6 +860,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-sdk-timeline
     arguments:
@@ -799,6 +974,19 @@ script:
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-database-ls
     arguments:
@@ -815,6 +1003,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-decoder-info
     arguments:
@@ -831,6 +1032,19 @@ script:
         machines where the service will need to share memory.
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-decoder-ls
     arguments:
@@ -847,6 +1061,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-decoder-logStats
     arguments:
@@ -901,11 +1128,37 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-index-info
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-decoderParsers-ls
     arguments:
@@ -922,11 +1175,37 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-decoderParsers-info
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-decoderParsers-ipdevice
     arguments:
@@ -956,6 +1235,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-logs-pull
     arguments:
@@ -977,6 +1269,19 @@ script:
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-logs-download
     arguments:
@@ -1028,6 +1333,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-sys-info
     arguments:
@@ -1049,11 +1367,37 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns the list of child nodes
   - name: nw-users-info
     arguments:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: Returns detailed information about the node
   - name: nw-users-unlock
     arguments:
@@ -1092,6 +1436,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: 'Returns the list of child nodes security.roles: everyone'
   - name: nw-broker-ls
     arguments:
@@ -1108,6 +1465,19 @@ script:
         to exclude (wildcards allowed: * and ?)'
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Node.display
+      description: Node display
+    - contextPath: NetWitness.Node.handle
+      description: Node handle
+    - contextPath: NetWitness.Node.name
+      description: Node name
+    - contextPath: NetWitness.Node.nodeType
+      description: Node type
+    - contextPath: NetWitness.Node.parentHandle
+      description: Node parent handle
+    - contextPath: NetWitness.Node.path
+      description: Node path
     description: 'Returns the list of child nodes security.roles: everyone'
 fromversion: 3.5.0
 releaseNotes: "-"
