@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+          "playbookID": "Test filters & transformers scripts"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
@@ -33,22 +36,6 @@
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 300
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test",
-            "timeout": 300
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 "urlscan.io"
@@ -60,10 +47,6 @@
             "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                },
                 {
                     "name": "carbonblackprotection",
                     "byoi": false
