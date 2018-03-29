@@ -86,7 +86,12 @@ script:
             else{
                 // Get the next page for the results
                 var afterPattern = /\bafter=(.*)>/;
-                args['after'] = link[1].match(afterPattern)[1];
+                var linkMatch = link[1].match(afterPattern);
+                if(!linkMatch){
+                    break;
+                }
+
+                args['after'] = linkMatch[1];
             }
 
        } while(resObject.body.length > 0)
