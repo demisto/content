@@ -736,8 +736,6 @@ script:
       description: The environment id of the sensor
     - contextPath: Packetsled.Sensors.probe
       description: The probe number of the sensor
-    - contextPath: Packetsled.Sensors.stop_time
-      description: The end of the time range containing the incident
     description: List the sensors attached to the packetsled platform.
   - name: packetsled-get-flows
     arguments:
@@ -917,6 +915,13 @@ script:
       defaultValue: "5000"
     outputs:
     - contextPath: Packetsled.Flows
+      description: Flow metadata
+    - contextPath: Packetsled.Flows._id
+      description: The unique id of the flow
+    - contextPath: Packetsled.Flows.src_ip
+      description: The originator of the flow
+    - contextPath: Packetsled.Flows.dest_ip
+      description: The respondant of the flow
     description: Query packetsled sensor metadata
   - name: packetsled-get-files
     arguments:
@@ -1188,12 +1193,19 @@ script:
     arguments:
     - name: uid
       required: true
-      description: The uid to retrieve logs for
+      description: The uid to retrieve logs for. Use the _id attribute from a flow for this parameter value.
     - name: envid
       description: The environment id of the probe to search
     - name: probe
       description: The probe number of the probe to search
     outputs:
-    - contextPath: packetsled.events
+    - contextPath: Packetsled.Events
+      description: Retrieve all logs for a single flow
+    - contextPath: Packetsled.Events._id
+      description: The unique id of the Event
+    - contextPath: Packetsled.Events.src_ip
+      description: The originator of the Events
+    - contextPath: Packetsled.Events.dest_ip
+      description: The respondant of the Events
     description: Get all of the events for a given uid
   isfetch: true
