@@ -165,12 +165,14 @@ script:
         }
         if(!isObjectEmpty(queryResults)) {
             retVal.md = flatQueryResult;
+            retVal.context.NetWitness.Results = queryResults;
             var hr = tableToMarkdown(command, retVal.md);
             return {
                 Type: entryTypes.note,
                 Contents: data,
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
+                EntryContext: retVal.context,
                 ReadableContentsFormat: formats.markdown
             };
         } else {
