@@ -108,16 +108,16 @@ tasks:
       - "4"
     scriptarguments:
       entity: ${Packetsled.Incidents.entity}
-      envid: ${Packetsled.Incidents. envid}
+      envid: ${Packetsled.Incidents.envid}
       family: ""
       geo: ""
       limit: ""
       log: ""
       port: ""
-      probe: ${Packetsled.Incidents. probe}
+      probe: ${Packetsled.Incidents.probe}
       protocol: ""
-      start_time: ${Packetsled.Incidents. start_time}
-      stop_time: ${Packetsled.Incidents. stop_time}
+      start_time: ${Packetsled.Incidents.start_time}
+      stop_time: ${Packetsled.Incidents.stop_time}
     view: |-
       {
         "position": {
@@ -140,14 +140,14 @@ tasks:
       brand: Packetsled
     scriptarguments:
       entity: ${Packetsled.Incidents.entity}
-      envid: ${Packetsled.Incidents. envid}
+      envid: ${Packetsled.Incidents.envid}
       limitbytes: ""
       limitpkts: ""
       port: ""
-      probe: ${Packetsled.Incidents. probe}
+      probe: ${Packetsled.Incidents.probe}
       protocol: ""
-      start_time: ${Packetsled.Incidents. start_time}
-      stop_time: ${Packetsled.Incidents. stop_time}
+      start_time: ${Packetsled.Incidents.start_time}
+      stop_time: ${Packetsled.Incidents.stop_time}
     view: |-
       {
         "position": {
