@@ -1,101 +1,37 @@
-id: 2c56c928-58f2-4d5d-84f2-048146e8fbc9
-version: 37
+id: 29252c27-c473-4b11-81ba-904e05a7f5c4
+version: 2
 name: Packetsled
+description: Enumerate the packetsled entities with incidents, and query each entity
+  for artifacts (metadata, extracted files, and packet capture) that are then delivered
+  into the demisto War Room.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b3bc6824-db01-4a5b-886e-04fc2d8263cf
+    taskid: 5cef66e1-b4eb-4c40-8a13-91acbe99e21d
     type: start
     task:
-      id: b3bc6824-db01-4a5b-886e-04fc2d8263cf
+      id: 5cef66e1-b4eb-4c40-8a13-91acbe99e21d
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "1"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": -148
+          "x": 450,
+          "y": 50
         }
       }
-  "8":
-    id: "8"
-    taskid: 143874b2-445d-4503-8378-604d8d067c6a
+  "1":
+    id: "1"
+    taskid: e443082b-2aea-4018-8f40-84ef352a2585
     type: regular
     task:
-      id: 143874b2-445d-4503-8378-604d8d067c6a
-      version: -1
-      name: packetsled-get-files
-      description: Query packetsled extracted files
-      script: Packetsled|||packetsled-get-files
-      type: regular
-      iscommand: true
-      brand: Packetsled
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      envid: ""
-      family: ""
-      geo: ""
-      host: ""
-      incident: ${packetsled.psincidents}
-      limit: ""
-      log: ""
-      port: ""
-      probe: ""
-      protocol: ""
-      start_time: ""
-      stop_time: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 403
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 0daf0c6e-be7a-4410-83de-14480e60675e
-    type: regular
-    task:
-      id: 0daf0c6e-be7a-4410-83de-14480e60675e
-      version: -1
-      name: packetsled-get-pcaps
-      description: Query packetsled for full packet
-      script: Packetsled|||packetsled-get-pcaps
-      type: regular
-      iscommand: true
-      brand: Packetsled
-    scriptarguments:
-      envid: ""
-      host: ""
-      incident: ${packetsled.psincidents}
-      limitbytes: ""
-      limitpkts: ""
-      port: ""
-      probe: ""
-      protocol: ""
-      start_time: ""
-      stop_time: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 583
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 651c5caa-7be7-4a2d-89eb-7aa8e3ab9236
-    type: regular
-    task:
-      id: 651c5caa-7be7-4a2d-89eb-7aa8e3ab9236
+      id: e443082b-2aea-4018-8f40-84ef352a2585
       version: -1
       name: packetsled-get-incidents
       description: Query for incidents by time range and severity
@@ -105,7 +41,7 @@ tasks:
       brand: Packetsled
     nexttasks:
       '#none#':
-      - "12"
+      - "2"
     scriptarguments:
       envid: ""
       probe: ""
@@ -115,16 +51,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 33
+          "x": 450,
+          "y": 230
         }
       }
-  "12":
-    id: "12"
-    taskid: 63eb8d6b-f462-4db5-8e8f-876dcfa90030
+  "2":
+    id: "2"
+    taskid: 4ddbd5d5-073f-452e-89c9-74217bbd144a
     type: regular
     task:
-      id: 63eb8d6b-f462-4db5-8e8f-876dcfa90030
+      id: 4ddbd5d5-073f-452e-89c9-74217bbd144a
       version: -1
       name: packetsled-get-flows
       description: Query packetsled sensor metadata
@@ -134,25 +70,89 @@ tasks:
       brand: Packetsled
     nexttasks:
       '#none#':
-      - "8"
+      - "3"
     scriptarguments:
-      envid: ""
+      entity: ${Packetsled.Incidents.entity}
+      envid: ${Packetsled.Incidents.envid}
       family: ""
       geo: ""
-      host: ""
-      incident: ${packetsled.psincidents}
       limit: ""
       log: ""
       port: ""
-      probe: ""
+      probe: ${Packetsled.Incidents.probe}
       protocol: ""
-      start_time: ""
-      stop_time: ""
+      start_time: ${Packetsled.Incidents.start_time}
+      stop_time: ${Packetsled.Incidents.stop_time}
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 214
+          "x": 450,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    taskid: e0874409-6332-4590-8814-fda00ab9b0ca
+    type: regular
+    task:
+      id: e0874409-6332-4590-8814-fda00ab9b0ca
+      version: -1
+      name: packetsled-get-files
+      description: Query packetsled extracted files
+      script: Packetsled|||packetsled-get-files
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entity: ${Packetsled.Incidents.entity}
+      envid: ${Packetsled.Incidents. envid}
+      family: ""
+      geo: ""
+      limit: ""
+      log: ""
+      port: ""
+      probe: ${Packetsled.Incidents. probe}
+      protocol: ""
+      start_time: ${Packetsled.Incidents. start_time}
+      stop_time: ${Packetsled.Incidents. stop_time}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d55d0d07-ae25-4ef7-8c90-ea317bc21998
+    type: regular
+    task:
+      id: d55d0d07-ae25-4ef7-8c90-ea317bc21998
+      version: -1
+      name: packetsled-get-pcaps
+      description: Query packetsled for full packet
+      script: Packetsled|||packetsled-get-pcaps
+      type: regular
+      iscommand: true
+      brand: Packetsled
+    scriptarguments:
+      entity: ${Packetsled.Incidents.entity}
+      envid: ${Packetsled.Incidents. envid}
+      limitbytes: ""
+      limitpkts: ""
+      port: ""
+      probe: ${Packetsled.Incidents. probe}
+      protocol: ""
+      start_time: ${Packetsled.Incidents. start_time}
+      stop_time: ${Packetsled.Incidents. stop_time}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
         }
       }
 view: |-
@@ -160,10 +160,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 826,
+        "height": 815,
         "width": 380,
-        "x": 50,
-        "y": -148
+        "x": 450,
+        "y": 50
       }
     }
   }
