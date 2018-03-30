@@ -127,7 +127,7 @@ script:
 
     def humanReadable(title, arr):
         if len(arr) > 0:
-          return tableToMarkdown('Incidents', arr, arr[0].keys())
+          return tableToMarkdown(title, arr, arr[0].keys())
         return arr
 
     def number_to_ip(n):
