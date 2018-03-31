@@ -1,15 +1,15 @@
 id: CarbonBlackResponseTest
-version: -16
-name: CarbonBlackResponseTest
+version: -1
+name: Carbon Black Response Test
 description: Tests carbon black enterprise response selected use cases and commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ae8bdd91-bd6c-454d-870a-4ec68a381d43
+    taskid: c2ed899a-e668-4614-806b-269335660c46
     type: start
     task:
-      id: ae8bdd91-bd6c-454d-870a-4ec68a381d43
+      id: c2ed899a-e668-4614-806b-269335660c46
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 8427b21b-1872-49da-81a0-9abdbbbd6fef
+    taskid: b635af3d-12d2-4bfd-8ba3-b164c5b4a1ee
     type: title
     task:
-      id: 8427b21b-1872-49da-81a0-9abdbbbd6fef
+      id: b635af3d-12d2-4bfd-8ba3-b164c5b4a1ee
       version: -1
       name: Isolate Endpoint
       type: title
@@ -49,10 +49,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 272d40ea-a19c-4d13-88b3-ac3b34b350c7
+    taskid: 8ff6c576-ee36-48c0-84e3-fb15e16275b4
     type: title
     task:
-      id: 272d40ea-a19c-4d13-88b3-ac3b34b350c7
+      id: 8ff6c576-ee36-48c0-84e3-fb15e16275b4
       version: -1
       name: Search for a binary and fetch it
       type: title
@@ -71,10 +71,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 4d97526a-f466-408e-8443-f46c56c3ecfe
+    taskid: 1f446be8-7568-4eeb-8247-4b931e4dc7f1
     type: title
     task:
-      id: 4d97526a-f466-408e-8443-f46c56c3ecfe
+      id: 1f446be8-7568-4eeb-8247-4b931e4dc7f1
       version: -1
       name: Add hash to blacklist
       type: title
@@ -93,16 +93,16 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: ef92b862-7b44-47d9-865a-8120cd391307
+    taskid: efc18969-067d-4a4e-89d4-a36f5b916609
     type: regular
     task:
-      id: ef92b862-7b44-47d9-865a-8120cd391307
+      id: efc18969-067d-4a4e-89d4-a36f5b916609
       version: -1
       name: List available sensors
       script: carbonblack-v2|||cb-list-sensors
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "16"
@@ -116,16 +116,16 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 29f519f4-bcda-4748-8f5f-bbf31d491d7f
+    taskid: efce296a-cb0e-4edc-8c17-df24f96a2d8c
     type: regular
     task:
-      id: 29f519f4-bcda-4748-8f5f-bbf31d491d7f
+      id: efce296a-cb0e-4edc-8c17-df24f96a2d8c
       version: -1
       name: Isolate (quarantine) sensor (endpoint)
       script: carbonblack-v2|||cb-quarantine-device
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "17"
@@ -142,10 +142,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: a6cceb95-021f-41de-8c88-bd36c7fbe40f
+    taskid: ce5a5bed-c26a-45f3-8cf7-e18e34dc9f1b
     type: regular
     task:
-      id: a6cceb95-021f-41de-8c88-bd36c7fbe40f
+      id: ce5a5bed-c26a-45f3-8cf7-e18e34dc9f1b
       version: -1
       name: Check that sensor was blocked
       scriptName: VerifyContext
@@ -171,10 +171,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 541b1000-39ce-472a-89a4-4ae785f03a9f
+    taskid: e9b2fe38-1b00-4b18-8b6c-3b48df28d70b
     type: regular
     task:
-      id: 541b1000-39ce-472a-89a4-4ae785f03a9f
+      id: e9b2fe38-1b00-4b18-8b6c-3b48df28d70b
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -198,16 +198,16 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 1709a222-fc40-4df5-806d-7f0d7b948a30
+    taskid: a978ce49-b7e4-4daa-8717-f45fd6afb6bb
     type: regular
     task:
-      id: 1709a222-fc40-4df5-806d-7f0d7b948a30
+      id: a978ce49-b7e4-4daa-8717-f45fd6afb6bb
       version: -1
       name: Get binaries by query
       script: carbonblack-v2|||cb-binary
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "32"
@@ -227,16 +227,16 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 18670ac5-337f-492b-8ba4-4d84156bda3e
+    taskid: 3e80a30e-fa88-4b8b-8588-224feab33026
     type: regular
     task:
-      id: 18670ac5-337f-492b-8ba4-4d84156bda3e
+      id: 3e80a30e-fa88-4b8b-8588-224feab33026
       version: -1
       name: cb-block-hash
       script: carbonblack-v2|||cb-block-hash
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     scriptarguments:
       banCount: {}
       lastBanHost: {}
@@ -255,16 +255,16 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: 4a774966-25b2-4f89-8742-e581e08a67c3
+    taskid: f4138d4a-164f-4820-8b86-ad699ded1fc5
     type: regular
     task:
-      id: 4a774966-25b2-4f89-8742-e581e08a67c3
+      id: f4138d4a-164f-4820-8b86-ad699ded1fc5
       version: -1
       name: cb-unblock-hash
       script: carbonblack-v2|||cb-unblock-hash
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "20"
@@ -283,10 +283,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: 0a6646a0-761c-4a5b-8394-b5e848ee24e5
+    taskid: 2a6a5f72-c56d-4108-877e-d86dd8a2f826
     type: regular
     task:
-      id: 0a6646a0-761c-4a5b-8394-b5e848ee24e5
+      id: 2a6a5f72-c56d-4108-877e-d86dd8a2f826
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -310,10 +310,10 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: ccebe895-3bf5-4067-8a3e-4eb9709d67b7
+    taskid: 019c54ac-9c00-46ff-89af-8d7cff684a20
     type: regular
     task:
-      id: ccebe895-3bf5-4067-8a3e-4eb9709d67b7
+      id: 019c54ac-9c00-46ff-89af-8d7cff684a20
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -337,16 +337,16 @@ tasks:
       }
   "26":
     id: "26"
-    taskid: 61e0e25b-6961-433a-86c6-d0b56b250410
+    taskid: 1547fb54-e468-429d-8462-b1a90d23cc72
     type: regular
     task:
-      id: 61e0e25b-6961-433a-86c6-d0b56b250410
+      id: 1547fb54-e468-429d-8462-b1a90d23cc72
       version: -1
       name: Get hash blacklist and choose an item to unblock and block
       script: carbonblack-v2|||cb-get-hash-blacklist
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "21"
@@ -363,10 +363,10 @@ tasks:
       }
   "27":
     id: "27"
-    taskid: af153539-ef19-4e29-8265-ba1881489026
+    taskid: 15edbe13-b22d-4597-80c0-8aafe0285c1a
     type: title
     task:
-      id: af153539-ef19-4e29-8265-ba1881489026
+      id: 15edbe13-b22d-4597-80c0-8aafe0285c1a
       version: -1
       name: Update alert's status
       type: title
@@ -385,10 +385,10 @@ tasks:
       }
   "28":
     id: "28"
-    taskid: 9b0984f2-a8c5-4793-8157-7b4334b8c2ea
+    taskid: 65e05ecc-aacb-42cf-8e45-c041806f4f46
     type: regular
     task:
-      id: 9b0984f2-a8c5-4793-8157-7b4334b8c2ea
+      id: 65e05ecc-aacb-42cf-8e45-c041806f4f46
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -412,16 +412,16 @@ tasks:
       }
   "29":
     id: "29"
-    taskid: c4798363-c7c3-47cd-8758-cfeab889e84c
+    taskid: 6aa926c8-cccf-4e61-89be-c98043611594
     type: regular
     task:
-      id: c4798363-c7c3-47cd-8758-cfeab889e84c
+      id: 6aa926c8-cccf-4e61-89be-c98043611594
       version: -1
       name: List alerts
       script: carbonblack-v2|||cb-alert
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "30"
@@ -441,16 +441,16 @@ tasks:
       }
   "30":
     id: "30"
-    taskid: d955c5b3-f0d2-4dd3-827d-222da136ec3c
+    taskid: ae04d024-c32c-4b4a-8f17-b27b5442d580
     type: regular
     task:
-      id: d955c5b3-f0d2-4dd3-827d-222da136ec3c
+      id: ae04d024-c32c-4b4a-8f17-b27b5442d580
       version: -1
       name: Update alert status to Unresolved
       script: carbonblack-v2|||cb-alert-update
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "31"
@@ -470,16 +470,16 @@ tasks:
       }
   "31":
     id: "31"
-    taskid: 410228c9-410d-48a1-82fe-b4e41b25f682
+    taskid: f81295ae-172c-4089-8e9e-ada88be253ee
     type: regular
     task:
-      id: 410228c9-410d-48a1-82fe-b4e41b25f682
+      id: f81295ae-172c-4089-8e9e-ada88be253ee
       version: -1
       name: Update alert status to False Positive
       script: carbonblack-v2|||cb-alert-update
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "12"
@@ -499,16 +499,16 @@ tasks:
       }
   "32":
     id: "32"
-    taskid: cbcc3182-fc61-46e5-870d-20075bda78c0
+    taskid: 58e1e949-c3cf-4666-85fd-4a12b5b7c203
     type: regular
     task:
-      id: cbcc3182-fc61-46e5-870d-20075bda78c0
+      id: 58e1e949-c3cf-4666-85fd-4a12b5b7c203
       version: -1
       name: Fetch binary
       script: carbonblack-v2|||cb-binary-get
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "14"
@@ -527,16 +527,16 @@ tasks:
       }
   "33":
     id: "33"
-    taskid: 0bff4eb9-ea38-49ef-8c82-2831ba8b55d2
+    taskid: 5d57e8e0-03b1-4ecc-8ca9-1742e5133113
     type: regular
     task:
-      id: 0bff4eb9-ea38-49ef-8c82-2831ba8b55d2
+      id: 5d57e8e0-03b1-4ecc-8ca9-1742e5133113
       version: -1
       name: Unquarantine sensor (endpoint)
       script: carbonblack-v2|||cb-unquarantine-device
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "13"
@@ -553,10 +553,10 @@ tasks:
       }
   "34":
     id: "34"
-    taskid: 3876dd3d-43c4-4ada-8d71-dd680eed9e29
+    taskid: 1b98a23e-7f7e-4341-82f0-96439db2344e
     type: title
     task:
-      id: 3876dd3d-43c4-4ada-8d71-dd680eed9e29
+      id: 1b98a23e-7f7e-4341-82f0-96439db2344e
       version: -1
       name: Get processes info
       type: title
@@ -575,10 +575,10 @@ tasks:
       }
   "35":
     id: "35"
-    taskid: c36f69ad-d99d-441d-84fd-d182f6361cdf
+    taskid: 3821488f-1242-4b74-8f65-87879fe2a2b6
     type: regular
     task:
-      id: c36f69ad-d99d-441d-84fd-d182f6361cdf
+      id: 3821488f-1242-4b74-8f65-87879fe2a2b6
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -602,16 +602,16 @@ tasks:
       }
   "36":
     id: "36"
-    taskid: c99bcca9-4554-4736-826c-d97d92d6b96a
+    taskid: 079adb63-cdfc-4b1f-8a0b-d6ee6c7a478f
     type: regular
     task:
-      id: c99bcca9-4554-4736-826c-d97d92d6b96a
+      id: 079adb63-cdfc-4b1f-8a0b-d6ee6c7a478f
       version: -1
       name: Fetch list of processes
       script: carbonblack-v2|||cb-get-processes
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "38"
@@ -631,16 +631,16 @@ tasks:
       }
   "37":
     id: "37"
-    taskid: 0d925009-e851-4095-8fd6-0e0df82ccb81
+    taskid: 9b89b1c6-497b-4e00-862d-b61962e8ecbe
     type: regular
     task:
-      id: 0d925009-e851-4095-8fd6-0e0df82ccb81
+      id: 9b89b1c6-497b-4e00-862d-b61962e8ecbe
       version: -1
       name: Get event info on a process
       script: carbonblack-v2|||cb-process-events
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "27"
@@ -659,16 +659,16 @@ tasks:
       }
   "38":
     id: "38"
-    taskid: 1fffcb14-dea1-4748-8d1d-3654ad45eadc
+    taskid: fea4215c-b085-4439-84cd-29966d4b2317
     type: regular
     task:
-      id: 1fffcb14-dea1-4748-8d1d-3654ad45eadc
+      id: fea4215c-b085-4439-84cd-29966d4b2317
       version: -1
       name: Get process by pid/segid
       script: carbonblack-v2|||cb-get-process
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "37"
@@ -687,10 +687,10 @@ tasks:
       }
   "39":
     id: "39"
-    taskid: 83fa373e-9990-4cbf-8cb5-adc0a78d8ad9
+    taskid: 5e79f131-4712-40b5-8f6c-d7f5301ed119
     type: regular
     task:
-      id: 83fa373e-9990-4cbf-8cb5-adc0a78d8ad9
+      id: 5e79f131-4712-40b5-8f6c-d7f5301ed119
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -714,16 +714,16 @@ tasks:
       }
   "40":
     id: "40"
-    taskid: 6d2fc720-9ccd-48c5-8ed3-fa35eee5ff02
+    taskid: 1a90896f-4f72-4279-812f-4db9d36ad234
     type: regular
     task:
-      id: 6d2fc720-9ccd-48c5-8ed3-fa35eee5ff02
+      id: 1a90896f-4f72-4279-812f-4db9d36ad234
       version: -1
       name: Create a new watchlist
       script: carbonblack-v2|||cb-watchlist-new
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "41"
@@ -742,16 +742,16 @@ tasks:
       }
   "41":
     id: "41"
-    taskid: 447f39a4-3a4c-49fc-880f-9993f25434e0
+    taskid: 70089b46-e730-419d-8325-c32f0d50f4ed
     type: regular
     task:
-      id: 447f39a4-3a4c-49fc-880f-9993f25434e0
+      id: 70089b46-e730-419d-8325-c32f0d50f4ed
       version: -1
       name: Set (update) watchlist name
       script: carbonblack-v2|||cb-watchlist-set
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "43"
@@ -772,16 +772,16 @@ tasks:
       }
   "42":
     id: "42"
-    taskid: cbf449de-9d1f-4850-83de-492d16c7c0b1
+    taskid: f3a5a101-25a6-49dc-8e26-cd1b15fadc6a
     type: regular
     task:
-      id: cbf449de-9d1f-4850-83de-492d16c7c0b1
+      id: f3a5a101-25a6-49dc-8e26-cd1b15fadc6a
       version: -1
       name: Delete the created watchlist
       script: carbonblack-v2|||cb-watchlist-del
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise Response
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "34"
@@ -798,10 +798,10 @@ tasks:
       }
   "43":
     id: "43"
-    taskid: 742ce2ec-5a26-483c-8c55-3ff4a4c81aa2
+    taskid: 4c29470a-5a18-4256-8507-0a32a06b168a
     type: regular
     task:
-      id: 742ce2ec-5a26-483c-8c55-3ff4a4c81aa2
+      id: 4c29470a-5a18-4256-8507-0a32a06b168a
       version: -1
       name: Check that watchlist name was changed
       scriptName: VerifyContext
