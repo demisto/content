@@ -360,6 +360,13 @@
         {
             "integrations": "Remedy AR",
             "playbookID": "Remedy AR Test"
+        },
+        {
+            "integrations": {
+                "name": "carbonblackliveresponse",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ]
 }
