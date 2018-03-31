@@ -578,6 +578,26 @@ script:
         return entries;
     }
 
+    const binaryData = [
+        {to: 'Name', from: 'original_filename'},
+        {to: 'MD5', from: 'md5'},
+        {to: 'Timestamp', from: 'timestamp'},
+        {
+            to: 'Extension',
+            from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1] : "")'
+        },
+        {to: 'Hostname', from: ".=(val.endpoint ? val.endpoint[0] : '')"},
+        {to: 'Path', from: 'observed_filename'},
+        {to: 'LastSeen', from: 'last_seen'},
+        {to: 'ServerAddedTimestamp', from: 'server_added_timestamp'},
+        {to: 'Description', from: 'file_desc'},
+        {to: 'InternalName', from: 'internal_name'},
+        {to: 'ProductName', from: 'product_name'},
+        {to: 'OS', from: 'os_type'},
+        {to: 'DigSig.Result', from: 'digsig_result'},
+        {to: 'DigSig.Publisher', from: 'digsig_publisher'}
+    ];
+
     function getBinariesRequest(query, rows, start, sort, facets) {
         let queryParams = {};
         if (query) {
@@ -632,25 +652,7 @@ script:
         let result = getBinariesRequest(query, args.rows, args.start, args.sort, args.facets);
 
         let title = 'CB Response - Get Binaries';
-        let dataMap = [
-            {to: 'Name', from: 'original_filename'},
-            {to: 'MD5', from: 'md5'},
-            {to: 'Timestamp', from: 'timestamp'},
-            {
-                to: 'Extension',
-                from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1] : "")'
-            },
-            {to: 'Hostname', from: ".=(val.endpoint ? val.endpoint[0] : '')"},
-            {to: 'Path', from: 'observed_filename'},
-            {to: 'LastSeen', from: 'last_seen'},
-            {to: 'ServerAddedTimestamp', from: 'server_added_timestamp'},
-            {to: 'Description', from: 'file_desc'},
-            {to: 'InternalName', from: 'internal_name'},
-            {to: 'ProductName', from: 'product_name'},
-            {to: 'OS', from: 'os_type'},
-            {to: 'DigSig.Result', from: 'digsig_result'},
-            {to: 'DigSig.Publisher', from: 'digsig_publisher'}
-        ];
+        let dataMap = binaryData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
@@ -666,6 +668,58 @@ script:
             HumanReadable: humanReadable,
             EntryContext: context,
         };
+    }
+
+    function getBinarySummaryRequest(md5) {
+        let response = sendRequest('/v1/binary/' + md5 + '/summary', 'GET');
+        try {
+            return JSON.parse(response.Body);
+        } catch (err) {
+            throw `Could not parse response.\nError: ${err}.\nResponse: ${response.Body}`;
+        }
+    }
+
+    function getBinaryRequest(md5) {
+        return sendRequest('/v1/binary/' + md5, 'GET');
+    }
+
+    function getBinary() {
+        let entries = [];
+
+        if (args.summary && args.summary === 'yes') {
+            let result = getBinarySummaryRequest(args.md5);
+            let title = 'CB Response - Binary Summary';
+            let dataMap = binaryData;
+            let headers = dataMap.map(cn => cn.to);
+            let translatedData = mapObjFunction(dataMap)(result);
+            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+            let context = {
+                'File(val.MD5==obj.MD5)': createContext(translatedData)
+            };
+            entries.push({
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsType: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: humanReadable,
+                EntryContext: context,
+            });
+        }
+
+        let res = getBinaryRequest(args.md5);
+        let fileEntryId = saveFile(res.Bytes);
+        let fileEntries = decompressFile(fileEntryId);
+
+        fileEntries.forEach(fileEntry => {
+            entries.push({
+                Type: fileEntry.Type,
+                FileID: fileEntry.FileID,
+                File: fileEntry.File,
+                Contents: fileEntry.Contents
+            });
+        });
+
+        return entries;
     }
 
     function getSensorsRequest(sensorId, hostname, ip, groupId) {
@@ -747,38 +801,6 @@ script:
             ReadableContentsFormat: formats.markdown,
             HumanReadable: humanReadable,
             EntryContext: context,
-        });
-
-        return entries;
-    }
-
-    function getBinarySummaryRequest(md5) {
-        let res = sendRequest('/v1/binary/' + md5 + '/summary', 'GET');
-        return res.Body;
-    }
-
-    function getBinaryRequest(md5) {
-        return sendRequest('/v1/binary/' + md5, 'GET');
-    }
-
-    function getBinary() {
-        let entries = [];
-
-        if (args.summary && args.summary === 'yes') {
-            entries.push(getBinarySummaryRequest(args.md5));
-        }
-
-        let res = getBinaryRequest(args.md5);
-        let fileEntryId = saveFile(res.Bytes);
-        let fileEntries = decompressFile(fileEntryId);
-
-        fileEntries.forEach(fileEntry => {
-            entries.push({
-                Type: fileEntry.Type,
-                FileID: fileEntry.FileID,
-                File: fileEntry.File,
-                Contents: fileEntry.Contents
-            });
         });
 
         return entries;
@@ -1297,6 +1319,35 @@ script:
       - "yes"
       - "no"
       description: Whether to include summary
+    outputs:
+    - contextPath: File.DigSig.Publisher
+      description: The publisher of the Digital Signature
+    - contextPath: File.InternalName
+      description: The Internal Name
+    - contextPath: File.ServerAddedTimestamp
+      description: The server added timestamp
+    - contextPath: File.Name
+      description: Binary Name
+    - contextPath: File.Extension
+      description: Binary Extension
+    - contextPath: File.Timestamp
+      description: Binary Timestamp
+    - contextPath: File.Hostname
+      description: Binary Hostname
+    - contextPath: File.Description
+      description: The description
+    - contextPath: File.DigSig.Result
+      description: Cb's decision after checking this binary's Digital Signature
+    - contextPath: File.LastSeen
+      description: Last time binary was seen
+    - contextPath: File.Path
+      description: Binary Path
+    - contextPath: File.ProductName
+      description: The Product Name
+    - contextPath: File.OS
+      description: The OS
+    - contextPath: File.MD5
+      description: Binary MD5
     description: Retrieve a binary from CarbonBlack based on hash. Returned file will
       be places in the war room.
   - name: cb-block-hash
