@@ -47,7 +47,7 @@ script:
                     res = 'I think you deserve it, try to run /demisto\n\n---\n\nBy the way, there are much more eggs around, try me later.. there is a magic world for that: "dbot I love you"';
                     break;
                 case 'dbot i love you':
-                    res = 'oh, that\'s nice... but try another time';
+                    res = 'oh, that\'s nice... but try in another time... [meanwhile...](https://www.youtube.com/watch?v=dQw4w9WgXcQ)';
                     break;
                 default:
                     res = 'no no...';
