@@ -44,7 +44,7 @@ script:
                 case '2 weeks':
                 case '2-weeks':
                 case '2weeks':
-                    res = 'I think you deserved it, try to run /demisto\n\n---\n\nBy the way, there are much more eggs around, try me later.. there is a magic world for that: "dbot I love you"';
+                    res = 'I think you deserve it, try to run /demisto\n\n---\n\nBy the way, there are much more eggs around, try me later.. there is a magic world for that: "dbot I love you"';
                     break;
                 case 'dbot i love you':
                     res = 'oh, that\'s nice... but try another time';
