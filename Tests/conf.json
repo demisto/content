@@ -300,6 +300,10 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
         }
     ],
     "skipped": [
