@@ -208,4 +208,3 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
   type: string
-releaseNotes: "-"

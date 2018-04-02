@@ -94,4 +94,3 @@ args:
   description: Message to send
 scripttarget: 0
 runonce: false
-releaseNotes: "Added Mattermost support"
