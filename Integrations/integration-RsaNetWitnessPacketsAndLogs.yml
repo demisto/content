@@ -85,65 +85,21 @@ script:
         var GROUP = 'group';
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
-                if (element[TYPE] && element[VALUE] && element[GROUP]) {
+                if (element[TYPE] && element[VALUE]) {
                     var index = element[GROUP];
-                    if(queryResults[index]) {
-                        queryResults[index][element[TYPE]] = element[VALUE];
-                    } else {
-                        queryResults[index] = {};
-                        queryResults[index][element[TYPE]] = element[VALUE];
+                    if(!(queryResults[index])){
+                       queryResults[index] = {};
                     }
+                    if(!(queryResults[index][element[TYPE]])) {
+                            queryResults[index][element[TYPE]] = [];
+                    }
+                    queryResults[index][element[TYPE]].push(element[VALUE]);
                 }
             });
         }
     }
 
-    var mapSingleArray = function(fields, arrayResults){
-        if(fields && Array.isArray(fields)) {
-            fields.forEach(function (field) {
-              var element = {};
-              element[field['type']] = field['value'];
-              arrayResults.push(element);
-            });
-        }
-    }
-
-    var BuildArrayMd = function(response){
-        var data = parseResponse(response);
-
-        var queryResults = [];
-        var extractFromData = function(data) {
-            var fields = dq(data, 'results.fields');
-            mapSingleArray(fields, queryResults);
-        };
-
-        if (Array.isArray(data)) {
-            data.forEach(function (element) {
-                extractFromData(element);
-            });
-        } else if ((typeof data) ==='object') {
-            extractFromData(data);
-        }
-
-        var flatQueryResult = [];
-        for(key in queryResults) {
-            flatQueryResult.push(queryResults[key])
-        }
-        if(!isObjectEmpty(queryResults)) {
-            var hr = tableToMarkdown(command, flatQueryResult);
-            return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: hr,
-                ReadableContentsFormat: formats.markdown
-            };
-        } else {
-            return "No results found.";
-        }
-    }
-
-    var buildHrAndContext = function (data, isEvent) {
+    var buildHrAndContext = function (data, mapper, queryResults) {
         //Check if we have values
         var retVal = {md: [], context: {NetWitness:{}}};
         var queryResults = {};
@@ -159,6 +115,7 @@ script:
         } else if ((typeof data) ==='object') {
             extractFromData(data);
         }
+
         var flatQueryResult = [];
         for(key in queryResults) {
             flatQueryResult.push(queryResults[key])
@@ -264,12 +221,12 @@ script:
         }
     };
 
-    var buildMdAndContext = function(resp, isEvent) {
+    var buildMdAndContext = function(resp) {
         var mdAndContext;
         if (resp.StatusCode === 200) {
             try {
                 var res = JSON.parse(resp.Body);
-                return buildHrAndContext(res, isEvent);
+                return buildHrAndContext(res);
             } catch (e) {
                 return resp.Body;
             }
@@ -365,8 +322,6 @@ script:
         var parametersUrl = encodeParams(args);
         var responseType = resType ? ResponseTypes[resType] : 'application/json';
         var fullUrl = urlToUse + path + parametersUrl + '&force-content-type=' + responseType;
-
-        log(fullUrl);
 
         if (params.expiry) {
             fullUrl += '&expiry=' + params.expiry;
@@ -621,20 +576,17 @@ script:
         case 'nw-decoder-parsers-upload':
             var res = decoderImport('/decoder/parsers/upload');
             return res;
-        case  'netwitness-msearch':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case  'netwitness-search':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
-        case  'netwitness-query':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType), true)
         case 'netwitness-packets':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
-        case 'nw-sdk-content':
-            return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'netwitness-msearch':
+        case 'netwitness-search':
+        case 'netwitness-query':
         case 'nw-sdk-language':
         case 'nw-sdk-timeline':
         case 'nw-sdk-values':
-           return BuildArrayMd(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+        case 'nw-sdk-content':
+            return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-info':
         case 'nw-sdk-ls':
         case 'nw-broker-ls':
@@ -903,30 +855,6 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     description: Returns the count of sessions/size/packets in discrete time intervals
-  - name: nw-sdk-language
-    arguments:
-    - name: id1
-      description: <uint64, optional> The starting language id
-    - name: id2
-      description: <uint64, optional> The ending language id
-    - name: time1
-      description: <date-time, optional> The starting time in seconds since 1970 or
-        a time string (YYYY-MMM-DD HH:MM:SS)
-    - name: time2
-      description: <date-time, optional> The ending time in seconds since 1970 or
-        a time string (YYYY-MMM-DD HH:MM:SS)
-    - name: options
-      description: <string, optional> Extra options, currently unused
-    - name: flags
-      description: <string, optional> Optional flags to configure how the results
-        are returned.  Can be a number (bitwise mask) or comma separated values like
-        default, no-count, quick-count or full-count.
-    - name: size
-      required: true
-      description: <uint32, {range:1 to 1677721}> The max number of entries to return
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Retrieves the language definition
   - name: nw-sdk-summary
     arguments:
     - name: flags
@@ -1285,41 +1213,6 @@ script:
     - contextPath: NetWitness.Node.path
       description: Node path
     description: Returns detailed information about the node
-  - name: nw-logs-download
-    arguments:
-    - name: id1
-      description: <uint64, optional> The starting log number to download
-    - name: id2
-      description: <uint64, optional> The ending log number to download
-    - name: time1
-      description: <date-time, optional> The starting log date to download, can be
-        posix time (seconds since 1970) or DD-MM-YY HH:MM:SS
-    - name: time2
-      description: <date-time, optional> The ending log date to download, can be posix
-        time (seconds since 1970) or DD-MM-YY HH:MM:SS
-    - name: op
-      required: true
-      description: <string, {enum-one:start|next|cancel}> The operation to perform
-        (start, next, cancel)
-    - name: logTypes
-      description: <string, optional> The type(s) of log messages to retrieve (debug,info,audit,warning,failure)
-    - name: match
-      description: <string, optional> Case insensitive string to match in each log
-        message
-    - name: regex
-      description: <string, optional> Regular expression to match in each log message
-    - name: timeFormat
-      description: <string, optional, {enum-one:posix|simple}> The time format used
-        in each log message, default is posix time (seconds since 1970)
-    - name: batchSize
-      description: <uint32, optional, {range:2000 to 10000}> The number of logs to
-        retrieve per batch, default is 2000
-    - name: responseType
-      description: <string, optional {enum-one:text|html|json|xml|octet-stream}> Default
-        set to json. Defines the type of the response message.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Downloads log entries
   - name: nw-sys-ls
     arguments:
     - name: depth
@@ -1401,14 +1294,6 @@ script:
     - contextPath: NetWitness.Node.path
       description: Node path
     description: Returns detailed information about the node
-  - name: nw-users-unlock
-    arguments:
-    - name: name
-      required: true
-      description: <string> The username or account to unlock
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Unlock a locked out account
   - name: nw-decoder-import
     arguments:
     - name: entryID
@@ -1416,13 +1301,6 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     description: Import new data into the decoder
-  - name: nw-decoder-parsers-upload
-    arguments:
-    - name: entryID
-      description: The entry ID of file from the War Room.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Uploading new parser into the decoder
   - name: nw-concentrator-ls
     arguments:
     - name: depth
