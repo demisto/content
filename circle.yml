@@ -15,39 +15,10 @@ test:
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 30a9335588dbb52e61b9f30c644755f5da4537c5 18.3.3
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 30a9335588dbb52e61b9f30c644755f5da4537c5 18.3.4
 
     # create common server documentation
     - ./Docs/commonServerDocs.sh
 
     # create content bundle
     - python content_creator.py $CIRCLE_ARTIFACTS
-  override:
-    - chmod +x ./Tests/scripts/*
-
-    # ensure file name
-    - ./Tests/scripts/validate_files_structure.sh
-
-    # get installer from server
-    - ./Tests/scripts/server_get_artifact.sh
-
-    # run demisto instance
-    - ./Tests/scripts/create_instance.sh
-
-    # download conf file
-    - ./Tests/scripts/download_demisto_conf.sh
-
-    # run installer
-    - ./Tests/scripts/run_installer_on_instance.sh
-
-    # wait until server is ready
-    - ./Tests/scripts/wait_until_server_ready.sh
-
-    # pull all non default docker images
-    #- ./Tests/scripts/pull_docker_images.sh
-
-    # run tests
-    - ./Tests/scripts/run_tests.sh
-
-    # terminate instance
-    - ./Tests/scripts/destroy_instances.sh
