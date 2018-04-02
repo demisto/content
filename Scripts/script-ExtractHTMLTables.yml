@@ -2,7 +2,6 @@ commonfields:
   id: ExtractHTMLTables
   version: -1
 name: ExtractHTMLTables
-releaseNotes: "Extract HTML table data into the context"
 script: |-
   from bs4 import BeautifulSoup
 
@@ -52,7 +51,7 @@ script: |-
       demisto.results('Did not find tables in HTML.')
 type: python
 tags:
-- Utilities
+- Utility
 comment: |-
   Find tables inside HTML and extract the contents into objects using the following logic:
   - If table has a single column, just create an array of strings from the values
@@ -73,3 +72,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/bs4
+releaseNotes: "-"
