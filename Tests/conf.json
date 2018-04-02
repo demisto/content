@@ -50,6 +50,10 @@
                 {
                     "name": "carbonblackprotection",
                     "byoi": false
+                },
+                {
+                    "name": "carbonblack",
+                    "byoi": false
                 }
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
