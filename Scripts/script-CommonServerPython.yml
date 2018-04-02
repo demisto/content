@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+releaseNotes: Modified tableToMarkdown to handle empty responses
 script: |-
   # Common functions script
   # =======================
