@@ -1,6 +1,7 @@
 id: 'QRadar - Get offense correlations '
 version: -1
-name: 'QRadar - Get offense correlations '
+name: QRadar - Get offense correlations
+fromversion: 3.5.0
 description: |-
   Run on a QRadar offense to get more information
 
@@ -14,18 +15,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: efaa120a-35d6-437c-8ac7-0ece067386c6
+    taskid: 608f0ec1-4001-4e68-8ead-e160f7802b35
     type: start
     task:
-      id: efaa120a-35d6-437c-8ac7-0ece067386c6
+      id: 608f0ec1-4001-4e68-8ead-e160f7802b35
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -35,24 +37,42 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 12b7da80-4881-428c-8d37-f513dadd6480
+    taskid: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
     type: condition
     task:
-      id: 12b7da80-4881-428c-8d37-f513dadd6480
+      id: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
       version: -1
       name: Is this a QRadar offense?
-      scriptName: Exists
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "2"
       "yes":
       - "5"
-    scriptarguments:
-      value: ${incident.labels(val.Brand=="QRadar")}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
@@ -62,16 +82,17 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 79031f54-97bb-4a27-84d1-665f762c3428
+    taskid: edc69a27-88bc-4edb-8fca-8a111d2b6785
     type: title
     task:
-      id: 79031f54-97bb-4a27-84d1-665f762c3428
+      id: edc69a27-88bc-4edb-8fca-8a111d2b6785
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -81,28 +102,33 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 777beed6-580b-4cc6-82c6-1a23309d8313
+    taskid: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
     type: regular
     task:
-      id: 777beed6-580b-4cc6-82c6-1a23309d8313
+      id: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
       version: -1
       name: Get Offense correlations
+      description: Query QRadar for the offense correlations using the QRadar API
       scriptName: QRadarGetOffenseCorrelations
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      fields: ""
-      headers: ""
-      interval: ""
-      offenseID: ""
-      range: ""
-      startTime: ""
-      timeout: ""
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      range: {}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -112,30 +138,39 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 09959beb-a116-4202-8bd1-8388eac3d3b3
+    taskid: 324f9756-1ddb-4d58-8d45-26f892ba6759
     type: regular
     task:
-      id: 09959beb-a116-4202-8bd1-8388eac3d3b3
+      id: 324f9756-1ddb-4d58-8d45-26f892ba6759
       version: -1
       name: Get correlations' logs
+      description: ""
       scriptName: QRadarGetCorrelationLogs
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      additionalQueryFields: ""
-      fields: ""
-      headers: ""
-      interval: ""
-      offenseID: ""
-      qid: ""
-      range: 0-${inputs.MaxLogsCount}
-      startTime: ""
-      timeout: ""
+      additionalQueryFields: {}
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      qid:
+        complex:
+          root: QRadar
+          accessor: Correlation.QID
+      range:
+        simple: 0-${inputs.MaxLogsCount}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -145,19 +180,20 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 449b51e7-fde6-49a9-8cc3-6231bcc7c358
+    taskid: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
     type: title
     task:
-      id: 449b51e7-fde6-49a9-8cc3-6231bcc7c358
+      id: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
       version: -1
       name: Get offense information
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -167,27 +203,35 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 2e19a41a-872f-40ca-840d-af419b4ea32d
+    taskid: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
     type: condition
     task:
-      id: 2e19a41a-872f-40ca-840d-af419b4ea32d
+      id: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
       version: -1
       name: Should query for the correlations' logs?
-      scriptName: AreValuesEqual
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "2"
       "yes":
       - "4"
-    scriptarguments:
-      left: ${inputs.=(val.GetCorrelationLogs.toLowerCase())}
-      right: "true"
-    results:
-    - AreValuesEqual
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetCorrelationLogs
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -209,8 +253,73 @@ view: |-
   }
 inputs:
 - key: GetCorrelationLogs
-  value: "False"
+  value:
+    simple: "False"
+  required: false
   description: If "True" will get all of the offense's correlations logs
 - key: MaxLogsCount
-  value: "20"
+  value:
+    simple: "20"
+  required: false
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
+- key: ID
+  value:
+    complex:
+      root: incident
+      accessor: labels.id
+  required: true
+  description: 'The QRadar offense ID '
+- key: StartTime
+  value:
+    complex:
+      root: incident
+      accessor: labels.start_time
+  required: true
+  description: The QRadar offense start time
+outputs:
+- contextPath: QRadar.Correlation.StartTime
+  description: The correlation start time
+- contextPath: QRadar.Correlation.CategoryID
+  description: 'The correlation category id '
+- contextPath: QRadar.Correlation.QID
+  description: The correlation QID identifier
+- contextPath: QRadar.Correlation.CREName
+  description: The correlation name
+- contextPath: QRadar.Correlation.CREDescription
+  description: The correlation description
+- contextPath: QRadar.Correlation
+  description: The QRadar offense correlations
+- contextPath: QRadar.Correlation.SourceIP
+  description: The correlation source IP
+- contextPath: QRadar
+  description: QRadar context output
+- contextPath: QRadar.Correlation.DestinationIP
+  description: The correlation destination IP
+- contextPath: QRadar.Correlation.Category
+  description: The correlation high level category
+- contextPath: QRadar.Correlation.Username
+  description: The correlation username
+- contextPath: QRadar.Log
+  description: The QRadar offense correlation logs
+- contextPath: QRadar.Log.QID
+  description: The log's correlation ID
+- contextPath: QRadar.Log.SourceIP
+  description: The log's source IP
+- contextPath: QRadar.Log.DestinationPort
+  description: The log's destination port
+- contextPath: QRadar.Log.SourcePort
+  description: The log's source port
+- contextPath: QRadar.Log.DestinationIP
+  description: The log's destination IP
+- contextPath: QRadar.Log.Category
+  description: The log's category
+- contextPath: QRadar.Log.IdentityIP
+  description: The log's identity IP
+- contextPath: QRadar.Log.Username
+  description: The log's username
+- contextPath: QRadar.Log.StartTime
+  description: The log's start time
+- contextPath: QRadar.Log.Magnitude
+  description: The log's magnitude
+- contextPath: QRadar.Log.ProtocolName
+  description: The log's protocol name

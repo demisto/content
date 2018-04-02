@@ -67,4 +67,3 @@ outputs:
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP in the investigation
 scripttarget: 0
-releaseNotes: 'Fix to Handle includeSuspicious properly'
