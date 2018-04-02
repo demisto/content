@@ -9,7 +9,8 @@ script: |-
   // Place here all common functions you'd like to share between server scripts.
   /**
    * Returns true if string starts with search string
-   * @param {String} search - string to check
+   * @param {String} search - The string to be searched
+   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0. 
    * @return {Boolean} true if string starts with <search> string
    */
   if (!String.prototype.startsWith) {
@@ -20,7 +21,8 @@ script: |-
 
   /**
    * Returns true if string ends with search string
-   * @param {String} search - string to check
+   * @param {String} search - The string to be searched
+   * @param {Integer} this_len - Optional. If provided it is used as the length of search string. If omitted, the default value is the length of the string.
    * @return {Boolean} true if string ends with <search> string
    */
   if (!String.prototype.endsWith) {
@@ -33,10 +35,10 @@ script: |-
   }
 
   /**
-   * Removes the last slash `/` from the url. This function should be used to prevent double slash situations like https://192.12.12.3:8443//api/bla
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
    *
    * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
-   * @return {String} url without last slash `/` - e.g https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
    */
   function fixUrl(url) {
       if (url.endsWith('/')) {
@@ -46,10 +48,10 @@ script: |-
       return url;
   }
   /**
-   * Removes the last slash `/` from the url. This function should be used to prevent double slash situations like https://192.12.12.3:8443//api/bla
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
    *
    * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
-   * @return {String} url without last slash `/` - e.g https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
    */
   var removeLastSlash = fixUrl;
 
