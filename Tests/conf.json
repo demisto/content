@@ -291,7 +291,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -307,6 +307,13 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": {
+                "name": "carbonblackliveresponse",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ],
     "skipped": [
@@ -360,13 +367,6 @@
         {
             "integrations": "Remedy AR",
             "playbookID": "Remedy AR Test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblackliveresponse",
-                "byoi": true
-            },
-            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ]
 }
