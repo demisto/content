@@ -9,31 +9,6 @@ script: |-
   // Place here all common functions you'd like to share between server scripts.
 
   /**
-   * Returns true if string starts with search string
-   * @param {String} search - string to check
-   * @return {Boolean} true if string starts with <search> string
-   */
-  if (!String.prototype.startsWith) {
-      String.prototype.startsWith = function(search, pos) {
-          return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-      };
-  }
-
-  /**
-   * Returns true if string ends with search string
-   * @param {String} search - string to check
-   * @return {Boolean} true if string ends with <search> string
-   */
-  if (!String.prototype.endsWith) {
-      String.prototype.endsWith = function(search, this_len) {
-          if (this_len === undefined || this_len > this.length) {
-              this_len = this.length;
-          }
-          return this.substring(this_len - search.length, this_len) === search;
-      };
-  }
-
-  /**
    * Formats a string in place
    * @return {String} The formatted string
    */
