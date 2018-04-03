@@ -410,4 +410,4 @@ script:
       description: The command to run
     - name: headers
       description: Table's headers to be shown by order
-    description: Execute ePO command
+    description: Execute ePO command. Run 'epo-help' command to see a list available commands
