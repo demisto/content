@@ -28,7 +28,7 @@
 				"name": "My Tasks",
 				"dataType": "tasks",
 				"widgetType": "list",
-				"query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
+				"query": "assignee:{me} and (state:Waiting or state:inprogress or state:error) and -state:skipped",
 				"sort": [
 					{
 						"field": "dueDate",
