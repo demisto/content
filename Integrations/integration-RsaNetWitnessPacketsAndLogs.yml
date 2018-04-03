@@ -42,12 +42,20 @@ configuration:
   type: 0
   required: false
 script:
-  script: |2-
+  script: |-
+    var RESPONSE_TYPES = {
+        'json': 'application/json',
+        'html': 'text/html',
+        'text': 'text/plain',
+        'xml': 'text/xml',
+        'octet-stream': 'application/octet-stream'
+    };
 
     var LAST_HOURS = 'lastHours';
-    var LAST_MINUTES = 'lastMinutes'
+    var LAST_MINUTES = 'lastMinutes';
     var QUERY = 'query';
-    var fixUrl = function(base) {
+
+    function fixUrl(base) {
         var url = base.trim();
         if (base.indexOf('http://') !== 0 && base.indexOf('https://') !== 0) {
             url = "http://" + url;
@@ -56,9 +64,11 @@ script:
         url = url.replace(/\/$/, '');
 
         return url;
-    };
+    }
 
-    var getUrl = function(currentUrl){
+    var url = fixUrl(params.url) + ':' + params.port;
+
+    function getUrl (currentUrl){
         var urlToReturn;
         if(args && args.concentratorAddress){
             urlToReturn = fixUrl(args.concentratorAddress);
@@ -73,13 +83,13 @@ script:
         }
 
         return urlToReturn;
-    };
+    }
 
-    var isObjectEmpty = function (obj) {
+    function isObjectEmpty (obj) {
         return Object.keys(obj).length === 0;
-    };
+    }
 
-    var mapQueryResults = function (fields, queryResults) {
+    function mapQueryResults (fields, queryResults) {
         var TYPE  = 'type';
         var VALUE = 'value';
         var GROUP = 'group';
@@ -88,10 +98,10 @@ script:
                 if (element[TYPE] && element[VALUE]) {
                     var index = element[GROUP];
                     if(!(queryResults[index])){
-                       queryResults[index] = {};
+                        queryResults[index] = {};
                     }
                     if(!(queryResults[index][element[TYPE]])) {
-                            queryResults[index][element[TYPE]] = [];
+                        queryResults[index][element[TYPE]] = [];
                     }
                     queryResults[index][element[TYPE]].push(element[VALUE]);
                 }
@@ -99,8 +109,9 @@ script:
         }
     }
 
-    var buildHrAndContext = function (data, mapper, queryResults) {
+    function buildQueryMdAndContext (response) {
         //Check if we have values
+        var data = parseResponse(response);
         var retVal = {md: [], context: {NetWitness:{}}};
         var queryResults = {};
         var extractFromData = function(data) {
@@ -137,50 +148,49 @@ script:
         } else {
             return "No results found.";
         }
-    };
+    }
 
-    var BuildNodeMdAndContext = function(response){
+    function buildNodeMdAndContext (response){
         var data = parseResponse(response);
         var nodes = data.nodes ? data.nodes : [data.node];
 
         return {
-             Type: entryTypes.note,
-                Contents: nodes,
-                ContentsFormat: formats.json,
-                HumanReadable: tableToMarkdown(command, nodes),
-                EntryContext: {
-                    'NetWitness.Node(val.handle==obj.handle)' : nodes
-                },
-                ReadableContentsFormat: formats.markdown
+            Type: entryTypes.note,
+            Contents: nodes,
+            ContentsFormat: formats.json,
+            HumanReadable: tableToMarkdown(command, nodes),
+            EntryContext: {
+                'NetWitness.Node(val.handle==obj.handle)' : nodes
+            },
+            ReadableContentsFormat: formats.markdown
         }
     }
 
-
-    var BuildStringMdAndContext = function(response){
+    function buildStringMdAndContext (response){
         var data = parseResponse(response);
         var string = data.string;
         var md =  '### Results for ' + command + ':\n' + string;
-         return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: md
+        return {
+            Type: entryTypes.note,
+            Contents: data,
+            ContentsFormat: formats.json,
+            HumanReadable: md
         }
     }
 
-    var BuildParamsMd = function(response){
+    function buildParamsMd (response){
         var data = parseResponse(response);
         var params = data.params;
 
-         return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: tableToMarkdown(command, params)
+        return {
+            Type: entryTypes.note,
+            Contents: data,
+            ContentsFormat: formats.json,
+            HumanReadable: tableToMarkdown(command, params)
         }
     }
 
-    var parseResponse = function(resp, isXml) {
+    function parseResponse (resp, isXml) {
         if (resp.StatusCode === 200) {
             try {
                 var body = resp.Body;
@@ -188,9 +198,6 @@ script:
                     body = x2j(body);
                 }
                 var res = JSON.parse(body);
-                if (Array.isArray(res)) {
-                    return { results: res };
-                }
 
                 return res;
             } catch (e) {
@@ -203,9 +210,9 @@ script:
             }
             throw err;
         }
-    };
+    }
 
-    var parseDownloadResponse = function(resp) {
+    function parseDownloadResponse (resp) {
         if (resp.StatusCode === 200) {
             try {
                 var currentTime = new Date();
@@ -221,29 +228,9 @@ script:
             }
             throw err;
         }
-    };
+    }
 
-    var buildMdAndContext = function(resp) {
-        var mdAndContext;
-        if (resp.StatusCode === 200) {
-            try {
-                var res = JSON.parse(resp.Body);
-                return buildHrAndContext(res);
-            } catch (e) {
-                return resp.Body;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    };
-
-    var url = fixUrl(params.url) + ':' + params.port;
-
-    var getHelp = function(node) {
+    function getHelp(node) {
         var fullUrl = url + node + '?msg=help&op=messages' + '&force-content-type=application/json';
         res = http(
             fullUrl,
@@ -257,9 +244,9 @@ script:
         );
 
         return parseResponse(res);
-    };
+    }
 
-    var handleTimeFilter = function (args) {
+    function handleTimeFilter(args) {
         if(LAST_HOURS in args || LAST_MINUTES in args) {
             var now = new Date();
             var dt = new Date();
@@ -287,7 +274,7 @@ script:
         }
     }
 
-    var encodeParams = function(p) {
+    function encodeParams(p) {
         var q = '';
         if (p) {
             var argsToIgnore = {
@@ -309,20 +296,12 @@ script:
             }
         }
         return q;
-    };
+    }
 
-    var ResponseTypes = {
-        'json': 'application/json',
-        'html': 'text/html',
-        'text': 'text/plain',
-        'xml': 'text/xml',
-        'octet-stream': 'application/octet-stream'
-    };
-
-    var doReq = function(method, path, args, resType, body) {
+    function doReq(method, path, args, resType, body) {
         var urlToUse = getUrl(url);
         var parametersUrl = encodeParams(args);
-        var responseType = resType ? ResponseTypes[resType] : 'application/json';
+        var responseType = resType ? RESPONSE_TYPES[resType] : 'application/json';
         var fullUrl = urlToUse + path + parametersUrl + '&force-content-type=' + responseType;
 
         if (params.expiry) {
@@ -347,9 +326,9 @@ script:
         }
 
         return res;
-    };
+    }
 
-    var decoderImport = function(path) {
+    function decoderImport(path) {
         var fileParam = args.entryID ? args.entryID : args.fileID;
         var fullUrl = getUrl(url) + path;
         var res = httpMultipart(
@@ -370,28 +349,28 @@ script:
         var data = parseResponse(res, true);
 
         return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: tableToMarkdown(command, data.import.data)
+            Type: entryTypes.note,
+            Contents: data,
+            ContentsFormat: formats.json,
+            HumanReadable: tableToMarkdown(command, data.import.data)
         };
 
-    };
+    }
 
-    var parseBlob = function(response){
+    function parseBlob(response){
         var data = parseResponse(response);
         var blob = data.blob;
 
         var md =  '### Results for ' + command + ':\n' + blob;
-         return {
-                Type: entryTypes.note,
-                Contents: blob,
-                ContentsFormat: formats.json,
-                HumanReadable: md
-        }
+        return {
+            Type: entryTypes.note,
+            Contents: blob,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
     }
 
-    var concentratorAgg = function() {
+    function concentratorAgg() {
         var fullUrl = getUrl(url) + '/concentrator/agg';
         var body = {
             op: args.op,
@@ -406,7 +385,7 @@ script:
                 Accept: 'application/json',
                 Username: params.credentials.identifier,
                 Password: params.credentials.password,
-                Body: JSON.stringify(args)
+                Body: JSON.stringify(body)
             },
             !params.secure,
             params.proxy
@@ -572,11 +551,7 @@ script:
             doReq('GET', '/sdk?msg=help&op=messages');
             return true;
         case 'nw-decoder-import':
-            var res = decoderImport('/decoder/import');
-            return res;
-        case 'nw-decoder-parsers-upload':
-            var res = decoderImport('/decoder/parsers/upload');
-            return res;
+            return decoderImport('/decoder/import');
         case 'netwitness-packets':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
         case 'netwitness-msearch':
@@ -585,7 +560,7 @@ script:
         case 'nw-sdk-language':
         case 'nw-sdk-timeline':
         case 'nw-sdk-values':
-            return buildMdAndContext(doReq('GET', commandToPath[command], args, args.responseType))
+            return buildQueryMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-content':
             return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-info':
@@ -606,16 +581,16 @@ script:
         case 'nw-sys-ls':
         case 'nw-users-info':
         case 'nw-users-ls':
-            return BuildNodeMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildNodeMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-decoderParsers-ipdevice':
         case 'nw-sdk-validate':
         case 'nw-users-unlock':
         case 'nw-sdk-summary':
-            return BuildStringMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildStringMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-session':
         case 'nw-logs-pull':
         case 'nw-decoder-logStats':
-            return BuildParamsMd(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildParamsMd(doReq('GET', commandToPath[command], args, args.responseType));
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
