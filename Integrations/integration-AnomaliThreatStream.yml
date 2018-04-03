@@ -265,8 +265,12 @@ script:
         return entries;
     }
 
+    function isObjectEmpty (obj) {
+        return Object.keys(obj).length === 0;
+    }
+
     var parseResult = function(command, result) {
-        if(!(result['objects'] instanceof Array)){
+        if(result && !(isObjectEmpty(result)) && !(result['objects'] instanceof Array)){
             result['objects'] = [result['objects']];
         }
 
