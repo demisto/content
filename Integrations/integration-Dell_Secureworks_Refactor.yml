@@ -613,15 +613,28 @@ script:
     - name: reason
       auto: PREDEFINED
       predefined:
-      - Authorized/Expected
-      - Duplicate Previously Escalated
-      - False Positive
-      - Inconclusive
-      - Mitigated By Security Controls
-      - Not Relevant
-      - True Positive
-      - Work Completed
+      - AUTHORIZED_EXPECTED
+      - DUPLICATE_PREVIOUSLY_ESCALATED
+      - FALSE_POSITIVE
+      - INCONCLUSIVE
+      - MITIGATED_BY_SECURITY_CONTROLS
+      - NOT_RELEVANT
+      - TRUE_POSITIVE
+      - WORK_COMPLETED
       description: The reason code to use when closing the ticket
+    - name: Explanation
+      auto: PREDEFINED
+      predefined:
+      - LEAVE_UNTIL_OPEN_DATE
+      - AUTO_RESOLVE_FUTURE_ACTIVITY
+      - ALERT_ON_FUTURE_OCCURENCES
+      - INCIDENT_MISIDENTIFIED
+      - EVENTS_ARE_FALSE_POSITIVE
+      - ALERT_ON_FUTURE_OCCURENCES
+      - APPLICATION_NOT_IN_ENVIRONMENT_DO_NOT_ALERT
+      - APPLICATION_PRESENT_BUT_NOT_VULNERABLE_DO_NOT_ALERT
+      - ALERT_ON_FUTURE_OCCURENCES
+      description: The explanation for closing the ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ID
       description: Ticket ID in secure works
@@ -644,8 +657,6 @@ script:
       - INCIDENT
       - CHANGE
       description: The ticket type to filter
-    - name: categoryClass
-      description: Category Class
     description: Retrieve a count of tickets that have been updated and not yet acknowledged
   - name: secure-works-get-ticket
     arguments:
@@ -769,8 +780,6 @@ script:
       - "true"
       - "false"
       description: Whether or not to include ticket worklogs, default is true
-    - name: categoryClass
-      description: Category class
     outputs:
     - contextPath: SecureWorks.Ticket.ChangeApproval
       description: Ticket change approval
@@ -856,8 +865,6 @@ script:
     - name: limit
       description: If provided, limit response to that number of tickets. If not provided,
         a maximum of 10 tickets are returned
-    - name: categoryClass
-      description: Category class
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
   isfetch: true
