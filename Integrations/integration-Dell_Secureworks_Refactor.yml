@@ -89,7 +89,7 @@ script:
             {
                 Method: method ? method : 'GET',
                 Headers: {
-                    'Authorization': [ 'APIKEY ' + params.credentials.identifier + ':' + params.credentials.password ],
+                    'Authorization': [ 'APIKEY ' + params.credentials.identifier + ':' + params.credentials.password],
                     'Content-Type': ['application/json'],
                 },
                 Body: JSON.stringify(body)
@@ -428,7 +428,69 @@ script:
     }
 
     function fetchIncidents(){
+        var countCommand = commands['secure-works-get-ticket-count'];
 
+        if(params.ticketType){
+            args = {ticketType: params.ticketType}
+        }
+
+        var countObject = sendRequest(countCommand);
+
+        if(!countObject){
+            return [];
+        }
+
+        var count = countObject.ticketCount;
+
+        var idsCommand = commands['secure-works-get-tickets-ids'];
+        var currentIds;
+        args = {limit: count};
+        var ticketIdsObject = sendRequest(idsCommand);
+        if(ticketIdsObject){
+            currentIds = ticketIdsObject.ticketIds;
+        }
+
+        if(!currentIds){
+            return [];
+        }
+
+        var incidents = [];
+        var lastRun = getLastRun();
+        if(!lastRun || !lastRun.ids){
+            lastRun = { ids: [] };
+        }
+
+        var idsToFetch = currentIds.filter(function(id){
+            return lastRun.ids.indexOf(id) === -1;
+        });
+
+        if (idsToFetch && idsToFetch.length > 0) {
+            var tickets = [];
+            var getTicketCommand = commands['secure-works-get-ticket'];
+            idsToFetch.forEach(function(id){
+               var ticket =  sendRequest(getTicketCommand);
+               if(ticket.status != "CLOSED" && ticket.categoryClass != "HEALTH"){
+                    tickets.push(ticket);
+               }
+            });
+            // convert tickets to demisto incidents
+            if (tickets.length > 0) {
+                tickets.forEach(function(ticket){
+                    var incident = {
+                        name: 'Secureworks - Ticket - ' + ticket.id,
+                        rawJSON: JSON.stringify(ticket)
+                    };
+
+                    incidents.push(incident);
+                });
+            }
+
+            setLastRun({
+                ids: currentIds
+            });
+        }
+
+        return JSON.stringify(incidents);
     }
 
     var entry = {};
