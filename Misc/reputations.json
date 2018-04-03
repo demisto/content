@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Support escaped ips in format 1[.]2[.]3[.]4",
   "reputations": [
     {
       "id": "fileRep",
