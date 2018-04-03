@@ -4,6 +4,7 @@ name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
 starttaskid: "0"
+releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -261,7 +262,7 @@ tasks:
     task:
       id: 551589fe-87f8-4b47-8865-304283d81363
       version: -1
-      name: Take Screenshits
+      name: Take Screenshots
       description: ""
       type: title
       iscommand: false
