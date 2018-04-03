@@ -117,10 +117,12 @@ script:
         }
 
         var flatQueryResult = [];
-        for(key in queryResults) {
-            flatQueryResult.push(queryResults[key])
-        }
+
         if(!isObjectEmpty(queryResults)) {
+            for(key in queryResults) {
+                flatQueryResult.push(queryResults[key])
+            }
+
             retVal.md = flatQueryResult;
             retVal.context.NetWitness.Results = queryResults;
             var hr = tableToMarkdown(command, retVal.md);
@@ -366,7 +368,6 @@ script:
         );
 
         var data = parseResponse(res, true);
-        var blob = data.blob;
 
         return {
                 Type: entryTypes.note,
