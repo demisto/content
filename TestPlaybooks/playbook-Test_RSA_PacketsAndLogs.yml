@@ -1,0 +1,280 @@
+id: rsa_packets_and_logs_test
+version: -1
+name: RSA Packets And Logs test
+description: Test RSA P&L integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 599a334c-a562-4a51-8ad4-1680780e1bd2
+    type: start
+    task:
+      id: 599a334c-a562-4a51-8ad4-1680780e1bd2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -13,
+          "y": -413
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 94fa9e06-d9ec-4452-864d-33cb74004d2f
+    type: regular
+    task:
+      id: 94fa9e06-d9ec-4452-864d-33cb74004d2f
+      version: -1
+      name: netwitness-msearch
+      description: Search for pattern matches in many sessions or packets
+      script: RSA NetWitness Packets and Logs|||netwitness-msearch
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      concentratorAddress: {}
+      flags:
+        simple: regex,sp,si,sm
+      limit:
+        simple: "1"
+      packets: {}
+      search:
+        simple: ^(.*)
+      sessions: {}
+      where: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -11,
+          "y": 373
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1fcc808a-df32-4494-8179-ba42892b01aa
+    type: regular
+    task:
+      id: 1fcc808a-df32-4494-8179-ba42892b01aa
+      version: -1
+      name: netwitness-query
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      concentratorAddress: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours: {}
+      lastMinutes: {}
+      query:
+        simple: select * where alias.host contains 'skimresources'
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -11,
+          "y": 575
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 9535e1ff-09e0-4cf8-87ab-f0be0a27a29a
+    type: regular
+    task:
+      id: 9535e1ff-09e0-4cf8-87ab-f0be0a27a29a
+      version: -1
+      name: nw-sdk-values
+      description: Performs a value count query and returns the matching values for
+        a report
+      script: RSA NetWitness Packets and Logs|||nw-sdk-values
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      aggregateFieldName: {}
+      aggregateFunction: {}
+      concentratorAddress: {}
+      fieldName:
+        simple: ip.src
+      flags:
+        simple: sessions,sort-total,order-ascending
+      id1: {}
+      id2: {}
+      max: {}
+      min: {}
+      size:
+        simple: "20"
+      threshold:
+        simple: "100000"
+      using:
+        simple: Concentrator
+      where:
+        simple: time="2016-Jan-30 13:56:30"-"2018-May-21 12:20:49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -8,
+          "y": 780
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 5ceedf7e-9839-48c7-8e52-1bb2411b92f1
+    type: regular
+    task:
+      id: 5ceedf7e-9839-48c7-8e52-1bb2411b92f1
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: NetWitness.Results
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -11,
+          "y": 980
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 01e4219e-ceb9-4d52-88aa-96fedef87d5d
+    type: regular
+    task:
+      id: 01e4219e-ceb9-4d52-88aa-96fedef87d5d
+      version: -1
+      name: nw-sdk-info
+      description: Returns detailed information about the node
+      script: RSA NetWitness Packets and Logs|||nw-sdk-info
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      concentratorAddress: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -11,
+          "y": -35
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d7ba50aa-9b31-4ef2-8603-78c270376c3a
+    type: regular
+    task:
+      id: d7ba50aa-9b31-4ef2-8603-78c270376c3a
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Node
+      path:
+        simple: NetWitness
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -11,
+          "y": 165
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 773247ab-9b6c-4aba-8401-09e0b4f6f82d
+    type: regular
+    task:
+      id: 773247ab-9b6c-4aba-8401-09e0b4f6f82d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -13,
+          "y": -238
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1488,
+        "width": 385,
+        "x": -13,
+        "y": -413
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
+fromversion: "3.5.0"
