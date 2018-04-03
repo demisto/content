@@ -2,7 +2,6 @@ commonfields:
   id: PCAPMiner
   version: -1
 name: PCAPMiner
-releaseNotes: set Utility tag
 script: |
   #!/usr/bin/env python2.7
   # -*- coding: utf8 -*-
