@@ -323,7 +323,7 @@ script:
             var result = callEpo(args.command,pArgs);
 
             var md = tableToMarkdown(
-                '#### ePO command *'+args.command+'* results:',
+                'ePO command *'+args.command+'* results:',
                 Object.keys(result || {}).map(function (k) { return result[k]}), // object keys
                 args.headers && args.headers.split(',')
             );
