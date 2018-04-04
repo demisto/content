@@ -1049,12 +1049,16 @@ script:
       required: true
       description: File ID
     outputs:
-    - contextPath: Filename
+    - contextPath: CbResponse.Files.Filename
       description: The Filename
-    - contextPath: Size
+    - contextPath: CbResponse.Files.Size
       description: The File size
-    - contextPath: CbFileID
-      description: ID of the file within the Cb Session Storage - use with cb-file-get.
+    - contextPath: CbResponse.Files.CbFileID
+      description: ID of the file within the Cb Session Storage - use with cb-file-get
+    - contextPath: CbResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbResponse.Files.Delete
+      description: Whether the file was deleted or not
     description: Delete a given file in the session
   - name: cb-file-get
     arguments:
@@ -1074,13 +1078,37 @@ script:
     - name: file-id
       description: File ID
     outputs:
-    - contextPath: Filename
+    - contextPath: CbResponse.Files.Filename
       description: The Filename
-    - contextPath: Size
+    - contextPath: CbResponse.Files.Size
       description: The File size
-    - contextPath: CbFileID
+    - contextPath: CbResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage - use with cb-file-get.
+    - contextPath: CbResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbResponse.Files.Delete
+      description: Whether the file was deleted or not
     description: Get file info for a given file in a session
+  - name: cb-file-upload
+    arguments:
+    - name: session
+      required: true
+      description: Session ID to upload the file through
+    - name: file-id
+      required: true
+      description: File entry id of an attachment to upload to a sensor
+    outputs:
+    - contextPath: CbResponse.Files.Filename
+      description: The Filename
+    - contextPath: CbResponse.Files.Size
+      description: The File size
+    - contextPath: CbResponse.Files.CbFileID
+      description: ID of the file within the Cb Session Storage - use with cb-file-get.
+    - contextPath: CbResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbResponse.Files.Delete
+      description: Whether the file was deleted or not
+    description: Uploads an attachment to the requested sensor by session
   - name: cb-keepalive
     arguments:
     - name: session
@@ -1102,12 +1130,16 @@ script:
       default: true
       description: Session ID
     outputs:
-    - contextPath: Filename
+    - contextPath: CbResponse.Files.Filename
       description: The Filename
-    - contextPath: Size
+    - contextPath: CbResponse.Files.Size
       description: The File size
-    - contextPath: CbFileID
+    - contextPath: CbResponse.Files.CbFileID
       description: ID of the file within the Cb Session Storage - use with cb-file-get.
+    - contextPath: CbResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbResponse.Files.Delete
+      description: Whether the file was deleted or not
     description: List files in a given session
   - name: cb-list-sessions
     arguments:
@@ -1245,13 +1277,4 @@ script:
       description: Time to wait in seconds for process to complete termination
       defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
-  - name: cb-file-upload
-    arguments:
-    - name: session
-      required: true
-      description: Session ID to upload the file through
-    - name: file-id
-      required: true
-      description: File entry id of an attachment to upload to a sensor
-    description: Uploads an attachment to the requested sensor by session
   runonce: false
