@@ -12,7 +12,6 @@ tasks:
       id: 599a334c-a562-4a51-8ad4-1680780e1bd2
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -113,7 +112,7 @@ tasks:
       brand: RSA NetWitness Packets and Logs
     nexttasks:
       '#none#':
-      - "8"
+      - "12"
     scriptarguments:
       aggregateFieldName: {}
       aggregateFunction: {}
@@ -130,6 +129,8 @@ tasks:
         simple: "20"
       threshold:
         simple: "100000"
+      using:
+        simple: Concentrator
       where:
         simple: time="2016-Jan-30 13:56:30"-"2018-May-21 12:20:49"
     separatecontext: false
@@ -142,10 +143,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 5ceedf7e-9839-48c7-8e52-1bb2411b92f1
+    taskid: e3c38334-ab97-4e80-8c5b-67e80bdf8c9e
     type: regular
     task:
-      id: 5ceedf7e-9839-48c7-8e52-1bb2411b92f1
+      id: e3c38334-ab97-4e80-8c5b-67e80bdf8c9e
       version: -1
       name: Verify Context
       description: |-
@@ -160,15 +161,16 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue: {}
-      fields: {}
+      fields:
+        simple: Events,SearchHits,Values,Timeline
       path:
-        simple: NetWitness.Results
+        simple: NetWitness
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -11,
-          "y": 980
+          "y": 1155
         }
       }
   "9":
@@ -260,12 +262,46 @@ tasks:
           "y": -238
         }
       }
+  "12":
+    id: "12"
+    taskid: fcba05b0-71a4-4827-8120-acf93bf15761
+    type: regular
+    task:
+      id: fcba05b0-71a4-4827-8120-acf93bf15761
+      version: -1
+      name: nw-sdk-timeline
+      description: Returns the count of sessions/size/packets in discrete time intervals
+      script: RSA NetWitness Packets and Logs|||nw-sdk-timeline
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      bookendHours: {}
+      concentratorAddress: {}
+      flags: {}
+      size:
+        simple: "10"
+      time1: {}
+      time2: {}
+      timezone: {}
+      where: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -13,
+          "y": 965
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1488,
+        "height": 1663,
         "width": 385,
         "x": -13,
         "y": -413
