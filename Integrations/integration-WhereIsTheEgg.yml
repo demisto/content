@@ -32,7 +32,7 @@ script:
                     res = 'That\'s a markdown touchdown! A follow-up language question. Another one of DBot\'s many languages (some would say the most important one) begins with an \'h\', I think. Any guesses?';
                     break;
                 case 'html':
-                    res = 'You\'re on fire! Sorry my memory\'s not so good today. Perhaps I need 16GB (or SSD?) to be faster, what with things changing so quickly around here...   \nNow for a tricky one. Find the answer to this riddle:\nDemisto content updates are constantly shipped\nPlaybooks, widgets, integrations, scripts,\nWill you be a dear and tell me please,\nThe frequency of this content release?';
+                    res = 'You\'re on fire! Sorry my memory\'s not so good today. Perhaps I need 16GB (or SSD?) to be faster, what with things changing so quickly around here...   \nNow for a tricky one. Find the answer to this riddle:  \nDemisto content updates are constantly shipped\nPlaybooks, widgets, integrations, scripts,\nWill you be a dear and tell me please,\nThe frequency of this content release?';
                     break;
                 case 'twice a month':
                 case 'every fortnight':
