@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1a3d18e6-6c3e-4f7b-8933-f8e929e6a37c
+    taskid: a7dba15e-3ae2-4215-8944-7e8f3d8004e1
     type: start
     task:
-      id: 1a3d18e6-6c3e-4f7b-8933-f8e929e6a37c
+      id: a7dba15e-3ae2-4215-8944-7e8f3d8004e1
       version: -1
       description: ""
       name: ""
@@ -23,16 +23,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 606281da-a6f6-43d9-83e3-8f56f2313d02
+    taskid: a3ce0f7c-bcd0-497d-8b79-5a524b8416ca
     type: regular
     task:
-      id: 606281da-a6f6-43d9-83e3-8f56f2313d02
+      id: a3ce0f7c-bcd0-497d-8b79-5a524b8416ca
       version: -1
       description: ""
       name: Delete Context
@@ -46,6 +46,8 @@ tasks:
       - "6"
       - "13"
       - "4"
+      - "15"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,16 +56,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: c86c5d14-3783-418b-814b-4a5271768cfb
+    taskid: db2fb4dd-8220-4fd0-8787-585465815897
     type: regular
     task:
-      id: c86c5d14-3783-418b-814b-4a5271768cfb
+      id: db2fb4dd-8220-4fd0-8787-585465815897
       version: -1
       description: ""
       name: Get searchable mailboxes
@@ -84,10 +86,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 33e1a432-f453-466e-8ac7-a2c956ee68d8
+    taskid: d3f59864-0b8f-4fc9-8d2e-36fc7c27aee0
     type: regular
     task:
-      id: 33e1a432-f453-466e-8ac7-a2c956ee68d8
+      id: d3f59864-0b8f-4fc9-8d2e-36fc7c27aee0
       version: -1
       description: ""
       name: Verify Mailboxes context key
@@ -111,10 +113,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 095a271e-6768-406a-8230-09a11d36a9e9
+    taskid: 744f2aff-0e90-4227-84c1-13ae64a4f1e5
     type: regular
     task:
-      id: 095a271e-6768-406a-8230-09a11d36a9e9
+      id: 744f2aff-0e90-4227-84c1-13ae64a4f1e5
       version: -1
       description: ""
       name: Search mailboxes
@@ -139,10 +141,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: b6d4f244-a741-413b-871a-a5864a555722
+    taskid: 52b55155-7b88-4329-8bce-aadc24aff5f0
     type: regular
     task:
-      id: b6d4f244-a741-413b-871a-a5864a555722
+      id: 52b55155-7b88-4329-8bce-aadc24aff5f0
       version: -1
       description: ""
       name: Verify Items context key
@@ -170,10 +172,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 11bfb829-bf97-42de-88ed-ce993c4a8296
+    taskid: 25a6919e-5106-4024-8837-2f97d93b449a
     type: regular
     task:
-      id: 11bfb829-bf97-42de-88ed-ce993c4a8296
+      id: 25a6919e-5106-4024-8837-2f97d93b449a
       version: -1
       description: ""
       name: Get contacts
@@ -199,10 +201,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 14cff168-51f8-4d99-82d6-2dcb4e87b55e
+    taskid: 6e186da2-3a1a-4e08-81a0-e06f7f34a401
     type: regular
     task:
-      id: 14cff168-51f8-4d99-82d6-2dcb4e87b55e
+      id: 6e186da2-3a1a-4e08-81a0-e06f7f34a401
       version: -1
       description: ""
       name: Verify Contacts context key
@@ -226,10 +228,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 0e5e77a3-be4a-496f-806a-4f105bd2c12d
+    taskid: 817fbc68-c466-4073-8708-c7e505c782a2
     type: regular
     task:
-      id: 0e5e77a3-be4a-496f-806a-4f105bd2c12d
+      id: 817fbc68-c466-4073-8708-c7e505c782a2
       version: -1
       description: ""
       name: Get item attachment
@@ -255,10 +257,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 3c3d9a8d-e8c1-4fc3-8800-ee67ebda5863
+    taskid: ef5e845e-5b39-47c0-823f-9c618ceb9048
     type: regular
     task:
-      id: 3c3d9a8d-e8c1-4fc3-8800-ee67ebda5863
+      id: ef5e845e-5b39-47c0-823f-9c618ceb9048
       version: -1
       description: ""
       name: Verify Items context
@@ -282,10 +284,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 4d3d92e3-4506-4c6b-8558-5efe203f30a5
+    taskid: cd09ad8e-7075-473a-875c-dff12db7f8d3
     type: regular
     task:
-      id: 4d3d92e3-4506-4c6b-8558-5efe203f30a5
+      id: cd09ad8e-7075-473a-875c-dff12db7f8d3
       version: -1
       description: ""
       name: Get file attachment
@@ -298,7 +300,7 @@ tasks:
       - "11"
     scriptarguments:
       attachment-ids:
-        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=,AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=
+        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=
       item-id:
         simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAA=
       target-mailbox: {}
@@ -306,16 +308,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 720
         }
       }
   "11":
     id: "11"
-    taskid: 0f33ed47-5d87-4260-8713-2791acf1e83a
+    taskid: be9301a9-cae2-491a-8825-7025950b219f
     type: regular
     task:
-      id: 0f33ed47-5d87-4260-8713-2791acf1e83a
+      id: be9301a9-cae2-491a-8825-7025950b219f
       version: -1
       description: ""
       name: Verify EWS file attachment
@@ -336,16 +338,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 895
         }
       }
   "12":
     id: "12"
-    taskid: 6e2e77e0-ac4e-46cb-82ec-370bbd812a0a
+    taskid: 84773ced-dadf-47ce-8427-f00e1050b4cf
     type: regular
     task:
-      id: 6e2e77e0-ac4e-46cb-82ec-370bbd812a0a
+      id: 84773ced-dadf-47ce-8427-f00e1050b4cf
       version: -1
       description: ""
       name: Verify file context
@@ -363,16 +365,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 1070
         }
       }
   "13":
     id: "13"
-    taskid: 633dca6c-72d4-4108-856b-3c982ff3bcdc
+    taskid: 12579a4f-2924-4e93-805e-cb9dc54fb471
     type: regular
     task:
-      id: 633dca6c-72d4-4108-856b-3c982ff3bcdc
+      id: 12579a4f-2924-4e93-805e-cb9dc54fb471
       version: -1
       description: ""
       name: Get out of office status
@@ -396,10 +398,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 401a68c7-9bd4-4286-8971-e750bff100c0
+    taskid: 437889e1-48eb-4a23-8cc7-5f6e6b863522
     type: regular
     task:
-      id: 401a68c7-9bd4-4286-8971-e750bff100c0
+      id: 437889e1-48eb-4a23-8cc7-5f6e6b863522
       version: -1
       description: ""
       name: Verify out of office context key
@@ -421,13 +423,171 @@ tasks:
           "y": 545
         }
       }
+  "15":
+    id: "15"
+    taskid: 78e81be8-812f-42e1-89f9-c8df92084434
+    type: regular
+    task:
+      id: 78e81be8-812f-42e1-89f9-c8df92084434
+      version: -1
+      description: ""
+      name: Find folders
+      script: EWS v2|||ews-find-folders
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 27bad126-6323-44f2-8633-f472b7259ae6
+    type: regular
+    task:
+      id: 27bad126-6323-44f2-8633-f472b7259ae6
+      version: -1
+      description: ""
+      name: Verify folders context key
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Folders
+      path:
+        simple: EWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 28342353-39d3-4ac6-8534-24365bb13cdd
+    type: regular
+    task:
+      id: 28342353-39d3-4ac6-8534-24365bb13cdd
+      version: -1
+      description: ""
+      name: Get items
+      script: EWS v2|||ews-get-items
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      item-ids:
+        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5SxAAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 86bd116d-111b-470f-8cad-a3d473031949
+    type: condition
+    task:
+      id: 86bd116d-111b-470f-8cad-a3d473031949
+      version: -1
+      description: ""
+      name: Filter item id
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.inList
+          left:
+            value:
+              simple: EWS.Items.itemId
+            iscontext: true
+          right:
+            value:
+              simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5SxAAA=
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 2be90127-1d13-458a-8645-edfcdedeeac6
+    type: regular
+    task:
+      id: 2be90127-1d13-458a-8645-edfcdedeeac6
+      version: -1
+      description: ""
+      name: Did not find item in content
+      scriptName: Exception
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 720
+        }
+      }
+  "20":
+    id: "20"
+    taskid: d5f56aba-f8a4-4d5f-8f1d-03f5cfa34297
+    type: title
+    task:
+      id: d5f56aba-f8a4-4d5f-8f1d-03f5cfa34297
+      version: -1
+      description: ""
+      name: Found
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 735
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1115,
-        "width": 1670,
+        "width": 2745,
         "x": 50,
         "y": 50
       }
