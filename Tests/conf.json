@@ -24,11 +24,6 @@
             "timeout": 300
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
-        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
@@ -353,6 +348,11 @@
             },
             "playbookID": "CB-Response-Test",
             "nightly": true
+        },
+        {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
         }
     ]
 }
