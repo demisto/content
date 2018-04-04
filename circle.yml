@@ -15,7 +15,7 @@ test:
     - ./Tests/yamlvalidator
 
     # build content descriptor
-    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 30a9335588dbb52e61b9f30c644755f5da4537c5 18.3.3
+    - ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 00147fc001414670732cb2de5298f8e2188f10cc 18.4.1
 
     # create common server documentation
     - ./Docs/commonServerDocs.sh
