@@ -149,7 +149,7 @@ script:
         error = soup.find('div','errorMessageText')
         if error: # Error occured
             error_message = ' '.join(error.text.split())# Removes whitespaces from string
-            raise Exception(error_message)
+            return error_message
 
     def unblock_request(selected_group_member, selected_sender_groups):
         cmd_url = 'reputation/sender-group/deleteSender.do'
@@ -213,7 +213,9 @@ script:
 
     def block_email(email):
         selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
-        block_request(email, selected_sender_groups)
+        error_message = block_request(email, selected_sender_groups)
+        if error_message:
+            return error_message
         context = {
             'Address': email,
             'Blocked': True
@@ -273,7 +275,9 @@ script:
 
     def block_domain(domain):
         selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
-        block_request(domain, selected_sender_groups)
+        error_message = block_request(domain, selected_sender_groups)
+        if error_message:
+            return error_message
         context = {
             'Name': domain,
             'Blocked': True
@@ -332,7 +336,9 @@ script:
 
     def block_ip(ip):
         selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
-        block_request(ip, selected_sender_groups)
+        error_message = block_request(ip, selected_sender_groups)
+        if error_message:
+            return error_message
         context = {
             'Address': ip,
             'Blocked': True
@@ -417,12 +423,6 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
-
-
-
-
-
-
   type: python
   commands:
   - name: smg-block-email
