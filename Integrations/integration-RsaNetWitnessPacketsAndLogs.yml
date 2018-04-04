@@ -26,7 +26,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Secure (over HTTPS)
+- display: Secure (Over HTTPS)
   name: secure
   defaultvalue: "false"
   type: 8
@@ -68,7 +68,7 @@ script:
 
     var url = fixUrl(params.url) + ':' + params.port;
 
-    function getUrl (currentUrl){
+    function getUrl(currentUrl){
         var urlToReturn;
         if(args && args.concentratorAddress){
             urlToReturn = fixUrl(args.concentratorAddress);
@@ -89,7 +89,7 @@ script:
         return Object.keys(obj).length === 0;
     }
 
-    function mapQueryResults (fields, queryResults) {
+    function mapQueryResults(fields, queryResults) {
         var TYPE  = 'type';
         var VALUE = 'value';
         var GROUP = 'group';
@@ -98,51 +98,60 @@ script:
                 if (element[TYPE] && element[VALUE]) {
                     var index = element[GROUP];
                     if(!(queryResults[index])){
-                        queryResults[index] = {};
+                        queryResults[index] = {
+                            sessionId: index
+                        };
                     }
                     if(!(queryResults[index][element[TYPE]])) {
-                        queryResults[index][element[TYPE]] = [];
+                        queryResults[index][element[TYPE]] = element[VALUE];
                     }
-                    queryResults[index][element[TYPE]].push(element[VALUE]);
+                    else{
+                        if(!(queryResults[index][element[TYPE]] instanceof Array)){
+                            var currValue = queryResults[index][element[TYPE]];
+                            queryResults[index][element[TYPE]] = [currValue];
+                        }
+                        queryResults[index][element[TYPE]].push(element[VALUE]);
+                    }
                 }
             });
         }
     }
 
-    function buildQueryMdAndContext (response) {
-        //Check if we have values
-        var data = parseResponse(response);
-        var retVal = {md: [], context: {NetWitness:{}}};
+    function extractFromData(data){
         var queryResults = {};
-        var extractFromData = function(data) {
-            var fields = dq(data, 'results.fields');
-            mapQueryResults(fields, queryResults);
-        };
 
         if (Array.isArray(data)) {
             data.forEach(function (element) {
-                extractFromData(element);
+                 var fields = dq(element, 'results.fields');
+                 mapQueryResults(fields, queryResults);
             });
         } else if ((typeof data) ==='object') {
-            extractFromData(data);
+             var fields = dq(data, 'results.fields');
+             mapQueryResults(fields, queryResults);
         }
 
+        return queryResults;
+    }
+
+    function buildQueryMdAndContext(response) {
+        //Check if we have values
+        var data = parseResponse(response);
+
+        var queryResults = extractFromData(data);
         var flatQueryResult = [];
-
         if(!isObjectEmpty(queryResults)) {
-            for(key in queryResults) {
-                flatQueryResult.push(queryResults[key])
+             for(var key in queryResults) {
+                flatQueryResult.push(queryResults[key]);
             }
-
-            retVal.md = flatQueryResult;
-            retVal.context.NetWitness.Results = queryResults;
-            var hr = tableToMarkdown(command, retVal.md);
+            var hr = tableToMarkdown(command, flatQueryResult);
             return {
                 Type: entryTypes.note,
                 Contents: data,
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
-                EntryContext: retVal.context,
+                EntryContext: {
+                    'NetWitness.Events(val.sessionId == obj.sessionId)': flatQueryResult
+                },
                 ReadableContentsFormat: formats.markdown
             };
         } else {
@@ -150,7 +159,86 @@ script:
         }
     }
 
-    function buildNodeMdAndContext (response){
+    function buildMSearchMdAndContext(response) {
+        //Check if we have values
+        var data = parseResponse(response);
+
+        var queryResults = extractFromData(data);
+        var flatQueryResult = [];
+        if(!isObjectEmpty(queryResults)) {
+            for(var key in queryResults) {
+                flatQueryResult.push(queryResults[key]);
+            }
+            var hr = tableToMarkdown(command, flatQueryResult);
+            return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: hr,
+                EntryContext: {
+                    'NetWitness.SearchHits(val.sessionId == obj.sessionId)': flatQueryResult
+                },
+                ReadableContentsFormat: formats.markdown
+            };
+        } else {
+            return "No results found.";
+        }
+    }
+
+    function buildValuesMdAndContext(response) {
+        //Check if we have values
+        var data = parseResponse(response);
+
+        var queryResults = extractFromData(data);
+        var flatQueryResult = [];
+        if(!isObjectEmpty(queryResults)) {
+            for(var key in queryResults) {
+                flatQueryResult.push(queryResults[key]);
+            }
+            var hr = tableToMarkdown(command, flatQueryResult);
+            return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: hr,
+                EntryContext: {
+                    'NetWitness.Values(val.sessionId == obj.sessionId)': flatQueryResult
+                },
+                ReadableContentsFormat: formats.markdown
+            };
+        } else {
+            return "No results found.";
+        }
+    }
+
+    function buildTimelineMdAndContext(response) {
+        //Check if we have values
+        var data = parseResponse(response);
+
+        var queryResults = extractFromData(data);
+        var flatQueryResult = [];
+        var keysToDisplay = [];
+        if(!isObjectEmpty(queryResults)) {
+            for(var key in queryResults) {
+                flatQueryResult.push(queryResults[key]);
+            }
+
+            var hr = tableToMarkdown(command, flatQueryResult, keysToDisplay);
+            return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: hr,
+                EntryContext: {
+                    'NetWitness.Timeline(val.sessionId == obj.sessionId)': flatQueryResult
+                },
+                ReadableContentsFormat: formats.markdown
+            };
+        } else {
+            return "No results found.";
+        }
+    }
+    function buildNodeMdAndContext(response){
         var data = parseResponse(response);
         var nodes = data.nodes ? data.nodes : [data.node];
 
@@ -163,10 +251,10 @@ script:
                 'NetWitness.Node(val.handle==obj.handle)' : nodes
             },
             ReadableContentsFormat: formats.markdown
-        }
+        };
     }
 
-    function buildStringMdAndContext (response){
+    function buildStringMdAndContext(response){
         var data = parseResponse(response);
         var string = data.string;
         var md =  '### Results for ' + command + ':\n' + string;
@@ -175,10 +263,10 @@ script:
             Contents: data,
             ContentsFormat: formats.json,
             HumanReadable: md
-        }
+        };
     }
 
-    function buildParamsMd (response){
+    function buildParamsMd(response){
         var data = parseResponse(response);
         var params = data.params;
 
@@ -187,10 +275,10 @@ script:
             Contents: data,
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, params)
-        }
+        };
     }
 
-    function parseResponse (resp, isXml) {
+    function parseResponse(resp, isXml) {
         if (resp.StatusCode === 200) {
             try {
                 var body = resp.Body;
@@ -212,12 +300,17 @@ script:
         }
     }
 
-    function parseDownloadResponse (resp) {
+    function parseDownloadResponse(resp) {
         if (resp.StatusCode === 200) {
             try {
                 var currentTime = new Date();
                 var fileName = command + '_at_' + currentTime.getTime();
-                return {Type: 3, FileID: saveFile(resp.Bytes), File: fileName, Contents: fileName};
+                return {
+                    Type: 3,
+                    FileID: saveFile(resp.Bytes),
+                    File: fileName,
+                    Contents: fileName
+                };
             } catch (e) {
                 return e;
             }
@@ -368,30 +461,6 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md
         };
-    }
-
-    function concentratorAgg() {
-        var fullUrl = getUrl(url) + '/concentrator/agg';
-        var body = {
-            op: args.op,
-            crc: args.crc,
-            nice: args.nice
-        };
-        var res = http(
-            fullUrl,
-            { // HTTP Request Headers
-                Method: 'POST',
-                ContentType: 'appliaction/json',
-                Accept: 'application/json',
-                Username: params.credentials.identifier,
-                Password: params.credentials.password,
-                Body: JSON.stringify(body)
-            },
-            !params.secure,
-            params.proxy
-        );
-
-        return parseResponse(res);
     }
 
     var commandToPath = {
@@ -555,12 +624,14 @@ script:
         case 'netwitness-packets':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
         case 'netwitness-msearch':
+            return buildMSearchMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
         case 'netwitness-search':
         case 'netwitness-query':
-        case 'nw-sdk-language':
-        case 'nw-sdk-timeline':
-        case 'nw-sdk-values':
             return buildQueryMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-timeline':
+            return buildTimelineMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-sdk-values':
+            return buildValuesMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-content':
             return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
         case 'nw-sdk-info':
@@ -624,6 +695,7 @@ script:
       description: all events of netwitness
     description: Search for pattern matches in many sessions or packets
   - name: netwitness-search
+    deprecated: true
     arguments:
     - name: session
       required: true
