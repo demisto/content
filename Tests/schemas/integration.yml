@@ -73,6 +73,8 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  scriptNotVisible:
+    type: bool
 
 schema;commonfields_schema:
 
