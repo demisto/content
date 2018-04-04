@@ -945,16 +945,16 @@ script:
             demisto.results('ok')
         elif command == 'fetch-incidents':
             fetch_incidents()
-        elif command == 'NetWitness-get-incident':
+        elif command == 'netwitness-get-incident':
             get_incident()
             get_alerts()
-        elif command == 'NetWitness-get-incidents':
+        elif command == 'netwitness-get-incidents':
             get_incidents()
-        elif command == 'NetWitness-update-incident':
+        elif command == 'netwitness-update-incident':
             update_incident()
-        elif command == 'NetWitness-delete-incident':
+        elif command == 'netwitness-delete-incident':
             delete_incident()
-        elif command == 'NetWitness-get-alerts':
+        elif command == 'netwitness-get-alerts':
             get_alerts()
         sys.exit(0)
     except ValueError as e:
@@ -963,7 +963,7 @@ script:
 
   type: python
   commands:
-  - name: NetWitness-get-incident
+  - name: netwitness-get-incident
     arguments:
     - name: incidentId
       required: true
@@ -1092,7 +1092,7 @@ script:
       description: An Active Directory (AD) domain
     description: Get details of a specific incident, including all alerts related
       with the incident.
-  - name: NetWitness-get-incidents
+  - name: netwitness-get-incidents
     arguments:
     - name: since
       description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z).
@@ -1175,7 +1175,7 @@ script:
       description: Unique destination IP addresses.
     description: 'Get a list of incidents in a specific time frame. One of the followings
       must be specified:  since, until, lastDays'
-  - name: NetWitness-update-incident
+  - name: netwitness-update-incident
     arguments:
     - name: incidentId
       required: true
@@ -1264,13 +1264,13 @@ script:
       description: Unique destination IP addresses.
     description: Update a specific incident.  Currently, an incident’s status and
       assignee may be modified
-  - name: NetWitness-delete-incident
+  - name: netwitness-delete-incident
     arguments:
     - name: incidentId
       required: true
       description: The incident id
     description: Delete a specific incident, by its id.
-  - name: NetWitness-get-alerts
+  - name: netwitness-get-alerts
     arguments:
     - name: incidentId
       required: true
