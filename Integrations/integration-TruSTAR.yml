@@ -283,6 +283,8 @@ script:
 
     def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, excluded_tags):
         is_encalve = True if distribution_type=='ENCLAVE' else False
+        from_time = date_to_unix(from_time) if from_time else from_time
+        to_time = date_to_unix(to_time) if to_time else to_time
         response = ts.get_reports(is_encalve, enclave_ids, tags, excluded_tags, date_to_unix(from_time), date_to_unix(to_time))
         reports = []
         reports_context = []
