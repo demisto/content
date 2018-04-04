@@ -67,6 +67,7 @@ script:
         ip_context = []
         email_context = []
         key_context = []
+        cve_context = []
         for indicator in ts_indicators:
             current_indicator = indicator.to_dict(remove_nones=True)
             indicator_type = current_indicator['indicatorType']
@@ -101,6 +102,10 @@ script:
                 key_context.append({
                     'Path': value
                 })
+            elif indicator_type == 'CVE':
+                cve_context.append({
+                    'ID': value
+                })
             indicators.append(current_indicator)
         # Build Entry Context
         ec = {}
@@ -115,6 +120,8 @@ script:
             ec['Account']['Email'] = email_context
         if key_context:
             ec['RegistryKey'] = key_context
+        if cve_context:
+            ec['CVE'] = cve_context
         return indicators, ec
 
     def normalize_time(timestamp):
@@ -510,6 +517,9 @@ script:
     - contextPath: RegistryKey.Path
       description: Registry key path
       type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
     description: Search all TruSTAR incident reports for provided indicators and return
       all correlated indicators from search results. Two indicators are considered
       “correlated” if they can be found in a common report.
@@ -530,20 +540,31 @@ script:
     outputs:
     - contextPath: File.Name
       description: File name
+      type: string
     - contextPath: File.MD5
       description: File MD5
+      type: string
     - contextPath: File.SHA1
       description: File SHA1
+      type: string
     - contextPath: File.SHA256
       description: File SHA256
+      type: string
     - contextPath: URL.Address
       description: URL address
+      type: string
     - contextPath: IP.Address
       description: IP address
+      type: string
     - contextPath: Account.Email.Address
       description: Email address
+      type: string
     - contextPath: RegistryKey.Path
       description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
     description: Returns the 10 indicators that have recently appeared in the most
       community reports. This is analogous to the Community Trends section of the
       dashboard on Station.
@@ -586,7 +607,11 @@ script:
       description: Email address
       type: string
     - contextPath: RegistryKey.Path
-      description: Registry
+      description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
     description: Searches for all indicators that contain the given search term.
   - name: trustar-submit-report
     arguments:
@@ -732,10 +757,13 @@ script:
     outputs:
     - contextPath: TruSTAR.Report.reportTitle
       description: Title of the report
+      type: string
     - contextPath: TruSTAR.Report.reportBody
       description: Body of the report
+      type: string
     - contextPath: TruSTAR.Report.id
       description: ID of the report
+      type: string
     description: 'Returns incident reports matching the specified filters. All parameters
       are optional: if nothing is specified, the latest 25 reports accessible by the
       user will be returned (matching the view the user would have by logging into
