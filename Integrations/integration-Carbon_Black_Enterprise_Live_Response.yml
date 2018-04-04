@@ -32,6 +32,9 @@ script:
   script: |-
     "use strict";
 
+    /// Constants
+    const SLEEP_BETWEEN_RETRIES = 5000;
+
     /// Base Functions
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
@@ -63,20 +66,20 @@ script:
             }
         }
 
-        //log.Info({path: path + querystring, req: request}, 'HTTP Request');
+        //logInfo('HTTP Request: ' + JSON.stringify({path: path + querystring, req: request}));
 
         let result = http(baseUrl + path + querystring, request, params.insecure, params.proxy);
 
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 404) {
-                    throw 'Cannot find the requested resource (Status Code: 404)';
+                    throw `Cannot find the requested resource\nError message: ${result.Body}\nStatus Code: 404`;
                 }
-                throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${JSON.stringify(result.Body)}`;
+                throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${result.Body}.`;
             }
         }
 
-        //log.Info(result.Body, 'Result');
+        //logInfo(`Result: ${result.Body}`);
 
         return result;
     }
@@ -102,7 +105,7 @@ script:
             Headers: headers
         };
 
-        //log.Info({path: path, req: request}, 'HTTP Request');
+        //logInfo({path: path, req: request}, 'HTTP Request');
 
         let result = httpMultipart(baseUrl + path, fileId, request, requestParams, params.insecure, params.proxy);
 
@@ -113,7 +116,7 @@ script:
             throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${JSON.stringify(result.Body)}`;
         }
 
-        //log.Info(result, 'Result');
+        //logInfo(result, 'Result');
 
         return result;
     }
@@ -153,11 +156,11 @@ script:
         }
 
         // If optional sensor argument is given, filter the results by it.
-        if (sensorId) {
+        if (!sessionId && sensorId) {
             sensorId = parseInt(sensorId);
             result = result.filter(session => (parseInt(session.sensor_id) === sensorId));
         }
-        if (status) {
+        if (!sessionId && status) {
             result = result.filter(session => (status.indexOf(session.status) > -1));
         }
 
@@ -207,7 +210,7 @@ script:
     function createSession() {
         let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
 
-        let title = 'CB Response - Get Sessions';
+        let title = 'CB Response - Create Session';
         let dataMap = sessionData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
@@ -226,6 +229,43 @@ script:
         };
     }
 
+    function createSessionAndWait() {
+        let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
+        sleep(1000);
+        let sessionId = result.id;
+        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : 20 * 1000;
+        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
+
+        let curTry = 0;
+        while (curTry < retries) {
+            let result = getSessionsRequest(sessionId, args.sensor);
+            if (result.status === 'active') {
+                let title = 'CB Response - Create Session And Wait';
+                let dataMap = sessionData;
+                let headers = dataMap.map(cn => cn.to);
+                let translatedData = mapObjFunction(dataMap)(result);
+                let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+                let context = {
+                    'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)': createContext(translatedData)
+                };
+                return {
+                    Type: entryTypes.note,
+                    Contents: result,
+                    ContentsType: formats.json,
+                    ReadableContentsFormat: formats.markdown,
+                    HumanReadable: humanReadable,
+                    EntryContext: context,
+                };
+                return;
+            } else if (result.status !== 'pending') {
+                throw `Executing session ${sessionId} failed, status: ${result.status}`;
+            }
+            sleep(SLEEP_BETWEEN_RETRIES);
+            curTry++;
+        }
+        throw `Creating session ${sessionId} timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
+    }
+
     function closeSessionRequest(sessionId) {
         let queryParams = {
             status: 'close',
@@ -241,7 +281,7 @@ script:
     }
 
     function closeSession() {
-        let result = closeSessionRequest(args.session);
+        let result = closeSessionRequest(parseInt(args.session));
 
         let title = 'CB Response - Session Closed';
         let dataMap = sessionData;
@@ -397,43 +437,106 @@ script:
         };
     }
 
-    function terminateProcessRequest(sessionId, pid, wait) {
-        let queryParams = {
-            name: 'kill',
-            object: args.pid
-        };
-        queryParams.wait = true;
-        if ('wait' in args && args.wait === false) {
-            queryParams = args.wait;
+    function createCommandAndWait() {
+        let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
+            args['working-dir'], args['output-file'], args['value-data'], args['value-type'], args.overwrite, args.offset,
+            args['get-count']);
+        sleep(1000);
+        let commandId = result.id;
+        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : 20 * 1000;
+        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
+
+        let curTry = 0;
+        while (curTry < retries) {
+            let result = getCommandsRequest(args.session, commandId);
+
+            if (result.status === 'complete') {
+                let entries = [];
+                let title = 'CB Response - Execute Command And Wait';
+                let dataMap = commandData.concat([
+                    {to: 'Result.Desc', from: 'result_desc'},
+                    {to: 'Result.Type', from: 'result_type'},
+                    {to: 'Result.Code', from: 'result_code'}
+                ]);
+                let headers = dataMap.map(cn => cn.to);
+                let translatedData = mapObjFunction(dataMap)(result);
+                let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+                let context = {
+                    'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)': createContext(translatedData)
+                };
+                entries.push({
+                    Type: entryTypes.note,
+                    Contents: result,
+                    ContentsType: formats.json,
+                    ReadableContentsFormat: formats.markdown,
+                    HumanReadable: humanReadable,
+                    EntryContext: context,
+                });
+
+                // If we have the command in args then we get info for the command,
+                // in this case we want to parse the result:
+                let contents = result;
+                switch (result.name) {
+                    case "directory list":
+                        contents = result.files;
+                        break;
+                    case "process list":
+                        contents = result.processes;
+                        break;
+                }
+                logInfo("Here2");
+                entries.push({
+                    Type: entryTypes.note,
+                    Contents: contents,
+                    ContentsType: formats.json,
+                    // TODO: Add human readable and context for specific commands
+                });
+
+                return entries;
+
+            } else if (result.status !== 'pending') {
+                throw `Executing command ${commandId} failed, status: ${result.status}`;
+            }
+            sleep(SLEEP_BETWEEN_RETRIES);
+            curTry++;
         }
-        let response = sendRequest(`/v1/cblr/session/${args.session}/command`, 'POST', queryParams).Body;
-        let result;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
+        throw `Executing command ${commandId} timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
     }
 
     function terminateProcess() {
-        let result = createCommandRequest(args['session'], 'kill', undefined, args.pid, undefined, args.wait);
-        let title = `CB Response - Terminate Process ${args.pid}`;
-        let dataMap = commandData;
-        let headers = dataMap.map(cn => cn.to);
-        let translatedData = mapObjFunction(dataMap)(result);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
-        let context = {
-            'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)': createContext(translatedData)
-        };
+        let result = createCommandRequest(args.session, 'kill', undefined, args.pid, undefined, args.wait);
+        sleep(1000);
+        let commandId = result.id;
+        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : 20 * 1000;
+        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
 
-        return {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable,
-            EntryContext: context,
-        };
+        let curTry = 0;
+        while (curTry < retries) {
+            let result = getCommandsRequest(args.session, commandId);
+            if (result.status === 'complete') {
+                let title = `CB Response - Terminate Process ${args.pid}`;
+                let dataMap = commandData;
+                let headers = dataMap.map(cn => cn.to);
+                let translatedData = mapObjFunction(dataMap)(result);
+                let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+                let context = {
+                    'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)': createContext(translatedData)
+                };
+                return {
+                    Type: entryTypes.note,
+                    Contents: result,
+                    ContentsType: formats.json,
+                    ReadableContentsFormat: formats.markdown,
+                    HumanReadable: humanReadable,
+                    EntryContext: context,
+                };
+            } else if (result.status !== 'pending') {
+                throw `Terminating process failed, status: ${result.status}`;
+            }
+            sleep(SLEEP_BETWEEN_RETRIES);
+            curTry++;
+        }
+        throw `Terminating process timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
     }
 
     function getCommandsRequest(sessionId, commandId) {
@@ -688,6 +791,8 @@ script:
                 return getSessions();
             case 'cb-session-create':
                 return createSession();
+            case 'cb-session-create-and-wait':
+                return createSessionAndWait();
             case 'cb-session-close':
                 return closeSession();
             case 'cb-keepalive':
@@ -701,6 +806,8 @@ script:
                 return terminateProcess();
             case 'cb-command-create':
                 return createCommand();
+            case 'cb-command-create-and-wait':
+                return createCommandAndWait();
             case 'cb-command-cancel':
                 return cancelCommand();
             case 'cb-file-get':
@@ -712,7 +819,6 @@ script:
                 return uploadFile();
             case 'cb-file-delete':
                 return deleteFile();
-            // End Live Response Commands
             default:
                 throw `Unknown Command: ${command}`;
         }
@@ -724,6 +830,17 @@ script:
             ReadableContentsFormat: formats.text,
             HumanReadable: err
         }
+    }
+
+    /// Util methods
+
+    function sleep(ms) {
+        var start = new Date().getTime();
+        var expire = start + ms;
+        while (new Date().getTime() < expire) {
+            /*Do nothing*/
+        }
+        return;
     }
   type: javascript
   commands:
@@ -774,9 +891,6 @@ script:
     - name: compress
       description: '"true" or "false" - an optional parameter to specify whether to
         compress resulting memory dump'
-    - name: wait
-      description: “true” or “false” - An optional parameter to specify whether to
-        wait for the process to complete execution before reporting the result
     - name: working-dir
       description: An optional parameter to specify the working directory of the executable
     - name: output-file
@@ -817,6 +931,79 @@ script:
     - contextPath: CbResponse.Commands.WaitTimeout
       description: The Wait timeout
     description: Create a live response command
+  - name: cb-command-create-and-wait
+    arguments:
+    - name: name
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - put-file
+      - get-file
+      - delete-file
+      - directory-list
+      - reg-enum-key
+      - reg-query-value
+      - reg-create-key
+      - reg-delete-key
+      - reg-delete-value
+      - reg-set-value
+      - process-list
+      - kill
+      - create-process
+      - memdump
+      description: Command name
+    - name: timeout
+      description: Command timeout
+    - name: object
+      description: the object the command operates on. This is specific to the command
+        but has meaning in a generic way for logging, and display purposes
+    - name: compress
+      description: '"true" or "false" - an optional parameter to specify whether to
+        compress resulting memory dump'
+    - name: working-dir
+      description: An optional parameter to specify the working directory of the executable
+    - name: output-file
+      description: An option file that STDERR and STDOUT will be redirected to.
+    - name: value-data
+      description: the data associated with the registry value
+    - name: value-type
+      description: the string representation of the registry value type (ie REG_DWORD,
+        REG_QWORD, ….)
+    - name: overwrite
+      description: “true” or “false”. An optional parameter to specify whether to
+        overwrite the value if it already exists (default value is “false”)
+    - name: offset
+      description: a byte offset to start getting the file. Supports a partial get.
+    - name: get-count
+      description: the number of bytes to grab
+    - name: session
+      required: true
+      description: Session ID to create command for
+    - name: wait-timeout
+      description: Time to wait in seconds to wait for command to finish executing
+      defaultValue: "20"
+    outputs:
+    - contextPath: CbResponse.Commands.Status
+      description: The Command Status
+    - contextPath: CbResponse.Commands.Hostname
+      description: The Hostname running the command
+    - contextPath: CbResponse.Commands.CbSensorID
+      description: The Sensor ID
+    - contextPath: CbResponse.Commands.CommandName
+      description: The Command name
+    - contextPath: CbResponse.Commands.CbSessionID
+      description: The Session ID
+    - contextPath: CbResponse.Commands.CbCommandID
+      description: The Command ID
+    - contextPath: CbResponse.Commands.OperandObject
+      description: 'Object argument for the CbLive command - e.g. for ''directory
+        list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
+    - contextPath: CbResponse.Commands.CreateTime
+      description: Command create time
+    - contextPath: CbResponse.Commands.WaitTimeout
+      description: The Wait timeout
+    description: Create a live response command and wait for it to finish executing
   - name: cb-command-info
     arguments:
     - name: session
@@ -996,6 +1183,36 @@ script:
     - contextPath: CbResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
     description: Create a new CarbonBlack session for a given sensor
+  - name: cb-session-create-and-wait
+    arguments:
+    - name: sensor
+      required: true
+      default: true
+      description: Sensor ID to create session for
+    - name: command-timeout
+      description: Session timeout (If a command will not be issued after this time
+        the session will be closed)
+    - name: keepalive-timeout
+      description: Session keepalive timeout (If a keepalive is not issued after this
+        time, the session will close)
+    - name: wait-timeout
+      description: Time in seconds to wait for session to be active
+      defaultValue: "20"
+    outputs:
+    - contextPath: CbResponse.Sessions.Status
+      description: Session Status
+    - contextPath: CbResponse.Sessions.Hostname
+      description: Hostname
+    - contextPath: CbResponse.Sessions.CbSensorID
+      description: Sensor ID
+    - contextPath: CbResponse.Sessions.CbSessionID
+      description: Session ID
+    - contextPath: CbResponse.Sessions.SessionTimeout
+      description: Session Timeout
+    - contextPath: CbResponse.Sessions.WaitTimeout
+      description: Sensor wait timeout
+    description: Create a new CarbonBlack session for a given sensor and wait for
+      it to be active
   - name: cb-session-info
     arguments:
     - name: session
@@ -1024,6 +1241,9 @@ script:
     - name: pid
       required: true
       description: Process ID to terminate
+    - name: wait-timeout
+      description: Time to wait in seconds for process to complete termination
+      defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
   - name: cb-file-upload
     arguments:

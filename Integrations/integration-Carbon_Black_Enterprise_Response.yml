@@ -1492,7 +1492,7 @@ script:
     - name: parent-process-name
       description: Filter processes by parent process name
     - name: process-path
-      description: Filter processes by process path
+      description: 'Filter processes by process path (Example: "c:\windows\resources\spoolsv.exe")'
     - name: md5
       description: Filter processes by md5 hash
     - name: query
