@@ -1,6 +1,6 @@
-id: 29252c27-c473-4b11-81ba-904e05a7f5c4
-version: 2
-name: Packetsled
+id: TestPacketsled
+version: -1
+name: TestPacketsled
 description: Enumerate the packetsled entities with incidents, and query each entity
   for artifacts (metadata, extracted files, and packet capture) that are then delivered
   into the demisto War Room.
@@ -169,3 +169,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"

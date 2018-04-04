@@ -72,7 +72,6 @@ class Content:
                     cnt = self.loadData(rawContent)
                     ans = self.modifiedReleaseNotes(cnt)
                     if ans is None:
-                        print_error(rawContent)
                         print_error(cnt["name"] + " is missing releaseNotes entry")
                         missingReleaseNotes = True
                     elif ans is not "":
