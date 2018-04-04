@@ -1,8 +1,8 @@
 commonfields:
-  id: Where is the egg? 2
+  id: Where is the egg?
   version: -1
-name: Where is the egg? 2
-display: Where is the egg? 2
+name: Where is the egg?
+display: Where is the egg?
 fromversion: 3.6.0
 category: Utilities
 description: ""
