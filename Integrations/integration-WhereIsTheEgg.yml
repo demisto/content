@@ -18,10 +18,10 @@ script:
             var res = ''
             switch ((args['magic-word'] || '').toLowerCase()) {
                 case '':
-                    res = 'Finally! you found me. There are lots of mystery in Demisto, and there is such a lot of world to see... try the same command, but now with mystery...';
+                    res = 'Finally! You found me. Although Demisto demystifies, we still have so many secrets waiting to be discovered. Let's play a little game. Try the same command, but now with a dash of 'mystery'…';
                     break;
                 case 'mystery':
-                    res = 'We are full of mysteries, it is not going to be easy... say, what is the name of the icon we have for the automated tasks? I don\'t remember it... \n\n---\n\n ![mystery](https://media.giphy.com/media/3ohhwg3O1TGRXHQYh2/source.gif)';
+                    res = 'We're full of mysteries, but you're on your way to uncovering them! It's not going to be easy. Say, what's the name of the icon we have for automated tasks? I remembered it a second ago, but then it was gone in a flash… \n\n---\n\n ![mystery](https://media.giphy.com/media/3ohhwg3O1TGRXHQYh2/source.gif)';
                     break;
                 case 'lightning':
                     res = 'wow, you are good, so yes, the lightning is the icon represents automated task, why? don\'t ask, nobody knows.  \nYou know, DBot speaks lots of languages... there is a special cool language... something with M↓, remind me, how is it called? \n\n---\n\n ![lightning](https://media.giphy.com/media/FZzbTJyRTwPuw/source.gif)';
@@ -32,6 +32,8 @@ script:
                 case 'html':
                     res = 'Right, my memory is not that good at the moment, not sure why, I think I need 16GB (or SSD to be faster?), things change so quickly...  \nYou know, Demisto employees are working very hard to release new content (playbooks, integrations, scripts...), do you know how often they release the content?';
                     break;
+                case 'twice a month':
+                case 'every fortnight':
                 case 'every two weeks':
                 case 'every-two-weeks':
                 case 'everytwoweeks':
