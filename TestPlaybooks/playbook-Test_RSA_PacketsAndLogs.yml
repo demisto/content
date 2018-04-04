@@ -130,8 +130,6 @@ tasks:
         simple: "20"
       threshold:
         simple: "100000"
-      using:
-        simple: Concentrator
       where:
         simple: time="2016-Jan-30 13:56:30"-"2018-May-21 12:20:49"
     separatecontext: false
