@@ -172,6 +172,21 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "CB-Response-Test",
+            "nightly": true
+        },
+        {
+            "integrations": {
+                "name": "carbonblack-v2",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -234,7 +249,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -250,6 +265,19 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ],
     "skipped": [
