@@ -34,4 +34,3 @@ args:
   description: Entries with the given tag will be marked as notes
 scripttarget: 0
 runonce: false
-releaseNotes: "-"

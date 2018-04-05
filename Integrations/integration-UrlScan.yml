@@ -127,7 +127,7 @@ script:
     }
 
     var searchUrl = function(url) {
-        var res = sendRequest("GET","/search?q=" + "\"" + url + "\"");
+        var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(url) + "\"");
         var md = "";
         var ec = {};
         var resDis = [];
