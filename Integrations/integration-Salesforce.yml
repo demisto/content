@@ -55,29 +55,29 @@ configuration:
   required: false
 script:
   script: |
-    var uriPrefix = '/services/data/v39.0/';
+    var URI_PREFIX = '/services/data/v39.0/';
 
-    var sessionData = '';
+    var SESSION_DATA = '';
     function getNewToken() {
         var request = {
-                grant_type: 'password',
-                client_id: params.clientID,
-                client_secret: params.clientSecret,
-                username: params.credentials.identifier,
-                password: params.credentials.password
+            grant_type: 'password',
+            client_id: params.clientID,
+            client_secret: params.clientSecret,
+            username: params.credentials.identifier,
+            password: params.credentials.password
             };
 
         var body = encodeToURLQuery(request).substr(1);
         var response = http(
-                    params.InstanceURL + '/services/oauth2/token',
-                    {
-                        Method: 'POST',
-                        Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-                        Body: body,
-                    },
-                    params.insecure === false,
-                    params.useproxy
-                );
+            params.InstanceURL + '/services/oauth2/token',
+            {
+                Method: 'POST',
+                Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
+                Body: body,
+            },
+            params.insecure === false,
+            params.useproxy
+        );
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
             throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
         }
@@ -95,25 +95,25 @@ script:
         }
 
         return http(
-                url,
-                {
-                    Method: method,
-                    Headers: headers,
-                    Body: body,
-                },
-                params.insecure === false,
-                params.useproxy
-            );
+            url,
+            {
+                Method: method,
+                Headers: headers,
+                Body: body,
+            },
+            params.insecure === false,
+            params.useproxy
+        );
     }
 
     function sendRequestInSession(method, uri, body) {
-        if (!sessionData || !sessionData.access_token) {
+        if (!SESSION_DATA || !SESSION_DATA.access_token) {
             throw "Faield to get access token for Salesforce integration.";
         }
-        var response = sendRequest(method, sessionData.instance_url + uriPrefix + uri, body, sessionData.access_token);
+        var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
         if (response.StatusCode === 401) {
-            sessionData = getNewToken();
-            response = sendRequest(method, sessionData.instance_url + uriPrefix + uri, body, sessionData.access_token);
+            SESSION_DATA = getNewToken();
+            response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
         }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
                 throw 'Failed to run command uri: ' + uri + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
@@ -270,6 +270,16 @@ script:
             default:
                 return obj;
         }
+    }
+
+    function queryToEntry(query) {
+        return {
+            Type : entryTypes.note,
+            Contents : query.records,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable : tableToMarkdown('Query Results', query.records)
+        };
     }
 
     function searchToEntry(searchRecords) {
@@ -534,6 +544,8 @@ script:
         lastRun = getLastRun();
         if (lastRun.last_case_time === undefined) {
             current_time = new Date();
+            current_time.setMonth(current_time.getMonth() - 1); // TODO - remove this line
+            // logInfo(dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ"));
             lastRun.last_case_time = dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ");
             setLastRun(lastRun);
         }
@@ -549,6 +561,8 @@ script:
             lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
 
             setLastRun(lastRun);
+            logInfo(lastRun.last_case_time);
+            // logInfo(JSON.stringify(cases));
         }
 
         var userMapping = getUserNames();
@@ -556,7 +570,7 @@ script:
         return incidents;
     }
 
-    sessionData = getNewToken();
+    SESSION_DATA = getNewToken();
     // The command input arg holds the command sent from the user.
     var response;
     switch (command) {
@@ -564,9 +578,10 @@ script:
             return fetchIncident();
         case 'salesforce-search':
             response = sendRequestInSession('GET','search/?q=FIND+%7B' + args.pattern +'%7D','');
+            logInfo(response.Body);
             return searchToEntry(JSON.parse(response.Body).searchRecords);
         case 'salesforce-query':
-            return queryRaw(args.query);
+            return queryToEntry(queryRaw(args.query));
         case 'salesforce-get-object':
             return getObject(args.path);
         case 'salesforce-update-object':
