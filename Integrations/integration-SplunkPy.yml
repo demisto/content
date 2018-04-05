@@ -315,8 +315,8 @@ script:
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
             lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
-        kwargs_oneshot = {"earliest_time": lastRun,
-                      "latest_time": now}
+        kwargs_oneshot = {"index_earliest": lastRun,
+                      "index_latest": now}
         searchquery_oneshot = demisto.params()['fetchQuery']
 
         if demisto.get(demisto.params(), 'extractFields'):
@@ -482,4 +482,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Support Splunk fetch incident to extract custom fields from _raw of notable events'
+releaseNotes: 'Fetch notable events by index time (instead of event time)'
