@@ -1,14 +1,15 @@
-id: 7fd6be97-7a40-42fa-86ac-b5b3f84a1e66
-version: 43
+id: Anomali_ThreatStream_Test
+version: -1
+fromversion: 3.5.0
 name: Anomali ThreatStream Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a0769846-8a67-4b94-8b03-78a5359978da
+    taskid: cc16a1a8-e966-460b-8056-aac54e3515f2
     type: start
     task:
-      id: a0769846-8a67-4b94-8b03-78a5359978da
+      id: cc16a1a8-e966-460b-8056-aac54e3515f2
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +17,7 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: e7926b25-5def-4fa2-8030-b16ab012ced2
+    taskid: fd7db6e3-2385-4d83-8774-ab014d1965cc
     type: regular
     task:
-      id: e7926b25-5def-4fa2-8030-b16ab012ced2
+      id: fd7db6e3-2385-4d83-8774-ab014d1965cc
       version: -1
       name: threatstream-intelligence (type=ip, value=218.227.212.90)
       description: To retrieve threat intelligence from the ThreatStream cloud
@@ -42,37 +44,39 @@ tasks:
       - "4"
       - "5"
     scriptarguments:
-      asn: ""
-      confidence: ""
-      country: ""
-      created_ts: ""
-      expiration_ts: ""
-      feed_id: ""
-      id: ""
-      import_session_ id: ""
-      ip: ""
-      is_public: ""
-      itype: ""
-      latitude: ""
-      limit: ""
-      longitude: ""
-      meta.detail: ""
-      meta.detail2: ""
-      meta.maltype: ""
-      meta.severity: ""
-      modified_ts: ""
-      org: ""
-      owner_ organization_id: ""
-      rdns: ""
-      source_reported_ confidence: ""
-      status: ""
-      tags.name: ""
-      threat_type: ""
-      trusted_circle_ids: ""
-      type: ip
-      update_id: ""
-      using: Anomali_ThreatStream_instance_1
-      value: 218.227.212.90
+      asn: {}
+      confidence: {}
+      country: {}
+      created_ts: {}
+      expiration_ts: {}
+      feed_id: {}
+      id: {}
+      import_session_ id: {}
+      ip: {}
+      is_public: {}
+      itype: {}
+      latitude: {}
+      limit: {}
+      longitude: {}
+      meta.detail: {}
+      meta.detail2: {}
+      meta.maltype: {}
+      meta.severity: {}
+      modified_ts: {}
+      org: {}
+      owner_ organization_id: {}
+      rdns: {}
+      source_reported_ confidence: {}
+      status: {}
+      tags.name: {}
+      threat_type: {}
+      trusted_circle_ids: {}
+      type:
+        simple: ip
+      update_id: {}
+      value:
+        simple: 218.227.212.90
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -82,12 +86,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 5b5c8508-4910-4cf8-8102-8d329331038a
+    taskid: 7408f6a4-8790-4753-88ca-60e70aeaefcf
     type: regular
     task:
-      id: 5b5c8508-4910-4cf8-8102-8d329331038a
+      id: 7408f6a4-8790-4753-88ca-60e70aeaefcf
       version: -1
-      name: ip (218.227.212.90)
+      name: ip (176.228.66.70)
       description: Checks the reputation of the given IP
       script: Anomali ThreatStream|||ip
       type: regular
@@ -97,8 +101,10 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      ip: 218.227.212.90
-      using: Anomali_ThreatStream_instance_1
+      ip:
+        simple: 176.228.66.70
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -108,10 +114,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 50127fc0-1909-452c-8f0d-ddd3ee05c219
+    taskid: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
     type: regular
     task:
-      id: 50127fc0-1909-452c-8f0d-ddd3ee05c219
+      id: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
       version: -1
       name: domain (kpanels.in)
       description: Checks the reputation of the given IP or domain name
@@ -123,8 +129,10 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      domain: kpanels.in
-      using: Anomali_ThreatStream_instance_1
+      domain:
+        simple: kpanels.in
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -134,10 +142,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: ec620ebd-568f-49d0-80fe-876c92015b38
+    taskid: ce92b708-ce6d-4dce-887c-6f84b160ebd2
     type: regular
     task:
-      id: ec620ebd-568f-49d0-80fe-876c92015b38
+      id: ce92b708-ce6d-4dce-887c-6f84b160ebd2
       version: -1
       name: file (3e5d63b93a68d715f7559f42285223f4)
       description: Checks the reputation of the given checksum
@@ -149,8 +157,10 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      file: 3e5d63b93a68d715f7559f42285223f4
-      using: Anomali_ThreatStream_instance_1
+      file:
+        simple: 3e5d63b93a68d715f7559f42285223f4
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -160,10 +170,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 5f79a60f-6812-486c-811f-3912ae9b7b61
+    taskid: 9949f81e-3a07-4272-8c2a-39d3a0a92b0a
     type: regular
     task:
-      id: 5f79a60f-6812-486c-811f-3912ae9b7b61
+      id: 9949f81e-3a07-4272-8c2a-39d3a0a92b0a
       version: -1
       name: threatstream-email-reputation (mailonline_16@filposcv.com)
       description: Checks the reputation of the given email
@@ -175,8 +185,10 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      email: mailonline_16@filposcv.com
-      using: Anomali_ThreatStream_instance_1
+      email:
+        simple: mailonline_16@filposcv.com
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -186,10 +198,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: e17b50d4-bf48-473d-886e-fc5ae308b953
+    taskid: 0350626f-e2bc-4011-8627-672c67fe1855
     type: regular
     task:
-      id: e17b50d4-bf48-473d-886e-fc5ae308b953
+      id: 0350626f-e2bc-4011-8627-672c67fe1855
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -201,8 +213,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -212,10 +226,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 4cc9eca2-1201-4d06-81ed-75d1e067d2d8
+    taskid: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
     type: regular
     task:
-      id: 4cc9eca2-1201-4d06-81ed-75d1e067d2d8
+      id: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
       version: -1
       name: VerifyContext (File)
       description: |+
@@ -230,10 +244,12 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: '{"MD5": "3e5d63b93a68d715f7559f42285223f4", "Malicious": {"Vendor":
-        "Analyst"}, "Score": 79}'
-      fields: ""
-      path: File
+      expectedValue: {}
+      fields:
+        simple: MD5, Malicious, Score
+      path:
+        simple: File
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -243,10 +259,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: ff87908f-d3ba-452b-86be-6637eaace472
+    taskid: 255a564c-e2bb-473e-82f5-69ff848b978f
     type: regular
     task:
-      id: ff87908f-d3ba-452b-86be-6637eaace472
+      id: 255a564c-e2bb-473e-82f5-69ff848b978f
       version: -1
       name: VerifyContext (IP)
       description: |+
@@ -264,21 +280,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: |-
-        {
-            "ASN": "2518",
-            "Address": "218.227.212.90",
-            "Geo": {
-                "Country": "JP",
-                "Location": "34.976900, 138.383100",
-                "Organization": "Biglobe"
-            },
-            "Hostname": "FL1-218-227-212-90.szo.mesh.ad.jp",
-            "Malicious": {"Vendor": "Anomali Labs TOR Nodes"},
-            "Score": 25
-        }
-      fields: ""
-      path: IP
+      expectedValue: {}
+      fields:
+        simple: ASN, Address, Geo, Malicious, Score
+      path:
+        simple: IP
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -288,10 +295,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: a1790078-518a-438f-81d7-7586f3895971
+    taskid: 54fcfa9e-2a6c-4f02-806e-2c2d19d8d6f0
     type: regular
     task:
-      id: a1790078-518a-438f-81d7-7586f3895971
+      id: 54fcfa9e-2a6c-4f02-806e-2c2d19d8d6f0
       version: -1
       name: VerifyContext (Domain)
       description: |+
@@ -305,18 +312,13 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
     scriptarguments:
-      expectedValue: |-
-        {
-            "DNS": "185.72.179.152",
-            "Name": "kpanels.in",
-            "Score": 4
-        }
-      fields: ""
-      path: Domain
+      expectedValue: {}
+      fields:
+        simple: DNS, Name, Score
+      path:
+        simple: Domain
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -324,52 +326,12 @@ tasks:
           "y": 1070
         }
       }
-  "10":
-    id: "10"
-    taskid: 61cf443b-7b4c-4483-88f2-2739ab4f5798
-    type: regular
-    task:
-      id: 61cf443b-7b4c-4483-88f2-2739ab4f5798
-      version: -1
-      name: VerifyContext (Domain->IP)
-      description: |+
-        Verify path in context
-        - Verify path existence
-        - If matching object is array - verify fields exists in each object in array
-        - If matching object is not array - verify fields exists in matching object
-        - if 'expectedValue' supplied - ensure that given value equal to context path
-
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: |-
-        {
-            "Address": "185.72.179.152",
-            "Geo": {
-                "Country": "RO",
-                "Location": "46.000000, 25.000000",
-                "Organization": "Nix Web Solutions Pvt Ltd"
-            },
-            "Malicious": {"Vendor": "Analyst"},
-            "Score": 4
-        }
-      fields: ""
-      path: IP.[1]
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
   "11":
     id: "11"
-    taskid: 2ca07503-9571-4ab5-8353-d1b8eaa70124
+    taskid: 7bf1a60f-4517-46db-8183-0cbd7049e434
     type: regular
     task:
-      id: 2ca07503-9571-4ab5-8353-d1b8eaa70124
+      id: 7bf1a60f-4517-46db-8183-0cbd7049e434
       version: -1
       name: VerifyContext (ThreatStream.EmailReputation)
       description: |+
@@ -384,23 +346,13 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: |-
-        {
-            "Itype": "apt_email",
-            "Created": "2017-05-02T23:16:17.724Z",
-            "Modified": "2017-05-02T23:16:57.336Z",
-            "Confidence": 95,
-            "Details1": "",
-            "Details2": "imported by user 6822",
-            "Status": "active",
-            "ThreatScore": 72,
-            "Source": "Analyst",
-            "Id": 787723185,
-            "Email": "mailonline_16@filposcv.com",
-            "Severity": "high"
-        }
-      fields: ""
-      path: ThreatStream.EmailReputation.[0]
+      expectedValue: {}
+      fields:
+        simple: Itype, Created, Modified, Confidence, Details1, Details2, Status,
+          ThreatScore, Source, Id, Email, Severity
+      path:
+        simple: ThreatStream.EmailReputation
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -413,7 +365,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1115,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -421,3 +373,5 @@ view: |-
     }
   }
 inputs: []
+outputs: []
+releaseNotes: "-"
