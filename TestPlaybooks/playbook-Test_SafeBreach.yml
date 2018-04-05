@@ -1,0 +1,164 @@
+id: TestSafeBreach
+version: -1
+name: TestSafeBreach
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3aec5aaa-ee32-401c-8ea3-38b421c7e8aa
+    type: start
+    task:
+      id: 3aec5aaa-ee32-401c-8ea3-38b421c7e8aa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 741,
+          "y": 8
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b3c30f83-3e9b-4c60-81d3-9097ca735e6d
+    type: regular
+    task:
+      id: b3c30f83-3e9b-4c60-81d3-9097ca735e6d
+      version: -1
+      name: safebreach-rerun
+      description: Rerun the simulation/s related to the incident
+      script: SafeBreach|||safebreach-rerun
+      type: regular
+      iscommand: true
+      brand: SafeBreach
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      rerunData:
+        simple: |-
+          {
+            "force": true,
+            "matrix": {
+              "name": "Rerun simulation #03ff1fb5d3fe765a20280754b4be04ce",
+              "nodeIds": [
+                "e82a2c1e-7df0-43ef-881b-2979632cafb3",
+                "141fda3f-9bb6-4474-a22b-4e1d926973df"
+              ],
+              "moveIds": [
+                1207
+              ],
+              "paramsIds": [
+                [
+                  {
+                    "paramId": 25,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 26,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 27,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 28,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 29,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 30,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 31,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 32,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 33,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 34,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 35,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 36,
+                    "valueId": 1
+                  },
+                  {
+                    "paramId": 37,
+                    "valueId": 0
+                  }
+                ]
+              ]
+            }
+          }
+      using:
+        simple: SafeBreach_instance
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 741,
+          "y": 188
+        }
+      }
+  "2":
+    id: "2"
+    taskid: fda9d09e-5901-4217-8e1d-fc737641cadd
+    type: regular
+    task:
+      id: fda9d09e-5901-4217-8e1d-fc737641cadd
+      version: -1
+      name: safebreach-get-simulation
+      description: Fetch the breach simulation results
+      script: SafeBreach|||safebreach-get-simulation
+      type: regular
+      iscommand: true
+      brand: SafeBreach
+    scriptarguments:
+      simulationId:
+        simple: 03ff1fb5d3fe765a20280754b4be04ce
+      using:
+        simple: SafeBreach_instance
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 741,
+          "y": 368
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 741,
+        "y": 8
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -278,6 +278,10 @@
                 }
             ],
             "playbookID": "CarbonBlackLiveResponseTest"
+        },
+        {
+            "playbookID": "TestSafeBreach",
+            "integrations": "SafeBreach"
         }
     ],
     "skipped": [
