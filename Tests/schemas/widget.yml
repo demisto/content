@@ -17,7 +17,7 @@ mapping:
     type: str
   dataType:
     type: str
-    required: yes
+    allowempty: True
   widgetType:
     type: str
     required: yes
