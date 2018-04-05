@@ -3,6 +3,8 @@ commonfields:
   version: -1
 name: ADGetUser
 script: |-
+  import re
+
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
       'ACCOUNTDISABLE': 0x0002,
@@ -34,9 +36,7 @@ script: |-
 
 
   def escapeSpecialCharacters(s):
-      for c in r'\()':
-          s = s.replace(c, '\\' + c)
-      return s
+      return re.sub(r'([\()]+)', lambda r : '\\' + r.group(), s)
 
 
   def createAccountEntities(t,attrs):
