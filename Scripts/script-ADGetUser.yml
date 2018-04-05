@@ -313,4 +313,4 @@ runonce: false
 dependson:
   must:
   - ad-search
-releaseNotes: "add escaping to filter"
+releaseNotes: "Added escaping for brackets in filter's parameters"
