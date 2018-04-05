@@ -2,7 +2,6 @@
 	"id": "health-status-dashboard",
     "version": -1,
 	"fromVersion": "3.5.1",
-	"modified": "2018-03-23T19:11:38.970206+03:00",
 	"period": {
 		"byTo": "days",
 		"byFrom": "minutes",
