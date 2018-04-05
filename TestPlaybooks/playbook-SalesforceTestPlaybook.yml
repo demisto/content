@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: fc22c766-f9f8-4c58-8cf3-9127bb553b6d
+    taskid: 866f14ce-ee11-4837-874e-ac105545b2d7
     type: regular
     task:
-      id: fc22c766-f9f8-4c58-8cf3-9127bb553b6d
+      id: 866f14ce-ee11-4837-874e-ac105545b2d7
       version: -1
       name: 'Search for string  '
       script: Salesforce|||salesforce-search
@@ -38,7 +38,7 @@ tasks:
       brand: Salesforce
     scriptarguments:
       pattern:
-        simple: demisto
+        simple: asdf
     separatecontext: false
     view: |-
       {
@@ -49,10 +49,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 5ab6ed4f-e52a-46f1-87e1-61d305e4bc33
+    taskid: bdd868ef-f09d-42c9-8a17-f195f133669e
     type: regular
     task:
-      id: 5ab6ed4f-e52a-46f1-87e1-61d305e4bc33
+      id: bdd868ef-f09d-42c9-8a17-f195f133669e
       version: -1
       name: Query User
       script: Salesforce|||salesforce-query
