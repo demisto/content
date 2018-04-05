@@ -2,7 +2,6 @@ commonfields:
   id: StringReplace
   version: -1
 name: StringReplace
-releaseNotes: set Utility tag
 script: |-
   if ((typeof args.data) !== 'string') {
       return {
