@@ -12,5 +12,6 @@
   "isPredefined": true,
   "version": -1,
   "category": "",
-  "widgetType": "list"
+  "widgetType": "list",
+  "releaseNotes": "-"
 }
