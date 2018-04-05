@@ -2,7 +2,6 @@ commonfields:
   id: d98506ea-fd06-49d6-8f1e-bb29ab06766e
   version: 16
 name: VerifyContext
-releaseNotes: set Utility tag
 script: |-
   var path = args.path;
   var fields = args.fields ? args.fields.split(",") : [];
