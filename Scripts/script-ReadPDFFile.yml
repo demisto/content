@@ -2,7 +2,6 @@ commonfields:
   id: ReadPDFFile
   version: -1
 name: ReadPDFFile
-releaseNotes: "-"
 script: |-
   import pdfx
   import sys

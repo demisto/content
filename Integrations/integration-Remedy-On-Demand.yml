@@ -540,4 +540,3 @@ script:
     description: Update exiting incident
   isfetch: true
 hidden: false
-releaseNotes: "Added fetch incidents support"

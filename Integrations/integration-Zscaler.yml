@@ -5,7 +5,6 @@ name: Zscaler
 display: Zscaler
 category: Network Security
 image: data:image/png;base64,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
-releaseNotes: "-"
 description: Zscaler is a cloud security solution built for performance and flexible
   scalability.
 configuration:
@@ -99,18 +98,320 @@ script:
         cmd_url = '/authenticatedSession'
         result = http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
-    def blacklist_url(url):
-        cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
+    def update_blacklist(url, action, ioc_type):
         blacklistUrls = url.split(',')
+        if action == 'add':
+            cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
+        else: # Action is 'remove' from blacklist
+            cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
+            # Check if given IOC is blacklisted
+            blacklist_urls = get_blacklist()['blacklistUrls']
+            if len(blacklistUrls) == 1: # Given only one IOC to blacklist
+                if blacklistUrls[0] not in blacklist_urls:
+                    raise Exception('Given host address is not blacklisted')
+            elif blacklistUrls not in blacklist_urls: # Given more than one IOC to blacklist
+                raise Exception('Given host address is not blacklisted')
         data = {
             'blacklistUrls': blacklistUrls
         }
         jsondata = json.dumps(data)
-        http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        res = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
         listOfUrls = ''
         for url in blacklistUrls:
             listOfUrls += '- ' + url + '\n'
-        return 'Added the following URL to the blacklist successfully:\n' + listOfUrls
+        if action == 'add':
+            if ioc_type == 'url':
+                return 'Added the following URLs to the blacklist successfully:\n' + listOfUrls
+            else: # IOC type is IP address
+                return 'Added the following IP addresses to the blacklist successfully:\n' + listOfUrls
+        else: # Action is 'remove' from blacklist
+            if ioc_type == 'url':
+                return 'Removed the following URLs from the blacklist successfully:\n' + listOfUrls
+            else: # IOC type is IP address
+                return 'Removed the following IP addresses from the blacklist successfully:\n' + listOfUrls
+
+    def blacklist_url(url):
+        blacklistUrls = url.split(',')
+        cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
+        data = {
+            'blacklistUrls': blacklistUrls
+        }
+        jsondata = json.dumps(data)
+        res = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfUrls = ''
+        for url in blacklistUrls:
+            listOfUrls += '- ' + url + '\n'
+        return 'Added the following URLs to the blacklist successfully:\n' + listOfUrls
+
+    def unblacklist_url(url):
+        blacklistUrls = url.split(',')
+        cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
+        # Check if given URLs is blacklisted
+        blacklist_urls = get_blacklist()['blacklistUrls']
+        if len(blacklistUrls) == 1: # Given only one URL to blacklist
+            if blacklistUrls[0] not in blacklist_urls:
+                raise Exception('Given URL is not blacklisted')
+        elif blacklistUrls not in blacklist_urls: # Given more than one URL to blacklist
+            raise Exception('Given URL is not blacklisted')
+        data = {
+            'blacklistUrls': blacklistUrls
+        }
+        jsondata = json.dumps(data)
+        res = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfUrls = ''
+        for url in blacklistUrls:
+            listOfUrls += '- ' + url + '\n'
+        return 'Removed the following URLs from the blacklist successfully:\n' + listOfUrls
+
+    def blacklist_ip(ip):
+        blacklistIps = ip.split(',')
+        cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
+        data = {
+            'blacklistUrls': blacklistIps
+        }
+        jsondata = json.dumps(data)
+        res = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfIps = ''
+        for ip in blacklistIps:
+            listOfIps += '- ' + ip + '\n'
+        return 'Added the following IP addresses to the blacklist successfully:\n' + listOfIps
+
+    def unblacklist_ip(ip):
+        blacklistIps = ip.split(',')
+        cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
+        # Check if given IPs is blacklisted
+        blacklist_ips = get_blacklist()['blacklistUrls']
+        if len(blacklistIps) == 1: # Given only one IP address to blacklist
+            if blacklistIps[0] not in blacklist_ips:
+                raise Exception('Given IP address is not blacklisted')
+        elif blacklistIps not in blacklist_ips: # Given more than one IP address to blacklist
+            raise Exception('Given IP address is not blacklisted')
+        data = {
+            'blacklistUrls': blacklistIps
+        }
+        jsondata = json.dumps(data)
+        res = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfIps = ''
+        for ip in blacklistIps:
+            listOfIps += '- ' + ip + '\n'
+        return 'Removed the following IP addresses from the blacklist successfully:\n' + listOfIps
+
+    def whitelist_url(url):
+        cmd_url = '/security'
+        whitelistUrls = url.split(',')
+        data = {
+            'whitelistUrls': whitelistUrls
+        }
+        # Get the current whitelist
+        whitelist_urls = get_whitelist()
+        if not whitelist_urls:
+            whitelist_urls['whitelistUrls'] = []
+
+        whitelist_urls['whitelistUrls'] += whitelistUrls
+        jsondata = json.dumps(whitelist_urls)
+        http_request('PUT', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfUrls = ''
+        for url in whitelistUrls:
+            listOfUrls += '- ' + url + '\n'
+        return 'Added the following URLs to the whitelist successfully:\n' + listOfUrls
+
+    def unwhitelist_url(url):
+        cmd_url = '/security'
+        whitelistUrls = url.split(',')
+        data = {
+            'whitelistUrls': whitelistUrls
+        }
+        # Get the current whitelist
+        whitelist_urls = get_whitelist()
+        if not whitelist_urls:
+            whitelist_urls['whitelistUrls'] = []
+
+        # Check if given URL is whitelisted
+        if len(whitelistUrls) == 1: # Given only one URL to whitelist
+            if whitelistUrls[0] not in whitelist_urls['whitelistUrls']:
+                raise Exception('Given host address is not whitelisted')
+        elif whitelistUrls not in whitelist_urls['whitelistUrls']: # Given more than one URL to whitelist
+            raise Exception('Given host address is not whitelisted')
+        # List comprehension to remove requested URLs from the whitelist
+        whitelist_urls['whitelistUrls'] = [x for x in whitelist_urls['whitelistUrls'] if x not in whitelistUrls]
+        jsondata = json.dumps(whitelist_urls)
+        http_request('PUT', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfUrls = ''
+        for url in whitelistUrls:
+            listOfUrls += '- ' + url + '\n'
+        return 'Removed the following URLs from the whitelist successfully:\n' + listOfUrls
+
+    def whitelist_ip(ip):
+        cmd_url = '/security'
+        whitelistIps = ip.split(',')
+        data = {
+            'whitelistUrls': whitelistIps
+        }
+        # Get the current whitelist
+        whitelist_ips = get_whitelist()
+        if not whitelist_ips:
+            whitelist_ips['whitelistUrls'] = []
+
+        whitelist_ips['whitelistUrls'] += whitelistIps
+        jsondata = json.dumps(whitelist_ips)
+        http_request('PUT', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfIps = ''
+        for ip in whitelistIps:
+            listOfIps += '- ' + ip + '\n'
+        return 'Added the following URLs to the whitelist successfully:\n' + listOfIps
+
+    def unwhitelist_ip(ip):
+        cmd_url = '/security'
+        whitelistIps = ip.split(',')
+        data = {
+            'whitelistUrls': whitelistIps
+        }
+        # Get the current whitelist
+        whitelist_ips = get_whitelist()
+        if not whitelist_ips:
+            whitelist_ips['whitelistUrls'] = []
+
+        # Check if given IP is whitelisted
+        if len(whitelistIps) == 1: # Given only one IP to whitelist
+            if whitelistIps[0] not in whitelist_ips['whitelistUrls']:
+                raise Exception('Given IP address is not whitelisted')
+        elif whitelistIps not in whitelist_ips['whitelistUrls']: # Given more than one IP to whitelist
+            raise Exception('Given IP address is not whitelisted')
+        # List comprehension to remove requested IPs from the whitelist
+        whitelist_ips['whitelistUrls'] = [x for x in whitelist_ips['whitelistUrls'] if x not in whitelistIps]
+        jsondata = json.dumps(whitelist_ips)
+        http_request('PUT', cmd_url, jsondata, DEFAULT_HEADERS)
+        listOfIps = ''
+        for ip in whitelistIps:
+            listOfIps += '- ' + ip + '\n'
+        return 'Removed the following IP addresses from the whitelist successfully:\n' + listOfIps
+
+    def get_blacklist():
+        cmd_url = '/security/advanced'
+        result = http_request('GET', cmd_url, None, DEFAULT_HEADERS)
+        return json.loads(result.content)
+
+    def get_whitelist():
+        cmd_url = '/security'
+        result = http_request('GET', cmd_url, None, DEFAULT_HEADERS)
+        return json.loads(result.content)
+
+    def url_lookup(url):
+        response = lookup_request(url)
+        hr = json.loads(response.content)
+        if hr:
+            ioc_context = [None]*len(hr)
+            suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
+            dbot_score_array = [None]*len(hr)
+            for i in range(len(hr)):
+                ioc_context[i] = {}
+                dbot_score_array[i] = {}
+                ioc_context[i]['Address'] = hr[i]['url']
+                dbot_score_array[i]['Indicator'] = hr[i]['url']
+                score = 1
+                if len(hr[i]['urlClassifications']) == 0:
+                    hr[i]['urlClassifications'] = ''
+                else:
+                    hr[i]['urlClassifications'] = ''.join(hr[i]['urlClassifications'])
+                    ioc_context[i]['urlClassifications'] = hr[i]['urlClassifications']
+                    if hr[i]['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN':
+                        score = 0
+                if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
+                    hr[i]['urlClassificationsWithSecurityAlert'] = ''
+                else:
+                    hr[i]['urlClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
+                    if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
+                        score = 2
+                    else:
+                        score = 3
+                    ioc_context[i]['Malicious'] = {
+                        'Vendor': 'Zscaler',
+                        'Description': hr[i]['urlClassificationsWithSecurityAlert']
+                    }
+                    hr[i]['ip'] = hr[i].pop('url')
+                dbot_score_array[i]['Score'] = score
+                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Vendor'] = 'Zscaler'
+
+            ioc_context = createContext(data=ioc_context, removeNull=True)
+            ec = {
+                'URL': ioc_context
+            }
+            title = 'Zscaler URL Lookup'
+            ec['DBotScore'] = dbot_score_array
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': hr,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found.'
+        return entry
+
+    def ip_lookup(ip):
+        response = lookup_request(ip)
+        hr = json.loads(response.content)
+        if hr:
+            ioc_context = [None]*len(hr)
+            suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
+            dbot_score_array = [None]*len(hr)
+            for i in range(len(hr)):
+                ioc_context[i] = {}
+                dbot_score_array[i] = {}
+                ioc_context[i]['Address'] = hr[i]['url']
+                dbot_score_array[i]['Indicator'] = hr[i]['url']
+                score = 1
+                if len(hr[i]['urlClassifications']) == 0:
+                    hr[i]['iplClassifications'] = ''
+                else:
+                    hr[i]['ipClassifications'] = ''.join(hr[i]['urlClassifications'])
+                    ioc_context[i]['ipClassifications'] = hr[i]['ipClassifications']
+                del hr[i]['urlClassifications']
+                if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
+                    hr[i]['ipClassificationsWithSecurityAlert'] = ''
+                else:
+                    hr[i]['ipClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
+                    if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
+                        score = 2
+                    else:
+                        score = 3
+                    ioc_context[i]['Malicious'] = {
+                        'Vendor': 'Zscaler',
+                        'Description': r[i]['ipClassificationsWithSecurityAlert']
+                    }
+                del hr[i]['urlClassificationsWithSecurityAlert']
+                hr[i]['ip'] = hr[i].pop('url')
+                dbot_score_array[i]['Score'] = score
+                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Vendor'] = 'Zscaler'
+
+            ioc_context = createContext(data=ioc_context, removeNull=True)
+            ec = {
+                'IP': ioc_context
+            }
+            title = 'Zscaler IP Lookup'
+            ec['DBotScore'] = dbot_score_array
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': hr,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found.'
+        return entry
+
+    def lookup_request(ioc):
+        cmd_url = '/urlLookup'
+        ioc_list = ioc.split(',')
+        jsondata = json.dumps(ioc_list)
+        response = http_request('POST', cmd_url, jsondata, DEFAULT_HEADERS)
+        return response
 
     ''' EXECUTION CODE '''
     auth = login()
@@ -120,9 +421,29 @@ script:
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
+            # Checks if there is an authenticated session
+            result = http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
             demisto.results('ok')
+        elif demisto.command() == 'url':
+            demisto.results(url_lookup(demisto.args()['url']))
+        elif demisto.command() == 'ip':
+            demisto.results(ip_lookup(demisto.args()['ip']))
         elif demisto.command() == 'zscaler-blacklist-url':
             demisto.results(blacklist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-undo-blacklist-url':
+            demisto.results(unblacklist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-whitelist-url':
+            demisto.results(whitelist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-undo-whitelist-url':
+            demisto.results(unwhitelist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-blacklist-ip':
+            demisto.results(blacklist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-undo-blacklist-ip':
+            demisto.results(unblacklist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-whitelist-ip':
+            demisto.results(whitelist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-undo-whitelist-ip':
+            demisto.results(unwhitelist_ip(demisto.args()['ip']))
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -138,3 +459,140 @@ script:
       default: true
       description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
     description: Adds URL to the blacklist.
+    execution: true
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to search for
+    outputs:
+    - contextPath: URL.Address
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.urlClassifications
+      description: The classification of the URL
+      type: string
+    - contextPath: URL.urlClassificationsWithSecurityAlert
+      description: Classifications with security alert of the URL
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com.
+      Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to search for
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address that was searched
+      type: string
+    - contextPath: IP.ipClassifications
+      description: The classification of the IP address
+      type: string
+    - contextPath: IP.iplClassificationsWithSecurityAlert
+      description: Classifications with security alert of the IP address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason for the vendor to make the
+        decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Look up the categorization of the given set of IP addresses, e.g.,
+      8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot
+      exceed 1024 characters.
+  - name: zscaler-undo-blacklist-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: 'URL to be  removed from blacklist. Should be comma separated (i.e.
+        snapchat.com,tinder.com) '
+    description: Removes URL from the blacklist.
+    execution: true
+  - name: zscaler-whitelist-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: 'URL to be whitelisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
+    description: Adds URL to the whitelist.
+    execution: true
+  - name: zscaler-undo-whitelist-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: 'URL to be  removed from whitelist. Should be comma separated (i.e.
+        snapchat.com,tinder.com) '
+    description: Removes URL from the whitelist.
+    execution: true
+  - name: zscaler-undo-whitelist-ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'IP address to be  removed from whitelist. Should be comma separated
+        (i.e. 8.8.8.8,1.2.3.4) '
+    description: Removes IP from the whitelist.
+    execution: true
+  - name: zscaler-whitelist-ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'IP address to be whitelisted. Should be comma separated (i.e.
+        8.8.8.8,1.2.3.4) '
+    description: Adds IP address to the whitelist.
+    execution: true
+  - name: zscaler-undo-blacklist-ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'IP address to be  removed from blacklist. Should be comma separated
+        (i.e. 8.8.8.8,1.2.3.4) '
+    description: Removes IP address from the blacklist.
+  - name: zscaler-blacklist-ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: 'IP address to be blacklisted. Should be comma separated (i.e.
+        8.8.8.8,1.2.3.4) '
+    description: Adds IP address to the blacklist.
+    execution: true
+releaseNotes: "Added commands: lookup, whitelist, undo-whitelist, undo-blacklist of URLs and IP addresses"
