@@ -26,6 +26,7 @@ args:
   description: domain to discover
 outputs:
 - contextPath: Aquatone.discover
+  description: 'find the targets nameservers and shuffle DNS lookups between them'
 scripttarget: 0
 timeout: 3.6µs
 runonce: true
