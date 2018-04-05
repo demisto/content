@@ -4,7 +4,6 @@ name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"
