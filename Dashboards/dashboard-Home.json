@@ -2,7 +2,6 @@
 	"id": "my-home-dashboard",
 	"version": -1,
 	"fromVersion": "3.5.1",
-	"modified": "2018-03-22T16:03:29.602661+02:00",
 	"period": {
 		"byTo": "",
 		"byFrom": "days",
