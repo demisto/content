@@ -20,6 +20,13 @@
             "timeout": 240
         },
         {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
