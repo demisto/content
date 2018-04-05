@@ -1003,4 +1003,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Fixed functionality of null removal from cells in tableToMarkdown"
