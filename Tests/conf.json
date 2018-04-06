@@ -20,6 +20,13 @@
             "timeout": 240
         },
         {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
@@ -165,6 +172,21 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "CB-Response-Test",
+            "nightly": true
+        },
+        {
+            "integrations": {
+                "name": "carbonblack-v2",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -227,7 +249,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -247,6 +269,19 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ],
     "skipped": [
