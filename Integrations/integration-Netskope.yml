@@ -102,7 +102,7 @@ script:
                 return 'ok';
             }
             return 'not cool';
-        case 'NetskopeEvents':
+        case 'netskope-events':
             if (args.timeperiod === null && args.query === null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + encodeURIComponent(args.starttime) + "&endtime=" + encodeURIComponent(args.endtime));
             } else if (args.timeperiod === null && args.query !== null) {
@@ -171,7 +171,7 @@ script:
                     "Netskope.Events": retArray
                }
             };
-        case 'NetskopeAlerts':
+        case 'netskope-alerts':
            if (args.timeperiod === null && args.query === null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime);
             } else if (args.timeperiod === null && args.query !== null) {
@@ -219,7 +219,7 @@ script:
     }
   type: javascript
   commands:
-  - name: NetskopeEvents
+  - name: netskope-events
     arguments:
     - name: query
       description: filter query (e.g. user eq jtesarz@netskope.com)
@@ -282,7 +282,7 @@ script:
       description: Category
     - contextPath: Netskope.Events
       description: Events
-  - name: NetskopeAlerts
+  - name: netskope-alerts
     arguments:
     - name: type
       required: true
