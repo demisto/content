@@ -585,23 +585,26 @@ script:
     def get_threat():
         hash = demisto.args()['sha256']
         threat = get_threat_request(hash)
-        score = threat.get('cylance_score', None)
-        if score:
-            threat['cylance_score'] = normalize_score(threat['cylance_score'])
-        context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'File':  context_threat
-        }
+        if threat:
+            score = threat.get('cylance_score', None)
+            if score:
+                threat['cylance_score'] = normalize_score(threat['cylance_score'])
+            context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
+            ec = {
+                'File':  context_threat
+            }
 
-        title = 'Cylance Protect Threat ' + hash
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': threat,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, threat, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
+            title = 'Cylance Protect Threat ' + hash
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': threat,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, threat, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'Threat was not found.'
 
         demisto.results(entry)
 
@@ -667,40 +670,43 @@ script:
 
         threats = get_threat_devices_request(threat_hash, page, page_size)['page_items']
 
-        threats_context = threats[:]
+        if threats:
+            threats_context = threats[:]
 
-        for threat in threats:
-            threat['ip_addresses'] = ', '.join(threat['ip_addresses'])
-            threat['mac_addresses'] = ', '.join(threat['mac_addresses'])
+            for threat in threats:
+                threat['ip_addresses'] = ', '.join(threat['ip_addresses'])
+                threat['mac_addresses'] = ', '.join(threat['mac_addresses'])
 
-        file_paths = []
-        for threat in threats_context:
-            file_path = threat.pop('file_path')
-            file_paths.append({
-                'FilePath': file_path
-            })
+            file_paths = []
+            for threat in threats_context:
+                file_path = threat.pop('file_path')
+                file_paths.append({
+                    'FilePath': file_path
+                })
 
-        context_file = {
-            'Sha256': threat_hash,
-            'FilePath': file_paths
-        }
+            context_file = {
+                'Sha256': threat_hash,
+                'FilePath': file_paths
+            }
 
-        context_device = createContext(data=threats_context, keyTransform=underscoreToCamelCase, removeNull=True)
+            context_device = createContext(data=threats_context, keyTransform=underscoreToCamelCase, removeNull=True)
 
-        ec = {
-            'File':  context_file,
-            'Devices(val.id && val.id === obj.id)': context_device
-        }
+            ec = {
+                'File':  context_file,
+                'Devices(val.id && val.id === obj.id)': context_device
+            }
 
-        title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': threats,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
+            title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': threats,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No devices found on given threat.'
 
         demisto.results(entry)
 
