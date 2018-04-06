@@ -21,42 +21,52 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var url = params.url.replace(/[\/]+$/, '');
     var token = params.token;
-    var insecure = params.insecure;
     var context = [];
 
     if (url[url.length - 1] !== '/') {
-        url += '/'; }
-    var sendRequest = function(method, url) {
+        url += '/';
+    }
+
+    function sendRequest(method, url) {
         var result = http(
             url,
             {
                 Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
                 Method: method
             },
-            false,
-            params.useproxy
-            );
+            params.insecure,
+            params.proxy
+        );
 
-            if (result.StatusCode < 200 && result.StatusCode > 299) {
-                throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
-            }
-            if (result.Body === '') {
-                throw 'No content received.' + url + result;
-            }
-            var obj;
-            try {
-                obj = JSON.parse(result.Body);
-            } catch (ex) {
-                throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
-            }
-            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+        }
+        if (result.Body === '') {
+            throw 'No content received.' + url + result;
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        return {
+            body: result.Body,
+            obj: obj,
+            statusCode: result.StatusCode
         };
+    }
 
-    var isEmpty = function(object) {
+    function isEmpty(object) {
         if(Array.isArray(object)){
             return object.length === 0;
         }
@@ -66,25 +76,24 @@ script:
             }
         }
         return true;
-    };
+    }
 
-    var splitToID = function(str){
+    function splitToID(str){
         var temp = str.split('/');
         return temp[temp.length -1];
-    };
+    }
 
-    var removeFromArray = function(keys, array){
+    function removeFromArray(keys, array){
         for(var i=0; i<keys.length; i++){
             array.splice(array.indexOf(keys[i]), 1);
         }
         return array;
-    };
+    }
 
-    var netskopeEvents = function(result) {
+    function netskopeEvents(result) {
         var res = JSON.parse(result.Data);
 
         var md;
-
     }
 
     switch (command) {
@@ -94,21 +103,32 @@ script:
             }
             return 'not cool';
         case 'NetskopeEvents':
-            if (args.timeperiod == null && args.query == null) {
+            if (args.timeperiod === null && args.query === null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + encodeURIComponent(args.starttime) + "&endtime=" + encodeURIComponent(args.endtime));
-            } else if (args.timeperiod == null && args.query != null) {
+            } else if (args.timeperiod === null && args.query !== null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime + "&query=" + encodeURIComponent(args.query));
-            } else if (args.query == null) {
-                if (args.timeperiod == null){
-                    result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + arg.starttime + "&endtime=" + args.endtime);
-                } else {
+            } else if (args.timeperiod !== null && args.query === null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
-                }
             } else {
                 result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod + "&query=" + encodeURIComponent(args.query));
             }
 
-            var keys = ["App","Timestamp","Activity","Object","Hostname","Category","DeviceClassification","User","FromUser","ToUser","ScrIP","AccessMethod","Url","AppCategory"];
+            var keys = [
+                "App",
+                "Timestamp",
+                "Activity",
+                "Object",
+                "Hostname",
+                "Category",
+                "DeviceClassification",
+                "User",
+                "FromUser",
+                "ToUser",
+                "ScrIP",
+                "AccessMethod",
+                "Url",
+                "AppCategory"
+            ];
             var retArray = [];
             result.obj.data.forEach( function (arrayItem)
             {
@@ -125,46 +145,50 @@ script:
                 var srcip =  arrayItem.srcip;
                 var access_method =  arrayItem.access_method;
                 var url =  arrayItem.url;
-                retArray.push({"App" : app, "Timestamp" : timestamp, "Activity" : activity, "Object" : object, "Hostname" : hostname, "Category" : category, "Device_Classification" : device_classification, "User" : user, "From_User" : from_user, "To_User" : to_user, "SourceIP" : srcip, "Access_Method" : access_method, "URL" : url})
+                retArray.push({
+                    "App" : app,
+                    "Timestamp" : timestamp,
+                    "Activity" : activity,
+                    "Object" : object,
+                    "Hostname" : hostname,
+                    "Category" : category,
+                    "Device_Classification" : device_classification,
+                    "User" : user,
+                    "From_User" : from_user,
+                    "To_User" : to_user,
+                    "SourceIP" : srcip,
+                    "Access_Method" : access_method,
+                    "URL" : url
+                });
             });
-            var hr = tblToMd('Events Table', retArray, keys);
+            var hr = tableToMarkdown('Events Table', retArray, keys);
 
             return {
                ContentsFormat: formats.table,
                Type: entryTypes.note,
                HumanReadable: hr,
                EntryContext: {
-                    "Netskope.Events.app" : retArray.App,
-                    "Netskope.Events.timestamp" : retArray.Timestamp,
-                    "Netskope.Events.activity" : retArray.Activity,
-                    "Netskope.Events.object" : retArray.Object,
-                    "Netskope.Events.hostname" : retArray.Hostname,
-                    "Netskope.Events.Category" : retArray.Category,
-                    "Netskope.Events.device_classification" : retArray.Device_Classification,
-                    "Netskope.Events.user" : retArray.User,
-                    "Netskope.Events.from_user" : retArray.From_User,
-                    "Netskope.Events.to_user" : retArray.To_User,
-                    "Netskope.Events.srcip" : retArray.SourceIP,
-                    "Netskope.Events.access_method" : retArray.Access_Method,
-                    "Netskope.Events.url" : retArray.URL
+                    "Netskope.Events": retArray
                }
-            }
-            break;
+            };
         case 'NetskopeAlerts':
-           if (args.timeperiod == null && args.query == null) {
-                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + encodeURIComponent(args.starttime) + "&endtime=" + encodeURIComponent(args.endtime));
-            } else if (args.timeperiod == null && args.query != null) {
+           if (args.timeperiod === null && args.query === null) {
+                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime);
+            } else if (args.timeperiod === null && args.query !== null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime + "&query=" + encodeURIComponent(args.query));
-            } else if (args.query == null) {
-                if (args.timeperiod == null){
-                    result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + arg.starttime + "&endtime=" + args.endtime);
-                } else {
+            } else if (args.timeperiod !== null && args.query === null) {
                 result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
-                }
             } else {
                 result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
             }
-            var keys = ["App","Timestamp","DLP_Profile","DLP_File","Hostname","Policy"];
+            var keys = [
+                "App",
+                "Timestamp",
+                "DLP_Profile",
+                "DLP_File",
+                "Hostname",
+                "Policy"
+            ];
             var retArray = [];
             result.obj.data.forEach( function (arrayItem)
             {
@@ -174,29 +198,24 @@ script:
                 var dlp_file =  arrayItem.dlp_file;
                 var hostname =  arrayItem.hostname;
                 var policy =  arrayItem.policy;
-                retArray.push({"App" : app, "Timestamp" : timestamp, "DLP_Profile" : dlp_profile, "DLP_File" : dlp_file, "Hostname" : hostname, "Policy" : policy})
+                retArray.push({
+                    "App" : app,
+                    "Timestamp" : timestamp,
+                    "DLP_Profile" : dlp_profile,
+                    "DLP_File" : dlp_file,
+                    "Hostname" : hostname,
+                    "Policy" : policy
+                });
             });
-            var hr = tblToMd('Events Table', retArray, keys);
+            var hr = tableToMarkdown('Alerts Table', retArray, keys);
             return {
                ContentsFormat: formats.table,
                Type: entryTypes.note,
                HumanReadable: hr,
                EntryContext: {
-                    "Netskope.Events.app" : retArray.App,
-                    "Netskope.Events.timestamp" : retArray.Timestamp,
-                    "Netskope.Events.activity" : retArray.Activity,
-                    "Netskope.Events.object" : retArray.Object,
-                    "Netskope.Events.hostname" : retArray.Hostname,
-                    "Netskope.Events.Category" : retArray.Category,
-                    "Netskope.Events.device_classification" : retArray.Device_Classification,
-                    "Netskope.Events.user" : retArray.User,
-                    "Netskope.Events.from_user" : retArray.From_User,
-                    "Netskope.Events.to_user" : retArray.To_User,
-                    "Netskope.Events.srcip" : retArray.SourceIP,
-                    "Netskope.Events.access_method" : retArray.Access_Method,
-                    "Netskope.Events.url" : retArray.URL
+                    "Netskope.Alerts": retArray
                }
-            }
+            };
     }
   type: javascript
   commands:
@@ -260,6 +279,9 @@ script:
     - contextPath: Netskope.Events.url
       description: URL
     - contextPath: Netskope.Events.appcategory
+      description: Category
+    - contextPath: Netskope.Events
+      description: Events
   - name: NetskopeAlerts
     arguments:
     - name: type
@@ -293,15 +315,18 @@ script:
     - name: query
       description: "Valid event query described in the query language document\t"
     outputs:
-    - contextPath: Netskope.Events.app
+    - contextPath: Netskope.Alerts.app
       description: Name of Application
-    - contextPath: Netskope.Events.timestamp
+    - contextPath: Netskope.Alerts.timestamp
       description: Timestamp of event
-    - contextPath: Netskope.Events.policy
+    - contextPath: Netskope.Alerts.policy
       description: Name of Policy Triggered
-    - contextPath: Netskope.Events.DLP_File
+    - contextPath: Netskope.Alerts.DLP_File
       description: Name of DLP File that triggered
-    - contextPath: Netskope.Events.Hostname
+    - contextPath: Netskope.Alerts.Hostname
       description: Hostname
-    - contextPath: Netskope.Events.User
+    - contextPath: Netskope.Alerts.User
       description: Email of user
+    - contextPath: Netskope.Alerts
+      description: Alerts
+  runonce: false
