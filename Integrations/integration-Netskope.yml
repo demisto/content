@@ -1,0 +1,307 @@
+commonfields:
+  id: Netskope
+  version: -1
+name: Netskope
+display: Netskope
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAnCAYAAAB9qAq4AAAAAXNSR0IArs4c6QAABjlJREFUWAnFWGtsVEUUnjO72ycaKCDgC4iRBEkI0cRoUCtBBQQhaGp4pC3lB4mGRyAVC9Tu7N3SGsQHaiT+gC1UVFIfQZRHBGwhRInRgBACP6Q+oghCSyK0S7t3jmduei9372N7d/uj98+c+c5jzp3HOWcG2AC/qrq6GQhQ09HdPferTZv+G6A5lzq4kCyASiFeBMRmAJ5Ham3IcGaTEMn+TFSsWzc8VFi4UEpZBLq+vykeP+2nk7ODVRtilRhi24CzkGUc8et2YPNbhUhZmIMoj8cnhnXZRvBIxULJdGSscocW3eUQNbrcC+wPq9K05TLCEmnOKSWAOeOQNTOBvnbDKXydJA3nDBX1gyDfKSsru/WjitH3+RoyBZwtLetKJvE9UvScfQBYUIXxhK+TKKc5bXLgI4onTbKctvOzcnCJEEs5gy12A540YMUSjO16aNmyiJ2/UIgRjMNtdkzRiPJyE4teduKqH9jBxUI8g8g+9DLihamZnDxmzL5FNTXDTD55W2HSViuxN4S4nAmQFmYjPJfJxrfIqmj0Lwb8TgsISEiJV+mktyHwMZyzRy01cgyBtXQDa9wtxBkLdxBhR9+3K4EPCzzdNiucw3Dars+nzYRyjrOHKSSdtIl6koHHpBhXKxH/UGHB01IWoAT8KYhzymTajwUZo0yIvKKensdZJFJPp++RIDpOGZT4ZyIWHUv7lEJg5i9rB01zdKIL6NCc4ACTTSybllairkmLxvvT8XWQQsJjlL9KfmdsX6tPZqisi1XRxt/e3yB+fNoyB6Seerm5vr7dT8ZzD1ZGxRsFDI5RzNszTseYnzJi6pwfLwhOsz+Th0JnK18T8blr17rio7LhmkHKFE8Q3EqeGzyJ8koHwNi9QnQ5B10Si5XTLtrpxHPs/yslawSOW+kAWQVHWv57UojwUMb3knN3mIPQRi4q1DF08mjbYRNTbdnq1YWRvPztxB9lxwdAFwOwGRQzl06ZPj15f2npqbOtrXraDKo865fKKMxsoRLl/aus5PIo1vEgIjaqU3xvUSdbcd8xT78++HUqa++iMJjDRyv3202AqVagLq+uLqakuI4qEk9zwGAVpapVo1kn8anXJ8cZsjzwrq58THnad4HIL34ai/5tORgaMmQFDTvaJThIADJ9gxraOMWzxLu309q/Mki+uIal6ubITk37znJwJOtYQ4VAiUtysAAAY/bU8GEqo+4OSbYmeOGVs9cnaI+fogvWXVTnP913j3EZowyzp0kTP5iMMG38KykGMY6yRlW2JiNoe623kB24NNFTvLOn0Lhz0LFbnNCiu02hCiEmcImHgMM9JqZayiwpXaZetWPWkVWRfFhB8UrK39V0QofahQZC0yl/e5sQa5w2yMmn6DLyrR2XDN/cIUS1HTMOiQLUnZZuVhspgoyXUm+k8rbbLpgrTennCy/dnUIcooL1R5NH47XL69ejZt9sLQdNgNLMtR2atj7FcAIF5xYTz7WN6Lpv/UhLup72wAVy7jjoqXnNmzffcI5jLbGTYfbVXSQPMZFLuW/YkPrGhKbVmvaybft1UBkkJx+ISPjFdQ8OMBqlrCSlxWfNuBZAJU0kkINKg0qwU7kWp+peSeFlP5PqeUS/AJwfVlspzROfjmsPesrRSwGVVdb10VMmE0hBj2ZiNq3AJs5Dn5HD32QSt/OsXGwH7XR5be34MAqNcZ4Ws+wy2dLk7JSgOr4OqrhYUlS0lWZuIZUut2Ya8Qyt2Ho6gVcgFHqBI1udxg8wso74eQAxQ8TXwZKC4mb603nOmhulvsj2XPZ9RV3dcaqCPqYsVBBkUPq5n7Gr66Ugskrm1szYNNT7Hc3ZPBtkkCoV3Th37qwdp9P5Jdf12fSC4IphdjmDBjivA8zyincu2T7A00Gen5/26GMpAz/f0tLiCryJ+voj9ENzMmYfcq73ZnJasxCej0TWGA7C00EKAf9Q/DrqkKXplk1OzOyTTiuX+nxawh4TM1u6nZ9O3kyWftTQcNHEgraeDiplvbd3ARk+aMQwxGtSx/oEi76VyTBljIMSYLHSscmd6El2l37S0HDJhgUm+w3U6qmjRQjXrGQaQT0PGy+wKNtuADxH+tczyQ8Kj8qpOepqOtDB/wdyeUmzWIu6lQAAAABJRU5ErkJggg==
+configuration:
+- display: URL of Netskope Tenant (e.g. tenant.goskope.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Tenant API Token
+  name: token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    var url = params.url.replace(/[\/]+$/, '');
+    var token = params.token;
+    var insecure = params.insecure;
+    var context = [];
+
+    if (url[url.length - 1] !== '/') {
+        url += '/'; }
+    var sendRequest = function(method, url) {
+        var result = http(
+            url,
+            {
+                Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
+                Method: method
+            },
+            false,
+            params.useproxy
+            );
+
+            if (result.StatusCode < 200 && result.StatusCode > 299) {
+                throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
+            }
+            if (result.Body === '') {
+                throw 'No content received.' + url + result;
+            }
+            var obj;
+            try {
+                obj = JSON.parse(result.Body);
+            } catch (ex) {
+                throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+            }
+            return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+        };
+
+    var isEmpty = function(object) {
+        if(Array.isArray(object)){
+            return object.length === 0;
+        }
+        for(var i in object) {
+            if(object[i]){
+                return false;
+            }
+        }
+        return true;
+    };
+
+    var splitToID = function(str){
+        var temp = str.split('/');
+        return temp[temp.length -1];
+    };
+
+    var removeFromArray = function(keys, array){
+        for(var i=0; i<keys.length; i++){
+            array.splice(array.indexOf(keys[i]), 1);
+        }
+        return array;
+    };
+
+    var netskopeEvents = function(result) {
+        var res = JSON.parse(result.Data);
+
+        var md;
+
+    }
+
+    switch (command) {
+        case 'test-module':
+            if (sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=application&timeperiod=3600&limit=1")) {
+                return 'ok';
+            }
+            return 'not cool';
+        case 'NetskopeEvents':
+            if (args.timeperiod == null && args.query == null) {
+                result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + encodeURIComponent(args.starttime) + "&endtime=" + encodeURIComponent(args.endtime));
+            } else if (args.timeperiod == null && args.query != null) {
+                result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime + "&query=" + encodeURIComponent(args.query));
+            } else if (args.query == null) {
+                if (args.timeperiod == null){
+                    result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + arg.starttime + "&endtime=" + args.endtime);
+                } else {
+                result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
+                }
+            } else {
+                result = sendRequest('GET', "https://" + url + "/api/v1/events?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod + "&query=" + encodeURIComponent(args.query));
+            }
+
+            var keys = ["App","Timestamp","Activity","Object","Hostname","Category","DeviceClassification","User","FromUser","ToUser","ScrIP","AccessMethod","Url","AppCategory"];
+            var retArray = [];
+            result.obj.data.forEach( function (arrayItem)
+            {
+                var app =  arrayItem.app;
+                var timestamp =  arrayItem.timestamp;
+                var activity =  arrayItem.activity;
+                var object =  arrayItem.object;
+                var hostname =  arrayItem.hostname;
+                var category =  arrayItem.category;
+                var device_classification =  arrayItem.device_classification;
+                var user =  arrayItem.user;
+                var from_user =  arrayItem.from_user;
+                var to_user =  arrayItem.to_user;
+                var srcip =  arrayItem.srcip;
+                var access_method =  arrayItem.access_method;
+                var url =  arrayItem.url;
+                retArray.push({"App" : app, "Timestamp" : timestamp, "Activity" : activity, "Object" : object, "Hostname" : hostname, "Category" : category, "Device_Classification" : device_classification, "User" : user, "From_User" : from_user, "To_User" : to_user, "SourceIP" : srcip, "Access_Method" : access_method, "URL" : url})
+            });
+            var hr = tblToMd('Events Table', retArray, keys);
+
+            return {
+               ContentsFormat: formats.table,
+               Type: entryTypes.note,
+               HumanReadable: hr,
+               EntryContext: {
+                    "Netskope.Events.app" : retArray.App,
+                    "Netskope.Events.timestamp" : retArray.Timestamp,
+                    "Netskope.Events.activity" : retArray.Activity,
+                    "Netskope.Events.object" : retArray.Object,
+                    "Netskope.Events.hostname" : retArray.Hostname,
+                    "Netskope.Events.Category" : retArray.Category,
+                    "Netskope.Events.device_classification" : retArray.Device_Classification,
+                    "Netskope.Events.user" : retArray.User,
+                    "Netskope.Events.from_user" : retArray.From_User,
+                    "Netskope.Events.to_user" : retArray.To_User,
+                    "Netskope.Events.srcip" : retArray.SourceIP,
+                    "Netskope.Events.access_method" : retArray.Access_Method,
+                    "Netskope.Events.url" : retArray.URL
+               }
+            }
+            break;
+        case 'NetskopeAlerts':
+           if (args.timeperiod == null && args.query == null) {
+                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + encodeURIComponent(args.starttime) + "&endtime=" + encodeURIComponent(args.endtime));
+            } else if (args.timeperiod == null && args.query != null) {
+                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + args.starttime + "&endtime=" + args.endtime + "&query=" + encodeURIComponent(args.query));
+            } else if (args.query == null) {
+                if (args.timeperiod == null){
+                    result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&starttime=" + arg.starttime + "&endtime=" + args.endtime);
+                } else {
+                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
+                }
+            } else {
+                result = sendRequest('GET', "https://" + url + "/api/v1/alerts?token=" + token + "&type=" + encodeURIComponent(args.type) + "&timeperiod=" + args.timeperiod);
+            }
+            var keys = ["App","Timestamp","DLP_Profile","DLP_File","Hostname","Policy"];
+            var retArray = [];
+            result.obj.data.forEach( function (arrayItem)
+            {
+                var app =  arrayItem.app;
+                var timestamp =  arrayItem.timestamp;
+                var dlp_profile =  arrayItem.dlp_profile;
+                var dlp_file =  arrayItem.dlp_file;
+                var hostname =  arrayItem.hostname;
+                var policy =  arrayItem.policy;
+                retArray.push({"App" : app, "Timestamp" : timestamp, "DLP_Profile" : dlp_profile, "DLP_File" : dlp_file, "Hostname" : hostname, "Policy" : policy})
+            });
+            var hr = tblToMd('Events Table', retArray, keys);
+            return {
+               ContentsFormat: formats.table,
+               Type: entryTypes.note,
+               HumanReadable: hr,
+               EntryContext: {
+                    "Netskope.Events.app" : retArray.App,
+                    "Netskope.Events.timestamp" : retArray.Timestamp,
+                    "Netskope.Events.activity" : retArray.Activity,
+                    "Netskope.Events.object" : retArray.Object,
+                    "Netskope.Events.hostname" : retArray.Hostname,
+                    "Netskope.Events.Category" : retArray.Category,
+                    "Netskope.Events.device_classification" : retArray.Device_Classification,
+                    "Netskope.Events.user" : retArray.User,
+                    "Netskope.Events.from_user" : retArray.From_User,
+                    "Netskope.Events.to_user" : retArray.To_User,
+                    "Netskope.Events.srcip" : retArray.SourceIP,
+                    "Netskope.Events.access_method" : retArray.Access_Method,
+                    "Netskope.Events.url" : retArray.URL
+               }
+            }
+    }
+  type: javascript
+  commands:
+  - name: NetskopeEvents
+    arguments:
+    - name: query
+      description: filter query (e.g. user eq jtesarz@netskope.com)
+    - name: timeperiod
+      auto: PREDEFINED
+      predefined:
+      - "3600"
+      - "86400"
+      - "604800"
+      - "2592000"
+      - "5184000"
+      - "7776000"
+      description: TimePeriod
+    - name: starttime
+      description: start time in epoch
+    - name: endtime
+      description: end time in epoch
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application
+      - page
+      - audit
+      description: Type of Event (e.g Application, Page, Audit)
+    - name: limit
+      description: Limit the number of events returned (useful for pagination in combination
+        with skip). Positive integer less than 5000.
+    - name: skip
+      description: Skip over some of the events (useful for pagination in combination
+        with limit)
+    outputs:
+    - contextPath: Netskope.Events.app
+      description: Name of Application
+    - contextPath: Netskope.Events.timestamp
+      description: Timestamp of event
+    - contextPath: Netskope.Events.activity
+      description: Activity of event
+    - contextPath: Netskope.Events.object
+      description: Document/object from event
+    - contextPath: Netskope.Events.hostname
+      description: Hostname of device
+    - contextPath: Netskope.Events.Category
+      description: Netskope application category (e.g. Cloud Storage, Webmail, etc)
+    - contextPath: Netskope.Events.device_classification
+      description: Device classification (e.g. managed vs unmanaged)
+    - contextPath: Netskope.Events.user
+      description: User
+    - contextPath: Netskope.Events.from_user
+      description: Login IDs for cloud apps
+    - contextPath: Netskope.Events.to_user
+      description: Destination user IDs
+    - contextPath: Netskope.Events.srcip
+      description: Source IP
+    - contextPath: Netskope.Events.access_method
+      description: Access method (e.g. client, reverse proxy, Secure Forwarder, etc)
+    - contextPath: Netskope.Events.url
+      description: URL
+    - contextPath: Netskope.Events.appcategory
+  - name: NetskopeAlerts
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - Compromised Credential
+      - DLP
+      - Legal Hold
+      - malsite
+      - Malware
+      - policy
+      - quarantine
+      - Remediation
+      - watchlist
+    - name: timeperiod
+      auto: PREDEFINED
+      predefined:
+      - "3600"
+      - "86400"
+      - "604800"
+      - "2592000"
+      - "5184000"
+      - "7776000"
+      description: Time period (e.g. Last 60 minutes, Last 24 hours, etc.)
+    - name: starttime
+      description: Start time in epoch
+    - name: endtime
+      description: End time in epoch
+    - name: query
+      description: "Valid event query described in the query language document\t"
+    outputs:
+    - contextPath: Netskope.Events.app
+      description: Name of Application
+    - contextPath: Netskope.Events.timestamp
+      description: Timestamp of event
+    - contextPath: Netskope.Events.policy
+      description: Name of Policy Triggered
+    - contextPath: Netskope.Events.DLP_File
+      description: Name of DLP File that triggered
+    - contextPath: Netskope.Events.Hostname
+      description: Hostname
+    - contextPath: Netskope.Events.User
+      description: Email of user
