@@ -599,6 +599,7 @@ script:
 
         # handle attachments
         if item.attachments:
+            incident['attachment'] = [];
             for attachment in item.attachments:
                 if isinstance(attachment, FileAttachment):
                     # file attachment
@@ -610,6 +611,20 @@ script:
                     label_attachment_id_type = 'attachmentItemsId'
                 labels.append({'type': label_attachment_type, 'value': attachment.name})
                 labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
+
+                # save the attachment
+                file_result = fileResult(attachment.name, attachment.content)
+
+                # check for error
+                if file_result['Type'] == entryTypes['error']:
+                    demisto.error(file_result['Contents'])
+                    raise Exception(file_result['Contents'])
+
+                # save attachment to incident
+                incident['attachment'].append({
+                    'path': file_result['FileID'],
+                    'name': attachment.name
+                })
 
         # handle headers
         if item.headers:
