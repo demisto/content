@@ -72,4 +72,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/bs4
-releaseNotes: "-"
