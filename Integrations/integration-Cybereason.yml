@@ -174,7 +174,6 @@ script:
         var headers = headersDict['login'];
         var body = 'username=' + username + '&password=' + password;
         var completeUrl = server + '/' + url;
-
         var res = http(
             completeUrl,
             {
@@ -250,12 +249,14 @@ script:
 
         var body = buildQuery(queryFields, path);
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
             if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -342,7 +343,6 @@ script:
         ];
 
         var body = buildQuery(connectionFields, path);
-
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
 
         var elements = res.data.resultIdToElementDataMap;
@@ -371,6 +371,92 @@ script:
         entry.ContentsFormat = formats.json;
 
         return entry;
+    }
+
+    var isolateMachine = function(cookies) {
+        pylumId = getpylumId(cookies, args.machine);
+        url = 'rest/monitor/global/commands/isolate';
+        body = {
+            "pylumIds":[pylumId]
+        };
+
+        res = sendRequest(url, headersDict['query'], JSON.stringify(body), cookies);
+
+        if (res[pylumId] === 'Failed') {
+            throw 'Failed to isolate machine.'
+        } else if (res[pylumId] === 'Succeeded') {
+            ec = {
+                'Cybereason(val.Machine && val.Machine === obj.Machine)': {
+                    'Machine': args.machine,
+                    'IsIsolated': true
+                },
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+                    'Hostname': args.machine
+                }
+            }
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': 'Machine was isolated successfully.',
+                'EntryContext': ec
+            }
+        }
+    }
+
+    var unisolateMachine = function(cookies) {
+        pylumId = getpylumId(cookies, args.machine);
+        url = 'rest/monitor/global/commands/un-isolate';
+        body = {
+            "pylumIds":[pylumId]
+        };
+
+        res = sendRequest(url, headersDict['query'], JSON.stringify(body), cookies);
+
+        if (res[pylumId] === 'Failed') {
+            throw 'Failed to unisolate machine.'
+        } else if (res[pylumId] === 'Succeeded') {
+            ec = {
+                'Cybereason(val.Machine && val.Machine === obj.Machine)': {
+                    'Machine': args.machine,
+                    'IsIsolated': false
+                },
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+                    'Hostname': args.machine
+                }
+            }
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': 'Machine was unisolated successfully.',
+                'EntryContext': ec
+            }
+        }
+    }
+
+    var getpylumId = function(cookies, machine) {
+        var queryFields = ['pylumId'];
+        var path = [
+            {
+                requestedType: 'Machine',
+                filters: [
+                    {facetName: 'pylumId', values: [machine]}
+                ],
+                isResult: true
+            }
+        ];
+
+        var body = buildQuery(queryFields, path);
+        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+        var elements = res.data.resultIdToElementDataMap;
+        for (var key in elements) {
+            if ('simpleValues' in elements[key]){
+                return elements[key].simpleValues.pylumId.values[0]
+            }
+        }
     }
 
     if (command != 'test-module') {
@@ -406,6 +492,14 @@ script:
 
         case 'cybereason-query-connections':
             res = queryConnections(cookies);
+            break;
+
+        case 'cybereason-isolate-machine':
+            res = isolateMachine(cookies);
+            break;
+
+        case 'cybereason-unisolate-machine':
+            res = unisolateMachine(cookies);
             break;
 
         case 'cybereason-login':
@@ -537,4 +631,41 @@ script:
     - contextPath: Connection.EndTime
       description: End time of the connection
     description: Searches for connections.
+  - name: cybereason-isolate-machine
+    arguments:
+    - name: machine
+      required: true
+      default: true
+      description: Machine name to be isolated
+    outputs:
+    - contextPath: Cybereason.Machine
+      description: Machine name
+      type: string
+    - contextPath: Cybereason.IsIsolated
+      description: Is the machine isolated
+      type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
+    description: Isolates a machine that has been infected from the rest of the network
+    execution: true
+  - name: cybereason-unisolate-machine
+    arguments:
+    - name: machine
+      required: true
+      default: true
+      description: Machine name to be un-isolated
+    outputs:
+    - contextPath: Cybereason.Machine
+      description: Machine name
+      type: string
+    - contextPath: Cybereason.IsIsolated
+      description: Is the machine isolated
+      type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
+    description: Stops isolation of a machine
+    execution: true
 hidden: false
+releaseNotes: "Added isolate and un-isolate machines commands"

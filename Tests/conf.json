@@ -10,6 +10,10 @@
             "playbookID": "pyEWS_Test"
         },
         {
+            "integrations": "Salesforce",
+            "playbookID": "SalesforceTestPlaybook"
+        },
+        {
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
@@ -18,6 +22,13 @@
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -165,6 +176,21 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "CB-Response-Test",
+            "nightly": true
+        },
+        {
+            "integrations": {
+                "name": "carbonblack-v2",
+                "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -227,7 +253,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -243,6 +269,23 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ],
     "skipped": [
