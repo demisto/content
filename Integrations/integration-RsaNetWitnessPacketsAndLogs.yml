@@ -85,7 +85,7 @@ script:
         return urlToReturn;
     }
 
-    function isObjectEmpty (obj) {
+    function isObjectEmpty(obj) {
         return Object.keys(obj).length === 0;
     }
 
@@ -98,9 +98,7 @@ script:
                 if (element[TYPE] && element[VALUE]) {
                     var index = element[GROUP];
                     if(!(queryResults[index])){
-                        queryResults[index] = {
-                            sessionId: index
-                        };
+                        queryResults[index] = {};
                     }
                     if(!(queryResults[index][element[TYPE]])) {
                         queryResults[index][element[TYPE]] = element[VALUE];
@@ -108,36 +106,52 @@ script:
                     else{
                         if(!(queryResults[index][element[TYPE]] instanceof Array)){
                             var currValue = queryResults[index][element[TYPE]];
-                            queryResults[index][element[TYPE]] = [currValue];
+                            if(currValue !== element[VALUE]){
+                                queryResults[index][element[TYPE]] = [currValue];
+                                queryResults[index][element[TYPE]].push(element[VALUE]);
+                            }
                         }
-                        queryResults[index][element[TYPE]].push(element[VALUE]);
+                        else {
+                            if(queryResults[index][element[TYPE]].indexOf(element[VALUE]) === -1){
+                                queryResults[index][element[TYPE]].push(element[VALUE]);
+                            }
+                        }
                     }
                 }
             });
         }
     }
 
-    function extractFromData(data){
-        var queryResults = {};
+    function mapArrayResults(fields, arrayResults){
+        var TYPE  = 'type';
+        var VALUE = 'value';
+        if(fields && Array.isArray(fields)) {
+            fields.forEach(function (element) {
+               var currObject = {};
+               currObject[element[TYPE]] = element[VALUE];
+               arrayResults.push(currObject);
+            });
+        }
+    }
 
+    function extractFromData(data, mapper, results){
         if (Array.isArray(data)) {
             data.forEach(function (element) {
                  var fields = dq(element, 'results.fields');
-                 mapQueryResults(fields, queryResults);
+                 mapper(fields, results);
             });
         } else if ((typeof data) ==='object') {
              var fields = dq(data, 'results.fields');
-             mapQueryResults(fields, queryResults);
+             mapper(fields, results);
         }
-
-        return queryResults;
     }
 
     function buildQueryMdAndContext(response) {
         //Check if we have values
         var data = parseResponse(response);
 
-        var queryResults = extractFromData(data);
+        var queryResults = {};
+        extractFromData(data, mapQueryResults, queryResults);
         var flatQueryResult = [];
         if(!isObjectEmpty(queryResults)) {
              for(var key in queryResults) {
@@ -150,7 +164,7 @@ script:
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
                 EntryContext: {
-                    'NetWitness.Events(val.sessionId == obj.sessionId)': flatQueryResult
+                    'NetWitness.Events': flatQueryResult
                 },
                 ReadableContentsFormat: formats.markdown
             };
@@ -163,10 +177,15 @@ script:
         //Check if we have values
         var data = parseResponse(response);
 
-        var queryResults = extractFromData(data);
+        var queryResults = {};
+        extractFromData(data, mapQueryResults, queryResults);
         var flatQueryResult = [];
         if(!isObjectEmpty(queryResults)) {
             for(var key in queryResults) {
+                 //for(var key in queryResults) {
+              //  var hit = Object.keys(queryResults[key])[0];
+                //var value = queryResults[key][hit];
+                //flatQueryResult.push(value);
                 flatQueryResult.push(queryResults[key]);
             }
             var hr = tableToMarkdown(command, flatQueryResult);
@@ -176,7 +195,7 @@ script:
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
                 EntryContext: {
-                    'NetWitness.SearchHits(val.sessionId == obj.sessionId)': flatQueryResult
+                    'NetWitness.SearchHits': flatQueryResult
                 },
                 ReadableContentsFormat: formats.markdown
             };
@@ -189,20 +208,17 @@ script:
         //Check if we have values
         var data = parseResponse(response);
 
-        var queryResults = extractFromData(data);
-        var flatQueryResult = [];
-        if(!isObjectEmpty(queryResults)) {
-            for(var key in queryResults) {
-                flatQueryResult.push(queryResults[key]);
-            }
-            var hr = tableToMarkdown(command, flatQueryResult);
+        var arrayResults = [];
+        extractFromData(data, mapArrayResults, arrayResults);
+        if(arrayResults.length !== 0) {
+            var hr = tableToMarkdown(command, arrayResults);
             return {
                 Type: entryTypes.note,
                 Contents: data,
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
                 EntryContext: {
-                    'NetWitness.Values(val.sessionId == obj.sessionId)': flatQueryResult
+                    'NetWitness.Values': arrayResults
                 },
                 ReadableContentsFormat: formats.markdown
             };
@@ -212,25 +228,20 @@ script:
     }
 
     function buildTimelineMdAndContext(response) {
-        //Check if we have values
+         //Check if we have values
         var data = parseResponse(response);
 
-        var queryResults = extractFromData(data);
-        var flatQueryResult = [];
-        var keysToDisplay = [];
-        if(!isObjectEmpty(queryResults)) {
-            for(var key in queryResults) {
-                flatQueryResult.push(queryResults[key]);
-            }
-
-            var hr = tableToMarkdown(command, flatQueryResult, keysToDisplay);
+        var arrayResults = [];
+        extractFromData(data, mapArrayResults, arrayResults);
+        if(arrayResults.length !== 0) {
+            var hr = tableToMarkdown(command, arrayResults);
             return {
                 Type: entryTypes.note,
                 Contents: data,
                 ContentsFormat: formats.json,
                 HumanReadable: hr,
                 EntryContext: {
-                    'NetWitness.Timeline(val.sessionId == obj.sessionId)': flatQueryResult
+                    'NetWitness.Timeline': arrayResults
                 },
                 ReadableContentsFormat: formats.markdown
             };
@@ -300,17 +311,21 @@ script:
         }
     }
 
-    function parseDownloadResponse(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                var currentTime = new Date();
+    function createFileEntry(data){
+         var currentTime = new Date();
                 var fileName = command + '_at_' + currentTime.getTime();
                 return {
                     Type: 3,
-                    FileID: saveFile(resp.Bytes),
+                    FileID: saveFile(data),
                     File: fileName,
                     Contents: fileName
                 };
+    }
+
+    function parseDownloadResponse(resp) {
+        if (resp.StatusCode === 200) {
+            try {
+               return createFileEntry(resp.Bytes);
             } catch (e) {
                 return e;
             }
@@ -407,7 +422,7 @@ script:
                 Method: method,
                 Username: params.credentials.identifier,
                 Password: params.credentials.password,
-                Accept: responseType,
+                Accept: responseType || '',
                 Body: body || ''
             },
             !params.secure,
@@ -454,13 +469,7 @@ script:
         var data = parseResponse(response);
         var blob = data.blob;
 
-        var md =  '### Results for ' + command + ':\n' + blob;
-        return {
-            Type: entryTypes.note,
-            Contents: blob,
-            ContentsFormat: formats.json,
-            HumanReadable: md
-        };
+        return createFileEntry(atob(blob));
     }
 
     var commandToPath = {
@@ -691,8 +700,8 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     outputs:
-    - contextPath: NetWitness.Events
-      description: all events of netwitness
+    - contextPath: NetWitness.SearchHits
+      description: all search hits in netwitness
     description: Search for pattern matches in many sessions or packets
   - name: netwitness-search
     deprecated: true
@@ -709,8 +718,8 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     outputs:
-    - contextPath: NetWitness.Events
-      description: all events of netwitness
+    - contextPath: NetWitness.SearchHits
+      description: all search hits in netwitness
     description: Searches for matches in session/packet content
   - name: netwitness-query
     arguments:
@@ -739,7 +748,7 @@ script:
       description: Use the instance that is mapped to this concentrator address
     outputs:
     - contextPath: NetWitness.Events
-      description: all events of NetWitness
+      description: all query events of NetWitness
     description: Performs a query against the meta database
   - name: netwitness-packets
     arguments:
@@ -782,26 +791,6 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     description: Retrieves the meta id range for the session range
-  - name: nw-sdk-validate
-    arguments:
-    - name: op
-      required: true
-      description: <string, {enum-one:query|values}> The operation to validate
-    - name: validateLanguage
-      description: <bool, optional> If true (default is false), language tokens and
-        syntax will be validated, otherwise just syntax will be validated
-    - name: fieldName
-      description: <string, optional> Required if validating a 'values' operation.
-        The field to retrieve values for.
-    - name: where
-      description: <string, optional> Optional if validating a 'values' operation.
-        The filter criteria to be validated.
-    - name: query
-      description: <string, optional> Required if validating a 'query' operation.
-        The query string to be validated.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Validate a query or values call without execution
   - name: nw-sdk-content
     arguments:
     - name: session
@@ -829,80 +818,6 @@ script:
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
     description: Returns the packet content for a session
-  - name: nw-sdk-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-sdk-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-sdk-timeline
-    arguments:
-    - name: time1
-      description: <date-time, optional> The starting time in seconds since 1970 or
-        a time string (YYYY-MMM-DD HH:MM:SS), if greater than time2, then the whole
-        time range is returned
-    - name: time2
-      description: <date-time, optional> The ending time in seconds since 1970 or
-        a time string (YYYY-MMM-DD HH:MM:SS)
-    - name: timezone
-      description: <int32, optional> The timezone of the local computer to receive
-        the data, hour offset from GMT [-13 to 13]
-    - name: size
-      required: true
-      description: <uint32, {range:1 to 1677721}> The max number of entries to return
-    - name: flags
-      description: <string, optional> The flags to use for the timeline.  Can be a
-        number (bitwise mask) or comma separated values like sessions, size, packets,
-        order-ascending, order-descending, ignore-cache or clear-cache.
-    - name: where
-      description: <string, optional> Optional where clause for filtering the data
-    - name: bookendHours
-      description: uint32, optional> The number of hours outside the given time1,
-        time2 which will become part of the cache.  Default is 24 hours.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Returns the count of sessions/size/packets in discrete time intervals
   - name: nw-sdk-summary
     arguments:
     - name: flags
@@ -946,466 +861,28 @@ script:
         less than this value will be returned.
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
+    outputs:
+    - contextPath: NetWitness.Values
+      description: NetWitness values
     description: Performs a value count query and returns the matching values for
       a report
-  - name: nw-database-info
+  - name: nw-database-dump
     arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-database-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-decoder-info
-    arguments:
-    - name: update
-      description: <bool, optional> If true (default is false), will automatically
-        update the respective decoder settings, otherwise it will just output the
-        calculations
-    - name: op
-      description: <string, optional, {enum-one:normal|10g}> The operating mode, 'normal'
-        or '10g'. Default is normal.
-    - name: memory
-      description: <size, optional> If non-zero, will use that setting as installed
-        physical RAM (e.g., memory="24 GiB"). This is useful for hybrids and/or all-in-one
-        machines where the service will need to share memory.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-decoder-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-decoder-logStats
-    arguments:
-    - name: op
-      description: <string, optional, {enum-one:clear|remove|save}> The log stats
-        operation.  If clear, all log stats state will be reset and no results will
-        be returned. If save, the current stats are saved for the next time the log
-        decoder is restarted.
-    - name: deviceFilter
-      description: <string, optional> A regex that will only return matching devices.
-    - name: forwarderFilter
-      description: <string, optional> A regex that will only return matching forwarders.
-    - name: sourceFilter
-      description: <string, optional> A regex that will only return matching sources.
-    - name: timeFilter
-      description: <string, optional> This parameter forms a window from the current
-        time which will return any device that falls outside that window.  So if you
-        pass 300, it will return all devices that have not sent a log in over 5 minutes.  You
-        can pass a hard datetime (YYYY-MM-DD HH:MM:SS) or a time duration (HH:MM:SS
-        or just number of seconds). Not compatible with the lastReceived parameter.
-    - name: lastReceived
-      description: <string, optional> Compare the last received log time from each
-        device with the passed in operator (<, <=, >, >=) and time/duration. For example,
-        lastReceived="<60" will return all devices that have sent logs less than 60
-        seconds ago. lastReceived=">=2014-04-23 16:00:00" will return all devices
-        that have sent logs on or after April 4, 2014 at 4pm UTC.
-    - name: lastUpdated
-      description: <string, optional> Compare the last updated log time from each
-        device with the passed in operator (<, <=, >, >=) and time/duration. For example,
-        lastUpdated="<60" will return all devices that have had logs updated less
-        than 60 seconds ago. lastUpdated=">=2014-04-23 16:00:00" will return all devices
-        that have had logs updated on or after April 4, 2014 at 4pm UTC.
-    - name: timeFormat
-      description: <string, optional, {enum-one:posix|simple}> Specify the time format
-        that is returned (posix, simple), default is simple (YYYY-MM-DD HH:MM:SS)
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Retrieve count and last receive times for log devices, sources and
-      forwarders.
-  - name: nw-index-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-index-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-decoderParsers-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-decoderParsers-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-decoderParsers-ipdevice
-    arguments:
-    - name: op
+    - name: session
       required: true
-      description: <string, {enum-one:edit|describe}> The operation to perform (edit|describe).
-    - name: entries
-      description: <string, optional> The IP entries. StringParam in format of '+/-ip=device'.
-        + means adding or editing a map entry, - means delete a map entry
-    - name: reload
-      description: <bool, optional> If true, reload parsers when command finishes.
+      description: <uint64> The session id to dump
+    - name: type
+      description: <string, optional, {enum-one:db|nwd}> The dump type
+    - name: source
+      description: <string, optional, {enum-any:s|m|p}> The types of data to dump,
+        default is all
+    - name: verbose
+      description: <bool, optional> If true (default is false), dumps more information
+    - name: file
+      description: <string, optional> Optional filename to use for NWD type, otherwise
+        filename is assumed to be _sessionid_.nwd
     - name: concentratorAddress
       description: Use the instance that is mapped to this concentrator address
-    description: Map IP to Device type in log parsing. Takes effect after parser reload.
-  - name: nw-logs-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-logs-pull
-    arguments:
-    - name: d1
-      description: <uint64, optional> The first log id number to retrieve, this is
-        mutually exclusive with id2
-    - name: id2
-      description: <uint64, optional> The last log id number that will be sent, defaults
-        to most recent log message when id1 or id2 is not sent
-    - name: count
-      description: <uint32, optional, {range:1 to 10000}> The number of logs to pull
-    - name: timeFormat
-      description: <string, optional, {enum-one:posix|simple}> The time format used
-        in each log message, default is posix time (seconds since 1970)
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Downloads N log entries
-  - name: nw-logs-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-sys-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-sys-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Returns detailed information about the node
-  - name: nw-users-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns the list of child nodes
-  - name: nw-users-info
-    arguments:
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: Returns detailed information about the node
-  - name: nw-decoder-import
-    arguments:
-    - name: entryID
-      description: The entry IF of file from the War Room.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    description: Import new data into the decoder
-  - name: nw-concentrator-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: 'Returns the list of child nodes security.roles: everyone'
-  - name: nw-broker-ls
-    arguments:
-    - name: depth
-      description: <uint32, optional> How many levels deep to return node info, default
-        is 1
-    - name: options
-      description: <string, optional> What types of nodes to return information about,
-        default is all nodes.  Can be a number (bitwise mask) or comma separated values
-        like config, stat, folder, session, connection, channel, restart-needed or
-        pretty-print.
-    - name: exclude
-      description: '<string, optional> Comma separated list of nodes or node pathnames
-        to exclude (wildcards allowed: * and ?)'
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Node.display
-      description: Node display
-    - contextPath: NetWitness.Node.handle
-      description: Node handle
-    - contextPath: NetWitness.Node.name
-      description: Node name
-    - contextPath: NetWitness.Node.nodeType
-      description: Node type
-    - contextPath: NetWitness.Node.parentHandle
-      description: Node parent handle
-    - contextPath: NetWitness.Node.path
-      description: Node path
-    description: 'Returns the list of child nodes security.roles: everyone'
+    description: Dumps information out of the database in nwd formatted files
 fromversion: 3.5.0
 releaseNotes: "-"
