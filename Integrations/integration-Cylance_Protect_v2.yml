@@ -815,7 +815,7 @@ script:
         if isinstance(last_run, unicode):
             last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S.%f') # Converts string to datetime object
 
-        threats = get_threats_request()['page_items']
+        threats = get_threats_request().get('page_items', [])
 
         incidents = []
         for threat in threats:
