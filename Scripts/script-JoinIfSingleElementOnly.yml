@@ -22,7 +22,7 @@ args:
 - name: value
   required: true
   default: true
-  description: The array to join is has single element
+  description: The array to join if it has single element
   isArray: true
 scripttarget: 0
 releaseNotes: 'add transformer JoinIfSingleElementOnly'
