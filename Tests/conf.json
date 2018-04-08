@@ -286,6 +286,10 @@
                 }
             ],
             "playbookID": "CarbonBlackLiveResponseTest"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         }
     ],
     "skipped": [
