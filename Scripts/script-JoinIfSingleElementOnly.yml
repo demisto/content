@@ -16,7 +16,7 @@ tags:
 - transformer
 - general
 comment: Return the single element in case the array has only 1 element in it, otherwise
-  return the whole array.
+  return the whole array
 enabled: true
 args:
 - name: value
