@@ -85,7 +85,8 @@ script:
           getMappingByLevel: 'archer-get-mapping-by-level',
           manualFetch: 'archer-manually-fetch-incident',
           getFile: 'archer-get-file',
-          uploadFile: 'archer-upload-file'
+          uploadFile: 'archer-upload-file',
+          addToDetailedAnalysis: 'archer-add-to-detailed-analysis',
         };
 
         var urlDictionary = {};
@@ -661,6 +662,26 @@ script:
             );
         }
 
+        function getContentSubFormSoapRequest(token, appId, fieldId, fieldValues) {
+            return (
+            '<?xml version="1.0" encoding="utf-8"?> ' +
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+            '   <soap:Body>' +
+            '       <CreateSubformRecord xmlns="http://archer-tech.com/webservices/">' +
+            '           <sessionToken>' + token + '</sessionToken>' +
+            '           <subformModuleId>' + appId + '</subformModuleId>' +
+            '           <subformFieldId>' + fieldId +'</subformFieldId>' +
+            '           <fieldValues>' +
+            '               <![CDATA[' +
+            '                   <CreateSubformRecord>' + fieldValues + '</CreateSubformRecord>' +
+            '               ]]>' +
+            '           </fieldValues>' +
+            '       </CreateSubformRecord>' +
+            '   </soap:Body>' +
+            '</soap:Envelope>'
+            );
+        }
+
         // helper functions
 
         function extractObjectFromXML(xml, path) {
@@ -734,6 +755,16 @@ script:
                             fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
                             break;
                         case 9:
+                            if (Array.isArray(fieldsToValue[key])){
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
+                                for(var i=1; i<fieldsToValue[key].length; i++){
+                                    fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
+                                }
+                                fields+= '</Field>';
+                            } else{
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
+                            }
+                            break;
                         case 18:
                             fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
                             for(var i=1; i<fieldsToValue[key].length; i++){
@@ -769,6 +800,15 @@ script:
                             fields+= '</Field>';
                             break;
                         case 8:
+                            if(fieldsToValue[key] && fieldsToValue[key] !== undefined){
+                                fields += '<Field id="' + mapping[key].Id + '">';
+                                fields += '<Users>';
+                                fields += '<User id="' + fieldsToValue[key] + '"></User>';
+                                fields += '</Users>';
+                                fields += '</Field>';
+                                break;
+                            }
+
                         case 15:
                             //fieldsToValue[key] is of the form {groups: [group1, group2,...], users : [user1, user2,...]}
                             fields+= '<Field id="' + mapping[key].Id + '" >';
@@ -789,6 +829,32 @@ script:
                                 fields += '</Users>'
                             }
                             fields+='</Field>';
+                            break;
+                        case 23:
+                            if (Array.isArray(fieldsToValue[key])){
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
+                                for(var i=1; i<fieldsToValue[key].length; i++){
+                                    fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
+                                }
+                                fields+= '</Field>';
+                            } else{
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key] + '" />';
+                            }
+                            break;
+                        case 24: // subform
+                            // get subform id
+                            if (Array.isArray(fieldsToValue[key])){
+                                fields += '<Field id="' + mapping[key].Id +'" value="' + fieldsToValue[key][0] +'">';
+                                for(var i=1; i<fieldsToValue[key].length; i++){
+                                    fields+= '<MultiValue value="'+fieldsToValue[key][i]+'" />';
+                                }
+                                fields+= '</Field>';
+                            } else{
+                                var idToCheck = mapping[key].Id;
+                                var secFields = '<Field id="29906" value="' + fieldsToValue[key]+'" />';
+                                var subFormId = getSubformId(idToCheck, 411, secFields);
+                                fields += '<Field id="' + idToCheck +'" value="' + subFormId + '" />';
+                            }
                             break;
                         //case 14, 16 : not supported yet
                     }
@@ -1388,7 +1454,46 @@ script:
             return parsedJSON;
         }
 
-        function createIncidentsArr(results){
+        function getFullRecord(contentId, moduleId) {
+            /* getFullRecord is used to get the full record data(including full data on its inner records) */
+
+            var seenRecords = {};
+            // used later on to check if we need to bring more mappings
+            var seenModuleIds = {};
+            seenModuleIds[moduleId] = moduleId;
+
+            // Getting base record
+            var record = getRecord(commands.getRecord, contentId, moduleId, false)[0].keyValsForFetch;
+
+            // iterating over the base records inner records and getting their entire object
+            var innerRecords = verifyOrMakeArray(record.innerRecords); // contains all possible inner records
+            innerRecords.forEach(function (innerRecord){
+                if (innerRecord){
+                    if (innerRecord.levelId === "33"){ //buggy record type in Archer
+                        return;
+                    }
+                    var innerRecordContentId = innerRecord.contentId;
+                    if (seenRecords[innerRecordContentId]){
+                        innerRecord.Record = seenRecords[innerRecordContentId];
+                    } else {
+                        var innerRecordModuleId = innerRecord.ModuleId || args.applicationId;
+                        if(innerRecordModuleId && !(innerRecordModuleId in seenModuleIds)){
+                            // we have an inner record from another module, so we bring the field mappings of the new module
+                            extendAppIdMapping(innerRecordModuleId);
+                            seenModuleIds[innerRecordModuleId] = innerRecordModuleId;
+                        }
+                        var recordRes = getRecord(commands.getRecord, innerRecordContentId, innerRecordModuleId, false);
+                        var innerRecordRes = recordRes.length > 0 ? recordRes[0].keyValsForFetch : innerRecord;
+                        innerRecord.Record = innerRecordRes;
+                        seenRecords[innerRecordContentId] = innerRecordRes;
+                    }
+                }
+            });
+
+            return record;
+        }
+
+        function createIncidentsArr(results, dataArgs){
             var incidents = [];
             var lastTime;
             var details = "";
@@ -1460,6 +1565,8 @@ script:
                         }
                     }
                     var raw = JSON.stringify(res);
+                    labels.push({ 'type': 'ModuleId', 'value': dataArgs.applicationId});
+                    labels.push({ 'type': 'ContentId', 'value': res.Id});
                     labels.push({ 'type': 'rawJSON', 'value': raw });
 
                     incidents.push({
@@ -1474,18 +1581,18 @@ script:
             return incidents;
         }
 
-        function buildIncident(results, contentId){
+        function buildIncident(results, contentId, moduleId){
             var labels = [];
             var lastTime;
             var details = "";
 
-            if (results && results.Contents) {
-                var fields = Object.keys(results.Contents);
+            if (results) {
+                var fields = Object.keys(results);
                 if (fields) {
                     for (var j = 0; j < fields.length; j++) {
                         var fieldName = fields[j];
                         var fieldValue;
-                        fieldValue = results.Contents[fieldName];
+                        fieldValue = results[fieldName];
                         var labelDic = {}
                         if (fieldName === "Record"){
                             var recordValues = fieldValue;
@@ -1543,7 +1650,9 @@ script:
                         }
                     }
                 }
-                var raw = JSON.stringify(results.Contents);
+                var raw = JSON.stringify(results);
+                labels.push({ 'ModuleId': moduleId});
+                labels.push({ 'ContentId': contentId});
                 labels.push({'rawJSON': raw });
 
                 return {
@@ -1583,6 +1692,19 @@ script:
 
             return contentIdsArr;
         }
+
+        function getSubformId(fieldId, applicationId, fieldValues) {
+            /* Used to get the id of a subform field*/
+
+            var SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
+            var token = getAuthToken();
+            var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
+            var response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
+            destroyAuthToken(token);
+            var result = dq(response, 'Envelope.Body.CreateSubformRecordResponse.CreateSubformRecordResult');
+            return result;
+        }
+
         // integration commands functions
 
         function createRecord(command, dataArgs) {
@@ -1632,7 +1754,6 @@ script:
 
         function updateRecord(command, dataArgs) {
             // corresponds to 'archer-update-record' command. Updates the field/s of a record in Archer
-
             var appId = dataArgs.applicationId;
             var contentId = dataArgs.contentId;
             if (typeof dataArgs.fieldsToValue === 'object'){
@@ -1998,7 +2119,7 @@ script:
             dataArgs.fetchFilter = params.fetchFilter;
 
             var results = searchRecords(cmd, dataArgs);
-            var incidents = createIncidentsArr(results);
+            var incidents = createIncidentsArr(results, dataArgs.applicationId);
 
             if (incidents.length > 0){
                 lastTime = incidents[incidents.length-1].occurred;
@@ -2169,8 +2290,8 @@ script:
             }
 
             contentIdsArr.forEach(function (contentId){
-                var record = getRecord(commands.getRecord, contentId, applicationId, false)[0];
-                incidents.push(buildIncident(record, contentId));
+                var record = getFullRecord(contentId, applicationId);
+                incidents.push(buildIncident(record, contentId, applicationId));
             })
             return incidents;
         }
@@ -2192,7 +2313,7 @@ script:
         }
 
         function uploadFile(args){
-            // corresponds to 'archer-upload-file' command. Uploads a file to Archer and adds its id to the context attached files
+            // corresponds to 'archer-upload-file' command. Uploads a file from Demisto to Archer
 
             var applicationId = args.applicationId;
             var contentId = args.contentId;
@@ -2230,6 +2351,43 @@ script:
             return "File uploaded successfully";
         }
 
+        function addToDetailedAnalysis(args){
+            // corresponds to 'archer-add-to-detailed-analysis' command. Adds more data to detailed analysis
+
+            var detailedAnalysisArcherIds = [];
+            var applicationId = args.applicationId;
+            var contentId = args.contentId;
+            var incidentId = args.incidentId;
+
+            if (incidentId){
+                contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            }
+            var value = args.value;
+
+            currentRecord = getRecord(commands.getRecord, contentId, applicationId, false)[0].Contents;
+            if (currentRecord['Detailed Analysis']){
+                currentDetailedAnalysis = verifyOrMakeArray(currentRecord['Detailed Analysis']);
+                currentDetailedAnalysis.forEach(function(item){
+                    if(item['Notes: Tracking ID']){
+                        detailedAnalysisArcherIds.push(item['Notes: Tracking ID']);
+                    }
+                })
+            }
+
+            var fields = '<Field id="29906" value="' + value +'" />';
+            detailedAnalysisArcherIds.push(getSubformId(30186, 411, fields));
+
+            var args = {
+                "applicationId": applicationId,
+                "contentId": contentId,
+                "fieldsToValue": {"Detailed Analysis": detailedAnalysisArcherIds},
+                "incidentId": incidentId
+            }
+            updateRecord(commands.updateRecord, args);
+
+            return "Detailed Analysis updated successfully";
+        }
+
         function test() {
             var isFetch = params.isFetch;
             if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -2241,6 +2399,7 @@ script:
             return 'ok';
         }
 
+        extendAppIdMapping(411);
         switch (command) {
             case 'test-module':
                 return test();
@@ -2278,6 +2437,8 @@ script:
                 return getFile(args);
             case commands.uploadFile:
                 return uploadFile(args);
+            case commands.addToDetailedAnalysis:
+                return addToDetailedAnalysis(args);
             case 'fetch-incidents':
                 return fetchIncidents(args);
             default:
@@ -2511,6 +2672,20 @@ script:
       description: The entry id of the file in Demisto's context
     description: Uploads a file to Archer and adds its id to the context attached
       files
+  - name: archer-add-to-detailed-analysis
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application which we want to upload the file to
+    - name: contentId
+      description: The Content (record) ID to update
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    - name: value
+      required: true
+      description: 'The value you want to add to Detailed Analysis. For example: value="test
+        string"'
+    description: Add data to Archer's Detailed Analysis field
   isfetch: true
   runonce: false
 releaseNotes: "-"
