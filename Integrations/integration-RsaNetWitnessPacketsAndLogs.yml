@@ -96,7 +96,7 @@ script:
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
                 if (element[TYPE] && element[VALUE]) {
-                    var index = element[GROUP];
+                    var index = element[GROUP] || 0;
                     if(!(queryResults[index])){
                         queryResults[index] = {};
                     }
@@ -107,12 +107,14 @@ script:
                         if(!(queryResults[index][element[TYPE]] instanceof Array)){
                             var currValue = queryResults[index][element[TYPE]];
                             if(currValue !== element[VALUE]){
+                                // Ignore duplicates
                                 queryResults[index][element[TYPE]] = [currValue];
                                 queryResults[index][element[TYPE]].push(element[VALUE]);
                             }
                         }
                         else {
                             if(queryResults[index][element[TYPE]].indexOf(element[VALUE]) === -1){
+                                // Ignore duplicates
                                 queryResults[index][element[TYPE]].push(element[VALUE]);
                             }
                         }
@@ -182,10 +184,6 @@ script:
         var flatQueryResult = [];
         if(!isObjectEmpty(queryResults)) {
             for(var key in queryResults) {
-                 //for(var key in queryResults) {
-              //  var hit = Object.keys(queryResults[key])[0];
-                //var value = queryResults[key][hit];
-                //flatQueryResult.push(value);
                 flatQueryResult.push(queryResults[key]);
             }
             var hr = tableToMarkdown(command, flatQueryResult);
@@ -287,6 +285,37 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, params)
         };
+    }
+
+    function buildDatabaseMetaMdContext(response){
+        var data = parseResponse(response);
+        var params = data.params;
+        if(params.length === 0){
+            return 'No results found';
+        }
+
+        var results = { '0': {
+           MetaArray: params[0]['MetaArray'],
+           dbFile: params[0]['dbFile']
+        }};
+
+        params.splice(0, 1);
+        mapQueryResults(params, results);
+        var flattenedResult = [];
+        for(var key in results){
+            flattenedResult.push(results[key]);
+        }
+
+        return {
+                Type: entryTypes.note,
+                Contents: data,
+                ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown('Database dump meta', flattenedResult),
+                EntryContext: {
+                    'NetWitness.DatabaseDump(val.sessionid == obj.sessionid)': flattenedResult
+                },
+                ReadableContentsFormat: formats.markdown
+            };
     }
 
     function parseResponse(resp, isXml) {
@@ -671,6 +700,8 @@ script:
         case 'nw-logs-pull':
         case 'nw-decoder-logStats':
             return buildParamsMd(doReq('GET', commandToPath[command], args, args.responseType));
+        case 'nw-database-dump':
+            return buildDatabaseMetaMdContext(doReq('GET', commandToPath[command], args, args.responseType));
         default:
             return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
     }
