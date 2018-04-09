@@ -27,10 +27,20 @@ script: |-
   if (ips && (!Array.isArray(ips) || ips.length > 0)) {
       return 'yes';
   }
-  var indicatorsRes = executeCommand("findIndicators", {"query":"(reputation:Bad or reputation:Suspicious)  and investigationIDs:"+investigation.id,"size":1});
+  var query = "(reputation:Bad";
+  if (args.includeSuspicious == 'yes') {
+      query = query + " or reputation:Suspicious";
+  }
+  query = query + ")";
+
+  if ((args.maliciousQueryOverride) && (args.maliciousQueryOverride.length > 0)) {
+      query = args.maliciousQueryOverride;
+  }
+
+  var indicatorsRes = executeCommand("findIndicators", {"query":query+" and investigationIDs:"+investigation.id,"size":1});
   if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
       // we have results, so we found a maliciuos indicator for this investigation
-      return 'yes'
+      return 'yes';
   }
   return 'no';
 type: javascript
@@ -47,8 +57,10 @@ args:
   predefined:
   - "yes"
   - "no"
-  defaultValue: "no"
   description: Whether to check also suspicious indicators - yes/no
+  defaultValue: "no"
+- name: maliciousQueryOverride
+  description: Override the query to search for malicious indicators in Demisto
 outputs:
 - contextPath: "yes"
   description: if found any Malicious File/URL/IP in the investigation

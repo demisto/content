@@ -1,6 +1,6 @@
 commonfields:
   id: TestPYCommonServer
-  version: 32
+  version: -1
 name: TestPYCommonServer
 script: |-
   INFO = {'b' : 1,
@@ -58,11 +58,37 @@ script: |-
 
       demisto.results('XML tests finished successfully!')
 
+  def test_tbl_to_md():
+      data = [
+          {
+              'header_1': 'a1',
+              'header_2': 'b1',
+              'header_3': 'c1'
+          },
+          {
+              'header_1': 'a2',
+              'header_2': 'b2',
+              'header_3': 'c2'
+          },
+          {
+              'header_1': 'a3',
+              'header_2': 'b3',
+              'header_3': 'c3'
+          }
+      ]
+      table = tableToMarkdown('tableToMarkdown test', data)
+      demisto.results(table)
+
+      table = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
+      demisto.results(table)
+
+      demisto.results('ok')
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
       'MD' : test_entry_MD,
+      'TBLMD' : test_tbl_to_md
   }
 
   test_type = demisto.args()['test_type']
@@ -83,7 +109,7 @@ args:
   - DQ
   - MD
   - XML
+  - TBLMD
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0
-releaseNotes: "turned script to main testing platform of python common server API"
