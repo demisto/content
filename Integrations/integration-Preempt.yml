@@ -373,7 +373,7 @@ script:
             "Contents": json.dumps(result),
             "HumanReadable": tableToMarkdown("User's regular endpoints", pretty_results, ["HostName", "IsOwnedByUser"]),
             "EntryContext": {
-                'Preempt.Endpoint': pretty_results
+                'Endpoint': pretty_results
             }
         })
         sys.exit(0)
