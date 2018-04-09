@@ -76,10 +76,24 @@ script: |-
               'header_3': 'c3'
           }
       ]
+
+      empty_data = []
+      empty_data2 = {}
+      empty_data3 = None
+
       table = tableToMarkdown('tableToMarkdown test', data)
       demisto.results(table)
 
       table = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
+      demisto.results(table)
+
+      table = tableToMarkdown('tableToMarkdown empty test', empty_data)
+      demisto.results(table)
+
+      table = tableToMarkdown('tableToMarkdown empty test2', empty_data2)
+      demisto.results(table)
+
+      table = tableToMarkdown('tableToMarkdown empty test3', empty_data3)
       demisto.results(table)
 
       demisto.results('ok')
