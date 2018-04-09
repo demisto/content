@@ -958,6 +958,9 @@ script:
     - name: maxDirSize
       description: Once the toplevel directory exceeds this size, the oldest files
         will get cleaned up.
+    - name: renderFlags
+      description: ' <uint32, optional> Bitwise mask to control options, (see NwContentFlags
+        in NwSDK.h)'
     description: Returns the packet content for a session
   - name: nw-sdk-summary
     arguments:
