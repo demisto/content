@@ -32,9 +32,7 @@
     "investigation.type.1": { "type": "string", "value": "Restricted" },
     "investigation.type.9": { "type": "string", "value": "Playground" },
     "investigation.created": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
-    "investigation.closed": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" },
-    "investigation.openDuration": { "type": "duration" },
-    "incident.openDuration": { "type": "duration" }
+    "investigation.closed": { "type": "date", "value": "Mon, 02 Jan 2006 15:04:05 MST" }
   },
   "sections": [
     {
