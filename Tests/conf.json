@@ -380,6 +380,11 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "LogRhythm",
+            "playbookID": "LogRhythm-Test-Playbook",
+            "timeout": 200
         }
     ]
 }
