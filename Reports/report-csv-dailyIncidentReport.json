@@ -1,5 +1,6 @@
 {
   "id": "csvDailyIncidentReport",
+  "releaseNotes": "Removed open duration as it is not set for open incident",
   "name": "Daily incidents",
   "description": "Daily summary of all current open incidents (CSV format).",
   "tags": [],
