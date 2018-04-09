@@ -7,6 +7,53 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
+  /**
+   * Returns true if string starts with search string
+   * @param {String} search - The string to be searched
+   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0. 
+   * @return {Boolean} true if string starts with <search> string
+   */
+  if (!String.prototype.startsWith) {
+      String.prototype.startsWith = function(search, pos) {
+          return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+      };
+  }
+
+  /**
+   * Returns true if string ends with search string
+   * @param {String} search - The string to be searched
+   * @param {Integer} this_len - Optional. If provided it is used as the length of search string. If omitted, the default value is the length of the string.
+   * @return {Boolean} true if string ends with <search> string
+   */
+  if (!String.prototype.endsWith) {
+      String.prototype.endsWith = function(search, this_len) {
+          if (this_len === undefined || this_len > this.length) {
+              this_len = this.length;
+          }
+          return this.substring(this_len - search.length, this_len) === search;
+      };
+  }
+
+  /**
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
+   *
+   * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
+   */
+  function fixUrl(url) {
+      if (url.endsWith('/')) {
+          return url.slice(0, -1);
+      }
+
+      return url;
+  }
+  /**
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
+   *
+   * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
+   */
+  var removeLastSlash = fixUrl;
 
   /**
    * Formats a string in place
@@ -1894,3 +1941,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Added fixUrl, endsWith and startsWith to string type

@@ -2,14 +2,15 @@
   "id": "investigationSummaryReport",
   "name": "Investigation Summary",
   "description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
-  "fromVersion": "3.6.0",
+  "fromVersion": "3.1.0",
+  "toVersion": "3.5.1",
   "tags": [],
   "createdBy": "DBot",
   "type": "pdf",
   "orientation": "portrait",
   "recipients": [],
   "system": true,
-  "releaseNotes": "Added linked incidents section",
+  "releaseNotes": "-",
   "reportType": "investigation",
   "decoder": {
     "incident.status.0": { "type": "string", "value": "Not Assigned" },
@@ -809,33 +810,6 @@
         "rowPos": 500001,
         "columnPos": 100,
         "tableColumns": [{ "key": "Avatar", "hidden": true} , "Name", "Email", "Phone Number"],
-        "classes": "collapsing selectable unstackable"
-      }
-    },
-    {
-      "type": "text",
-      "data": "Linked Incidents",
-      "layout": {
-        "rowPos": 600000,
-        "columnPos": 100,
-        "style": {
-          "textAlign": "left",
-          "fontSize": 24,
-          "color": "#4e6767",
-          "pageBreakBefore": "always"
-        }
-      }
-    },
-    {
-      "type": "table",
-      "query": {
-        "type": "sessionData",
-        "filter": "linkedIncidents"
-      },
-      "layout": {
-        "rowPos": 600001,
-        "columnPos": 100,
-        "tableColumns": ["ID", "Name", "Status", "Closure Reason", "Close Notes"],
         "classes": "collapsing selectable unstackable"
       }
     }
