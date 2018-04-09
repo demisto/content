@@ -4,7 +4,8 @@ import yaml
 import glob
 import shutil
 
-CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts']
+CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
+                'Classifiers', 'Layouts', 'IncidentFields']
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
 BUNDLE_POST = 'bundle_post'
@@ -84,6 +85,10 @@ def main(circle_artifacts):
     print 'copying content descriptor to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST]:
         shutil.copyfile('content-descriptor.json', os.path.join(b, 'content-descriptor.json'))
+
+    print 'copying common server doc to bundles'
+    for b in [BUNDLE_PRE, BUNDLE_POST]:
+        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)

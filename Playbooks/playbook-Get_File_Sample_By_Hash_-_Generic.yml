@@ -42,6 +42,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       SHA256:
         complex:
@@ -71,6 +74,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       MD5:
         complex:
@@ -87,12 +93,32 @@ tasks:
           "y": 195
         }
       }
+  "4":
+    id: "4"
+    taskid: 905fca17-4fc2-4efb-8db3-322ff915dee8
+    type: title
+    task:
+      id: 905fca17-4fc2-4efb-8db3-322ff915dee8
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 240,
+        "height": 385,
         "width": 810,
         "x": 50,
         "y": 50
