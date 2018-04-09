@@ -50,7 +50,8 @@ script:
         'xml': 'text/xml',
         'octet-stream': 'application/octet-stream'
     };
-
+    var SSL_PORT = '56105';
+    var NON_SSL_PORT = '50105';
     var LAST_HOURS = 'lastHours';
     var LAST_MINUTES = 'lastMinutes';
     var QUERY = 'query';
@@ -70,13 +71,29 @@ script:
 
     function getUrl(currentUrl){
         var urlToReturn;
-        if(args && args.concentratorAddress){
-            urlToReturn = fixUrl(args.concentratorAddress);
-            // Check if port was provided
-            if(!urlToReturn.match(/:(\d.*)/)){
-                urlToReturn += ":" + params.port;
+        if(args && args.concentratorIP){
+            // Check if port was provided, omit it if yes
+            var match = args.concentratorIP.match(/(.*):/);
+            urlToReturn = match ? match[1] : args.concentratorIP;
+            var port = args.concentratorPort;
+            if(port){
+                if(port === SSL_PORT){
+                    urlToReturn = urlToReturn.indexOf('https://') === -1 ? 'https://' + urlToReturn : urlToReturn;
+                }
+                else{
+                    urlToReturn = urlToReturn.indexOf('http://') === -1 ? 'http://' + urlToReturn : urlToReturn;
+                }
             }
-            delete(args.concentratorAddress);
+            else{
+                urlToReturn = urlToReturn.indexOf('http://') === -1 ? 'http://' + urlToReturn : urlToReturn;
+                port = NON_SSL_PORT;
+            }
+
+
+            urlToReturn = urlToReturn + ":" + port;
+
+            delete(args.concentratorIP);
+            delete(args.concentratorPort);
         }
         else {
             urlToReturn = currentUrl;
@@ -100,22 +117,27 @@ script:
                     if(!(queryResults[index])){
                         queryResults[index] = {};
                     }
-                    if(!(queryResults[index][element[TYPE]])) {
-                        queryResults[index][element[TYPE]] = element[VALUE];
+
+                    var type = element[TYPE].replace(/\.([a-z,A-Z,0-9])/g, function (g) {
+                        return g[1].toUpperCase();
+                    });
+
+                    if(!(queryResults[index][type])) {
+                        queryResults[index][type] = element[VALUE];
                     }
                     else{
-                        if(!(queryResults[index][element[TYPE]] instanceof Array)){
-                            var currValue = queryResults[index][element[TYPE]];
+                        if(!(queryResults[index][type] instanceof Array)){
+                            var currValue = queryResults[index][type];
                             if(currValue !== element[VALUE]){
                                 // Ignore duplicates
-                                queryResults[index][element[TYPE]] = [currValue];
-                                queryResults[index][element[TYPE]].push(element[VALUE]);
+                                queryResults[index][type] = [currValue];
+                                queryResults[index][type].push(element[VALUE]);
                             }
                         }
                         else {
-                            if(queryResults[index][element[TYPE]].indexOf(element[VALUE]) === -1){
+                            if(queryResults[index][type].indexOf(element[VALUE]) === -1){
                                 // Ignore duplicates
-                                queryResults[index][element[TYPE]].push(element[VALUE]);
+                                queryResults[index][type].push(element[VALUE]);
                             }
                         }
                     }
@@ -130,7 +152,11 @@ script:
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
                var currObject = {};
-               currObject[element[TYPE]] = element[VALUE];
+               //var type = dotToSpace(element[TYPE]).replace(/ /g,'');
+               var type = element[TYPE].replace(/\.([a-z,A-Z])/g, function (g) {
+                   return g[1].toUpperCase();
+               });
+               currObject[type] = element[VALUE];
                arrayResults.push(currObject);
             });
         }
@@ -340,9 +366,13 @@ script:
         }
     }
 
-    function createFileEntry(data){
+    function createFileEntry(data, extension){
          var currentTime = new Date();
                 var fileName = command + '_at_' + currentTime.getTime();
+                if(extension){
+                    fileName += extension;
+                }
+
                 return {
                     Type: 3,
                     FileID: saveFile(data),
@@ -354,7 +384,11 @@ script:
     function parseDownloadResponse(resp) {
         if (resp.StatusCode === 200) {
             try {
-               return createFileEntry(resp.Bytes);
+               var extension;
+               if(args && args.fileExt){
+                   extension = args.fileExt;
+               }
+               return createFileEntry(resp.Bytes, extension);
             } catch (e) {
                 return e;
             }
@@ -435,11 +469,14 @@ script:
         return q;
     }
 
-    function doReq(method, path, args, resType, body) {
+    function doReq(method, path, args, responseType, body) {
         var urlToUse = getUrl(url);
         var parametersUrl = encodeParams(args);
-        var responseType = resType ? RESPONSE_TYPES[resType] : 'application/json';
-        var fullUrl = urlToUse + path + parametersUrl + '&force-content-type=' + responseType;
+        //var responseType = resType ? RESPONSE_TYPES[resType] : 'application/json';
+        var fullUrl = urlToUse + path + parametersUrl;
+        if(responseType){
+             fullUrl += ('&force-content-type=' + responseType);
+        }
 
         if (params.expiry) {
             fullUrl += '&expiry=' + params.expiry;
@@ -492,13 +529,6 @@ script:
             HumanReadable: tableToMarkdown(command, data.import.data)
         };
 
-    }
-
-    function parseBlob(response){
-        var data = parseResponse(response);
-        var blob = data.blob;
-
-        return createFileEntry(atob(blob));
     }
 
     var commandToPath = {
@@ -660,18 +690,18 @@ script:
         case 'nw-decoder-import':
             return decoderImport('/decoder/import');
         case 'netwitness-packets':
-            return parseDownloadResponse(doReq('GET', commandToPath[command], args, args.responseType));
+            return parseDownloadResponse(doReq('GET', commandToPath[command], args));
+        case 'nw-sdk-content':
+            return parseDownloadResponse(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['octet-stream']));
         case 'netwitness-msearch':
-            return buildMSearchMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildMSearchMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'netwitness-search':
         case 'netwitness-query':
-            return buildQueryMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildQueryMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-sdk-timeline':
-            return buildTimelineMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildTimelineMdAndContext(doReq('GET', commandToPath[command], RESPONSE_TYPES['json']));
         case 'nw-sdk-values':
-            return buildValuesMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
-        case 'nw-sdk-content':
-            return parseBlob(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildValuesMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-sdk-info':
         case 'nw-sdk-ls':
         case 'nw-broker-ls':
@@ -690,20 +720,20 @@ script:
         case 'nw-sys-ls':
         case 'nw-users-info':
         case 'nw-users-ls':
-            return buildNodeMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildNodeMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-decoderParsers-ipdevice':
         case 'nw-sdk-validate':
         case 'nw-users-unlock':
         case 'nw-sdk-summary':
-            return buildStringMdAndContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildStringMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-sdk-session':
         case 'nw-logs-pull':
         case 'nw-decoder-logStats':
-            return buildParamsMd(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildParamsMd(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-database-dump':
-            return buildDatabaseMetaMdContext(doReq('GET', commandToPath[command], args, args.responseType));
+            return buildDatabaseMetaMdContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         default:
-            return parseResponse(doReq('GET', commandToPath[command], args, args.responseType));
+            return parseResponse(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
     }
   type: javascript
   commands:
@@ -728,10 +758,13 @@ script:
     - name: flags
       description: <string, optional> Flags to use for search.  This is a comma separated
         list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     outputs:
-    - contextPath: NetWitness.SearchHits
+    - contextPath: NetWitness.SearchHits.hit
       description: all search hits in netwitness
     description: Search for pattern matches in many sessions or packets
   - name: netwitness-search
@@ -746,8 +779,11 @@ script:
     - name: search
       required: true
       description: <string> The search string to use
-    - name: concentratorAddress
+    - name: concentratorIP
       description: Use the instance that is mapped to this concentrator address
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     outputs:
     - contextPath: NetWitness.SearchHits
       description: all search hits in netwitness
@@ -775,11 +811,34 @@ script:
       description: <uint64, optional> Filter for date and time
     - name: lastMinutes
       description: <uint64, optional> Filter by last minutes
-    - name: concentratorAddress
+    - name: concentratorIP
       description: Use the instance that is mapped to this concentrator address
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     outputs:
-    - contextPath: NetWitness.Events
-      description: all query events of NetWitness
+    - contextPath: NetWitness.Events.ipSrc
+      description: IP source of the event
+    - contextPath: NetWitness.Events.aliasIp
+      description: Alias IP of the event
+    - contextPath: NetWitness.Events.aliasHost
+      description: Alias host of the event
+    - contextPath: NetWitness.Events.ipDst
+      description: IP Destination of the event
+    - contextPath: NetWitness.Events.direction
+      description: Direction of the event
+    - contextPath: NetWitness.Events.content
+      description: Content type of the event
+    - contextPath: NetWitness.Events.sessionid
+      description: Session ID of the event
+    - contextPath: NetWitness.Events.tcpSrcport
+      description: TCP source port of the event
+    - contextPath: NetWitness.Events.tcpDstport
+      description: TCP destination port of the event
+    - contextPath: NetWitness.Events.packets
+      description: Number of event packets
+    - contextPath: NetWitness.Events.client
+      description: Client of the event
     description: Performs a query against the meta database
   - name: netwitness-packets
     arguments:
@@ -805,11 +864,28 @@ script:
     - name: flags
       description: <uint32, optional> Additional flags as defined by the NwPackets
         SDK function
-    - name: concentratorAddress
+    - name: concentratorIP
       description: Use the instance that is mapped to this concentrator address
-    outputs:
-    - contextPath: NetWitness.Events
-      description: all events of NetWitness
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
+    - name: render
+      auto: PREDEFINED
+      predefined:
+      - text
+      - hex
+      - packets
+      - web
+      - mail
+      - raw
+      - rtp
+      - voip
+      - meta
+      - im
+      - files
+      - pcap
+      description: 'The render type (defined in NwSDK.h) for content or one of the
+        following render types: text,hex,packets,web,mail,raw,rtp,voip,im,files,pcap'
     description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
@@ -819,43 +895,80 @@ script:
     - name: id2
       required: true
       description: <uint64> The ending session id
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     description: Retrieves the meta id range for the session range
   - name: nw-sdk-content
     arguments:
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     - name: session
       required: true
-      description: <uint64> The session id to retrieve packet content for
-    - name: packet
-      description: <uint64, optional> The packet id of the first packet of the session,
-        in case the session has rolled out
-    - name: maxSize
-      description: <size, optional> The max number of bytes to return, zero means
-        no limit
-    - name: failOnCacheMiss
-      description: <bool, optional> If true, the content call fails if the NWD is
-        not in the cache.  This is used by optimized caching code only.
+      description: The session id that will be returned in the response.
     - name: renderType
-      description: <uint32, optional> The render type (see NwContentTypes in NwSDK.h),
-        pass zero to pick best option.  Not specifying this parameter always results
-        in an NWD and renderFlags and renderOptions are not considered.
-    - name: renderFlags
-      description: <uint32, optional> Bitwise mask to control options, (see NwContentFlags
-        in NwSDK.h)
-    - name: renderOptions
-      description: <string, optional> An encoded string params containing additional
-        options for controlling the operation.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+      auto: PREDEFINED
+      predefined:
+      - text
+      - hex
+      - packets
+      - web
+      - mail
+      - raw
+      - rtp
+      - voip
+      - meta
+      - im
+      - files
+      - pcap
+      description: 'The render type (defined in NwSDK.h) for content or one of the
+        following render types: text, hex, packets, web, mail, raw, rtp, voip, meta,
+        im, files or pcap'
+    - name: maxSize
+      description: The maximum size of the session returned (bytes), zero is unlimited.
+        Default is zero.
+    - name: base64
+      description: If 1, encode the multipart/mixed response as base64. Otherwise
+        binary is the default.
+    - name: flags
+      description: Optional flags for content rendering, see the SDK header file NwContent
+        flags parameter for more info.
+    - name: includeFileTypes
+      description: Semicolon separated list of file extensions that will be extracted
+        (e.g. .ext1;.ext2).
+    - name: excludeFileTypes
+      description: Semicolon separated list of file extensions that will be excluded
+        (e.g. .ext1;.ext2).
+    - name: renameFileTypes
+      description: 'Used to rename certain files from one or more extensions to another.
+        For example: renameFileTypes=.download|.octet-stream|.program|.exe;.jpeg|.jpg'
+    - name: fileExt
+      description: Extension of the saved file
+    - name: where
+      description: Where clause which will be evaluated to determine which sessions
+        to stream back
+    - name: subdirFileTypes
+      description: Group these files into the specified directory, e.g. documents=.doc;.xls;.pdf;
+        images=.png;.gif;.jpg;.jpeg;
+    - name: maxDirSize
+      description: Once the toplevel directory exceeds this size, the oldest files
+        will get cleaned up.
     description: Returns the packet content for a session
   - name: nw-sdk-summary
     arguments:
     - name: flags
       description: <string, optional> Optional SDK flags.  Can be a number (bitwise
         mask) or comma separated values like default or ignore-cache.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     description: Retrieves summary information from the databases
   - name: nw-sdk-values
     arguments:
@@ -890,8 +1003,11 @@ script:
     - name: max
       description: <string, optional> The upper limit of values to return.  Only values
         less than this value will be returned.
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     outputs:
     - contextPath: NetWitness.Values
       description: NetWitness values
@@ -912,8 +1028,11 @@ script:
     - name: file
       description: <string, optional> Optional filename to use for NWD type, otherwise
         filename is assumed to be _sessionid_.nwd
-    - name: concentratorAddress
-      description: Use the instance that is mapped to this concentrator address
+    - name: concentratorIP
+      description: Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
+        SSL
     description: Dumps information out of the database in nwd formatted files
 fromversion: 3.5.0
 releaseNotes: "-"
