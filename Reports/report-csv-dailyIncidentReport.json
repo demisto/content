@@ -122,7 +122,7 @@
       "layout": {
         "rowPos": 4,
         "columnPos": 1,
-        "tableColumns": ["id", "name", "occurred", "created", "type", "owner", "severity", "status", "phase", "dueDate", "details", "openDuration" ],
+        "tableColumns": ["id", "name", "occurred", "created", "type", "owner", "severity", "status", "phase", "dueDate", "details" ],
         "classes": "striped stackable small very compact"
       }
     }
