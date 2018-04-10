@@ -27,7 +27,7 @@
 				"name": "My Tasks",
 				"dataType": "tasks",
 				"widgetType": "list",
-				"query": "assignee:{me} and (state:Waiting or state:inprogress or state:error) and -state:skipped",
+				"query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
 				"sort": [
 					{
 						"field": "dueDate",
@@ -173,16 +173,16 @@
 						"isEnabled": true,
 						"items": {
 							"#00CD33": {
-								"value": 1
+								"value": -1
 							},
 							"#FAC100": {
-								"value": 10
+								"value": 5
 							},
 							"#FF1B15": {
-								"value": 999
+								"value": 10
 							}
 						},
-						"type": "below"
+						"type": "above"
 					}
 				},
 				"size": 0,
