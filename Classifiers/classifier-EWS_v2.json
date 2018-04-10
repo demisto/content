@@ -282,7 +282,6 @@
 		}
 	},
 	"unclassifiedCases": {},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "importance",

@@ -182,7 +182,6 @@
 		}
 	},
 	"unclassifiedCases": {},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "brand",
