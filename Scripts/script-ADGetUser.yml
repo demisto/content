@@ -36,7 +36,7 @@ script: |-
 
 
   def escapeSpecialCharacters(s):
-      return re.sub(r'([\()]+)', lambda r : '\\' + r.group(), s)
+      return re.sub(r'([\()])', lambda r : '\\' + r.group(), s)
 
 
   def createAccountEntities(t,attrs):
