@@ -1,0 +1,263 @@
+commonfields:
+  id: Centreon
+  version: -1
+name: Centreon
+display: Centreon
+category: Case Management
+image: data:image/png;base64,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
+description: IT & Network Monitoring
+configuration:
+- display: Server URL (e.g. http://147.75.33.100:20016/)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import requests
+    import time
+    import json
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SERVER_NAME=demisto.params()['server']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+
+    BASE_URL= SERVER_NAME + 'centreon/api/index.php?'
+    USE_SSL = not demisto.params().get('insecure', False)
+    DEFAULT_HEADERS = {
+        'Content-Type': 'application/json'
+    }
+
+    ''' HELPER FUNCTIONS '''
+    def httpRequest(method, urlSuffix, data, headers):
+        data = {} if data is None else data
+
+        url = BASE_URL + urlSuffix
+        LOG('running %s request with url=%s\theaders=%s' % (method, url, headers))
+
+        try:
+            res = requests.request(method,
+                url,
+                verify=USE_SSL,
+                params=data,
+                headers=headers
+            )
+
+            if res.status_code not in (200, 204):
+                raise Exception('Your request failed with the following error: ' + res.reason)
+        except Exception, e:
+            LOG(e)
+            raise(e)
+        return res.json()
+
+    def httpPost(urlSuffix, data=None, files=None):
+        data = {} if data is None else data
+        url = BASE_URL + urlSuffix
+        LOG('running request with url=%s\tdata=%s\tfiles=%s' % (url, data, files))
+        try:
+            res = requests.post(url, data=data)
+            if res.status_code != 200:
+                raise Exception('Your request failed with the following error: ' + res.reason)
+            return res.json()
+
+        except Exception, e:
+            LOG(e)
+            raise (e)
+
+    def login():
+      # retrieves an authentication token from Centreon
+        cmdUrl = 'action=authenticate'
+        data = {
+            'username': USERNAME,
+            'password': PASSWORD
+        }
+        result = httpPost(cmdUrl, data=data)
+        return result['authToken']
+
+    def stateMapping(state):
+        mappingDic = {
+          '0': '',
+          '1': "up",
+          '2': "down",
+          '3': "unreachable",
+          '4': "pending"
+        }
+        return mappingDic[state]
+
+    def transformHostVals(key, value):
+        if (key == 'state'):
+          return stateMapping(value)
+        return value
+
+    ''' COMMANDS FUNCTIONS '''
+
+    def getHostStatus():
+        args = demisto.args()
+        token = login()
+        DEFAULT_HEADERS['centreon-auth-token'] = token
+        cmdUrl = 'object=centreon_realtime_hosts&action=list'
+        response = httpRequest('GET', cmdUrl, args, DEFAULT_HEADERS)
+
+        if (len(response) == 0):
+            return "No Hosts found"
+        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in response]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Centreon Hosts status',  listForMd)
+        }
+
+        return entry
+
+    def getServiceStatus():
+        args = demisto.args()
+        token = login()
+        DEFAULT_HEADERS['centreon-auth-token'] = token
+        cmdUrl = 'object=centreon_realtime_services&action=list'
+        response = httpRequest('GET', cmdUrl, args, DEFAULT_HEADERS)
+        if (len(response) == 0):
+            return "No Services found"
+        listForMd = [dict((k, v) for k, v in dic.iteritems() if (v==0 or v)) for dic in response]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Centreon Services status',  listForMd)
+        }
+
+        return entry
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            if getHostStatus():
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+        elif demisto.command() == 'centreon-get-host-status':
+            demisto.results(getHostStatus())
+        elif demisto.command() == 'centreon-get-service-status':
+            demisto.results(getServiceStatus())
+
+    except Exception, e:
+        if demisto.params().get('verbose'):
+            LOG(e.message)
+            LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: centreon-get-host-status
+    arguments:
+    - name: viewType
+      auto: PREDEFINED
+      predefined:
+      - all
+      - unhandled
+      - problems
+      description: 'select the predefined filter like in the monitoring view: all,
+        unhandled, problems'
+    - name: fields
+      description: 'the fields list that you want to get separated by a ”,”. For example:
+        fields=id,name,alias,address'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - up
+      - down
+      - unreachable
+      - pending
+      - all
+      description: the status of hosts that you want to get (up, down, unreachable,
+        pending, all)
+    - name: hostgroup
+      description: hostgroup id filter
+    - name: instance
+      description: instance id filter
+    - name: search
+      description: search pattern applied on host name
+    - name: criticality
+      description: a specific criticality
+    - name: sortType
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: asc,desc
+    - name: limit
+      description: number of lines that you want
+    - name: number
+      description: page number
+    description: 'All the monitoring information regarding hosts '
+  - name: centreon-get-service-status
+    arguments:
+    - name: viewType
+      auto: PREDEFINED
+      predefined:
+      - all
+      - unhandled
+      - problems
+      description: 'select the predefined filter like in the monitoring view: all,
+        unhandled, problems'
+    - name: fields
+      description: the fields list that you want to get separated by ",". For example,
+        fields=id,description,host_id
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - ok
+      - warning
+      - critical
+      - unknown
+      - pending
+      - all
+      description: the status of services that you want to get (ok, warning, critical,
+        unknown, pending, all)
+    - name: hostgroup
+      description: hostgroup id filter
+    - name: servicegroup
+      description: servicegroup id filter
+    - name: instance
+      description: instance id filter
+    - name: search
+      description: search pattern applied on service
+    - name: searchHost
+      description: search pattern applied on host
+    - name: searchOutput
+      description: search pattern applied on output
+    - name: criticality
+      description: a specific criticality
+    - name: sortType
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: asc or desc
+    - name: limit
+      description: the amount of lines that you want
+    - name: number
+      description: page number
+    description: All the monitoring information regarding services
+  runonce: false
+releaseNotes: "-"
