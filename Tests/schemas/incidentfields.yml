@@ -59,5 +59,3 @@ schema;field_schema:
       type: bool
     unmapped:
       type: bool
-    content:
-          type: bool
