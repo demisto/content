@@ -926,6 +926,7 @@ script:
       - im
       - files
       - pcap
+      - filelist
       description: 'The render type (defined in NwSDK.h) for content or one of the
         following render types: text, hex, packets, web, mail, raw, rtp, voip, meta,
         im, files or pcap'
