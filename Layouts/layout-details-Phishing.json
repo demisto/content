@@ -586,8 +586,7 @@
 				"query": null,
 				"queryType": ""
 			}
-		],
-		"system": false
+		]
 	},
 	"releaseNotes":"Add new default layout for Phishing incident"
 }
