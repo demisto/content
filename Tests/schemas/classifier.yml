@@ -29,7 +29,3 @@ mapping:
   keyTypeMap:
     type: map
     allowempty: True
-  releaseNotes:
-    type: str
-  custom:
-    type: bool
