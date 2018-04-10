@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 5a8eb582-ec36-4dbd-8b4b-93c2a2ea462d
+    taskid: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
     type: regular
     task:
-      id: 5a8eb582-ec36-4dbd-8b4b-93c2a2ea462d
+      id: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
       version: -1
       name: netwitness-msearch
       description: Search for pattern matches in many sessions or packets
@@ -40,9 +40,10 @@ tasks:
       brand: RSA NetWitness Packets and Logs
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
-      concentratorAddress: {}
+      concentratorIP: {}
+      concentratorPort: {}
       flags:
         simple: regex,sp,si,sm
       limit:
@@ -56,16 +57,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 204
+          "x": 386,
+          "y": -61
         }
       }
   "2":
     id: "2"
-    taskid: c9ade7fc-9f3e-4bf3-88a6-18b13a89c737
+    taskid: 561e87db-d1a1-4857-81d7-13d5b463fdfb
     type: regular
     task:
-      id: c9ade7fc-9f3e-4bf3-88a6-18b13a89c737
+      id: 561e87db-d1a1-4857-81d7-13d5b463fdfb
       version: -1
       name: netwitness-query
       description: Performs a query against the meta database
@@ -75,16 +76,17 @@ tasks:
       brand: RSA NetWitness Packets and Logs
     nexttasks:
       '#none#':
-      - "7"
+      - "12"
     scriptarguments:
-      concentratorAddress: {}
+      concentratorIP: {}
+      concentratorPort: {}
       flags: {}
       id1: {}
       id2: {}
       lastHours: {}
       lastMinutes: {}
       query:
-        simple: select * where alias.host contains 'skimresources'
+        simple: select alias.host where alias.host contains 'skimresources'
       size:
         simple: "100"
       threshold: {}
@@ -93,15 +95,15 @@ tasks:
       {
         "position": {
           "x": -13,
-          "y": 436
+          "y": -61
         }
       }
   "7":
     id: "7"
-    taskid: 198e9dc6-c472-471a-8466-80a5dc8747d1
+    taskid: 42145249-59e9-48f0-84f2-95240b1e372b
     type: regular
     task:
-      id: 198e9dc6-c472-471a-8466-80a5dc8747d1
+      id: 42145249-59e9-48f0-84f2-95240b1e372b
       version: -1
       name: nw-sdk-values
       description: Performs a value count query and returns the matching values for
@@ -112,11 +114,12 @@ tasks:
       brand: RSA NetWitness Packets and Logs
     nexttasks:
       '#none#':
-      - "8"
+      - "13"
     scriptarguments:
       aggregateFieldName: {}
       aggregateFunction: {}
-      concentratorAddress: {}
+      concentratorIP: {}
+      concentratorPort: {}
       fieldName:
         simple: ip.src
       flags:
@@ -129,24 +132,22 @@ tasks:
         simple: "20"
       threshold:
         simple: "100000"
-      using:
-        simple: Concentrator
       where:
         simple: time="2016-Jan-30 13:56:30"-"2018-May-21 12:20:49"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 649
+          "x": -425,
+          "y": -61
         }
       }
   "8":
     id: "8"
-    taskid: 78e3f682-b83a-4d9f-8114-f6db087ef29d
+    taskid: 2637abfb-14c4-4c3c-8f91-51db23201ca2
     type: regular
     task:
-      id: 78e3f682-b83a-4d9f-8114-f6db087ef29d
+      id: 2637abfb-14c4-4c3c-8f91-51db23201ca2
       version: -1
       name: Verify Context
       description: |-
@@ -162,50 +163,15 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Events,SearchHits,Values
+        simple: hit
       path:
-        simple: NetWitness
+        simple: NetWitness.SearchHits
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 849
-        }
-      }
-  "10":
-    id: "10"
-    taskid: d76ce703-475e-4448-840c-ed3a98dea371
-    type: regular
-    task:
-      id: d76ce703-475e-4448-840c-ed3a98dea371
-      version: -1
-      name: Verify Context
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Node
-      path:
-        simple: NetWitness
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -13,
-          "y": 3
+          "x": 386,
+          "y": 136
         }
       }
   "11":
@@ -223,7 +189,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "1"
+      - "2"
+      - "7"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -236,14 +205,151 @@ tasks:
           "y": -238
         }
       }
+  "12":
+    id: "12"
+    taskid: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+    type: regular
+    task:
+      id: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: aliasHost
+      path:
+        simple: NetWitness.Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -13,
+          "y": 136
+        }
+      }
+  "13":
+    id: "13"
+    taskid: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+    type: regular
+    task:
+      id: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ipSrc
+      path:
+        simple: NetWitness.Values
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -425,
+          "y": 136
+        }
+      }
+  "14":
+    id: "14"
+    taskid: d029b7dc-0432-4828-87d7-fe89ebcadac7
+    type: regular
+    task:
+      id: d029b7dc-0432-4828-87d7-fe89ebcadac7
+      version: -1
+      name: nw-sdk-content
+      description: Returns the packet content for a session
+      script: RSA NetWitness Packets and Logs|||nw-sdk-content
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      base64: {}
+      concentratorIP: {}
+      concentratorPort: {}
+      excludeFileTypes: {}
+      fileExt: {}
+      flags: {}
+      includeFileTypes: {}
+      maxDirSize: {}
+      maxSize: {}
+      renameFileTypes: {}
+      renderFlags: {}
+      renderType: {}
+      session:
+        simple: "1"
+      subdirFileTypes: {}
+      where: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -868,
+          "y": -61
+        }
+      }
+  "15":
+    id: "15"
+    taskid: ec45e125-7497-449d-87e7-6d2c3000a4b0
+    type: regular
+    task:
+      id: ec45e125-7497-449d-87e7-6d2c3000a4b0
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: MD5
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -868,
+          "y": 136
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1357,
-        "width": 380,
-        "x": -13,
+        "height": 644,
+        "width": 1634,
+        "x": -868,
         "y": -413
       }
     }
