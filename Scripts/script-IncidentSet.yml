@@ -2,7 +2,7 @@ commonfields:
   id: IncidentSet
   version: -1
 name: IncidentSet
-fromversion: 3.6.0
+fromversion: 3.5.1
 script: |-
   res = []
   dArgs = {}
@@ -78,3 +78,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
