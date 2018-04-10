@@ -158,55 +158,6 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Email Advanced Info",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailclientname",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailkeywords",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailsize",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailtocount",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailurlclicked",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
 				"name": "Email Body",
 				"type": "",
 				"isVisible": true,
@@ -312,6 +263,55 @@
 					}
 				],
 				"description": "Email Attachments Files info",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Email Advanced Info",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_emailclientname",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_emailkeywords",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_emailsize",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_emailtocount",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_emailurlclicked",
+						"isVisible": true
+					}
+				],
+				"description": "",
 				"query": null,
 				"queryType": ""
 			},
