@@ -2,7 +2,7 @@
   "id": "my-tasks",
   "size": 10,
   "dataType": "tasks",
-  "fromVersion": "3.6.0",
+  "fromVersion": "3.5.1",
   "query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
   "name": "My Tasks",
   "dateRange": {
@@ -12,5 +12,6 @@
   "version": -1,
   "sort": [{ "field": "dueDate", "asc": true }],
   "category": "",
-  "widgetType": "list"
+  "widgetType": "list",
+  "releaseNotes": "-"
 }
