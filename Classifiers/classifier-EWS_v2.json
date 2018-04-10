@@ -3,7 +3,6 @@
 	"version": -1,
 	"modified": "2018-04-08T19:42:30.856069216Z",
 	"defaultIncidentType": "",
-	"instanceId": "5abb3072-c468-4a2a-836e-6c70d98ba464",
 	"mapping": {
 		"Phishing": {
 			"internalMapping": {
@@ -295,6 +294,5 @@
 		"Normal": "Phishing"
 	},
 	"brandName": "EWS v2",
-	"instanceName": "EWS v2_instance_1",
 	"releaseNotes": "New EWS-v2 default classification"
 }
