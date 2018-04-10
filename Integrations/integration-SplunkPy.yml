@@ -58,6 +58,12 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: 'Extract Fields - comma separated fields that will be parsed out of _raw
+    notable events '
+  name: extractFields
+  defaultvalue: ""
+  type: 12
+  required: false
 script:
   script: |
     import splunklib.client as client
@@ -309,9 +315,16 @@ script:
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
             lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
-        kwargs_oneshot = {"earliest_time": lastRun,
-                      "latest_time": now}
+        kwargs_oneshot = {"index_earliest": lastRun,
+                      "index_latest": now}
         searchquery_oneshot = demisto.params()['fetchQuery']
+
+        if demisto.get(demisto.params(), 'extractFields'):
+            extractFields = demisto.params()['extractFields']
+            extra_raw_arr = extractFields.split(',')
+            for field in extra_raw_arr:
+                field_trimmed = field.strip()
+                searchquery_oneshot = searchquery_oneshot + ' | eval '+field_trimmed+'='+field_trimmed
 
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
         reader = results.ResultsReader(oneshotsearch_results)
@@ -469,3 +482,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: 'Fetch notable events by index time (instead of event time)'

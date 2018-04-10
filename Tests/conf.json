@@ -10,6 +10,10 @@
             "playbookID": "pyEWS_Test"
         },
         {
+            "integrations": "Salesforce",
+            "playbookID": "SalesforceTestPlaybook"
+        },
+        {
             "integrations": "McAfee ESM-v10",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
@@ -23,33 +27,16 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "playbookID": "TestWordFileToIOC",
-            "timeout": 300
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
+            "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
         {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_carbon_black_enterprise_response_-_test",
-            "timeout": 300
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_from_path_-_generic_-_test",
-            "timeout": 300
         },
         {
             "integrations": [
@@ -58,22 +45,6 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                }
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 240
         },
         {
             "integrations": {
@@ -85,11 +56,6 @@
         },
         {
             "playbookID": "process_email_-_generic_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 240
         },
         {
@@ -199,12 +165,6 @@
             "playbookID": "test-ThreatConnect"
         },
         {
-            "integrations": "XFE",
-            "playbookID": "XFE Test",
-            "timeout": 140,
-            "nightly": true
-        },
-        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
@@ -217,11 +177,10 @@
         },
         {
             "integrations": {
-                "name": "carbonblack",
-                "byoi": false
+                "name": "carbonblack-v2",
+                "byoi": true
             },
-            "playbookID": "CB-Response-Test",
-            "nightly": true
+            "playbookID": "CarbonBlackResponseTest"
         },
         {
             "playbookID": "TestCommonPython"
@@ -249,10 +208,6 @@
             "nightly": true
         },
         {
-            "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
-        },
-        {
             "integrations": "PhishTank",
             "playbookID": "PhishTank Testing"
         },
@@ -264,16 +219,6 @@
         {
             "integrations": "TCPIPUtils",
             "playbookID": "TCPUtils-Test"
-        },
-        {
-            "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
@@ -293,10 +238,6 @@
             "timeout": 300
         },
         {
-            "integrations": "ArcSight Logger",
-            "playbookID": "ArcSight Logger test"
-        },
-        {
             "integrations": "Forcepoint",
             "playbookID": "forcepoint test",
             "timeout": 500,
@@ -304,7 +245,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -320,6 +261,27 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         }
     ],
     "skipped": [
@@ -373,6 +335,55 @@
         {
             "integrations": "Remedy AR",
             "playbookID": "Remedy AR Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "McAfee-MAR_Test"
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "McAfee-TIE Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
+        },
+        {
+            "integrations": "ArcSight Logger",
+            "playbookID": "ArcSight Logger test"
+        },
+        {
+            "integrations": "XFE",
+            "playbookID": "XFE Test",
+            "timeout": 140,
+            "nightly": true
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                {
+                    "name": "carbonblackprotection",
+                    "byoi": false
+                }
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "McAfee Threat Intelligence Exchange",
+            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "iDefense",
+            "playbookID": "iDefenseTest",
+            "timeout": 300
         }
     ]
 }
