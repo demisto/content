@@ -10,6 +10,10 @@ mapping:
     type: str
   toVersion:
     type: str
+  releaseNotes:
+    type: str
+  system:
+    type: bool
   layout:
     type: map
     mapping:
