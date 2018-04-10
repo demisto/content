@@ -559,7 +559,8 @@ script: |-
               sep = '-|'
           mdResult += '|'.join([sep] * len(headers)) + '\n'
           for entry in t:
-              vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
+              vals = [(stringEscapeMD(formatCell(entry.get(h, ''), False), True, True)
+                  if entry.get(h) is not None else '') for h in headers]
               if len(vals) == 1:
                   mdResult += vals[0] + '|' + '\n'
               else:
@@ -733,17 +734,31 @@ script: |-
   MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
-  def stringEscapeMD(st):
+  def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
       """
          Escape any chars that might break a markdown string
 
          :type st: ``str``
-         :param st: The string tobe modified (required)
+         :param st: The string to be modified (required)
+
+         :type minimal_escaping: ``bool``
+         :param minimal_escaping: Whether replace all special characters or table format only (optional)
+
+         :type escape_multiline: ``bool``
+         :param escape_multiline: Whether convert line-ending characters (optional)
 
          :return: A modified string
          :rtype: ``str``
       """
-      return "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+      if escape_multiline:
+          st = st.replace('\n', '<br>')
+
+      if minimal_escaping:
+          for c in '|':
+              st = st.replace(c, '\\' + c)
+      else:
+          st = "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+      return st
 
 
   def raiseTable(root, key):
@@ -1003,3 +1018,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "escaped special characters used in tableToMarkdown"
