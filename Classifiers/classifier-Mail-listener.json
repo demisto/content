@@ -193,5 +193,6 @@
 		"mail-listener": "Phishing"
 	},
 	"brandName": "mail-listener",
-	"instanceName": "mail-listener_instance_1"
+	"instanceName": "mail-listener_instance_1",
+	"releaseNotes": "New Mail listener default classification"
 }
