@@ -11,12 +11,7 @@ script: |
       if (reg === str) {
           return true;
       }
-
-      if(reg.indexOf('~') === 0) {
-          reg = reg.substring(1);
-          return str.match(reg);
-      }
-      return false;
+      return str.match(reg);
   };
 
   var addToContextAndMD = function(domains, ec, md) {
