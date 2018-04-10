@@ -235,7 +235,34 @@ script:
         var arrayResults = [];
         extractFromData(data, mapArrayResults, arrayResults);
         if(arrayResults.length !== 0) {
-            var hr = tableToMarkdown(command, arrayResults);
+            var typeDict = {};
+            for(var index in arrayResults){
+                var type = Object.keys(arrayResults[index])[0];
+                if(!typeDict[type]){
+                    typeDict[type] = [];
+                }
+
+                typeDict[type].push(arrayResults[index][type]);
+            }
+            var arr = [];
+            var maxLength = 0;
+            for(var key in typeDict){
+                if(maxLength < typeDict[key].length){
+                    maxLength = typeDict[key].length;
+                }
+            }
+
+            for(var i = 0; i < maxLength; i++){
+                var currObj = {};
+                for(var key in typeDict){
+                    currObj[key] = typeDict[key][i];
+                }
+                if(!isObjectEmpty(currObj)){
+                    arr.push(currObj);
+                }
+            }
+
+            var hr = tableToMarkdown(command, arr);
             return {
                 Type: entryTypes.note,
                 Contents: data,
