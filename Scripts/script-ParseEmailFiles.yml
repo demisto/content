@@ -33,7 +33,7 @@ script: |-
   import olefile as OleFile
   import random
   import string
-  
+
   reload(sys)
   sys.setdefaultencoding('utf8')
 
@@ -450,6 +450,7 @@ script: |-
 
   def dataToMD(emailData):
       md = "### Results:\n"
+
       md += "* {0}:\t{1}\n".format('From', emailData['From'])
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
@@ -476,22 +477,37 @@ script: |-
           elif a.shortFilename:
               fname = a.shortFilename
           if fname and a.data:
-              fname = fname.encode('utf-8')
+              fname = getUtfString(fname, 'fname')
               attachments.append(fname)
               r.append(fileResult(fname, a.data))
+
+      body = getUtfString(msg.body, 'Body')
 
       emailData = {
           'To': extractAddress(msg.to),
           'CC': extractAddress(msg.cc),
           'From': extractAddress(msg.sender),
-          'Subject': msg.subject,
-          'HTML': msg.body,
-          'Text': msg.body,
+          'Subject': getUtfString(msg.subject, 'Subject'),
+          'HTML': body,
+          'Text': body,
           'Headers': '\n'.join(headers),
           'Attachments': '' if not attachments else ','.join(attachments)
       }
+
       return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
           'EntryContext': {'Email': emailData}}]
+
+  def getUtfString(text, field):
+      try:
+          utfString = text.encode('utf-8')
+      except Exception as ex:
+          utfString = text.decode('utf-8','ignore').encode('utf-8')
+          temp = demisto.uniqueFile()
+          with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+              f.write(text)
+          demisto.results({'Contents': str(ex) + '\n\nOpen HEX viewer to review.', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': field, 'FileID': temp})
+
+      return utfString
 
   def handleEml(filePath, b64 = False):
       r = []
@@ -520,14 +536,14 @@ script: |-
                   html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
               elif part.get_content_type() == 'text/plain':
                   text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
-                  
+
 
           try:
               subjenc, encoding = decode_header(eml['Subject'])[0]
-              subj = subjenc.decode(encoding)
+              subj = subjenc.decode(encoding).strip()
           except:
               subj = eml['Subject']
-          subj = unicode(subj).encode('utf-8')
+          subj = unicode(subj).encode('utf-8').strip()
 
           emailData = {
               'To': extractAddress(eml['To']),
@@ -595,7 +611,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package.
-system: true
+enabled: true
 args:
 - name: entryid
   required: true
@@ -621,5 +637,4 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-dependson: {}
-timeout: 0s
+releaseNotes: 'Better handling of non-UTF characters'
