@@ -295,5 +295,6 @@
 		"Normal": "Phishing"
 	},
 	"brandName": "EWS v2",
-	"instanceName": "EWS v2_instance_1"
+	"instanceName": "EWS v2_instance_1",
+	"releaseNotes": "New EWS-v2 default classification"
 }
