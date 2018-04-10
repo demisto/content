@@ -9,7 +9,7 @@ description: Accenture Security
 configuration:
 - display: URL
   name: url
-  defaultvalue: https://api.intelgraph.verisign.com/
+  defaultvalue: https://api.intelgraph.idefense.com/
   type: 0
   required: true
 - display: API Token
@@ -422,3 +422,5 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Get specific indicator reputation
+  runonce: false
+releaseNotes: "-"
