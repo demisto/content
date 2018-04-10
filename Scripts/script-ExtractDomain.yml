@@ -11,6 +11,10 @@ script: |
       if (reg === str) {
           return true;
       }
+      if(reg.indexOf('~') === 0) {
+          reg = reg.substring(1);
+          return str.match(reg);
+      }
       return str.match(reg);
   };
 
@@ -198,3 +202,4 @@ outputs:
 - contextPath: Domain.Name
   description: Extracted domains
 scripttarget: 0
+releaseNotes: 'Use whitelist correctlly in ExtractDomain'
