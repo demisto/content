@@ -1,9 +1,8 @@
 {
 	"id": "8e398f32-2af9-49a0-8702-e2eeeb0101e5",
-	"version": 7,
+	"version": -1,
 	"modified": "2018-04-08T19:54:57.433647006Z",
 	"defaultIncidentType": "",
-	"instanceId": "0e56d727-5861-4ed3-8b69-3ff800b4eaee",
 	"mapping": {
 		"Phishing": {
 			"internalMapping": {
@@ -193,6 +192,5 @@
 		"mail-listener": "Phishing"
 	},
 	"brandName": "mail-listener",
-	"instanceName": "mail-listener_instance_1",
 	"releaseNotes": "New Mail listener default classification"
 }
