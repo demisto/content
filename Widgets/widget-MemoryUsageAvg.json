@@ -9,7 +9,9 @@
   "isPredefined": true,
   "params": {
     "currencySign": "%",
-    "signAlignment": "right"
+    "signAlignment": "right",
+    "colors":{"isEnabled":true,"items":{"#FF1B15":{"value":90},"#FAC100":{"value":70},"#00CD33":{"value":-1}},"type":"above"}
   },
-  "size": 0
+  "size": 0,
+  "releaseNotes": "Added threshold colors"
 }
