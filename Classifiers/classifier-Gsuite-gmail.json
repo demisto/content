@@ -14,8 +14,16 @@
 						"accessor": "ID",
 						"transformers": [
 							{
-								"operator": "general.3126cc8a-7272-4b80-8e26-39fe2602c83f",
-								"args": {}
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
 							}
 						]
 					}
@@ -28,8 +36,16 @@
 						"accessor": "Name",
 						"transformers": [
 							{
-								"operator": "general.3126cc8a-7272-4b80-8e26-39fe2602c83f",
-								"args": {}
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
 							}
 						]
 					}
@@ -46,8 +62,16 @@
 						"accessor": "",
 						"transformers": [
 							{
-								"operator": "general.3126cc8a-7272-4b80-8e26-39fe2602c83f",
-								"args": {}
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
 							}
 						]
 					}
@@ -57,8 +81,26 @@
 					"complex": null
 				},
 				"Email Message ID": {
-					"simple": "headers.Message-ID",
-					"complex": null
+					"simple": "",
+					"complex": {
+						"root": "headers",
+						"filters": [],
+						"accessor": "Message-ID",
+						"transformers": [
+							{
+								"operator": "string.StripChars",
+								"args": {
+									"chars": {
+										"value": {
+											"simple": "\u003c\u003e",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
 				},
 				"Email Received": {
 					"simple": "headers.Received",
@@ -120,8 +162,16 @@
 						"accessor": "",
 						"transformers": [
 							{
-								"operator": "general.3126cc8a-7272-4b80-8e26-39fe2602c83f",
-								"args": {}
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
 							}
 						]
 					}
