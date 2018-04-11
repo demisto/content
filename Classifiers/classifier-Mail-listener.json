@@ -28,7 +28,20 @@
 						"root": "cc",
 						"filters": [],
 						"accessor": "",
-						"transformers": []
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
 					}
 				},
 				"Email From": {
@@ -153,8 +166,16 @@
 						"accessor": "",
 						"transformers": [
 							{
-								"operator": "general.3126cc8a-7272-4b80-8e26-39fe2602c83f",
-								"args": {}
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
 							}
 						]
 					}
