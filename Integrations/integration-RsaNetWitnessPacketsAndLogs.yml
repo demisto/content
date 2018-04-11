@@ -721,8 +721,8 @@ script:
         case 'nw-sdk-content':
             return parseDownloadResponse(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['octet-stream']));
         case 'netwitness-msearch':
-            return buildMSearchMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'netwitness-search':
+            return buildMSearchMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'netwitness-query':
             return buildQueryMdAndContext(doReq('GET', commandToPath[command], args, RESPONSE_TYPES['json']));
         case 'nw-sdk-timeline':
