@@ -897,22 +897,7 @@ script:
       description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
         SSL
     - name: render
-      auto: PREDEFINED
-      predefined:
-      - text
-      - hex
-      - packets
-      - web
-      - mail
-      - raw
-      - rtp
-      - voip
-      - meta
-      - im
-      - files
-      - pcap
-      description: 'The render type (defined in NwSDK.h) for content or one of the
-        following render types: text,hex,packets,web,mail,raw,rtp,voip,im,files,pcap'
+      description: The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
     description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
