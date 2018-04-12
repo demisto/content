@@ -1,0 +1,846 @@
+commonfields:
+  id: TruSTAR
+  version: -1
+name: TruSTAR
+display: TruSTAR
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: TruSTAR's threat intelligence platform enriches every stage of the security
+  operations workflow from the trusted and relevant data sources.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.trustar.co
+  type: 0
+  required: true
+- display: TruSTAR API Key
+  name: key
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: TruSTAR API Secret
+  name: secret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    ''' IMPORTS '''
+    import requests
+    import time
+    import datetime
+    import json
+    import trustar
+    import os
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SERVER=demisto.params()['server']
+    API_KEY=str(demisto.params()['key'])
+    API_SECRET=str(demisto.params()['secret'])
+    BASE_URL=SERVER + '/api/1.3'
+    INSECURE=demisto.params()['insecure']
+
+    ''' HELPER FUNCTIONS '''
+    def translate_indicators(ts_indicators):
+        indicators = []
+        file_context = []
+        url_context = []
+        ip_context = []
+        email_context = []
+        key_context = []
+        cve_context = []
+        for indicator in ts_indicators:
+            current_indicator = indicator.to_dict(remove_nones=True)
+            indicator_type = current_indicator['indicatorType']
+            value = current_indicator['value']
+            if indicator_type == 'SOFTWARE':
+                # Extracts the filename out of file path
+                if "\\" in r"%r" % value:
+                    file_name = value.split('\\')[-1] # Handles file path with backslash
+                else:
+                    file_name = value.split('/')[-1] # Handles file path with slash
+                current_indicator['value'] = file_name
+                file_context.append({
+                    'Name': file_name
+                })
+            elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
+                file_context.append({
+                    indicator_type: value
+                })
+            elif indicator_type == 'URL':
+                url_context.append({
+                    'Address': value
+                })
+            elif indicator_type == 'IP':
+                ip_context.append({
+                    'Address': value
+                })
+            elif indicator_type == 'EMAIL_ADDRESS':
+                email_context.append({
+                    'Address': value
+                })
+            elif indicator_type == 'REGISTRY_KEY':
+                key_context.append({
+                    'Path': value
+                })
+            elif indicator_type == 'CVE':
+                cve_context.append({
+                    'ID': value
+                })
+            indicators.append(current_indicator)
+        # Build Entry Context
+        ec = {}
+        if file_context:
+            ec['File(val.Name && val.Name === obj.Name)'] = file_context
+        if url_context:
+            ec['URL(val.Address && val.Address === obj.Address)'] = url_context
+        if ip_context:
+            ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
+        if email_context:
+            ec['Account'] = {}
+            ec['Account']['Email(val.Address && val.Address === obj.Address)'] = email_context
+        if key_context:
+            ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
+        if cve_context:
+            ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
+        return indicators, ec
+
+    def normalize_time(timestamp):
+        '''
+        Converts unix epoch time to GMT
+        '''
+        if isinstance(timestamp, str):
+            return timestamp
+        return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(timestamp/1000.0))
+
+    def date_to_unix(timestamp):
+        d = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        return int(d.strftime("%s")) * 1000
+
+
+    ''' FUNCTIONS '''
+    def get_related_indicators(indicators, enclave_ids, page_size, page_number):
+        response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
+        related_indicators, ec = translate_indicators(response)
+        if related_indicators:
+            title = 'TruSTAR indicators related to ' + indicators
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': related_indicators,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, related_indicators),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No indicators related to ' + indicators + ' were found.'
+        return entry
+
+    def get_trending_indicators(indicator_type, days_back):
+        if indicator_type == 'other':
+            indicator_type = None
+        response = ts.get_community_trends(indicator_type, days_back)
+        trending_indicators, ec = translate_indicators(response)
+        if trending_indicators:
+            title = 'TruSTAR Community Trending Indicators'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': trending_indicators,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, trending_indicators),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No trending indicators were found.'
+        return entry
+
+    def search_indicators(search_term, enclave_ids, page_size, page_number):
+        response = ts.search_indicators_page(search_term, enclave_ids, page_size, page_number)
+        indicators, ec = translate_indicators(response)
+        if indicators:
+            title = 'TruSTAR indicators that contain the term ' + search_term
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': indicators,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, indicators),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No indicators were found.'
+        return entry
+
+    def submit_report(title, report_body, enclave_ids, external_url, time_began, distribution_type):
+        if distribution_type == 'ENCLAVE' and enclave_ids is None:
+            return 'Distribution type is ENCLAVE, but no enclave ID was given.'
+        ts_report = trustar.models.Report(
+            title=title,
+            body=report_body,
+            enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
+            is_enclave=True if distribution_type=='ENCLAVE' else False,
+            time_began=time_began,
+            external_url=external_url
+        )
+        response = ts.submit_report(ts_report)
+        report = {
+            'reportTitle': title,
+            'reportBody': report_body,
+            'id': response.id
+        }
+        ec = {
+            'TruSTAR.Report(val.id && val.id === obj.id)': report
+        }
+        title = 'TruSTAR report was successfully created'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': report,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, report),
+            'EntryContext': ec
+        }
+        return entry
+
+    def update_report(report_id, title, report_body, enclave_ids, external_url, time_began, distribution_type):
+        ts_report = trustar.models.Report(
+            id=report_id,
+            title=title,
+            body=report_body,
+            enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
+            is_enclave=True if distribution_type=='ENCLAVE' else False,
+            time_began=time_began,
+            external_url=external_url
+        )
+        response = ts.update_report(ts_report)
+        report = {
+            'reportTitle': title,
+            'reportBody': report_body,
+            'id': report_id
+        }
+        ec = {
+            'TruSTAR.Report(val.id && val.id === obj.id)': report
+        }
+        title = 'TruSTAR report was successfully updated'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': report,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, report),
+            'EntryContext': ec
+        }
+        return entry
+
+    def get_report_details(report_id, id_type):
+        response = ts.get_report_details(report_id, id_type)
+        report_details = response.to_dict(remove_nones=True)
+        if report_details['enclaveIds']:
+            report_details['enclaveIds'] = ', '.join(report_details['enclaveIds']) # Prettify list of enclave IDs
+        report_details['updated'] = normalize_time(report_details['updated'])
+        report_details['created'] = normalize_time(report_details['created'])
+        report_details['timeBegan'] = normalize_time(report_details['timeBegan'])
+        report_context = {
+            'reportTitle': report_details['title'],
+            'reportBody': report_details['reportBody'],
+            'id': report_details['id']
+        }
+        ec = {
+            'TruSTAR.Report(val.id && val.id === obj.id)': report_context
+        }
+        title = 'TruSTAR report ID ' + report_id + ' details'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': report_details,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, report_details),
+            'EntryContext': ec
+        }
+        return entry
+
+    def delete_report(report_id, id_type):
+        ts.delete_report(report_id, id_type)
+        return 'Report ' + report_id + ' was successfully deleted'
+
+    def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, excluded_tags):
+        is_encalve = True if distribution_type=='ENCLAVE' else False
+        from_time = date_to_unix(from_time) if from_time else from_time
+        to_time = date_to_unix(to_time) if to_time else to_time
+        response = ts.get_reports(is_encalve, enclave_ids, tags, excluded_tags, from_time, to_time)
+        reports = []
+        reports_context = []
+        for report in response:
+            current_report = report.to_dict(remove_nones=True)
+            if current_report['enclaveIds']:
+                current_report['enclaveIds'] = ', '.join(current_report['enclaveIds']) # Prettify list of enclave IDs
+            current_report['updated'] = normalize_time(current_report['updated'])
+            current_report['created'] = normalize_time(current_report['created'])
+            current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+            reports.append(current_report)
+            reports_context.append({
+                'reportTitle': current_report['title'],
+                'reportBody': current_report['reportBody'],
+                'id': current_report['id']
+            })
+        if reports:
+            ec = {
+                'TruSTAR.Report(val.id && val.id === obj.id)': reports_context
+            }
+            title = 'TruSTAR reports'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': reports,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, reports),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No reports were found.'
+        return entry
+
+    def get_correlated_reports(indicators, enclave_ids, distribution_type, page_size, page_number):
+        response = ts.get_correlated_reports_page(indicators, enclave_ids, page_number, page_size)
+        correlated_reports = []
+        for report in response:
+            current_report = report.to_dict(remove_nones=True)
+            current_report['updated'] = normalize_time(current_report['updated'])
+            current_report['created'] = normalize_time(current_report['created'])
+            current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+            return current_report
+            correlated_reports.append(current_report)
+        if correlated_reports:
+            title = 'TruSTAR correlated reports'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': correlated_reports,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, correlated_reports)
+            }
+        else:
+            entry = 'No reports were found.'
+        return entry
+
+    def search_reports(search_term, enclave_ids):
+        response = ts.search_reports(search_term, enclave_ids)
+        reports = []
+        report_context = []
+        for report in response:
+            current_report = report.to_dict(remove_nones=True)
+            current_report['updated'] = normalize_time(current_report['updated'])
+            current_report['created'] = normalize_time(current_report['created'])
+            current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+            reports.append(current_report)
+            report_context.append({
+                'reportTitle': current_report['title'],
+                'id': current_report['id']
+            })
+            if 'reportBody' in current_report:
+                report_context['reportBody'] =  current_report['reportBody']
+
+        ec = {
+            'TruSTAR.Report(val.id && val.id === obj.id)': report_context
+        }
+
+        title = 'TruSTAR reports that contain the term ' + search_term
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': reports,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, reports),
+            'EntryContext': ec
+        }
+        return entry
+
+    def add_to_whitelist(indicators):
+        response = ts.add_terms_to_whitelist([indicators])
+        if response:
+            return 'Added to the whitelist successfully'
+        else:
+            return 'Indicator could not be added to the whitelist.'
+
+    def remove_from_whitelist(indicator, indicator_type):
+        ts_indicator = trustar.models.Indicator(
+            value=indicator,
+            type=indicator_type
+        )
+        response = ts.delete_indicator_from_whitelist(ts_indicator)
+        if response:
+            return 'Removed from the whitelist successfully'
+        else:
+            return 'Indicator could not be removed from the whitelist.'
+
+    def get_enclaves():
+        response = ts.get_user_enclaves()
+        enclave_ids = []
+        for enclave in response:
+            enclave_ids.append(enclave.to_dict(remove_nones=True))
+        title = 'TruSTAR Enclaves'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': enclave_ids,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, enclave_ids),
+        }
+        return entry
+
+
+    ''' EXECUTION CODE '''
+    config = {
+        'user_api_key': API_KEY,
+        'user_api_secret': API_SECRET,
+        'api_endpoint': BASE_URL,
+        'verify': INSECURE
+    }
+    ts=trustar.TruStar(config=config)
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+
+        elif demisto.command() == 'trustar-related-indicators':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            demisto.results(get_related_indicators(demisto.args()['indicators'], enclave_ids, demisto.args()['page-size'], demisto.args()['page-number']))
+
+        elif demisto.command() == 'trustar-trending-indicators':
+            demisto.results(get_trending_indicators(demisto.args()['type'], demisto.args()['days-back']))
+
+        elif demisto.command() == 'trustar-search-indicators':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            demisto.results(search_indicators(demisto.args()['search-term'], enclave_ids, demisto.args()['page-size'], demisto.args()['page-number']))
+
+        elif demisto.command() == 'trustar-submit-report':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            external_url = demisto.args().get('external-url', None)
+            time_began = demisto.args().get('time-began', None)
+            demisto.results(submit_report(demisto.args()['title'], demisto.args()['report-body'], enclave_ids, external_url, time_began, demisto.args()['distribution-type']))
+
+        elif demisto.command() == 'trustar-update-report':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            external_url = demisto.args().get('external-url', None)
+            time_began = demisto.args().get('time-began', None)
+            demisto.results(update_report(demisto.args()['report-id'], demisto.args()['title'], demisto.args()['report-body'], enclave_ids, external_url, time_began, demisto.args()['distribution-type']))
+
+        elif demisto.command() == 'trustar-report-details':
+            demisto.results(get_report_details(demisto.args()['report-id'], demisto.args()['id-type']))
+
+        elif demisto.command() == 'trustar-delete-report':
+            demisto.results(delete_report(demisto.args()['report-id'], demisto.args()['id-type']))
+
+        elif demisto.command() == 'trustar-get-reports':
+            from_time = demisto.args().get('from', None)
+            to_time = demisto.args().get('to', None)
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            tags = demisto.args().get('tags', None)
+            excluded_tags = demisto.args().get('excluded-tags', None)
+            demisto.results(get_reports(from_time, to_time, enclave_ids, demisto.args()['distribution-type'], tags, excluded_tags))
+
+        elif demisto.command() == 'trustar-correlated-reports':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            demisto.results(get_correlated_reports(demisto.args()['indicators'], enclave_ids, demisto.args()['distribution-type'], demisto.args()['page-size'], demisto.args()['page-number']))
+
+        elif demisto.command() == 'trustar-search-reports':
+            enclave_ids = demisto.args().get('enclave-ids', None)
+            demisto.results(search_reports(demisto.args()['search-term'], enclave_ids))
+
+        elif demisto.command() == 'trustar-add-to-whitelist':
+            demisto.results(add_to_whitelist(demisto.args()['indicators']))
+
+        elif demisto.command() == 'trustar-remove-from-whitelist':
+            demisto.results(remove_from_whitelist(demisto.args()['indicator'], demisto.args()['indicator-type']))
+
+        elif demisto.command() == 'trustar-get-enclaves':
+            demisto.results(get_enclaves())
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+  type: python
+  commands:
+  - name: trustar-related-indicators
+    arguments:
+    - name: indicators
+      required: true
+      default: true
+      description: Indicator value of any type; i.e. an IP address, email address,
+        URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
+    - name: enclave-ids
+      description: Comma-separated list of enclave ids; only indicators found in reports
+        from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to.
+    - name: page-number
+      description: Which page of the result set to get
+      defaultValue: "0"
+    - name: page-size
+      description: The number of results per page.
+      defaultValue: "25"
+    outputs:
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: URL.Address
+      description: URL address
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email address
+      type: string
+    - contextPath: RegistryKey.Path
+      description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
+    description: Search all TruSTAR incident reports for provided indicators and return
+      all correlated indicators from search results. Two indicators are considered
+      “correlated” if they can be found in a common report.
+  - name: trustar-trending-indicators
+    arguments:
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - CVE
+      - MALWARE
+      - other
+      description: The types of indicators to be returned. If other, then all indicator
+        types except for CVE and MALWARE will be returned.
+      defaultValue: other
+    - name: days-back
+      description: The number of days back to count correlations for.
+      defaultValue: "3"
+    outputs:
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: URL.Address
+      description: URL address
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email address
+      type: string
+    - contextPath: RegistryKey.Path
+      description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
+    description: Returns the 10 indicators that have recently appeared in the most
+      community reports. This is analogous to the Community Trends section of the
+      dashboard on Station.
+  - name: trustar-search-indicators
+    arguments:
+    - name: search-term
+      required: true
+      default: true
+      description: The term to search for
+    - name: enclave-ids
+      description: Comma-separated list of enclave ids; only indicators found in reports
+        from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to.
+    - name: page-number
+      description: Which page of the result set to get
+      defaultValue: "0"
+    - name: page-size
+      description: The number of results per page.
+      defaultValue: "25"
+    outputs:
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: URL.Address
+      description: URL address
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email address
+      type: string
+    - contextPath: RegistryKey.Path
+      description: Registry key path
+      type: string
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: string
+    description: Searches for all indicators that contain the given search term.
+  - name: trustar-submit-report
+    arguments:
+    - name: title
+      required: true
+      description: Title of the report
+    - name: report-body
+      required: true
+      description: Text content of report
+    - name: enclave-ids
+      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
+        enclave name. Mandatory if the distribution type is ENCLAVE.
+    - name: distribution-type
+      auto: PREDEFINED
+      predefined:
+      - COMMUNITY
+      - ENCLAVE
+      description: Distribution type of the report
+      defaultValue: ENCLAVE
+    - name: external-url
+      description: URL for the external report that this originated from, if one exists.
+        Limit 500 alphanumeric characters. Must be unique across all reports for a
+        given company.
+    - name: time-began
+      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
+        Default is current time.
+    outputs:
+    - contextPath: TruSTAR.Report.reportTitle
+      description: Title of the report
+      type: string
+    - contextPath: TruSTAR.Report.reportBody
+      description: Body of the report
+      type: string
+    - contextPath: TruSTAR.Report.id
+      description: ID of the report
+      type: string
+    description: Submit a new incident report, and receive the ID it has been assigned
+      in TruSTAR’s system.
+  - name: trustar-update-report
+    arguments:
+    - name: report-id
+      required: true
+      description: TruSTAR report id or external tracking id.
+    - name: title
+      required: true
+      description: Title of the report
+    - name: report-body
+      required: true
+      description: Text content of report
+    - name: enclave-ids
+      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
+        enclave name. Mandatory if the distribution type is ENCLAVE.
+    - name: external-url
+      description: URL for the external report that this originated from, if one exists.
+        Limit 500 alphanumeric characters. Must be unique across all reports for a
+        given company.
+    - name: distribution-type
+      auto: PREDEFINED
+      predefined:
+      - COMMUNITY
+      - ENCLAVE
+      description: Distribution type of the report
+      defaultValue: ENCLAVE
+    - name: time-began
+      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
+        Default is current time.
+    outputs:
+    - contextPath: TruSTAR.Report.reportTitle
+      description: Title of the report
+      type: string
+    - contextPath: TruSTAR.Report.reportBody
+      description: Body of the report
+      type: string
+    - contextPath: TruSTAR.Report.id
+      description: ID of the report
+      type: string
+    description: Update the report with the specified ID. Either the internal TruSTAR
+      report ID or an external tracking ID can be used. Only the fields passed will
+      be updated. All others will be left unchanged.
+  - name: trustar-report-details
+    arguments:
+    - name: report-id
+      required: true
+      description: Finds a report by its internal or external id.
+    - name: id-type
+      auto: PREDEFINED
+      predefined:
+      - internal
+      - external
+      description: Type of report ID
+      defaultValue: internal
+    outputs:
+    - contextPath: TruSTAR.Report.reportTitle
+      description: Title of the report
+      type: string
+    - contextPath: TruSTAR.Report.reportBody
+      description: Body of the report
+      type: string
+    - contextPath: TruSTAR.Report.id
+      description: ID of the report
+      type: string
+    description: Finds a report by its internal or external id.
+  - name: trustar-delete-report
+    arguments:
+    - name: report-id
+      required: true
+      description: Finds a report by its internal or external id.
+    - name: id-type
+      auto: PREDEFINED
+      predefined:
+      - internal
+      - external
+      description: Type of report ID
+      defaultValue: internal
+    description: Deletes a report as specified by given id (id can be TruSTAR report
+      id or external id).
+  - name: trustar-get-reports
+    arguments:
+    - name: from
+      description: Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01
+        10:30:00). Based on updated time, and not created time. Default is 1 day ago.
+    - name: to
+      description: End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01
+        10:30:00). Based on updated time, and not created time. Default is current
+        time.
+    - name: distribution-type
+      auto: PREDEFINED
+      predefined:
+      - ENCLAVE
+      - COMMUNITY
+      description: Whether to search for reports in the community, or only in enclaves
+      defaultValue: ENCLAVE
+    - name: enclave-ids
+      description: Comma separated list of enclave ids to search for reports in. Even
+        if distributionType is COMMUNITY, these enclaves will still be searched as
+        well. Default is All enclaves the user has READ access to.
+    - name: tags
+      description: a list of names of tags to filter by; only reports containing ALL
+        of these tags will be returned
+    - name: excluded-tags
+      description: reports containing ANY of these tags will be excluded from the
+        results.
+    outputs:
+    - contextPath: TruSTAR.Report.reportTitle
+      description: Title of the report
+    - contextPath: TruSTAR.Report.reportBody
+      description: Body of the report
+    - contextPath: TruSTAR.Report.id
+      description: ID of the report
+    description: 'Returns incident reports matching the specified filters. All parameters
+      are optional: if nothing is specified, the latest 25 reports accessible by the
+      user will be returned (matching the view the user would have by logging into
+      Station).'
+  - name: trustar-correlated-reports
+    arguments:
+    - name: indicators
+      required: true
+      description: Indicator value of any type; i.e. an IP address, email address,
+        URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
+    - name: enclave-ids
+      description: Comma-separated list of enclave ids; only indicators found in reports
+        from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to.
+    - name: page-number
+      description: Which page of the result set to get
+      defaultValue: "0"
+    - name: page-size
+      description: The number of results per page.
+      defaultValue: "25"
+    - name: distribution-type
+      auto: PREDEFINED
+      predefined:
+      - COMMUNITY
+      - ENCLAVE
+      description: Distribution type of the report
+      defaultValue: ENCLAVE
+    description: Returns a paginated list of all reports that contain any of the provided
+      indicator values.
+  - name: trustar-search-reports
+    arguments:
+    - name: search-term
+      required: true
+      default: true
+      description: The term to search for
+    - name: enclave-ids
+      description: Comma-separated list of enclave ids; only indicators found in reports
+        from these enclaves will be returned (defaults to all of user’s enclaves)
+    description: Searches for all reports that contain the given search term.
+  - name: trustar-add-to-whitelist
+    arguments:
+    - name: indicators
+      required: true
+      default: true
+      description: CSV of indicators to whitelist, i.e. evil.com,101.43.52.224
+    description: Whitelist a list of indicator values for the user’s company.
+  - name: trustar-remove-from-whitelist
+    arguments:
+    - name: indicator
+      required: true
+      description: The value of the indicator to delete.
+    - name: indicator-type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - URL
+      - IP
+      - SHA256
+      - SHA1
+      - MD5
+      - SOFTWARE
+      - EMAIL_ADDRESS
+      - BITCOIN_ADDRESS
+      - CIDR_BLOCK
+      - CVE
+      - REGISTRY_KEY
+      description: The type of the indicator to delete.
+    description: Delete an indicator from the user’s company whitelist.
+  - name: trustar-get-enclaves
+    arguments: []
+    description: Returns the list of all enclaves that the user has access to, as
+      well as whether they can read, create, and update reports in that enclave.
+  dockerimage: demisto/trustar

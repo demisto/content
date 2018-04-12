@@ -177,14 +177,6 @@
         },
         {
             "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "CB-Response-Test",
-            "nightly": true
-        },
-        {
-            "integrations": {
                 "name": "carbonblack-v2",
                 "byoi": true
             },
@@ -271,6 +263,10 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
             "integrations": [
                 {
                     "name": "carbonblackliveresponse",
@@ -286,6 +282,10 @@
         {
             "playbookID": "TestSafeBreach",
             "integrations": "SafeBreach"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         }
     ],
     "skipped": [
@@ -383,14 +383,6 @@
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "CB-Response-Test",
-            "nightly": true
         },
         {
             "integrations": "iDefense",

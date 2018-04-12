@@ -242,7 +242,8 @@ script:
         }
         createIssueObj['md'].push(data);
         var id = dq(data, 'id');
-        createIssueObj['context'].Ticket.push({Id: id});
+        var key = dq(data, 'key');
+        createIssueObj['context'].Ticket.push({Id: id, Key: key});
         return createIssueObj;
     }
 
@@ -573,6 +574,8 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: Id of ticket
+    - contextPath: Ticket.Key
+      description: Key of ticket
     description: Create a new issue on Jira
   - name: jira-issue-upload-file
     arguments:
@@ -615,3 +618,4 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
+releaseNotes: "-"

@@ -340,20 +340,28 @@ script:
         def parse_element(element):
             to_recipients = element.find('{%s}ToRecipients' % TNS)
             if to_recipients:
-                to_recipients = map(lambda x: x.text, to_recipients)
+                to_recipients = map(lambda x: x.text if x is not None else None, to_recipients)
 
-            return {
-                ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'],
-                MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text,
-                'subject': element.find("{%s}Subject" % TNS).text,
+            result = {
+                ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
+                MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text if element.find(
+                    '{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)) is not None else None,
+                'subject': element.find("{%s}Subject" % TNS).text if element.find(
+                    "{%s}Subject" % TNS) is not None else None,
                 'toRecipients': to_recipients,
-                'sender': element.find("{%s}Sender" % TNS).text,
-                'hasAttachments': element.find("{%s}HasAttachment" % TNS).text,
-                'datetimeSent': element.find("{%s}SentTime" % TNS).text,
-                'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text
+                'sender': element.find("{%s}Sender" % TNS).text if element.find("{%s}Sender" % TNS) is not None else None,
+                'hasAttachments': element.find("{%s}HasAttachment" % TNS).text if element.find(
+                    "{%s}HasAttachment" % TNS) is not None else None,
+                'datetimeSent': element.find("{%s}SentTime" % TNS).text if element.find(
+                    "{%s}SentTime" % TNS) is not None else None,
+                'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text if element.find(
+                    "{%s}ReceivedTime" % TNS) is not None else None
             }
 
+            return result
+
         def call(self, query, mailboxes):
+            query = query.replace(".", "\\.")
             if self.protocol.version.build < EXCHANGE_2013:
                 raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
             elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
@@ -1608,5 +1616,4 @@ script:
     description: Get items by id.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "1. support folder id in a addition to folder path.
-2. add ews-find-folders, ews-get-items, ews-get-items-from-folder commands"
+releaseNotes: fix ews-search-mailboxes command
