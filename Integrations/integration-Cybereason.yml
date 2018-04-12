@@ -668,4 +668,3 @@ script:
     description: Stops isolation of a machine
     execution: true
 hidden: false
-releaseNotes: "Added isolate and un-isolate machines commands"
