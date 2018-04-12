@@ -1283,4 +1283,3 @@ script:
     description: Delete triggered alarms
   isfetch: true
   runonce: false
-releaseNotes: "-"

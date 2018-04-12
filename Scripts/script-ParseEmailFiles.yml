@@ -637,4 +637,3 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-releaseNotes: 'Better handling of non-UTF characters'
