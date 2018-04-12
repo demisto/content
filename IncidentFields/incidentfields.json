@@ -1,13 +1,13 @@
 [
 	{
-		"id": "incident_attachamenthash",
+		"id": "incident_attachmenthash",
 		"version": 1,
 		"modified": "2018-04-08T06:42:56.385393516Z",
-		"name": "Attachament Hash",
+		"name": "Attachment Hash",
 		"ownerOnly": false,
 		"placeholder": "",
 		"description": "",
-		"cliName": "attachamenthash",
+		"cliName": "attachmenthash",
 		"type": "shortText",
 		"closeForm": false,
 		"editForm": true,
