@@ -297,7 +297,8 @@
 			"Phishing"
 		],
 		"associatedToAll": false,
-		"unmapped": false
+		"unmapped": false,
+		"unsearchable": true
 	},
 	{
 		"id": "incident_emailbodyformat",
@@ -357,7 +358,8 @@
 			"Phishing"
 		],
 		"associatedToAll": false,
-		"unmapped": false
+		"unmapped": false,
+		"unsearchable": true
 	},
 	{
 		"id": "incident_emailcc",
