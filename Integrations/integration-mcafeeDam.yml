@@ -371,4 +371,3 @@ script:
     description: Get latest DAM alerts by rule name
   isfetch: true
   runonce: false
-releaseNotes: "-"
