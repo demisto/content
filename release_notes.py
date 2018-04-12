@@ -9,6 +9,13 @@ from Tests.test_utils import print_error
 contentLibPath = "./"
 limitedVersion = False
 
+LAYOUT_TYPE_TO_NAME = {
+    "details": "Summary",
+    "edit": "New/Edit",
+    "close": "Close",
+}
+
+
 class Content:
     __metaclass__ = abc.ABCMeta
 
@@ -54,10 +61,15 @@ class Content:
                 new_count = 0
                 for rawContent in self.addedStore:
                     cnt = self.loadData(rawContent)
-                    new_content_rn = self.addedReleaseNotes(cnt)
-                    if new_content_rn:
+
+                    ans = self.addedReleaseNotes(cnt)
+                    if ans is None:
+                        print_error(cnt["name"] + " is missing releaseNotes entry")
+                        missingReleaseNotes = True
+
+                    if ans:
                         new_count += 1
-                    newStr += self.addedReleaseNotes(cnt)
+                    newStr += ans
 
                 if len(newStr) > 0:
                     if new_count > 1:
@@ -105,7 +117,7 @@ class ScriptContent(Content):
     def getHeader(self):
         return "Scripts"
 
-    def addedReleaseNotes(self,cnt):
+    def addedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
@@ -124,6 +136,7 @@ class ScriptContent(Content):
             res =  "- " + cnt["name"] + "\n"
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
+
 
 Content.register(ScriptContent)
 
@@ -155,6 +168,7 @@ class PlaybookContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+
 Content.register(PlaybookContent)
 
 
@@ -185,7 +199,9 @@ class ReportContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+
 Content.register(ReportContent)
+
 
 class DashboardContent(Content):
     def loadData(self, data):
@@ -214,7 +230,9 @@ class DashboardContent(Content):
             res += "-- " + rn + "\n"
         return res
 
+
 Content.register(DashboardContent)
+
 
 class WidgetContent(Content):
     def loadData(self, data):
@@ -243,14 +261,123 @@ class WidgetContent(Content):
             res += "-- " + rn + "\n"
         return res
 
+
 Content.register(WidgetContent)
+
+
+class IncidentFieldContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Incident Fields"
+
+    def addedReleaseNotes(self, cnt):
+        # This should never happen
+        return ""
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+        # Add a comment only if there are release notes
+        if rn != '-':
+            res += "- " + cnt["releaseNotes"] + "\n"
+        return res
+
+
+Content.register(IncidentFieldContent)
+
+
+class LayoutContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Incident Layouts"
+
+    def getReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+
+        layout_kind = LAYOUT_TYPE_TO_NAME.get(cnt.get("kind", ""))
+        if not layout_kind:
+            print_error("invalid layout kind %s" % (cnt.get("kind", ""),))
+            return None
+
+        layout_type = cnt.get("typeId")
+        if not layout_type:
+            print_error("invalid layout kind %s" % (layout_type,))
+            return None
+
+        return "- " + layout_type + " - " + layout_kind + "\n" + "-- " + rn + "\n"
+
+    def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+
+        return self.getReleaseNotes(cnt)
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+
+        if len(rn) == 0:
+            return None
+
+        if rn == "-":
+            return ""
+
+        return self.getReleaseNotes(cnt)
+
+
+Content.register(LayoutContent)
+
+
+class ClassifierContent(Content):
+    def loadData(self, data):
+        return json.loads(data)
+
+    def getHeader(self):
+        return "Classification & Mapping"
+
+    def getReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        brand_name = cnt.get("brandName")
+        if not brand_name:
+            print_error("invalid classifier brand name %s" % (brand_name,))
+            return None
+
+        return "- " + brand_name + "\n" + "-- " + rn + "\n"
+
+    def addedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+
+        return self.getReleaseNotes(cnt)
+
+    def modifiedReleaseNotes(self, cnt):
+        rn = cnt.get("releaseNotes", "")
+
+        if len(rn) == 0:
+            return None
+
+        if rn == "-":
+            return ""
+
+        return self.getReleaseNotes(cnt)
+
+
+Content.register(ClassifierContent)
+
 
 class ReputationContent(Content):
     def loadData(self, data):
         return json.loads(data)
 
     def getHeader(self):
-        return "Hypersearch"
+        return "Reputations"
 
     def addedReleaseNotes(self, cnt):
         #This should never happen
@@ -263,8 +390,9 @@ class ReputationContent(Content):
         res = ""
         #Add a comment only if there are release notes
         if rn != '-':
-            res += "-- " + cnt["releaseNotes"] + "\n"
+            res += "- " + cnt["releaseNotes"] + "\n"
         return res
+
 
 Content.register(ReputationContent)
 
@@ -293,6 +421,7 @@ class IntegrationContent(Content):
             res += "-- " + cnt["releaseNotes"] + "\n"
         return res
 
+
 Content.register(IntegrationContent)
 
 
@@ -303,14 +432,19 @@ releaseNoteGenerator = {
     "Reports": ReportContent(),
     "Misc": ReputationContent(),
     "Dashboards": DashboardContent(),
-    "Widgets": WidgetContent()
+    "Widgets": WidgetContent(),
+    "IncidentFields": IncidentFieldContent(),
+    "Layouts": LayoutContent(),
+    "Classifiers": ClassifierContent()
 }
+
 
 def parseChangeList(filePath):
     with open(filePath, 'r') as f:
         data = f.read()
         return data.split("\n")
     return []
+
 
 def getDeletedContent(fullFileName, data):
     startIndex = data.find(fullFileName)
@@ -319,6 +453,7 @@ def getDeletedContent(fullFileName, data):
         if nameIndex > 0:
             return data[nameIndex:].split("\n")[0][len("-name:"):].strip()
     return ""
+
 
 def handleDeletedFiles(deleteFilePath, fullFileName):
     with open(deleteFilePath, 'r') as f:
@@ -329,6 +464,7 @@ def handleDeletedFiles(deleteFilePath, fullFileName):
             deletedContent = getDeletedContent(fullFileName, data)
             if fileTypeMapping is not None:
                 fileTypeMapping.add("D", deletedContent)
+
 
 def createFileReleaseNotes(fileName, deleteFilePath):
     if len(fileName) > 0:
@@ -356,6 +492,7 @@ def createFileReleaseNotes(fileName, deleteFilePath):
             with open(contentLibPath + fullFileName, 'r') as f:
                 data = f.read()
                 fileTypeMapping.add(changeType, data)
+
 
 def createContentDescriptor(version, assetId, res):
     #time format example 2017 - 06 - 11T15:25:57.0 + 00:00

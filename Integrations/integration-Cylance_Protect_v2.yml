@@ -32,6 +32,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |+
     import jwt
@@ -146,6 +156,23 @@ script:
         res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)
         return res['access_token']
 
+    def threat_to_incident(threat):
+            incident = {}
+            incident['name'] = 'Cylance Protect v2 threat ' + threat['name']
+            incident['occurred'] = threat['last_found'] + 'Z'
+            incident['rawJSON'] = json.dumps(threat)
+
+            labels = []
+            labels.append({'type':'Classification','value':threat['classification']})
+            labels.append({'type':'MD5','value':threat['md5']})
+            labels.append({'type':'SHA256','value':threat['sha256']})
+            incident['labels'] = labels
+            return incident
+
+    def normalize_score(score):
+        ''' Translates API raw float (-1 to 1) score to UI score (-100 to 100) '''
+        return score*100
+
     # FUNCTIONS
     def test():
         access_token = get_authentication_token()
@@ -160,8 +187,9 @@ script:
         result = get_devices_request(page, page_size)
         devices = result['page_items']
 
+        devices_context = createContext(data=devices, keyTransform=underscoreToCamelCase)
         ec = {
-            'Devices(val.id && val.id === obj.id)': devices
+            'Endpoint(val.id && val.id === obj.id)': devices_context
         }
 
         hr = []
@@ -178,7 +206,7 @@ script:
             'Contents': devices,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cylance Protect Devices', hr, headerTransform=underscoreToCamelCase),
+            'HumanReadable': tableToMarkdown('Cylance Protect Devices', hr, headerTransform=underscoreToCamelCase, removeNull=True),
             'EntryContext': ec
         }
 
@@ -205,8 +233,9 @@ script:
         device_id = demisto.args()['id']
         device = get_device_request(device_id)
 
+        device_context = createContext(data=device, keyTransform=underscoreToCamelCase)
         ec = {
-            'Devices(val.id && val.id === obj.id)': device
+            'Endpoint(val.id && val.id === obj.id)': device_context
         }
 
         hr = []
@@ -222,7 +251,7 @@ script:
             'Contents': device,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr, headerTransform=underscoreToCamelCase),
+            'HumanReadable': tableToMarkdown(title, hr, headerTransform=underscoreToCamelCase, removeNull=True),
             'EntryContext': ec
         }
 
@@ -306,21 +335,28 @@ script:
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
 
         device_threats = get_device_threats_request(device_id, page, page_size)['page_items']
+        for threat in device_threats:
+            score = threat.get('cylance_score', None)
+            if score:
+                threat['cylance_score'] = normalize_score(threat['cylance_score'])
+        if device_threats:
+            threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
+            ec = {
+                'File': threats_context
+            }
 
-        ec = {
-            'File': device_threats
-        }
+            title = 'Cylance Protect Device Threat ' + device_id
 
-        title = 'Cylance Protect Device Threat ' + device_id
-
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': device_threats,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, device_threats, headerTransform=underscoreToCamelCase),
-            'EntryContext': ec
-        }
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': device_threats,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, device_threats, headerTransform=underscoreToCamelCase),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No threats found.'
 
         demisto.results(entry)
 
@@ -549,21 +585,26 @@ script:
     def get_threat():
         hash = demisto.args()['sha256']
         threat = get_threat_request(hash)
+        if threat:
+            score = threat.get('cylance_score', None)
+            if score:
+                threat['cylance_score'] = normalize_score(threat['cylance_score'])
+            context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
+            ec = {
+                'File':  context_threat
+            }
 
-        context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'File':  context_threat
-        }
-
-        title = 'Cylance Protect Threat ' + hash
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': threat,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, threat, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
+            title = 'Cylance Protect Threat ' + hash
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': threat,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, threat, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'Threat was not found.'
 
         demisto.results(entry)
 
@@ -583,7 +624,10 @@ script:
         page_size = demisto.args()['page_size'] if 'page_size' in demisto.args() else None
 
         threats = get_threats_request(page, page_size)['page_items']
-
+        for threat in threats:
+            score = threat.get('cylance_score', None)
+            if score:
+                threat['cylance_score'] = normalize_score(threat['cylance_score'])
         context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
         ec = {
             'File':  context_threat
@@ -626,40 +670,43 @@ script:
 
         threats = get_threat_devices_request(threat_hash, page, page_size)['page_items']
 
-        threats_context = threats[:]
+        if threats:
+            threats_context = threats[:]
 
-        for threat in threats:
-            threat['ip_addresses'] = ', '.join(threat['ip_addresses'])
-            threat['mac_addresses'] = ', '.join(threat['mac_addresses'])
+            for threat in threats:
+                threat['ip_addresses'] = ', '.join(threat['ip_addresses'])
+                threat['mac_addresses'] = ', '.join(threat['mac_addresses'])
 
-        file_paths = []
-        for threat in threats_context:
-            file_path = threat.pop('file_path')
-            file_paths.append({
-                'FilePath': file_path
-            })
+            file_paths = []
+            for threat in threats_context:
+                file_path = threat.pop('file_path')
+                file_paths.append({
+                    'FilePath': file_path
+                })
 
-        context_file = {
-            'Sha256': threat_hash,
-            'FilePath': file_paths
-        }
+            context_file = {
+                'Sha256': threat_hash,
+                'FilePath': file_paths
+            }
 
-        context_device = createContext(data=threats_context, keyTransform=underscoreToCamelCase, removeNull=True)
+            context_device = createContext(data=threats_context, keyTransform=underscoreToCamelCase, removeNull=True)
 
-        ec = {
-            'File':  context_file,
-            'Devices(val.id && val.id === obj.id)': context_device
-        }
+            ec = {
+                'File':  context_file,
+                'Devices(val.id && val.id === obj.id)': context_device
+            }
 
-        title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': threats,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
+            title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': threats,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No devices found on given threat.'
 
         demisto.results(entry)
 
@@ -682,31 +729,34 @@ script:
         return res
 
     def get_list():
-        list_type_id = demisto.args()['listTypeId'] if 'listTypeId' in demisto.args() else None
         page = demisto.args()['pageNumber'] if 'pageNumber' in demisto.args() else None
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
 
-        lst = get_list_request(list_type_id, page, page_size)['page_items']
+        lst = get_list_request(demisto.args()['listTypeId'], page, page_size)['page_items']
+        for threat in lst:
+            score = threat.get('cylance_score', None)
+            if score:
+                threat['cylance_score'] = normalize_score(threat['cylance_score'])
+        if lst:
+            context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
+            ec = {
+                'File':  context_list
+            }
 
-        context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
-
-        ec = {
-            'File':  context_list
-        }
-
-        title = 'Cylance Protect Global List'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': lst,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, lst, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
-
+            title = 'Cylance Protect Global List'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': lst,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, lst, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No list of this type was found.'
         demisto.results(entry)
 
-    def get_list_request(list_type_id = None, page = None, page_size = None):
+    def get_list_request(list_type_id, page = None, page_size = None):
         access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
         headers = {
             'Content-Type': 'application/json',
@@ -714,8 +764,10 @@ script:
         }
 
         params = {}
-        if list_type_id:
-            params['listTypeId'] = list_type_id
+        if list_type_id == 'GlobalQuarantine':
+            params['listTypeId'] = 0
+        else: # List Type ID is GlobalSafe
+            params['listTypeId'] = 1
         if page:
             params['page'] = page
         if page_size:
@@ -754,11 +806,35 @@ script:
 
         return res
 
+    def fetch_incidents():
+        now = datetime.utcnow()
+        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+        if len(last_run) == 0:
+            now -= timedelta(minutes=10)
+            last_run = now
+        if isinstance(last_run, unicode):
+            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S.%f') # Converts string to datetime object
+
+        threats = get_threats_request().get('page_items', [])
+
+        incidents = []
+        for threat in threats:
+            last_found = datetime.strptime(threat['last_found'], '%Y-%m-%dT%H:%M:%S')
+            if last_found > last_run:
+                incident = threat_to_incident(threat)
+                incidents.append(incident)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now.isoformat()})
+
     # EXECUTION
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
             test()
+
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
         elif demisto.command() == 'cylance-protect-get-devices':
             get_devices()
@@ -818,23 +894,23 @@ script:
     - name: pageSize
       description: 'Default: 100'
     outputs:
-    - contextPath: Devices.AgentVersion
+    - contextPath: Endpoint.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
       type: string
-    - contextPath: Devices.DateFirstRegistered
+    - contextPath: Endpoint.DateFirstRegistered
       description: The date and time (in UTC) when the device record was created.
       type: string
-    - contextPath: Devices.Id
+    - contextPath: Endpoint.Id
       description: The device’s unique identifier.
       type: string
-    - contextPath: Devices.IpAddresses
+    - contextPath: Endpoint.IpAddresses
       description: The list of IP addresses for the device.
-    - contextPath: Devices.MacAddresses
+    - contextPath: Endpoint.MacAddresses
       description: The list of MAC addresses for the device.
-    - contextPath: Devices.Name
+    - contextPath: Endpoint.Name
       description: The device’s name.
       type: string
-    - contextPath: Devices.Policy
+    - contextPath: Endpoint.Policy
       description: The policy ID and name.
       type: string
     description: Allows a caller to request a page with a list of Console device resources
@@ -847,33 +923,33 @@ script:
       default: true
       description: The device ID
     outputs:
-    - contextPath: Devices.AgentVersion
+    - contextPath: Endpoint.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
       type: string
-    - contextPath: Devices.DateFirstRegistered
+    - contextPath: Endpoint.DateFirstRegistered
       description: The date and time (in UTC) when the device record was created.
       type: string
-    - contextPath: Devices.BackgroundDetection
+    - contextPath: Endpoint.BackgroundDetection
       description: If true, the Agent is currently running.
       type: boolean
-    - contextPath: Devices.DateLastModified
+    - contextPath: Endpoint.DateLastModified
       description: The date and time (in UTC) when the device record was last modified.
       type: string
-    - contextPath: Devices.DateOffline
+    - contextPath: Endpoint.DateOffline
       description: The date and time (in UTC) when the device last communicated with
         the Console.
       type: string
-    - contextPath: Devices.HostName
+    - contextPath: Endpoint.HostName
       description: The hostname for the device.
       type: string
-    - contextPath: Devices.Id
+    - contextPath: Endpoint.Id
       description: The unique identifier for the device.
       type: string
-    - contextPath: Devices.IpAddresses
+    - contextPath: Endpoint.IpAddresses
       description: The list of IP addresses for the device.
-    - contextPath: Devices.MacAddresses
+    - contextPath: Endpoint.MacAddresses
       description: The list of MAC addresses for the device.
-    - contextPath: Devices.IsSafe
+    - contextPath: Endpoint.IsSafe
       description: If true, there are no outstanding threats.
       type: boolean
     description: Allows a caller to request a specific device resource belonging to
@@ -1239,10 +1315,9 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      description: 'The type of the list to retrieve the hashes for -  0 (GlobalQuarantine)
-        or 1 (GlobalSafe). '
+      - GlobalQuarantine
+      - GlobalSafe
+      description: 'The type of the list to retrieve the hashes for. '
     - name: page
       description: The page number to request
     - name: page_size
@@ -1277,3 +1352,5 @@ script:
       type: string
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
+  isfetch: true
+releaseNotes: "Added fetch incidents support and fixed Cylance score translation"
