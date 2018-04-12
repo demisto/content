@@ -1616,4 +1616,3 @@ script:
     description: Get items by id.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: fix ews-search-mailboxes command
