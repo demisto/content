@@ -1,0 +1,19 @@
+commonfields:
+  id: UnEscapeURLs
+  version: -1
+name: UnEscapeURLs
+releaseNotes: "-"
+script: return args.input.replace(/\[\.\]/g, '.').replace('hxxp', 'http').replace(/&amp;/g,
+  '&');
+type: javascript
+tags:
+- indicator-format
+comment: Un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: The URL to un-escape
+scripttarget: 0
+runonce: false

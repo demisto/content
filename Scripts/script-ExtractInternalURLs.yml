@@ -1,0 +1,44 @@
+commonfields:
+  id: ExtractInternalURLs
+  version: -1
+name: ExtractInternalURLs
+releaseNotes: "-"
+script: |-
+  var PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u='];
+  var v = 0;
+  if (args.input.indexOf(PROOFPOINT_PREFIXES[0]) === 0) {
+      v = 1;
+  } else if (args.input.indexOf(PROOFPOINT_PREFIXES[1]) === 0) {
+      v = 2;
+  }
+  // Not Proofpoint
+  if (v === 0) {
+      // Normalize the URL with http prefix
+      if (args.input.indexOf('http') !== 0 && args.input.indexOf('ftp') !== 0) {
+          return 'http://' + args.input;
+      }
+      return args.input;
+  }
+
+  var clean = args.input.substr(PROOFPOINT_PREFIXES[v-1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://');
+  try {
+      clean = decodeURI(clean);
+  } catch (e) {
+      // Ignore
+  }
+  return clean;
+type: javascript
+tags:
+- indicator-format
+comment: |-
+  Extract URLs redirected by security tools like Proofpoint.
+  Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+  If this is not a recognized URL prefix, just return the URL
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: The URL to extract internal URL from
+scripttarget: 0
+runonce: false
