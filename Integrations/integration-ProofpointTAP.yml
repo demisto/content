@@ -126,68 +126,72 @@ script:
         var messagesBlockedOutput = [];
         var clicksPermittedOutput = [];
         var clicksBlockedOutput = [];
-        if (events) {
-              // convert events to demisto incidents
-              if (events.messagesDelivered && events.messagesDelivered.length > 0) {
-                  for (var i = 0; i < events.messagesDelivered.length; i++) {
-                      var event = events.messagesDelivered[i];
-                      messagesDeliveredOutput.push({
-                          CampaignId: dq(event, 'campaignId'),
-                          Classification: dq(event, 'classification'),
-                          ClickIP: dq(event, 'clickIP'),
-                          ClickTime: dq(event, 'clickTime'),
-                          MessageID: dq(event, 'messageID'),
-                          Recipient: dq(event, 'recipient'),
-                          Sender: dq(event, 'sender'),
-                          SenderIP: dq(event, 'senderIP'),
-                          ThreatID: dq(event, 'threatID'),
-                          ThreatTime: dq(event, 'threatTime'),
-                          ThreatURL: dq(event, 'threatURL'),
-                          Url: dq(event, 'url'),
-                          UserAgent: dq(event, 'userAgent')
-                      })
-                  }
-              }
-
-              if (events.messagesBlocked && events.messagesBlocked.length > 0) {
-                  for (var i = 0; i < events.messagesBlocked.length; i++) {
-                      var event = events.messagesBlocked[i];
-                      messagesBlocked.push({
-
-                      })
-                  }
-              }
-
-              if (events.clicksPermitted && events.clicksPermitted.length > 0) {
-                  for (var i = 0; i < events.clicksPermitted.length; i++) {
-                      var event = events.clicksPermitted[i];
-                      event.type = 'clicks permitted';
-                      var incident = {
-                          name: 'Proofpoint - Click Permitted - '  + event.GUID,
-                          rawJSON: JSON.stringify(event)
-                      };
-
-                      incidents.push(incident);
-                  }
-              }
-
-              if (events.clicksBlocked && events.clicksBlocked.length > 0) {
-                  for (var i = 0; i < events.clicksBlocked.length; i++) {
-                      var event = events.clicksBlocked[i];
-                      event.type = 'clicks blocked';
-                      var incident = {
-                          name: 'Proofpoint - Click Blocked - '  + event.GUID,
-                          rawJSON: JSON.stringify(event)
-                      };
-
-                      incidents.push(incident);
-                  }
-              }
-
-          }
 
         // output to context
         var eventsMarkdownString = '';
+        if (events) {
+            // convert events to demisto incidents
+            if (events.messagesDelivered && events.messagesDelivered.length > 0) {
+                for (var i = 0; i < events.messagesDelivered.length; i++) {
+                    var event = events.messagesDelivered[i];
+                    messagesDeliveredOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Messages Delivered', messagesDeliveredOutput, [
+                  'GUID',
+                  'ccAddresses',
+                  'fromAddress',
+                  'impostorScore',
+                  'malwareScore',
+                  'messageID',
+                  'messageTime',
+                  'sender',
+                  'senderIP',
+                  'spamScore',
+                  'subject'
+
+                ]);
+            }
+
+            if (events.messagesBlocked && events.messagesBlocked.length > 0) {
+                for (var i = 0; i < events.messagesBlocked.length; i++) {
+                    var event = events.messagesBlocked[i];
+                    messagesBlockedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Messages Blocked', messagesBlockedOutput, [
+                  'GUID',
+                  'ccAddresses',
+                  'fromAddress',
+                  'impostorScore',
+                  'malwareScore',
+                  'messageID',
+                  'messageTime',
+                  'sender',
+                  'senderIP',
+                  'spamScore',
+                  'subject'
+                ]);
+            }
+
+            if (events.clicksPermitted && events.clicksPermitted.length > 0) {
+                for (var i = 0; i < events.clicksPermitted.length; i++) {
+                    var event = events.clicksPermitted[i];
+                    clicksPermittedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Clicks Permitted', clicksPermittedOutput);
+            }
+
+            if (events.clicksBlocked && events.clicksBlocked.length > 0) {
+                for (var i = 0; i < events.clicksBlocked.length; i++) {
+                    var event = events.clicksBlocked[i];
+                    clicksBlockedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Clicks Blocked', clicksBlockedOutput);
+            }
+        }
 
 
         return {
@@ -197,10 +201,10 @@ script:
             ReadableContentsFormat: formats.markdown,
             HumanReadable: eventsMarkdownString,
             EntryContext: {
-                'Proofpoint.MessagesDelivered()': messagesDeliveredOutput,
-                'Proofpoint.MessagesBlocked()': messagesBlockedOutput,
-                'Proofpoint.ClicksPermitted()': clicksPermittedOutput,
-                'Proofpoint.ClicksBlocked()': clicksBlockedOutput
+                'Proofpoint.MessagesDelivered': messagesDeliveredOutput,
+                'Proofpoint.MessagesBlocked': messagesBlockedOutput,
+                'Proofpoint.ClicksPermitted': clicksPermittedOutput,
+                'Proofpoint.ClicksBlocked': clicksBlockedOutput
             }
         };
     }
