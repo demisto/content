@@ -1,0 +1,208 @@
+{
+	"id": "9dd5ef77-fd1a-4346-8c29-6aa6379c6f04",
+	"version": -1,
+	"modified": "2018-04-10T06:39:15.91617666Z",
+	"defaultIncidentType": "",
+	"mapping": {
+		"Phishing": {
+			"internalMapping": {
+				"Attachment ID": {
+					"simple": "",
+					"complex": {
+						"root": "attachments",
+						"filters": [],
+						"accessor": "ID",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Attachment Name": {
+					"simple": "",
+					"complex": {
+						"root": "attachments",
+						"filters": [],
+						"accessor": "Name",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Body": {
+					"simple": "text",
+					"complex": null
+				},
+				"Email CC": {
+					"simple": "",
+					"complex": {
+						"root": "cc",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email From": {
+					"simple": "from",
+					"complex": null
+				},
+				"Email Message ID": {
+					"simple": "",
+					"complex": {
+						"root": "headers",
+						"filters": [],
+						"accessor": "Message-ID",
+						"transformers": [
+							{
+								"operator": "string.StripChars",
+								"args": {
+									"chars": {
+										"value": {
+											"simple": "\u003c\u003e",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Received": {
+					"simple": "headers.Received",
+					"complex": null
+				},
+				"Email Return Path": {
+					"simple": "",
+					"complex": {
+						"root": "headers",
+						"filters": [],
+						"accessor": "Return-Path",
+						"transformers": [
+							{
+								"operator": "string.StripChars",
+								"args": {
+									"chars": {
+										"value": {
+											"simple": "\u003c\u003e",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Sender IP": {
+					"simple": "",
+					"complex": {
+						"root": "headers",
+						"filters": [],
+						"accessor": "x-originating-ip",
+						"transformers": [
+							{
+								"operator": "string.StripChars",
+								"args": {
+									"chars": {
+										"value": {
+											"simple": "[]",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Subject": {
+					"simple": "headers.Subject",
+					"complex": null
+				},
+				"Email To": {
+					"simple": "",
+					"complex": {
+						"root": "to",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email To Count": {
+					"simple": "",
+					"complex": {
+						"root": "to",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.count",
+								"args": {}
+							}
+						]
+					}
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"unclassifiedCases": {},
+	"custom": true,
+	"transformer": {
+		"simple": "brand",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"google": "Phishing"
+	},
+	"brandName": "google",
+	"releaseNotes": "New Google apps gsuite gmail default classification"
+}

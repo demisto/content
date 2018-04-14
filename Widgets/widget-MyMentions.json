@@ -6,12 +6,11 @@
   "query": "type:mention*",
   "name": "Mentions",
   "dateRange": {
-    "fromDate": "0001-01-01T00:00:00Z",
-    "toDate": "0001-01-01T00:00:00Z"
+    "period": { "byFrom": "days", "fromValue": null }
   },
   "isPredefined": true,
   "version": -1,
-  "category": "",
+  "category": "others",
   "widgetType": "list",
   "releaseNotes": "-"
 }
