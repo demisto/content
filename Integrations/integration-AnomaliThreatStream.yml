@@ -348,6 +348,10 @@ script:
         return 'ok';
     }
 
+    if (result && result.meta && result.meta.next) {
+        // hide the api key
+        result.meta.next = result.meta.next.replace(API_KEY, '*******');
+    }
     return parseResult(command, result);
   type: javascript
   commands:
