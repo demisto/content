@@ -2,6 +2,7 @@ commonfields:
   id: ExtractURL
   version: -1
 name: ExtractURL
+releaseNotes: "Support extraction of escaped urls as well"
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -28,7 +29,7 @@ script: |-
   if (args.urlRegex) {
       reg = new RegExp(args.urlRegex, "gmi");
   } else {
-      reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
+      reg = /(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?/gmi;
   }
 
   var whitelist = getCSVListAsArray('Indicators Whitelist');
