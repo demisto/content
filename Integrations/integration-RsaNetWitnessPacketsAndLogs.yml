@@ -55,6 +55,8 @@ script:
     var LAST_HOURS = 'lastHours';
     var LAST_MINUTES = 'lastMinutes';
     var QUERY = 'query';
+    var USER_NAME = params.credentials ? params.credentials.identifier : params.username;
+    var PASSWORD = params.credentials ? params.credentials.password : params.password;
 
     function fixUrl(base) {
         var url = base.trim();
@@ -67,13 +69,14 @@ script:
         return url;
     }
 
-    var url = fixUrl(params.url) + ':' + params.port;
+    var BASE_URL = getUrl(fixUrl(params.url) + ':' + params.port);
 
+    // Check if concentrator IP and/or port were provided, if yes, then the url will be changed to the assigned concentrator.
     function getUrl(currentUrl){
         var urlToReturn;
         if(args && args.concentratorIP){
             // Check if port was provided, omit it if yes
-            var match = args.concentratorIP.match(/(.*):/);
+            var match = args.concentratorIP.match(/(https{0,1}:\/\/?.*):/);
             urlToReturn = match ? match[1] : args.concentratorIP;
             var port = args.concentratorPort;
             if(port){
@@ -89,7 +92,6 @@ script:
                 port = NON_SSL_PORT;
             }
 
-
             urlToReturn = urlToReturn + ":" + port;
 
             delete(args.concentratorIP);
@@ -103,8 +105,81 @@ script:
     }
 
     function isObjectEmpty(obj) {
-        return Object.keys(obj).length === 0;
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
+
+    /* Example transformation:
+     {
+        "fields": [
+            {
+                "count": 0,
+                "flags": 0,
+                "format": 8,
+                "group": 13,
+                "id1": 504,
+                "id2": 504,
+                "type": "sessionid",
+                "value": "13"
+            },
+            {
+                "count": 0,
+                "flags": 0,
+                "format": 32,
+                "group": 13,
+                "id1": 505,
+                "id2": 505,
+                "type": "time",
+                "value": 1372882420
+            },
+            {
+                "count": 0,
+                "flags": 0,
+                "format": 6,
+                "group": 13,
+                "id1": 506,
+                "id2": 506,
+                "type": "size",
+                "value": "16452"
+            },
+            {
+                "count": 0,
+                "flags": 0,
+                "format": 6,
+                "group": 13,
+                "id1": 507,
+                "id2": 507,
+                "type": "payload",
+                "value": "13590"
+            },
+            {
+                "count": 0,
+                "flags": 0,
+                "format": 2,
+                "group": 13,
+                "id1": 508,
+                "id2": 508,
+                "type": "medium",
+                "value": "1"
+            }
+        ],
+        "id1": 509,
+        "id2": 3938
+    }
+
+    To:
+
+    {
+        sessionid: 13,
+        paylod: 13590,
+        size: 16542,
+        time: 1372882420
+    }
+
+    */
 
     function mapQueryResults(fields, queryResults) {
         var TYPE  = 'type';
@@ -117,7 +192,7 @@ script:
                     if(!(queryResults[index])){
                         queryResults[index] = {};
                     }
-
+                    // Dot to camel case
                     var type = element[TYPE].replace(/\.([a-z,A-Z,0-9])/g, function (g) {
                         return g[1].toUpperCase();
                     });
@@ -128,15 +203,15 @@ script:
                     else{
                         if(!(queryResults[index][type] instanceof Array)){
                             var currValue = queryResults[index][type];
+                            // Ignore duplicates
                             if(currValue !== element[VALUE]){
-                                // Ignore duplicates
                                 queryResults[index][type] = [currValue];
                                 queryResults[index][type].push(element[VALUE]);
                             }
                         }
                         else {
+                            // Ignore duplicates
                             if(queryResults[index][type].indexOf(element[VALUE]) === -1){
-                                // Ignore duplicates
                                 queryResults[index][type].push(element[VALUE]);
                             }
                         }
@@ -146,18 +221,86 @@ script:
         }
     }
 
+    /*
+    Example transformation:
+    {
+        "fields": [
+            {
+                "count": 1,
+                "flags": 0,
+                "format": 65,
+                "group": 0,
+                "id1": 25,
+                "id2": 25,
+                "type": "client",
+                "value": "opera mail/12.11"
+            },
+            {
+                "count": 5,
+                "flags": 0,
+                "format": 65,
+                "group": 0,
+                "id1": 13,
+                "id2": 63,
+                "type": "client",
+                "value": "mozilla/5.0"
+            },
+            {
+                "count": 31,
+                "flags": 0,
+                "format": 65,
+                "group": 0,
+                "id1": 14,
+                "id2": 61,
+                "type": "client",
+                "value": "mozilla/4.0"
+            },
+            {
+                "count": 2,
+                "flags": 0,
+                "format": 65,
+                "group": 0,
+                "id1": 5,
+                "id2": 6,
+                "type": "client",
+                "value": "e1e8d428-5bf1-4323-8808-d138a039102f"
+            }
+        ],
+        "id1": 0,
+        "id2": 0
+    }
+
+    To:
+
+    [
+        {
+            client: opera mail/12.11
+        },
+        {
+            client: mozilla/5.0,
+        },
+        {
+            client: mozilla/4.0,
+        },
+        {
+            client: e1e8d428-5bf1-4323-8808-d138a039102f
+        }
+    ]
+    */
+
     function mapArrayResults(fields, arrayResults){
         var TYPE  = 'type';
         var VALUE = 'value';
         if(fields && Array.isArray(fields)) {
             fields.forEach(function (element) {
-               var currObject = {};
-               //var type = dotToSpace(element[TYPE]).replace(/ /g,'');
-               var type = element[TYPE].replace(/\.([a-z,A-Z])/g, function (g) {
-                   return g[1].toUpperCase();
-               });
-               currObject[type] = element[VALUE];
-               arrayResults.push(currObject);
+                var currObject = {};
+                // Dot to camel case ip.src => ipSrc
+                // The reason for this transformation is to allow use in context
+                var type = element[TYPE].replace(/\.([a-z,A-Z,0-9])/g, function (g) {
+                    return g[1].toUpperCase();
+                });
+                currObject[type] = element[VALUE];
+                arrayResults.push(currObject);
             });
         }
     }
@@ -165,24 +308,23 @@ script:
     function extractFromData(data, mapper, results){
         if (Array.isArray(data)) {
             data.forEach(function (element) {
-                 var fields = dq(element, 'results.fields');
-                 mapper(fields, results);
+                var fields = dq(element, 'results.fields');
+                mapper(fields, results);
             });
         } else if ((typeof data) ==='object') {
-             var fields = dq(data, 'results.fields');
-             mapper(fields, results);
+            var fields = dq(data, 'results.fields');
+            mapper(fields, results);
         }
     }
 
     function buildQueryMdAndContext(response) {
-        //Check if we have values
         var data = parseResponse(response);
 
         var queryResults = {};
         extractFromData(data, mapQueryResults, queryResults);
         var flatQueryResult = [];
         if(!isObjectEmpty(queryResults)) {
-             for(var key in queryResults) {
+            for(var key in queryResults) {
                 flatQueryResult.push(queryResults[key]);
             }
             var hr = tableToMarkdown(command, flatQueryResult);
@@ -202,7 +344,6 @@ script:
     }
 
     function buildMSearchMdAndContext(response) {
-        //Check if we have values
         var data = parseResponse(response);
 
         var queryResults = {};
@@ -229,57 +370,55 @@ script:
     }
 
     function buildValuesMdAndContext(response) {
-        //Check if we have values
         var data = parseResponse(response);
 
         var arrayResults = [];
         extractFromData(data, mapArrayResults, arrayResults);
         if(arrayResults.length !== 0) {
-            var typeDict = {};
-            for(var index in arrayResults){
-                var type = Object.keys(arrayResults[index])[0];
-                if(!typeDict[type]){
-                    typeDict[type] = [];
-                }
+        var typeDict = {};
+                for(var index in arrayResults){
+                    var type = Object.keys(arrayResults[index])[0];
+                    if(!typeDict[type]){
+                        typeDict[type] = [];
+                    }
 
-                typeDict[type].push(arrayResults[index][type]);
-            }
-            var arr = [];
-            var maxLength = 0;
-            for(var key in typeDict){
-                if(maxLength < typeDict[key].length){
-                    maxLength = typeDict[key].length;
+                    typeDict[type].push(arrayResults[index][type]);
                 }
-            }
-
-            for(var i = 0; i < maxLength; i++){
-                var currObj = {};
+                var arr = [];
+                var maxLength = 0;
                 for(var key in typeDict){
-                    currObj[key] = typeDict[key][i];
+                    if(maxLength < typeDict[key].length){
+                        maxLength = typeDict[key].length;
+                    }
                 }
-                if(!isObjectEmpty(currObj)){
-                    arr.push(currObj);
-                }
-            }
 
-            var hr = tableToMarkdown(command, arr);
-            return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: hr,
-                EntryContext: {
-                    'NetWitness.Values': arrayResults
-                },
-                ReadableContentsFormat: formats.markdown
-            };
+                for(var i = 0; i < maxLength; i++){
+                    var currObj = {};
+                    for(var key in typeDict){
+                        currObj[key] = typeDict[key][i];
+                    }
+                    if(!isObjectEmpty(currObj)){
+                        arr.push(currObj);
+                    }
+                }
+
+                var hr = tableToMarkdown(command, arr);
+                return {
+                    Type: entryTypes.note,
+                    Contents: data,
+                    ContentsFormat: formats.json,
+                    HumanReadable: hr,
+                    EntryContext: {
+                        'NetWitness.Values': arrayResults
+                    },
+                    ReadableContentsFormat: formats.markdown
+                };
         } else {
             return "No results found.";
         }
     }
 
     function buildTimelineMdAndContext(response) {
-         //Check if we have values
         var data = parseResponse(response);
 
         var arrayResults = [];
@@ -330,45 +469,47 @@ script:
 
     function buildParamsMd(response){
         var data = parseResponse(response);
-        var params = data.params;
+        var resultParams= data.params;
 
         return {
             Type: entryTypes.note,
             Contents: data,
             ContentsFormat: formats.json,
-            HumanReadable: tableToMarkdown(command, params)
+            HumanReadable: tableToMarkdown(command, resultParams)
         };
     }
 
     function buildDatabaseMetaMdContext(response){
         var data = parseResponse(response);
-        var params = data.params;
-        if(params.length === 0){
+        var resultParams = data.params;
+        if(!resultParams || resultParams.length === 0){
             return 'No results found';
         }
 
-        var results = { '0': {
-           MetaArray: params[0]['MetaArray'],
-           dbFile: params[0]['dbFile']
-        }};
+        // First element of the response
+        var metaArray = resultParams[0]['MetaArray'];
+        var dbFile = resultParams[0]['dbFile'];
 
-        params.splice(0, 1);
-        mapQueryResults(params, results);
+        results = {};
+
+        mapQueryResults(resultParams, results);
         var flattenedResult = [];
         for(var key in results){
+            results[key]['MetaArray'] = metaArray;
+            results[key]['dbFile'] = dbFile;
             flattenedResult.push(results[key]);
         }
 
         return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsFormat: formats.json,
-                HumanReadable: tableToMarkdown('Database dump meta', flattenedResult),
-                EntryContext: {
-                    'NetWitness.DatabaseDump(val.sessionid == obj.sessionid)': flattenedResult
-                },
-                ReadableContentsFormat: formats.markdown
-            };
+            Type: entryTypes.note,
+            Contents: data,
+            ContentsFormat: formats.json,
+            HumanReadable: tableToMarkdown('Database dump meta', flattenedResult),
+            EntryContext: {
+                'NetWitness.DatabaseDump(val.sessionid == obj.sessionid)': flattenedResult
+            },
+            ReadableContentsFormat: formats.markdown
+        };
     }
 
     function parseResponse(resp, isXml) {
@@ -394,28 +535,28 @@ script:
     }
 
     function createFileEntry(data, extension){
-         var currentTime = new Date();
-                var fileName = command + '_at_' + currentTime.getTime();
-                if(extension){
-                    fileName += extension;
-                }
+        var currentTime = new Date();
+        var fileName = command + '_at_' + currentTime.getTime();
+        if(extension){
+            fileName += extension;
+        }
 
-                return {
-                    Type: 3,
-                    FileID: saveFile(data),
-                    File: fileName,
-                    Contents: fileName
-                };
+        return {
+            Type: 3,
+            FileID: saveFile(data),
+            File: fileName,
+            Contents: fileName
+        };
     }
 
     function parseDownloadResponse(resp) {
         if (resp.StatusCode === 200) {
             try {
-               var extension;
-               if(args && args.fileExt){
-                   extension = args.fileExt;
-               }
-               return createFileEntry(resp.Bytes, extension);
+                var extension;
+                if(args && args.fileExt){
+                    extension = args.fileExt;
+                }
+                return createFileEntry(resp.Bytes, extension);
             } catch (e) {
                 return e;
             }
@@ -426,22 +567,6 @@ script:
             }
             throw err;
         }
-    }
-
-    function getHelp(node) {
-        var fullUrl = url + node + '?msg=help&op=messages' + '&force-content-type=application/json';
-        res = http(
-            fullUrl,
-            {
-                Method: 'GET',
-                Username: params.credentials.identifier,
-                Password: params.credentials.password
-            },
-            !params.secure,
-            params.proxy
-        );
-
-        return parseResponse(res);
     }
 
     function handleTimeFilter(args) {
@@ -497,12 +622,10 @@ script:
     }
 
     function doReq(method, path, args, responseType, body) {
-        var urlToUse = getUrl(url);
         var parametersUrl = encodeParams(args);
-        //var responseType = resType ? RESPONSE_TYPES[resType] : 'application/json';
-        var fullUrl = urlToUse + path + parametersUrl;
+        var fullUrl = BASE_URL + path + parametersUrl;
         if(responseType){
-             fullUrl += ('&force-content-type=' + responseType);
+            fullUrl += ('&force-content-type=' + responseType);
         }
 
         if (params.expiry) {
@@ -513,8 +636,8 @@ script:
             fullUrl,
             {
                 Method: method,
-                Username: params.credentials.identifier,
-                Password: params.credentials.password,
+                Username: USER_NAME,
+                Password: PASSWORD,
                 Accept: responseType || '',
                 Body: body || ''
             },
@@ -531,7 +654,7 @@ script:
 
     function decoderImport(path) {
         var fileParam = args.entryID ? args.entryID : args.fileID;
-        var fullUrl = getUrl(url) + path;
+        var fullUrl = BASE_URL + path;
         var res = httpMultipart(
             fullUrl,
             fileParam,
@@ -539,8 +662,8 @@ script:
                 Method: 'POST',
                 ContentType: 'appliaction/json',
                 Accept: 'application/json',
-                Username: params.credentials.identifier,
-                Password: params.credentials.password
+                Username: USER_NAME,
+                Password: PASSWORD
             },
             null,
             !params.secure,
@@ -784,7 +907,9 @@ script:
         this search
     - name: flags
       description: <string, optional> Flags to use for search.  This is a comma separated
-        list of one or more of the flag values regex, sp, sm, si, ci, pre, post, ds
+        list of one or more of the flag values regex, sp(scan raw packet data), sm(scan
+        all metadata), si(index lookup for all search parametes before scanning meta),
+        ci(case insensitive)
     - name: concentratorIP
       description: Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
@@ -835,7 +960,7 @@ script:
         after the threshold is reached (useful with select aggregate functions).  Zero
         means no threshold (the default).
     - name: lastHours
-      description: <uint64, optional> Filter for date and time
+      description: <uint64, optional> Filter by last hours
     - name: lastMinutes
       description: <uint64, optional> Filter by last minutes
     - name: concentratorIP
@@ -845,31 +970,44 @@ script:
         SSL
     outputs:
     - contextPath: NetWitness.Events.ipSrc
-      description: IP source of the event
+      description: Source IP
     - contextPath: NetWitness.Events.aliasIp
-      description: Alias IP of the event
+      description: Destination IP
     - contextPath: NetWitness.Events.aliasHost
-      description: Alias host of the event
+      description: describes hostname or FQDN.
     - contextPath: NetWitness.Events.ipDst
       description: IP Destination of the event
-    - contextPath: NetWitness.Events.direction
-      description: Direction of the event
-    - contextPath: NetWitness.Events.content
-      description: Content type of the event
+    - contextPath: NetWitness.Events.userSrc
+      description: Source user
+    - contextPath: NetWitness.Events.userDst
+      description: Destination user
+    - contextPath: NetWitness.Events.username
+      description: Field includes any username meta available – both source and destination
+        – as defined by the user. This is an optional field that will only appear
+        if configured by the end user.
+    - contextPath: NetWitness.Events.service
+      description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Events.sessionid
-      description: Session ID of the event
-    - contextPath: NetWitness.Events.tcpSrcport
-      description: TCP source port of the event
-    - contextPath: NetWitness.Events.tcpDstport
-      description: TCP destination port of the event
-    - contextPath: NetWitness.Events.packets
-      description: Number of event packets
-    - contextPath: NetWitness.Events.client
-      description: Client of the event
+      description: NW Specific field that contains a NW specific ‘serial number’ of
+        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+    - contextPath: NetWitness.Events.deviceType
+      description: Field describes the type of system that generated a log message
+        (ex. SQUID / Windows / rhlinux)
+    - contextPath: NetWitness.Events.direction
+      description: 'Traffic flow direction (e.g. Inbound/outbound) '
+    - contextPath: NetWitness.Events.did
+      description: Specific Decoder a session was captured on
+    - contextPath: NetWitness.Events.ioc
+      description: Endpoint specific meta that describes malware on an endpoint.
     description: Performs a query against the meta database
   - name: netwitness-packets
     arguments:
     - name: op
+      auto: PREDEFINED
+      predefined:
+      - start
+      - cancel
+      - processed
       description: <string, {enum-one:start|cancel|processed}> The operation to perform
         (start, cancel, processed)
     - name: sessions
@@ -961,7 +1099,7 @@ script:
       description: 'Used to rename certain files from one or more extensions to another.
         For example: renameFileTypes=.download|.octet-stream|.program|.exe;.jpeg|.jpg'
     - name: fileExt
-      description: Extension of the saved file
+      description: Extension of the file (e.g. .zip, .exe etc.)
     - name: where
       description: Where clause which will be evaluated to determine which sessions
         to stream back
@@ -993,8 +1131,9 @@ script:
     - name: id2
       description: <uint64, optional> The ending meta id
     - name: size
-      required: true
-      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return,
+        default 100
+      defaultValue: "100"
     - name: flags
       description: <string, optional> The flags to use for values.  Can be a number
         (bitwise mask) or comma separated values like sessions, size, packets, aggregate,
@@ -1025,8 +1164,36 @@ script:
       description: Port to use with concentratorIP, 50105 for Non SSL and 56105 for
         SSL
     outputs:
-    - contextPath: NetWitness.Values
-      description: NetWitness values
+    - contextPath: NetWitness.Values.ipSrc
+      description: Source IP
+    - contextPath: NetWitness.Values.aliasIp
+      description: Destination IP
+    - contextPath: NetWitness.Values.aliasHost
+      description: describes hostname or FQDN.
+    - contextPath: NetWitness.Values.ipDst
+      description: IP Destination of the event
+    - contextPath: NetWitness.Values.userSrc
+      description: Source user
+    - contextPath: NetWitness.Values.userDst
+      description: Destination user
+    - contextPath: NetWitness.Values.username
+      description: Field includes any username meta available – both source and destination
+        – as defined by the user. This is an optional field that will only appear
+        if configured by the end user.
+    - contextPath: NetWitness.Values.service
+      description: Field describes the service that created the session (if available)
+    - contextPath: NetWitness.Values.sessionid
+      description: NW Specific field that contains a NW specific ‘serial number’ of
+        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+    - contextPath: NetWitness.Values.deviceType
+      description: Field describes the type of system that generated a log message
+        (ex. SQUID / Windows / rhlinux)
+    - contextPath: NetWitness.Values.direction
+      description: 'Traffic flow direction (e.g. Inbound/outbound) '
+    - contextPath: NetWitness.Values.did
+      description: Specific Decoder a session was captured on
+    - contextPath: NetWitness.Values.ioc
+      description: Endpoint specific meta that describes malware on an endpoint.
     description: Performs a value count query and returns the matching values for
       a report
   - name: nw-database-dump
@@ -1038,7 +1205,8 @@ script:
       description: <string, optional, {enum-one:db|nwd}> The dump type
     - name: source
       description: <string, optional, {enum-any:s|m|p}> The types of data to dump,
-        default is all
+        default is m
+      defaultValue: m
     - name: verbose
       description: <bool, optional> If true (default is false), dumps more information
     - name: file
