@@ -595,3 +595,4 @@ script:
         8.8.8.8,1.2.3.4) '
     description: Adds IP address to the blacklist.
     execution: true
+releaseNotes: "-"
