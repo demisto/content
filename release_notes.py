@@ -277,14 +277,8 @@ class IncidentFieldContent(Content):
         return ""
 
     def modifiedReleaseNotes(self, cnt):
-        rn = cnt.get("releaseNotes", "")
-        if len(rn) == 0:
-            return None
-        res = ""
-        # Add a comment only if there are release notes
-        if rn != '-':
-            res += "- " + cnt["releaseNotes"] + "\n"
-        return res
+        # temporary disabled
+        return ""
 
 
 Content.register(IncidentFieldContent)
