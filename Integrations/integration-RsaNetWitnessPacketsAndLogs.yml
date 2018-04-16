@@ -21,11 +21,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Username
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: true
 - display: Secure (Over HTTPS)
   name: secure
   defaultvalue: "false"
@@ -41,6 +36,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Username
+  name: username
+  defaultvalue: admin
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
 script:
   script: |-
     var RESPONSE_TYPES = {
@@ -1219,4 +1224,4 @@ script:
         SSL
     description: Dumps information out of the database in nwd formatted files
 fromversion: 3.5.0
-releaseNotes: "-"
+releaseNotes: "Added outputs for relevant commands"
