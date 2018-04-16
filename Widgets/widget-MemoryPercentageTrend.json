@@ -1,0 +1,24 @@
+{
+    "id": "memory-percentage-trend",
+    "version": -1,
+    "fromVersion": "3.5.1",
+    "modified": "2018-03-14T17:42:44.919467+02:00",
+    "name": "Memory Use Trend",
+    "dataType": "system",
+    "widgetType": "line",
+    "query": "memory.usedPercent",
+    "isPredefined": true,
+    "dateRange": {
+        "period": {
+            "byTo": "",
+            "byFrom": "minutes",
+            "toValue": null,
+            "fromValue": 60,
+            "field": ""
+        }
+    },
+    "params": {
+        "timeFrame": "minutes"
+    },
+    "size": 61
+}

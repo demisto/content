@@ -1,6 +1,6 @@
 {
   "name": "reputations",
-  "releaseNotes": "Support escaped ips in format 1[.]2[.]3[.]4",
+  "releaseNotes": "Support for unescaped URLs extraction",
   "reputations": [
     {
       "id": "fileRep",
@@ -163,7 +163,23 @@
         "URLReputation",
         "SplunkSearch"
       ],
-      "fromVersion": "3.1.0"
+      "fromVersion": "3.1.0",
+      "toVersion": "3.5.0"
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?",
+      "reputationCommand": "url",
+      "details": "URL",
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
+      "formatScript": "UnEscapeURLs",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
+      "fromVersion": "3.5.1"
     },
     {
       "id": "registryRep",
