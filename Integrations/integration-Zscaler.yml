@@ -330,7 +330,7 @@ script:
                     }
                     hr[i]['ip'] = hr[i].pop('url')
                 dbot_score_array[i]['Score'] = score
-                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Type'] = 'url'
                 dbot_score_array[i]['Vendor'] = 'Zscaler'
 
             ioc_context = createContext(data=ioc_context, removeNull=True)
@@ -385,7 +385,7 @@ script:
                 del hr[i]['urlClassificationsWithSecurityAlert']
                 hr[i]['ip'] = hr[i].pop('url')
                 dbot_score_array[i]['Score'] = score
-                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Type'] = 'ip'
                 dbot_score_array[i]['Vendor'] = 'Zscaler'
 
             ioc_context = createContext(data=ioc_context, removeNull=True)
