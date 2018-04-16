@@ -21,6 +21,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Username
+  name: username
+  defaultvalue: admin
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
 - display: Secure (Over HTTPS)
   name: secure
   defaultvalue: "false"
@@ -36,16 +46,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Username
-  name: username
-  defaultvalue: admin
-  type: 0
-  required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
-  required: true
 script:
   script: |-
     var RESPONSE_TYPES = {
