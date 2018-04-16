@@ -176,13 +176,6 @@
             "playbookID": "ExtractURL Test"
         },
         {
-            "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
-            },
-            "playbookID": "CarbonBlackResponseTest"
-        },
-        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -285,6 +278,13 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": {
+              "name": "carbonblack-v2",
+              "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
