@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-          "playbookID": "Test filters & transformers scripts"
+            "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "EWS v2",
@@ -106,8 +106,8 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "ip_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -125,8 +125,8 @@
             "playbookID": "Test CommonServer"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "domain_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -282,6 +282,10 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
         }
     ],
     "skipped": [
@@ -312,11 +316,11 @@
         },
         {
             "integrations": [
-              "AlienVault OTX",
-              {
-                "name": "activedir",
-                "byoi": false
-              }],
+                "AlienVault OTX",
+                {
+                    "name": "activedir",
+                    "byoi": false
+                }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
