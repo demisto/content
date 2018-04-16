@@ -478,4 +478,3 @@ script:
     description: Search endpoint data crossed by multiple collectors
   dockerimage: demisto/dxl
   runonce: false
-releaseNotes: "-"
