@@ -3,7 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "Test filters & transformers scripts"
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
+          "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "EWS v2",
@@ -176,13 +180,6 @@
             "playbookID": "ExtractURL Test"
         },
         {
-            "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
-            },
-            "playbookID": "CarbonBlackResponseTest"
-        },
-        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -290,6 +287,13 @@
     ],
     "skipped": [
         {
+            "integrations": {
+              "name": "carbonblack-v2",
+              "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
+        {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
         },
@@ -388,6 +392,11 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "LogRhythm",
+            "playbookID": "LogRhythm-Test-Playbook",
+            "timeout": 200
         }
     ]
 }
