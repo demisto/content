@@ -56,9 +56,9 @@ validateFilesStructure Widgets widget- .json widget
 validateFilesStructure Dashboards dashboard- .json
 
 # uncomment when creating dir
-#validateFilesStructure Classifiers classifier- .json classifier
-#validateFilesStructure Layouts layout- .json layout
-#validateFilesStructure IncidentFields incidentfields .json incidentfields
+validateFilesStructure Classifiers classifier- .json classifier
+validateFilesStructure Layouts layout- .json layout
+validateFilesStructure IncidentFields incidentfields .json incidentfields
 
 if [ "$foundWrongName" = true ] || [ "$foundMissingField" = true ]
 then
