@@ -268,7 +268,6 @@ script:
             throw 'No systems found. Response: ' + JSON.stringify(result);
         }
     }
-
     var epoGetLatestDat = function() {
         var url = "http://update.nai.com/products/commonupdater/gdeltaavv.ini"
         //Another option is to use avvdat.ini - provided here in case any additional data from that file is needed in the future
