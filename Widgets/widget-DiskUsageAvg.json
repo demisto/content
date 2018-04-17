@@ -10,6 +10,21 @@
   "params": {
     "currencySign": "%",
     "signAlignment": "right",
-    "colors":{"isEnabled":true,"items":{"#FF1B15":{"value":80},"#FAC100":{"value":60},"#00CD33":{"value":-1}},"type":"above"}
+    "colors": {
+      "isEnabled": true,
+      "items": {
+        "#FF1B15": {
+          "value": 80
+        },
+        "#FAC100": {
+          "value": 60
+        },
+        "#00CD33": {
+          "value": -1
+        }
+      },
+      "type": "above"
+    }
   },
-  "size": 0,
+  "size": 0
+}
