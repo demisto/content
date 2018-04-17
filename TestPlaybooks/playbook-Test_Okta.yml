@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
-      script: okta_copy|||okta-get-group-assignments
+      script: okta|||okta-get-group-assignments
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "5"
@@ -125,10 +125,10 @@ tasks:
       version: -1
       name: okta-get-groups
       description: Get all user groups
-      script: okta_copy|||okta-get-groups
+      script: okta|||okta-get-groups
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "9"
@@ -188,10 +188,10 @@ tasks:
       version: -1
       name: okta-remove-from-group
       description: Removes a user from a group with OKTA_GROUP type.
-      script: okta_copy|||okta-remove-from-group
+      script: okta|||okta-remove-from-group
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "11"
@@ -217,10 +217,10 @@ tasks:
       version: -1
       name: okta-add-to-group
       description: Adds a user to a group with OKTA_GROUP type.
-      script: okta_copy|||okta-add-to-group
+      script: okta|||okta-add-to-group
       type: regular
       iscommand: true
-      brand: okta_copy
+      brand: okta
     nexttasks:
       '#none#':
       - "2"
