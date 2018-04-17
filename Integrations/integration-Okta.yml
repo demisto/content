@@ -27,7 +27,7 @@ configuration:
   required: false
 script:
   script: |-
-    var fixUrl = function(base) {
+    function fixUrl(base) {
         var res = base;
         if (base && base[base.length - 1] !== '/') {
             res = res + '/';
@@ -72,7 +72,7 @@ script:
     var SERVER_URL = fixUrl(params.url) + 'api/v1/';
     var DEFAULT_SEARCH_LIMIT = 200;
 
-    var getAllLogs = function(requestFunction){
+    function getAllLogs(requestFunction){
         var res = [];
         do {
             var resObject = requestFunction(args);
@@ -99,7 +99,7 @@ script:
        return res;
     };
 
-    var logsToMarkdown = function(title, contents){
+    function logsToMarkdown(title, contents){
         var md = title + '\n';
         if(!(contents.length > 0)){
             return md + 'No events found';
@@ -112,7 +112,7 @@ script:
         return md;
     }
 
-    var logToHumanReadble = function(logObject){
+    function logToHumanReadble(logObject){
         var flattened = {};
         var keys = Object.keys(logObject);
         keys.forEach(function(key){
@@ -127,7 +127,7 @@ script:
         return flattened;
     }
 
-    var createLogObject = function(log){
+    function createLogObject(log){
         var logObject = {};
 
         if(log.actor){
@@ -226,7 +226,7 @@ script:
         return logObject;
     };
 
-    var buildProfile = function(args) {
+    function buildProfile(args) {
         var profile = {};
         var keys = Object.keys(args);
         for (var i = 0 ; i < PROFILE_ARGS.length; i++) {
@@ -237,7 +237,7 @@ script:
         return profile;
     };
 
-    var buildCredentials = function(args) {
+    function buildCredentials(args) {
         var creds = {};
         if (args.password) {
             var  pswd = { value: args.password };
@@ -260,7 +260,7 @@ script:
         return creds;
     };
 
-    var identLevel = function(count) {
+    function identLevel(count) {
         var ret='';
         for (var i=0;i<count;i++) {
             ret += '     ';
@@ -268,7 +268,7 @@ script:
         return ret;
     };
 
-    var flattenValue = function(value, level, isArray) {
+    function flattenValue(value, level, isArray) {
         if (!level) {
             level=0;
         }
@@ -286,7 +286,7 @@ script:
 
     };
 
-    var profileToMd = function (profile) {
+    function profileToMd(profile) {
         var head = '|';
         var line = '|';
         var data = '|';
@@ -299,7 +299,7 @@ script:
         return head + '\n' + line + '\n' + data + '\n';
     };
 
-    var usersToMd = function (users, verbose) {
+    function usersToMd(users, verbose) {
         var md='';
 
         if (!Array.isArray(users)) {
@@ -337,7 +337,7 @@ script:
         return md;
     };
 
-    var usersToEc = function(users) {
+    function usersToEc(users) {
 
         var ec={};
         ec.Account = [];
@@ -368,7 +368,7 @@ script:
     };
 
 
-    var sendRequest = function(path, method, queryParams, body, pagination){
+    function sendRequest(path, method, queryParams, body, pagination){
         var url = SERVER_URL.concat(path);
         var query = '';
         if(queryParams){
@@ -401,10 +401,14 @@ script:
             };
         }
 
+        if(!(res.Body)){
+            return '';
+        }
+
         return JSON.parse(res.Body);
     };
 
-    var getUserIdRequest = function(username){
+    function getUserIdRequest(username){
         var uri = 'users?filter=' + encodeURIComponent('profile.login eq "' + username + '"');
         var res = sendRequest(uri);
         if (res && res.length && res.length === 1) {
@@ -414,7 +418,7 @@ script:
         }
     };
 
-    var unlockUser = function(){
+    function unlockUser(){
         var userId = getUserIdRequest(args.username);
 
         var res = unlockUserRequest(userId);
@@ -430,12 +434,12 @@ script:
     };
 
 
-    var unlockUserRequest = function(userId){
+    function unlockUserRequest(userId){
         var uri = 'users/' + userId + '/lifecycle/unlock';
         return sendRequest(uri, 'POST');
     };
 
-    var deactivateUser = function () {
+    function deactivateUser() {
         var userId = getUserIdRequest(args.username);
 
         var res = deactivateUserRequest(userId);
@@ -450,13 +454,13 @@ script:
         };
     };
 
-    var deactivateUserRequest = function(userId){
+    function deactivateUserRequest(userId){
         var uri = 'users/' + userId + '/lifecycle/deactivate';
 
         return sendRequest(uri, 'POST');
     };
 
-    var activateUser = function(){
+    function activateUser(){
         var userId = getUserIdRequest(args.username);
 
         var res = activateUserRequest(userId);
@@ -471,40 +475,90 @@ script:
         };
     };
 
-    var activateUserRequest = function (userId) {
+    function activateUserRequest(userId) {
         var uri = 'users/' + userId + '/lifecycle/activate';
 
         return sendRequest(uri, 'POST');
     };
 
-    var getGroups = function () {
+    function getGroups() {
         var userId = getUserIdRequest(args.username);
 
         var res = getGroupsRequest(userId);
 
+        var groups = [];
+        res.forEach(function(resGroup){
+           var group = {
+               ID: resGroup.id,
+               Created: resGroup.created,
+               ObjectClass: resGroup.objectClass,
+               LastUpdated: resGroup.lastUpdated,
+               LastMembershipUpdated: resGroup.lastMembershipUpdated,
+               Type: resGroup.type,
+               Name: resGroup.profile.name,
+               Description: resGroup.profile.description
+           };
+
+           groups.push(group);
+        });
+
+        var ec = {
+            Group: groups,
+            ID: userId,
+            Type: 'Okta'
+        };
+
         var md = "### Okta groups for user " + args.username + '\n';
-        md += 'User ID: ' + userId + '\n';
-        md += '#### Groups:\n';
-        md += res[0].objectClass + '\n';
-        md += '#### Profiles:\n';
-        md += objToMd(res[0].profile) + '\n';
-        var ec = usersToEc(res);
+        md += 'User ID: ' + userId + '\n';;
+        md += tableToMarkdown('Groups', groups);
         return {
             Type: entryTypes.note,
-            entryContext: ec,
+            entryContext: {
+                'Account(val.ID==obj.ID)' : ec
+            },
             Contents: res,
             ContentsFormat: formats.json,
             HumanReadable: md
         };
     };
 
-    var getGroupsRequest = function (userId) {
+    function getGroupsRequest(userId) {
         var uri = 'users/' + userId + '/groups';
 
         return sendRequest(uri);
     };
 
-    var setPassword = function(){
+    function addUserToGroup(){
+        var groupId = args.groupId;
+        var userId = args.userId;
+
+        var res = addUserToGroupRequest(userId, groupId);
+
+        return 'Succesfully added user to group';
+    }
+
+    function addUserToGroupRequest(userId, groupId){
+        var uri = 'groups/' + groupId + '/users/' + userId;
+
+        return sendRequest(uri, 'PUT');
+    }
+
+    function removeUserFromGroup(){
+        var groupId = args.groupId;
+        var userId = args.userId;
+
+        var res = removeUserFromGroupRequest(userId, groupId);
+
+        return 'Succesfully removed user from group';
+    }
+
+    function removeUserFromGroupRequest(userId, groupId){
+        var uri = 'groups/' + groupId + '/users/' + userId;
+
+        return sendRequest(uri, 'DELETE');
+    }
+
+    function setPassword(){
         var userId = getUserIdRequest(args.username);
 
         var res = setPasswordRequest(userId, args.password);
@@ -520,7 +574,7 @@ script:
         };
     };
 
-    var setPasswordRequest = function (userId, password) {
+    function setPasswordRequest(userId, password) {
         var uri = 'users/' + userId;
         var body =  {
             "credentials": {
@@ -531,7 +585,7 @@ script:
         return sendRequest(uri, 'POST', body);
     };
 
-    var search = function(){
+    function search(){
         var limit = args.limit ? args.limit : DEFAULT_SEARCH_LIMIT;
         var term = args.term ? encodeURIComponent(args.term) : args.term;
 
@@ -557,13 +611,13 @@ script:
         };
     };
 
-    var searchRequest = function (term, limit) {
+    function searchRequest(term, limit) {
         var uri = 'users?q=' + term + '&limit=' + limit;
 
         return sendRequest(uri);
     };
 
-    var getUser = function(){
+    function getUser(){
       var term = args.username ? encodeURIComponent(args.username) : args.userid;
 
         if (!term) {
@@ -584,13 +638,13 @@ script:
         };
     };
 
-    var getUserRequest = function(term){
+    function getUserRequest(term){
         var uri = 'users/' + term;
 
         return sendRequest(uri);
     };
 
-    var createUser = function(){
+    function createUser(){
         var cred = buildCredentials(args);
         var profile = buildProfile(args);
         var groupIds = args.groupIds;
@@ -617,7 +671,7 @@ script:
         };
     };
 
-    var createUserRequest = function (cred, profile, groupIds, activate) {
+    function createUserRequest(cred, profile, groupIds, activate) {
         var body = {
             profile: profile,
             groupIds: groupIds,
@@ -632,7 +686,7 @@ script:
         return sendRequest(uri, 'POST', body);
     };
 
-    var updateUser = function () {
+    function updateUser() {
         var userId = getUserIdRequest(args.username);
         var cred = buildCredentials(args);
         var profile = buildProfile(args);
@@ -649,7 +703,7 @@ script:
         };
     };
 
-    var updateUserRequest = function(userId, profile, cred){
+    function updateUserRequest(userId, profile, cred){
         var body = {
             profile: profile,
             credentials: cred
@@ -660,12 +714,13 @@ script:
         return sendRequest(uri, 'POST', body, true);
     };
 
-    var getFailedLogins = function(){
+    function getFailedLogins(){
         var contents = [];
-        var currentPage;
-        var allPages = [];
-
         var res = getAllLogs(getFailedLoginsRequest);
+
+        if(!res || res.length === 0){
+            return 'No events found';
+        }
 
         for(var i = 0; i < res.length; i++){
             contents.push(createLogObject(res[i]));
@@ -685,7 +740,7 @@ script:
     };
 
 
-    var getFailedLoginsRequest = function(queryParams){
+    function getFailedLoginsRequest(queryParams){
         var uri = 'logs';
 
         if(!queryParams){
@@ -697,9 +752,13 @@ script:
         return sendRequest(uri, 'GET', queryParams,'', true);
     };
 
-    var getGroupAssignments = function(){
+    function getGroupAssignments(){
         var contents = [];
         var res = getAllLogs(getGroupAssignmentsRequest);
+
+        if(!res || res.length === 0){
+            return 'No events found';
+        }
 
         for(var i = 0; i < res.length; i++){
             contents.push(createLogObject(res[i]));
@@ -718,7 +777,7 @@ script:
         };
     };
 
-    var getGroupAssignmentsRequest = function(queryParams){
+    function getGroupAssignmentsRequest(queryParams){
         var uri = 'logs';
         if(!queryParams){
             queryParams = {};
@@ -729,9 +788,13 @@ script:
         return sendRequest(uri, 'GET', queryParams, '', true);
     };
 
-    var getApplicationAssignments = function(){
+    function getApplicationAssignments(){
         var res = getAllLogs(getApplicationAssignmentsRequest);
         var contents = [];
+
+        if(!res || res.length === 0){
+            return 'No events found';
+        }
 
         for(var i = 0; i < res.length; i++){
             contents.push(createLogObject(res[i]));
@@ -750,7 +813,7 @@ script:
         };
     };
 
-    var getApplicationAssignmentsRequest = function(queryParams){
+    function getApplicationAssignmentsRequest(queryParams){
         var uri = 'logs';
         if(!queryParams){
             queryParams = {};
@@ -761,9 +824,14 @@ script:
         return sendRequest(uri, 'GET', queryParams, '', true);
     };
 
-    var getApplicationAuthentication = function(){
+    function getApplicationAuthentication(){
         var res = getAllLogs(getApplicationAuthenticationRequest);
         var contents = [];
+
+        if(!res || res.length === 0){
+            return 'No events found';
+        }
+
         for(var i = 0; i < res.length; i++){
             contents.push(createLogObject(res[i]));
         }
@@ -781,7 +849,7 @@ script:
         };
     };
 
-    var getApplicationAuthenticationRequest = function(queryParams){
+    function getApplicationAuthenticationRequest(queryParams){
         var uri = 'logs';
         if(!queryParams){
             queryParams = {};
@@ -792,7 +860,7 @@ script:
         return sendRequest(uri, 'GET', queryParams, '', true);
     };
 
-    var test = function () {
+    function test() {
         var uri = 'users?limit=1';
         var res = sendRequest(uri);
 
@@ -842,6 +910,12 @@ script:
         case 'okta-get-application-authentication':
             entry = getApplicationAuthentication();
             break;
+        case 'okta-add-to-group':
+            entry = addUserToGroup();
+            break;
+        case 'okta-remove-from-group':
+            entry = removeUserFromGroup();
+            break;
     }
 
     return entry;
@@ -878,12 +952,28 @@ script:
       default: true
       description: Username in Okta to get groups for
     outputs:
-    - contextPath: Account.Groups
+    - contextPath: Account.Group
       description: Okta groups the account is associated with
     - contextPath: Account.ID
       description: Okta account ID
     - contextPath: Account.Type
       description: Account type - Okta
+    - contextPath: Account.Group.ID
+      description: Unique key for group
+    - contextPath: Account.Group.Created
+      description: Timestamp when group was created
+    - contextPath: Account.Group.ObjectClass
+      description: Determines the group’s profile
+    - contextPath: Account.Group.LastUpdated
+      description: Timestamp when group’s profile was last updated
+    - contextPath: Account.Group.LastMembershipUpdated
+      description: Timestamp when group’s memberships were last updated
+    - contextPath: Account.Group.Type
+      description: Determines how a group’s profile and memberships are managed
+    - contextPath: Account.Group.Name
+      description: Name of the group
+    - contextPath: Account.Group.Description
+      description: Description of the group
     description: Get all user groups
   - name: okta-set-password
     arguments:
@@ -1465,6 +1555,20 @@ script:
       description: Log target display name
     description: Get events for when a user attempted to SSO to an application managed
       in Okta
+  - name: okta-add-to-group
+    arguments:
+    - name: userId
+      description: ID of the user to add
+    - name: groupId
+      description: ID of the group to add the user to
+    description: Adds a user to a group with OKTA_GROUP type.
+  - name: okta-remove-from-group
+    arguments:
+    - name: userId
+      description: ID of the user to remove
+    - name: groupId
+      description: ID of the group to remove the user from
+    description: Removes a user from a group with OKTA_GROUP type.
   runonce: false
 releaseNotes: "-"
-fromversion: 3.6.0
+fromversion: 3.5.0
