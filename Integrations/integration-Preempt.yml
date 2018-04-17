@@ -53,7 +53,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     import json
     from dateutil.parser import parse as parse_date
     from datetime import timedelta, datetime
@@ -311,7 +311,7 @@ script:
             "HumanReadable": tableToMarkdown("Activities in time frame", pretty_results, ["Timestamp", "EndpointHostName"]),
             "EntryContext": {
                 'Preempt.Activities': pretty_results,
-                'Preempt.Activities.Cursor': cursor
+                'Preempt.Alerts.Cursor': cursor
             }
         })
         sys.exit(0)
@@ -451,22 +451,22 @@ script:
       required: true
       description: ID of the user
     outputs:
-    - contextPath: Preempt.Endpoint.Hostname
+    - contextPath: Endpoint.Hostname
       description: Hostname of the endpoint
       type: string
-    - contextPath: Preempt.Endpoint.ID
+    - contextPath: Endpoint.ID
       description: Object GUID of the computer account
       type: string
-    - contextPath: Preempt.Endpoint.PrimaryDisplayName
+    - contextPath: Endpoint.PrimaryDisplayName
       description: The computer's display name in AD
       type: string
-    - contextPath: Preempt.Endpoint.IsOwnedByUser
+    - contextPath: Endpoint.IsOwnedByUser
       description: True if the user owns this endpoint
       type: boolean
-    - contextPath: Preempt.Endpoint.IPAddress
+    - contextPath: Endpoint.IPAddress
       description: The last IP address associated with this endpoint seen by the system
       type: string
-    - contextPath: Preempt.Endpoint.StaticIpAddresses
+    - contextPath: Endpoint.StaticIpAddresses
       description: Static IP addresses which have been associated with the endpoint
       type: string
     description: Gets the endpoints regularly used by the user account
