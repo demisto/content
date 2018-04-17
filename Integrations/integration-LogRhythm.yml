@@ -2,7 +2,6 @@ commonfields:
   id: LogRhythm
   version: -1
 name: LogRhythm
-fromversion: 2.6.0
 display: LogRhythm
 category: Analytics & SIEM
 image: data:image/png;base64,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
@@ -52,6 +51,7 @@ configuration:
   required: false
 script:
   script: |-
+    // SOAP templates
     var tmplAddAlarmComment = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
     '  <env:Header>' +
@@ -181,13 +181,10 @@ script:
     '  </env:Body>' +
     '</env:Envelope>';
 
-    var soapActionURIAddAlarmComments                = 'http://www.logrhythm.com/webservices/AlarmService/AddAlarmComments';
-    var soapActionURIUpdateAlarmStatus               = 'http://www.logrhythm.com/webservices/AlarmService/UpdateAlarmStatus';
-    var soapActionURIGetAlarmByID                    = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmByID';
+    // global variables and helper functions
+
     var soapActionURIGetNextPageAlarms               = 'http://www.logrhythm.com/webservices/AlarmService/GetNextPageAlarms';
     var soapActionURIGetFirstPageAlarmsByAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/GetFirstPageAlarmsByAlarmStatus';
-    var soapActionURIGetAlarmsEventsByID             = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmEventsByID';
-    var soapActionURIGetAlarmsHistoryByID            = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmHistoryByID';
 
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
@@ -206,11 +203,6 @@ script:
     if (params.timeZone === '0') {
         tz = 0;
     }
-
-    var dataObj = {
-        Username: params.Credentials.identifier,
-        Password: params.Credentials.password
-    };
 
     var getRaw = function(url) {
          res = http(
@@ -293,7 +285,7 @@ script:
         return alarms.length > count ? alarms.slice(0,count) : alarms;
     };
 
-    var getAlarms = function(allUsers, count, pageSize, startDate, endDate, status) {
+    function getAlarmsData(allUsers, count, pageSize, startDate, endDate, status, dataObj) {
         dataObj.StartDate = startDate;
         dataObj.EndDate = endDate;
         dataObj.Status = status;
@@ -378,12 +370,216 @@ script:
         return d.toISOString();
     }
 
+    function processAlarmEventsMd(mdRaw){
+        // flattening the AlarmEvents structure
+        var processedMd = {};
+        mdRaw = mdRaw['LogDataModel'];
+        Object.keys(mdRaw).forEach(function(key) {
+            if (mdRaw[key] === undefined || mdRaw[key] === "" || mdRaw[key] === "NaN") {
+                return;
+            }
+            else if (typeof (mdRaw[key]) === 'object'){
+                var inputString = "";
+                Object.keys(mdRaw[key]).forEach(function(innerKey) {
+                    inputString += innerKey + ":" + mdRaw[key][innerKey] + "\n";
+                });
+                processedMd[key] = inputString;
+            } else {
+                processedMd[key] = mdRaw[key];
+            }
+        });
+        return processedMd;
+    }
+
+    // commands functions
+
+    function addAlarmComments(args){
+        // corresponds to lr-add-alarm-comments command. Adds a comment to an alarm
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+            AlarmID: args['alarm-id'],
+            Comments: args['comments']
+        };
+
+
+        var soapActionURIAddAlarmComments = 'http://www.logrhythm.com/webservices/AlarmService/AddAlarmComments';
+        var envelope = fixTemplate(tmplAddAlarmComment, dataObj);
+        var jsResponse = parseResponse(sendRequest(envelope, soapActionURIAddAlarmComments));
+        var mdRaw = dq(jsResponse, 'Envelope.Body.AddAlarmCommentsResponse.AddAlarmCommentsResult');
+        if (mdRaw['-i']) {
+            delete mdRaw['-i'];
+        }
+
+        var md = tableToMarkdown('LogRhythm added alarm comment ' + args.comment + ' for ID: ' + args['alarm-id'],  mdRaw);
+        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    function getAlarmById(args){
+        // corresponds to lr-get-alarm-by-id command. Get the data by a specific alarm id
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+            AlarmID: args['alarm-id']
+        };
+
+        var soapActionURIGetAlarmByID = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmByID';
+        var envelope = fixTemplate(tmplGetAlarmByID, dataObj);
+        var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmByID));
+        var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmByIDResponse.GetAlarmByIDResult');
+        if (mdRaw['-i']) {
+            delete mdRaw['-i'];
+        }
+        var md = tableToMarkdown('LogRhythm alarm for ID: ' + args['alarm-id'],  mdRaw);
+        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    function getAlarmEventsById(args){
+        // corresponds to lr-get-alarm-events-by-id command. Get the alarm's events by a specific alarm id
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+            AlarmID: args['alarm-id'],
+            IncludeRawLog: args['include-raw-log'] === 'true'
+        };
+
+        var soapActionURIGetAlarmsEventsByID = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmEventsByID';
+        var envelope = fixTemplate(tmplGetAlarmEventsByID, dataObj);
+        var jsResponse = parseResponse(sendRequest(envelope, soapActionURIGetAlarmsEventsByID));
+        var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmEventsByIDResponse.GetAlarmEventsByIDResult.Events')
+        if (mdRaw['-i']) {
+            delete mdRaw['-i'];
+        }
+        var processedMd = processAlarmEventsMd(mdRaw);
+        var md = tableToMarkdown('LogRhythm alarm events for ID: ' + args['alarm-id'],  processedMd);
+        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    function getAlarmHistoryById(args){
+        // corresponds to lr-get-alarm-history-by-id command. Get the alarm's history by a specific alarm id
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+            AlarmID: args['alarm-id'],
+            IncludeComments: args['include-comments'] === 'true',
+            IncludeNotifications: args['include-notifications'] === 'true'
+        };
+
+        //Verify that at least one of the 2 are marked as true, else throw an error
+        if (!dataObj.IncludeNotifications && !dataObj.IncludeComments) {
+            throw 'At least one of "include-comments", "include-notifications" should be true';
+        }
+
+        var soapActionURIGetAlarmsHistoryByID = 'http://www.logrhythm.com/webservices/AlarmService/GetAlarmHistoryByID';
+        var envelope = fixTemplate(tmplGetAlarmHistoryByID, dataObj);
+        var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmsHistoryByID));
+        var md = "", mdRaw;
+        if (dataObj.IncludeNotifications) {
+            mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Notifications.AlarmNotificationDataModel')
+            md = tableToMarkdown('LogRhythm alarm notifications history for ID: ' + args['alarm-id'],  mdRaw);
+        }
+        if (dataObj.IncludeComments) {
+            if (md.length > 0) {
+                md += '\n\n';
+            }
+            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Comments.AlarmCommentDataModel')
+            md += tableToMarkdown('LogRhythm alarm comments history for ID: ' + args['alarm-id'],  mdRaw);
+        }
+        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    function updateAlarmStatus(args){
+        // corresponds to lr-update-alarm-status command. Updates an alarm's current status
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+            AlarmID: args['alarm-id'],
+            Status: args['status'],
+            Comments: (args.comments ? ('<tns:comments>' + args.comments + '</tns:comments>') : '')
+        };
+
+        var soapActionURIUpdateAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/UpdateAlarmStatus';
+        var envelope = fixTemplate(tmplUpdateAlarmStatus, dataObj);
+        var jsResponse = parseResponse(sendRequest(envelope, soapActionURIUpdateAlarmStatus));
+        var mdRaw = dq(jsResponse, 'Envelope.Body.UpdateAlarmStatusResponse.UpdateAlarmStatusResult')
+        if (mdRaw['-i']) {
+            delete mdRaw['-i'];
+        }
+        var md = tableToMarkdown('LogRhythm alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*',  mdRaw);
+        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    function getAlarms(dataArgs){
+        /* corresponds to lr-get-alarms command. Retrieves data about alarms in a particular time range.
+           time format follows iso 8601, for example: startDate="2017-03-27" */
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password,
+        };
+
+        var allUsers = dataArgs['all-users'] === 'true';
+        var count = dataArgs.count ? parseInt(dataArgs.count) : defaultCount;
+        count = count || defaultCount;
+
+        var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
+        pageSize = pageSize || defaultAlarmsPageSize;
+        if (count < pageSize) {
+            pageSize = count;
+        }
+
+        var startDate = new Date(dataArgs['start-date']).toISOString();
+        var endDate = new Date(dataArgs['end-date']).toISOString();
+
+        var alarms = getAlarmsData(allUsers, count, pageSize, startDate, endDate, dataArgs.status, dataObj);
+        if (alarms.length) {
+            var md = tableToMarkdown('',  alarms);
+            return {Type: entryTypes.note, Contents: alarms, ContentsFormat: formats.json, HumanReadable: md};
+        } else {
+            return {Type: entryTypes.note, Contents: "No results", ContentsFormat: formats.text};
+        }
+    }
+
+    function fetchIncidents(){
+
+        var dataObj = {
+            Username: params.Credentials.identifier,
+            Password: params.Credentials.password
+        };
+
+        var lastRun = getLastRun();
+        if (!lastRun || !lastRun.lastTime) {
+            lastRun = {
+                lastId: 0,
+                lastTime: new Date().getTime() - (10 * 60 * 1000)
+            }
+        }
+        var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
+        pageSize = pageSize || defaultAlarmsPageSize;
+        var alarms = getAlarmsData(true, pageSize, pageSize, getDateAsString(new Date(lastRun.lastTime)), getDateAsString(new Date()), 'New',dataObj);
+        if (alarms.length) {
+            return alarmsToIncident(alarms, lastRun);
+        }
+        return '[]';
+    }
     // The command input arg holds the command sent from the user.
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
             var resp = getRaw(url + '?singleWsdl');
-            if (resp.StatusCode === 200) {
+            var alarmsArgs = {};
+            alarmsArgs['all-users'] = "true";
+            alarmsArgs['start-date'] = "2018-03-01";
+            alarmsArgs['end-date'] = "2018-03-30";
+            alarmsArgs['status'] = "New";
+            var alarmsResponse = getAlarms(alarmsArgs);
+            // if we get alarmsResponse.Type it means that no error was raised in getAlarms
+            if (resp.StatusCode === 200 && alarmsResponse.Type) {
                 return 'ok';
             } else if (resp.Status) {
                 return resp.Status;
@@ -392,92 +588,25 @@ script:
             }
             break;
         case 'lr-add-alarm-comments':
-            dataObj.AlarmID = args['alarm-id'];
-            dataObj.Comments = args.comments;
-            var envelope = fixTemplate(tmplAddAlarmComment, dataObj);
-            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIAddAlarmComments));
-            var mdRaw = dq(jsResponse, 'Envelope.Body.AddAlarmCommentsResponse.AddAlarmCommentsResult')
-            var md = tableToMarkdown('LogRyhthem added alarm comment ' + args.comment + ' for ID: ' + args['alarm-id'],  mdRaw);
-            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
-        case 'lr-get-alarm-by-id':
-            dataObj.AlarmID = args['alarm-id'];
-            var envelope = fixTemplate(tmplGetAlarmByID, dataObj);
-            var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmByID));
-            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmByIDResponse.GetAlarmByIDResult')
-            var md = tableToMarkdown('LogRyhthem alarm for ID: ' + args['alarm-id'],  mdRaw);
-            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
-        case 'lr-get-alarm-events-by-id':
-            dataObj.AlarmID = args['alarm-id'];
-            dataObj.IncludeRawLog = args['include-raw-log'] === 'true';
-            var envelope = fixTemplate(tmplGetAlarmEventsByID, dataObj);
-            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIGetAlarmsEventsByID));
-            var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmEventsByIDResponse.GetAlarmEventsByIDResult.Events')
-            var md = tableToMarkdown('LogRyhthem alarm events for ID: ' + args['alarm-id'],  mdRaw);
-            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
-        case 'lr-get-alarm-history-by-id':
-            dataObj.AlarmID = args['alarm-id'];
-            dataObj.IncludeComments = args['include-comments'] === 'true';
-            dataObj.IncludeNotifications = args['include-notifications'] === 'true';
-            //Verify that at least one of the 2 are marked as true, else throw an error
-            if (!dataObj.IncludeNotifications && !dataObj.IncludeComments) {
-                throw 'At least one of "include-comments", "include-notifications" should be true';
-            }
-            var envelope = fixTemplate(tmplGetAlarmHistoryByID, dataObj);
-            var jsResponse =  parseResponse(sendRequest(envelope, soapActionURIGetAlarmsHistoryByID));
-            var md = "", mdRaw;
-            if (dataObj.IncludeNotifications) {
-                mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Notifications.AlarmNotificationDataModel')
-                md = tableToMarkdown('LogRyhthem alarm notifications history for ID: ' + args['alarm-id'],  mdRaw);
-            }
-            if (dataObj.IncludeComments) {
-                if (md.length > 0) {
-                    md += '\n\n';
-                }
-                var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Comments.AlarmCommentDataModel')
-                md += tableToMarkdown('LogRyhthem alarm comments history for ID: ' + args['alarm-id'],  mdRaw);
-            }
-            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
-        case 'lr-update-alarm-status':
-            dataObj.AlarmID = args['alarm-id'];
-            dataObj.Status = args.status;
-            dataObj.Comments = (args.comments ? ('<tns:comments>' + args.comments + '</tns:comments>') : '');
-            var envelope = fixTemplate(tmplUpdateAlarmStatus, dataObj);
-            var jsResponse = parseResponse(sendRequest(envelope, soapActionURIUpdateAlarmStatus));
-            var mdRaw = dq(jsResponse, 'Envelope.Body.UpdateAlarmStatusResponse.UpdateAlarmStatusResult')
-            var md = tableToMarkdown('LogRyhthem alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*',  mdRaw);
-            return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
-        case 'lr-get-alarms':
-            var allUsers = args['all-users'] === 'true';
-            var count = args.count ? parseInt(args.count) : defaultCount;
-            count = count || defaultCount;
+            return addAlarmComments(args);
 
-            var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
-            pageSize = pageSize || defaultAlarmsPageSize;
-            if (count < pageSize) {
-                pageSize = count;
-            }
-            var alarms = getAlarms(allUsers, count, pageSize, args['start-date'], args['end-date'], args.status);
-            if (alarms.length) {
-                var md = tableToMarkdown('',  alarms);
-                return {Type: entryTypes.note, Contents: alarms, ContentsFormat: formats.json, HumanReadable: md};
-            } else {
-                return {Type: entryTypes.note, Contents: "No results", ContentsFormat: formats.text};
-            }
+        case 'lr-get-alarm-by-id':
+            return getAlarmById(args);
+
+        case 'lr-get-alarm-events-by-id':
+            return getAlarmEventsById(args);
+
+        case 'lr-get-alarm-history-by-id':
+            return getAlarmHistoryById(args);
+
+        case 'lr-update-alarm-status':
+            return updateAlarmStatus(args);
+
+        case 'lr-get-alarms':
+            return getAlarms(args);
+
         case 'fetch-incidents':
-            var lastRun = getLastRun();
-            if (!lastRun || !lastRun.lastTime) {
-                lastRun = {
-                    lastId: 0,
-                    lastTime: new Date().getTime() - (10 * 60 * 1000)
-                }
-            }
-            var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultAlarmsPageSize;
-            pageSize = pageSize || defaultAlarmsPageSize;
-            var alarms = getAlarms(true, pageSize, pageSize, getDateAsString(new Date(lastRun.lastTime)), getDateAsString(new Date()), 'New');
-            if (alarms.length) {
-                return alarmsToIncident(alarms, lastRun);
-            }
-            return '[]';
+            return fetchIncidents();
     }
   type: javascript
   commands:
@@ -559,10 +688,10 @@ script:
     arguments:
     - name: start-date
       required: true
-      description: Start date for the data query
+      description: 'Start date for the data query. For example: start-date="2018-03-27"'
     - name: end-date
       required: true
-      description: End date for the data query
+      description: 'End date for the data query. For example: end-date="2018-04-08"'
     - name: all-users
       auto: PREDEFINED
       predefined:
@@ -591,3 +720,5 @@ script:
     description: Retrieve alarms in a given time period, optionally filtered by the
       alarm status or entity
   isfetch: true
+  runonce: false
+releaseNotes: "-"

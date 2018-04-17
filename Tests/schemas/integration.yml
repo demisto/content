@@ -22,7 +22,7 @@ mapping:
     'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
     'Vulnerability Management', 'Case Management',
     'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment & Threat Intelligence',
-     'Authentication', 'Database', 'Deception']
+     'Authentication', 'Database', 'Deception', 'Email Gateway']
     required: yes
   fromversion:
     type: str

@@ -7,11 +7,19 @@
             "playbookID": "okta_test_playbook"
         },
         {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
           "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+            "integrations": "Salesforce",
+            "playbookID": "SalesforceTestPlaybook"
         },
         {
             "integrations": "McAfee ESM-v10",
@@ -22,6 +30,13 @@
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
+        },
+        {
+            "playbookID": "File Enrichment - Generic Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -231,7 +246,7 @@
         },
         {
             "playbookID": "GeneratePassword-Test"
-        }, 
+        },
         {
             "playbookID": "ZipFile-Test"
         },
@@ -247,9 +262,37 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         }
     ],
     "skipped": [
+        {
+            "integrations": {
+              "name": "carbonblack-v2",
+              "byoi": true
+            },
+            "playbookID": "CarbonBlackResponseTest"
+        },
         {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
@@ -346,17 +389,14 @@
             "timeout": 240
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "CB-Response-Test",
-            "nightly": true
-        },
-        {
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "LogRhythm",
+            "playbookID": "LogRhythm-Test-Playbook",
+            "timeout": 200
         }
     ]
 }

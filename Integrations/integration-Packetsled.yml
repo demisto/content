@@ -1209,4 +1209,3 @@ script:
       description: The respondant of the Events
     description: Get all of the events for a given uid
   isfetch: true
-releaseNotes: "-"
