@@ -29,30 +29,30 @@ jobs:
       - run:
           name: Server Documentation
           command: python content_creator.py $CIRCLE_ARTIFACTS
-test:
-  docker:
-    - image: circleci/node:9.11
-  steps:
-    - checkout
-    - run:
-        name: Prepare
-        command: |
-            chmod +x ./Tests/scripts/*
-            ./Tests/scripts/validate_files_structure.sh
-            ./Tests/scripts/server_get_artifact.sh
-    - run:
-        name: Setup Instance
-        command: |
-            ./Tests/scripts/create_instance.sh
-            ./Tests/scripts/download_demisto_conf.sh
-            ./Tests/scripts/run_installer_on_instance.sh
-            ./Tests/scripts/wait_until_server_ready.sh
-    - run:
-        name: Test
-        command: ./Tests/scripts/run_tests.sh
-    - run:
-        name: Destory Instances
-        command: ./Tests/scripts/destroy_instances.sh
+  test:
+    docker:
+      - image: circleci/node:9.11
+    steps:
+      - checkout
+      - run:
+          name: Prepare
+          command: |
+              chmod +x ./Tests/scripts/*
+              ./Tests/scripts/validate_files_structure.sh
+              ./Tests/scripts/server_get_artifact.sh
+      - run:
+          name: Setup Instance
+          command: |
+              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/download_demisto_conf.sh
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
+      - run:
+          name: Test
+          command: ./Tests/scripts/run_tests.sh
+      - run:
+          name: Destory Instances
+          command: ./Tests/scripts/destroy_instances.sh
 workflows:
   version: 2
   build-and-test:
