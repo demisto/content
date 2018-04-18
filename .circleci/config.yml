@@ -8,7 +8,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev
+              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
+              sudo easy_install pip
               sudo npm install npm -g
               pip install git+https://github.com/demisto/demisto-py.git@test-content
               pip install pykwalify
