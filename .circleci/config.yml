@@ -11,10 +11,10 @@ jobs:
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
               sudo easy_install pip
               sudo npm install npm -g
-              pip install git+https://github.com/demisto/demisto-py.git@test-content
-              pip install pykwalify
+              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
+              sudo pip install pykwalify
               sudo npm install -g jsdoc-to-markdown
-              pip install git+https://github.com/rahulrrixe/parinx.git@master
+              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
       - run:
           name: Validate Yaml
           command: |
