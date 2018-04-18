@@ -3,8 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/node:9.11
-      environment:
-          CIRCLE_ARTIFACTS: "~/content"
+    environment:
+      CIRCLE_ARTIFACTS: "~/content"
     steps:
       - checkout
       - run:
