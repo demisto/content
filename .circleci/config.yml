@@ -6,28 +6,28 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Install dependencies
-        command: |
-            sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev
-            sudo npm install npm -g
-            pip install git+https://github.com/demisto/demisto-py.git@test-content
-            pip install pykwalify
-            sudo npm install -g jsdoc-to-markdown
-            pip install git+https://github.com/rahulrrixe/parinx.git@master
+          name: Install dependencies
+          command: |
+              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev
+              sudo npm install npm -g
+              pip install git+https://github.com/demisto/demisto-py.git@test-content
+              pip install pykwalify
+              sudo npm install -g jsdoc-to-markdown
+              pip install git+https://github.com/rahulrrixe/parinx.git@master
       - run:
-        name: Validate Yaml
-        command: |
-            chmod +x ./Tests/yamlvalidator
-            ./Tests/yamlvalidator
+          name: Validate Yaml
+          command: |
+              chmod +x ./Tests/yamlvalidator
+              ./Tests/yamlvalidator
       - run:
-        name: Build Content Descriptor
-        command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 1aeecc41f4640cfca92618bbefd44698f61b9c88 18.4.2
+          name: Build Content Descriptor
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 1aeecc41f4640cfca92618bbefd44698f61b9c88 18.4.2
       - run:
-        name: Common Server Documentation
-        command: ./Docs/commonServerDocs.sh
+          name: Common Server Documentation
+          command: ./Docs/commonServerDocs.sh
       - run:
-        name: Server Documentation
-        command: python content_creator.py $CIRCLE_ARTIFACTS
+          name: Server Documentation
+          command: python content_creator.py $CIRCLE_ARTIFACTS
 test:
   docker:
     - image: circleci/node:9.11
