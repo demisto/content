@@ -2,7 +2,6 @@ commonfields:
   id: ExtractURL
   version: -1
 name: ExtractURL
-releaseNotes: "Support extraction of escaped urls as well"
 script: |-
   var checkMatch = function(reg,str) {
       if (reg === str) {

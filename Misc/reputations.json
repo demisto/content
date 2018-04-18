@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Support for unescaped URLs extraction",
   "reputations": [
     {
       "id": "fileRep",

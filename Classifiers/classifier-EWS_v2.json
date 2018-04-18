@@ -363,6 +363,5 @@
 		"Low": "Phishing",
 		"Normal": "Phishing"
 	},
-	"brandName": "EWS v2",
-	"releaseNotes": "New EWS-v2 default classification"
+	"brandName": "EWS v2"
 }
