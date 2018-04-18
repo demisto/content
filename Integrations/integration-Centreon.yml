@@ -26,7 +26,6 @@ script:
   script: |
     ''' IMPORTS '''
     import requests
-    import time
     import json
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -88,24 +87,23 @@ script:
         result = httpPost(cmdUrl, data=data)
         return result['authToken']
 
-    def stateMapping(state):
-        mappingDic = {
-          '0': '',
-          '1': "up",
-          '2': "down",
-          '3': "unreachable",
-          '4': "pending"
-        }
-        return mappingDic[state]
-
     def transformHostVals(key, value):
-        if (key == 'state'):
-          return stateMapping(value)
+        mappingDic = {
+          '0': "Up",
+          '4': "Pending"
+        }
+        if (key == 'state' and mappingDic[value]):
+          return mappingDic[value]
         return value
+
+    def toUpperCamelCase(word):
+        return ''.join(x.capitalize() or '_' for x in word.split('_'))
 
     ''' COMMANDS FUNCTIONS '''
 
-    def getHostStatus():
+    def getHostStatusCommand():
+        # corresponds to 'centreon-get-host-status' command. Brings the status of the connected hosts.
+
         args = demisto.args()
         token = login()
         DEFAULT_HEADERS['centreon-auth-token'] = token
@@ -114,19 +112,25 @@ script:
 
         if (len(response) == 0):
             return "No Hosts found"
-        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in response]
+        camelCaseResponse = [dict((toUpperCamelCase(k),v) for k, v in dic.iteritems()) for dic in response]
+        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camelCaseResponse]
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': response,
+            'Contents': camelCaseResponse,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Centreon Hosts status',  listForMd)
+            'HumanReadable': tableToMarkdown('Centreon Hosts status',  listForMd),
+            'EntryContext': {
+                  'Centreon.Host(val.Id==obj.Id)': camelCaseResponse
+            }
         }
 
         return entry
 
-    def getServiceStatus():
+    def getServiceStatusCommand():
+        # corresponds to 'centreon-get-service-status' command. Brings the status of the connected services.
+
         args = demisto.args()
         token = login()
         DEFAULT_HEADERS['centreon-auth-token'] = token
@@ -134,14 +138,18 @@ script:
         response = httpRequest('GET', cmdUrl, args, DEFAULT_HEADERS)
         if (len(response) == 0):
             return "No Services found"
-        listForMd = [dict((k, v) for k, v in dic.iteritems() if (v==0 or v)) for dic in response]
+        camelCaseResponse = [dict((toUpperCamelCase(k),v) for k, v in dic.iteritems()) for dic in response]
+        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camelCaseResponse]
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': response,
+            'Contents': camelCaseResponse,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Centreon Services status',  listForMd)
+            'HumanReadable': tableToMarkdown('Centreon Services status',  listForMd),
+            'EntryContext': {
+                  'Centreon.Service(val.ServiceId==obj.ServiceId)': camelCaseResponse
+            }
         }
 
         return entry
@@ -157,9 +165,9 @@ script:
             else:
                 demisto.results('test failed')
         elif demisto.command() == 'centreon-get-host-status':
-            demisto.results(getHostStatus())
+            demisto.results(getHostStatusCommand())
         elif demisto.command() == 'centreon-get-service-status':
-            demisto.results(getServiceStatus())
+            demisto.results(getServiceStatusCommand())
 
     except Exception, e:
         if demisto.params().get('verbose'):
@@ -209,6 +217,21 @@ script:
       description: number of lines that you want
     - name: number
       description: page number
+    outputs:
+    - contextPath: Centreon.Host.Output
+      description: Host output
+      type: string
+    - contextPath: Centreon.Host.Name
+      description: Host name
+      type: string
+    - contextPath: Centreon.Host.State
+      description: Host state
+    - contextPath: Centreon.Host.Address
+      description: Host address
+      type: string
+    - contextPath: Centreon.Host.Id
+      description: Host id
+      type: number
     description: 'All the monitoring information regarding hosts '
   - name: centreon-get-service-status
     arguments:
@@ -258,6 +281,21 @@ script:
       description: the amount of lines that you want
     - name: number
       description: page number
+    outputs:
+    - contextPath: Centreon.Service.Output
+      description: Service output
+      type: string
+    - contextPath: Centreon.Service.Name
+      description: Service name
+      type: string
+    - contextPath: Centreon.Service.ServiceId
+      description: Service id
+      type: number
+    - contextPath: Centreon.Service.Description
+      description: Service description
+      type: string
+    - contextPath: Centreon.Service.State
+      description: Service state
     description: All the monitoring information regarding services
   runonce: false
 releaseNotes: "-"
