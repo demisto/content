@@ -3,13 +3,17 @@ jobs:
   build:
     docker:
       - image: circleci/node:9.11
+      environment:
+          CIRCLE_ARTIFACTS: "~/content"
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
+              mkdir ~/content
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
               sudo easy_install pip
+              sudo pip install pykwalify
               sudo npm install npm -g
               sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo pip install pykwalify
@@ -29,6 +33,9 @@ jobs:
       - run:
           name: Server Documentation
           command: python content_creator.py $CIRCLE_ARTIFACTS
+      - store_artifacts:
+          path: $CIRCLE_ARTIFACTS/content
+          destination: content
   test:
     docker:
       - image: circleci/node:9.11
@@ -37,6 +44,14 @@ jobs:
       - run:
           name: Prepare
           command: |
+              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
+              sudo easy_install pip
+              sudo pip install pykwalify
+              sudo npm install npm -g
+              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
+              sudo pip install pykwalify
+              sudo npm install -g jsdoc-to-markdown
+              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
               ./Tests/scripts/validate_files_structure.sh
               ./Tests/scripts/server_get_artifact.sh
