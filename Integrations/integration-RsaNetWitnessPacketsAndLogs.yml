@@ -31,9 +31,9 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Do not validate server certificate (insecure)
-  name: insecure
-  defaultvalue: "false"
+- display: Validate server certificate (insecure)
+  name: secure
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
@@ -646,7 +646,7 @@ script:
                 Accept: responseType || '',
                 Body: body || ''
             },
-            params.insecure,
+            !params.secure,
             params.proxy
         );
 
@@ -671,7 +671,7 @@ script:
                 Password: PASSWORD
             },
             null,
-            params.insecure,
+            !params.secure,
             params.proxy
         );
 
