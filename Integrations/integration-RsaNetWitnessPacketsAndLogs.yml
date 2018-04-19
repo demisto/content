@@ -10,7 +10,7 @@ description: RSA NetWitness Logs and Packets decoders are responsible for the re
   and reconstruct data for full session analysis. In addition, the decoder can collect
   flow and endpoint data.
 configuration:
-- display: Appliance IP/Hostname (192.168.56.108)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
   defaultvalue: ""
   type: 0
@@ -31,9 +31,9 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Secure (Over HTTPS)
+- display: Validate server certificate
   name: secure
-  defaultvalue: "false"
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
@@ -1224,3 +1224,4 @@ script:
         SSL
     description: Dumps information out of the database in nwd formatted files
 fromversion: 3.5.0
+releaseNotes: "Clarified parameter descriptions."
