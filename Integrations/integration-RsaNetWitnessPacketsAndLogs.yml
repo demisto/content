@@ -31,7 +31,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Validate server certificate (insecure)
+- display: Validate server certificate
   name: secure
   defaultvalue: "true"
   type: 8
