@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              sudo mkdir -p $CIRCLE_ARTIFACTS
+              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
               sudo easy_install pip
               sudo pip install pykwalify
@@ -45,6 +45,7 @@ jobs:
           name: Prepare
           command: |
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
+              sudo apt-get install -y awscli
               sudo easy_install pip
               sudo pip install pykwalify
               sudo npm install npm -g
@@ -52,7 +53,6 @@ jobs:
               sudo pip install pykwalify
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
-              pip install awscli --upgrade --user
               chmod +x ./Tests/scripts/*
               ./Tests/scripts/validate_files_structure.sh
               ./Tests/scripts/server_get_artifact.sh
