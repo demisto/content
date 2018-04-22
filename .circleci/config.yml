@@ -34,7 +34,7 @@ jobs:
           name: Server Documentation
           command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
-          path: $CIRCLE_ARTIFACTS/content
+          path: content
           destination: content
   test:
     docker:
@@ -45,12 +45,11 @@ jobs:
           name: Prepare
           command: |
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
-              sudo apt-get install -y awscli
               sudo easy_install pip
               sudo pip install pykwalify
+              sudo pip install awscli
               sudo npm install npm -g
               sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
-              sudo pip install pykwalify
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
