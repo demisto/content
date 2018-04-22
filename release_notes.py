@@ -273,12 +273,24 @@ class IncidentFieldContent(Content):
         return "Incident Fields"
 
     def addedReleaseNotes(self, cnt):
-        # This should never happen
-        return ""
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+
+        if rn != '-':
+            res += "- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def modifiedReleaseNotes(self, cnt):
-        # temporary disabled
-        return ""
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+
+        if rn != '-':
+            res += "- " + cnt["releaseNotes"] + "\n"
+        return res
 
 
 Content.register(IncidentFieldContent)
