@@ -1,4 +1,5 @@
-[
+{
+	"incidentFields": [
 	{
 		"id": "incident_attachmenthash",
 		"version": 1,
@@ -810,5 +811,37 @@
 		],
 		"associatedToAll": false,
 		"unmapped": false
-	}
-]
+		},
+			{
+		"id": "incident_blabla",
+		"version": 1,
+		"modified": "2018-04-08T06:40:54.227952601Z",
+		"name": "Bla bla",
+		"ownerOnly": false,
+		"placeholder": "",
+		"description": "",
+		"cliName": "blabla",
+		"type": "shortText",
+		"closeForm": false,
+		"editForm": true,
+		"required": false,
+		"script": "",
+		"neverSetAsRequired": false,
+		"isReadOnly": false,
+		"selectValues": null,
+		"validationRegex": "",
+		"useAsKpi": true,
+		"locked": false,
+		"system": false,
+		"content": false,
+		"group": 0,
+		"hidden": false,
+		"associatedTypes": [
+			"Phishing"
+		],
+		"associatedToAll": false,
+		"unmapped": false
+		}
+	],
+	"releaseNotes": "Added bla bla field"
+}
