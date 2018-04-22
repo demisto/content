@@ -42,7 +42,7 @@ tasks:
     scriptarguments:
       extend-context: {}
       fileId:
-        simple: ${incident.labels.attachedFiles -> FileID}
+        simple: ${incident.labels.attachedFiles->FileID}
     separatecontext: false
     view: |-
       {
