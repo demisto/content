@@ -20,7 +20,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: 'Do not validate server certificate (insecure)'
+- display: ' Do not validate server certificate (insecure)'
   name: insecure
   defaultvalue: ""
   type: 8
@@ -72,33 +72,6 @@ script:
     var SERVER_URL = fixUrl(params.url) + 'api/v1/';
     var DEFAULT_SEARCH_LIMIT = 200;
 
-    function getAllLogs(requestFunction){
-        var res = [];
-        do {
-            var resObject = requestFunction(args);
-            res = res.concat(resObject.body);
-            var link = resObject.link;
-
-            if(link.length < 2){
-                // No next page
-                break;
-            }
-            else{
-                // Get the next page for the results
-                var afterPattern = /\bafter=(.*)>/;
-                var linkMatch = link[1].match(afterPattern);
-                if(!linkMatch){
-                    break;
-                }
-
-                args['after'] = linkMatch[1];
-            }
-
-       } while(resObject.body.length > 0)
-
-       return res;
-    };
-
     function logsToMarkdown(title, contents){
         var md = title + '\n';
         if(!(contents.length > 0)){
@@ -106,16 +79,20 @@ script:
         }
 
         md += tableToMarkdown('Event Details', contents.map(function(content){
-            return logToHumanReadble(content);
+            return logToHumanReadable(content);
         }));
 
         return md;
     }
 
-    function logToHumanReadble(logObject){
+    function logToHumanReadable(logObject){
         var flattened = {};
+        var md = '';
         var keys = Object.keys(logObject);
         keys.forEach(function(key){
+            log(key);
+
+           // md += tableToMarkdown(key, logObject[key]);
             if(logObject[key] instanceof Array){
                 flattened[pascalToSpace(key)] = flattenValue(logObject[key], 0, true);
             }
@@ -127,72 +104,80 @@ script:
         return flattened;
     }
 
-    function createLogObject(log){
+    function createVerboseLog(log){
         var logObject = {};
 
         if(log.actor){
-            logObject.ActorAlternateId = log.actor.alternateId;
-            logObject.ActorDisplayName = log.actor.displayName;
-            logObject.ActorID = log.actor.id;
+            logObject.Actor = {};
+            logObject.Actor.AlternateId = log.actor.alternateId;
+            logObject.Actor.DisplayName = log.actor.displayName;
+            logObject.Actor.ID = log.actor.id;
         }
 
         if(log.client){
-            logObject.ClientRawUserAgent = log.client.userAgent.rawUserAgent;
-            logObject.ClientOS = log.client.userAgent.os;
-            logObject.ClientBrowser = log.client.userAgent.browser;
-            logObject.ClientDevice = log.client.device;
-            logObject.ClientID = log.client.ID;
-            logObject.ClientIPAddress = log.client.ipAddress;
-            logObject.ClientCity = log.client.geographicalContext.city;
-            logObject.ClientState = log.client.geographicalContext.state;
-            logObject.ClientCountry = log.client.geographicalContext.country;
+            logObject.Client = {};
+            if(log.client.userAgent){
+                logObject.Client.RawUserAgent = log.client.userAgent.rawUserAgent;
+                logObject.Client.OS = log.client.userAgent.os;
+                logObject.Client.Browser = log.client.userAgent.browser;
+            }
+            logObject.Client.Device = log.client.device;
+            logObject.Client.ID = log.client.ID;
+            logObject.Client.IPAddress = log.client.ipAddress;
+            if(log.client.geographicalContext){
+                logObject.Client.City = log.client.geographicalContext.city;
+                logObject.Client.State = log.client.geographicalContext.state;
+                logObject.Client.Country = log.client.geographicalContext.country;
+            }
         }
 
-        logObject.DisplayMessage = log.displayMessage;
-        logObject.EventType = log.eventType;
-        logObject.OutcomeResult = log.outcome.result;
-        logObject.OutcomeReason = log.outcome.reason;
-        logObject.Published = log.published;
-        logObject.Severity = log.severity;
+        logObject.Event = {};
+
+        logObject.Event.DisplayMessage = log.displayMessage;
+        logObject.Event.EventType = log.eventType;
+        logObject.Event.OutcomeResult = log.outcome.result;
+        logObject.Event.OutcomeReason = log.outcome.reason;
+        logObject.Event.Published = log.published;
+        logObject.Event.Severity = log.severity;
         if(log.securityContext.asNumber){
-            logObject.SecurityContextAsNumber = log.securityContext.asNumber;
+            logObject.Event.SecurityContextAsNumber = log.securityContext.asNumber;
         }
         if(log.securityContext.asOrg){
-            logObject.SecurityContextAsOrg = log.securityContext.asOrg;
+            logObject.Event.SecurityContextAsOrg = log.securityContext.asOrg;
         }
         if(log.securityContext.isp){
-            logObject.SecurityContextISP = log.securityContext.isp;
+            logObject.Event.SecurityContextISP = log.securityContext.isp;
         }
         if(log.SecurityContextDomain){
-            logObject.SecurityContextDomain = log.securityContext.domain;
+            logObject.Event.SecurityContextDomain = log.securityContext.domain;
         }
         if(log.securityContext.domain){
-            logObject.SecurityContextIsProxy = log.securityContext.isProxy;
+            logObject.Event.SecurityContextIsProxy = log.securityContext.isProxy;
         }
         if(log.authenticationContext){
             if(log.authenticationContext.authenticationProvider){
-                logObject.AuthenticationProvider = log.authenticationContext.authenticationProvider;
+                logObject.Event.AuthenticationProvider = log.authenticationContext.authenticationProvider;
             }
             if(log.authenticationContext.credentialProvider){
-                logObject.CredentialProvider = log.authenticationContext.credentialProvider;
+                logObject.Event.CredentialProvider = log.authenticationContext.credentialProvider;
             }
             if(log.authenticationContext.credentialType){
-                logObject.CredentialType = log.authenticationContext.credentialType;
+                logObject.Event.CredentialType = log.authenticationContext.credentialType;
             }
             if(log.authenticationContext.issuer){
-                logObject.AuthenticationIssuer = log.authenticationContext.issuer;
+                logObject.Event.AuthenticationIssuer = log.authenticationContext.issuer;
             }
             if(log.authenticationContext.interface){
-                logObject.AuthenticationInterface = log.authenticationContext.interface;
+                logObject.Event.AuthenticationInterface = log.authenticationContext.interface;
             }
             if(log.authenticationContext.authenticationStep){
-                logObject.AuthenticationStep = log.authenticationContext.authenticationStep;
+                logObject.Event.AuthenticationStep = log.authenticationContext.authenticationStep;
             }
             if(log.authenticationContext.externalSessionId){
-                logObject.ExternalSessionId = log.authenticationContext.externalSessionId;
+                logObject.Event.ExternalSessionId = log.authenticationContext.externalSessionId;
             }
         }
-        logObject.uuid = log.uuid;
+        logObject.Event.uuid = log.uuid;
 
 
         if(log.request.ipChain){
@@ -212,16 +197,36 @@ script:
 
         if(log.target){
             var targets = log.target.map(function(target){
-               return {
-                   ID: target.id,
-                   Type: target.type,
-                   AlternateId: target.alternateId,
-                   DisplayName: target.displayName
-               }
+                return {
+                    ID: target.id,
+                    Type: target.type,
+                    AlternateId: target.alternateId,
+                    DisplayName: target.displayName
+                }
             });
 
             logObject.Targets = targets;
         }
+
+        return logObject;
+    }
+
+    function createReadableLog(log){
+        var logObject = {};
+
+        logObject.Time = log.published;//dateToString(Date.parse(log.published), '%m-%d-%Y %H:%M:%S');
+        logObject.Actor = log.actor.displayName + ' (' + log.actor.type + ')';
+        logObject.EventInfo = log.displayMessage + ' - ' + log.outcome.result + (log.outcome.reason ? ': ' + log.outcome.reason : '');
+
+        var targets = '';
+            if(log.target){
+            log.target.forEach(function(target){
+               targets += target.displayName + ' (' + target.type + ')\n';
+            });
+        }
+
+        logObject.Targets = targets || '-';
+        logObject.uuid = log.uuid;
 
         return logObject;
     };
@@ -309,7 +314,7 @@ script:
         var user;
         if (verbose==='true') {
             for (var i=0;i<users.length;i++) {
-               user=users[i];
+                user=users[i];
                 md += '### User: ' + user.profile.login +'\n';
                 md += '#### Profile:\n';
                 md += profileToMd(user.profile);
@@ -376,6 +381,8 @@ script:
         }
 
         url = url.concat(query);
+
+        log(url);
 
         var res = http(
             url,
@@ -488,18 +495,18 @@ script:
 
         var groups = [];
         res.forEach(function(resGroup){
-           var group = {
-               ID: resGroup.id,
-               Created: resGroup.created,
-               ObjectClass: resGroup.objectClass,
-               LastUpdated: resGroup.lastUpdated,
-               LastMembershipUpdated: resGroup.lastMembershipUpdated,
-               Type: resGroup.type,
-               Name: resGroup.profile.name,
-               Description: resGroup.profile.description
-           };
+            var group = {
+                ID: resGroup.id,
+                Created: resGroup.created,
+                ObjectClass: resGroup.objectClass,
+                LastUpdated: resGroup.lastUpdated,
+                LastMembershipUpdated: resGroup.lastMembershipUpdated,
+                Type: resGroup.type,
+                Name: resGroup.profile.name,
+                Description: resGroup.profile.description
+            };
 
-           groups.push(group);
+            groups.push(group);
         });
 
         var ec = {
@@ -599,7 +606,7 @@ script:
             ec = usersToEc(res);
         }
         else {
-             md = '### No users found in Okta\n';
+            md = '### No users found in Okta\n';
         }
 
         return {
@@ -618,7 +625,7 @@ script:
     };
 
     function getUser(){
-      var term = args.username ? encodeURIComponent(args.username) : args.userid;
+        var term = args.username ? encodeURIComponent(args.username) : args.userid;
 
         if (!term) {
             throw "You must supply either 'username' or 'userid'";
@@ -714,158 +721,217 @@ script:
         return sendRequest(uri, 'POST', body, true);
     };
 
-    function getFailedLogins(){
-        var contents = [];
-        var res = getAllLogs(getFailedLoginsRequest);
+    function getLogs(filter, query, since, until, sortOrder)
+    {
+        var logs = [];
+        var queryParams = {};
 
-        if(!res || res.length === 0){
+        if(filter){
+            queryParams.filter =  encodeURIComponent(filter);
+        }
+
+        if(query){
+            queryParams.q = encodeURIComponent(query);
+        }
+
+        if(since){
+            queryParams.since = since;
+        }
+
+        if(until){
+            queryParams.until = until;
+        }
+
+        if(sortOrder){
+            queryParams.sortOrder = sortOrder;
+        }
+
+        do {
+            var resObject = sendRequest('logs', 'GET', queryParams, '', true);
+            logs = logs.concat(resObject.body);
+            var link = resObject.link;
+
+            if(link.length < 2){
+                // No next page
+                break;
+            }
+            else{
+                // Get the next page for the results
+                var afterPattern = /\bafter=(.*)>/;
+                var linkMatch = link[1].match(afterPattern);
+                if(!linkMatch){
+                    break;
+                }
+
+                queryParams['after'] = linkMatch[1];
+            }
+
+        } while(resObject.body.length > 0)
+
+        return logs;
+    }
+
+    function getFailedLoginsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder);
+
+        if(!logs || logs.length === 0){
             return 'No events found';
         }
 
-        for(var i = 0; i < res.length; i++){
-            contents.push(createLogObject(res[i]));
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = logsToMarkdown("Failed Login events", contents);
+        var md = logsToMarkdown("Failed Login events", readableLogs);
 
         return {
             Type: entryTypes.note,
-            Contents: res,
+            Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.FailedLogins(val.uuid==obj.uuid)' : contents
+                'Okta.Logs.FailedLogins(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+    function getGroupAssignmentsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "group.user_membership.add"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Group assignment events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.GroupAssignments(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+
+    function getApplicationAssignmentsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "application.user_membership.add"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Application assignment events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.ApplicationAssignments(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+
+    function getApplicationAuthenticationCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "user.authentication.sso"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Application authentication events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.ApplicationAuthentication(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
     };
 
+    function getLogsCommand(){
+        var readableLogs = [];
+        var logs = getLogs(args.filter, args.query, args.since, args.until, args.sortOrder);
 
-    function getFailedLoginsRequest(queryParams){
-        var uri = 'logs';
-
-        if(!queryParams){
-            queryParams = {};
-        }
-
-        queryParams['filter'] = encodeURIComponent('eventType eq "user.session.start" and outcome.result eq "FAILURE"');
-
-        return sendRequest(uri, 'GET', queryParams,'', true);
-    };
-
-    function getGroupAssignments(){
-        var contents = [];
-        var res = getAllLogs(getGroupAssignmentsRequest);
-
-        if(!res || res.length === 0){
+        if(!logs || logs.length === 0){
             return 'No events found';
         }
 
-        for(var i = 0; i < res.length; i++){
-            contents.push(createLogObject(res[i]));
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = logsToMarkdown("Group assignment events", contents);
+        var md = tableToMarkdown("Okta events", readableLogs);
 
         return {
             Type: entryTypes.note,
-            Contents: res,
+            Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.GroupAssignments(val.uuid==obj.uuid)' : contents
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
-    };
+    }
 
-    function getGroupAssignmentsRequest(queryParams){
-        var uri = 'logs';
-        if(!queryParams){
-            queryParams = {};
-        }
+    function getVerboseLogsCommand(){
+        var verboseLogs = [];
+        var query = args.uuid;
+        var logs = getLogs(args.filter, query, args.since, args.until, args.sortOrder);
 
-        queryParams['filter'] = encodeURIComponent('eventType eq "group.user_membership.add"');
-
-        return sendRequest(uri, 'GET', queryParams, '', true);
-    };
-
-    function getApplicationAssignments(){
-        var res = getAllLogs(getApplicationAssignmentsRequest);
-        var contents = [];
-
-        if(!res || res.length === 0){
+        if(!logs || logs.length === 0){
             return 'No events found';
         }
 
-        for(var i = 0; i < res.length; i++){
-            contents.push(createLogObject(res[i]));
+        for(var i = 0; i < logs.length; i++){
+            verboseLogs.push(createVerboseLog(logs[i]));
         }
 
-        var md = logsToMarkdown("Application assignment events", contents);
+        var md = logsToMarkdown("Verbose details for log " + args.uuid, verboseLogs);
 
         return {
             Type: entryTypes.note,
-            Contents: res,
+            Contents: logs,
             ContentsFormat: formats.json,
-            EntryContext: {
-                'Okta.Logs.ApplicationAssignments(val.uuid==obj.uuid)' : contents
-            },
             HumanReadable: md
         };
-    };
+    }
 
-    function getApplicationAssignmentsRequest(queryParams){
-        var uri = 'logs';
-        if(!queryParams){
-            queryParams = {};
-        }
-
-        queryParams['filter'] = encodeURIComponent('eventType eq "application.user_membership.add"');
-
-        return sendRequest(uri, 'GET', queryParams, '', true);
-    };
-
-    function getApplicationAuthentication(){
-        var res = getAllLogs(getApplicationAuthenticationRequest);
-        var contents = [];
-
-        if(!res || res.length === 0){
-            return 'No events found';
-        }
-
-        for(var i = 0; i < res.length; i++){
-            contents.push(createLogObject(res[i]));
-        }
-
-        var md = logsToMarkdown("Application authentication events", contents);
-
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            EntryContext: {
-                'Okta.Logs.ApplicationAuthentication(val.uuid==obj.uuid)' : contents
-            },
-            HumanReadable: md
-        };
-    };
-
-    function getApplicationAuthenticationRequest(queryParams){
-        var uri = 'logs';
-        if(!queryParams){
-            queryParams = {};
-        }
-
-        queryParams['filter'] = encodeURIComponent('eventType eq "user.authentication.sso"');
-
-        return sendRequest(uri, 'GET', queryParams, '', true);
-    };
 
     function test() {
         var uri = 'users?limit=1';
         var res = sendRequest(uri);
 
         return res ? 'ok' : 'not ok';
-    };
+    }
 
     var entry;
     switch (command){
@@ -899,22 +965,27 @@ script:
             entry = updateUser();
             break;
         case 'okta-get-failed-logins':
-            entry = getFailedLogins();
+            entry = getFailedLoginsCommand();
             break;
         case 'okta-get-group-assignments':
-            entry = getGroupAssignments();
+            entry = getGroupAssignmentsCommand();
             break;
         case 'okta-get-application-assignments':
-            entry = getApplicationAssignments();
+            entry = getApplicationAssignmentsCommand();
             break;
         case 'okta-get-application-authentication':
-            entry = getApplicationAuthentication();
+            entry = getApplicationAuthenticationCommand();
             break;
         case 'okta-add-to-group':
             entry = addUserToGroup();
             break;
         case 'okta-remove-from-group':
             entry = removeUserFromGroup();
+        case 'okta-get-logs':
+            entry = getLogsCommand();
+            break;
+        case 'okta-get-verbose-log':
+            entry = getVerboseLogsCommand();
             break;
     }
 
@@ -1569,6 +1640,32 @@ script:
     - name: groupId
       description: ID of the group to remove the user from
     description: Removes a user from a group with OKTA_GROUP type.
+  - name: okta-get-verbose-log
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the log to retrieve
+    description: Retrieve detailed information for specific log entry
+  - name: okta-get-logs
+    arguments:
+    - name: filter
+      description: 'The filter to use, for example eventType eq "user.session.start"
+        and outcome.result eq "FAILURE" '
+    - name: query
+      description: A query to search the logs for
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    description: Get logs by providing optional filters
   runonce: false
 releaseNotes: "-"
 fromversion: 3.5.0
