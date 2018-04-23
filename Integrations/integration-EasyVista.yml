@@ -65,7 +65,7 @@ script:
                 method,
                 BASE_URL + url_suffix,
                 verify=USE_SSL,
-                auth=requests.auth.HTTPBasicAuth(USERNAME,PASSWORD) #Remember to set credentials mandatory
+                auth=requests.auth.HTTPBasicAuth(USERNAME,PASSWORD)
             )
             if res.status_code != 200:
                 raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
@@ -75,6 +75,18 @@ script:
         return res.json()
 
     def dict_to_str(obj):
+        """
+        Input - dictionary :
+        {
+            key1_keya: "valuea",
+            key1_keyb: "valueb",
+            HREF: "http://link"
+        }
+
+        Output - string:
+        Key1Keya: Valuea
+        Key1Keyb: Valueb
+        """
         string_result = ''
         context_result = {}
         for key, value in obj.iteritems():
@@ -84,9 +96,18 @@ script:
         return string_result, context_result
 
     ''' FUNCTIONS '''
-    def search(asset, attribute, value):
-        cmd_url = 'requests?search=' + asset + '.' + attribute + ':"' + value + '"'
-        response = http_request('GET', cmd_url)['records']
+    def search_command():
+        request = demisto.args().get('request')
+        if request:
+            response = search(request=request)
+        else:
+            asset = demisto.args().get('asset')
+            attribute = demisto.args().get('attribute')
+            value = demisto.args().get('value')
+            if asset and attribute and value:
+                response = search(asset, attribute, value)
+            else:
+                return 'Not enough arguments given'
         records = []
         context = []
         for record in response:
@@ -103,20 +124,30 @@ script:
                     context_record[underscoreToCamelCase(header)] = current_context
             records.append(string_record)
             context.append(context_record)
+        if records:
+            title = 'EasyVista Search Results'
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': records,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, records, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': {
+                    'EasyVista.Records': context
+                }
+            })
+        else:
+            demisto.results('No records found')
 
-        ec = {
-            'EasyVista.Records': context
-        }
-        title = 'EasyVista Search Results'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': records,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, records, headerTransform=underscoreToCamelCase, removeNull=True),
-            'EntryContext': ec
-        }
-        return entry
+    def search(asset=None, attribute=None, value=None, request=None):
+        cmd_url = 'requests?search='
+        if request:
+            cmd_url += request
+        else:
+            cmd_url += asset + '.' + attribute + ':"' + value + '"'
+        records = http_request('GET', cmd_url)['records']
+        return records
+
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -127,7 +158,7 @@ script:
             demisto.results('ok')
 
         elif demisto.command() == 'easy-vista-search':
-            demisto.results(search(demisto.args()['asset'], demisto.args()['attribute'], demisto.args()['value']))
+            search_command()
 
     except Exception, e:
         LOG(e.message)
@@ -139,14 +170,17 @@ script:
   - name: easy-vista-search
     arguments:
     - name: asset
-      required: true
-      description: Asset to search, e.g. requestor
+      description: Asset to search, e.g. requestor (This argument is mandatory if
+        the "request" argument is not given)
     - name: attribute
-      required: true
-      description: Attribute to search, e.g. last_name
+      description: Attribute to search, e.g. last_name (This argument is mandatory
+        if the "request" argument is not given)
     - name: value
-      required: true
-      description: Value to search, e.g. "Morley, Gaby"
+      description: Value to search, e.g. "Morley, Gaby" (This argument is mandatory
+        if the "request" argument is not given)
+    - name: request
+      description: Integrated request of assets, attributes and values, e.g.  requestor.last_name:"Morley,
+        Gaby" (This argument replaces the other arguments given each one separately)
     outputs:
     - contextPath: EasyVista.Records.CatalogRequest.CatalogRequestPath
       description: Catalog Request Path
@@ -237,4 +271,3 @@ script:
       type: string
     description: This method allows a list of incidents / requests (service, change,
       investment) to be obtained.
-  runonce: false
