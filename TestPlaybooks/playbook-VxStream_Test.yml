@@ -1,14 +1,14 @@
 id: VxStream Test
-version: 11
+version: 18
 name: VxStream Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+    taskid: 4a503314-a015-41b1-8f43-e9567a025321
     type: start
     task:
-      id: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+      id: 4a503314-a015-41b1-8f43-e9567a025321
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,20 +26,21 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: e625028b-1e53-4229-80f6-bf00c7c9ea10
+    taskid: c012ccd1-f708-4784-806f-d3ba32b6d203
     type: regular
     task:
-      id: e625028b-1e53-4229-80f6-bf00c7c9ea10
+      id: c012ccd1-f708-4784-806f-d3ba32b6d203
       version: -1
-      name: vx-get-environments
-      description: 'Get a list of all available environments '
-      script: VxStream|||vx-get-environments
+      name: Get Environments
+      description: Get a list of all available environments
+      script: VxStream|||crowdstrike-get-environments
       type: regular
       iscommand: true
       brand: VxStream
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -48,10 +50,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 4968dff5-e289-4588-81d3-32ba018c29b6
+    taskid: d85ad451-be9c-4361-8138-1531137fec9d
     type: regular
     task:
-      id: 4968dff5-e289-4588-81d3-32ba018c29b6
+      id: d85ad451-be9c-4361-8138-1531137fec9d
       version: -1
       name: 'Verify Context get-environments '
       description: |-
@@ -68,9 +70,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: ""
-      fields: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
-      path: VX.Environment
+      expectedValue: {}
+      fields:
+        simple: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
+      path:
+        simple: VX.Environment
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -80,14 +85,14 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 52037816-aedb-408d-8ead-b90942f991fb
+    taskid: 3383be9f-dff3-49d8-846a-49fa0bdc30a8
     type: regular
     task:
-      id: 52037816-aedb-408d-8ead-b90942f991fb
+      id: 3383be9f-dff3-49d8-846a-49fa0bdc30a8
       version: -1
-      name: vx-search
+      name: Search
       description: Search the database using the VXStream search syntax
-      script: VxStream|||vx-search
+      script: VxStream|||crowdstrike-search
       type: regular
       iscommand: true
       brand: VxStream
@@ -95,7 +100,27 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      query: url:google
+      authentihash: {}
+      av_detect: {}
+      context: {}
+      country: {}
+      domain: {}
+      env_id: {}
+      filename: {}
+      filetype: {}
+      filetype_desc: {}
+      host: {}
+      imp_hash: {}
+      port: {}
+      query:
+        simple: url:http://www.facebook.com/
+      similar_to: {}
+      ssdeep: {}
+      tag: {}
+      url: {}
+      verdict: {}
+      vx_family: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -105,10 +130,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 96042103-dc37-4f07-871c-6dd406cdfd5b
+    taskid: fdf919f6-36b7-493b-89e1-388cf17c7dca
     type: regular
     task:
-      id: 96042103-dc37-4f07-871c-6dd406cdfd5b
+      id: fdf919f6-36b7-493b-89e1-388cf17c7dca
       version: -1
       name: Verify Context search
       description: |-
@@ -125,9 +150,12 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: ""
-      fields: SHA256,environmentId,start_time,threatscore,verdict,environmentDescription,submitname,type_short,size
-      path: VX.Search
+      expectedValue: {}
+      fields:
+        simple: SHA256,environmentId,start_time,threatscore,verdict,environmentDescription,submitname,size
+      path:
+        simple: VX.Search
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -137,15 +165,15 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 0bbe7af7-634a-40d8-8221-a86532112442
+    taskid: 5d2f9523-a55d-41ae-86c0-c46b024036a0
     type: regular
     task:
-      id: 0bbe7af7-634a-40d8-8221-a86532112442
+      id: 5d2f9523-a55d-41ae-86c0-c46b024036a0
       version: -1
-      name: vx-scan
+      name: Scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
         the reports generated for any environment ID
-      script: VxStream|||vx-scan
+      script: VxStream|||crowdstrike-scan
       type: regular
       iscommand: true
       brand: VxStream
@@ -153,7 +181,9 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      file: ${VX.Search.SHA256}
+      file:
+        simple: ${VX.Search.SHA256}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -163,10 +193,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 8074d29c-91b7-4f32-8697-fa8626b904df
+    taskid: c982d510-b745-4a0c-89e4-b92a0fba8513
     type: regular
     task:
-      id: 8074d29c-91b7-4f32-8697-fa8626b904df
+      id: c982d510-b745-4a0c-89e4-b92a0fba8513
       version: -1
       name: Verify Context scan
       description: |-
@@ -180,9 +210,12 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: ""
-      fields: SHA256,environmentId,analysis_start_time,submitname,total_network_connections,total_processes,total_signatures,hosts,isinteresting,domains,isurlanalysis
-      path: File
+      expectedValue: {}
+      fields:
+        simple: SHA256,environmentId,analysis_start_time,submitname,total_network_connections,total_processes,total_signatures,hosts,isinteresting,domains,isurlanalysis
+      path:
+        simple: File
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -203,3 +236,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
