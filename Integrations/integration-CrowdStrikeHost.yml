@@ -555,6 +555,7 @@ script:
     - name: ids
       required: true
       deprecated: false
+      description: "-"
       default: true
     outputs:
     - contextPath: FalconHostDetails
