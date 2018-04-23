@@ -22,11 +22,17 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |
     ''' IMPORTS '''
     import requests
     import json
+    import os
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -36,12 +42,23 @@ script:
     PASSWORD=demisto.params()['credentials']['password']
 
     BASE_URL= SERVER_NAME + 'centreon/api/index.php?'
-    USE_SSL = not demisto.params().get('insecure', False)
+    USE_SSL = True if demisto.params().get('insecure') else False
     DEFAULT_HEADERS = {
         'Content-Type': 'application/json'
     }
 
     ''' HELPER FUNCTIONS '''
+
+    def load_proxy():
+        """ Loads the system configured proxy if enabled in configuration """
+        proxy = {}
+        if "proxy" in demisto.params():
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+    PROXY = load_proxy()
+
     def httpRequest(method, urlSuffix, data, headers):
         data = {} if data is None else data
 
@@ -53,24 +70,23 @@ script:
                 url,
                 verify=USE_SSL,
                 params=data,
-                headers=headers
+                headers=headers,
+                proxies=PROXY
             )
+            res.raise_for_status()
+            return res.json()
 
-            if res.status_code not in (200, 204):
-                raise Exception('Your request failed with the following error: ' + res.reason)
         except Exception, e:
             LOG(e)
             raise(e)
-        return res.json()
 
     def httpPost(urlSuffix, data=None, files=None):
         data = {} if data is None else data
         url = BASE_URL + urlSuffix
         LOG('running request with url=%s\tdata=%s\tfiles=%s' % (url, data, files))
         try:
-            res = requests.post(url, data=data)
-            if res.status_code != 200:
-                raise Exception('Your request failed with the following error: ' + res.reason)
+            res = requests.post(url, data=data, proxies=PROXY)
+            res.raise_for_status()
             return res.json()
 
         except Exception, e:
@@ -79,81 +95,97 @@ script:
 
     def login():
       # retrieves an authentication token from Centreon
-        cmdUrl = 'action=authenticate'
+        cmd_url = 'action=authenticate'
         data = {
             'username': USERNAME,
             'password': PASSWORD
         }
-        result = httpPost(cmdUrl, data=data)
+        result = httpPost(cmd_url, data=data)
         return result['authToken']
 
-    def transformHostVals(key, value):
-        mappingDic = {
+    def transform_host_vals(key, value):
+        # "down" and "unreachable" states can be added here after their value would be known
+        host_service_status = {
           '0': "Up",
           '4': "Pending"
         }
-        if (key == 'state' and mappingDic[value]):
-          return mappingDic[value]
+        if (key == 'State' and value in host_service_status):
+          return host_service_status[value]
         return value
 
-    def toUpperCamelCase(word):
+    def to_upper_camel_case(word):
         return ''.join(x.capitalize() or '_' for x in word.split('_'))
 
     ''' COMMANDS FUNCTIONS '''
 
-    def getHostStatusCommand():
-        # corresponds to 'centreon-get-host-status' command. Brings the status of the connected hosts.
+    def get_host_status():
+        """ Returns the status of the connected hosts. """
 
         args = demisto.args()
         token = login()
         DEFAULT_HEADERS['centreon-auth-token'] = token
-        cmdUrl = 'object=centreon_realtime_hosts&action=list'
-        response = httpRequest('GET', cmdUrl, args, DEFAULT_HEADERS)
+        cmd_url = 'object=centreon_realtime_hosts&action=list'
+        return httpRequest('GET', cmd_url, args, DEFAULT_HEADERS)
 
+
+    def get_host_status_command():
+        """ corresponds to 'centreon-get-host-status' command. Brings the status of the connected hosts."""
+
+        response = get_host_status()
         if (len(response) == 0):
             return "No Hosts found"
-        camelCaseResponse = [dict((toUpperCamelCase(k),v) for k, v in dic.iteritems()) for dic in response]
-        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camelCaseResponse]
+
+        # changing the keys from underscore notation to UpperCamelCase notation
+        camel_case_response = [dict((to_upper_camel_case(k),v) for k, v in dic.iteritems()) for dic in response]
+        # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
+        list_for_md = [dict((k, transform_host_vals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camel_case_response]
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': camelCaseResponse,
+            'Contents': camel_case_response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Centreon Hosts status',  listForMd),
+            'HumanReadable': tableToMarkdown('Centreon Hosts status', list_for_md),
             'EntryContext': {
-                  'Centreon.Host(val.Id==obj.Id)': camelCaseResponse
+                  'Centreon.Host(val.Id==obj.Id)': camel_case_response
             }
         }
 
         return entry
 
-    def getServiceStatusCommand():
-        # corresponds to 'centreon-get-service-status' command. Brings the status of the connected services.
+    def get_service_status():
+        """ Returns the status of the connected services. """
 
         args = demisto.args()
         token = login()
         DEFAULT_HEADERS['centreon-auth-token'] = token
-        cmdUrl = 'object=centreon_realtime_services&action=list'
-        response = httpRequest('GET', cmdUrl, args, DEFAULT_HEADERS)
+        cmd_url = 'object=centreon_realtime_services&action=list'
+        return httpRequest('GET', cmd_url, args, DEFAULT_HEADERS)
+
+    def get_service_status_command():
+        """ corresponds to 'centreon-get-service-status' command. Brings the status of the connected services. """
+
+        response = get_service_status()
         if (len(response) == 0):
             return "No Services found"
-        camelCaseResponse = [dict((toUpperCamelCase(k),v) for k, v in dic.iteritems()) for dic in response]
-        listForMd = [dict((k, transformHostVals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camelCaseResponse]
+
+        # changing the keys from underscore notation to UpperCamelCase notation
+        camel_case_response = [dict((to_upper_camel_case(k),v) for k, v in dic.iteritems()) for dic in response]
+        # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
+        list_for_md = [dict((k, transform_host_vals(k,v)) for k, v in dic.iteritems() if (v==0 or v)) for dic in camel_case_response]
 
         entry = {
             'Type': entryTypes['note'],
-            'Contents': camelCaseResponse,
+            'Contents': camel_case_response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Centreon Services status',  listForMd),
+            'HumanReadable': tableToMarkdown('Centreon Services status', list_for_md),
             'EntryContext': {
-                  'Centreon.Service(val.ServiceId==obj.ServiceId)': camelCaseResponse
+                  'Centreon.Service(val.ServiceId==obj.ServiceId)': camel_case_response
             }
         }
 
         return entry
-
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -165,14 +197,13 @@ script:
             else:
                 demisto.results('test failed')
         elif demisto.command() == 'centreon-get-host-status':
-            demisto.results(getHostStatusCommand())
+            demisto.results(get_host_status_command())
         elif demisto.command() == 'centreon-get-service-status':
-            demisto.results(getServiceStatusCommand())
+            demisto.results(get_service_status_command())
 
     except Exception, e:
-        if demisto.params().get('verbose'):
-            LOG(e.message)
-            LOG.print_log()
+        LOG(e.message)
+        LOG.print_log()
         raise
   type: python
   commands:
@@ -200,11 +231,11 @@ script:
       description: the status of hosts that you want to get (up, down, unreachable,
         pending, all)
     - name: hostgroup
-      description: hostgroup id filter
+      description: hostgroup id filter. For example, hostgroup=2
     - name: instance
-      description: instance id filter
+      description: instance id filter. For example, instance=2
     - name: search
-      description: search pattern applied on host name
+      description: search pattern applied on host name. For example, search="localhost"
     - name: criticality
       description: a specific criticality
     - name: sortType
@@ -258,11 +289,11 @@ script:
       description: the status of services that you want to get (ok, warning, critical,
         unknown, pending, all)
     - name: hostgroup
-      description: hostgroup id filter
+      description: hostgroup id filter. For example, hostgroup=2
     - name: servicegroup
       description: servicegroup id filter
     - name: instance
-      description: instance id filter
+      description: instance id filter. For example, instance=2
     - name: search
       description: search pattern applied on service
     - name: searchHost
