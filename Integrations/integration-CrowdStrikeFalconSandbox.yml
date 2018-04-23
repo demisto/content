@@ -4,7 +4,7 @@ commonfields:
 name: VxStream
 display: CrowdStrike Falcon Sandbox
 category: Forensics & Malware Analysis
-image: data:image/png;base64,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
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAAHgoC9OAAAAAXNSR0IArs4c6QAAEBBJREFUeAHtXAmQXMV5/rvf/WZmZ/bS3tLqXK1mdmbFAoqwOY2iSrDAhMu4SEwwJCQGYleSApJKWJJKAS4DKTso5SOJE4xjkKIU2IVdoQjYxhiDJFhWo5UQQmvtarUzszO7s3O/97o7f680m5VQESoux5H8uupN9+vjP74+po+/H8Av1c3EzSv+NwIQWeglAHVwY6M75cwayxV9ncOszS7lzUS4xwhVlwun+BK39DnFUZoUqt7PVfEF4bK2UxhmV0PPKRH+y/sRyMZCX3t/7IeLWaiq1Eo9rkYCI81vzpJsHLqZCGwhDhsXunYLFfS9/9yXf/iS1cFmaisPARFVIqAFHO/ziyymY/bHF1/8wP87BBZqObsJGljZ2qpR7W4B5PmmkfzDv2hJFxjXmcyvC7WUNfcTqmo8QASnR7RC72oGgTmIQIi5n6DC3cuEvsHT4cWON4uZ2fVmrwOkk6jqZSAKX1qWhOL0BmtT+/7KT9P9xlqq6/chHUUQrehSb4fiij9WgD/VtK+yo87T930EziEExGawfpYIRv+vVVroxzPR4HahiJKmaNcWK3Obug9A9hctyOIAkoyC3qaYNxPF+gZ2+lzTW/nmdCJ0m0YKuxrfgrmJKDR1J2Hu6HIIB5rsNcwjR3XGzEihmi4uh5BXMfs9V9sGbuFBMIOfY9PFx5wmfaVJnXFeDdpGkHfxUvkwN4JDTySLP6B1zTYkgXng5ghnexmAlokHXiTAeiVTmYdokeWpOFgrjsIs9WptQPi9ngK3kkmoBPMw59SgO50qDBPDvIAImm9PQSmgOHk5mkEAwGOg1MrgKURkhwF4ne+if2gNGDP96pWLEX7AR8BHwEfAR2ARgePx4PUCx+Kx9dC8GHmOBhb+ElFZK9UfvEbV6ceZU9qpqua2XKV039p3IXOu6b04B5CKyW2FRF9ok2uwLeCWfxywwt90BF1GQXiUiBQXtU9H3qy+uBSE1CZoE2V9Wduosw+JiWzM6rGNCrH2wNF6vnTC3uhlygc7p6B8eKgxvHrPbD4dhWBrEkqT3WB2T4IzO9QYpLXZlrCACZIER5adHYRIVUBXxwgkszHo8aqGTowaUSuQqTaGNLVcaMxQ+FkU809i63z1AMx1d4MeDgPDqQWHTtDfbmkjHSzVUQMDupO19xbnHpLB5ThFUNTCGOGeoxmRP0rPenEVvEcpJSoHpYsTc1cqEbxTTpBk/tQGe7jtp5BqH3VGpbIyDqjyJ2Wn4br5mHpRemPkklTMWL1spPymVHYmZt7fxGbJ7DotQYh96bG4ebkesf4QyzKv5t41W4RjUtlUzHxAkhIQ/FMbGj6DhNXmfTCh2MZVwA3S9B7kNRcepkbod9vV4L9gumIakQcviQebe8ONQx1K+AUEfhtBnu1kfitVgn9nKPqlyIfj88EOidGZROiHOPX8iPCc4RrA37dZxerkMXBlzWQG7K2EQ5fByrsacFo6NRBa3zlaOJCNN/xa89vzr2VW2B08wK5RKXu7aZ/3mmSajQW2HNlXennFQDg+V8kfwq4zn1pvbQaNrnJd/t6rByqv34ggZOPh6zwPWib25//xfMCZ4EBgAEqlo1LhTCJ4+Vyp+GrIbtiolef3E9tMlHLV3WagpdEQMw4xg7ToFG1LB1Jj9hYV8XOV8rc+WNvTUuUE8LQo/9VHwEfAR8BHwEfAR8BHwEfAR+AkAmTywlCzPeMFPKuSw9VLFee63rmMzsLiITUQ/j0G7IAKYrOXLX1ZrmzOVaUXloeqcOYU4bSoQFeSxsDduVjDLbhK+h9XUmcjKAsKy1M9KhTdId6YTkiHIzyrfF4knRuMPDs7oF4ql4hno3JnknlBEaxK0ZqsfNugxj9zwrOEk2rZdZ+khFwtlODLlfMi+Ww8tHOiG6zTicjdjGwTNMj4qSGwUzFYLXrBrOeTOyLHT54jyVaDz8LmwRE4kedAX0tI5j0+CL3HcLekXk76qY1aItkKQYEbDul+WJtaZ67KR2HNMFbAdNxcObMOumQ+6Q6vagxL//gaaJX++BB0SH8qai2XZQXSke+n1Fzkrbly62j5r7Va6Tm1UPor3NYZF4RARZCgoirXBSL2x2Qh6YaxbDpq3VeZLY8j6e7deEKjssANBi6ZcwHrzql10IIL+Nvtqt5i8eJUJhp49GXcmZiJ2r9TQKECcesRVF5pNAubJRDAjA1cVErZeOBxue7OJEKP6Y5O2pZBP+B2TY1ZZdVS/sJ1rcoNuAOiCnKTZzb0pDYEbpHyRGznDunrgcATs4Nmb9AJbJXvmqI8UuV26ScG4CHSaQrjuzvdZ18t7MDjXkPo+mqtskURPKNTghLhzpai3TYzAOtlwc/GtPMM4DvlcVNzEvbLHQlNMF4F7SpO6YoShwJnrDM04iQjozDLFHi+P272cAo9VSt8LWP0WHp94GPYjw5KeiollZ4k5Dxe29FqGt0V5jwhVPoQM/QatkCv553KMTyhKrWgn5ZbNUS5QKH8NpOIhfJI96TTuhjozxcKpW/LCEroKtvQvhwNn2idi9lkomza7QfLz03S0t0GOD/inhcFznfXPDfpeSyH6VcIan0nN2h9pDrnJqtE3SzLyWaKj+oSTWlQ2L9hGeepd8EVFLTcKlhoagoAIl5NU8He4OCsNvXS04oCN0fGqlMLNDziSl8l5lZRrGUtppQbRwpXK0z7gmwJMq3usA8QJtyXQIgDZUFP/Ufh3jEF2KfshuBVMr8nxNjo2/mbwghmvfwH+tg0Pzq/sdGZHQy/eXydfYHsU+N9sFIWKvVDR2qDcefx9eplKBTNxI0+2X+PboTOI70QkYKmB+zfzETt27H/N8kyGKdnVhnrZDi7Xr1I+tLlo9Ynjw9YN8wPodUOuol1VtdMwrp3HmnKd+mm+tVLpC95TfdDbIHnevVSGZce1AalP5UwFprydNTY9gzyzw0GPjUdte+Y6IO4TP9QLhcPxtKxwD9k+qBPDiAfqtDZnkkqKoZPHeTOdp18+X0EfAR8BHwEfAR8BHwEfAR8BHwEfAR8BHwEfAR8BHwEzkYE5B4kbqHbuP+He7C+O5cQWKhQubGbittXEaaeX4Xq08vzzpFsg/7rnuoczjJ4R5qpnktK/yrpsthjj1wA7YEytAtqX6gQulVl5PtlqIwZRL+SEZoJeHxXYKw8jeBge/Dd2YLAYgWjwASPj5pVzfokoaQRDTz24qHdRjx0uxAEe4WByBtEvZ6ohDsevOB45EWnPDe2chyqZ4uyv4pyLq3gRf3l+b1Z09cwol8jhFihKuKNmus6hKhhSrlrKMYfcKL04wVCD0/Jqx7nJS7ION4teEUw9v0UFF/HYb24SNAP/NIQOGMFL5VG3uKwNbBDZW2toykJ6sIRAWzesgOPCEou5gLwDsGS2ZkQYKik6nriYAW8z7W/VXwFmbzP4GtqqNMmTu5GVSgbqEIKHO/NU07sqlp7trPo7SbvQi0Tt7dRQS7nwIpC6JSCR11On/rR/uIBeRFCNkTVMW9kXNmgq6QAHteAELNG2Xdq89U3esehhofSd1CVHqxmiq/jxYxqNhG612HuMZtUvyvNEbJx67oaB26TysvyfSbWcA/qtxzJFwjoGqXMEFz9DzeTf1XelJW6Tg2EhwxF3IU3cFsIIZbL2RuugO0GXvZHEe/iRF2FwraA4KbgJINTV2TBvs5ypR+rLcE/w1u3Q2hIUUFrCguNL/Zptdr2yMHqOJIW2YHgX6KtwmSlVnhW3meeSFgXGkBuUVzvK837nWQ60XQTAXcTqcBXm98pHMSz6ytRyLs4V5CkqCHPCqHe9nKgMtLzE6gsVI4U+kwuGW0NNsFcP1aqU0i7h4Id7qRbBPfgFMzF+uauoWbkQV0ht+Lw3cjEybaCXZoJMLkQTDh8/kyVK7/Z4dTy96AdyM7mZPVJzLNgZIJ/7soOFERWnpRHUKW55vG9QU/7XsOB+Ww6bn9GVdyLL43BzDTFyvUCdwpwnmlfSkNa+ZDgbXbI3pCKl/+dC22PUuNb9YgxOdOodRPO8RSfnM+Yvnd8yDHBURLMFTvDB2EO+WNtcLwExb47N1d9beV4tbpwj5s03Ki1WrdPhCs7u9+BqSzwGzgIXQf+N7l85a3xcfAuQ5lRDzk/uV/KPhNvuIcT0Qfc+dtlY7VDMk4a+/S2kg4hnF1KobpjqgReW0foGzWLbkFzkKflDR1B1WVCuGVVD6JpRxHtXRQLu0c3XhbrmokHb8Y61Mslb3v34dphyS8NvIkJOq8x5/GwW07ueRe4tLGR/KT7wAqOJjPFYYA9D2wGY0qB5SDCl5it7IpEK12Jw/Juxy38kNW0EarTLgqkD41pOrBHN7pMSHOrZkNXnptNhFVPsENEVB710uwF2QtEpTmk2mXhMIK95ERlSmGWhuU7moZxXdBoWfF4LmFv9ph4B21cdrSNQyodDQzitzIYIbS4tNzC3a44y6BiK6rcMjr35ffm4tbFSG0QhJPwSrBDC5IuBOV82wl0OMwZDenOhARLVrDk6+H3RKQvnVxBpGK1FBGiN2SaOv4jCTFa+HN5ea7s0r5QWPlibAAaU57zkBhzkpLOiZL4S+h/h09GIhPsCuplTtDubA+rv+Fw+KaTK+9oOwr5xXJLAljL2M4J5UwLY9lWlCxrB6g0gz1BmwDaSVEbdG9tVmvQOvud6eRY9XgUTqx8PrCCJZ9htIIaxq6OQbSAyksrqK8hZTreC7rqAdFNpgk9eCuhykdxuOpByycceeRDECg+gfq8hIE9jBrnqe1qz3iTt7NlLDs2tS70T6oBn8avLhUF0FFs7Sr1xKAQZLRUrryAk7c5HAIVl9BDoqq80JgsPjMbtX+fB4PXpmJiV+u+0sh0NOhohP52OqEWiUf3o+mciZOCTcDZu0aRfKt5vJRCecU0iGcVoT2BX2H5gaCl6Z1vw4HfigUeQsC6UMzn5NCM+U44AiZajV0UDFhtxweoqRIaw3wzaIv4VGuyOo66q7Px0Ofx403nGRqZZELpQvgLXNGxBzuLFeoRUFT5uRYcLuqkpY8TWJW67NUKlP8V155fN0joS1ZTg5IPzT8pjakQLwX5KQFyYgqDxooUh0SBX4E40tJS/mxuNnQPDvsPz64NfDFyqDSSIwoWEW0M1C04Gc6YWKOtA+r3cro30rTnzI1mqTwfKixNeo5F7W3ZRPi13MZIEZ+pzEDgsUy/eXshpvfXb2Oi9qdYlOE7QQMuE+2fQkgjmDxh0bYIyEsIJuZZbIQYppKWLFcXTIZPp1FPW+pLGaWhVj1u9xBocshcSkumyXzyv326DQICjUkxXauXqfvDKIfkmV0DDQv58L2eVvcl/dNllWmS/leW0BSYT9pW1uWQ6VKuOh2MV2Tc8EkeMp/kLeMX6KGPvOzpOATqjyxfz78IVJ3gz+NLpvujoLTXYK1HocKKMP3VKXCQ2fsmWT8PH7+sj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI/AmRD4L7vW/mEmVWSaAAAAAElFTkSuQmCC
 description: Fully automated malware analysis with unique Hybrid Analysis. (formerly
   Payload Security VxStream)
 configuration:
@@ -18,11 +18,16 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Secret Key
+- display: Secret Key (applicable only for v1)
   name: secretKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+- display: API Version (v1,v2)
+  name: version
+  defaultvalue: v1
+  type: 0
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -40,7 +45,22 @@ script:
     var serverUrl = params.serverUrl;
     var insecure = params.insecure;
     var proxy = params.proxy;
-    var auth = 'Basic ' + Base64.encode(apiKey + ':' + secretKey);
+    var version = params.version;
+    if (version === undefined) {
+        version = 'v1';
+    }
+    if (version === 'v1' && !secretKey) {
+        return 'No API secret key was provided.';
+    }
+    var HEADERS = {
+        'User-Agent': ['Falcon Sandbox']
+    };
+    if (version === 'v1') {
+        HEADERS['Authorization'] = ['Basic ' + Base64.encode(apiKey + ':' + secretKey)];
+    } else { // API Version is v2
+        HEADERS['api-key'] = [apiKey];
+        HEADERS['accept'] = ['application/json'];
+    }
 
     // handle '/' at the end of serverUrl
     if (serverUrl[serverUrl.length - 1] === '/') {
@@ -62,7 +82,7 @@ script:
                 res[newKey] = obj[key];
             });
             return res;
-        }
+        };
     }
 
     function createTableEntry(name, rawResponse, table, context, headers) {
@@ -71,21 +91,19 @@ script:
             ContentsFormat: formats.json,
             Contents: rawResponse,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown(name, table, headers),
+            HumanReadable: tableToMarkdown(name, table, headers, undefined, headerTransform=underscoreToCamelCase),
             EntryContext: context
         };
     }
 
-    var sendRequest = function(endpoint) {
+    var sendRequest = function(method, endpoint, body) {
         var requestUrl = serverUrl + endpoint;
         var res = http(
             requestUrl,
             {
-                Method: 'GET',
-                Headers: {
-                    'Authorization': [auth],
-                    'User-Agent': ['VxStream']
-                }
+                Method: method,
+                Headers: HEADERS,
+                Body: body
             },
             insecure,
             proxy
@@ -94,26 +112,31 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
         var body;
         try {
             body = JSON.parse(res.Body);
         } catch (ex) {
-            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
+            body = res.Bytes;
         }
 
         return body;
     };
 
     function scan(hash) {
-        return sendRequest('/api/scan/' + hash);
+        if (version === 'v1'){
+            return sendRequest('GET', '/api/scan/' + hash);
+        } else { // v2
+            HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+            return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
+        }
+
     }
     function scanToEntry(res) {
-        if (res.response_code !== 0) {
+        if (version === 'v1' && res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
 
-        var response = res.response;
+        var response = (version === 'v1') ? res.response: res;
 
         // create table from response
         var tableMapper = {
@@ -141,6 +164,14 @@ script:
             sha1: 'SHA1',
             sha256: 'SHA256',
             md5: 'MD5',
+            job_id: 'JobID',
+            environment_id: 'environmentId',
+            threat_score: 'threatscore',
+            environment_description: 'environmentDescription',
+            submit_name: 'submitname',
+            url_analysis: 'isurlanalysis',
+            interesting: 'isinteresting',
+            vx_family: 'vxfamily'
         };
         context[outputPaths.file] = response.map(mapObject(contextMapper));
         response.forEach(function(res) {
@@ -157,7 +188,7 @@ script:
     }
 
     function getEnvironments() {
-        var res = sendRequest('/system/state');
+        var res = sendRequest('GET', '/system/state');
         if (res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
@@ -179,11 +210,11 @@ script:
                 ID: currentEnvironment.ID,
                 description: currentEnvironment.description,
                 architecture: currentEnvironment.architecture,
-                'total VMS': currentEnvironment.VMs_busy,
-                'busy VMS': currentEnvironment.VMs_total,
+                'total VMS': currentEnvironment.VMs_total,
+                'busy VMS': currentEnvironment.VMs_busy,
                 'analysis mode': currentEnvironment.analysisMode,
                 'group icon': currentEnvironment.groupicon ? currentEnvironment.groupicon : ''
-            }
+            };
         }
         // create context from environments
         var context = {
@@ -195,20 +226,21 @@ script:
     }
 
     function submitFile (entryId, environmentId) {
-        var requestUrl = serverUrl + '/api/submit';
+        var requestUrl = version === 'v1' ? serverUrl + '/api/submit' : serverUrl + '/api/v2/submit/file';
+        if (version === 'v2') {
+            HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+        }
         // submit file
         var res = httpMultipart(
                     requestUrl, // URL
                     entryId, // Optional - FilePath / EntryID
                     {
                         Method: 'POST',
-                        Headers: {
-                            'Authorization': [auth],
-                            'User-Agent': ['VxStream']
-                        }
+                        Headers: HEADERS
                     },
                     { // Multipart Contents
-                        environmentId: environmentId
+                        environmentId: environmentId, // For API v1
+                        environment_id: environmentId // For API v2
                     },
                     insecure,
                     proxy
@@ -218,16 +250,17 @@ script:
             throw 'Multipart Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
         var body;
+
         try {
             body = JSON.parse(res.Body);
         } catch (ex) {
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
-        if (body.response_code !== 0) {
+        if (version === 'v1' && body.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
 
         }
-        var response = body.response;
+        var response = version === 'v1' ? body.response: body;
         var resMessage = '';
         if (response.sha256) {
             resMessage = resMessage + '\nsha256 - ' + response.sha256;
@@ -238,23 +271,58 @@ script:
         if (response.md5) {
             resMessage = resMessage + '\nmd5 - ' + response.md5;
         }
+        if (response['job_id']) {
+            resMessage = resMessage + '\nJob ID - ' + response['job_id'];
+        }
+        if (response['environment_id']) {
+            resMessage = resMessage + '\nEnvironment ID - ' + response['environment_id'];
+        }
 
         return resMessage;
     }
 
     function submitFileMsg(hash) {
-        var resMessage = "File submitted successfully";
-        resMessage += resMessage + hash;
+        var resMessage = "File submitted successfully" + hash;
         return resMessage;
     }
 
-    function searchQuery(query) {
-        var res = sendRequest('/api/search?query=' + args.query);
-        if (res.response_code !== 0) {
+    function searchQuery() {
+        var res;
+        if (version === 'v1') {
+            var query = '';
+            if (args.query) {
+                query = args.query;
+            } else {
+            // Build Crowd Strike query syntax from arguments, i.e. key:value
+                for (var key in args) {
+                    query += key + ':' + args[key] + '&';
+                }
+            }
+            res = sendRequest('GET', '/api/search?query=' + query);
+        } else { //API Version is v2
+            HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+            body = '';
+            if (args.query) {
+                args.query.split(',').forEach(function(keyValue){
+                   splittedObject = keyValue.split(/:(.+)/); // Split by first ':' only
+                   key = splittedObject[0];
+                   value = splittedObject[1];
+                   body += key + '=' + value + '&'
+                });
+            } else {
+            // Build Crowd Strike query syntax from arguments, i.e. key:value
+                for (var key in args) {
+                    body += key + '=' + args[key] + '&';
+                }
+            }
+            res = sendRequest('POST', '/api/v2/search/terms', body)
+        }
+
+        if (version === 'v1' && res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
 
-        var result = res.response.result;
+        var result = version === 'v1' ? res.response.result : res.result
 
         // create table from search result
         var tableMapper = {
@@ -268,15 +336,33 @@ script:
         var table = result.map(mapObject(tableMapper));
 
         // create context from search result
-        var contextMapper = {
-            sha1: 'SHA1',
-            sha256: 'SHA256',
-            md5: 'MD5',
-        };
+        var contextMapper;
+        var context;
+        if (version === 'v1') {
+            contextMapper = {
+                sha1: 'SHA1',
+                sha256: 'SHA256',
+                md5: 'MD5',
+            };
 
-        var context = {
-            'VX.Search(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
-        };
+            context = {
+                'VX.Search(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
+            };
+        } else { // v2
+            contextMapper = {
+                job_id: 'JobID',
+                sha256: 'SHA256',
+                environment_id: 'environmentId',
+                threat_score: 'threatscore',
+                environment_description: 'environmentDescription',
+                submit_name: 'submitname',
+                analysis_start_time: 'start_time'
+            };
+
+            context = {
+                'VX.Search(val.JobID && val.JobID == obj.JobID || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
+            };
+        }
 
         result.forEach(function(res) {
            if(res.threatlevel && res.threatlevel > 1) {
@@ -289,11 +375,50 @@ script:
            }
         });
 
-        return createTableEntry('All Environments:', result, table, context);
+        return createTableEntry('Search results:', result, table, context);
     }
 
-    function vxResult(hash, environmentId) {
-        var res = sendRequest('/api/result/' + hash + '?type=json&environmentId=' + args.environmentId);
+    function vxResult(hash, environmentId, fileType, jobID) {
+        var csID;
+        if (version === 'v2') {
+            if (hash && environmentId){
+                csID = hash + ':' + environmentId;
+            } else if (jobID) {
+                csID = jobID;
+            } else {
+                return 'Job ID or SHA256 and environment ID are required to retrieve screenshots.'
+        }
+        }
+        var cmdUrl = (version === 'v1') ? '/api/result/' + hash + '?type=json&environmentId=' + args.environmentId : '/api/v2/report/' + csID + '/file/' + fileType;
+        var res = sendRequest('GET', cmdUrl);
+        if (version === 'v2') {
+            var currentTime = new Date();
+            var filename =  'CrowdStrike_report_' + currentTime.getTime();
+            switch (fileType) {
+                case 'pcap':
+                case 'bin':
+                case 'xml':
+                case 'html':
+                    filename += '.gz';
+                    break;
+                case 'json':
+                    filename += '.json';
+                    res = JSON.stringify(res);
+                    break;
+                case 'misp':
+                case 'stix':
+                    filename += '.xml';
+                    break;
+                case 'pdf':
+                    filename += '.pdf';
+            }
+            return {
+                Type: 3,
+                FileID: saveFile(res),
+                File: filename,
+                Contents: filename
+            };
+        }
         if (res.response_code !== undefined && res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
@@ -306,7 +431,7 @@ script:
         if (args.environmentID) {
             environmentId = args.environmentID;
         } else {
-            var environments = getEnvironments().backend.global_environment;
+            var environments = (version === 'v1') ? getEnvironments().backend.global_environment : getEnvironments().backend.global_environment;
             for (var i=0; i<environments.length; i++) {
                 if (environments[i]['ID'] === 100) {
                     environmentId = 100;
@@ -319,18 +444,17 @@ script:
                 }
             }
         }
-
-        var hash = submitFile(entryId, environmentId).substring(10);
+        var file = submitFile(entryId, environmentId.toString());
+        var hash = (version === 'v1') ? file.substring(10) : file.substring(10,75);
 
         delayTime = parseInt(delay);
         timeOut = parseInt(timeout);
         var waitTime = delayTime;
 
         wait(delayTime);
-
         while (waitTime<timeOut) {
-            res = scan(hash);
-            if (res.response.length > 0 && res.response[0]) {
+            var res = scan(hash);
+            if ((version === 'v1' && res.response.length > 0 && res.response[0]) || (version === 'v2' && res.length > 0)) {
                 return scanToEntry(res);
             } else {
                 waitTime = waitTime + delayTime;
@@ -341,39 +465,93 @@ script:
 
     }
 
+    function submitUrl(url, environmentID) {
+        if (version === 'v1') {
+            return 'This command is supported only in API v2.'
+        }
+        var cmdUrl = '/api/v2/submit/url-for-analysis';
+        var body = 'url=' + url + '&environment_id=' + environmentID;
+        HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+        var response = sendRequest('POST', cmdUrl, body);
+        var context = {
+            'File': {
+                'SHA256': response['sha256']
+            },
+            'CrowdStrike(val.JobID && val.JobID === obj.JobID)': {
+                'EnvironmentID': response['environment_id'],
+                'JobID': response['job_id']
+            }
+        };
+        var title = 'URL ' + url + ' was submitted for analysis on CrowdStrike Falcon Sandbox';
+        return createTableEntry(title, response, response, context);
+    }
+
+    function getScreenshots(file, environmentID, jobID) {
+        if (version === 'v1') {
+            return 'This command is supported only in API v2.'
+        }
+        var csID;
+        if (file && environmentID){
+            csID = file + ':' + environmentID;
+        } else if (jobID) {
+            csID = jobID;
+        } else {
+            return 'Job ID or SHA256 and environment ID are required to retrieve screenshots.'
+        }
+        var cmdUrl = '/api/v2/report/' + csID +'/screenshots';
+        var response = sendRequest('GET', cmdUrl);
+        var images = [];
+        for (var i = 0; i < response.length; i++) {
+            images.push({
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: '',
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: '![](data:image/png;base64,' + response[i]['image'] + ')'
+            });
+        }
+        return images
+    }
+
     switch (command) {
         case 'test-module':
-            var entry = searchQuery('url:google');
+            args.query = 'url:google';
+            var entry = searchQuery();
             if (entry && entry.Type === entryTypes.note) {
                return 'ok';
             }
             return entry && entry.Contents;
-        case 'vx-scan':
+        case 'vx-scan': // Deprecated
         case 'crowdstrike-scan':
             var res = scan(args.file);
             return scanToEntry(res);
-        case 'vx-get-environments':
+        case 'vx-get-environments': // Deprecated
         case 'crowdstrike-get-environments':
             var response = getEnvironments();
             return tableFromEnvironments(response);
-        case 'vx-submit-sample':
+        case 'vx-submit-sample': // Deprecated
         case 'crowdstrike-submit-sample':
             var hash = submitFile(args.entryId, args.environmentID);
             return submitFileMsg(hash);
-        case 'vx-search':
+        case 'vx-search': // Deprecated
         case 'crowdstrike-search':
-            return searchQuery(args.query);
-        case 'vx-result':
+            return searchQuery();
+        case 'vx-result': // Deprecated
         case 'crowdstrike-result':
-            return vxResult(args.file, args.environmentId);
-        case 'vx-detonate-file':
+            return vxResult(args.file, args.environmentId, args['file-type'], args.JobID);
+        case 'vx-detonate-file': // Deprecated
         case 'crowdstrike-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
+        case 'crowdstrike-submit-url':
+            return submitUrl(args.url, args.environmentID);
+        case 'crowdstrike-get-screenshots':
+            return getScreenshots(args.file, args.environmentID, args.JobID);
     }
 
   type: javascript
   commands:
   - name: vx-scan
+    deprecated: true
     arguments:
     - name: file
       required: true
@@ -387,7 +565,7 @@ script:
     - contextPath: File.MD5
       description: MD5 of the file
     - contextPath: File.environmentId
-      description: 'Environment id of the file '
+      description: Environment id of the file
     - contextPath: File.analysis_start_time
       description: Analysis start time of the file
     - contextPath: File.submitname
@@ -425,41 +603,56 @@ script:
     outputs:
     - contextPath: File.SHA256
       description: SHA256 of the file
+      type: string
     - contextPath: File.SHA1
       description: SHA1 of the file
+      type: string
     - contextPath: File.MD5
       description: MD5 of the file
+      type: string
     - contextPath: File.environmentId
-      description: 'Environment id of the file '
+      description: Environment id of the file
+      type: string
     - contextPath: File.analysis_start_time
       description: Analysis start time of the file
+      type: string
     - contextPath: File.submitname
       description: Submission name of the file
+      type: string
     - contextPath: File.classification_tags
       description: List of classification tags of the file
     - contextPath: File.vxfamily
       description: Family classification of the file
+      type: string
     - contextPath: File.total_network_connections
       description: Total network connections of the file
+      type: number
     - contextPath: File.total_processes
       description: Total processes count of the file
+      type: number
     - contextPath: File.total_signatures
       description: Total signatures count if the file
+      type: number
     - contextPath: File.hosts
       description: List of file's hosts
     - contextPath: File.isinteresting
       description: If server found this file interesting
+      type: boolean
     - contextPath: File.domains
       description: List of file's related domains
     - contextPath: File.isurlanalysis
       description: If file analyzed by url
+      type: boolean
     - contextPath: File.Malicious.Vendor
       description: or malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     description: Get summary information for a given MD5, SHA1 or SHA256 and all the
       reports generated for any environment ID
   - name: vx-get-environments
+    deprecated: true
     arguments: []
     outputs:
     - contextPath: VX.Environment.ID
@@ -473,7 +666,7 @@ script:
     - contextPath: VX.Environment.VMs_busy
       description: Busy virtual machines in environment
     - contextPath: VX.Environment.analysisMode
-      description: 'Analysis mode of environment '
+      description: Analysis mode of environment
     - contextPath: VX.Environment.groupicon
       description: Icon of environment
     description: Get a list of all available environments  (NOTE - minimum required
@@ -482,28 +675,36 @@ script:
     arguments: []
     outputs:
     - contextPath: VX.Environment.ID
-      description: Environment id
+      description: Environment ID
+      type: number
     - contextPath: VX.Environment.description
       description: Environment description
+      type: string
     - contextPath: VX.Environment.architecture
       description: Environment architecture
+      type: string
     - contextPath: VX.Environment.VMs_total
       description: Total virtual machines in environment
+      type: number
     - contextPath: VX.Environment.VMs_busy
       description: Busy virtual machines in environment
+      type: number
     - contextPath: VX.Environment.analysisMode
       description: 'Analysis mode of environment '
+      type: string
     - contextPath: VX.Environment.groupicon
       description: Icon of environment
+      type: string
     description: Get a list of all available environments  (NOTE - minimum required
       authorization is `default`)
   - name: vx-submit-sample
+    deprecated: true
     arguments:
     - name: entryId
       required: true
       default: true
       description: War-room entry ID of sample file
-    - name: environmentID
+    - name: environmentId
       required: true
       description: Environment ID to submit file to (get all IDs via vx-get-environments)
     description: Submit a file from investigation to analysis server  (NOTE - minimum
@@ -520,6 +721,7 @@ script:
     description: Submit a file from investigation to analysis server  (NOTE - minimum
       required authorization is `default`)
   - name: vx-search
+    deprecated: true
     arguments:
     - name: query
       required: true
@@ -561,43 +763,95 @@ script:
   - name: crowdstrike-search
     arguments:
     - name: query
-      required: true
       default: true
-      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
-        for more details). examples -  url:google, host:95.181.53.78
+      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78.
+        This argument integrates all other arguments to one, and cannot be given along
+        with the other arguments.
+    - name: filename
+      description: Filename e.g. invoice.exe
+    - name: filetype
+      description: Filetype e.g. docx
+    - name: filetype_desc
+      description: Filetype description e.g. PE32 executable
+    - name: env_id
+      description: Environment Id
+    - name: country
+      description: Country (3 digit ISO) e.g. swe
+    - name: verdict
+      description: 'Verdict e.g. 1 (available: 1 ''whitelisted’, 2 ''no verdict’,
+        3 ''no specific threat’, 4 ''suspicious’, 5 ‘malicious’)'
+    - name: av_detect
+      description: AV Multiscan range e.g. 50-70 (min 0, max 100)
+    - name: vx_family
+      description: AV Family Substring e.g. nemucod
+    - name: tag
+      description: Hashtag e.g. ransomware
+    - name: port
+      description: Port e.g. 8080
+    - name: host
+      description: Host e.g. 192.168.0.1
+    - name: domain
+      description: Domain e.g. checkip.dyndns.org
+    - name: url
+      description: HTTP Request Substring e.g. google
+    - name: similar_to
+      description: Similar Samples e.g. <sha256>
+    - name: context
+      description: Sample Context e.g. <sha256>
+    - name: imp_hash
+      description: Import Hash
+    - name: ssdeep
+      description: SSDeep
+    - name: authentihash
+      description: Authentication Hash
     outputs:
     - contextPath: VX.Search.SHA256
       description: SHA256 of search result
+      type: string
     - contextPath: VX.Search.SHA1
       description: SHA1of search result
+      type: string
     - contextPath: VX.Search.MD5
       description: MD5 of search result
+      type: string
     - contextPath: VX.Search.environmentId
       description: Environment Id of search result
+      type: number
     - contextPath: VX.Search.start_time
       description: Start time of search result
     - contextPath: VX.Search.threatscore
       description: Threat score of search result by server
+      type: string
     - contextPath: VX.Search.verdict
       description: Verdict of search result
+      type: string
     - contextPath: VX.Search.environmentDescription
       description: Environment description of search result
+      type: string
     - contextPath: VX.Search.submitname
       description: Submission name of search result
+      type: string
     - contextPath: VX.Search.vxfamily
       description: Family of search result
+      type: string
     - contextPath: VX.Search.threatscore
       description: Threat score of search result
+      type: number
     - contextPath: VX.Search.type_short
       description: type of search result (url, host, etc.)
+      type: string
     - contextPath: VX.Search.size
       description: Size of search result
+      type: number
     - contextPath: File.Malicious.Vendor
       description: or malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     description: Search the database using the Falcon Sandbox search syntax
   - name: vx-result
+    deprecated: true
     arguments:
     - name: file
       required: true
@@ -605,21 +859,36 @@ script:
       description: File hash (MD5, SHA1 or SHA256)
     - name: environmentId
       required: true
-      description: 'environment ID to submit file to(get all via vx-get-environments) '
+      description: environment ID to submit file to(get all via vx-get-environments)
     description: Retrieve result data upon a file. NOTE - This command returns a file
       (also - minimum required authorization is `default`)
   - name: crowdstrike-result
     arguments:
     - name: file
-      required: true
       default: true
-      description: File hash (MD5, SHA1 or SHA256)
+      description: File hash (MD5, SHA1 or SHA256) - Mandatory in v1
     - name: environmentId
-      required: true
-      description: 'environment ID to submit file to(get all via vx-get-environments) '
+      description: environment ID to submit file to(get all via vx-get-environments)  -
+        Mandatory in v1
+    - name: file-type
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - json
+      - html
+      - pdf
+      - stix
+      - misp
+      - bin
+      - pcap
+      description: File type of report to return (supported only in v2)
+      defaultValue: pdf
+    - name: JobID
+      description: Job ID of file to generate report of (supported only in v2)
     description: Retrieve result data upon a file. NOTE - This command returns a file
       (also - minimum required authorization is `default`)
   - name: vx-detonate-file
+    deprecated: true
     arguments:
     - name: entryId
       required: true
@@ -649,3 +918,32 @@ script:
       description: Total wait time (in seconds)
       defaultValue: "60"
     description: Detonate file through Falcon Sandbox
+  - name: crowdstrike-submit-url
+    arguments:
+    - name: url
+      required: true
+      description: URL to analyze
+    - name: environmentID
+      required: true
+      description: Environment ID to submit URL to
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: CrowdStrike.EnvironmentID
+      description: Environment ID in which the URL was analysed
+      type: string
+    - contextPath: CrowdStrike.JobID
+      description: Job ID of URL analysation
+      type: string
+    description: Submit a URL for analysis (Supported only in v2)
+  - name: crowdstrike-get-screenshots
+    arguments:
+    - name: file
+      description: File hash (SHA256) to retrieve screenshots of
+    - name: environmentID
+      description: environment ID to retrieve screenshots from
+    - name: JobID
+      description: Job ID to retrieve screenshots of
+    description: Retrieves screenshots from a report (Supported only in v2)
+releaseNotes: "Upgraded to API v2 and added commands: get-screenshots, submit-url"
