@@ -279,6 +279,10 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "SQS",
+            "playbookID": "SQS Test"
         }
     ],
     "skipped": [
