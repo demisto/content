@@ -721,4 +721,3 @@ script:
       alarm status or entity
   isfetch: true
   runonce: false
-releaseNotes: "-"
