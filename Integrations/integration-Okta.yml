@@ -80,7 +80,8 @@ script:
     function createReadableLog(log){
         var logObject = {};
 
-        logObject.Time = new Date(log.published).toDateString();
+        var time  = new Date(log.published);
+        logObject.Time = time.toLocaleString();
         logObject.Actor = log.actor.displayName + ' (' + log.actor.type + ')';
         logObject.EventInfo = log.displayMessage + ' - ' + log.outcome.result + (log.outcome.reason ? ': ' + log.outcome.reason : '');
 
