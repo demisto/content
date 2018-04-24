@@ -1,6 +1,6 @@
 id: okta_test_playbook
 version: -1
-fromversion: 3.6.0
+fromversion: 3.5.0
 name: Okta test playbook
 description: Test the functionality of Okta
 starttaskid: "0"
@@ -13,7 +13,6 @@ tasks:
       id: f9fd4278-c268-4e7b-88b4-0c87050f4ef6
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +28,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: e2d5e16e-fc89-4ce7-83ab-0c1daf24340c
+    taskid: 729701df-f87e-4b9b-859c-e8e48e3302a7
     type: regular
     task:
-      id: e2d5e16e-fc89-4ce7-83ab-0c1daf24340c
+      id: 729701df-f87e-4b9b-859c-e8e48e3302a7
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
@@ -44,7 +43,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      limit: {}
       since: {}
       sortOrder: {}
       until: {}
@@ -74,6 +72,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -118,10 +119,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 3afa7830-ed45-41ab-89c2-5404822be98e
+    taskid: 71842440-6017-47f3-8130-fefea71c0c71
     type: regular
     task:
-      id: 3afa7830-ed45-41ab-89c2-5404822be98e
+      id: 71842440-6017-47f3-8130-fefea71c0c71
       version: -1
       name: okta-get-groups
       description: Get all user groups
@@ -181,10 +182,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: fb4bae1b-8e80-4ffe-80e5-fb73e2f6a36d
+    taskid: 48c96f2f-f2f2-4e7f-851c-dc182ad7380f
     type: regular
     task:
-      id: fb4bae1b-8e80-4ffe-80e5-fb73e2f6a36d
+      id: 48c96f2f-f2f2-4e7f-851c-dc182ad7380f
       version: -1
       name: okta-remove-from-group
       description: Removes a user from a group with OKTA_GROUP type.
@@ -205,15 +206,15 @@ tasks:
       {
         "position": {
           "x": 172,
-          "y": 659
+          "y": 658
         }
       }
   "11":
     id: "11"
-    taskid: 5ed95bdb-278e-4112-8a48-cc9c2bbae3b2
+    taskid: 8c1c78a1-a964-439c-8178-3a4309751848
     type: regular
     task:
-      id: 5ed95bdb-278e-4112-8a48-cc9c2bbae3b2
+      id: 8c1c78a1-a964-439c-8178-3a4309751848
       version: -1
       name: okta-add-to-group
       description: Adds a user to a group with OKTA_GROUP type.
@@ -237,12 +238,159 @@ tasks:
           "y": 803
         }
       }
+  "12":
+    id: "12"
+    taskid: e0826b64-cb55-430b-82bf-3578e212a0aa
+    type: regular
+    task:
+      id: e0826b64-cb55-430b-82bf-3578e212a0aa
+      version: -1
+      name: okta-update-user
+      description: Update user with a given login, all fields are optional, fields
+        which are not set will not be overriden
+      script: okta|||okta-update-user
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      city: {}
+      costCenter: {}
+      countryCode: {}
+      department: {}
+      displayName:
+        simple: test1
+      division: {}
+      email: {}
+      employeeNumber: {}
+      firstName: {}
+      honorificPrefix: {}
+      honorificSuffix: {}
+      lastName: {}
+      locale: {}
+      manager: {}
+      managerId: {}
+      middleName: {}
+      mobilePhone: {}
+      nickName: {}
+      organization: {}
+      password: {}
+      passwordAnswer: {}
+      passwordQuestion: {}
+      postalAddress: {}
+      "preferredLanguage\t": {}
+      primaryPhone: {}
+      profileUrl: {}
+      providerName: {}
+      providerType: {}
+      secondEmail: {}
+      state: {}
+      streetAddress: {}
+      "timezone\t": {}
+      title: {}
+      userType: {}
+      username:
+        simple: test@this.com
+      zipCode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 461,
+          "y": 1390
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ee90e02a-d322-4551-8397-5238d84b39fa
+    type: regular
+    task:
+      id: ee90e02a-d322-4551-8397-5238d84b39fa
+      version: -1
+      name: okta-get-failed-logins
+      description: Get events for when Okta issued a session to a user who is authenticating
+        and the user failed to log-in
+      script: okta|||okta-get-failed-logins
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 461,
+          "y": 1570
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 6e476ce0-53e3-4816-86a7-3c609ae8b878
+    type: regular
+    task:
+      id: 6e476ce0-53e3-4816-86a7-3c609ae8b878
+      version: -1
+      name: okta-get-application-authentication
+      description: Get events for when a user attempted to SSO to an application managed
+        in Okta
+      script: okta|||okta-get-application-authentication
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 461,
+          "y": 1750
+        }
+      }
+  "15":
+    id: "15"
+    taskid: c4dfb569-0e51-4fab-837b-8a0a351ee7f0
+    type: regular
+    task:
+      id: c4dfb569-0e51-4fab-837b-8a0a351ee7f0
+      version: -1
+      name: okta-get-application-assignments
+      description: Get events for when a user was assigned to an application.
+      script: okta|||okta-get-application-assignments
+      type: regular
+      iscommand: true
+      brand: okta
+    scriptarguments:
+      since: {}
+      sortOrder: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 461,
+          "y": 1930
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1366,
+        "height": 2115,
         "width": 669,
         "x": 172,
         "y": -90
