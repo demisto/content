@@ -30,7 +30,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Filter tickets by SERVICE_REQUEST, INCIDENT or CHANGE
+- display: Fetch tickets matching to one of SERVICE_REQUEST, INCIDENT or CHANGE
   name: ticketType
   defaultvalue: ""
   type: 0
@@ -45,11 +45,28 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Limit tickets to one of REQUEST, CHANGE, HEALTH or SECURITY
+  name: groupingType
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'Fetch tickets by status(comma separated): New,Active,Queued,Pending,Resolved'
+  name: status
+  defaultvalue: New,Active,Queued,Pending,Resolved
+  type: 0
+  required: false
+- display: If "ALL," all worklogs are returned for each ticket. If "UPDATED", all
+    worklogs added since last acknowledgement are returned. If "NONE," the path returns
+    no worklogs. Default is "ALL."
+  name: worklogs
+  defaultvalue: ALL
+  type: 0
+  required: false
 script:
   script: |-
     var SERVER_URL = params.server.replace(/[\/]+$/, '') + '/api/ticket/v3/';
-    var CLOSED_STATUS = "Closed";
-    var HEALTH_TYPE = "Health";
+    var EVENT_SOURCE_HEALTH_TYPE = "CTP_HEALTH";
+    var CATEGORIZATION_CLASS_HEALTH_TYPE = "Health";
 
     function createContext(data) {
         var createContextSingle = function(obj) {
@@ -86,6 +103,8 @@ script:
 
         var url = SERVER_URL.concat(path, query)
 
+        log(url);
+
         var res = http(
             url,
             {
@@ -105,8 +124,8 @@ script:
         return JSON.parse(res.Body);
     }
 
-    function createTicket(){
-        var response = createTicketRequest(args);
+    function createTicketCommand(){
+        var response = createTicket(args);
 
         var translator = [
             {to: 'CreationStatusCode', from: 'code'},
@@ -129,17 +148,17 @@ script:
         return entry;
     }
 
-    function createTicketRequest(ticketBody){
+    function createTicket(ticketBody){
         var response = sendRequest('tickets', 'POST', '', ticketBody);
 
         return response;
     }
 
 
-    function updateTicket(){
+    function updateTicketCommand(){
         var id = args['id'];
         delete args['id'];
-        var response = updateTicketRequest(id, args);
+        var response = updateTicket(id, args);
 
         var translator = [
             {to: 'UpdateStatusCode', from: 'code'},
@@ -162,14 +181,14 @@ script:
         return entry;
     }
 
-    function updateTicketRequest(ticketId, updateBody) {
+    function updateTicket(ticketId, updateBody) {
         var response = sendRequest('tickets/' + ticketId, 'POST', '', updateBody);
 
         return response;
     }
 
-    function getTicketCount(){
-        var countObject = getTicketCountRequest();
+    function getTicketCountCommand(){
+        var countObject = getTicketCount();
 
         var translator = [
             {to: 'TicketCount', from: 'ticketCount'}
@@ -188,16 +207,16 @@ script:
         return entry;
     }
 
-    function getTicketCountRequest(){
-        var response = sendRequest('tickets/count', 'GET');
+    function getTicketCount(){
+        var response = sendRequest('tickets/count', 'POST');
 
         return response;
     }
 
-    function assignTicket(){
+    function assignTicketCommand(){
         var id = args['id'];
         delete args['id'];
-        var response = assignTicketRequest(id, args);
+        var response = assignTicket(id, args);
 
         var translator = [
             {to: 'AssignStatusCode', from: 'code'},
@@ -220,16 +239,16 @@ script:
         return entry;
     }
 
-    function assignTicketRequest(id, assignBody){
+    function assignTicket(id, assignBody){
         var response = sendRequest('tickets/' + id + '/assign', 'POST', '', assignBody);
 
         return response;
     }
 
-    function closeTicket(){
+    function closeTicketCommand(){
         var id = args['id'];
         delete args['id'];
-        var response = closeTicketRequest(id, args);
+        var response = closeTicket(id, args);
 
         var translator = [
             {to: 'ClosureStatusCode', from: 'code'},
@@ -252,16 +271,16 @@ script:
         return entry;
     }
 
-    function closeTicketRequest(id, closeBody){
+    function closeTicket(id, closeBody){
         var response = sendRequest('tickets/' + id + '/close', 'POST', '', closeBody);
 
         return response;
     }
 
-    function addTicketWorklog(){
+    function addTicketWorklogCommand(){
         var id = args['id'];
         delete args['id'];
-        var response = addTicketWorklogRequest(id, args);
+        var response = addTicketWorklog(id, args);
 
         var translator = [
             {to: 'WorklogAdditionStatusCode', from: 'code'},
@@ -281,14 +300,14 @@ script:
         return entry;
     }
 
-    function addTicketWorklogRequest(id, worklogBody) {
+    function addTicketWorklog(id, worklogBody) {
         var response = sendRequest('tickets/' + id + '/worklogs', 'POST', '', worklogBody);
 
         return response;
     }
 
-    function getTicket() {
-        var response = getTicketRequest(args['id'], args);
+    function getTicketCommand() {
+        var response = getTicket(args['id'], args);
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
@@ -339,14 +358,14 @@ script:
         return entry;
     }
 
-    function getTicketRequest(ticketId, queryParams) {
+    function getTicket(ticketId, queryParams) {
         var response = sendRequest('tickets/' + ticketId, 'GET', queryParams);
 
         return response;
     }
 
-    function getTicketsIds() {
-        var response = getTicketsIdsRequest(args);
+    function getTicketsIdsCommand() {
+        var response = getTicketsIds(args);
 
         var translator = [
             {to: 'IDs', from: 'ticketIds'}
@@ -365,18 +384,27 @@ script:
         return entry;
     }
 
-    function getTicketsIdsRequest(queryParams) {
+    function getTicketsIds(queryParams) {
         var response = sendRequest('tickets/ids', 'POST', queryParams);
 
         return response;
     }
 
-    function getTicketsUpdates() {
-        var response = getTicketsUpdatesRequest(args);
+    function getTicketsUpdatesCommand() {
+        var acknowledge = args.acknowledge;
+        delete args.acknowledge;
+        var response = getTicketsUpdates(args, acknowledge);
+
+        response.dateCreated = new Date(response.dateCreated).toString();
+        response.dateModified = new Date(response.dateModified).toString();
+        response.dateClosed = new Date(response.dateClosed).toString();
+
+        log(response.dateCreated);
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfo', from: 'attachmentInfo'},
+            {to: 'AttachmentInfoId', from: 'attachmentInfo.id'},
+            {to: 'AttachmentInfoName', from: 'attachmentInfo.name'},
             {to: 'ChangeSlo', from: 'changeSlo'},
             {to: 'ChangeWindowStart', from: 'changeWindowStart'},
             {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
@@ -417,74 +445,114 @@ script:
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': createContext(translated)
         };
 
         return entry;
     }
 
-    function getTicketsUpdatesRequest(queryParams) {
+    function getTicketsUpdates(queryParams, acknowledge) {
         var response = sendRequest('tickets/updates', 'POST', queryParams);
 
         var responseTickets = response.tickets;
         var tickets = [];
-        var ticketVersions = {
+        var ticketVersionsObject = {
             ticketVersions: []
         };
         responseTickets.forEach(function(responseTicket){
-            // Health?
-           if(responseTicket.status !== CLOSED_STATUS && responseTicket.categoryClass !== HEALTH_TYPE){
-                tickets.push(responseTicket);
-                ticketVersions.ticketVersions.push(
-                    {
-                        ticketId: responseTicket.ticketId,
-                        version: responseTicket.ticketVersion
-                    });
-           }
-        });
-        // Acknowledge
-        acknowledgeTicketsRequest(ticketVersions);
+            tickets.push(responseTicket);
+            ticketVersionsObject.ticketVersions.push({
+                ticketId: responseTicket.ticketId,
+                version: responseTicket.version
+            });
+    });
 
-        return tickets;
+    if(acknowledge === "true"){
+        acknowledgeTickets(ticketVersionsObject);
     }
 
-    function acknowledgeTicketsRequest(tickets) {
+    return tickets;
+    }
+
+    function acknowledgeTickets(tickets) {
         var response = sendRequest('tickets/acknowledge', 'POST', '', tickets);
 
         return response;
     }
 
+    function getCloseCodesCommand(){
+        var id = args['id'];
+        delete args['id'];
+        var response = getCloseCodes(id);
+
+        if(!response || !(response.closeCodes)){
+            return 'No results found';
+        }
+
+         var entry = {
+            Type: entryTypes.note,
+            Contents: response,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown
+        };
+
+        var output = {
+            ID: id,
+            CloseCodes: response.closeCodes
+        };
+
+        entry.HumanReadable = tableToMarkdown('Secure works close codes for ticket ' + id, response);
+        entry.EntryContext = {
+            'SecureWorks.Ticket(val.ID==obj.ID)': createContext(output)
+        };
+
+        return entry;
+    }
+
+    function getCloseCodes(ticketId){
+        var response = sendRequest('tickets/' + ticketId + '/close-codes', 'GET');
+
+        return response;
+    }
+
     function fetchIncidents(){
-            var queryParams = {
-                incidentType: 'INCIDENT'
-            };
-            var tickets = [];
-            var ticketVersions = [];
-            var responseTickets = getTicketsUpdatesRequest(queryParams).tickets;
-            responseTickets.forEach(function(responseTicket){
-               if(responseTicket.status !== CLOSED_STATUS && responseTicket.categoryClass !== HEALTH_TYPE){
-                    tickets.push(responseTicket);
-                    ticketVersions.push({
-                       ticketId: responseTicket.ticketId,
-                       version: responseTicket.ticketVersion
-                    });
-               }
-            });
-            // Acknowledge
-            acknowledgeTicketsRequest(ticketVersions);
-
-            // convert tickets to demisto incidents
-            if (tickets.length > 0) {
-                tickets.forEach(function(ticket){
-                    var incident = {
-                        name: 'Secureworks - Ticket - ' + ticket.id,
-                        rawJSON: JSON.stringify(ticket)
-                    };
-
-                    incidents.push(incident);
+        var queryParams = {};
+        if(params.ticketType){
+            queryParams.ticketType = params.ticketType;
+        }
+        if(params.groupingType){
+            queryParams.groupingType = params.groupingType;
+        }
+        var statuses = params.status;
+        var tickets = [];
+        var ticketVersionsObject = {
+            ticketVersions: []
+        };
+        var responseTickets = getTicketsUpdates(queryParams).tickets;
+        responseTickets.forEach(function(responseTicket){
+            if(statuses.indexOf(responseTicket.status) !== -1 &&
+                responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
+                responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE){
+                tickets.push(responseTicket);
+                ticketVersionsObject.ticketVersions.push({
+                    ticketId: responseTicket.ticketId,
+                    version: responseTicket.version
                 });
+            }
+        });
+        // Acknowledge
+        acknowledgeTickets(ticketVersionsObject);
 
+        // convert tickets to demisto incidents
+        if (tickets.length > 0) {
+            tickets.forEach(function(ticket){
+                var incident = {
+                    name: 'Secureworks - Ticket - ' + ticket.id,
+                    rawJSON: JSON.stringify(ticket)
+                };
 
+                incidents.push(incident);
+            });
         }
 
         return JSON.stringify(incidents);
@@ -493,38 +561,40 @@ script:
     var entry = {};
     switch(command){
         case 'test-module':
-            var count = getTicketCountRequest();
+            var count = getTicketCount();
             return  count ? 'ok' : 'not ok';
         case 'fetch-incidents':
             return fetchIncidents();
         case 'secure-works-create-ticket':
-            entry = createTicket();
+            entry = createTicketCommand();
             break;
         case 'secure-works-update-ticket':
-            entry = updateTicket();
+            entry = updateTicketCommand();
             break;
         case 'secure-works-close-ticket':
-            entry = closeTicket();
+            entry = closeTicketCommand();
             break;
         case 'secure-works-add-worklogs-ticket':
-            entry = addTicketWorklog();
+            entry = addTicketWorklogCommand();
             break;
         case 'secure-works-get-ticket-count':
-            entry = getTicketCount();
+            entry = getTicketCountCommand();
             break;
         case 'secure-works-get-ticket':
-            entry = getTicket();
+            entry = getTicketCommand();
             break;
         case 'secure-works-assign-ticket':
-            entry = assignTicket();
+            entry = assignTicketCommand();
             break;
         case 'secure-works-get-tickets-updates':
-            entry = getTicketsUpdates();
+            entry = getTicketsUpdatesCommand();
             break;
         case 'secure-works-get-tickets-ids':
-            entry = getTicketsIds();
+            entry = getTicketsIdsCommand();
             break;
-
+        case 'secure-works-get-close-codes':
+            entry = getCloseCodesCommand();
+            break;
     }
 
     return entry;
@@ -672,28 +742,15 @@ script:
     - name: reason
       auto: PREDEFINED
       predefined:
-      - AUTHORIZED_EXPECTED
-      - DUPLICATE_PREVIOUSLY_ESCALATED
-      - FALSE_POSITIVE
-      - INCONCLUSIVE
-      - MITIGATED_BY_SECURITY_CONTROLS
-      - NOT_RELEVANT
-      - TRUE_POSITIVE
-      - WORK_COMPLETED
+      - Mitigated by Security Controls
+      - Authorized/Expected
+      - Inconclusive
+      - True Positive
+      - False Positive
+      - Not Relevant
+      - Duplicate - Previously Escalated
+      - Work Completed
       description: The reason code to use when closing the ticket
-    - name: Explanation
-      auto: PREDEFINED
-      predefined:
-      - LEAVE_UNTIL_OPEN_DATE
-      - AUTO_RESOLVE_FUTURE_ACTIVITY
-      - ALERT_ON_FUTURE_OCCURENCES
-      - INCIDENT_MISIDENTIFIED
-      - EVENTS_ARE_FALSE_POSITIVE
-      - ALERT_ON_FUTURE_OCCURENCES
-      - APPLICATION_NOT_IN_ENVIRONMENT_DO_NOT_ALERT
-      - APPLICATION_PRESENT_BUT_NOT_VULNERABLE_DO_NOT_ALERT
-      - ALERT_ON_FUTURE_OCCURENCES
-      description: The explanation for closing the ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ID
       description: Ticket ID in secure works
@@ -832,13 +889,33 @@ script:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: The ticket type to filter
-    - name: includeWorklogs
+      description: Tickets matching the ticketType. If not specified, the path returns
+        all ticket types
+    - name: worklogs
+      auto: PREDEFINED
+      predefined:
+      - ALL
+      - NONE
+      - UPDATED
+      description: If "ALL," all worklogs are returned for each ticket. If "UPDATED",
+        all worklogs added since last acknowledgement are returned. If "NONE," the
+        path returns no worklogs. Default is "ALL."
+    - name: groupingType
+      auto: PREDEFINED
+      predefined:
+      - REQUEST
+      - CHANGE
+      - HEALTH
+      - SECURITY
+      description: If provided, limit response to tickets matching the grouping type(s)
+        identified
+    - name: acknowledge
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether or not to include ticket worklogs, default is true
+      description: Whether to acknowledge the received tickets, default false
+      defaultValue: "false"
     outputs:
     - contextPath: SecureWorks.Ticket.ChangeApproval
       description: Ticket change approval
@@ -903,14 +980,9 @@ script:
       endpoint is executed. If the limit is specified, it will retrieve up to that
       many tickets (max is 500 tickets). Tickets must be updated within the last 24
       hours to be visible in POST /tickets/updates. When accessing this endpoint you
-      also receive the ticket worklogs. It is recommended that you access POST /tickets/updates
-      on a regular basis. NOTE ­ It is important that you send a POST to /tickets/acknowledge
-      after you receive updated frmo POST /tickets/updates to inform SecureWorks that
-      you have received the latest version of the ticket. Please note that ticket
-      attachments are not visible via this endpoint. In order to view the attachment
-      information of a specific ticket, you must use the GET /tickets/{id} endpoint.
-      This endpoint will return the list of attachments available for that particular
-      ticket.
+      also receive the ticket worklogs. In order to view the attachment information
+      of a specific ticket, you must use the GET /tickets/{id} endpoint. This endpoint
+      will return the list of attachments available for that particular ticket.
   - name: secure-works-get-tickets-ids
     arguments:
     - name: ticketType
@@ -919,12 +991,32 @@ script:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: 'If provided, limit response to tickets matching the ticket type
-        identified '
+      description: Tickets matching the ticketType. If not specified, the path returns
+        all ticket types
     - name: limit
       description: If provided, limit response to that number of tickets. If not provided,
         a maximum of 10 tickets are returned
+    - name: groupingType
+      auto: PREDEFINED
+      predefined:
+      - REQUEST
+      - CHANGE
+      - HEALTH
+      - SECURITY
+      description: If provided, limit response to tickets matching the grouping type(s)
+        identified
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
+  - name: secure-works-get-close-codes
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the ticket
+    outputs:
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket ID
+    - contextPath: SecureWorks.Ticket.CloseCodes
+      description: Ticket close codes
+    description: Returns a list of close codes for a ticket.
   isfetch: true
 releaseNotes: "-"
