@@ -52,7 +52,7 @@
                 "byoi": false
             },
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "playbookID": "process_email_-_generic_-_test",
@@ -64,7 +64,7 @@
                 "byoi": false
             },
             "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations":"Cylance Protect",
@@ -99,7 +99,8 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test"
+            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
+            "timeout": 500
         },
         {
             "integrations": "FalconHost",
@@ -374,15 +375,19 @@
                 {
                     "name": "carbonblackprotection",
                     "byoi": false
+                },
+                {
+                  "name": "carbonblack",
+                  "byoi": false
                 }
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations": "iDefense",
