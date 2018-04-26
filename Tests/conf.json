@@ -10,10 +10,6 @@
           "playbookID": "Test filters & transformers scripts"
         },
         {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
-        },
-        {
             "integrations": "Salesforce",
             "playbookID": "SalesforceTestPlaybook"
         },
@@ -282,6 +278,10 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test"
+        },
         {
             "integrations": {
               "name": "carbonblack-v2",
