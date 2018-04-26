@@ -388,4 +388,3 @@ script:
     arguments: []
     description: Execute ePO command
   runonce: false
-releaseNotes: "-"
