@@ -38,58 +38,61 @@ script: |+
   doc = ''
 
   # Overview
-  doc += 'Overview:\n'
+  doc += '# Overview:\n'
   if 'overview' in demisto.args():
       doc += demisto.args()['overview'] + '\n'
 
   #Setup integration to work with Demisto
 
-  doc += '\nTo set up ' + name + ' on Demisto:'
+  doc += '\n## To set up ' + name + ' on Demisto:\n'
 
   if 'setupOnIntegration' in demisto.args():
       doc += addLines(demisto.args()['setupOnIntegration']) + '\n'
 
   #Setup integration on Demisto
 
-  doc += "To set up the integration on Demisto:\n1.Go to 'Settings > Integrations > Servers & Services'\n\
-  2.Locate " + name + " by searching for it using the search box on the top of the page.\n\
-  3.Click 'Add instance' to create and configure a new integration\n\
-  You should configure the following settings:\n1.Name: a textual name for the integration instance.\n"
-  j=2;
+  doc += '''
+  1. Go to 'Settings > Integrations > Servers & Services'
+  2. Locate "''' + name + '''" by searching for it using the search box on the top of the page.
+  3. Click 'Add instance' to create and configure a new integration
+  You should configure the following settings:
+  1.Name: a textual name for the integration instance.
+  '''
+  j=2
   for i in range(len(dataMap['configuration'])):
       doc += str(j) + '.' + dataMap['configuration'][i]['display'] +'\n'
-      j+=1;
+      j += 1
   doc += str(j) + '.Test: Checks correctness of URLs and token.' +'\n'
 
   # Top Use-cases
 
-  doc += '\nTop Use-cases:'
+  doc += '\n# Top Use-cases:'
 
   if 'useCases' in demisto.args():
       doc +=addLines(demisto.args()['useCases']) + '\n'
 
   # Fetched incidents data
 
-  doc += '\nFetched incidents data:'
+  doc += '\n## Fetched incidents data:'
 
   if 'fetchedData' in demisto.args():
       doc +=addLines(demisto.args()['fetchedData']) + '\n'
 
   # Commands
 
-  doc += '\nCommands:\n'
+  doc += '\n## Commands:\n'
   for i in range(len(dataMap['script']['commands'])):
-      doc += str(i+1) + '.Command name: ' + dataMap['script']['commands'][i]['name'] + '\n'
+      doc += '### ' + str(i+1) + '. Command name: ' + dataMap['script']['commands'][i]['name'] + '\n'
       #Inputs
-      doc += 'Inputs:\n'
+      doc += '#### Inputs:\n'
       if len(dataMap['script']['commands'][i]['arguments']) != 0:
           for j in range(len(dataMap['script']['commands'][i]['arguments'])):
-              doc += str(j+1)+ '.' +dataMap['script']['commands'][i]['arguments'][j]['name']
+              doc += str(j+1)+ '. ' +dataMap['script']['commands'][i]['arguments'][j]['name']
               doc += ' - '+ dataMap['script']['commands'][i]['arguments'][j]['description'] + '\n'
       else:
           doc += '-\n'
       #Context output
-      doc += 'Context Output:\n'
+      doc += '#### Context Output:\n'
       if 'outputs' in dataMap['script']['commands'][i]:
           for k in range(len(dataMap['script']['commands'][i]['outputs'])):
               doc += 'Path: ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + '\n'
@@ -97,27 +100,29 @@ script: |+
       else:
           doc += '-\n'
       #Raw output:
-      doc += 'Raw output:\n'
+      doc += '#### Command example:\n'
+      doc += '#### Raw output:\n'
+      doc += '#### Context example:\n'
 
       doc += '\n'
 
   # Additional info
 
-  doc += '\nAdditional information:'
+  doc += '\n## Additional information:'
 
   if 'addInfo' in demisto.args():
       doc +=addLines(demisto.args()['addInfo']) + '\n'
 
   # Known limitations
 
-  doc += '\nKnown limitations:'
+  doc += '\n## Known limitations:'
 
   if 'limit' in demisto.args():
       doc +=addLines(demisto.args()['limit']) + '\n'
 
   # Troubleshooting
 
-  doc += '\nTroubleshooting:\n'
+  doc += '\n## Troubleshooting:\n'
   if 'troubleshooting' in demisto.args():
       doc +=addLines(demisto.args()['troubleshooting'])
 
