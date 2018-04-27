@@ -37,7 +37,7 @@ tasks:
       version: -1
       name: Find duplicate incidents
       description: Find duplicate incidents for the current incident.
-      scriptName: findSimilarIncidents
+      scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
@@ -190,3 +190,4 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
+releaseNotes: "-"
