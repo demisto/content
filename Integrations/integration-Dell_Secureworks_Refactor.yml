@@ -138,7 +138,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works create ticket response' , translated);
         entry.EntryContext = {
@@ -171,7 +171,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works update ticket response' , translated);
         entry.EntryContext = {
@@ -229,7 +229,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works assign ticket response' , translated);
         entry.EntryContext = {
@@ -261,7 +261,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works close ticket response' , translated);
         entry.EntryContext = {
@@ -293,7 +293,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works add ticket worklog response' , translated);
 
@@ -308,6 +308,12 @@ script:
 
     function getTicketCommand() {
         var response = getTicket(args['id'], args);
+
+        response.forEach(function(ticket){
+            ticket.dateCreated = new Date(ticket.dateCreated).toString();
+            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
+            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
+        });
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
@@ -348,7 +354,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get ticket response', translated);
         entry.EntryContext = {
@@ -377,7 +383,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets ids response' , translated);
 
@@ -395,11 +401,11 @@ script:
         delete args.acknowledge;
         var response = getTicketsUpdates(args, acknowledge);
 
-        response.dateCreated = new Date(response.dateCreated).toString();
-        response.dateModified = new Date(response.dateModified).toString();
-        response.dateClosed = new Date(response.dateClosed).toString();
-
-        log(response.dateCreated);
+        response.forEach(function(ticket){
+            ticket.dateCreated = new Date(ticket.dateCreated).toString();
+            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
+            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
+        });
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
@@ -441,7 +447,7 @@ script:
             ContentsFormat: formats.json
         };
 
-        var translated = mapObjFunction(translator)(response);
+        var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated);
         entry.EntryContext = {
@@ -465,16 +471,17 @@ script:
                 ticketId: responseTicket.ticketId,
                 version: responseTicket.version
             });
-    });
+        });
 
-    if(acknowledge === "true"){
-        acknowledgeTickets(ticketVersionsObject);
-    }
+        if(acknowledge === "true" && tickets.length > 0){
+            acknowledgeTickets(ticketVersionsObject);
+        }
 
-    return tickets;
+        return tickets;
     }
 
     function acknowledgeTickets(tickets) {
+        log(JSON.stringify(tickets));
         var response = sendRequest('tickets/acknowledge', 'POST', '', tickets);
 
         return response;
@@ -489,7 +496,7 @@ script:
             return 'No results found';
         }
 
-         var entry = {
+        var entry = {
             Type: entryTypes.note,
             Contents: response,
             ContentsFormat: formats.json,
@@ -540,11 +547,9 @@ script:
                 });
             }
         });
-        // Acknowledge
-        acknowledgeTickets(ticketVersionsObject);
-
         // convert tickets to demisto incidents
         if (tickets.length > 0) {
+            acknowledgeTickets(ticketVersionsObject);
             tickets.forEach(function(ticket){
                 var incident = {
                     name: 'Secureworks - Ticket - ' + ticket.id,
