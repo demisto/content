@@ -299,6 +299,7 @@ script:
         break;
       case 'threat-grid-get-samples-state':
         args.ids = JSON.stringify(args.ids.split(','));
+        break;
       default:
         // Get file name if such exists
         var filename = command in fileCommands && replaceInTemplates(fileCommands[command], args);
@@ -308,6 +309,12 @@ script:
             args,
             filename
         );
+
+        if (command === 'threat-grid-get-html-report-by-id') {
+            var fileId = rawResponse.FileID;
+            return ({Type: 3, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
+        }
+
         if (filename){
             return rawResponse;
         }
@@ -903,9 +910,9 @@ script:
   - name: threat-grid-user-get-rate-limit
     arguments:
     - name: login
-      description: User login name
       required: true
       default: true
+      description: User login name
     description: Get rate limit for user
   - name: threat-grid-get-specific-feed
     arguments:
@@ -914,15 +921,14 @@ script:
       default: true
       description: The feed name
     - name: feed-period
-      description: Feed period (hourly/daily)
       required: true
       auto: PREDEFINED
       predefined:
       - hourly
       - daily
+      description: Feed period (hourly/daily)
     - name: output-type
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
-hidden: false
-fromversion: 3.5.0
+releaseNotes: "The report file pushed to WarRoom as a file and not as a link."
