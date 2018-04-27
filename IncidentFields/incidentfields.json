@@ -1,13 +1,14 @@
-[
-	{
-		"id": "incident_attachamenthash",
+{
+    "releaseNotes": "-",
+	"incidentFields": [{
+		"id": "incident_attachmenthash",
 		"version": 1,
 		"modified": "2018-04-08T06:42:56.385393516Z",
-		"name": "Attachament Hash",
+		"name": "Attachment Hash",
 		"ownerOnly": false,
 		"placeholder": "",
 		"description": "",
-		"cliName": "attachamenthash",
+		"cliName": "attachmenthash",
 		"type": "shortText",
 		"closeForm": false,
 		"editForm": true,
@@ -297,7 +298,8 @@
 			"Phishing"
 		],
 		"associatedToAll": false,
-		"unmapped": false
+		"unmapped": false,
+		"unsearchable": true
 	},
 	{
 		"id": "incident_emailbodyformat",
@@ -357,7 +359,8 @@
 			"Phishing"
 		],
 		"associatedToAll": false,
-		"unmapped": false
+		"unmapped": false,
+		"unsearchable": true
 	},
 	{
 		"id": "incident_emailcc",
@@ -808,5 +811,5 @@
 		],
 		"associatedToAll": false,
 		"unmapped": false
-	}
-]
+	}]
+}

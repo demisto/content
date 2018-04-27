@@ -548,23 +548,25 @@ script: |-
               headerTransform = lambda s: s
           for header in headers:
               newHeaders.append(headerTransform(header))
-
+          mdResult += '|'
           if len(newHeaders) == 1:
-              mdResult += newHeaders[0] + '|' + '\n'
+              mdResult += newHeaders[0]
           else:
-              mdResult += '|'.join(newHeaders) + '\n'
-
+              mdResult += '|'.join(newHeaders)
+          mdResult = mdResult + '|\n'
           sep = '-'
           if len(headers) == 1:
               sep = '-|'
-          mdResult += '|'.join([sep] * len(headers)) + '\n'
+          mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
-              vals = [(stringEscapeMD(formatCell(entry.get(h, ''), False), True, True)
-                  if entry.get(h) is not None else '') for h in headers]
+              vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
+              mdResult += '|'
               if len(vals) == 1:
-                  mdResult += vals[0] + '|' + '\n'
+                  mdResult += vals[0]
               else:
-                  mdResult += '|'.join(vals) + '\n'
+                  mdResult += '|'.join(vals)
+              mdResult += '|\n'
+
       else:
           mdResult += '**No entries.**\n'
 
@@ -1018,4 +1020,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "escaped special characters used in tableToMarkdown"
