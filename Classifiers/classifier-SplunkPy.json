@@ -30,7 +30,6 @@
 			"dontMapEventToLabels": false
 		}
 	},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "source",
