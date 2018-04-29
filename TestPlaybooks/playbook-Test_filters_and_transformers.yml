@@ -745,7 +745,7 @@ tasks:
               complex:
                 root: arg4
                 transformers:
-                - operator: number.022939d6-55fd-49c8-898b-27817bdf47a0
+                - operator: number.TimeStampToDate
             iscontext: true
           right:
             value:
@@ -880,7 +880,7 @@ tasks:
               complex:
                 root: arg5
                 transformers:
-                - operator: general.5a2e0a70-11a5-4e1d-8412-89f1ff376402
+                - operator: general.WhereFieldEquals
                   args:
                     equalTo:
                       value:
@@ -950,7 +950,7 @@ tasks:
               complex:
                 root: arg5
                 transformers:
-                - operator: general.5a2e0a70-11a5-4e1d-8412-89f1ff376402
+                - operator: general.WhereFieldEquals
                   args:
                     equalTo:
                       value:
