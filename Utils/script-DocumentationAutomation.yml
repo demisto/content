@@ -108,8 +108,9 @@ script: |+
 
   # Additional info
 
-  doc += '\n## Additional information:'
+  doc += '\n## Additional information:\n'
 
+  doc += addLines('This integration was integrated and tested with version x.x of ' + name) + '\n'
   if 'addInfo' in demisto.args():
       doc +=addLines(demisto.args()['addInfo']) + '\n'
 
