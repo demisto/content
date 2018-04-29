@@ -48,7 +48,7 @@ args:
   description: Attribute in the collection's items check equality against 'equalTo'
 - name: equalTo
   required: true
-  description: Value to filter all items in the collec
+  description: Value to filter all items in the collection
 - name: getField
   description: Optional - field to extract from each item
 scripttarget: 0
