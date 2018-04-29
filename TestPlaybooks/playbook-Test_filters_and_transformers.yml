@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bac59b83-9b06-44d1-8fa2-43209cc25559
+    taskid: 6236667c-cbd9-4e01-8fc8-82172adc411c
     type: start
     task:
-      id: bac59b83-9b06-44d1-8fa2-43209cc25559
+      id: 6236667c-cbd9-4e01-8fc8-82172adc411c
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 374f8b88-3e54-4e5e-8c6c-e85ee1eb2fdb
+    taskid: bfa8ccb3-3144-43fe-807f-567a59712ea2
     type: title
     task:
-      id: 374f8b88-3e54-4e5e-8c6c-e85ee1eb2fdb
+      id: bfa8ccb3-3144-43fe-807f-567a59712ea2
       version: -1
       name: Test In Range
       type: title
@@ -52,10 +52,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3538472c-5a70-4ed5-8aec-11da2a6e9363
+    taskid: aeb5dd3a-f10b-47cc-8aee-4eb08dbeddd8
     type: condition
     task:
-      id: 3538472c-5a70-4ed5-8aec-11da2a6e9363
+      id: aeb5dd3a-f10b-47cc-8aee-4eb08dbeddd8
       version: -1
       name: 4 In range [2,8]
       type: condition
@@ -86,10 +86,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: dfa4b712-3e90-4570-821b-85e6ddfd9fd0
+    taskid: b40c44ed-1588-44dc-8d6c-038bc257dc21
     type: title
     task:
-      id: dfa4b712-3e90-4570-821b-85e6ddfd9fd0
+      id: b40c44ed-1588-44dc-8d6c-038bc257dc21
       version: -1
       name: Test Strip charecter
       type: title
@@ -108,10 +108,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: c3bcf2f3-46ac-4f77-8dc9-31d446497679
+    taskid: 79d58da4-dc70-40c1-8b60-01e660370e47
     type: condition
     task:
-      id: c3bcf2f3-46ac-4f77-8dc9-31d446497679
+      id: 79d58da4-dc70-40c1-8b60-01e660370e47
       version: -1
       name: -4 In range [-2, -8]
       type: condition
@@ -142,10 +142,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 73ff3dfc-7df5-43fb-8d0a-ffc52e267477
+    taskid: f47e54eb-68fc-4bc5-86a6-3483dc983980
     type: condition
     task:
-      id: 73ff3dfc-7df5-43fb-8d0a-ffc52e267477
+      id: f47e54eb-68fc-4bc5-86a6-3483dc983980
       version: -1
       name: 1 In range [2,8]
       type: condition
@@ -176,10 +176,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 8f4b54b9-ad95-44aa-88a9-dc268a23beaa
+    taskid: 53473f00-a145-47ac-88f7-82ef2478c3c4
     type: condition
     task:
-      id: 8f4b54b9-ad95-44aa-88a9-dc268a23beaa
+      id: 53473f00-a145-47ac-88f7-82ef2478c3c4
       version: -1
       name: panda In range [2, 8]
       type: condition
@@ -210,10 +210,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 0fc9642c-8adf-423f-810e-e12f5275c8a8
+    taskid: b4a0acf3-3d2f-4348-8730-d2b49341d1dd
     type: condition
     task:
-      id: 0fc9642c-8adf-423f-810e-e12f5275c8a8
+      id: b4a0acf3-3d2f-4348-8730-d2b49341d1dd
       version: -1
       name: 1 In range [28]
       type: condition
@@ -244,10 +244,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 90d73450-c0df-4967-8287-88aea51536a3
+    taskid: 1b1bc9c3-4020-4590-81a4-c7ebebaaf9e2
     type: regular
     task:
-      id: 90d73450-c0df-4967-8287-88aea51536a3
+      id: 1b1bc9c3-4020-4590-81a4-c7ebebaaf9e2
       version: -1
       name: 'FAILED: 1 In range [2,8]'
       scriptName: RaiseError
@@ -267,10 +267,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 3581c474-06e9-4478-81e8-2b920e21771c
+    taskid: 5f27d3a3-ff9d-47b4-8fe9-b19fb96bfb43
     type: regular
     task:
-      id: 3581c474-06e9-4478-81e8-2b920e21771c
+      id: 5f27d3a3-ff9d-47b4-8fe9-b19fb96bfb43
       version: -1
       name: 'FAILED: 1 In range [28]'
       scriptName: RaiseError
@@ -290,10 +290,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 082d9efc-fc05-4cc7-8a5b-e215b61a77b3
+    taskid: ab6570a0-4d89-4193-8378-9aeb51f7c6cf
     type: regular
     task:
-      id: 082d9efc-fc05-4cc7-8a5b-e215b61a77b3
+      id: ab6570a0-4d89-4193-8378-9aeb51f7c6cf
       version: -1
       name: 'FAILED: panda In range [2, 8]'
       scriptName: RaiseError
@@ -313,10 +313,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: ce43fb26-4856-4c64-89bb-289ee4b1daeb
+    taskid: d3e873f3-ffb9-43ac-8f3a-d5bd5254a8bb
     type: regular
     task:
-      id: ce43fb26-4856-4c64-89bb-289ee4b1daeb
+      id: d3e873f3-ffb9-43ac-8f3a-d5bd5254a8bb
       version: -1
       name: 'FAILED: -4 In range [-2, -8]'
       scriptName: RaiseError
@@ -336,10 +336,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 87ce74c9-e65c-4918-8af3-b3f7e3434da2
+    taskid: e0d4e65a-f9b7-4969-8caf-51ca97dd7d97
     type: regular
     task:
-      id: 87ce74c9-e65c-4918-8af3-b3f7e3434da2
+      id: e0d4e65a-f9b7-4969-8caf-51ca97dd7d97
       version: -1
       name: 'FAILED: 4 In range [2,8]'
       scriptName: RaiseError
@@ -359,10 +359,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: a945a4bd-cd31-4d8b-8f2b-2dadc61499a6
+    taskid: cd89a4b9-56a2-4e96-8828-186eec705b2d
     type: condition
     task:
-      id: a945a4bd-cd31-4d8b-8f2b-2dadc61499a6
+      id: cd89a4b9-56a2-4e96-8828-186eec705b2d
       version: -1
       name: Test Strip Char
       type: condition
@@ -401,10 +401,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 2e360261-9795-40d4-803e-6142e3478b3b
+    taskid: 01c792af-8044-46ec-8914-5961a0ef05ea
     type: regular
     task:
-      id: 2e360261-9795-40d4-803e-6142e3478b3b
+      id: 01c792af-8044-46ec-8914-5961a0ef05ea
       version: -1
       name: Set arg1
       scriptName: Set
@@ -430,10 +430,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 6c5348c9-e5e1-46a5-8929-ffcb94669d51
+    taskid: ab12f861-596b-4cf2-88bb-fdd23a7ee050
     type: title
     task:
-      id: 6c5348c9-e5e1-46a5-8929-ffcb94669d51
+      id: ab12f861-596b-4cf2-88bb-fdd23a7ee050
       version: -1
       name: Test Reverse
       type: title
@@ -452,10 +452,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 0383a306-b336-49ad-83d7-3e83cdf0c7a2
+    taskid: 03541a83-c468-4ca2-8a4e-64de52638d2a
     type: regular
     task:
-      id: 0383a306-b336-49ad-83d7-3e83cdf0c7a2
+      id: 03541a83-c468-4ca2-8a4e-64de52638d2a
       version: -1
       name: 'FAILED: Split char'
       scriptName: RaiseError
@@ -475,10 +475,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 016c4815-4908-40b5-84ca-218dd21358c5
+    taskid: b4728f45-3852-44ea-8ad5-a6c36a3daa1b
     type: regular
     task:
-      id: 016c4815-4908-40b5-84ca-218dd21358c5
+      id: b4728f45-3852-44ea-8ad5-a6c36a3daa1b
       version: -1
       name: Set arg2 (multiple items)
       scriptName: Set
@@ -504,10 +504,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: 76446107-21f2-4e5d-8c3c-51ce56c3cb55
+    taskid: d9308204-3a0b-4b11-83de-2acc50dce4a8
     type: condition
     task:
-      id: 76446107-21f2-4e5d-8c3c-51ce56c3cb55
+      id: d9308204-3a0b-4b11-83de-2acc50dce4a8
       version: -1
       name: Test Reverse List (multiple items)
       type: condition
@@ -550,10 +550,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: eb01a9a5-5fef-4a60-8cb0-7e89d6a6e021
+    taskid: 3e882b4c-e64c-4dc7-87df-41e512985442
     type: regular
     task:
-      id: eb01a9a5-5fef-4a60-8cb0-7e89d6a6e021
+      id: 3e882b4c-e64c-4dc7-87df-41e512985442
       version: -1
       name: Finished
       scriptName: Print
@@ -567,16 +567,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 1915
+          "x": 1855,
+          "y": 3259
         }
       }
   "20":
     id: "20"
-    taskid: 310e30bf-6889-43db-870d-eec770598408
+    taskid: 278873a8-7654-4765-8e53-6dce9aa5b6c0
     type: regular
     task:
-      id: 310e30bf-6889-43db-870d-eec770598408
+      id: 278873a8-7654-4765-8e53-6dce9aa5b6c0
       version: -1
       name: 'FAILED: Reverse List  (multiple items)'
       scriptName: RaiseError
@@ -596,10 +596,10 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: a940ab60-4225-4a87-8e37-a05e05719c00
+    taskid: 535713e5-58ed-4538-8363-61472de17e20
     type: regular
     task:
-      id: a940ab60-4225-4a87-8e37-a05e05719c00
+      id: 535713e5-58ed-4538-8363-61472de17e20
       version: -1
       name: Set arg3 (single item)
       scriptName: Set
@@ -625,10 +625,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: ef9dcdab-1024-408e-8c52-97595943b972
+    taskid: 61137620-f18a-4eb9-84c3-6110038dd828
     type: condition
     task:
-      id: ef9dcdab-1024-408e-8c52-97595943b972
+      id: 61137620-f18a-4eb9-84c3-6110038dd828
       version: -1
       name: Test Reverse List  (single item)
       type: condition
@@ -638,7 +638,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "19"
+      - "27"
     scriptarguments:
       value:
         simple: ${arg2}
@@ -666,10 +666,10 @@ tasks:
       }
   "23":
     id: "23"
-    taskid: c75aaf86-538e-44a0-89e4-5e1189f44485
+    taskid: 331b3479-725b-4a4d-8562-bfc8ecfe1580
     type: regular
     task:
-      id: c75aaf86-538e-44a0-89e4-5e1189f44485
+      id: 331b3479-725b-4a4d-8562-bfc8ecfe1580
       version: -1
       name: 'FAILED: Reverse List (single item)'
       scriptName: RaiseError
@@ -687,12 +687,320 @@ tasks:
           "y": 1915
         }
       }
+  "24":
+    id: "24"
+    taskid: a6e5b44f-949e-46e4-8468-e3740b1ed33f
+    type: regular
+    task:
+      id: a6e5b44f-949e-46e4-8468-e3740b1ed33f
+      version: -1
+      name: Set arg4 (timestamp)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arg4
+      value:
+        simple: "1525006939"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 2069
+        }
+      }
+  "25":
+    id: "25"
+    taskid: ee885e97-6712-442e-8385-560c80442eec
+    type: condition
+    task:
+      id: ee885e97-6712-442e-8385-560c80442eec
+      version: -1
+      name: Test Time Stamp To Date
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "28"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg4
+                transformers:
+                - operator: number.022939d6-55fd-49c8-898b-27817bdf47a0
+            iscontext: true
+          right:
+            value:
+              simple: 2018-04-29T13:02:19.000Z
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 2233
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 7840e4ae-bff1-44b5-8375-dab8d5ca960d
+    type: regular
+    task:
+      id: 7840e4ae-bff1-44b5-8375-dab8d5ca960d
+      version: -1
+      name: 'FAILED: Time Stamp To Date'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: TimeStampToDate - expected ''2018-04-29T13:02:19.000Z'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 929,
+          "y": 2467
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 8426b311-470b-4036-8ea9-2d773748ac47
+    type: title
+    task:
+      id: 8426b311-470b-4036-8ea9-2d773748ac47
+      version: -1
+      name: Test Time Stamp To Date
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1139,
+          "y": 1915
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 1f277511-70ec-4038-8e26-4813e222f98c
+    type: title
+    task:
+      id: 1f277511-70ec-4038-8e26-4813e222f98c
+      version: -1
+      name: Test Where Field Equals
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 2467
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 0867991e-7c19-4ec2-8f84-33c9585c13b6
+    type: regular
+    task:
+      id: 0867991e-7c19-4ec2-8f84-33c9585c13b6
+      version: -1
+      name: Set arg5 (collection)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append: {}
+      key:
+        simple: arg5
+      value:
+        simple: '[{"name": "192.0.1.82","type": "IP"},{"name": "myfile.exe","type":
+          "File"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1386,
+          "y": 2631
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 86786343-f17e-4fd1-85dd-18713b1de823
+    type: condition
+    task:
+      id: 86786343-f17e-4fd1-85dd-18713b1de823
+      version: -1
+      name: Test Where Field Equals without 'getField'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg5
+                transformers:
+                - operator: general.5a2e0a70-11a5-4e1d-8412-89f1ff376402
+                  args:
+                    equalTo:
+                      value:
+                        simple: IP
+                    field:
+                      value:
+                        simple: type
+                    getField: {}
+                - operator: general.Stringify
+            iscontext: true
+          right:
+            value:
+              simple: '{"name":"192.0.1.82","type":"IP"}'
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 2813
+        }
+      }
+  "31":
+    id: "31"
+    taskid: b38d8394-1b10-49f3-80e1-100be3c83899
+    type: regular
+    task:
+      id: b38d8394-1b10-49f3-80e1-100be3c83899
+      version: -1
+      name: 'FAILED: Where Field Equals'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: WhereFieldEquals - expected {"name":"192.0.1.82","type":"IP"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3031
+        }
+      }
+  "32":
+    id: "32"
+    taskid: 0c6cda37-940b-4f32-8b03-9f5c6e8c5abd
+    type: condition
+    task:
+      id: 0c6cda37-940b-4f32-8b03-9f5c6e8c5abd
+      version: -1
+      name: Test Where Field Equals with 'getField'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: arg5
+                transformers:
+                - operator: general.5a2e0a70-11a5-4e1d-8412-89f1ff376402
+                  args:
+                    equalTo:
+                      value:
+                        simple: IP
+                    field:
+                      value:
+                        simple: type
+                    getField:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value:
+              simple: 192.0.1.82
+    view: |-
+      {
+        "position": {
+          "x": 1619,
+          "y": 3031
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 2dd5b233-be3c-40e2-85b6-a6ef1b5e3fa0
+    type: regular
+    task:
+      id: 2dd5b233-be3c-40e2-85b6-a6ef1b5e3fa0
+      version: -1
+      name: 'FAILED: Where Field Equals with'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: 'FAILED: WhereFieldEquals with ''getField'' - expected 92.0.1.82'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1422,
+          "y": 3259
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 3304,
         "width": 2530,
         "x": 50,
         "y": 50
