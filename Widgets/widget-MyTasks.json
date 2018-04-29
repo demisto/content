@@ -24,6 +24,5 @@
     },
     "fromDateLicense": "0001-01-01T00:00:00Z"
   },
-  "size": 10,
-  "releaseNotes": "Widget now do not display skipped tasks"
+  "size": 10
 }
