@@ -76,7 +76,7 @@ def copy_dir_files(*args):
 
 def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
-    scan_files = glob.glob(os.path.join(bundle_test, '*'))
+    scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
         print "copying path %s" % (path,)
         shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
