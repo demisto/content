@@ -12,7 +12,7 @@ TEST_DIR = 'TestPlaybooks'
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
 BUNDLE_POST = 'bundle_post'
-BUNDLE_TEST = 'bundle_post'
+BUNDLE_TEST = 'bundle_test'
 # zip files names (the extension will be added later - shutil demands file name without extension)
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
