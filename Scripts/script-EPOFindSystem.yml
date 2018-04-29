@@ -90,3 +90,5 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: Hostname
 scripttarget: 0
+timeout: 0s
+releaseNotes: "-"
