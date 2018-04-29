@@ -30,9 +30,6 @@
 			"dontMapEventToLabels": false
 		}
 	},
-	"unclassifiedCases": {
-		"Endpoint - High Or Critical Priority Host With Malware - Rule": 1
-	},
 	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
