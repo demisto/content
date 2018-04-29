@@ -2,6 +2,7 @@ id: process_email_-_ews
 version: -1
 name: Process Email - EWS
 fromversion: 3.6.0
+releaseNotes: "-"
 description: Process an EWS email
 starttaskid: "0"
 tasks:
