@@ -110,7 +110,7 @@ script:
             } else {
                 return 'ok';
             }
-        case 'phishai-check':
+        case 'url':
             return phishai_scan(args.url, args.key);
         default:
             'unknown command';
@@ -118,7 +118,7 @@ script:
 
   type: javascript
   commands:
-  - name: phishai-check
+  - name: url
     arguments:
     - name: url
       required: true
