@@ -1,5 +1,5 @@
 id: ed50e316-9646-41f9-864a-a0c7aa5ff0b7
-version: 12
+version: 13
 name: SQS Test
 starttaskid: "0"
 tasks:
@@ -26,17 +26,17 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: d156204a-1455-4cf2-86dd-65f7c44196cb
+    taskid: b24cb6d6-f9fb-46d9-8a94-6ccdd72744fd
     type: regular
     task:
-      id: d156204a-1455-4cf2-86dd-65f7c44196cb
+      id: b24cb6d6-f9fb-46d9-8a94-6ccdd72744fd
       version: -1
       name: sqs-list-queues
       description: Returns a list of your queues
-      script: SQS_bar|||sqs-list-queues
+      script: SQS|||sqs-list-queues
       type: regular
       iscommand: true
-      brand: SQS_bar
+      brand: SQS
     nexttasks:
       '#none#':
       - "13"
@@ -76,21 +76,22 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 88f0046b-d700-4d54-8370-5955ac2e6dbd
+    taskid: 396fff97-43b2-4bbb-86ef-9c7ce3ded1fc
     type: regular
     task:
-      id: 88f0046b-d700-4d54-8370-5955ac2e6dbd
+      id: 396fff97-43b2-4bbb-86ef-9c7ce3ded1fc
       version: -1
       name: sqs-delete-messages
       description: Deletes up to 10 messages from the Queue
-      script: SQS_bar|||sqs-delete-messages
+      script: SQS|||sqs-delete-messages
       type: regular
       iscommand: true
-      brand: SQS_bar
+      brand: SQS
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
+      deleteAll: {}
       maxMessages: {}
       receiptHandles:
         simple: ${SQS.Messages.ReceiptHandle}
@@ -126,17 +127,17 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: ee07e26b-d289-4186-8ba3-adb6c0f483fc
+    taskid: 36b10643-2ad0-41c8-8ab0-e3e54478b8de
     type: regular
     task:
-      id: ee07e26b-d289-4186-8ba3-adb6c0f483fc
+      id: 36b10643-2ad0-41c8-8ab0-e3e54478b8de
       version: -1
       name: sqs-send-message
       description: Sends a message to the queue
-      script: SQS_bar|||sqs-send-message
+      script: SQS|||sqs-send-message
       type: regular
       iscommand: true
-      brand: SQS_bar
+      brand: SQS
     nexttasks:
       '#none#':
       - "7"
@@ -182,17 +183,17 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: a646f17b-eff9-40ba-804f-5be6bcbbb515
+    taskid: 8c08755b-b8ef-4c40-8181-8098ad6ee004
     type: regular
     task:
-      id: a646f17b-eff9-40ba-804f-5be6bcbbb515
+      id: 8c08755b-b8ef-4c40-8181-8098ad6ee004
       version: -1
       name: sqs-send-message
       description: Sends a message to the queue
-      script: SQS_bar|||sqs-send-message
+      script: SQS|||sqs-send-message
       type: regular
       iscommand: true
-      brand: SQS_bar
+      brand: SQS
     nexttasks:
       '#none#':
       - "8"
