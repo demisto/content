@@ -2,7 +2,6 @@ commonfields:
   id: UnEscapeURLs
   version: -1
 name: UnEscapeURLs
-releaseNotes: "-"
 script: |-
   var PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u='];
   var v = 0;

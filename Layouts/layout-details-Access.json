@@ -1,17 +1,17 @@
 {
-	"typeId": "Phishing",
+	"typeId": "Access",
 	"kind": "details",
 	"layout": {
-		"id": "Phishing",
+		"id": "Access",
 		"version": -1,
-		"modified": "2018-04-08T19:57:25.247211344Z",
+		"modified": "2018-04-25T16:52:35.762995135Z",
 		"name": "",
 		"sections": [
 			{
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Email Basic Information",
+				"name": "Access Info",
 				"type": "",
 				"isVisible": true,
 				"readOnly": false,
@@ -20,67 +20,53 @@
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailsubject",
+						"fieldId": "incident_app",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailfrom",
+						"fieldId": "incident_src",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailto",
+						"fieldId": "incident_srcntdomain",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailcc",
+						"fieldId": "incident_srcuser",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailbcc",
+						"fieldId": "incident_dest",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailsenderip",
+						"fieldId": "incident_destntdomain",
 						"isVisible": true
 					},
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailmessageid",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailreceived",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailreturnpath",
+						"fieldId": "incident_duration",
 						"isVisible": true
 					}
 				],
-				"description": "",
+				"description": "More information on the access attempts ",
 				"query": null,
 				"queryType": ""
 			},
@@ -147,167 +133,6 @@
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_roles",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Email Body",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailbody",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailbodyformat",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailbodyhtml",
-						"isVisible": true
-					}
-				],
-				"description": "Email relevant Body fields",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Email Attachments",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmentname",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachment",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmenthash",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmentcount",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmentextension",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmenthash",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmentid",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmentsize",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachmenttype",
-						"isVisible": true
-					}
-				],
-				"description": "Email Attachments Files info",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Email Advanced Info",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailclientname",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailkeywords",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailsize",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailtocount",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_emailurlclicked",
 						"isVisible": true
 					}
 				],
@@ -587,5 +412,6 @@
 				"queryType": ""
 			}
 		]
-	}
+	},
+	"releaseNotes": "-"
 }
