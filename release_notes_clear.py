@@ -64,7 +64,7 @@ def json_remove_releaseNote_record(file_path):
                 if line.strip()[0] == '"': # regular line
                     consider_multiline_notes = False
                     new_lines.append(line)
-                elif line == '}': # releaseNote was at end of dict
+                elif line.strip() == '}': # releaseNote was at end of dict
                     # needs to remove ',' from last line
                     idx = new_lines[-1].rfind(',')
                     new_lines[-1] = new_lines[-1][:idx] + new_lines[-1][idx+1:]
