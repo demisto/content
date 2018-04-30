@@ -2,7 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.5.0
-toversion: 3.6.0
+toversion: 3.5.9
 releaseNotes: "-"
 description: Add email details into the relevant context entities and handle the case
   where you have attached original emails.
