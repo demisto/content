@@ -2,7 +2,7 @@ id: phishing_investigation_-_generic
 version: -1
 name: Phishing Investigation - Generic
 fromversion: 3.6.0
-relaseNotes: "Add support for auto-extract"
+releaseNotes: "Add support for auto-extract"
 description: Investigate a phishing incident using one or more integrations
 starttaskid: "0"
 tasks:
