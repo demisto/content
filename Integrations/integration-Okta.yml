@@ -1656,4 +1656,4 @@ script:
     description: Get logs by providing optional filters
   runonce: false
 releaseNotes: "Added system log commands"
-fromversion: 3.5.0
+fromversion: 3.6.0
