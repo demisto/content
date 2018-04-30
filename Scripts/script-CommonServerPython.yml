@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+releaseNotes: "empty response bug fix"
 script: |-
   # Common functions script
   # =======================
@@ -541,6 +542,10 @@ script: |-
       mdResult = ''
       if name:
           mdResult = '### ' + name + '\n'
+
+      if not t or len(t) == 0:
+          mdResult += '**No entries.**\n'
+          return mdResult
 
       if t:
           newHeaders = []
