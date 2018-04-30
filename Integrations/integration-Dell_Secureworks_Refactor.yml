@@ -67,6 +67,7 @@ script:
     var SERVER_URL = params.server.replace(/[\/]+$/, '') + '/api/ticket/v3/';
     var EVENT_SOURCE_HEALTH_TYPE = "CTP_HEALTH";
     var CATEGORIZATION_CLASS_HEALTH_TYPE = "Health";
+    var MAX_LIMIT = 500;
 
     function createContext(data) {
         var createContextSingle = function(obj) {
@@ -103,8 +104,6 @@ script:
 
         var url = SERVER_URL.concat(path, query)
 
-        log(url);
-
         var res = http(
             url,
             {
@@ -122,6 +121,17 @@ script:
             throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         return JSON.parse(res.Body);
+    }
+
+    function convertTicketDates(tickets){
+        if(!(tickets instanceof Array)){
+            tickets = [tickets];
+        }
+        tickets.forEach(function(ticket){
+            ticket.dateCreated = new Date(ticket.dateCreated).toString();
+            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
+            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
+        });
     }
 
     function createTicketCommand(){
@@ -307,17 +317,14 @@ script:
     }
 
     function getTicketCommand() {
-        var response = getTicket(args['id'], args);
+        var ticket = getTicket(args['id'], args);
 
-        response.forEach(function(ticket){
-            ticket.dateCreated = new Date(ticket.dateCreated).toString();
-            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
-            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
-        });
+        convertTicketDates(ticket);
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfo', from: 'attachmentInfo'},
+            {to: 'AttachmentInfoId', from: 'attachmentInfo.id'},
+            {to: 'AttachmentInfoName', from: 'attachmentInfo.name'},
             {to: 'ChangeSlo', from: 'changeSlo'},
             {to: 'ChangeWindowStart', from: 'changeWindowStart'},
             {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
@@ -350,11 +357,11 @@ script:
 
         var entry = {
             Type: entryTypes.note,
-            Contents: response,
+            Contents: ticket,
             ContentsFormat: formats.json
         };
 
-        var translated = cleanObject(mapObjFunction(translator)(response));
+        var translated = cleanObject(mapObjFunction(translator)(ticket));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get ticket response', translated);
         entry.EntryContext = {
@@ -399,13 +406,9 @@ script:
     function getTicketsUpdatesCommand() {
         var acknowledge = args.acknowledge;
         delete args.acknowledge;
-        var response = getTicketsUpdates(args, acknowledge);
+        var ticktes = getTicketsUpdates(args, acknowledge);
 
-        response.forEach(function(ticket){
-            ticket.dateCreated = new Date(ticket.dateCreated).toString();
-            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
-            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
-        });
+        convertTicketDates(ticktes);
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
@@ -443,15 +446,15 @@ script:
 
         var entry = {
             Type: entryTypes.note,
-            Contents: response,
+            Contents: ticktes,
             ContentsFormat: formats.json
         };
 
-        var translated = cleanObject(mapObjFunction(translator)(response));
+        var translated = cleanObject(mapObjFunction(translator)(ticktes));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated);
         entry.EntryContext = {
-            'SecureWorks.Ticket(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
         };
 
         return entry;
@@ -481,7 +484,6 @@ script:
     }
 
     function acknowledgeTickets(tickets) {
-        log(JSON.stringify(tickets));
         var response = sendRequest('tickets/acknowledge', 'POST', '', tickets);
 
         return response;
@@ -510,7 +512,7 @@ script:
 
         entry.HumanReadable = tableToMarkdown('Secure works close codes for ticket ' + id, response);
         entry.EntryContext = {
-            'SecureWorks.Ticket(val.ID==obj.ID)': createContext(output)
+            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(output)
         };
 
         return entry;
@@ -530,16 +532,18 @@ script:
         if(params.groupingType){
             queryParams.groupingType = params.groupingType;
         }
-        var statuses = params.status;
+        queryParams.limit = MAX_LIMIT;
+        var statuses = params.status || [];
         var tickets = [];
         var ticketVersionsObject = {
             ticketVersions: []
         };
-        var responseTickets = getTicketsUpdates(queryParams).tickets;
+        var responseTickets = getTicketsUpdates(queryParams);
         responseTickets.forEach(function(responseTicket){
             if(statuses.indexOf(responseTicket.status) !== -1 &&
-                responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
-                responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE){
+            responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
+            responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE){
+                convertTicketDates(responseTicket);
                 tickets.push(responseTicket);
                 ticketVersionsObject.ticketVersions.push({
                     ticketId: responseTicket.ticketId,
@@ -547,12 +551,13 @@ script:
                 });
             }
         });
+        var incidents = [];
         // convert tickets to demisto incidents
         if (tickets.length > 0) {
             acknowledgeTickets(ticketVersionsObject);
             tickets.forEach(function(ticket){
                 var incident = {
-                    name: 'Secureworks - Ticket - ' + ticket.id,
+                    name: 'Secureworks - Ticket - ' + ticket.ticketId,
                     rawJSON: JSON.stringify(ticket)
                 };
 
