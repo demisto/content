@@ -73,3 +73,5 @@ dependson:
   must:
   - googleapps-list-users
 timeout: 0s
+deprecated: true
+releaseNotes: "deprecated script"
