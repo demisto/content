@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
-      script: okta_copy1|||okta-get-group-assignments
+      script: okta|||okta-get-group-assignments
       type: regular
       iscommand: true
-      brand: okta_copy1
+      brand: okta
     nexttasks:
       '#none#':
       - "5"
