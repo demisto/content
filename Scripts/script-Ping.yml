@@ -16,10 +16,10 @@ script: |-
 
       verbose = demisto.get(demisto.args(),'verbose')
       if verbose and verbose.lower() == 'false':
-          demisto.results(res)
+          demisto.results({'ContentsFormat': 'json', 'Type': entryTypes['note'], 'Contents': res, 'EntryContext': { "Ping.Result": res }})
       else:
           data = [ { 'ret_code' : res['ret_code'], 'destination' : res['destination'], 'max_rtt' : res['max_rtt'] , 'avg_rtt' : res['avg_rtt'],  'destination_ip' : res['destination_ip'] } ]
-          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data})
+          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': { "Ping.Result": res }})
 
       key = demisto.get(demisto.args(),'contextKey')
       if not key:
@@ -30,7 +30,7 @@ script: |-
 type: python
 tags:
 - Utility
-comment: Pings an IP or url address, to verify it's up 
+comment: Pings an IP or url address, to verify it's up
 enabled: true
 args:
 - name: address
@@ -40,7 +40,15 @@ args:
 - name: contextKey
   description: context key to place result in
 - name: verbose
-  description: prettify result in table
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Prettify result in table
+outputs:
+- contextPath: Ping.Result
+  description: Ping task results
 scripttarget: 0
-dependson: {}
+runonce: false
 dockerimage: demisto/pyping
+releaseNotes: Added Ping results as output
