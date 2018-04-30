@@ -123,6 +123,21 @@ script:
     - name: url
       required: true
       description: url to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
     description: Check if url is phishing and get details about the brand that is
       being phished
   runonce: true
