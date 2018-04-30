@@ -53,3 +53,4 @@ dependson:
   - googleapps-gmail-get-mail
 timeout: 0s
 deprecated: true
+releaseNotes: "deprecated script"
