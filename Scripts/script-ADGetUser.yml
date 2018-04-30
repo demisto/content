@@ -313,4 +313,3 @@ runonce: false
 dependson:
   must:
   - ad-search
-releaseNotes: "Added escaping for brackets in filter's parameters"

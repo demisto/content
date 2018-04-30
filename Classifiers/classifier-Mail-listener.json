@@ -211,6 +211,5 @@
 	"keyTypeMap": {
 		"mail-listener": "Phishing"
 	},
-	"brandName": "mail-listener",
-	"releaseNotes": "New Mail listener default classification"
+	"brandName": "mail-listener"
 }
