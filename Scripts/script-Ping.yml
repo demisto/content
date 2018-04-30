@@ -16,10 +16,10 @@ script: |-
 
       verbose = demisto.get(demisto.args(),'verbose')
       if verbose and verbose.lower() == 'false':
-          demisto.results({'ContentsFormat': 'json', 'Type': entryTypes['note'], 'Contents': res, 'EntryContext': { "Ping.Result": res }})
+          demisto.results({'ContentsFormat': 'json', 'Type': entryTypes['note'], 'Contents': res, 'EntryContext': { 'Ping': res }})
       else:
           data = [ { 'ret_code' : res['ret_code'], 'destination' : res['destination'], 'max_rtt' : res['max_rtt'] , 'avg_rtt' : res['avg_rtt'],  'destination_ip' : res['destination_ip'] } ]
-          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': { "Ping.Result": res }})
+          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': { 'Ping': res }})
 
       key = demisto.get(demisto.args(),'contextKey')
       if not key:
@@ -46,8 +46,24 @@ args:
   - "true"
   description: Prettify result in table
 outputs:
-- contextPath: Ping.Result
-  description: Ping task results
+- contextPath: Ping.ret_code
+  description: Ping return code
+  type: number
+- contextPath: Ping.destination
+  description: Ping destination address
+  type: string
+- contextPath: Ping.max_rtt
+  description: Ping max round trip time
+  type: number
+- contextPath: Ping.avg_rtt
+  description: Ping average round trip time
+  type: number
+- contextPath: Ping.min_rtt
+  description: Ping minimum round trip time
+  type: number
+- contextPath: Ping.destination_ip
+  description: Ping destination IP
+  type: string
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pyping
