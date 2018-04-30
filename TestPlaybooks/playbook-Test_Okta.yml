@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
-      script: okta|||okta-get-group-assignments
+      script: okta_copy1|||okta-get-group-assignments
       type: regular
       iscommand: true
-      brand: okta
+      brand: okta_copy1
     nexttasks:
       '#none#':
       - "5"
@@ -56,10 +56,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 1e97de85-f486-466d-820d-262db3eab501
+    taskid: 18cf2525-71e5-4bba-8129-70e4b80b5d19
     type: regular
     task:
-      id: 1e97de85-f486-466d-820d-262db3eab501
+      id: 18cf2525-71e5-4bba-8129-70e4b80b5d19
       version: -1
       name: Verify Context
       description: |-
@@ -78,7 +78,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: GroupAssignments
+        simple: Events
       path:
         simple: Okta.Logs
     separatecontext: false

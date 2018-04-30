@@ -83,7 +83,20 @@ script:
         var time  = new Date(log.published);
         logObject.Time = time.toLocaleString();
         logObject.Actor = log.actor.displayName + ' (' + log.actor.type + ')';
-        logObject.EventInfo = log.displayMessage + ' - ' + log.outcome.result + (log.outcome.reason ? ': ' + log.outcome.reason : '');
+        logObject.ActorAlternateId = log.actor.alternateId;
+        logObject.EventInfo = log.displayMessage;
+        logObject.EventOutcome = log.outcome.result + (log.outcome.reason ? ': ' + log.outcome.reason : '');
+        logObject.EventSeverity = log.severity;
+        logObject.Client = '';
+        if(log.client.userAgent){
+            var browser = log.client.userAgent.browser;
+            var os = log.client.userAgent.os;
+            logObject.Client += (browser.toLowerCase() !== 'unknown' ? browser : 'Unknown browser') + ' on ';
+            logObject.Client += (os.toLowerCase() !== 'unknown' ? os : 'Unknown OS') + ' ';
+        }
+        logObject.Client += log.client.device.toLowerCase() !== 'unknown' ? log.client.device : 'Unknown device';
+        logObject.RequestIP = log.client.ipAddress;
+        logObject.ChainIP = dq(log.request.ipChain, 'ip');
 
         var targets = '';
         if(log.target){
@@ -93,7 +106,6 @@ script:
         }
 
         logObject.Targets = targets || '-';
-        logObject.uuid = log.uuid;
 
         return logObject;
     }
@@ -658,7 +670,7 @@ script:
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.FailedLogins(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -684,7 +696,7 @@ script:
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.GroupAssignments(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -711,7 +723,7 @@ script:
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.ApplicationAssignments(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -738,7 +750,7 @@ script:
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.ApplicationAuthentication(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -1160,82 +1172,82 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     outputs:
-    - contextPath: Okta.Logs.FailedLogins.actor.alternateId
+    - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
-    - contextPath: Okta.Logs.FailedLogins.actor.displayName
+    - contextPath: Okta.Logs.Events.actor.displayName
       description: Display name of actor
-    - contextPath: Okta.Logs.FailedLogins.actor.id
+    - contextPath: Okta.Logs.Events.actor.id
       description: ID of actor
-    - contextPath: Okta.Logs.FailedLogins.client.userAgent.rawUserAgent
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
       description: A raw string representation of the user agent, formatted according
         to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
         OS fields can be derived from this field.
-    - contextPath: Okta.Logs.FailedLogins.client.userAgent.os
+    - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System the client runs on (e.g. Windows 10)
-    - contextPath: Okta.Logs.FailedLogins.client.userAgent.browser
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: If the client is a web browser, this field identifies the type
         of web browser (e.g. CHROME, FIREFOX)
-    - contextPath: Okta.Logs.FailedLogins.client.device
+    - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
-    - contextPath: Okta.Logs.FailedLogins.client.id
+    - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests this is the id of the OAuth client making the
         request. For SSWS token requests, this is the id of the agent making the request.
-    - contextPath: Okta.Logs.FailedLogins.client.ipAddress
+    - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
-    - contextPath: Okta.Logs.FailedLogins.client.geographicalContext.city
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.FailedLogins.geographicalContext.state
+    - contextPath: Okta.Logs.Events.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.FailedLogins.client.geographicalContext.country
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.FailedLogins.displayMessage
+    - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
-    - contextPath: Okta.Logs.FailedLogins.eventType
+    - contextPath: Okta.Logs.Events.eventType
       description: Type of event that was published
-    - contextPath: Okta.Logs.FailedLogins.outcome.result
+    - contextPath: Okta.Logs.Events.outcome.result
       description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
-    - contextPath: Okta.Logs.FailedLogins.outcome.reason
+    - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result, for example INVALID_CREDENTIALS
-    - contextPath: Okta.Logs.FailedLogins.published
+    - contextPath: Okta.Logs.Events.published
       description: Timestamp when event was published
-    - contextPath: Okta.Logs.FailedLogins.severity
+    - contextPath: Okta.Logs.Events.severity
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
-    - contextPath: Okta.Logs.FailedLogins.securityContext.asNumber
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
         that the event request was sourced to
-    - contextPath: Okta.Logs.FailedLogins.securityContext.asOrg
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
       description: Organization associated with the autonomous system that the event
         request was sourced to
-    - contextPath: Okta.Logs.FailedLogins.securityContext.isp
+    - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
-    - contextPath: Okta.Logs.FailedLogins.securityContext.domain
+    - contextPath: Okta.Logs.Events.securityContext.domain
       description: The domain name associated with the IP address of the inbound event
         request
-    - contextPath: Okta.Logs.FailedLogins.securityContext.isProxy
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
-    - contextPath: Okta.Logs.FailedLogins.request.ipChain.IP
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
       description: IP address
-    - contextPath: Okta.Logs.FailedLogins.request.ipChain.geographicalContext.city
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.FailedLogins.request.ipChain.geographicalContext.state
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.FailedLogins.request.ipChain.geographicalContext.country
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.FailedLogins.request.ipChain.source
+    - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
-    - contextPath: Okta.Logs.FailedLogins.target.id
+    - contextPath: Okta.Logs.Events.target.id
       description: ID of a target
-    - contextPath: Okta.Logs.FailedLogins.target.type
+    - contextPath: Okta.Logs.Events.target.type
       description: Type of a target
-    - contextPath: Okta.Logs.FailedLogins.target.alternateId
+    - contextPath: Okta.Logs.Events.target.alternateId
       description: Alternative id of a target
-    - contextPath: Okta.Logs.FailedLogins.target.displayName
+    - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
     description: Get events for when Okta issued a session to a user who is authenticating
       and the user failed to log-in
@@ -1254,82 +1266,82 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     outputs:
-    - contextPath: Okta.Logs.GroupAssignments.actor.alternateId
+    - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
-    - contextPath: Okta.Logs.GroupAssignments.actor.displayName
+    - contextPath: Okta.Logs.Events.actor.displayName
       description: Display name of actor
-    - contextPath: Okta.Logs.GroupAssignments.actor.id
+    - contextPath: Okta.Logs.Events.actor.id
       description: ID of actor
-    - contextPath: Okta.Logs.GroupAssignments.client.userAgent.rawUserAgent
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
       description: A raw string representation of the user agent, formatted according
         to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
         OS fields can be derived from this field.
-    - contextPath: Okta.Logs.GroupAssignments.client.userAgent.os
+    - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System the client runs on (e.g. Windows 10)
-    - contextPath: Okta.Logs.GroupAssignments.client.userAgent.browser
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: If the client is a web browser, this field identifies the type
         of web browser (e.g. CHROME, FIREFOX)
-    - contextPath: Okta.Logs.GroupAssignments.client.device
+    - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
-    - contextPath: Okta.Logs.GroupAssignments.client.id
+    - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests this is the id of the OAuth client making the
         request. For SSWS token requests, this is the id of the agent making the request.
-    - contextPath: Okta.Logs.GroupAssignments.client.ipAddress
+    - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
-    - contextPath: Okta.Logs.GroupAssignments.client.geographicalContext.city
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.GroupAssignments.client.geographicalContext.state
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.GroupAssignments.client.geographicalContext.country
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.GroupAssignments.displayMessage
+    - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
-    - contextPath: Okta.Logs.GroupAssignments.eventType
+    - contextPath: Okta.Logs.Events.eventType
       description: Type of event that was published
-    - contextPath: Okta.Logs.GroupAssignments.outcome.result
+    - contextPath: Okta.Logs.Events.outcome.result
       description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
-    - contextPath: Okta.Logs.GroupAssignments.outcome.reason
+    - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result, for example INVALID_CREDENTIALS
-    - contextPath: Okta.Logs.GroupAssignments.published
+    - contextPath: Okta.Logs.Events.published
       description: Log publish date in ISO 8601
-    - contextPath: Okta.Logs.GroupAssignments.severity
+    - contextPath: Okta.Logs.Events.severity
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
-    - contextPath: Okta.Logs.GroupAssignments.securityContext.asNumber
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
         that the event request was sourced to
-    - contextPath: Okta.Logs.GroupAssignments.securityContext.asOrg
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
       description: Organization associated with the autonomous system that the event
         request was sourced to
-    - contextPath: Okta.Logs.GroupAssignments.securityContext.isp
+    - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
-    - contextPath: Okta.Logs.GroupAssignments.securityContext.domain
+    - contextPath: Okta.Logs.Events.securityContext.domain
       description: The domain name associated with the IP address of the inbound event
         request
-    - contextPath: Okta.Logs.GroupAssignments.securityContext.isProxy
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
-    - contextPath: Okta.Logs.GroupAssignments.request.ipChain.IP
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
       description: IP address
-    - contextPath: Okta.Logs.GroupAssignments.request.ipChain.geographicalContext.city
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.GroupAssignments.request.ipChain.geographicalContext.state
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.GroupAssignments.request.ipChain.geographicalContext.country
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.GroupAssignments.request.ipChain.source
+    - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
-    - contextPath: Okta.Logs.GroupAssignments.target.id
+    - contextPath: Okta.Logs.Events.target.id
       description: ID of a target
-    - contextPath: Okta.Logs.GroupAssignments.target.type
+    - contextPath: Okta.Logs.Events.target.type
       description: Type of a target
-    - contextPath: Okta.Logs.GroupAssignments.target.alternateId
+    - contextPath: Okta.Logs.Events.target.alternateId
       description: Alternative id of a target
-    - contextPath: Okta.Logs.GroupAssignments.target.displayName
+    - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
     description: Get events for when a user was added to a group.
   - name: okta-get-application-assignments
@@ -1347,82 +1359,82 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     outputs:
-    - contextPath: Okta.Logs.ApplicationAssignments.actor.alternateId
+    - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
-    - contextPath: Okta.Logs.ApplicationAssignments.actor.displayName
+    - contextPath: Okta.Logs.Events.actor.displayName
       description: Display name of actor
-    - contextPath: Okta.Logs.ApplicationAssignments.actor.id
+    - contextPath: Okta.Logs.Events.actor.id
       description: ID of actor
-    - contextPath: Okta.Logs.ApplicationAssignments.client.userAgent.rawUserAgent
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
       description: A raw string representation of the user agent, formatted according
         to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
         OS fields can be derived from this field.
-    - contextPath: Okta.Logs.ApplicationAssignments.client.userAgent.os
+    - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System the client runs on (e.g. Windows 10)
-    - contextPath: Okta.Logs.ApplicationAssignments.client.userAgent.browser
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: If the client is a web browser, this field identifies the type
         of web browser (e.g. CHROME, FIREFOX)
-    - contextPath: Okta.Logs.ApplicationAssignments.client.device
+    - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
-    - contextPath: Okta.Logs.ApplicationAssignments.client.id
+    - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests this is the id of the OAuth client making the
         request. For SSWS token requests, this is the id of the agent making the request.
-    - contextPath: Okta.Logs.ApplicationAssignments.client.ipAddress
+    - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
-    - contextPath: Okta.Logs.ApplicationAssignments.client.geographicalContext.city
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.ApplicationAssignments.geographicalContext.state
+    - contextPath: Okta.Logs.Events.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.ApplicationAssignments.client.geographicalContext.country
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.ApplicationAssignments.displayMessage
+    - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
-    - contextPath: Okta.Logs.ApplicationAssignments.eventType
+    - contextPath: Okta.Logs.Events.eventType
       description: Type of event that was published
-    - contextPath: Okta.Logs.ApplicationAssignments.outcome.result
+    - contextPath: Okta.Logs.Events.outcome.result
       description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
-    - contextPath: Okta.Logs.ApplicationAssignments.outcome.reason
+    - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result, for example INVALID_CREDENTIALS
-    - contextPath: Okta.Logs.ApplicationAssignments.published
+    - contextPath: Okta.Logs.Events.published
       description: Log publish date in ISO 8601
-    - contextPath: Okta.Logs.ApplicationAssignments.severity
+    - contextPath: Okta.Logs.Events.severity
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
-    - contextPath: Okta.Logs.ApplicationAssignments.securityContext.asNumber
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
         that the event request was sourced to
-    - contextPath: Okta.Logs.ApplicationAssignments.securityContext.asOrg
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
       description: Organization associated with the autonomous system that the event
         request was sourced to
-    - contextPath: Okta.Logs.ApplicationAssignments.securityContext.isp
+    - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
-    - contextPath: Okta.Logs.ApplicationAssignments.securityContext.domain
+    - contextPath: Okta.Logs.Events.securityContext.domain
       description: The domain name associated with the IP address of the inbound event
         request
-    - contextPath: Okta.Logs.ApplicationAssignments.securityContext.isProxy
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
-    - contextPath: Okta.Logs.ApplicationAssignments.request.ipChain.IP
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
       description: IP address
-    - contextPath: Okta.Logs.ApplicationAssignments.request.ipChain.geographicalContext.city
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.ApplicationAssignments.request.ipChain.geographicalContext.state
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.ApplicationAssignments.request.ipChain.geographicalContext.country
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.ApplicationAssignments.request.ipChain.source
+    - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
-    - contextPath: Okta.Logs.ApplicationAssignments.target.id
+    - contextPath: Okta.Logs.Events.target.id
       description: ID of a target
-    - contextPath: Okta.Logs.ApplicationAssignments.target.type
+    - contextPath: Okta.Logs.Events.target.type
       description: Type of a target
-    - contextPath: Okta.Logs.ApplicationAssignments.target.alternateId
+    - contextPath: Okta.Logs.Events.target.alternateId
       description: Alternative id of a target
-    - contextPath: Okta.Logs.ApplicationAssignments.target.displayName
+    - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
     description: Get events for when a user was assigned to an application.
   - name: okta-get-application-authentication
@@ -1440,82 +1452,82 @@ script:
       - DESCENDING
       description: The order of the returned events, default is ASCENDING
     outputs:
-    - contextPath: Okta.Logs.ApplicationAuthentication.actor.alternateId
+    - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of actor
-    - contextPath: Okta.Logs.ApplicationAuthentication.actor.displayName
+    - contextPath: Okta.Logs.Events.actor.displayName
       description: Display name of actor
-    - contextPath: Okta.Logs.ApplicationAuthentication.actor.id
+    - contextPath: Okta.Logs.Events.actor.id
       description: ID of actor
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.userAgent.rawUserAgent
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
       description: A raw string representation of the user agent, formatted according
         to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
         OS fields can be derived from this field.
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.userAgent.os
+    - contextPath: Okta.Logs.Events.client.userAgent.os
       description: The Operating System the client runs on (e.g. Windows 10)
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.userAgent.browser
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: If the client is a web browser, this field identifies the type
         of web browser (e.g. CHROME, FIREFOX)
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.device
+    - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.id
+    - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests this is the id of the OAuth client making the
         request. For SSWS token requests, this is the id of the agent making the request.
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.ipAddress
+    - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.geographicalContext.city
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.ApplicationAuthentication.geographicalContext.state
+    - contextPath: Okta.Logs.Events.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.ApplicationAuthentication.client.geographicalContext.country
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.ApplicationAuthentication.displayMessage
+    - contextPath: Okta.Logs.Events.displayMessage
       description: The display message for an event
-    - contextPath: Okta.Logs.ApplicationAuthentication.eventType
+    - contextPath: Okta.Logs.Events.eventType
       description: Type of event that was published
-    - contextPath: Okta.Logs.ApplicationAuthentication.outcome.result
+    - contextPath: Okta.Logs.Events.outcome.result
       description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
-    - contextPath: Okta.Logs.ApplicationAuthentication.outcome.reason
+    - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result, for example INVALID_CREDENTIALS
-    - contextPath: Okta.Logs.ApplicationAuthentication.published
+    - contextPath: Okta.Logs.Events.published
       description: Log publish date in ISO 8601
-    - contextPath: Okta.Logs.ApplicationAuthentication.severity
+    - contextPath: Okta.Logs.Events.severity
       description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
-    - contextPath: Okta.Logs.ApplicationAuthentication.securityContext.asNumber
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
         that the event request was sourced to
-    - contextPath: Okta.Logs.ApplicationAuthentication.securityContext.asOrg
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
       description: Organization associated with the autonomous system that the event
         request was sourced to
-    - contextPath: Okta.Logs.ApplicationAuthentication.securityContext.isp
+    - contextPath: Okta.Logs.Events.securityContext.isp
       description: Internet service provider used to sent the event’s request
-    - contextPath: Okta.Logs.ApplicationAuthentication.securityContext.domain
+    - contextPath: Okta.Logs.Events.securityContext.domain
       description: The domain name associated with the IP address of the inbound event
         request
-    - contextPath: Okta.Logs.ApplicationAuthentication.securityContext.isProxy
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
       description: Specifies whether an event’s request is from a known proxy
-    - contextPath: Okta.Logs.ApplicationAuthentication.request.ipChain.IP
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
       description: IP address
-    - contextPath: Okta.Logs.ApplicationAuthentication.request.ipChain.geographicalContext.city
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
         if available (e.g. Seattle, San Francisco)
-    - contextPath: Okta.Logs.ApplicationAuthentication.request.ipChain.geographicalContext.state
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
       description: Full name of the state/province encompassing the area containing
         the geolocation coordinates (e.g. Montana, Incheon)
-    - contextPath: Okta.Logs.ApplicationAuthentication.request.ipChain.geographicalContext.country
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
       description: Full name of the country encompassing the area containing the geolocation
         coordinates (e.g. France, Uganda)
-    - contextPath: Okta.Logs.ApplicationAuthentication.request.ipChain.source
+    - contextPath: Okta.Logs.Events.request.ipChain.source
       description: Details regarding the source
-    - contextPath: Okta.Logs.ApplicationAuthentication.target.id
+    - contextPath: Okta.Logs.Events.target.id
       description: ID of a target
-    - contextPath: Okta.Logs.ApplicationAuthentication.target.type
+    - contextPath: Okta.Logs.Events.target.type
       description: Type of a target
-    - contextPath: Okta.Logs.ApplicationAuthentication.target.alternateId
+    - contextPath: Okta.Logs.Events.target.alternateId
       description: Alternative id of a target
-    - contextPath: Okta.Logs.ApplicationAuthentication.target.displayName
+    - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
     description: Get events for when a user attempted to SSO to an application managed
       in Okta
@@ -1536,10 +1548,21 @@ script:
   - name: okta-get-logs
     arguments:
     - name: filter
-      description: 'The filter to use, for example: eventType eq "user.session.start"
-        and outcome.result eq "FAILURE" '
+      description: "An expression filter is useful for performing structured queries
+        where constraints on LogEvent attribute values can be explicitly targeted.
+        \ The following expressions are supported for events with the filter query
+        parameter: eventType eq \":eventType\" -\tEvents that have a specific action;
+        eventType target.id eq \":id\" - Events published with a specific target id;
+        actor.id eq \":id\" - Events published with a specific actor id. For more
+        information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
     - name: query
-      description: A query to search the logs for
+      description: 'The query parameter can be used to perform keyword matching against
+        a LogEvents object’s attribute values. In order to satisfy the constraint,
+        all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The
+        following are some examples of common keyword filtering: Events that mention
+        a specific city: query=San Francisco; Events that mention a specific url:
+        query=interestingURI.com; Events that mention a specific person: query=firstName
+        lastName.'
     - name: since
       description: 'Filters the lower time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
@@ -1632,5 +1655,5 @@ script:
       description: Display name of a target
     description: Get logs by providing optional filters
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added system log commands"
 fromversion: 3.5.0
