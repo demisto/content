@@ -280,6 +280,10 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
         }
     ],
     "skipped": [
