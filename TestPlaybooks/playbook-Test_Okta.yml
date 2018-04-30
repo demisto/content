@@ -1,6 +1,6 @@
 id: okta_test_playbook
 version: -1
-fromversion: 3.5.0
+fromversion: 3.6.0
 name: Okta test playbook
 description: Test the functionality of Okta
 starttaskid: "0"
