@@ -99,3 +99,4 @@ dependson:
   - qradar-searches
   - qradar-get-search
   - qradar-get-search-results
+releaseNotes: "Marking dependencies for QRadar commands to make script appear under QRadar in playbook builder"
