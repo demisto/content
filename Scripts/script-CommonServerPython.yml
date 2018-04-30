@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+releaseNotes: Modified tableToMarkdown to handle empty responses.
 script: |-
   # Common functions script
   # =======================
@@ -525,9 +526,17 @@ script: |-
          :return: A string representation of the markdown table
          :rtype: ``str``
       """
+      mdResult = ''
+      if name:
+          mdResult = '### ' + name + '\n'
+
+      if not t or len(t) == 0:
+          mdResult += '**No entries.**\n'
+          return mdResult
 
       if not isinstance(t, list):
           t = [t]
+
       # in case of headers was not provided (backward compatibility)
       if not headers:
           headers = list(t[0].keys())
@@ -538,9 +547,11 @@ script: |-
               if all(obj[header] is None for obj in t):
                   headers.remove(header)
 
-      mdResult = ''
-      if name:
-          mdResult = '### ' + name + '\n'
+      newHeaders = []
+      if headerTransform is None:
+          headerTransform = lambda s: s
+      for header in headers:
+          newHeaders.append(headerTransform(header))
 
       if t:
           newHeaders = []
@@ -566,12 +577,24 @@ script: |-
               else:
                   mdResult += '|'.join(vals)
               mdResult += '|\n'
-
+              
+      if len(newHeaders) == 1: 
+          mdResult += newHeaders[0] + '|' + '\n'
       else:
-          mdResult += '**No entries.**\n'
+          mdResult += '|'.join(newHeaders) + '\n'
+
+      sep = '-'
+      if len(headers) == 1:
+          sep = '-|'
+      mdResult += '|'.join([sep] * len(headers)) + '\n'
+      for entry in t:
+          vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
+          if len(vals) == 1:
+              mdResult += vals[0] + '|' + '\n'
+          else:
+              mdResult += '|'.join(vals) + '\n'
 
       return mdResult
-
 
   tblToMd = tableToMarkdown
 
