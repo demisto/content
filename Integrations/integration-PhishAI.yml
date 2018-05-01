@@ -13,12 +13,11 @@ configuration:
   type: 0
   required: false
 script:
-  script: |2+
+  script: |2
 
     var TIMEOUT = 20 * 1000;
 
-    var phishai_scan = function(url, key)
-    {
+    function phishAiScan(url, apiKey) {
         var ec = {
             PhishAI: {Url: url},
             DBotScore: {
@@ -31,24 +30,24 @@ script:
 
         var md = '## Phish.AI Analysis for ' + url + '\n';
 
-        var res = http(
+        var initialRes = http(
             'https://app.phish.ai/api/url/scan',
             {
                 Method: 'POST',
                 Headers: {
                     'Content-Type': ['application/json'],
                     'Accept': ['application/json'],
-                    'Authorization': [key]
+                    'Authorization': [apiKey]
                 },
                 Body: JSON.stringify({'url': url})
             },
             "false"
         );
-        if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-            return {Type: entryType.note, Contents: res.Body, HumanReadable: "Scan Error", ContentsFormat: formats.json}
+        if (initialRes.StatusCode !== 200 && initialRes.StatusCode !== 201) {
+            throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
         }
 
-        var scan_id = JSON.parse(res.Body).scan_id;
+        var scanId = JSON.parse(initialRes.Body).scan_id;
 
         var startTime = new Date();
         startTime = startTime.getMilliseconds();
@@ -58,7 +57,7 @@ script:
 
         while ((endTime - startTime) < TIMEOUT) {
             var res = http(
-                'https://app.phish.ai/api/url/report?scan_id=' + scan_id,
+                'https://app.phish.ai/api/url/report?scan_id=' + scanId,
                 {
                     Method: 'GET',
                     Headers: {
@@ -68,54 +67,73 @@ script:
                 "false"
             );
             if (res.StatusCode !== 200) {
-                return {Type: entryType.note, Contents: res.Body, HumanReadable: "Scan Error", ContentsFormat: formats.json}
+                throw 'Failed to get scan results for ' + url + ' Response error: ' + res.Body;
             }
             var report = JSON.parse(res.Body);
             if (report.status !== 'in progress') {
                 delete report.user_email;
-                Object.keys(report).forEach(function(key) {
-                    md += key + ': ' + report[key] + '\n';
-                });
                 if (report.verdict == 'malicious') {
                     ec.DBotScore.Score = 3;
                     addMalicious(ec, url, {
                         Data: url,
-                        Malicious: {Vendor: 'Phish.AI', Description: 'URL classified as phishing by Phish.AI'}
+                        Malicious: {
+                            Vendor: 'Phish.AI',
+                            Description: 'URL classified as phishing by Phish.AI'
+                        }
                     });
                 }
-                return {Type: entryTypes.note, Contents: report, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec}
+                ec.PhishAI.IpAddress = report.ip_address;
+                ec.PhishAI.Hostname = report.domain;
+                ec.PhishAI.Country = report.iso_code;
+                // if we sending both domain and url to the war-room in the human readable we would run the test again for the domain since it doesn't have the http:// part
+                if (url === report.url){
+                    delete report.domain;
+                } else if (url === report.domain){
+                    delete report.url
+                }
+                md = tableToMarkdown('Scan report ' + url, report);
+                return {
+                    Type: entryTypes.note,
+                    Contents: report,
+                    ContentsFormat: formats.json,
+                    HumanReadable: md,
+                    EntryContext: {
+                        'Url(obj.Data.Url && obj.Data.Url===val.Data.Url)' : {
+                            'Data': ec.PhishAI.Url
+                        },
+                        'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
+                            'Address': ec.PhishAI.IpAddress,
+                            'Hostname': ec.PhishAI.Hostname,
+                            'Geo':{
+                                'Country':ec.PhishAI.Country
+                            }
+                        }
+                        'DBotScore' : ec.DBotScore
+                    }
+                };
             }
             logInfo('scan in progress');
         }
-        return {Type: entryType.note, Contents: JSON.parse(res.Body), HumanReadable: "Scan timedout"}
+        return {
+            Type: entryType.error,
+            Contents: JSON.parse(res.Body),
+            HumanReadable: "Scan timed out"
+        };
     }
 
     switch (command) {
         case 'test-module':
-            var res = http(
-                'https://app.phish.ai/api/url/scan',
-                {
-                    Method: 'POST',
-                    Headers: {
-                        'Content-Type': ['application/json'],
-                        'Accept': ['application/json'],
-                        'Authorization': ['']
-                    },
-                    Body: JSON.stringify({'url': 'https://www.demisto.com/'})
-                },
-                "false"
-            );
-            if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-                return 'error';
-            } else {
+            var res = phishAiScan('https://www.demisto.com/', params.API_KEY);
+            if (res && res.Type){
                 return 'ok';
+            } else {
+                return 'error';
             }
         case 'url':
-            return phishai_scan(args.url, args.key);
+            return phishAiScan(args.url, params.API_KEY);
         default:
-            'unknown command';
+            break;
     }
-
   type: javascript
   commands:
   - name: url
@@ -125,19 +143,30 @@ script:
       description: url to check
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: URL address
+      type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
     - contextPath: DBotScore.Type
       description: The type of the indicator
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: IP.Address
+      description: IP address of the url
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Geo location of the url
+      type: string
     description: Check if url is phishing and get details about the brand that is
       being phished
   runonce: true
+releaseNotes: "-"
