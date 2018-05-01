@@ -121,4 +121,3 @@ scripttarget: 0
 timeout: 300ns
 runonce: false
 fromversion: "3.5.0"
-releaseNotes: "Calculate statistics (Malicious Ratio) over indicators in the system"

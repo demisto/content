@@ -55,4 +55,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pyping
-releaseNotes: Added Ping results as output and removed verbose argument (this change breaks backward compatibility, best practice is to use outputs over context and raw-response=true for verbose results)
