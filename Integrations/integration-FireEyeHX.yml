@@ -2307,7 +2307,7 @@ script:
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values: normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
     - contextPath: FireEyeHX.Hosts.stats.acqs
       description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
@@ -2380,7 +2380,7 @@ script:
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values: normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
     - contextPath: FireEyeHX.Hosts.stats.acqs
       description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
