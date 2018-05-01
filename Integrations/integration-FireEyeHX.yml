@@ -1386,7 +1386,6 @@ script:
         except Exception as e:
             raise ValueError('Failed to parse response body')
 
-
     def get_all_enabled_conditions(indicator_category, indicator_name):
 
         offset = 0
@@ -2578,6 +2577,29 @@ script:
       description: Whether the indicator resulted in alerts
     - name: limit
       description: Limit the number of results
+    outputs:
+    - contextPath: FireEyeHX.Indicators._id
+      description: FireEye unique indicator ID.
+    - contextPath: FireEyeHX.Indicators.name
+      description: The indicator name as displayed in the UI.
+    - contextPath: FireEyeHX.Indicators.description
+      description: Indicator description.
+    - contextPath: FireEyeHX.Indicators.category.name
+      description: Catagory name.
+    - contextPath: FireEyeHX.Indicators.created_by
+      description: The "Created By" field as displayed in UI
+    - contextPath: FireEyeHX.Indicators.active_since
+      description: Date indicator became active.
+    - contextPath: FireEyeHX.Indicators.meta
+      description: JSON object containing arbitrary metadata about the indicator.
+    - contextPath: FireEyeHX.Indicators.stats.source_alerts
+      description: Total number of source alerts associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.stats.active_conditions
+      description: Total number of enabled conditions associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.stats.alerted_agents
+      description: Total number of agents with HX alerts associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.platforms
+      description: List of families of operating systems.
     description: Get s a list of indicators
   - name: fireeye-hx-get-indicator
     arguments:
@@ -2589,6 +2611,37 @@ script:
       description: Indicator name.
     - name: limit
       description: Limit the number of results
+    outputs:
+    - contextPath: FireEyeHX.Indicators._id
+      description: FireEye unique indicator ID.
+    - contextPath: FireEyeHX.Indicators.name
+      description: The indicator name as displayed in the UI.
+    - contextPath: FireEyeHX.Indicators.description
+      description: Indicator description.
+    - contextPath: FireEyeHX.Indicators.category.name
+      description: Catagory name.
+    - contextPath: FireEyeHX.Indicators.created_by
+      description: The "Created By" field as displayed in UI
+    - contextPath: FireEyeHX.Indicators.active_since
+      description: Date indicator became active.
+    - contextPath: FireEyeHX.Indicators.meta
+      description: JSON object containing arbitrary metadata about the indicator.
+    - contextPath: FireEyeHX.Indicators.stats.source_alerts
+      description: Total number of source alerts associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.stats.active_conditions
+      description: Total number of enabled conditions associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.stats.alerted_agents
+      description: Total number of agents with HX alerts associated with this indicator.
+    - contextPath: FireEyeHX.Indicators.platforms
+      description: List of families of operating systems.
+    - contextPath: FireEyeHX.Conditions._id
+      description: FireEye unique condition ID.
+    - contextPath: FireEyeHX.Conditions.event_type
+      description: Event type.
+    - contextPath: FireEyeHX.Conditions.enabled
+      description: Indicates whether the condition is enabled.
+    - contextPath: FireEyeHX.Conditions.tests
+      description: The list of condions to be tested againest the event.
     description: Get a specific indicator details
   - name: fireeye-hx-get-host-information
     arguments:
@@ -2610,7 +2663,7 @@ script:
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values: normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
     - contextPath: FireEyeHX.Hosts.stats.acqs
       description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
@@ -2715,6 +2768,23 @@ script:
     - name: hostName
       description: The host that holds the file. If the agentId is not specified,
         hostName must be specified.
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions._id
+      description: The acquisition unique ID.
+    - contextPath: FireEyeHX.Acquisitions.state
+      description: The acquisition state.
+    - contextPath: FireEyeHX.Acquisitions.md5
+      description: File md5.
+    - contextPath: FireEyeHX.Acquisitions.request_time
+      description: The acquisition request timestamp.
+    - contextPath: FireEyeHX.Acquisitions.req_filename
+      description: The file name.
+    - contextPath: FireEyeHX.Acquisitions.req_path
+      description: The file path.
+    - contextPath: FireEyeHX.Acquisitions.host._id
+      description: FireEye HX agent ID.
+    - contextPath: FireEyeHX.Acquisitions.finish_time
+      description: Time when the acquisition was finished.
     description: Aquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
   - name: fireeye-hx-delete-file-acquisition
@@ -2747,6 +2817,20 @@ script:
     - name: hostName
       description: The host name. If the agent ID is not specified, the host name
         must be specified.
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions._id
+      description: The acquisition unique ID.
+    - contextPath: FireEyeHX.Acquisitions.state
+      description: The acquisition state.
+    - contextPath: FireEyeHX.Acquisitions.md5
+      description: File md5.
+    - contextPath: FireEyeHX.Acquisitions.request_time
+      description: The acquisition request timestamp.
+    - contextPath: FireEyeHX.Acquisitions.host._id
+      description: FireEye HX agent ID.
+    - contextPath: FireEyeHX.Acquisitions.finish_time
+      description: Time when the acquisition was finished.
+    description: Aquire a specific file as a password protected zip file. The password
     description: Start a data acquisition process to gather artifacts from the system
       disk and memory. The data is fetched as mans file.
   - name: fireeye-hx-delete-data-acquisition
