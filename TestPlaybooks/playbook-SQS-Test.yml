@@ -7,7 +7,371 @@ tasks:
     id: "0"
     taskid: e1881d34-1ca8-4261-8019-3c14c22138bb
     type: start
+    task:id: ed50e316-9646-41f9-864a-a0c7aa5ff0b7
+version: 21
+name: SQS Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e1881d34-1ca8-4261-8019-3c14c22138bb
+    type: start
     task:
+      id: e1881d34-1ca8-4261-8019-3c14c22138bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -242
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b24cb6d6-f9fb-46d9-8a94-6ccdd72744fd
+    type: regular
+    task:
+      id: b24cb6d6-f9fb-46d9-8a94-6ccdd72744fd
+      version: -1
+      name: sqs-list-queues
+      description: Returns a list of your queues
+      script: SQS|||sqs-list-queues
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      queueNamePrefix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1497
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6ce97dc0-7446-4431-861d-c5224655527f
+    type: regular
+    task:
+      id: 6ce97dc0-7446-4431-861d-c5224655527f
+      version: -1
+      name: sqs-get-messages
+      description: Gets up to 10 messages from the Queue
+      script: SQS|||sqs-get-messages
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1027
+        }
+      }
+  "3":
+    id: "3"
+    taskid: d4eb14fb-e73d-4e5a-87a3-a8e6c591265f
+    type: regular
+    task:
+      id: d4eb14fb-e73d-4e5a-87a3-a8e6c591265f
+      version: -1
+      name: sqs-delete-messages
+      description: Deletes up to 10 messages from the Queue
+      script: SQS|||sqs-delete-messages
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      deleteAll:
+        simple: "yes"
+      maxMessages: {}
+      receiptHandles: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1942
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 12ba82da-2b05-47dc-8405-721203555a2d
+    type: title
+    task:
+      id: 12ba82da-2b05-47dc-8405-721203555a2d
+      version: -1
+      name: SQS test playbook
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -33
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 36b10643-2ad0-41c8-8ab0-e3e54478b8de
+    type: regular
+    task:
+      id: 36b10643-2ad0-41c8-8ab0-e3e54478b8de
+      version: -1
+      name: sqs-send-message
+      description: Sends a message to the queue
+      script: SQS|||sqs-send-message
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Body:
+        simple: verwgb5
+      Delay: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 524
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8ddf87e6-adac-4e55-8f5a-bbcbcd98a4d6
+    type: regular
+    task:
+      id: 8ddf87e6-adac-4e55-8f5a-bbcbcd98a4d6
+      version: -1
+      name: sqs-send-message
+      description: Sends a message to the queue
+      script: SQS|||sqs-send-message
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Body:
+        simple: r4klh234fn4k52 g3±!@#$@%&$^MUY
+      Delay: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 375
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 8c08755b-b8ef-4c40-8181-8098ad6ee004
+    type: regular
+    task:
+      id: 8c08755b-b8ef-4c40-8181-8098ad6ee004
+      version: -1
+      name: sqs-send-message
+      description: Sends a message to the queue
+      script: SQS|||sqs-send-message
+      type: regular
+      iscommand: true
+      brand: SQS
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Body:
+        simple: gbtbeu6jn
+      Delay: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 687
+        }
+      }
+  "8":
+    id: "8"
+    taskid: bde7a0a6-51a4-4501-8c06-e7113daf7d06
+    type: regular
+    task:
+      id: bde7a0a6-51a4-4501-8c06-e7113daf7d06
+      version: -1
+      name: Sleep for 6s
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 867
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 7ebfd662-1cab-4d26-8804-968db1fec676
+    type: condition
+    task:
+      id: 7ebfd662-1cab-4d26-8804-968db1fec676
+      version: -1
+      name: Verify get messages
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      left:
+        simple: ${SQS.Messages.Body}
+      right:
+        simple: gbtbeu6jn
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1229
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 8439dfe7-231d-475a-8877-691d2c8e8f78
+    type: regular
+    task:
+      id: 8439dfe7-231d-475a-8877-691d2c8e8f78
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 159
+        }
+      }
+  "12":
+    id: "12"
+    taskid: cfe0af4e-31b1-4fa2-86db-d8c842af8de8
+    type: regular
+    task:
+      id: cfe0af4e-31b1-4fa2-86db-d8c842af8de8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2123
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 51450e49-612c-4658-8ebe-a815d587c077
+    type: condition
+    task:
+      id: 51450e49-612c-4658-8ebe-a815d587c077
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left:
+        simple: ${SQS.QueueUrls}
+      right:
+        simple: https://us-east-2.queue.amazonaws.com/676921422616/playbook_test
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1738
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2460,
+        "width": 380,
+        "x": 450,
+        "y": -242
+      }
+    }
+  }
+inputs: []
+outputs: []
+
       id: e1881d34-1ca8-4261-8019-3c14c22138bb
       version: -1
       name: ""
