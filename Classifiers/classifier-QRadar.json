@@ -45,7 +45,7 @@
 						"accessor": "",
 						"transformers": [
 							{
-								"operator": "date.e8ae1656-b575-4171-821a-3c962926ba1c",
+								"operator": "number.TimeStampToDate",
 								"args": {}
 							}
 						]
