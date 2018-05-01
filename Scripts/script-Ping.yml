@@ -13,18 +13,14 @@ script: |-
       res['avg_rtt'] = r.avg_rtt
       res['min_rtt'] = r.min_rtt
       res['destination_ip'] = r.destination_ip
-
-      verbose = demisto.get(demisto.args(),'verbose')
-      if verbose and verbose.lower() == 'false':
-          demisto.results({'ContentsFormat': 'json', 'Type': entryTypes['note'], 'Contents': res, 'EntryContext': { 'Ping': res }})
-      else:
-          data = [ { 'ret_code' : res['ret_code'], 'destination' : res['destination'], 'max_rtt' : res['max_rtt'] , 'avg_rtt' : res['avg_rtt'],  'destination_ip' : res['destination_ip'] } ]
-          demisto.results({'ContentsFormat': 'table', 'Type': entryTypes['note'], 'Contents': data, 'EntryContext': { 'Ping': res }})
-
-      key = demisto.get(demisto.args(),'contextKey')
-      if not key:
-          key = 'ping_result'
-      demisto.setContext(key, res)
+      demisto.results({
+          'Type': entryTypes['note'],
+          'Contents': res,
+          'ContentsFormat': formats['json'],
+          'HumanReadable': tableToMarkdown("Ping Results", res),
+          'ReadableContentsFormat' : formats['markdown'],
+          'EntryContext': { "Ping": res }
+      })
   except Exception as e:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(e) } )
 type: python
@@ -37,14 +33,6 @@ args:
   required: true
   default: true
   description: Address to ping
-- name: contextKey
-  description: context key to place result in
-- name: verbose
-  auto: PREDEFINED
-  predefined:
-  - "false"
-  - "true"
-  description: Prettify result in table
 outputs:
 - contextPath: Ping.ret_code
   description: Ping return code
@@ -67,4 +55,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pyping
-releaseNotes: Added Ping results as output
+releaseNotes: Added Ping results as output and removed verbose argument (this change breaks backward compatibility, best practice is to use outputs over context and raw-response=true for verbose results)
