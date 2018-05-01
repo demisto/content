@@ -123,14 +123,14 @@ script:
         return JSON.parse(res.Body);
     }
 
-    function convertTicketDates(tickets){
-        if(!(tickets instanceof Array)){
-            tickets = [tickets];
+    function convertTicketDates(response){
+        if(!(response instanceof Array)){
+            response = [response];
         }
-        tickets.forEach(function(ticket){
-            ticket.dateCreated = new Date(ticket.dateCreated).toString();
-            ticket.dateModified = ticket.dateModified ? new Date(ticket.dateModified).toString() : '';
-            ticket.dateClosed = ticket.dateClosed ? new Date(ticket.dateClosed).toString() : '';
+        response.forEach(function(element){
+            element.dateCreated = new Date(element.dateCreated).toString();
+            element.dateModified = element.dateModified ? new Date(element.dateModified).toString() : '';
+            element.dateClosed = element.dateClosed ? new Date(element.dateClosed).toString() : '';
         });
     }
 
@@ -355,6 +355,16 @@ script:
             {to: 'Watchers', from: 'watchers'}
         ];
 
+        if(ticket.worklogs){
+            convertTicketDates(ticket.worklogs);
+            var worklogTranslator = [
+                {to: 'Created', from: 'dateCreated'},
+                {to: 'Description', from: 'description'},
+                {to: 'Type', from: 'type'}
+            ];
+            var worklogsTranslated = cleanObject(mapObjFunction(worklogTranslator)(ticket.worklogs));
+        }
+
         var entry = {
             Type: entryTypes.note,
             Contents: ticket,
@@ -362,8 +372,10 @@ script:
         };
 
         var translated = cleanObject(mapObjFunction(translator)(ticket));
+        var md = tableToMarkdown('Secure works get ticket response', translated);
+        md += worklogsTranslated ? tableToMarkdown('Worklogs', worklogsTranslated) : '';
         entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Secure works get ticket response', translated);
+        entry.HumanReadable = md,
         entry.EntryContext = {
             'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
         };
