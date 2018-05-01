@@ -107,7 +107,7 @@ script:
                             'Geo':{
                                 'Country':ec.PhishAI.Country
                             }
-                        }
+                        },
                         'DBotScore' : ec.DBotScore
                     }
                 };
