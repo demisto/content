@@ -30,20 +30,16 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Fetch tickets matching to one of SERVICE_REQUEST, INCIDENT or CHANGE
-  name: ticketType
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
+- display: Fetch tickets matching to one of SERVICE_REQUEST, INCIDENT or CHANGE
+  name: ticketType
   defaultvalue: ""
-  type: 13
+  type: 0
+  required: false
   required: false
 - display: Limit tickets to one of REQUEST, CHANGE, HEALTH or SECURITY
   name: groupingType
@@ -102,7 +98,7 @@ script:
             query = encodeToURLQuery(queryParams);
         }
 
-        var url = SERVER_URL.concat(path, query)
+        var url = SERVER_URL.concat(path, query);
 
         var res = http(
             url,
@@ -531,6 +527,9 @@ script:
         }
         if(params.groupingType){
             queryParams.groupingType = params.groupingType;
+        }
+        if(params.worklogs){
+            queryParams.worklogs = params.worklogs;
         }
         queryParams.limit = MAX_LIMIT;
         var statuses = params.status || [];
