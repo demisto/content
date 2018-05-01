@@ -55,8 +55,6 @@
 			"dontMapEventToLabels": false
 		}
 	},
-	"unclassifiedCases": {},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "",
@@ -71,5 +69,6 @@
 		"SIM User Authentication": "Access",
 		"User Login Failure": "Access"
 	},
-	"brandName": "QRadar"
+	"brandName": "QRadar",
+	"releaseNotes": "-"
 }
