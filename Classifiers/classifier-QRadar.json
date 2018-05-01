@@ -57,18 +57,13 @@
 	},
 	"custom": true,
 	"transformer": {
-		"simple": "",
-		"complex": {
-			"root": "categories",
-			"filters": [],
-			"accessor": "[0]",
-			"transformers": []
-		}
+		"simple": "categories.[0]",
+		"complex": null
 	},
 	"keyTypeMap": {
 		"SIM User Authentication": "Access",
 		"User Login Failure": "Access"
 	},
 	"brandName": "QRadar",
-	"releaseNotes": "-"
+	"releaseNotes": "QRadar classification and mapping for 'Access' incident type"
 }
