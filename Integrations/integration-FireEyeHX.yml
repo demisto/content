@@ -123,7 +123,7 @@ script:
         'Domain',
         'Last Alert'
     ]
-    #scripts for data aquisitions
+    #scripts for data acquisitions
     STANDART_INVESTIGATIVE_DETAILS_OSX = {
         "commands": [
             {
@@ -985,12 +985,12 @@ script:
         if not args:
             raise ValueError('Please provide either agentId or hostName')
 
-        #in case a hostName was given, set the agentId acordingly
+        #in case a hostName was given, set the agentId accordingly
         if args.get('hostName'):
             args['agentId'] = get_agent_id(args['hostName'])
 
         containment_request(args['agentId'])
-        #no exeptions raised->successful request
+        #no exceptions raised->successful request
 
         host = get_host_by_agent_request(args['agentId'])
         entry = {
@@ -1017,7 +1017,7 @@ script:
             url,
             headers = GET_HEADERS
         )
-        #no exeptions are raised - succeful request
+        #no exceptions are raised - successful request
 
     def containment_cancellation():
         """
@@ -1032,12 +1032,12 @@ script:
         if not args:
             raise ValueError('Please provide either agentId or hostName')
 
-        #in case a hostName was given, set the agentId acordingly
+        #in case a hostName was given, set the agentId accordingly
         if args.get('hostName'):
             args['agentId'] = get_agent_id(args['hostName'])
 
         containment_cancellation_request(args['agentId'])
-        #no exeptions raised->successful request
+        #no exceptions raised->successful request
 
         host = get_host_by_agent_request(args['agentId'])
         entry = {
@@ -1142,7 +1142,7 @@ script:
         sort=None, min_id=None, event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
         """
 
-        retuens a list of alerts, all results up to limit
+        returns a list of alerts, all results up to limit
 
         """
         offset = 0
@@ -1307,7 +1307,7 @@ script:
     def suppress_alert_request(alert_id):
         """
 
-        no return value on succeful request
+        no return value on successful request
 
         """
 
@@ -1328,7 +1328,7 @@ script:
         alert_id = demisto.args().get('alertId')
 
         suppress_alert_request(alert_id)
-        #no exeptions raised->successful request
+        #no exceptions raised->successful request
 
         entry = {
             'Type': entryTypes['note'],
@@ -1664,7 +1664,7 @@ script:
     def delete_search_request(search_id):
         """
 
-        no return value on succeful request
+        no return value on successful request
 
         """
 
@@ -1853,7 +1853,7 @@ script:
         """
         acquisition_id = demisto.args().get('acquisitionId')
         delete_file_acquisition_request(acquisition_id)
-        #succesful request
+        #successful request
 
         return {
             'Type': entryTypes['note'],
@@ -1926,7 +1926,7 @@ script:
 
         return response.json()['data']
 
-    def data_aquisition_information_request(acquisition_id):
+    def data_acquisition_information_request(acquisition_id):
 
         url = '{}/acqs/live/{}'.format(BASE_PATH, acquisition_id)
 
@@ -1950,7 +1950,7 @@ script:
 
         return response.content
 
-    def data_aquisition():
+    def data_acquisition():
         """
 
         returns the mans file to the war room
@@ -1968,7 +1968,7 @@ script:
         if args.get('hostName'):
             args['agentId'] = get_agent_id(args['hostName'])
 
-        #determain whether to use the default script
+        #determine whether to use the default script
         sys = args.get('defaultSystemScript')
         if sys:
             args['script'] = json.dumps(SYS_SCRIPT_MAP[sys])
@@ -1983,11 +1983,11 @@ script:
 
         request_id = acquisition_info.get('_id')
 
-        LOG('Aquisition request was successful. Waiting for aquisition process to be complete.')
+        LOG('Acquisition request was successful. Waiting for acquisition process to be complete.')
         #loop to inquire acquisition state every 30 seconds
         #break when state is complete
         while True:
-            acquisition_info = data_aquisition_information_request(request_id)
+            acquisition_info = data_acquisition_information_request(request_id)
             if acquisition_info.get('state') == 'COMPLETE':
                 break
             time.sleep(30)
@@ -1999,7 +1999,7 @@ script:
                 'ContentsFormat': formats['text'],
             })
 
-        LOG('Aquisition process has been complete. Fetching mans file.')
+        LOG('Acquisition process has been complete. Fetching mans file.')
         #output file to the war room
         data = data_collection_request(request_id)
         demisto.results(fileResult('agent_{}_data.mans'.format(args['agentId']), data))
@@ -2026,7 +2026,7 @@ script:
         """
         acquisition_id = demisto.args().get('acquisitionId')
         delete_data_acquisition_request(acquisition_id)
-        #succesful request
+        #successful request
 
         return {
             'Type': entryTypes['note'],
@@ -2242,14 +2242,14 @@ script:
 
 
     command = demisto.command()
-    LOG('Runing command "{}"'.format(command))
+    LOG('Running command "{}"'.format(command))
 
     #ask for a token using user credentials
     TOKEN = get_token()
 
     try:
         if command == 'test-module':
-            #token generated - cradentials are valid
+            #token generated - credentials are valid
             demisto.results('ok')
         elif command == 'fetch-incidents':
             fetch_incidents()
@@ -2275,7 +2275,7 @@ script:
         elif command == 'fireeye-hx-delete-file-acquisition':
             delete_file_acquisition()
         elif command == 'fireeye-hx-data-acquisition':
-            data_aquisition()
+            data_acquisition()
         elif command == 'fireeye-hx-delete-data-acquisition':
             delete_data_acquisition_request()
         sys.exit(0)
@@ -2304,59 +2304,41 @@ script:
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Bolean value to indicate for containment missing software.
+      description: Boolean value to indicate for containment missing software.
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
       description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
-    - contextPath: FireEyeHX.Hosts.stats.acqs
-      description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: Total number of alerts, including exploit-detection alerts.
-    - contextPath: FireEyeHX.Hosts.stats.exploit_alerts
-      description: Number of exploit alerts, partially blocked exploits, and blocked exploits.
     - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
       description: The number of blocked exploits on the host.
     - contextPath: FireEyeHX.Hosts.stats.malware_alerts
-      description: The number of malware alerts associated with thes host.
+      description: The number of malware alerts associated with the host.
     - contextPath: FireEyeHX.Hosts.hostname
       description: The host name.
     - contextPath: FireEyeHX.Hosts.domain
       description: Domain name.
-    - contextPath: FireEyeHX.Hosts.gmt_offset_seconds
-      description: How many seconds the offset is from Greenwich Mean Time (GMT).
     - contextPath: FireEyeHX.Hosts.timezone
       description: Host time zone.
     - contextPath: FireEyeHX.Hosts.primary_ip_address
       description: The host IP address.
-    - contextPath: FireEyeHX.Hosts.last_audit_timestamp
-      description: The time stamp of the last audit run against the host.
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
-      description: The time stemp of the last system poll preformed on the host.
-    - contextPath: FireEyeHX.Hosts.last_poll_ip
-      description: Last poll IP.
-    - contextPath: FireEyeHX.Hosts.reported_clone
-      description: Indicates whether the host has a reported clone.
+      description: The timestamp of the last system poll preformed on the host.
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent checkin.
-    - contextPath: FireEyeHX.Hosts.last_alert
-      description: Partial Alert JSON document of the last alert on the host.
+      description: Timestamp of the initial agent check-in.
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
       description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
-    - contextPath: FireEyeHX.Hosts.os.patch_level
-      description: Operating system patch
     - contextPath: FireEyeHX.Hosts.os.bitness
       description: OS Bitness.
     - contextPath: FireEyeHX.Hosts.os.platform
       description: Family of operating systems. Valid values are win, osx, and linux.
-    - contextPath: FireEyeHX.Hosts.os.kernel_version
-      description: Kernel version.
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
     description: Apply containment for a specific host, so that it no longer has access
@@ -2377,59 +2359,41 @@ script:
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Bolean value to indicate for containment missing software.
+      description: Boolean value to indicate for containment missing software.
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
       description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
-    - contextPath: FireEyeHX.Hosts.stats.acqs
-      description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: Total number of alerts, including exploit-detection alerts.
-    - contextPath: FireEyeHX.Hosts.stats.exploit_alerts
-      description: Number of exploit alerts, partially blocked exploits, and blocked exploits.
     - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
       description: The number of blocked exploits on the host.
     - contextPath: FireEyeHX.Hosts.stats.malware_alerts
-      description: The number of malware alerts associated with thes host.
+      description: The number of malware alerts associated with the host.
     - contextPath: FireEyeHX.Hosts.hostname
       description: The host name.
     - contextPath: FireEyeHX.Hosts.domain
       description: Domain name.
-    - contextPath: FireEyeHX.Hosts.gmt_offset_seconds
-      description: How many seconds the offset is from Greenwich Mean Time (GMT).
     - contextPath: FireEyeHX.Hosts.timezone
       description: Host time zone.
     - contextPath: FireEyeHX.Hosts.primary_ip_address
       description: The host IP address.
-    - contextPath: FireEyeHX.Hosts.last_audit_timestamp
-      description: The time stamp of the last audit run against the host.
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
-      description: The time stemp of the last system poll preformed on the host.
-    - contextPath: FireEyeHX.Hosts.last_poll_ip
-      description: Last poll IP.
-    - contextPath: FireEyeHX.Hosts.reported_clone
-      description: Indicates whether the host has a reported clone.
+      description: The timestamp of the last system poll preformed on the host.
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent checkin.
-    - contextPath: FireEyeHX.Hosts.last_alert
-      description: Partial Alert JSON document of the last alert on the host.
+      description: Timestamp of the initial agent check-in.
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
       description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
-    - contextPath: FireEyeHX.Hosts.os.patch_level
-      description: Operating system patch
     - contextPath: FireEyeHX.Hosts.os.bitness
       description: OS Bitness.
     - contextPath: FireEyeHX.Hosts.os.platform
       description: Family of operating systems. Valid values are win, osx, and linux.
-    - contextPath: FireEyeHX.Hosts.os.kernel_version
-      description: Kernel version.
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
     description: Release a specific host from containment.
@@ -2660,59 +2624,41 @@ script:
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Bolean value to indicate for containment missing software.
+      description: Boolean value to indicate for containment missing software.
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
     - contextPath: FireEyeHX.Hosts.containment_state
       description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
-    - contextPath: FireEyeHX.Hosts.stats.acqs
-      description: The number of acquisitions acquired for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: Total number of alerts, including exploit-detection alerts.
-    - contextPath: FireEyeHX.Hosts.stats.exploit_alerts
-      description: Number of exploit alerts, partially blocked exploits, and blocked exploits.
     - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
       description: The number of blocked exploits on the host.
     - contextPath: FireEyeHX.Hosts.stats.malware_alerts
-      description: The number of malware alerts associated with thes host.
+      description: The number of malware alerts associated with the host.
     - contextPath: FireEyeHX.Hosts.hostname
       description: The host name.
     - contextPath: FireEyeHX.Hosts.domain
       description: Domain name.
-    - contextPath: FireEyeHX.Hosts.gmt_offset_seconds
-      description: How many seconds the offset is from Greenwich Mean Time (GMT).
     - contextPath: FireEyeHX.Hosts.timezone
       description: Host time zone.
     - contextPath: FireEyeHX.Hosts.primary_ip_address
       description: The host IP address.
-    - contextPath: FireEyeHX.Hosts.last_audit_timestamp
-      description: The time stamp of the last audit run against the host.
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
-      description: The time stemp of the last system poll preformed on the host.
-    - contextPath: FireEyeHX.Hosts.last_poll_ip
-      description: Last poll IP.
-    - contextPath: FireEyeHX.Hosts.reported_clone
-      description: Indicates whether the host has a reported clone.
+      description: The timestamp of the last system poll preformed on the host.
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent checkin.
-    - contextPath: FireEyeHX.Hosts.last_alert
-      description: Partial Alert JSON document of the last alert on the host.
+      description: Timestamp of the initial agent check-in.
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
       description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
-    - contextPath: FireEyeHX.Hosts.os.patch_level
-      description: Operating system patch
     - contextPath: FireEyeHX.Hosts.os.bitness
       description: OS Bitness.
     - contextPath: FireEyeHX.Hosts.os.platform
       description: Family of operating systems. Valid values are win, osx, and linux.
-    - contextPath: FireEyeHX.Hosts.os.kernel_version
-      description: Kernel version.
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
     description: Get information on a host associated with an agent.
