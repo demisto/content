@@ -2494,12 +2494,8 @@ script:
       description: Indicator ID.
     - contextPath: FireEyeHX.Alerts.resolution
       description: Alert resulotion.
-    - contextPath: FireEyeHX.Alerts.event_id
-      description: The event ID.
     - contextPath: FireEyeHX.Alerts.event_type
       description: Event type.
-    - contextPath: FireEyeHX.Alerts.event_values
-      description: A JSON that holds the event information. Cusome to event type.
     description: Get a list of alerts, use the different arguments to filter the
       results returned.
   - name: fireeye-hx-suppress-alert
@@ -2555,12 +2551,8 @@ script:
       description: The "Created By" field as displayed in UI
     - contextPath: FireEyeHX.Indicators.active_since
       description: Date indicator became active.
-    - contextPath: FireEyeHX.Indicators.meta
-      description: JSON object containing arbitrary metadata about the indicator.
     - contextPath: FireEyeHX.Indicators.stats.source_alerts
       description: Total number of source alerts associated with this indicator.
-    - contextPath: FireEyeHX.Indicators.stats.active_conditions
-      description: Total number of enabled conditions associated with this indicator.
     - contextPath: FireEyeHX.Indicators.stats.alerted_agents
       description: Total number of agents with HX alerts associated with this indicator.
     - contextPath: FireEyeHX.Indicators.platforms
@@ -2589,12 +2581,8 @@ script:
       description: The "Created By" field as displayed in UI
     - contextPath: FireEyeHX.Indicators.active_since
       description: Date indicator became active.
-    - contextPath: FireEyeHX.Indicators.meta
-      description: JSON object containing arbitrary metadata about the indicator.
     - contextPath: FireEyeHX.Indicators.stats.source_alerts
       description: Total number of source alerts associated with this indicator.
-    - contextPath: FireEyeHX.Indicators.stats.active_conditions
-      description: Total number of enabled conditions associated with this indicator.
     - contextPath: FireEyeHX.Indicators.stats.alerted_agents
       description: Total number of agents with HX alerts associated with this indicator.
     - contextPath: FireEyeHX.Indicators.platforms
@@ -2605,8 +2593,6 @@ script:
       description: Event type.
     - contextPath: FireEyeHX.Conditions.enabled
       description: Indicates whether the condition is enabled.
-    - contextPath: FireEyeHX.Conditions.tests
-      description: The list of condions to be tested againest the event.
     description: Get a specific indicator details
   - name: fireeye-hx-get-host-information
     arguments:
@@ -2694,12 +2680,8 @@ script:
       description: Indicator ID.
     - contextPath: FireEyeHX.Alerts.resolution
       description: Alert resulotion.
-    - contextPath: FireEyeHX.Alerts.event_id
-      description: The event ID.
     - contextPath: FireEyeHX.Alerts.event_type
       description: Event type.
-    - contextPath: FireEyeHX.Alerts.event_values
-      description: A JSON that holds the event information. Cusome to event type.
     description: Get details of a specific alert
   - name: fireeye-hx-file-acquisition
     arguments:
@@ -2722,16 +2704,12 @@ script:
       description: The acquisition state.
     - contextPath: FireEyeHX.Acquisitions.md5
       description: File md5.
-    - contextPath: FireEyeHX.Acquisitions.request_time
-      description: The acquisition request timestamp.
     - contextPath: FireEyeHX.Acquisitions.req_filename
       description: The file name.
     - contextPath: FireEyeHX.Acquisitions.req_path
       description: The file path.
     - contextPath: FireEyeHX.Acquisitions.host._id
       description: FireEye HX agent ID.
-    - contextPath: FireEyeHX.Acquisitions.finish_time
-      description: Time when the acquisition was finished.
     description: Aquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
   - name: fireeye-hx-delete-file-acquisition
@@ -2771,11 +2749,7 @@ script:
       description: The acquisition state.
     - contextPath: FireEyeHX.Acquisitions.md5
       description: File md5.
-    - contextPath: FireEyeHX.Acquisitions.request_time
-      description: The acquisition request timestamp.
     - contextPath: FireEyeHX.Acquisitions.host._id
-      description: FireEye HX agent ID.
-    - contextPath: FireEyeHX.Acquisitions.finish_time
       description: Time when the acquisition was finished.
     description: Aquire a specific file as a password protected zip file. The password
     description: Start a data acquisition process to gather artifacts from the system
