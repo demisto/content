@@ -91,7 +91,7 @@ script:
                 } else if (url === report.domain){
                     delete report.url
                 }
-                md = tableToMarkdown('Scan report ' + url, report);
+                md = tableToMarkdown('Phish.AI Scan report ' + url, report);
                 return {
                     Type: entryTypes.note,
                     Contents: report,
