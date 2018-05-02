@@ -50,14 +50,16 @@ jobs:
       - run:
           name: Setup Instance
           command: |
-              sudo bash Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-              sudo bash Tests/scripts/create_instance.sh
-              sudo bash Tests/scripts/download_demisto_conf.sh
-              sudo bash Tests/scripts/run_installer_on_instance.sh
-              sudo bash Tests/scripts/wait_until_server_ready.sh
+              pip install awscli --upgrade --user
+              chmod +x ./Tests/scripts/*
+              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/download_demisto_conf.sh
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
       - run:
           name: Run Tests
-          command: sudo bash Tests/scripts/run_tests.sh
+          command: ./Tests/scripts/run_tests.sh
       - run:
           name: Destory Instances
           command: ./Tests/scripts/destroy_instances.sh
