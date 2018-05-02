@@ -4,14 +4,17 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CIRCLE_ARTIFACTS: "~/artifacts"
       CONTENT_VERSION: "18.5.0"
     steps:
       - checkout
       - run:
+          name: Prepare Environment
+          command: |
+              export CIRCLE_ARTIFACTS="$CIRCLE_WORKING_DIRECTORY/artifacts"
+              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+      - run:
           name: Install dependencies
           command: |
-              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
               sudo easy_install pip
               sudo pip install pykwalify
@@ -44,13 +47,10 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - store_artifacts:
-          path: /home/circleci/project/artifacts
-          destination: artifacts
       - run:
           name: Setup Instance
           command: |
-              pip install awscli --upgrade --user
+              sudo pip install awscli
               chmod +x ./Tests/scripts/*
               ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
               ./Tests/scripts/create_instance.sh
