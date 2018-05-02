@@ -10,7 +10,8 @@ jobs:
       - run:
           name: Prepare Environment
           command: |
-              export CIRCLE_ARTIFACTS="$CIRCLE_WORKING_DIRECTORY/artifacts"
+              echo 'export CIRCLE_ARTIFACTS="$CIRCLE_WORKING_DIRECTORY/artifacts"' >> $BASH_ENV
+              source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
       - run:
           name: Install dependencies
