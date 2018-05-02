@@ -2,6 +2,7 @@ id: MAR - Endpoint data collection
 version: -1
 name: MAR - Endpoint data collection
 fromversion: ""
+releaseNotes: "-"
 description: |-
   Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
 
