@@ -637,4 +637,3 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-releaseNotes: "Handling scenarios where character set of email cannot be identified"
