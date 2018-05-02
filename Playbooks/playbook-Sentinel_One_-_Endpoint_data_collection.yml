@@ -1,6 +1,8 @@
 id: Sentinel One - Endpoint data collection
 version: -1
 name: Sentinel One - Endpoint data collection
+fromversion: ""
+releaseNotes: "-"
 description: |-
   # Collect endpoint information based on SentinelOne commands.
 
