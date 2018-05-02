@@ -38,7 +38,7 @@ def add_dot(text):
 
 
 def release_notes_item(header, body):
-    return '- ___' + header + '___\n' + add_dot(body) + '\n'
+    return '- __' + header + '__\n' + add_dot(body) + '\n'
 
 
 class Content:
