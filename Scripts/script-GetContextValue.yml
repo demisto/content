@@ -18,7 +18,6 @@ tags:
 comment: The script returns a value from context
 system: true
 deprecated: true
-releaseNotes: Use builtin conditions instead
 args:
 - name: key
   required: true
