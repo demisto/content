@@ -5,6 +5,7 @@ jobs:
       - image: circleci/node:9.11
     environment:
       CIRCLE_ARTIFACTS: "~/content"
+      CONTENT_VERSION: "18.5.0"
     steps:
       - checkout
       - run:
@@ -26,13 +27,18 @@ jobs:
               ./Tests/yamlvalidator
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 1aeecc41f4640cfca92618bbefd44698f61b9c88 18.4.2
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 1aeecc41f4640cfca92618bbefd44698f61b9c88 $CONTENT_VERSION
       - run:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh
       - run:
           name: Server Documentation
           command: python content_creator.py $CIRCLE_ARTIFACTS
+      - run:
+          name: GET DETAILS
+          command: |
+              ls -l
+              ls -l ~
       - store_artifacts:
           path: content
           destination: content
