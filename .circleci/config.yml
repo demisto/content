@@ -1,10 +1,11 @@
 version: 2
 jobs:
   build:
+    working_directory: /tmp
     docker:
       - image: circleci/node:9.11
     environment:
-      CIRCLE_ARTIFACTS: "~/content"
+      CIRCLE_ARTIFACTS: "~/tmp/artifacts"
       CONTENT_VERSION: "18.5.0"
     steps:
       - checkout
@@ -21,8 +22,9 @@ jobs:
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
       - run:
-          name: Validate Yaml
+          name: Validate Files and Yaml
           command: |
+              ./Tests/scripts/validate_files_structure.sh
               chmod +x ./Tests/yamlvalidator
               ./Tests/yamlvalidator
       - run:
@@ -37,46 +39,22 @@ jobs:
       - run:
           name: GET DETAILS
           command: |
+              pwd
               ls -l
-              ls -l ~
+              ls -l $CIRCLE_ARTIFACTS
       - store_artifacts:
-          path: content
-          destination: content
-  test:
-    docker:
-      - image: circleci/node:9.11
-    steps:
-      - checkout
-      - run:
-          name: Prepare
-          command: |
-              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
-              sudo easy_install pip
-              sudo pip install pykwalify
-              sudo pip install awscli
-              sudo npm install npm -g
-              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
-              sudo npm install -g jsdoc-to-markdown
-              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
-              chmod +x ./Tests/scripts/*
-              ./Tests/scripts/validate_files_structure.sh
-              ./Tests/scripts/server_get_artifact.sh
+          path: artifacts
       - run:
           name: Setup Instance
           command: |
+              ./Tests/scripts/server_get_artifact.sh
               ./Tests/scripts/create_instance.sh
               ./Tests/scripts/download_demisto_conf.sh
               ./Tests/scripts/run_installer_on_instance.sh
               ./Tests/scripts/wait_until_server_ready.sh
       - run:
-          name: Test
+          name: Run Tests
           command: ./Tests/scripts/run_tests.sh
       - run:
           name: Destory Instances
           command: ./Tests/scripts/destroy_instances.sh
-workflows:
-  version: 2
-  build-and-test:
-    jobs:
-      - build
-      - test
