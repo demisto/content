@@ -8,6 +8,7 @@ TOKEN_ATTR="circle-token=$SERVER_CI_TOKEN"
 echo "Getting latest build num"
 TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=5&filter=successful&$TOKEN_ATTR")
 
+echo $SERVER_API_URI/tree/master?limit=5&filter=successful&$TOKEN_ATTR
 echo $TEMP
 ARTIFACT_BUILD_NUM=
 for i in `seq 0 4`; do
