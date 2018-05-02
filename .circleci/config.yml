@@ -42,18 +42,22 @@ jobs:
               ls -l
               ls -l $CIRCLE_ARTIFACTS
       - store_artifacts:
-          path: ~/artifacts
+          path: ~/artifacts/content_new.zip
+      - store_artifacts:
+          path: ~/artifacts/content_yml.zip
+      - store_artifacts:
+          path: ~/artifacts/release-notes.txt
       - run:
           name: Setup Instance
           command: |
-              sudo ./Tests/scripts/server_get_artifact.sh
-              sudo ./Tests/scripts/create_instance.sh
-              sudo ./Tests/scripts/download_demisto_conf.sh
-              sudo ./Tests/scripts/run_installer_on_instance.sh
-              sudo ./Tests/scripts/wait_until_server_ready.sh
+              ./Tests/scripts/server_get_artifact.sh
+              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/download_demisto_conf.sh
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
       - run:
           name: Run Tests
-          command: sudo ./Tests/scripts/run_tests.sh
+          command: ./Tests/scripts/run_tests.sh
       - run:
           name: Destory Instances
-          command: sudo ./Tests/scripts/destroy_instances.sh
+          command: ./Tests/scripts/destroy_instances.sh
