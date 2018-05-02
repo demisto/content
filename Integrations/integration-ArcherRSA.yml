@@ -2706,4 +2706,3 @@ script:
     description: Add data to Archer's Detailed Analysis field
   isfetch: true
   runonce: false
-releaseNotes: "-"
