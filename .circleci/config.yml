@@ -12,7 +12,7 @@ jobs:
           name: Install dependencies
           command: |
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools
+              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
               sudo easy_install pip
               sudo pip install pykwalify
               sudo npm install npm -g
