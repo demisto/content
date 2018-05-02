@@ -24,12 +24,12 @@ configuration:
   required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Fetch incidents
@@ -1298,7 +1298,7 @@ script:
             'EntryContext': {
                 "FireEyeHX.Alerts(obj._id==val._id)": alerts,
                 'File': files,
-                'RrgistryKey': registry_keys,
+                'RegistryKey': registry_keys,
                 'IP': ips
             }
         }
@@ -1902,7 +1902,7 @@ script:
             'Contents': '{}\nacquisition ID: {}'.format(message, acquisition_id),
             'ContentsFormat': formats['text'],
             'EntryContext': {
-                "FireEyeHX.acquisitions.Files(obj._id==val._id)": acquisition_info
+                "FireEyeHX.Acquisitions.Files(obj._id==val._id)": acquisition_info
             }
         }
 
@@ -1996,7 +1996,7 @@ script:
             demisto.results({
                 'Type': entryTypes['note'],
                 'Contents': acquisition_info.get('error_message'),
-                'ContentsFormat': formats['text'],
+                'ContentsFormat': formats['text']
             })
 
         LOG('Acquisition process has been complete. Fetching mans file.')
