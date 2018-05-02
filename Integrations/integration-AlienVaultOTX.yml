@@ -519,4 +519,3 @@ script:
     description: Query url in AlienVault OTX
   runonce: false
 fromversion: 3.0.1
-releaseNotes: "-"
