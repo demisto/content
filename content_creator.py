@@ -46,7 +46,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
             yml_info = yaml.safe_load(f)
 
         ver = yml_info.get('fromversion', '0')
-        if is_ge_version(version_num, ver):
+        if ver == '' or is_ge_version(version_num, ver):
             print ' - marked as post: %s (%s)' % (ver, path, )
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
