@@ -18,10 +18,10 @@ jobs:
           command: |
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
               sudo easy_install pip
-              sudo pip install pykwalify
               sudo npm install npm -g
-              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo pip install pykwalify
+              sudo pip install requests
+              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
       - run:
@@ -43,6 +43,7 @@ jobs:
           name: GET DETAILS
           command: |
               pwd
+              echo ${CIRCLE_ARTIFACTS}
               ls -l
               ls -l $CIRCLE_ARTIFACTS
       - store_artifacts:
