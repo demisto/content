@@ -97,7 +97,7 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_POST + '.zip', os.path.join(circle_artifacts, ZIP_POST + '.zip'))
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
 
-    print 'finished create content artifact'
+    print 'finished create content artifact at %s' % (circle_artifacts, )
 
 
 def test_version_compare(version_num):
