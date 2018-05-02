@@ -1,11 +1,10 @@
 version: 2
 jobs:
   build:
-    working_directory: /tmp
     docker:
       - image: circleci/node:9.11
     environment:
-      CIRCLE_ARTIFACTS: "~/tmp/artifacts"
+      CIRCLE_ARTIFACTS: "~/artifacts"
       CONTENT_VERSION: "18.5.0"
     steps:
       - checkout
