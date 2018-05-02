@@ -50,6 +50,9 @@ jobs:
       - run:
           name: Setup Instance
           command: |
+              echo $SERVER_CI_TOKEN
+              echo $TEST_VAR
+              echo 'lol'
               sudo bash Tests/scripts/server_get_artifact.sh
               sudo bash Tests/scripts/create_instance.sh
               sudo bash Tests/scripts/download_demisto_conf.sh
