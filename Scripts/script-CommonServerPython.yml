@@ -526,6 +526,14 @@ script: |-
          :rtype: ``str``
       """
 
+      mdResult = ''
+      if name:
+          mdResult = '### ' + name + '\n'
+
+      if not t or len(t) == 0:
+          mdResult += '**No entries.**\n'
+          return mdResult
+
       if not isinstance(t, list):
           t = [t]
       # in case of headers was not provided (backward compatibility)
@@ -537,10 +545,6 @@ script: |-
           for header in headers_aux:
               if all(obj[header] is None for obj in t):
                   headers.remove(header)
-
-      mdResult = ''
-      if name:
-          mdResult = '### ' + name + '\n'
 
       if t:
           newHeaders = []

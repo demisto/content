@@ -533,9 +533,9 @@ script: |-
                   demisto.setContext('AttachmentName', part.get_filename())
                   r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
-                  html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  html = getUtfString(part.get_payload(decode=True),'HTML')
               elif part.get_content_type() == 'text/plain':
-                  text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  text = getUtfString(part.get_payload(decode=True),'TEXT')
 
 
           try:
