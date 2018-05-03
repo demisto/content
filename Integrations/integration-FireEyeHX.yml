@@ -1543,7 +1543,8 @@ script:
 
         if args.get('limit'):
             args['limit'] = int(args['limit'])
-        alerted = args.get('alerted') == 'true'
+        if args.get('alerted'):
+            args['alerted'] = args['alerted'] == 'yes'
         if args.get('sort'):
             args['sort'] = sort_map.get(args.get('sort'))
 
@@ -1554,7 +1555,7 @@ script:
             share_mode=args.get('shareMode'),
             sort=args.get('sort'),
             created_by=args.get('createdBy'),
-            alerted=alerted,
+            alerted=args.get('alerted'),
             limit=args.get('limit')
         )
 
@@ -2535,6 +2536,10 @@ script:
       - "false"
       description: Person who created the indicator
     - name: alerted
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
       description: Whether the indicator resulted in alerts
     - name: limit
       description: Limit the number of results
