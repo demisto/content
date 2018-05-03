@@ -110,7 +110,10 @@ class Content:
 
                     if ans:
                         new_count += 1
-                    new_str += ans
+                        new_str += ans
+                        print "Success"
+                    else:
+                        print "Skipped"
 
             if len(new_str) > 0:
                 if self.show_secondary_header():
@@ -124,7 +127,6 @@ class Content:
         if missing_rn:
             return None
 
-        print "Success"
         return res
 
     def generate_release_notes(self):
@@ -194,7 +196,9 @@ class PlaybookContent(Content):
         return "Playbooks"
 
     def added_release_notes(self, cnt):
-        rn = cnt["releaseNotes"]
+        rn = cnt.get("releaseNotes")
+        if not rn:
+            return None
         if rn == "-":
             return ""
 
@@ -433,7 +437,7 @@ class ReputationContent(Content):
         res = ""
 
         if rn != '-':
-            res = add_dot(cnt["releaseNotes"]) + "\n"
+            res = add_dot(rn) + "\n"
         return res
 
 
@@ -457,7 +461,7 @@ class IntegrationContent(Content):
         res = ""
 
         if rn != '-':
-            res = release_notes_item(cnt["name"], cnt["releaseNotes"])
+            res = release_notes_item(cnt["name"], rn)
         return res
 
 
