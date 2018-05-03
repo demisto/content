@@ -76,6 +76,11 @@ script:
 
     var getHeaders = function(query) {
         var timestamp = new Date().toUTCString();
+        if (timestamp.indexOf('+') > 0) {
+            timestamp = timestamp.substring(0,timestamp.indexOf('+'));
+        } else if (timestamp.indexOf('-') > 0) {
+            timestamp = timestamp.substring(0,timestamp.indexOf('-'));
+        }
         message = query + acceptVersion + 'application/json' + timestamp;
         hashed = HMAC_SHA256_MAC(privateKey, message);
 
