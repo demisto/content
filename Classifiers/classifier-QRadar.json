@@ -64,6 +64,5 @@
 		"SIM User Authentication": "Access",
 		"User Login Failure": "Access"
 	},
-	"brandName": "QRadar",
-	"releaseNotes": "QRadar classification and mapping for 'Access' incident type"
+	"brandName": "QRadar"
 }
