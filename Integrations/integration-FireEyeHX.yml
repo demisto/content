@@ -1250,8 +1250,7 @@ script:
             'alertId': '_id',
             'matchedAt': 'matched_at',
             'id': '_id',
-            'reportedAt': 'reported_at',
-            'source': 'source'
+            'reportedAt': 'reported_at'
         }
 
         if args.get('sort'):
@@ -2460,7 +2459,6 @@ script:
       - matchedAt
       - id
       - reportedAt
-      - source
       description: Sorts the results by the specified field in ascending order.
     - name: sortOrder
       auto: PREDEFINED
