@@ -2530,10 +2530,6 @@ script:
       - alerted
       description: Sorts the results by the specified field in ascending  order
     - name: createdBy
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
       description: Person who created the indicator
     - name: alerted
       auto: PREDEFINED
