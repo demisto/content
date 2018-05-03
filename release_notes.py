@@ -9,6 +9,10 @@ from Tests.test_utils import print_error
 contentLibPath = "./"
 limitedVersion = False
 
+
+NEW_RN = "New"
+MODIFIED_RN = "Improved"
+
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
     "edit": "New/Edit",
@@ -87,11 +91,19 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print "     - Adding release notes (New) for file - [%s]... " % (path,),
+                    print " - adding release notes (New) for file - [%s]... " % (path,),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
 
-                    ans = self.added_release_notes(cnt)
+                    if title_prefix == NEW_RN:
+                        ans = self.added_release_notes(cnt)
+                    elif title_prefix == MODIFIED_RN:
+                        ans = self.modified_release_notes(cnt)
+                    else:
+                        # should never get here
+                        print_error("Error:\n Unknown release notes type" % (title_prefix,))
+                        return None
+
                     if ans is None:
                         print_error("Error:\n[%s] is missing releaseNotes entry" % (path,))
                         missing_rn = True
@@ -112,19 +124,20 @@ class Content:
         if missing_rn:
             return None
 
+        print "Success"
         return res
 
     def generate_release_notes(self):
         res = ""
 
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
-            print "Starting generate release notes for %s" % (self.get_header(),)
+            print "starting %s RN" % (self.get_header(),)
 
             # Added files
-            add_rn = self.release_notes_section(self.added_store, "New")
+            add_rn = self.release_notes_section(self.added_store, NEW_RN)
 
             # Modified files
-            modified_rn = self.release_notes_section(self.added_store, "Improved")
+            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN)
 
             if add_rn is None or modified_rn is None:
                 return None
@@ -135,14 +148,13 @@ class Content:
             if len(self.deleted_store) > 0:
                 section_body += "\n##### Removed " + self.get_header() + "\n"
                 for name in self.deleted_store:
-                    print "     - Adding release notes (Removed) for - [%s]" % (name,),
+                    print " - adding release notes (Removed) for - [%s]" % (name,),
                     section_body += "- __" + name + "__\n"
+                    print "Success"
 
             if len(section_body) > 0:
                 res = "### " + self.get_header() + "\n"
                 res += section_body
-
-            print "Success"
 
         return res
 
@@ -182,11 +194,11 @@ class PlaybookContent(Content):
         return "Playbooks"
 
     def added_release_notes(self, cnt):
-        rn = cnt.get("releaseNotes", "")
-        if len(rn) > 0 and rn == "-":
+        rn = cnt["releaseNotes"]
+        if rn == "-":
             return ""
 
-        return release_notes_item(cnt["name"], cnt["description"])
+        return release_notes_item(cnt["name"], rn)
 
     def modified_release_notes(self, cnt):
         rn = cnt.get("releaseNotes", "")
