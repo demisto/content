@@ -2756,8 +2756,8 @@ script:
     arguments:
     - name: userInfo
       required: true
-      description: User information in the following format "domain\\username".
+      description: User information in the following format - "domain\\username". For example, userInfo="Demisto\\myusername"
     description: Perform Archer Domain User Lookup and return its user id
   isfetch: true
   runonce: false
-releaseNotes:"-"
+releaseNotes: "-"
