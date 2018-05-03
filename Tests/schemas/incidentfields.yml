@@ -1,6 +1,15 @@
-type: seq
-sequence:
-- include: field_schema
+type: map
+mapping:
+  releaseNotes:
+    type: str
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  incidentFields:
+    type: seq
+    sequence:
+    - include: field_schema
 
 schema;field_schema:
   type: map

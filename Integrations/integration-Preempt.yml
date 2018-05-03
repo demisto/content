@@ -52,7 +52,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     import json
     from dateutil.parser import parse as parse_date
     from datetime import timedelta, datetime
@@ -236,7 +236,7 @@ script:
             "entityIds": [demisto.args()["accountObjectGuid"]]
         }
         resp = api_request("%s/unwatch" % ENTITIES_URI, args)
-        demisto.results("User removed removed from watch list")
+        demisto.results("User removed from watch list")
         sys.exit(0)
 
     if demisto.command() == "preempt-get-activities":
@@ -307,10 +307,10 @@ script:
             "Type": 1,
             "ContentsFormat": "json",
             "Contents": json.dumps(events),
-            "HumanReadable": tableToMarkdown("Activies in time frame", pretty_results, ["Timestamp", "EndpointHostName"]),
+            "HumanReadable": tableToMarkdown("Activities in time frame", pretty_results, ["Timestamp", "EndpointHostName"]),
             "EntryContext": {
-                "Activities": pretty_results,
-                "Cursor": cursor
+                'Preempt.Activities': pretty_results,
+                'Preempt.Alerts.Cursor': cursor
             }
         })
         sys.exit(0)
@@ -372,7 +372,7 @@ script:
             "Contents": json.dumps(result),
             "HumanReadable": tableToMarkdown("User's regular endpoints", pretty_results, ["HostName", "IsOwnedByUser"]),
             "EntryContext": {
-                "Endpoint": pretty_results
+                'Endpoint': pretty_results
             }
         })
         sys.exit(0)
@@ -396,15 +396,11 @@ script:
             "Contents": json.dumps(alerts),
             "HumanReadable": tableToMarkdown("User's last 48 hours alerts", alerts),
             "EntryContext": {
-                "Alerts": alerts,
-                "Cursor": cursor
+                'Preempt.Alerts': alerts,
+                'Preempt.Alerts.Cursor': cursor
             }
         })
         sys.exit(0)
-
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
   type: python
   commands:
   - name: preempt-add-to-watch-list
@@ -423,7 +419,6 @@ script:
       required: true
       description: ID of a user whose activities to retrieve
     - name: types
-      required: true
       description: List of specific incident types (comma delimited)
       defaultValue: LOGIN
     - name: endTime
@@ -433,19 +428,19 @@ script:
       description: Number of hours to look back from end time
       defaultValue: "48"
     outputs:
-    - contextPath: Activities.EndpointHostName
+    - contextPath: Preempt.Activities.EndpointHostName
       description: Hostname of the activity's endpoint
       type: string
-    - contextPath: Activities.EventType
+    - contextPath: Preempt.Activities.EventType
       description: Type of the activity
       type: string
-    - contextPath: Activities.AuthenticationType
+    - contextPath: Preempt.Activities.AuthenticationType
       description: For authentication, specific type
       type: string
-    - contextPath: Activities.Timestamp
+    - contextPath: Preempt.Activities.Timestamp
       description: Date/time of the activity
       type: date
-    - contextPath: Cursor
+    - contextPath: Preempt.Activities.Cursor
       description: Cursor of last retrieved activity for pagination
       type: string
     description: Get activities from a time frame
@@ -483,7 +478,24 @@ script:
       defaultValue: "48"
     - name: endTime
       description: End of time frame to look in
+    outputs:
+    - contextPath: Preempt.Alerts.AlertType
+      description: Type of the Alert
+      type: string
+    - contextPath: Preempt.Alerts.timestamp
+      description: Date/time of the activity
+      type: date
+    - contextPath: Preempt.Alerts.startTime
+      description: Date/time of beginning of the alert
+      type: date
+    - contextPath: Preempt.Alerts.EndTime
+      description: Date/time when the alert was ended
+      type: date
+    - contextPath: Preempt.Alerts.eventLabel
+      description: The label of the alert
+      type: string
+    - contextPath: Preempt.Alerts.Cursor
+      description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
   dockerimage: demisto/python
   isfetch: true
-  runonce: false

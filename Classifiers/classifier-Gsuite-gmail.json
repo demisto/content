@@ -203,6 +203,5 @@
 	"keyTypeMap": {
 		"google": "Phishing"
 	},
-	"brandName": "google",
-	"releaseNotes": "New Google apps gsuite gmail default classification"
+	"brandName": "google"
 }
