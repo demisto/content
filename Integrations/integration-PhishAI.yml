@@ -169,4 +169,3 @@ script:
     description: Check if url is phishing and get details about the brand that is
       being phished
   runonce: true
-releaseNotes: "-"
