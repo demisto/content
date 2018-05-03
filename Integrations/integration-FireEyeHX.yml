@@ -2718,10 +2718,6 @@ script:
       required: true
       description: The acquisition ID.
     description: Delete that file acquisition, by ID.
-  - name: fireeye-hx-search
-    arguments: []
-    description: Use  search to check all hosts or a subset of hosts for a specific
-      file or indicator.
   - name: fireeye-hx-data-acquisition
     arguments:
     - name: script
