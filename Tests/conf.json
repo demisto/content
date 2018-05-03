@@ -406,7 +406,7 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
-        }
+        },
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test"
