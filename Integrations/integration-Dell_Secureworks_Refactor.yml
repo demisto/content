@@ -68,7 +68,9 @@ script:
     var EVENT_SOURCE_HEALTH_TYPE = "CTP_HEALTH";
     var CATEGORIZATION_CLASS_HEALTH_TYPE = "Health";
     var MAX_LIMIT = 500;
+    var MINUTE_IN_MS = 60 * 1000;
 
+    /*
     function createContext(data) {
         var createContextSingle = function(obj) {
             var res = {};
@@ -94,7 +96,7 @@ script:
             return res;
         }
         return createContextSingle(data);
-    }
+    }*/
 
     function sendRequest(path, method, queryParams, body){
         var query = '';
@@ -152,7 +154,7 @@ script:
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works create ticket response' , translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': translated
         };
 
         return entry;
@@ -185,7 +187,7 @@ script:
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works update ticket response' , translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': translated
         };
 
         return entry;
@@ -243,7 +245,7 @@ script:
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works assign ticket response' , translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': translated
         };
 
         return entry;
@@ -275,7 +277,7 @@ script:
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works close ticket response' , translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': translated
         };
 
         return entry;
@@ -323,30 +325,25 @@ script:
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfoId', from: 'attachmentInfo.id'},
-            {to: 'AttachmentInfoName', from: 'attachmentInfo.name'},
+            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
             {to: 'ChangeSlo', from: 'changeSlo'},
             {to: 'ChangeWindowStart', from: 'changeWindowStart'},
             {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
-            {to: 'Client-ID', from: 'client.id'},
-            {to: 'Client-ID', from: 'client.name'},
-            {to: 'Contact-ID', from: 'contact.id'},
-            {to: 'Contact-ID', from: 'contact.name'},
+            {to: 'Client', from: 'client.name'},
+            {to: 'Contact', from: 'contact.name'},
             {to: 'Created', from: 'dateCreated'},
             {to: 'Closed', from: 'dateClosed'},
             {to: 'Modified', from: 'dateModified'},
             {to: 'Description', from: 'detailedDescription'},
-            {to: 'Devices-ID', from: 'devices.id'},
-            {to: 'Devices-Name', from: 'devices.name'},
+            {to: 'Device', from: 'devices.name'},
             {to: 'Impact', from: 'impact'},
-            {to: 'Location', from: 'location'},
+            {to: 'Location', from: 'clientLocation.name'},
             {to: 'Partner', from: 'partner'},
             {to: 'Priority', from: 'priority'},
             {to: 'Reason', from: 'reason'},
             {to: 'RequestType', from: 'requestType'},
             {to: 'RiskAssessment', from: 'riskAssessment'},
             {to: 'Service', from: 'service'},
-            {to: 'Status', from: 'status'},
             {to: 'Status', from: 'status'},
             {to: 'SymptomDescription', from: 'symptomDescription'},
             {to: 'ID', from: 'ticketId'},
@@ -376,9 +373,9 @@ script:
         md += worklogsTranslated ? tableToMarkdown('Worklogs', worklogsTranslated) : '';
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = md,
-        entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
-        };
+            entry.EntryContext = {
+                'SecureWorks.Ticket(val.ticketId==obj.ticketId)': ticket
+            };
 
         return entry;
     }
@@ -418,36 +415,31 @@ script:
     function getTicketsUpdatesCommand() {
         var acknowledge = args.acknowledge;
         delete args.acknowledge;
-        var ticktes = getTicketsUpdates(args, acknowledge);
+        var tickets = getTicketsUpdates(args, acknowledge);
 
-        convertTicketDates(ticktes);
+        convertTicketDates(tickets);
 
         var translator = [
             {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfoId', from: 'attachmentInfo.id'},
-            {to: 'AttachmentInfoName', from: 'attachmentInfo.name'},
+            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
             {to: 'ChangeSlo', from: 'changeSlo'},
             {to: 'ChangeWindowStart', from: 'changeWindowStart'},
             {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
-            {to: 'Client-ID', from: 'client.id'},
-            {to: 'Client-ID', from: 'client.name'},
-            {to: 'Contact-ID', from: 'contact.id'},
-            {to: 'Contact-ID', from: 'contact.name'},
+            {to: 'Client', from: 'client.name'},
+            {to: 'Contact', from: 'contact.name'},
             {to: 'Created', from: 'dateCreated'},
             {to: 'Closed', from: 'dateClosed'},
             {to: 'Modified', from: 'dateModified'},
             {to: 'Description', from: 'detailedDescription'},
-            {to: 'Devices-ID', from: 'devices.id'},
-            {to: 'Devices-Name', from: 'devices.name'},
+            {to: 'Device', from: 'devices.name'},
             {to: 'Impact', from: 'impact'},
-            {to: 'Location', from: 'location'},
+            {to: 'Location', from: 'clientLocation.name'},
             {to: 'Partner', from: 'partner'},
             {to: 'Priority', from: 'priority'},
             {to: 'Reason', from: 'reason'},
             {to: 'RequestType', from: 'requestType'},
             {to: 'RiskAssessment', from: 'riskAssessment'},
             {to: 'Service', from: 'service'},
-            {to: 'Status', from: 'status'},
             {to: 'Status', from: 'status'},
             {to: 'SymptomDescription', from: 'symptomDescription'},
             {to: 'ID', from: 'ticketId'},
@@ -458,15 +450,15 @@ script:
 
         var entry = {
             Type: entryTypes.note,
-            Contents: ticktes,
+            Contents: tickets,
             ContentsFormat: formats.json
         };
 
-        var translated = cleanObject(mapObjFunction(translator)(ticktes));
+        var translated = cleanObject(mapObjFunction(translator)(tickets));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ticketId==obj.ticketId)': tickets
         };
 
         return entry;
@@ -527,7 +519,7 @@ script:
 
         entry.HumanReadable = tableToMarkdown('Secure works close codes response', translated);
         entry.EntryContext = {
-            'SecureWorks.Tickets(val.ID==obj.ID)': createContext(translated)
+            'SecureWorks.Ticket(val.ID==obj.ID)': translated
         };
 
         return entry;
@@ -556,11 +548,22 @@ script:
         var ticketVersionsObject = {
             ticketVersions: []
         };
+
+        var lastRun = getLastRun();
+        var now = new Date().getTime();
+        if(!lastRun || !lastRun.timestamp){
+            var lastHalfAnHour = now - (30 * MINUTE_IN_MS);
+            lastRun = {
+                timestamp: lastHalfAnHour
+            };
+        }
+
         var responseTickets = getTicketsUpdates(queryParams);
         responseTickets.forEach(function(responseTicket){
             if(statuses.indexOf(responseTicket.status) !== -1 &&
-            responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
-            responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE){
+                responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
+                responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE &&
+                responseTicket.dateCreated > lastRun.timestamp){
                 convertTicketDates(responseTicket);
                 tickets.push(responseTicket);
                 ticketVersionsObject.ticketVersions.push({
@@ -582,6 +585,10 @@ script:
                 incidents.push(incident);
             });
         }
+
+        setLastRun({
+            timestamp: now
+        });
 
         return JSON.stringify(incidents);
     }
@@ -816,64 +823,84 @@ script:
       - "false"
       description: Whether or not to include ticket worklogs, default is true
     outputs:
-    - contextPath: SecureWorks.Ticket.ChangeApproval
+    - contextPath: SecureWorks.Ticket.changeApproval
       description: Ticket change approval
-    - contextPath: SecureWorks.Ticket.AttachmentInfo
-      description: Ticket attachment info
-    - contextPath: SecureWorks.Ticket.ChangeSlo
-      description: Ticket change slo
-    - contextPath: SecureWorks.Ticket.ChangeWindowStart
+    - contextPath: SecureWorks.Ticket.attachmentInfo.id
+      description: Ticket attachment info ID
+    - contextPath: SecureWorks.Ticket.changeSlo
+      description: Ticket change service level objective
+    - contextPath: SecureWorks.Ticket.changeWindowStart
       description: Ticket change window start
-    - contextPath: SecureWorks.Ticket.ChangeWindowEnd
-      description: Ticket window end
-    - contextPath: SecureWorks.Ticket.Client.ID
-      description: Ticket client id
-    - contextPath: SecureWorks.Ticket.Client.Name
+    - contextPath: SecureWorks.Ticket.changeWindowEnd
+      description: Ticket change window end
+    - contextPath: SecureWorks.Ticket.client.id
+      description: Ticket client ID
+    - contextPath: SecureWorks.Ticket.client.name
       description: Ticket client name
-    - contextPath: SecureWorks.Ticket.Contact.ID
-      description: Ticket contact id
-    - contextPath: SecureWorks.Ticket.Contact.ID
-      description: Ticket contact id
-    - contextPath: SecureWorks.Ticket.Created
-      description: Ticket created
-    - contextPath: SecureWorks.Ticket.Closed
-      description: Ticket closed
-    - contextPath: SecureWorks.Ticket.Modified
+    - contextPath: SecureWorks.Ticket.contact.id
+      description: Contact ID
+    - contextPath: SecureWorks.Ticket.contact.name
+      description: Contact name
+    - contextPath: SecureWorks.Ticket.dateCreated
+      description: Ticket creation time
+    - contextPath: SecureWorks.Ticket.dateClosed
+      description: Ticket closing time
+    - contextPath: SecureWorks.Ticket.dateModified
       description: Ticket modified
-    - contextPath: SecureWorks.Ticket.Description
-      description: Ticket description
-    - contextPath: SecureWorks.Ticket.Devices.ID
-      description: Ticket device id
-    - contextPath: SecureWorks.Ticket.Devices.Name
-      description: Ticket device name
-    - contextPath: SecureWorks.Ticket.Impact
-      description: Ticket impact
-    - contextPath: SecureWorks.Ticket.Location
-      description: Ticket location
-    - contextPath: SecureWorks.Ticket.Partner
-      description: Ticket partner
-    - contextPath: SecureWorks.Ticket.Priority
-      description: Ticket priority
-    - contextPath: SecureWorks.Ticket.Reason
-      description: Ticket reason
-    - contextPath: SecureWorks.Ticket.RequestType
-      description: Ticket request type
-    - contextPath: SecureWorks.Ticket.RiskAssessment
-      description: Ticket risk assessment
-    - contextPath: SecureWorks.Ticket.Service
+    - contextPath: SecureWorks.Ticket.detailedDescription
+      description: Detailed description
+    - contextPath: SecureWorks.Ticket.devices.id
+      description: Device ID
+    - contextPath: SecureWorks.Ticket.devices.name
+      description: Device name
+    - contextPath: SecureWorks.Ticket.impact
+      description: Impact
+    - contextPath: SecureWorks.Ticket.clientLocation.id
+      description: Client location ID
+    - contextPath: SecureWorks.Ticket.partner
+      description: Partner
+    - contextPath: SecureWorks.Ticket.priority
+      description: Priority
+    - contextPath: SecureWorks.Ticket.reason
+      description: Ticket closure reason
+    - contextPath: SecureWorks.Ticket.requestType
+      description: Request type
+    - contextPath: SecureWorks.Ticket.riskAssessment
+      description: Risk assessment
+    - contextPath: SecureWorks.Ticket.service
       description: Ticket service
-    - contextPath: SecureWorks.Ticket.Status
+    - contextPath: SecureWorks.Ticket.status
       description: Ticket status
-    - contextPath: SecureWorks.Ticket.SymptomDescription
-      description: Ticket symptom description
-    - contextPath: SecureWorks.Ticket.ID
-      description: Ticket id
-    - contextPath: SecureWorks.Ticket.Type
+    - contextPath: SecureWorks.Ticket.symptomDescription
+      description: Symptom description
+    - contextPath: SecureWorks.Ticket.ticketId
+      description: Ticket ID
+    - contextPath: SecureWorks.Ticket.type
       description: Ticket type
-    - contextPath: SecureWorks.Ticket.Urgency
+    - contextPath: SecureWorks.Ticket.urgency
       description: Ticket urgency
-    - contextPath: SecureWorks.Ticket.Watchers
-      description: Ticket watchers
+    - contextPath: SecureWorks.Ticket.watchers
+      description: Watchers
+    - contextPath: SecureWorks.Ticket.category
+      description: Ticket category
+    - contextPath: SecureWorks.Ticket.categoryClass
+      description: Ticket category class
+    - contextPath: SecureWorks.Ticket.categoryType
+      description: Ticket category class
+    - contextPath: SecureWorks.Ticket.categoryItem
+      description: Ticket category item
+    - contextPath: SecureWorks.Ticket.attachmentInfo.name
+      description: Attachment name
+    - contextPath: SecureWorks.Ticket.clientLocation.name
+      description: Client location name
+    - contextPath: SecureWorks.Ticket.worklogs.createdBy
+      description: Worklog creator
+    - contextPath: SecureWorks.Ticket.worklogs.dateCreated
+      description: Worklog creation date
+    - contextPath: SecureWorks.Ticket.worklogs.description
+      description: Worklog description
+    - contextPath: SecureWorks.Ticket.worklogs.type
+      description: Worklog type
     description: Get the details of a specific ticket, by ID
   - name: secure-works-assign-ticket
     arguments:
@@ -904,9 +931,9 @@ script:
       - PM_PEND_RFC_AND_COST
       description: Valid for Change tickets only
     outputs:
-    - contextPath: SecureWorks.Tickets.AssignStatusCode
+    - contextPath: SecureWorks.Ticket.AssignStatusCode
       description: Assignment status code
-    - contextPath: SecureWorks.Tickets.ID
+    - contextPath: SecureWorks.Ticket.ID
       description: The ticket ID
     description: Assign a ticket to the SecureWorks Counter Threat Operations Center
   - name: secure-works-get-tickets-updates
@@ -948,65 +975,84 @@ script:
       description: Whether to acknowledge the received tickets, default false
       defaultValue: "false"
     outputs:
-    - contextPath: SecureWorks.Ticket.ChangeApproval
+    - contextPath: SecureWorks.Ticket.changeApproval
       description: Ticket change approval
-    - contextPath: SecureWorks.Ticket.AttachmentInfo
-      description: Ticket attachment info
-    - contextPath: SecureWorks.Ticket.ChangeSlo
-      description: Ticket change slo
-    - contextPath: SecureWorks.Ticket.ChangeWindowStart
+    - contextPath: SecureWorks.Ticket.attachmentInfo.id
+      description: Ticket attachment info ID
+    - contextPath: SecureWorks.Ticket.changeSlo
+      description: Ticket change service level objective
+    - contextPath: SecureWorks.Ticket.changeWindowStart
       description: Ticket change window start
-    - contextPath: SecureWorks.Ticket.ChangeWindowEnd
-      description: Ticket window end
-    - contextPath: SecureWorks.Ticket.Client.ID
-      description: Ticket client id
-    - contextPath: SecureWorks.Ticket.Client.Name
+    - contextPath: SecureWorks.Ticket.changeWindowEnd
+      description: Ticket change window end
+    - contextPath: SecureWorks.Ticket.client.id
+      description: Ticket client ID
+    - contextPath: SecureWorks.Ticket.client.name
       description: Ticket client name
-    - contextPath: SecureWorks.Ticket.Contact.ID
-      description: Ticket contact id
-    - contextPath: SecureWorks.Ticket.Contact.ID
-      description: Ticket contact id
-    - contextPath: SecureWorks.Ticket.Created
-      description: Ticket created
-    - contextPath: SecureWorks.Ticket.Closed
-      description: Ticket closed
-    - contextPath: SecureWorks.Ticket.Modified
+    - contextPath: SecureWorks.Ticket.contact.id
+      description: Contact ID
+    - contextPath: SecureWorks.Ticket.contact.name
+      description: Contact name
+    - contextPath: SecureWorks.Ticket.dateCreated
+      description: Ticket creation time
+    - contextPath: SecureWorks.Ticket.dateClosed
+      description: Ticket closing time
+    - contextPath: SecureWorks.Ticket.dateModified
       description: Ticket modified
-    - contextPath: SecureWorks.Ticket.Description
-      description: Ticket description
-    - contextPath: SecureWorks.Ticket.Devices.ID
-      description: Ticket device id
-    - contextPath: SecureWorks.Ticket.Devices.Name
-      description: Ticket device name
-    - contextPath: SecureWorks.Ticket.Impact
-      description: Ticket impact
-    - contextPath: SecureWorks.Ticket.Location
-      description: Ticket location
-    - contextPath: SecureWorks.Ticket.Partner
-      description: Ticket partner
-    - contextPath: SecureWorks.Ticket.Priority
-      description: Ticket priority
-    - contextPath: SecureWorks.Ticket.Reason
-      description: Ticket reason
-    - contextPath: SecureWorks.Ticket.RequestType
-      description: Ticket request type
-    - contextPath: SecureWorks.Ticket.RiskAssessment
-      description: Ticket risk assessment
-    - contextPath: SecureWorks.Ticket.Service
+    - contextPath: SecureWorks.Ticket.detailedDescription
+      description: Detailed description
+    - contextPath: SecureWorks.Ticket.devices.id
+      description: Device ID
+    - contextPath: SecureWorks.Ticket.devices.name
+      description: Device name
+    - contextPath: SecureWorks.Ticket.impact
+      description: Impact
+    - contextPath: SecureWorks.Ticket.clientLocation.id
+      description: Client location ID
+    - contextPath: SecureWorks.Ticket.partner
+      description: Partner
+    - contextPath: SecureWorks.Ticket.priority
+      description: Priority
+    - contextPath: SecureWorks.Ticket.reason
+      description: Ticket closure reason
+    - contextPath: SecureWorks.Ticket.requestType
+      description: Request type
+    - contextPath: SecureWorks.Ticket.riskAssessment
+      description: Risk assessment
+    - contextPath: SecureWorks.Ticket.service
       description: Ticket service
-    - contextPath: SecureWorks.Ticket.Status
+    - contextPath: SecureWorks.Ticket.status
       description: Ticket status
-    - contextPath: SecureWorks.Ticket.SymptomDescription
-      description: Ticket symptom description
-    - contextPath: SecureWorks.Ticket.ID
-      description: Ticket id
-    - contextPath: SecureWorks.Ticket.Type
+    - contextPath: SecureWorks.Ticket.symptomDescription
+      description: Symptom description
+    - contextPath: SecureWorks.Ticket.ticketId
+      description: Ticket ID
+    - contextPath: SecureWorks.Ticket.type
       description: Ticket type
-    - contextPath: SecureWorks.Ticket.Urgency
+    - contextPath: SecureWorks.Ticket.urgency
       description: Ticket urgency
-    - contextPath: SecureWorks.Ticket.Watchers
-      description: Tickets matching the ticketType. If not specified, tickets of all
-        types are returned.
+    - contextPath: SecureWorks.Ticket.watchers
+      description: Watchers
+    - contextPath: SecureWorks.Ticket.category
+      description: Ticket category
+    - contextPath: SecureWorks.Ticket.categoryClass
+      description: Ticket category class
+    - contextPath: SecureWorks.Ticket.categoryType
+      description: Ticket category class
+    - contextPath: SecureWorks.Ticket.categoryItem
+      description: Ticket category item
+    - contextPath: SecureWorks.Ticket.attachmentInfo.name
+      description: Attachment name
+    - contextPath: SecureWorks.Ticket.clientLocation.name
+      description: Client location name
+    - contextPath: SecureWorks.Ticket.worklogs.createdBy
+      description: Worklog creator
+    - contextPath: SecureWorks.Ticket.worklogs.dateCreated
+      description: Worklog creation date
+    - contextPath: SecureWorks.Ticket.worklogs.description
+      description: Worklog description
+    - contextPath: SecureWorks.Ticket.worklogs.type
+      description: Worklog type
     description: retrieves 10 tickets from 24 hours prior to when the POST /tickets/updates
       endpoint is executed. If the limit is specified, it will retrieve up to that
       many tickets (max is 500 tickets). Tickets must be updated within the last 24
