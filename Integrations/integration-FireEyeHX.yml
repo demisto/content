@@ -1896,7 +1896,6 @@ script:
         if acquisition_info.get('error_message'):
             message = acquisition_info.get('error_message')
 
-
         entry = {
             'Type': entryTypes['note'],
             'Contents': '{}\nacquisition ID: {}'.format(message, acquisition_id),
@@ -1981,27 +1980,33 @@ script:
             base64.b64encode(args['script'])
         )
 
-        request_id = acquisition_info.get('_id')
+        acquisition_id = acquisition_info.get('_id')
 
         LOG('Acquisition request was successful. Waiting for acquisition process to be complete.')
         #loop to inquire acquisition state every 30 seconds
         #break when state is complete
         while True:
-            acquisition_info = data_acquisition_information_request(request_id)
+            acquisition_info = data_acquisition_information_request(acquisition_id)
             if acquisition_info.get('state') == 'COMPLETE':
                 break
             time.sleep(30)
-        #output error message to the war room
-        if acquisition_info.get('error_message'):
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': acquisition_info.get('error_message'),
-                'ContentsFormat': formats['text']
-            })
-
         LOG('Acquisition process has been complete. Fetching mans file.')
-        #output file to the war room
-        data = data_collection_request(request_id)
+
+        message = '{} acquired successfuly'.format(args.get('fileName'))
+        if acquisition_info.get('error_message'):
+            message = acquisition_info.get('error_message')
+
+        #output file and acquisition information to the war room
+        data = data_collection_request(acquisition_id)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '{}\nacquisition ID: {}'.format(message, acquisition_id),
+            'ContentsFormat': formats['text'],
+            'EntryContext': {
+                "FireEyeHX.Acquisitions.Data(obj._id==val._id)": acquisition_info
+            }
+        }
+        demisto.results(entry)
         demisto.results(fileResult('agent_{}_data.mans'.format(args['agentId']), data))
 
     def delete_data_acquisition_request(acquisition_id):
@@ -2697,17 +2702,17 @@ script:
       description: The host that holds the file. If the agentId is not specified,
         hostName must be specified.
     outputs:
-    - contextPath: FireEyeHX.Acquisitions._id
+    - contextPath: FireEyeHX.Acquisitions.Files._id
       description: The acquisition unique ID.
-    - contextPath: FireEyeHX.Acquisitions.state
+    - contextPath: FireEyeHX.Acquisitions.Files.state
       description: The acquisition state.
-    - contextPath: FireEyeHX.Acquisitions.md5
+    - contextPath: FireEyeHX.Acquisitions.Files.md5
       description: File md5.
-    - contextPath: FireEyeHX.Acquisitions.req_filename
+    - contextPath: FireEyeHX.Acquisitions.Files.req_filename
       description: The file name.
-    - contextPath: FireEyeHX.Acquisitions.req_path
+    - contextPath: FireEyeHX.Acquisitions.Files.req_path
       description: The file path.
-    - contextPath: FireEyeHX.Acquisitions.host._id
+    - contextPath: FireEyeHX.Acquisitions.Files.host._id
       description: FireEye HX agent ID.
     description: Aquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
@@ -2738,15 +2743,14 @@ script:
       description: The host name. If the agent ID is not specified, the host name
         must be specified.
     outputs:
-    - contextPath: FireEyeHX.Acquisitions._id
+    - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The acquisition unique ID.
-    - contextPath: FireEyeHX.Acquisitions.state
+    - contextPath: FireEyeHX.Acquisitions.Data.state
       description: The acquisition state.
-    - contextPath: FireEyeHX.Acquisitions.md5
+    - contextPath: FireEyeHX.Acquisitions.Data.md5
       description: File md5.
-    - contextPath: FireEyeHX.Acquisitions.host._id
+    - contextPath: FireEyeHX.Acquisitions.Data.host._id
       description: Time when the acquisition was finished.
-    description: Aquire a specific file as a password protected zip file. The password
     description: Start a data acquisition process to gather artifacts from the system
       disk and memory. The data is fetched as mans file.
   - name: fireeye-hx-delete-data-acquisition
