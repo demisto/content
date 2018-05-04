@@ -1,15 +1,16 @@
 id: Demisto_Self-Defense_-_Account_policy_monitoring_playbook
 version: -1
 name: Demisto Self-Defense - Account policy monitoring playbook
-description: Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found.
+description: Get list of Demisto users through the REST API, and alert if any non-SAML
+  user accounts are found.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8d5e0af6-7ac8-49ce-8de7-60aed382e97b
+    taskid: 8d2065da-28f3-4042-81b6-ccd497f2d788
     type: start
     task:
-      id: 8d5e0af6-7ac8-49ce-8de7-60aed382e97b
+      id: 8d2065da-28f3-4042-81b6-ccd497f2d788
       version: -1
       name: ""
       iscommand: false
@@ -27,13 +28,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 6b8b4358-fdfe-4b6d-8aa6-e6a94bfd62f3
+    taskid: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
     type: regular
     task:
-      id: 6b8b4358-fdfe-4b6d-8aa6-e6a94bfd62f3
+      id: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
       version: -1
       name: List Demisto users
-      description: send HTTP GET requests
+      description: List all Demisto users via Demisto REST API integration
       script: Demisto REST API|||demisto-api-get
       type: regular
       iscommand: true
@@ -56,12 +57,15 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: e2febf92-f432-462c-883b-78aca9385909
+    taskid: 4d440741-9f52-4625-8b31-ad0de970fe0b
     type: condition
     task:
-      id: e2febf92-f432-462c-883b-78aca9385909
+      id: 4d440741-9f52-4625-8b31-ad0de970fe0b
       version: -1
       name: Any non-SSO users?
+      description: Check if there are any users that weren't created through a SAML
+        login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't
+        be any.
       type: condition
       iscommand: false
       brand: ""
@@ -98,10 +102,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: b0b658b0-9296-4eb8-8c59-b176bbe97a48
+    taskid: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
     type: title
     task:
-      id: b0b658b0-9296-4eb8-8c59-b176bbe97a48
+      id: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
       version: -1
       name: Alert and Escalate
       type: title
@@ -122,12 +126,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 099ab147-084a-41c8-8eea-aaa3313cb343
+    taskid: 2f4d7417-f033-4c83-83b2-8a7484869a32
     type: regular
     task:
-      id: 099ab147-084a-41c8-8eea-aaa3313cb343
+      id: 2f4d7417-f033-4c83-83b2-8a7484869a32
       version: -1
       name: Escalate to Critical
+      description: Set incident severity to Critical
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -136,6 +141,7 @@ tasks:
       addLabels: {}
       amarkdownsection: {}
       anothernumberpleasejusttomakesure: {}
+      app: {}
       arcsightcaseid: {}
       attach: {}
       attachamenthash: {}
@@ -154,7 +160,10 @@ tasks:
       customFields: {}
       customfield: {}
       daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
       details: {}
+      duration: {}
       emailbcc: {}
       emailbody: {}
       emailbodyformat: {}
@@ -174,6 +183,7 @@ tasks:
       emailto: {}
       emailtocount: {}
       emailurlclicked: {}
+      escalationdate: {}
       eventid: {}
       falses: {}
       fetchid: {}
@@ -210,6 +220,9 @@ tasks:
       source: {}
       sourceip: {}
       sourceip1: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
       subcat: {}
       subcategory: {}
       systems: {}
@@ -235,12 +248,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 330b7f73-0b8a-4596-86e5-c30df8174098
+    taskid: 15c95532-3d62-41b0-8d97-663d17443b1b
     type: regular
     task:
-      id: 330b7f73-0b8a-4596-86e5-c30df8174098
+      id: 15c95532-3d62-41b0-8d97-663d17443b1b
       version: -1
       name: Send alert to Slack channel
+      description: Send an alert to the CSIRT slack channel
       script: slack|||slack-send
       type: regular
       iscommand: true
@@ -265,12 +279,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: afebdda7-3635-4392-8634-2584a243cda5
+    taskid: fed938d2-919c-467c-8f65-4757d50d6f00
     type: regular
     task:
-      id: afebdda7-3635-4392-8634-2584a243cda5
+      id: fed938d2-919c-467c-8f65-4757d50d6f00
       version: -1
       name: Send SMS alert
+      description: Send an SMS alert using Twilio.
       script: Twilio|||TwilioSendSMS
       type: regular
       iscommand: true
@@ -291,12 +306,13 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 9c7d51bf-48c0-41a7-8280-2d91990ffd8c
+    taskid: 99688ee1-63c3-4e75-8148-952305bcd890
     type: regular
     task:
-      id: 9c7d51bf-48c0-41a7-8280-2d91990ffd8c
+      id: 99688ee1-63c3-4e75-8148-952305bcd890
       version: -1
       name: Close
+      description: Auto-close this incident
       scriptName: CloseInvestigation
       type: regular
       iscommand: false
