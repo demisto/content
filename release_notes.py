@@ -107,8 +107,7 @@ class Content:
                     if ans is None:
                         print_error("Error:\n[%s] is missing releaseNotes entry" % (path,))
                         missing_rn = True
-
-                    if ans:
+                    elif ans:
                         new_count += 1
                         new_str += ans
                         print "Success"
