@@ -13,6 +13,7 @@ tasks:
       id: 8d2065da-28f3-4042-81b6-ccd497f2d788
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
@@ -108,6 +109,7 @@ tasks:
       id: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
       version: -1
       name: Alert and Escalate
+      description: Alert and Escalate
       type: title
       iscommand: false
       brand: ""
