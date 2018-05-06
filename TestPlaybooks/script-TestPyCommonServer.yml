@@ -89,27 +89,6 @@ script: |-
           }
       ]
 
-      empty_data = []
-      empty_data2 = {}
-      empty_data3 = None
-
-      table = tableToMarkdown('tableToMarkdown test', data)
-      demisto.results(table)
-
-      table = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
-      demisto.results(table)
-
-      table = tableToMarkdown('tableToMarkdown empty test', empty_data)
-      demisto.results(table)
-
-      table = tableToMarkdown('tableToMarkdown empty test2', empty_data2)
-      demisto.results(table)
-
-      table = tableToMarkdown('tableToMarkdown empty test3', empty_data3)
-      demisto.results(table)
-
-      demisto.results('ok')
-
       table = tableToMarkdown('tableToMarkdown test', data)
       expected_tbl = '''### tableToMarkdown test
   header_2|header_3|header_1
@@ -140,28 +119,47 @@ script: |-
   b3.1<br>b3.2|c3\|1|a3
   '''
 
+      data3 = data[:]
+      for i, d in enumerate(data2):
+          d['header_3'] = '[url](https:\\demisto.com)'
+          d['header_2'] = None
+      table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
+      expected_url_missing_info_tbl = '''### tableToMarkdown test with url and missing info
+  header_2|header_3|header_1
+  -|-|-
+  |[url](https:\\demisto.com)|a1
+  |[url](https:\\demisto.com)|a2
+  |[url](https:\\demisto.com)|a3
+  '''
+
       demisto.results(toEntry(table))
       demisto.results(toEntry(expected_tbl))
       demisto.results(toEntry(table_tranform))
       demisto.results(toEntry(expected_transform_tbl))
       demisto.results(toEntry(table_multiline))
       demisto.results(toEntry(expected_multiline_tbl))
+      demisto.results(toEntry(table_url_missing_info))
+      demisto.results(toEntry(expected_url_missing_info_tbl))
+
 
       results = [table == expected_tbl,
           table_tranform == expected_transform_tbl,
-          table_multiline == expected_multiline_tbl
+          table_multiline == expected_multiline_tbl,
+          table_url_missing_info == expected_url_missing_info_tbl
           ]
 
       if all(results):
           demisto.results('ok')
       else:
           demisto.results(str(results))
+          demisto.log(table)
+          demisto.log(expected_tbl)
           demisto.results('error')
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
-      #'XML' : test_xml,
+      'XML' : test_xml,
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md
   }
