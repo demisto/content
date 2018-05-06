@@ -380,7 +380,7 @@ script:
                         score = 3
                     ioc_context[i]['Malicious'] = {
                         'Vendor': 'Zscaler',
-                        'Description': r[i]['ipClassificationsWithSecurityAlert']
+                        'Description': hr[i]['ipClassificationsWithSecurityAlert']
                     }
                 del hr[i]['urlClassificationsWithSecurityAlert']
                 hr[i]['ip'] = hr[i].pop('url')
