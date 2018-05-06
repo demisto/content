@@ -837,6 +837,7 @@ script:
             break;
         case 'okta-remove-from-group':
             entry = removeUserFromGroupCommand();
+            break;
         case 'okta-get-logs':
             entry = getLogsCommand();
             break;
