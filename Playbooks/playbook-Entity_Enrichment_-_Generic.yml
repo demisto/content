@@ -1,4 +1,4 @@
-id: entity_enrichment_generic_v2
+id: entity_enrichment_generic
 version: -1
 name: Entity Enrichment - Generic
 fromversion: 3.6.0
