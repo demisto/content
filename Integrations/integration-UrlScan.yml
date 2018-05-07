@@ -85,7 +85,7 @@ script:
         try {
             var obj = JSON.parse(res.Body);
             if (obj.status === 400) {
-                throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
+                throw 'Urlscan.io Request Failed.\nObject Status code: ' + obj.status + '.\nBody: ' + res.Body + '.';
             }
             return obj;
         }
@@ -161,12 +161,12 @@ script:
 
             if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, 'URL', {
+                addMalicious(ec, outputPaths.url, {
                     Data: url,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: url};
                 dbotScore = 1;
             }
 
@@ -210,12 +210,12 @@ script:
 
             if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.IP = {};
-                addMalicious(ec, 'IP', {
+                addMalicious(ec, outputPaths.ip, {
                     Address: ip,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             } else {
+                ec[outputPaths.ip] = {Address: ip};
                 dbotScore = 1;
             }
 
@@ -248,12 +248,12 @@ script:
 
             if (res.malicious !== 0) {
                 dbotScore = 3;
-                ec.File = {};
-                addMalicious(ec, 'File', {
+                addMalicious(ec, outputPaths.file, {
                     MD5: hash,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             }else {
+                ec[outputPaths.file] = {MD5: hash};
                 dbotScore = 1;
             }
 
@@ -345,12 +345,12 @@ script:
 
             if (resStats.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, 'URL', {
+                addMalicious(ec, outputPaths.url, {
                     Data: scanUrl,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: scanUrl};
                 dbotScore = 1;
             }
 
