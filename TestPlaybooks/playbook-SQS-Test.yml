@@ -1,5 +1,5 @@
-id: ed50e316-9646-41f9-864a-a0c7aa5ff0b7
-version: 21
+id: sqs_test
+version: -1
 name: SQS Test
 starttaskid: "0"
 tasks:
