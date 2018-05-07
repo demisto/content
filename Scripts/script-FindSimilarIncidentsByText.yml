@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: FindSimilarIncidentsByText
 script: |-
-
   HOURS_TIME_FRAME = int(demisto.args()['timeFrameHours'])
   THRESHOLD = float(demisto.args()['threshold'])
   TEXT_FIELDS = set(map(lambda x: x.lower(), demisto.args()['textFields'].split(',')))
@@ -135,6 +134,7 @@ args:
   required: true
   description: 'Text fields to compare. Can be label name, incident fields or custom
     fields. Comma separated value. '
+  defaultValue: name,details
 - name: threshold
   description: TFIDF score threshold (to consider incident as similar).
   defaultValue: "0.95"
@@ -154,4 +154,3 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "Find similar incident by text comparison (TF-IDF)"
