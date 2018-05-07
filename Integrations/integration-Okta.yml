@@ -837,6 +837,7 @@ script:
             break;
         case 'okta-remove-from-group':
             entry = removeUserFromGroupCommand();
+            break;
         case 'okta-get-logs':
             entry = getLogsCommand();
             break;
@@ -1656,3 +1657,4 @@ script:
     description: Get logs by providing optional filters
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "-"
