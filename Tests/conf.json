@@ -282,14 +282,14 @@
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
         },
-       {
-         "integrations": "SQS",
-         "playbookID": "SQS Test"
-       },
-       {
-         "integrations": "Preempt",
-         "playbookID": "Preempt Test"
-       }
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+        {
+            "integrations": "SQS",
+            "playbookID": "SQS Test"
+        }
     ],
     "skipped": [
         {
@@ -298,8 +298,8 @@
         },
         {
             "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
+              "name": "carbonblack-v2",
+              "byoi": true
             },
             "playbookID": "CarbonBlackResponseTest"
         },
@@ -330,11 +330,11 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
