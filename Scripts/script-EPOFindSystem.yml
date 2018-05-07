@@ -91,4 +91,3 @@ outputs:
   description: Hostname
 scripttarget: 0
 timeout: 0s
-releaseNotes: "-"
