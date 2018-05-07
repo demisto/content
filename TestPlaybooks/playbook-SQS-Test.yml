@@ -7,15 +7,6 @@ tasks:
     id: "0"
     taskid: e1881d34-1ca8-4261-8019-3c14c22138bb
     type: start
-    task:id: ed50e316-9646-41f9-864a-a0c7aa5ff0b7
-version: 21
-name: SQS Test
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: e1881d34-1ca8-4261-8019-3c14c22138bb
-    type: start
     task:
       id: e1881d34-1ca8-4261-8019-3c14c22138bb
       version: -1
