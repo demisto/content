@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-          "integrations": "okta",
+            "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
         },
@@ -12,7 +12,7 @@
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-          "playbookID": "Test filters & transformers scripts"
+            "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "Salesforce",
@@ -112,8 +112,8 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-           "integrations": "AlienVault OTX",
-           "playbookID": "ip_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -288,7 +288,7 @@
         },
         {
             "integrations": "SQS",
-            "playbookID": "SQS Test"
+            "playbookID": "sqs_test"
         }
     ],
     "skipped": [
@@ -298,8 +298,8 @@
         },
         {
             "integrations": {
-              "name": "carbonblack-v2",
-              "byoi": true
+                "name": "carbonblack-v2",
+                "byoi": true
             },
             "playbookID": "CarbonBlackResponseTest"
         },
@@ -330,11 +330,11 @@
         },
         {
             "integrations": [
-              "AlienVault OTX",
-              {
-                "name": "activedir",
-                "byoi": false
-              }],
+                "AlienVault OTX",
+                {
+                    "name": "activedir",
+                    "byoi": false
+                }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
@@ -390,8 +390,8 @@
                     "byoi": false
                 },
                 {
-                  "name": "carbonblack",
-                  "byoi": false
+                    "name": "carbonblack",
+                    "byoi": false
                 }
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
