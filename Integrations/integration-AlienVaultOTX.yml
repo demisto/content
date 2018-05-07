@@ -332,6 +332,7 @@ script:
     arguments:
     - name: ip
       required: true
+      default: true
       description: ip to query
     outputs:
     - contextPath: IP.Address
@@ -359,6 +360,7 @@ script:
     arguments:
     - name: domain
       required: true
+      default: true
       description: domain to query
     outputs:
     - contextPath: Domain.Name
@@ -380,6 +382,7 @@ script:
     arguments:
     - name: ip
       required: true
+      default: true
       description: ip to query
     outputs:
     - contextPath: IP.Address
@@ -401,6 +404,7 @@ script:
     arguments:
     - name: hostname
       required: true
+      default: true
       description: hostname to query
     outputs:
     - contextPath: Endpoint.Hostname
@@ -413,6 +417,8 @@ script:
   - name: file
     arguments:
     - name: file
+      required: true
+      default: true
       description: md5 to query
     outputs:
     - contextPath: File.MD5
@@ -479,7 +485,6 @@ script:
       description: Pulse description
     description: Search for pulses in AlienVault OTX
   - name: alienvault-get-pulse-details
-    description: Get pulse details (pulse are alian vault's entities)
     arguments:
     - name: pulse-id
       required: true
@@ -501,14 +506,16 @@ script:
       description: Pulse targeted countries
     - contextPath: AlienVault.Pulses.Description
       description: Pulse description
+    description: Get pulse details (pulse are alian vault's entities)
   - name: url
     arguments:
     - name: url
       required: true
+      default: true
       description: url to query
     outputs:
     - contextPath: URL.Data
       description: 'URL '
     description: Query url in AlienVault OTX
-hidden: false
+  runonce: false
 fromversion: 3.0.1
