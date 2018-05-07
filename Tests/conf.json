@@ -3,11 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "okta",
+            "playbookID": "okta_test_playbook",
+            "timeout": 240
+        },
+        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-            "playbookID": "Test filters & transformers scripts"
+          "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "Salesforce",
@@ -107,8 +112,8 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": "AlienVault OTX",
-            "playbookID": "ip_enrichment_generic_test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -126,8 +131,8 @@
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "AlienVault OTX",
-            "playbookID": "domain_enrichment_generic_test"
+          "integrations": "AlienVault OTX",
+          "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -278,8 +283,8 @@
             "playbookID": "Symantec Messaging Gateway Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "SQS Test"
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
         }
     ],
     "skipped": [
@@ -289,8 +294,8 @@
         },
         {
             "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
+              "name": "carbonblack-v2",
+              "byoi": true
             },
             "playbookID": "CarbonBlackResponseTest"
         },
@@ -321,11 +326,11 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
+              "AlienVault OTX",
+              {
+                "name": "activedir",
+                "byoi": false
+              }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
@@ -402,6 +407,10 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
+        },
+        {
+            "integrations": "FireEye HX",
+            "playbookID": "FireEye HX Test"
         }
     ]
 }

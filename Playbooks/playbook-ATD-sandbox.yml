@@ -1,6 +1,7 @@
 id: ATD - Detonate File
 version: -1
 name: ATD - Detonate File
+fromversion: ""
 description: Detonate a file in McAfee ATD, wait for results, then get the report
   as both json and PDF.
 starttaskid: "0"
