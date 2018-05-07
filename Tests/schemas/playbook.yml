@@ -130,6 +130,7 @@ mapping:
     type: bool
   fromversion:
     type: text
+    required: yes
   toversion:
     type: text
   releaseNotes:

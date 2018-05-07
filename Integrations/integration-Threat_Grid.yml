@@ -931,4 +931,3 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
-releaseNotes: "The report file pushed to WarRoom as a file and not as a link."
