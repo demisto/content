@@ -1,5 +1,5 @@
 id: ed50e316-9646-41f9-864a-a0c7aa5ff0b7
-version: 13
+version: 21
 name: SQS Test
 starttaskid: "0"
 tasks:
@@ -440,10 +440,10 @@ outputs: []
       }
   "3":
     id: "3"
-    taskid: 396fff97-43b2-4bbb-86ef-9c7ce3ded1fc
+    taskid: d4eb14fb-e73d-4e5a-87a3-a8e6c591265f
     type: regular
     task:
-      id: 396fff97-43b2-4bbb-86ef-9c7ce3ded1fc
+      id: d4eb14fb-e73d-4e5a-87a3-a8e6c591265f
       version: -1
       name: sqs-delete-messages
       description: Deletes up to 10 messages from the Queue
@@ -455,10 +455,10 @@ outputs: []
       '#none#':
       - "12"
     scriptarguments:
-      deleteAll: {}
+      deleteAll:
+        simple: "yes"
       maxMessages: {}
-      receiptHandles:
-        simple: ${SQS.Messages.ReceiptHandle}
+      receiptHandles: {}
     separatecontext: false
     view: |-
       {
