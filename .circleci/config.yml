@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.5.1"
+      CONTENT_VERSION: "18.5.2"
     steps:
       - checkout
       - run:
@@ -32,7 +32,7 @@ jobs:
               ./Tests/yamlvalidator
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 7fc195b7b1c420f9c1ff5041f021f224648510fe $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM bbe11e6757bbd0c8a440d1e10aff6d8f8d3df3e0 $CONTENT_VERSION
       - run:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh
