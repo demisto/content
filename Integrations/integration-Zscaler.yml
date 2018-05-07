@@ -380,7 +380,7 @@ script:
                         score = 3
                     ioc_context[i]['Malicious'] = {
                         'Vendor': 'Zscaler',
-                        'Description': r[i]['ipClassificationsWithSecurityAlert']
+                        'Description': hr[i]['ipClassificationsWithSecurityAlert']
                     }
                 del hr[i]['urlClassificationsWithSecurityAlert']
                 hr[i]['ip'] = hr[i].pop('url')
@@ -595,3 +595,4 @@ script:
         8.8.8.8,1.2.3.4) '
     description: Adds IP address to the blacklist.
     execution: true
+releaseNotes: "-"

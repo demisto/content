@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "okta",
+            "playbookID": "okta_test_playbook",
+            "timeout": 240
+        },
+        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
@@ -276,6 +281,10 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
         }
     ],
     "skipped": [
@@ -398,6 +407,10 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
+        },
+        {
+            "integrations": "FireEye HX",
+            "playbookID": "FireEye HX Test"
         }
     ]
 }
