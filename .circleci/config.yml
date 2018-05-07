@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Prepare Environment
           command: |
-              echo 'export CIRCLE_ARTIFACTS="$CIRCLE_WORKING_DIRECTORY/artifacts"' >> $BASH_ENV
+              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
       - run:
@@ -39,13 +39,6 @@ jobs:
       - run:
           name: Server Documentation
           command: python content_creator.py $CIRCLE_ARTIFACTS
-      - run:
-          name: GET DETAILS
-          command: |
-              pwd
-              echo ${CIRCLE_ARTIFACTS}
-              ls -l
-              ls -l $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
