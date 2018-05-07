@@ -288,7 +288,7 @@
         },
         {
             "integrations": "SQS",
-            "playbookID": "SQS Test"
+            "playbookID": "sqs_test"
         }
     ],
     "skipped": [
