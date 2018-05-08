@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "test_url_regex"
+        },
+        {
           "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
