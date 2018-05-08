@@ -6,12 +6,19 @@ import shutil
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields']
+
+TEST_DIR = 'TestPlaybooks'
+
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
 BUNDLE_POST = 'bundle_post'
+BUNDLE_TEST = 'bundle_test'
 # zip files names (the extension will be added later - shutil demands file name without extension)
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
+ZIP_TEST = 'content_test'
+
+
 
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
@@ -31,7 +38,7 @@ def add_tools_to_bundle(bundle):
         shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
 
 
-def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post):
+def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
     for path in scan_files:
@@ -39,9 +46,10 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post):
             yml_info = yaml.safe_load(f)
 
         ver = yml_info.get('fromversion', '0')
-        if is_ge_version(version_num, ver):
+        if ver == '' or is_ge_version(version_num, ver):
             print ' - marked as post: %s (%s)' % (ver, path, )
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
+            shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
             post_files += 1
         else:
             # add the file to both bundles
@@ -51,12 +59,13 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post):
 
     print ' - total post files: %d' % (post_files, )
 
-def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post):
+def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
         shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
+        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def copy_dir_files(*args):
@@ -64,6 +73,13 @@ def copy_dir_files(*args):
     copy_dir_json(*args)
     # handle *.yml files
     copy_dir_yml(*args)
+
+def copy_test_files(bundle_test):
+    print 'copying test files to test bundle'
+    scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
+    for path in scan_files:
+        print "copying path %s" % (path,)
+        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def main(circle_artifacts):
@@ -74,27 +90,32 @@ def main(circle_artifacts):
     version_num = "3.5"
 
     print 'creating dir for bundles ...'
-    for b in [BUNDLE_PRE, BUNDLE_POST]:
+    for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(b)
         add_tools_to_bundle(b)
 
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
-        copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST)
+        copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
+
+    copy_test_files(BUNDLE_TEST)
 
     print 'copying content descriptor to bundles'
-    for b in [BUNDLE_PRE, BUNDLE_POST]:
+    for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         shutil.copyfile('content-descriptor.json', os.path.join(b, 'content-descriptor.json'))
 
     print 'copying common server doc to bundles'
-    for b in [BUNDLE_PRE, BUNDLE_POST]:
+    for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
     shutil.make_archive(ZIP_PRE, 'zip', BUNDLE_PRE)
+    shutil.make_archive(ZIP_TEST, 'zip', BUNDLE_TEST)
     shutil.copyfile(ZIP_PRE + '.zip', os.path.join(circle_artifacts, ZIP_PRE + '.zip'))
     shutil.copyfile(ZIP_POST + '.zip', os.path.join(circle_artifacts, ZIP_POST + '.zip'))
+    shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
+
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
 
     print 'finished create content artifact'

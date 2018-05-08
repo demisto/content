@@ -273,15 +273,21 @@ class IncidentFieldContent(Content):
         return "Incident Fields"
 
     def addedReleaseNotes(self, cnt):
-        # This should never happen
-        return ""
+        rn = cnt.get("releaseNotes", "")
+        if len(rn) == 0:
+            return None
+        res = ""
+
+        if rn != '-':
+            res += "- " + cnt["releaseNotes"] + "\n"
+        return res
 
     def modifiedReleaseNotes(self, cnt):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
         res = ""
-        # Add a comment only if there are release notes
+
         if rn != '-':
             res += "- " + cnt["releaseNotes"] + "\n"
         return res
@@ -426,16 +432,16 @@ Content.register(IntegrationContent)
 
 
 releaseNoteGenerator = {
-    "Scripts": ScriptContent(),
     "Integrations": IntegrationContent(),
+    "Scripts": ScriptContent(),
     "Playbooks": PlaybookContent(),
     "Reports": ReportContent(),
-    "Misc": ReputationContent(),
     "Dashboards": DashboardContent(),
     "Widgets": WidgetContent(),
     "IncidentFields": IncidentFieldContent(),
     "Layouts": LayoutContent(),
-    "Classifiers": ClassifierContent()
+    "Classifiers": ClassifierContent(),
+    "Misc": ReputationContent()
 }
 
 

@@ -1,14 +1,14 @@
 id: Archer-Test-Playbook
-version: 25
+version: -1
 name: Archer-Test-Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9f954aa5-97c8-46b3-8fdd-4a23c8fb9eb1
+    taskid: f0e69132-f55d-4ae5-8b52-778e55acd7a7
     type: start
     task:
-      id: 9f954aa5-97c8-46b3-8fdd-4a23c8fb9eb1
+      id: f0e69132-f55d-4ae5-8b52-778e55acd7a7
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 8352277d-92ef-4997-8561-8e42db723f23
+    taskid: 284fbdb2-b08a-4b7d-8247-d2d990df0996
     type: regular
     task:
-      id: 8352277d-92ef-4997-8561-8e42db723f23
+      id: 284fbdb2-b08a-4b7d-8247-d2d990df0996
       version: -1
       name: archer-create-record
       description: Creates a new content record in the given application.
@@ -40,21 +41,24 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      fieldsToValues: '{"Title":"${incident.name}","Incident Summary":"Something"}'
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      fieldsToValues:
+        simple: '{"Title":"${incident.name}","Incident Summary":"Something"}'
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 719
         }
       }
   "2":
     id: "2"
-    taskid: 37286454-86d0-49a9-8a8d-7fb7f6c0b3c8
+    taskid: 0e1d0876-0e0e-48d3-8f7e-72da418a0970
     type: regular
     task:
-      id: 37286454-86d0-49a9-8a8d-7fb7f6c0b3c8
+      id: 0e1d0876-0e0e-48d3-8f7e-72da418a0970
       version: -1
       name: archer-search-applications
       description: Gets application details or list of all applications.
@@ -66,21 +70,23 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      findById: ""
-      findByName: Security Incidents
+      findById: {}
+      findByName:
+        simple: Security Incidents
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 368
         }
       }
   "3":
     id: "3"
-    taskid: 638a28b2-74e7-480c-8651-df0008844d66
+    taskid: eb9afe2d-9340-407e-8e32-0df27389874f
     type: regular
     task:
-      id: 638a28b2-74e7-480c-8651-df0008844d66
+      id: eb9afe2d-9340-407e-8e32-0df27389874f
       version: -1
       name: archer-get-record
       description: Gets information about a content record in the given application.
@@ -92,8 +98,11 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      contentId: ${Archer.Content.Id}
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      contentId:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -103,10 +112,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 123502e1-5985-48ef-8b45-e0c6de51696a
+    taskid: 85b667c6-3140-4710-8f77-937ef4074ee0
     type: regular
     task:
-      id: 123502e1-5985-48ef-8b45-e0c6de51696a
+      id: 85b667c6-3140-4710-8f77-937ef4074ee0
       version: -1
       name: archer-get-application-fields
       description: Gets all application fields by application ID
@@ -118,7 +127,9 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
+      applicationId:
+        simple: ${Archer.Applications.Id}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -128,10 +139,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 63b0fb34-1646-4154-85e5-a6d1ea019bfa
+    taskid: f35780e5-84d8-4c84-80ad-68f180532f5f
     type: regular
     task:
-      id: 63b0fb34-1646-4154-85e5-a6d1ea019bfa
+      id: f35780e5-84d8-4c84-80ad-68f180532f5f
       version: -1
       name: archer-update-record
       description: Updates existing content record in the given application.
@@ -143,9 +154,13 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      contentId: ${Archer.Content.Id}
-      fieldsToValues: '{"Title":"Update!!!"}'
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      contentId:
+        simple: ${Archer.Record.Id}
+      fieldsToValues:
+        simple: '{"Title":"Update!!!"}'
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -155,10 +170,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 4bf19c29-d9fa-4b0a-81a1-d61c3469be11
+    taskid: 3af106d8-91a9-4307-85f9-d6e0b87d29db
     type: regular
     task:
-      id: 4bf19c29-d9fa-4b0a-81a1-d61c3469be11
+      id: 3af106d8-91a9-4307-85f9-d6e0b87d29db
       version: -1
       name: archer-search-records
       description: Search for records inside the given application
@@ -170,13 +185,19 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      dateOperator: ""
-      fieldToSearchOn: Incident ID (KPI)
-      fieldsToDisplay: Incident ID,Title,Date Created
-      maxResults: "1"
-      numericOperator: ""
-      searchValue: ${Archer.Content.Id}
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      dateOperator: {}
+      fieldToSearchOn:
+        simple: Incident ID (KPI)
+      fieldsToDisplay:
+        simple: Incident ID,Title,Date Created
+      maxResults:
+        simple: "1"
+      numericOperator: {}
+      searchValue:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -186,10 +207,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 7d2fd8ee-602e-4065-8434-0e5370b8bc99
+    taskid: eecdd672-f139-4df2-8431-70ec8968d19b
     type: regular
     task:
-      id: 7d2fd8ee-602e-4065-8434-0e5370b8bc99
+      id: eecdd672-f139-4df2-8431-70ec8968d19b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -201,8 +222,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -212,10 +235,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 61a20cc7-32b4-47c6-8d1a-4210c1247acd
+    taskid: 247a903e-adfc-439e-894b-cbcedeb9fb36
     type: regular
     task:
-      id: 61a20cc7-32b4-47c6-8d1a-4210c1247acd
+      id: 247a903e-adfc-439e-894b-cbcedeb9fb36
       version: -1
       name: archer-delete-record
       description: Delete existing content record in the given application.
@@ -227,8 +250,11 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      contentId: ${Archer.Content.Id}
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      contentId:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -238,10 +264,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: c62bd02f-ac8a-4b16-8adf-1a26276182c3
+    taskid: 5db409eb-e253-4ec5-8d96-580b4e6c8fab
     type: regular
     task:
-      id: c62bd02f-ac8a-4b16-8adf-1a26276182c3
+      id: 5db409eb-e253-4ec5-8d96-580b4e6c8fab
       version: -1
       name: archer-search-records
       description: Search for records inside the given application
@@ -250,13 +276,19 @@ tasks:
       iscommand: true
       brand: RSA Archer
     scriptarguments:
-      applicationId: ${Archer.Applications.Id}
-      dateOperator: ""
-      fieldToSearchOn: Incident ID (KPI)
-      fieldsToDisplay: Incident ID,Title,Date Created
-      maxResults: "1"
-      numericOperator: ""
-      searchValue: ${Archer.Content.Id}
+      applicationId:
+        simple: ${Archer.Applications.Id}
+      dateOperator: {}
+      fieldToSearchOn:
+        simple: Incident ID (KPI)
+      fieldsToDisplay:
+        simple: Incident ID,Title,Date Created
+      maxResults:
+        simple: "1"
+      numericOperator: {}
+      searchValue:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -266,10 +298,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 1e5eaa9b-4e64-41cf-8131-638edec6ad73
+    taskid: c5e32912-c4a0-4dd0-8302-8593e18ff271
     type: regular
     task:
-      id: 1e5eaa9b-4e64-41cf-8131-638edec6ad73
+      id: c5e32912-c4a0-4dd0-8302-8593e18ff271
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -280,14 +312,19 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      field1: Archer.Content.Id
-      field2: Archer.Content.Fields.Title
-      field3: ""
-      field4: ""
-      value1: ${Archer.Content.Id}
-      value2: Update!!!
-      value3: ""
-      value4: ""
+      field1:
+        simple: Archer.Record.Id
+      field2:
+        simple: Archer.Record.Fields.Title
+      field3: {}
+      field4: {}
+      value1:
+        simple: ${Archer.Record.Id}
+      value2:
+        simple: Update!!!
+      value3: {}
+      value4: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -297,10 +334,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: f48e65d4-7412-4e1d-856f-77e077c51cdf
+    taskid: 04a41628-1783-4341-8d62-68c882a607bb
     type: regular
     task:
-      id: f48e65d4-7412-4e1d-856f-77e077c51cdf
+      id: 04a41628-1783-4341-8d62-68c882a607bb
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -311,14 +348,19 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      field1: Archer.Content.Id
-      field2: Archer.Content.Fields.Title
-      field3: ""
-      field4: ""
-      value1: ${Archer.Content.Id}
-      value2: ${incident.name}
-      value3: ""
-      value4: ""
+      field1:
+        simple: Archer.Record.Id
+      field2:
+        simple: Archer.Record.Fields.Title
+      field3: {}
+      field4: {}
+      value1:
+        simple: ${Archer.Record.Id}
+      value2:
+        simple: ${incident.name}
+      value3: {}
+      value4: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -339,3 +381,5 @@ view: |-
     }
   }
 inputs: []
+outputs: []
+releaseNotes: "-"
