@@ -567,4 +567,4 @@ script:
     description: Return the latest vulnerabilities found
 hidden: false
 fromversion: 2.5.0
-releaseNote: "Add indicators thresholds as instance parameters"
+releaseNotes: "Add indicators thresholds as instance parameters"
